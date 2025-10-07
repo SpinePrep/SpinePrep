@@ -1,0 +1,40 @@
+Assuming unrestricted shared filesystem usage.
+host: kiomars
+Building DAG of jobs...
+Using shell: /usr/local/fsl/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job             count
+------------  -------
+motion_smoke        1
+mppca_smoke         1
+total               2
+
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 15:42:21 2025]
+localrule mppca_smoke:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/discover.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/mppca_smoke.ok
+    jobid: 3
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/mppca_smoke.ok; Code has changed since last execution
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 15:42:22 2025]
+Finished jobid: 3 (Rule: mppca_smoke)
+1 of 2 steps (50%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 15:42:22 2025]
+localrule motion_smoke:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/discover.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/mppca_smoke.ok
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/motion_smoke.ok
+    jobid: 0
+    reason: Input files updated by another job: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/mppca_smoke.ok
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 15:42:23 2025]
+Finished jobid: 0 (Rule: motion_smoke)
+2 of 2 steps (100%) done
+Complete log(s): /mnt/ssd1/SpinePrep/.snakemake/log/2025-10-07T154221.504496.snakemake.log

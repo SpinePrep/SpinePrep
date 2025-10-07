@@ -1,0 +1,4 @@
+FileNotFoundError in file "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 27:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/samples.tsv
+  File "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 27, in <module>
+  File "/mnt/ssd1/SpinePrep/workflow/lib/samples.py", line 128, in rows

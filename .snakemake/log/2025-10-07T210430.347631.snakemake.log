@@ -1,0 +1,2 @@
+WildcardError in file "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 314:
+No values given for wildcard 'mppca_path'.

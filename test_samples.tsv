@@ -1,0 +1,1 @@
+sub	ses	run	task	bold_path	mppca_path	motion_path	motion_params_tsv	motion_params_json	confounds_tsv	confounds_json	motion_group	crop_from	crop_to

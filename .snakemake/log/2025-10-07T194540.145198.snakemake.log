@@ -1,0 +1,296 @@
+Lints for snakefile /mnt/ssd1/SpinePrep/workflow/Snakefile:
+    * Mixed rules and functions in same snakefile.:
+      Small one-liner functions used only once should be defined as lambda
+      expressions. Other functions should be collected in a common module, e.g.
+      'rules/common.smk'. This makes the workflow steps more readable.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/modularization.html#includes
+
+Lints for rule validate_config (line 57, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+
+Lints for rule discover (line 67, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule samples (line 82, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+
+Lints for rule manifest_deriv (line 94, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule mppca (line 151, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule motion (line 183, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule confounds (line 233, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule report_subject (line 279, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+
+Lints for rule mppca_smoke (line 302, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule motion_smoke (line 320, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule confounds_smoke (line 342, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule epi_mean (line 367, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule seg_cord (line 402, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule label_levels (line 439, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule reg_epi2t2 (line 472, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule reg_t22pam50 (line 528, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule warp_masks (line 575, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+    * Migrate long run directives into scripts or notebooks:
+      Long run directives hamper workflow readability. Use the script or
+      notebook directive instead. Note that the script or notebook directive
+      does not involve boilerplate. Similar to run, you will have direct access
+      to params, input, output, and wildcards.Only use the run directive for a
+      handful of lines.
+      Also see:
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#external-scripts
+      https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#jupyter-notebook-integration
+
+Lints for rule registration_all (line 672, /mnt/ssd1/SpinePrep/workflow/Snakefile):
+    * No log directive defined:
+      Without a log directive, all output will be printed to the terminal. In
+      distributed environments, this means that errors are harder to discover.
+      In local environments, output of concurrent jobs will be mixed and become
+      unreadable.
+      Also see:
+      https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+

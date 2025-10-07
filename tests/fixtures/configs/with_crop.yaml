@@ -1,0 +1,10 @@
+pipeline_version: "0.2.0"
+study: { name: "Fixture" }
+paths: { root: "{TMP}/root" }
+options:
+  temporal_crop:
+    enable: true
+    method: "cord_mean_robust_z"
+    max_trim_start: 10
+    max_trim_end: 10
+    z_thresh: 2.5

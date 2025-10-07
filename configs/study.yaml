@@ -25,23 +25,46 @@ options:
   ingest:
     enable: false
   denoise_mppca: true
+  motion:
+    engine: "sct+rigid3d"
+    slice_axis: "IS"
+    concat:
+      mode: "session+task"
+      require_same: ["pe_dir", "slice_axis", "tr", "voxel_size"]
   smoothing:
     enable: false
     fwhm_mm: 2.0
   sdc:
     enable: true
     mode: "auto"
+  temporal_crop:
+    enable: true
+    method: "cord_mean_robust_z"
+    max_trim_start: 10
+    max_trim_end: 10
+    z_thresh: 2.5
   first_level:
     engine: "feat"
     feat_variant: "block_15s_conv3"
   cleanup:
     keep_only_latest_stage: false
 
+registration:
+  enable: true
+  template: PAM50
+  guidance: SCT
+  levels: auto
+  use_gm_wm_masks: true
+  rootlets:
+    enable: false
+    mode: "atlas"
+
 templates:
   pam50_version: "1.0"
 
 tools:
   sct: "7.1.0"
+  sct_min_version: "5.8"
   fsl: "6.0.7"
   ants: "2.5.3"
   dcm2niix: "v1.0.2024"

@@ -1,0 +1,2 @@
+RuleException in file "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 186:
+Only input files can be specified as functions

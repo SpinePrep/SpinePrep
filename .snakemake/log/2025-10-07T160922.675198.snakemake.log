@@ -1,0 +1,26 @@
+Assuming unrestricted shared filesystem usage.
+host: kiomars
+Building DAG of jobs...
+Using shell: /usr/local/fsl/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job            count
+-----------  -------
+mppca_smoke        1
+total              1
+
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 16:09:22 2025]
+localrule mppca_smoke:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/discover.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/mppca_smoke.ok
+    jobid: 0
+    reason: Code has changed since last execution
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 16:09:23 2025]
+Finished jobid: 0 (Rule: mppca_smoke)
+1 of 1 steps (100%) done
+Complete log(s): /mnt/ssd1/SpinePrep/.snakemake/log/2025-10-07T160922.675198.snakemake.log

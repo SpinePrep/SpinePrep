@@ -1,2 +1,4 @@
 PyYAML
 jsonschema
+matplotlib>=3.8
+Jinja2>=3.1

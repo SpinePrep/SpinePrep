@@ -1,0 +1,533 @@
+Assuming unrestricted shared filesystem usage.
+host: kiomars
+Building DAG of jobs...
+Using shell: /usr/local/fsl/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count
+--------------  -------
+report_subject       10
+reports_all           1
+total                11
+
+Select jobs to execute...
+Execute 8 jobs...
+[Tue Oct  7 18:38:36 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html
+    jobid: 11
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html
+    wildcards: sub=sub-08
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:38:36 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-05_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-06_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-05_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-06_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html
+    jobid: 13
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html
+    wildcards: sub=sub-10
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:38:36 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html
+    jobid: 7
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html
+    wildcards: sub=sub-04
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:38:36 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html
+    jobid: 9
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html
+    wildcards: sub=sub-06
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:38:36 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/reports/sub-02_desc-qc.html
+    jobid: 5
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/reports/sub-02_desc-qc.html
+    wildcards: sub=sub-02
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:38:36 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html
+    jobid: 12
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html
+    wildcards: sub=sub-09
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:38:36 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html
+    jobid: 10
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html
+    wildcards: sub=sub-07
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:38:36 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html
+    jobid: 14
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html
+    wildcards: sub=sub-11
+    resources: tmpdir=/tmp
+Shell command: None
+Select jobs to execute...
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-04' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:39:40 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 7
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html
+Execute 1 jobs...
+[Tue Oct  7 18:39:40 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html
+    jobid: 6
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html
+    wildcards: sub=sub-03
+    resources: tmpdir=/tmp
+Shell command: None
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-02' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:39:40 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 5
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/reports/sub-02_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/reports/sub-02_desc-qc.html
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 18:39:40 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html
+    jobid: 8
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html
+    wildcards: sub=sub-05
+    resources: tmpdir=/tmp
+Shell command: None
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-11' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:39:40 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 14
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-07' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:39:40 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 10
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-08' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:39:40 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 11
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-09' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:39:40 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 12
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-06' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:39:40 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 9
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-10' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:40:00 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 13
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-05_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-06_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-05_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-06_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-05' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 8
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html
+Traceback (most recent call last):
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 233, in spawn_job
+    subprocess.check_call(cmd, shell=True)
+
+  File "/usr/local/fsl/lib/python3.12/subprocess.py", line 413, in check_call
+    raise CalledProcessError(retcode, cmd)
+
+subprocess.CalledProcessError: Command 'cd /mnt/ssd1/SpinePrep && /mnt/ssd1/SpinePrep/.venv/bin/python -m snakemake --snakefile '/mnt/ssd1/SpinePrep/workflow/Snakefile' --target-jobs 'report_subject:sub=sub-03' --allowed-rules report_subject --cores 8 --attempt 1 --force-use-threads  --force --target-files-omit-workdir-adjustment --max-inventory-time 0 --nocolor --no-hooks --nolock --ignore-incomplete --rerun-triggers software-env params code mtime input --conda-frontend 'conda' --shared-fs-usage input-output storage-local-copies source-cache sources persistence software-deployment --wrapper-prefix 'https://github.com/snakemake/snakemake-wrappers/raw/' --printshellcmds  --latency-wait 30 --scheduler 'ilp' --local-storage-prefix base64//LnNuYWtlbWFrZS9zdG9yYWdl --scheduler-solver-path '/mnt/ssd1/SpinePrep/.venv/bin' --default-resources base64//dG1wZGlyPXN5c3RlbV90bXBkaXI= --quiet progress rules host --mode 'subprocess' --local-groupid 'local'' returned non-zero exit status 134.
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/fsl/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 248, in cached_or_run
+    run_func(*args)
+
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/snakemake/executors/local.py", line 235, in spawn_job
+    raise SpawnedJobError()
+
+snakemake.exceptions.SpawnedJobError
+
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 6
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html
+Removing output files of failed job report_subject since they might be corrupted:
+/mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html
+Exiting because a job execution failed. Look below for error messages
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 11
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/func/sub-08_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 13
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-05_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-06_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-05_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/func/sub-10_task-motor_acq-KombiShimZBrain_run-06_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 7
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/func/sub-04_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 9
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/func/sub-06_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 5
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/func/sub-02_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/reports/sub-02_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 6
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/func/sub-03_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 12
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/func/sub-09_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 14
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/func/sub-11_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 10
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/func/sub-07_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html
+[Tue Oct  7 18:40:41 2025]
+Error in rule report_subject:
+    message: None
+    jobid: 8
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.tsv, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-01_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-02_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-03_desc-confounds_timeseries.json, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/func/sub-05_task-motor_acq-KombiShimZBrain_run-04_desc-confounds_timeseries.json
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html
+Complete log(s): /mnt/ssd1/SpinePrep/.snakemake/log/2025-10-07T183836.678001.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

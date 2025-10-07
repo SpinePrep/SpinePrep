@@ -1,0 +1,5 @@
+Assuming unrestricted shared filesystem usage.
+host: kiomars
+Building DAG of jobs...
+MissingRuleException:
+No rule to produce report_subject[sub-01] (if you use input functions make sure that they don't raise unexpected exceptions).

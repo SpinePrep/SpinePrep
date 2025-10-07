@@ -10,6 +10,7 @@
     "dataset",
     "acq",
     "options",
+    "registration",
     "templates",
     "tools",
     "resources",
@@ -75,7 +76,7 @@
 
     "options": {
       "type": "object",
-      "required": ["ingest", "denoise_mppca", "smoothing", "sdc", "first_level", "cleanup"],
+      "required": ["ingest", "denoise_mppca", "motion", "smoothing", "sdc", "first_level", "cleanup"],
       "properties": {
         "ingest": {
           "type": "object",
@@ -84,6 +85,28 @@
           "additionalProperties": false
         },
         "denoise_mppca": { "type": "boolean" },
+        "motion": {
+          "type": "object",
+          "required": ["engine", "slice_axis", "concat"],
+          "properties": {
+            "engine": { "type": "string", "enum": ["sct", "rigid3d", "sct+rigid3d"] },
+            "slice_axis": { "type": "string", "enum": ["x", "y", "z", "IS", "SI"] },
+            "concat": {
+              "type": "object",
+              "required": ["mode", "require_same"],
+              "properties": {
+                "mode": { "type": "string", "enum": ["none", "subject", "session", "session+task"] },
+                "require_same": {
+                  "type": "array",
+                  "items": { "type": "string", "enum": ["pe_dir", "slice_axis", "tr", "voxel_size", "echo_spacing_s"] },
+                  "minItems": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
         "smoothing": {
           "type": "object",
           "required": ["enable", "fwhm_mm"],
@@ -99,6 +122,27 @@
           "properties": {
             "enable": { "type": "boolean" },
             "mode": { "type": "string", "enum": ["auto", "topup", "disabled"] }
+          },
+          "additionalProperties": false
+        },
+        "temporal_crop": {
+          "type": "object",
+          "required": ["enable", "method", "max_trim_start", "max_trim_end", "z_thresh"],
+          "properties": {
+            "enable": { "type": "boolean" },
+            "method": { "type": "string", "enum": ["cord_mean_robust_z"] },
+            "max_trim_start": { "type": "integer", "minimum": 0, "maximum": 10 },
+            "max_trim_end": { "type": "integer", "minimum": 0, "maximum": 10 },
+            "z_thresh": { "type": "number", "minimum": 1.0, "maximum": 5.0 }
+          },
+          "additionalProperties": false
+        },
+        "confounds": {
+          "type": "object",
+          "required": ["fd_method", "dvars_method"],
+          "properties": {
+            "fd_method": { "type": "string", "enum": ["power_fd"] },
+            "dvars_method": { "type": "string", "enum": ["std_dvars"] }
           },
           "additionalProperties": false
         },
@@ -123,6 +167,28 @@
       "additionalProperties": false
     },
 
+    "registration": {
+      "type": "object",
+      "required": ["enable", "template", "guidance", "levels", "use_gm_wm_masks", "rootlets"],
+      "properties": {
+        "enable": { "type": "boolean" },
+        "template": { "type": "string", "enum": ["PAM50"] },
+        "guidance": { "type": "string", "enum": ["SCT"] },
+        "levels": { "type": "string", "enum": ["auto"] },
+        "use_gm_wm_masks": { "type": "boolean" },
+        "rootlets": {
+          "type": "object",
+          "required": ["enable", "mode"],
+          "properties": {
+            "enable": { "type": "boolean" },
+            "mode": { "type": "string", "enum": ["atlas"] }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+
     "templates": {
       "type": "object",
       "required": ["pam50_version"],
@@ -137,6 +203,7 @@
       "required": ["sct", "fsl", "ants", "dcm2niix"],
       "properties": {
         "sct": { "type": "string" },
+        "sct_min_version": { "type": "string" },
         "fsl": { "type": "string" },
         "ants": { "type": "string" },
         "dcm2niix": { "type": "string" }

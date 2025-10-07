@@ -1,0 +1,3 @@
+KeyError in file "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 150:
+'deriv_motion_params_tsv'
+  File "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 150, in <module>

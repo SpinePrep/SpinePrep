@@ -1,0 +1,30 @@
+pipeline_version: "0.2.0"
+project_name: "SpinePrep"
+study: { name: "fixture" }
+paths:
+  root: "tests/fixtures/work"
+  bids_dir: "{root}/bids"
+  deriv_dir: "{root}/derivatives/spineprep"
+  work_dir: "{root}/work"
+dataset: { sessions: null, runs_per_subject: null }
+acq: { tr: 2.0, slice_timing: "ascending", pe_dir: "AP", echo_spacing_s: null }
+options:
+  ingest: { enable: false }
+  denoise_mppca: false
+  motion: { engine: "rigid3d", slice_axis: "z" }
+  smoothing: { enable: false, fwhm_mm: 2.0 }
+  sdc: { enable: false, mode: "auto" }
+  first_level: { engine: "feat", feat_variant: "x" }
+  cleanup: { keep_only_latest_stage: false }
+templates: { pam50_version: "1.0" }
+tools: { sct: ">=5.8", fsl: "any", ants: "any", dcm2niix: "any" }
+resources: { default_threads: 2, default_mem_gb: 2 }
+qc: { subject_report: false, cohort_report: false }
+runtime: { container_engine: null }
+registration:
+  enable: true
+  template: PAM50
+  guidance: SCT
+  levels: auto
+  use_gm_wm_masks: true
+  rootlets: { enable: false, mode: atlas }

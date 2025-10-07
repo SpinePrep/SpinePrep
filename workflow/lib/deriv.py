@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import shutil
 from pathlib import Path
 
 
@@ -40,12 +42,33 @@ def derive_paths(row: dict, deriv_root: str) -> dict[str, str]:
 
     mppca = out_dir / f"{base_no_bold}_desc-mppca_bold.nii.gz"
     motion = out_dir / f"{base_no_bold}_desc-motioncorr_bold.nii.gz"
+    motion_params_tsv = out_dir / f"{base_no_bold}_desc-motion_params.tsv"
+    motion_params_json = out_dir / f"{base_no_bold}_desc-motion_params.json"
     conf_tsv = out_dir / f"{base_no_bold}_desc-confounds_timeseries.tsv"
     conf_json = out_dir / f"{base_no_bold}_desc-confounds_timeseries.json"
 
     return {
         "deriv_mppca": str(mppca),
         "deriv_motion": str(motion),
+        "deriv_motion_params_tsv": str(motion_params_tsv),
+        "deriv_motion_params_json": str(motion_params_json),
         "deriv_confounds_tsv": str(conf_tsv),
         "deriv_confounds_json": str(conf_json),
     }
+
+
+def stage_file(src: str, dst: str) -> None:
+    """Stage file into derivatives: prefer hardlink, else copy. Create parent dirs."""
+    s, d = Path(src), Path(dst)
+    d.parent.mkdir(parents=True, exist_ok=True)
+    if not s.exists():
+        raise FileNotFoundError(src)
+    # if exists and up-to-date, skip
+    if d.exists() and d.stat().st_mtime >= s.stat().st_mtime:
+        return
+    try:
+        if d.exists():
+            d.unlink()
+        os.link(s, d)  # hardlink
+    except OSError:
+        shutil.copy2(s, d)  # fallback copy, preserves mtime

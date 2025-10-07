@@ -14,6 +14,25 @@ matplotlib.use("Agg")  # Use non-interactive backend
 import matplotlib.pyplot as plt
 from jinja2 import Environment, FileSystemLoader
 
+# Import registration utilities
+try:
+    from workflow.lib.registration import (
+        collect_registration_files,
+        get_registration_status,
+    )
+except ImportError:
+    # Fallback if registration module not available
+    def get_registration_status(manifest_tsv: str, sub: str) -> Dict[str, str]:
+        return {
+            "sct_segmentation": "absent",
+            "levels": "absent",
+            "warps": "absent",
+            "masks": "absent",
+        }
+
+    def collect_registration_files(manifest_tsv: str, sub: str) -> List[str]:
+        return []
+
 
 def subjects_from_manifest(manifest_tsv: str) -> List[str]:
     """Extract unique subject IDs from manifest_deriv.tsv."""
@@ -58,12 +77,14 @@ def compute_fd(conf: Dict[str, List[float]]) -> List[float]:
     if "framewise_displacement" in conf:
         return conf["framewise_displacement"]
 
-    # Fallback: compute FD from motion parameters
+    # Prefer motion parameters from motion correction step
     trans_cols = ["trans_x", "trans_y", "trans_z"]
     rot_cols = ["rot_x", "rot_y", "rot_z"]
 
     if not all(col in conf for col in trans_cols + rot_cols):
-        return [0.0] * max(len(conf.get(col, [])) for col in trans_cols + rot_cols)
+        # Fallback: return zeros if motion parameters not available
+        n_vols = max(len(conf.get(col, [])) for col in conf.keys()) if conf else 1
+        return [0.0] * n_vols
 
     n_vols = len(conf["trans_x"])
     fd = [0.0]  # First volume has FD = 0
@@ -79,6 +100,33 @@ def compute_fd(conf: Dict[str, List[float]]) -> List[float]:
         fd.append((trans_diff + rot_diff) ** 0.5)
 
     return fd
+
+
+def read_motion_params(tsv: str) -> Dict[str, List[float]]:
+    """Read motion parameters from motion correction TSV file."""
+    motion_params = {}
+    try:
+        with open(tsv, "r", newline="") as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            for row in reader:
+                for col, val in row.items():
+                    if col not in motion_params:
+                        motion_params[col] = []
+                    try:
+                        motion_params[col].append(float(val))
+                    except (ValueError, TypeError):
+                        # Skip non-numeric values
+                        pass
+    except (FileNotFoundError, IOError):
+        # Return empty dict if file doesn't exist
+        pass
+    return motion_params
+
+
+def compute_fd_from_motion_params(motion_params_tsv: str) -> List[float]:
+    """Compute FD from motion parameters TSV file."""
+    motion_params = read_motion_params(motion_params_tsv)
+    return compute_fd(motion_params)
 
 
 def compute_dvars(conf: Dict[str, List[float]]) -> List[float]:
@@ -171,7 +219,14 @@ def render_subject_report(
             continue
 
         conf = read_confounds_tsv(confounds_tsv)
-        fd = compute_fd(conf)
+
+        # Prefer motion parameters from motion correction step
+        motion_params_tsv = row.get("deriv_motion_params_tsv", "")
+        if motion_params_tsv and Path(motion_params_tsv).exists():
+            fd = compute_fd_from_motion_params(motion_params_tsv)
+        else:
+            fd = compute_fd(conf)
+
         dvars = compute_dvars(conf)
 
         # Compute summary stats
@@ -189,6 +244,33 @@ def render_subject_report(
         all_fd_plots.append(fd_plot.name)
         all_dvars_plots.append(dvars_plot.name)
 
+        # Check if this run used grouped motion
+        motion_group = row.get("motion_group", "")
+        group_info = None
+        if motion_group and not motion_group.startswith("per-run-"):
+            # Count other runs in the same group
+            group_size = sum(
+                1 for r in subject_rows if r.get("motion_group", "") == motion_group
+            )
+            group_info = {
+                "group": motion_group,
+                "group_size": group_size,
+                "is_grouped": True,
+            }
+        else:
+            group_info = {"group": motion_group, "group_size": 1, "is_grouped": False}
+
+        # Check temporal crop information
+        crop_from = row.get("crop_from", 0)
+        crop_to = row.get("crop_to", n_vols)
+        trim_info = {
+            "from": crop_from,
+            "to": crop_to,
+            "trimmed_start": crop_from,
+            "trimmed_end": n_vols - crop_to,
+            "is_trimmed": crop_from > 0 or crop_to < n_vols,
+        }
+
         run_summaries.append(
             {
                 "run": run_id,
@@ -200,11 +282,17 @@ def render_subject_report(
                 "confounds_json": confounds_json,
                 "fd_plot": fd_plot.name,
                 "dvars_plot": dvars_plot.name,
+                "motion_group": group_info,
+                "temporal_crop": trim_info,
             }
         )
 
     # Collect provenance files
     prov_files = collect_provenance(subject_rows)
+
+    # Get registration status
+    reg_status = get_registration_status(manifest_tsv, sub)
+    reg_files = collect_registration_files(manifest_tsv, sub)
 
     # Generate methods boilerplate
     methods = generate_methods_boilerplate(cfg, sub, len(subject_rows))
@@ -224,6 +312,8 @@ def render_subject_report(
         dvars_plots=all_dvars_plots,
         module_decisions=module_decisions(cfg),
         prov_files=prov_files,
+        reg_status=reg_status,
+        reg_files=reg_files,
         methods_boilerplate=methods,
     )
 
@@ -241,22 +331,22 @@ def generate_methods_boilerplate(cfg: dict, sub: str, n_runs: int) -> str:
     acq = cfg.get("acq", {})
     tools = cfg.get("tools", {})
 
-    methods = f"""SpinePrep preprocessing pipeline (version {cfg.get('pipeline_version', 'unknown')}) was applied to {n_runs} functional runs from subject {sub}.
+    methods = f"""SpinePrep preprocessing pipeline (version {cfg.get("pipeline_version", "unknown")}) was applied to {n_runs} functional runs from subject {sub}.
 
 Preprocessing steps included:
-- MP-PCA denoising: {'enabled' if opts.get('denoise_mppca', False) else 'disabled'}
+- MP-PCA denoising: {"enabled" if opts.get("denoise_mppca", False) else "disabled"}
 - Motion correction: enabled
 - Confounds extraction: motion parameters, framewise displacement, DVARS
 
 Acquisition parameters:
-- TR: {acq.get('tr', 'unknown')} s
-- Slice timing: {acq.get('slice_timing', 'unknown')}
-- Phase encoding direction: {acq.get('pe_dir', 'unknown')}
+- TR: {acq.get("tr", "unknown")} s
+- Slice timing: {acq.get("slice_timing", "unknown")}
+- Phase encoding direction: {acq.get("pe_dir", "unknown")}
 
 Tool versions:
-- SCT: {tools.get('sct', 'unknown')}
-- FSL: {tools.get('fsl', 'unknown')}
-- ANTs: {tools.get('ants', 'unknown')}
+- SCT: {tools.get("sct", "unknown")}
+- FSL: {tools.get("fsl", "unknown")}
+- ANTs: {tools.get("ants", "unknown")}
 
 All outputs follow BIDS-derivatives specification and include provenance metadata."""
 

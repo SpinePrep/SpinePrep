@@ -1,0 +1,7 @@
+Building DAG of jobs...
+MissingInputException in rule all in file "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 45:
+Missing input files for rule all:
+    affected files:
+        registration_all
+        reports_all
+        preproc_all

@@ -1,0 +1,66 @@
+ValidationError in file "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 21:
+'motion' is a required property
+
+Failed validating 'required' in schema['properties']['options']:
+    {'type': 'object',
+     'required': ['ingest',
+                  'denoise_mppca',
+                  'smoothing',
+                  'motion',
+                  'sdc',
+                  'first_level',
+                  'cleanup'],
+     'properties': {'ingest': {'type': 'object',
+                               'required': ['enable'],
+                               'properties': {'enable': {'type': 'boolean'}},
+                               'additionalProperties': False},
+                    'denoise_mppca': {'type': 'boolean'},
+                    'smoothing': {'type': 'object',
+                                  'required': ['enable', 'fwhm_mm'],
+                                  'properties': {'enable': {'type': 'boolean'},
+                                                 'fwhm_mm': {'type': 'number',
+                                                             'minimum': 0}},
+                                  'additionalProperties': False},
+                    'motion': {'type': 'object',
+                               'required': ['engine', 'slice_axis'],
+                               'properties': {'engine': {'type': 'string',
+                                                         'enum': ['sct',
+                                                                  'rigid3d',
+                                                                  'sct+rigid3d']},
+                                              'slice_axis': {'type': 'string',
+                                                             'enum': ['x',
+                                                                      'y',
+                                                                      'z']}},
+                               'additionalProperties': False},
+                    'sdc': {'type': 'object',
+                            'required': ['enable', 'mode'],
+                            'properties': {'enable': {'type': 'boolean'},
+                                           'mode': {'type': 'string',
+                                                    'enum': ['auto',
+                                                             'topup',
+                                                             'disabled']}},
+                            'additionalProperties': False},
+                    'first_level': {'type': 'object',
+                                    'required': ['engine', 'feat_variant'],
+                                    'properties': {'engine': {'type': 'string',
+                                                              'enum': ['feat',
+                                                                       'pyglm']},
+                                                   'feat_variant': {'type': 'string'}},
+                                    'additionalProperties': False},
+                    'cleanup': {'type': 'object',
+                                'required': ['keep_only_latest_stage'],
+                                'properties': {'keep_only_latest_stage': {'type': 'boolean'}},
+                                'additionalProperties': False}},
+     'additionalProperties': False}
+
+On instance['options']:
+    {'ingest': {'enable': False},
+     'denoise_mppca': True,
+     'smoothing': {'enable': False, 'fwhm_mm': 2.0},
+     'sdc': {'enable': True, 'mode': 'auto'},
+     'first_level': {'engine': 'feat', 'feat_variant': 'block_15s_conv3'},
+     'cleanup': {'keep_only_latest_stage': False}}
+  File "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 24, in <module>
+  File "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 21, in _load
+  File "/mnt/ssd1/SpinePrep/spineprep/config.py", line 81, in load_config
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/jsonschema/validators.py", line 1332, in validate

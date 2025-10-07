@@ -14,3 +14,9 @@ spineprep.egg-info/requires.txt
 spineprep.egg-info/top_level.txt
 spineprep/adapters/__init__.py
 spineprep/adapters/bids.py
+workflow/lib/__init__.py
+workflow/lib/deriv.py
+workflow/lib/provenance.py
+workflow/lib/qc.py
+workflow/lib/registration.py
+workflow/lib/samples.py

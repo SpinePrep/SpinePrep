@@ -1,0 +1,10 @@
+pipeline_version: "0.2.0"
+study: { name: "Fixture" }
+paths: { root: "{TMP}/root" }  # tests will template this
+options:
+  motion:
+    engine: "sct"
+    slice_axis: "IS"
+    concat:
+      mode: "session+task"
+      require_same: ["pe_dir", "slice_axis", "tr", "voxel_size"]

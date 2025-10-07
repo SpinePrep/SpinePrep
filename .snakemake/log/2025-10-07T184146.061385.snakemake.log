@@ -1,0 +1,158 @@
+Assuming unrestricted shared filesystem usage.
+host: kiomars
+Building DAG of jobs...
+Using shell: /usr/local/fsl/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count
+--------------  -------
+report_subject       10
+reports_all           1
+total                11
+
+Select jobs to execute...
+Execute 4 jobs...
+[Tue Oct  7 18:41:46 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html
+    jobid: 8
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-04
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:41:46 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html
+    jobid: 11
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-07
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:41:46 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html
+    jobid: 15
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-11
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:41:46 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html
+    jobid: 7
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-03
+    resources: tmpdir=/tmp
+Shell command: None
+Select jobs to execute...
+[Tue Oct  7 18:41:47 2025]
+Finished jobid: 8 (Rule: report_subject)
+1 of 11 steps (9%) done
+Execute 1 jobs...
+[Tue Oct  7 18:41:47 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html
+    jobid: 12
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-08
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:41:47 2025]
+Finished jobid: 11 (Rule: report_subject)
+2 of 11 steps (18%) done
+[Tue Oct  7 18:41:47 2025]
+Finished jobid: 7 (Rule: report_subject)
+3 of 11 steps (27%) done
+Select jobs to execute...
+Execute 2 jobs...
+[Tue Oct  7 18:41:47 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html
+    jobid: 14
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-10
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:41:47 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html
+    jobid: 10
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-06
+    resources: tmpdir=/tmp
+Shell command: None
+Select jobs to execute...
+[Tue Oct  7 18:41:47 2025]
+Finished jobid: 15 (Rule: report_subject)
+4 of 11 steps (36%) done
+Execute 1 jobs...
+[Tue Oct  7 18:41:47 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/reports/sub-02_desc-qc.html
+    jobid: 6
+    reason: Set of input files has changed since last execution
+    wildcards: sub=sub-02
+    resources: tmpdir=/tmp
+Shell command: None
+Select jobs to execute...
+[Tue Oct  7 18:41:49 2025]
+Finished jobid: 12 (Rule: report_subject)
+5 of 11 steps (45%) done
+Execute 1 jobs...
+[Tue Oct  7 18:41:49 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html
+    jobid: 9
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-05
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:41:49 2025]
+Finished jobid: 14 (Rule: report_subject)
+6 of 11 steps (55%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 18:41:49 2025]
+localrule report_subject:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/logs/manifest_deriv.tsv
+    output: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html
+    jobid: 13
+    reason: Missing output files: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html; Set of input files has changed since last execution
+    wildcards: sub=sub-09
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:41:49 2025]
+Finished jobid: 10 (Rule: report_subject)
+7 of 11 steps (64%) done
+[Tue Oct  7 18:41:49 2025]
+Finished jobid: 6 (Rule: report_subject)
+8 of 11 steps (73%) done
+[Tue Oct  7 18:41:51 2025]
+Finished jobid: 9 (Rule: report_subject)
+9 of 11 steps (82%) done
+[Tue Oct  7 18:41:51 2025]
+Finished jobid: 13 (Rule: report_subject)
+10 of 11 steps (91%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 18:41:51 2025]
+localrule reports_all:
+    input: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-01/reports/sub-01_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/reports/sub-02_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html
+    jobid: 0
+    reason: Input files updated by another job: /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-02/reports/sub-02_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-08/reports/sub-08_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-09/reports/sub-09_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-05/reports/sub-05_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-10/reports/sub-10_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-03/reports/sub-03_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-07/reports/sub-07_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-11/reports/sub-11_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-06/reports/sub-06_desc-qc.html, /mnt/ssd1/MyFirstStudy/derivatives/spineprep/sub-04/reports/sub-04_desc-qc.html
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 18:41:51 2025]
+Finished jobid: 0 (Rule: reports_all)
+11 of 11 steps (100%) done
+Complete log(s): /mnt/ssd1/SpinePrep/.snakemake/log/2025-10-07T184146.061385.snakemake.log

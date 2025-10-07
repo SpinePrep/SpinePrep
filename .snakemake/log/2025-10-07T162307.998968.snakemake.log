@@ -1,0 +1,56 @@
+Assuming unrestricted shared filesystem usage.
+host: kiomars
+Building DAG of jobs...
+Using shell: /usr/local/fsl/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job stats:
+job          count
+---------  -------
+confounds        1
+motion           1
+mppca            1
+total            3
+
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 16:23:08 2025]
+localrule mppca:
+    output: mppca_0.ok
+    jobid: 2
+    reason: Missing output files: mppca_0.ok
+    wildcards: id=0
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 16:23:09 2025]
+Finished jobid: 2 (Rule: mppca)
+1 of 3 steps (33%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 16:23:09 2025]
+localrule motion:
+    input: mppca_0.ok
+    output: motion_0.ok
+    jobid: 1
+    reason: Missing output files: motion_0.ok; Input files updated by another job: mppca_0.ok
+    wildcards: id=0
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 16:23:10 2025]
+Finished jobid: 1 (Rule: motion)
+2 of 3 steps (67%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Tue Oct  7 16:23:10 2025]
+localrule confounds:
+    input: motion_0.ok
+    output: confounds_0.tsv, confounds_0.json
+    jobid: 0
+    reason: Input files updated by another job: motion_0.ok
+    wildcards: id=0
+    resources: tmpdir=/tmp
+Shell command: None
+[Tue Oct  7 16:23:11 2025]
+Finished jobid: 0 (Rule: confounds)
+3 of 3 steps (100%) done
+Complete log(s): /mnt/ssd1/SpinePrep/.snakemake/log/2025-10-07T162307.998968.snakemake.log
