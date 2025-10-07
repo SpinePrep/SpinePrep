@@ -5,6 +5,8 @@ import subprocess
 from pathlib import Path
 
 from workflow.lib.samples import first_row, rows, row_by_id  # type: ignore
+from workflow.lib.samples import rows as _rows  # type: ignore
+from workflow.lib.deriv import derive_paths     # type: ignore
 
 CFG_PATH = os.environ.get("SPINEPREP_CONFIG", "configs/study.yaml")
 CFG_SCHEMA = "schemas/config.schema.json" if Path("schemas/config.schema.json").exists() else None
@@ -28,6 +30,7 @@ rule all:
         f"{LOGS}/validate.ok",
         f"{LOGS}/discover.json",
         f"{LOGS}/samples.tsv",
+        f"{LOGS}/manifest_deriv.tsv",    # <-- add this
         "preproc_all",  # aggregate target
 
 rule validate_config:
@@ -60,6 +63,41 @@ rule samples:
         from workflow.lib.samples import build_samples  # type: ignore
         n = build_samples(input.disc, BIDS, output.tsv)
         print(f"Wrote samples.tsv with {n} rows")
+
+rule manifest_deriv:
+    input:
+        samples = SAMPLES
+    output:
+        tsv = f"{LOGS}/manifest_deriv.tsv"
+    run:
+        import csv, json
+        from spineprep.config import load_config
+        cfg = load_config(CFG_PATH, CFG_SCHEMA)
+        deriv_root = cfg["paths"]["deriv_dir"]
+        rows = _rows(input.samples)
+        out_fields = None
+        with open(output.tsv, "w", newline="") as f:
+            # write original cols + derivative cols
+            # grab a header from first row
+            if not rows:
+                # write only header if empty
+                base_fields = []
+            else:
+                base_fields = list(rows[0].keys())
+            deriv_fields = [
+                "deriv_mppca",
+                "deriv_motion",
+                "deriv_confounds_tsv",
+                "deriv_confounds_json",
+            ]
+            out_fields = base_fields + deriv_fields
+            w = csv.DictWriter(f, fieldnames=out_fields, delimiter="\t")
+            w.writeheader()
+            for r in rows:
+                r2 = dict(r)
+                r2.update(derive_paths(r, deriv_root))
+                w.writerow(r2)
+        print(f"Wrote manifest_deriv.tsv with {len(rows)} rows")
 
 rule preproc_all:
     input:
