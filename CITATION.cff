@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: "SpinePrep: a BIDS-first spinal cord fMRI preprocessing pipeline"
+type: software
+authors:
+  - family-names: Sharifi
+    given-names: Kiomars
+repository-code: https://github.com/kiomarssharifi/SpinePrep
+license: Apache-2.0
+version: 0.2.0
+date-released: 2025-10-07
+preferred-citation:
+  type: article
+  title: "SpinePrep: a BIDS-first spinal cord fMRI preprocessing pipeline"
+  doi: 10.5281/zenodo.xxxxxxx
+  authors:
+    - family-names: Sharifi
+      given-names: Kiomars
