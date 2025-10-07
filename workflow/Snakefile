@@ -21,6 +21,7 @@ rule all:
     input:
         f"{LOGS}/validate.ok",
         f"{LOGS}/discover.json",
+        f"{LOGS}/samples.tsv",
         f"{LOGS}/mppca_smoke.ok",
         f"{LOGS}/motion_smoke.ok",
         f"{LOGS}/confounds_smoke.ok",
@@ -45,6 +46,16 @@ rule discover:
         summary = discover(cfg["paths"]["bids_dir"])
         Path(output.out).write_text(json.dumps(summary, indent=2))
         print("Subjects:", summary["counts"]["subjects"], "Runs:", summary["counts"]["runs"])
+
+rule samples:
+    input:
+        disc = rules.discover.output.out
+    output:
+        tsv = f"{LOGS}/samples.tsv"
+    run:
+        from workflow.lib.samples import build_samples  # type: ignore
+        n = build_samples(input.disc, BIDS, output.tsv)
+        print(f"Wrote samples.tsv with {n} rows")
 
 rule mppca_smoke:
     input:
