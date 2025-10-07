@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spineprep"
+version = "0.2.0"
+description = "BIDS-first spinal cord fMRI preprocessing pipeline CLI."
+readme = "README.md"
+license = {text = "Apache-2.0"}
+authors = [
+  {name = "Kiomars Sharifi"}
+]
+requires-python = ">=3.9"
+dependencies = [
+  "PyYAML",
+  "jsonschema",
+]
+
+[project.scripts]
+spineprep = "spineprep.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]

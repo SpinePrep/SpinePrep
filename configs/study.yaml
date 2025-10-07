@@ -1,0 +1,58 @@
+pipeline_version: "0.2.0"
+project_name: "SpinePrep"
+
+study:
+  name: "MyFirstStudy"
+
+paths:
+  root: "/mnt/ssd1/MyFirstStudy"
+  bids_dir: "{root}/bids"
+  deriv_dir: "{root}/derivatives/spineprep"
+  work_dir: "{root}/work/spineprep"
+  logs_dir: "{deriv_dir}/logs"
+
+dataset:
+  sessions: null
+  runs_per_subject: null
+
+acq:
+  tr: 1.2
+  slice_timing: "ascending"
+  pe_dir: "AP"
+  echo_spacing_s: null
+
+options:
+  ingest:
+    enable: false
+  denoise_mppca: true
+  smoothing:
+    enable: false
+    fwhm_mm: 2.0
+  sdc:
+    enable: true
+    mode: "auto"
+  first_level:
+    engine: "feat"
+    feat_variant: "block_15s_conv3"
+  cleanup:
+    keep_only_latest_stage: false
+
+templates:
+  pam50_version: "1.0"
+
+tools:
+  sct: "7.1.0"
+  fsl: "6.0.7"
+  ants: "2.5.3"
+  dcm2niix: "v1.0.2024"
+
+resources:
+  default_threads: 32
+  default_mem_gb: 128
+
+qc:
+  subject_report: true
+  cohort_report: false
+
+runtime:
+  container_engine: null

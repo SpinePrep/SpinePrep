@@ -1,0 +1,16 @@
+LICENSE
+NOTICE
+README.md
+pyproject.toml
+adapters/bids.py
+spineprep/__init__.py
+spineprep/cli.py
+spineprep/config.py
+spineprep.egg-info/PKG-INFO
+spineprep.egg-info/SOURCES.txt
+spineprep.egg-info/dependency_links.txt
+spineprep.egg-info/entry_points.txt
+spineprep.egg-info/requires.txt
+spineprep.egg-info/top_level.txt
+spineprep/adapters/__init__.py
+spineprep/adapters/bids.py

@@ -1,0 +1,58 @@
+pipeline_version: "0.2.0"
+project_name: "SpinePrep"
+
+study:
+  name: "ExampleStudy"            # human-readable study name
+
+paths:
+  root: "/DATA/ExampleStudy"      # single folder for this study
+  bids_dir: "{root}/bids"
+  deriv_dir: "{root}/derivatives/spineprep"
+  work_dir: "{root}/work/spineprep"
+  logs_dir: "{deriv_dir}/logs"    # resolved at runtime
+
+dataset:
+  sessions: null                   # list of sessions or null
+  runs_per_subject: null           # null => discover from BIDS
+
+acq:
+  tr: 1.2
+  slice_timing: "ascending"
+  pe_dir: "AP"
+  echo_spacing_s: null
+
+options:
+  ingest:
+    enable: false
+  denoise_mppca: true
+  smoothing:
+    enable: false
+    fwhm_mm: 2.0
+  sdc:
+    enable: true                   # run SDC iff fieldmaps present
+    mode: "auto"                   # auto | topup | disabled
+  first_level:
+    engine: "feat"                 # feat | pyglm (pyglm later)
+    feat_variant: "block_15s_conv3"
+  cleanup:
+    keep_only_latest_stage: false
+
+templates:
+  pam50_version: "1.0"             # final outputs in PAM50 native mm resolution
+
+tools:
+  sct: "7.1.0"
+  fsl: "6.0.7"
+  ants: "2.5.3"
+  dcm2niix: "v1.0.2024"
+
+resources:
+  default_threads: 8
+  default_mem_gb: 24
+
+qc:
+  subject_report: true
+  cohort_report: false
+
+runtime:
+  container_engine: null           # docker | singularity | null

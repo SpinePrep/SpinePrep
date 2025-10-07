@@ -1,0 +1,7 @@
+# SpinePrep rules for Cursor
+- Always output ONLY the files requested.
+- For each file, print a header line: === <relative path> ===
+- After each header, print ONE fenced code block with FULL file contents.
+- No extra narration or commentary.
+- Prefer idempotent scripts (bash: set -euo pipefail).
+- Do not include secrets; read tokens from environment variables.

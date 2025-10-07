@@ -1,0 +1,9 @@
+# Snakemake local profile for SpinePrep
+cores: 8
+latency-wait: 30
+printshellcmds: true
+rerun-incomplete: true
+keep-going: true
+use-conda: false
+# Allow passing the study config at runtime (defaults to configs/study.yaml)
+# Example: snakemake --profile profiles/local --configfile configs/study.yaml

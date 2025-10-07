@@ -1,0 +1,2 @@
+[console_scripts]
+spineprep = spineprep.cli:main
