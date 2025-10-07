@@ -43,6 +43,15 @@ options:
     max_trim_start: 10
     max_trim_end: 10
     z_thresh: 2.5
+  confounds:
+    fd_method: "power_fd"
+    dvars_method: "std_dvars"
+  censor:
+    enable: true
+    fd_thresh_mm: 0.5
+    dvars_thresh: 1.5
+    min_contig_vols: 5
+    pad_vols: 1
   first_level:
     engine: "feat"
     feat_variant: "block_15s_conv3"

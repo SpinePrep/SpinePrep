@@ -465,6 +465,10 @@ rule confounds:
                 crop_from = crop_info.get("from", 0)
                 crop_to = crop_info.get("to", 0)
 
+                # Get censor configuration
+        censor_cfg = CFG.get("options", {}).get("censor", {})
+        censor_enable = censor_cfg.get("enable", False)
+
         env = os.environ.copy()
         env["IN_BOLD"] = in_bold
         env["OUT_TSV"] = output.tsv
@@ -473,6 +477,19 @@ rule confounds:
         env["CROP_FROM"] = str(crop_from)
         env["CROP_TO"] = str(crop_to)
         env["MOTION_PARAMS_TSV"] = motion_params_tsv
+
+        # Set censor environment variables
+        env["CENSOR_ENABLE"] = "1" if censor_enable else "0"
+        if censor_enable:
+            env["CENSOR_FD_MM"] = str(censor_cfg.get("fd_thresh_mm", 0.5))
+            env["CENSOR_DVARS"] = str(censor_cfg.get("dvars_thresh", 1.5))
+            env["CENSOR_MIN_CONTIG"] = str(censor_cfg.get("min_contig_vols", 5))
+            env["CENSOR_PAD"] = str(censor_cfg.get("pad_vols", 1))
+        else:
+            env["CENSOR_FD_MM"] = "0.5"
+            env["CENSOR_DVARS"] = "1.5"
+            env["CENSOR_MIN_CONTIG"] = "5"
+            env["CENSOR_PAD"] = "1"
         Path("steps/spi07_confounds.sh").chmod(0o755)
         subprocess.run(["bash", "steps/spi07_confounds.sh"], check=True, env=env)
 
@@ -488,6 +505,13 @@ rule confounds:
             params={
                 "TR_S": CFG.get("acq", {}).get("tr", 1.0),
                 "temporal_crop": {"from": crop_from, "to": crop_to},
+                "censor": {
+                    "enable": censor_enable,
+                    "fd_thresh_mm": censor_cfg.get("fd_thresh_mm", 0.5),
+                    "dvars_thresh": censor_cfg.get("dvars_thresh", 1.5),
+                    "min_contig_vols": censor_cfg.get("min_contig_vols", 5),
+                    "pad_vols": censor_cfg.get("pad_vols", 1),
+                },
             },
             tools={"step": "spi07_confounds.sh"},
         )

@@ -178,3 +178,53 @@ The temporal crop system uses a **sidecar JSON file** as the single source of tr
 - **No Circular Dependencies**: Crop detection runs as a per-run wildcard rule, avoiding startup manifest access
 - **Graceful Fallback**: If crop sidecar is missing, wrappers use environment variables or default to no cropping
 - **Provenance Tracking**: Motion correction provenance includes crop information and source
+
+## Confounds & Censoring
+
+### Confounds Pipeline
+
+The confounds pipeline extracts motion and quality metrics from BOLD data:
+
+1. **FD Computation**: Framewise Displacement from motion parameters using Power et al. (2012) method
+2. **DVARS Computation**: Root mean square of BOLD signal changes between consecutive volumes
+3. **Censoring**: Optional frame censoring (scrubbing) based on FD/DVARS thresholds
+
+### Censor Algorithm
+
+The censoring system identifies and marks problematic frames for exclusion from statistical modeling:
+
+#### Step 1: Threshold-based Censoring
+- Frame censored if `FD > fd_thresh_mm` OR `DVARS > dvars_thresh`
+- Default thresholds: FD = 0.5mm, DVARS = 1.5
+
+#### Step 2: Padding
+- Add `pad_vols` frames before and after each censored frame
+- Default padding: 1 frame (total 3-frame window around each outlier)
+
+#### Step 3: Contiguity Filtering
+- Remove kept segments shorter than `min_contig_vols`
+- Default minimum: 5 consecutive non-censored volumes
+- Prevents isolated "islands" of kept data
+
+#### Outputs
+- **TSV Columns**: `framewise_displacement`, `dvars`, `frame_censor` (0=kept, 1=censored)
+- **JSON Metadata**: Censor thresholds, counts (`n_censored`, `n_kept`)
+- **QC Integration**: Censored frames overlaid on FD/DVARS plots
+
+### Configuration
+
+```yaml
+options:
+  censor:
+    enable: true                  # enable frame censoring
+    fd_thresh_mm: 0.5            # FD threshold in mm (0.1-2.0)
+    dvars_thresh: 1.5            # DVARS threshold (0.5-5.0)
+    min_contig_vols: 5           # minimum consecutive non-censored volumes (3-50)
+    pad_vols: 1                  # padding around censored frames (0-3)
+```
+
+### Integration with Temporal Crop
+
+- Censoring operates on **cropped** BOLD data (after temporal crop)
+- Crop information preserved in confounds JSON metadata
+- QC plots show both temporal crop and censoring effects

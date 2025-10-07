@@ -46,6 +46,12 @@ options:
   confounds:
     fd_method: "power_fd"         # power_fd
     dvars_method: "std_dvars"     # std_dvars
+  censor:
+    enable: true                  # enable frame censoring (scrubbing)
+    fd_thresh_mm: 0.5             # FD threshold in mm (0.1-2.0)
+    dvars_thresh: 1.5             # DVARS threshold (0.5-5.0)
+    min_contig_vols: 5            # minimum consecutive non-censored volumes to keep (3-50)
+    pad_vols: 1                   # padding around censored frames (0-3)
   first_level:
     engine: "feat"                 # feat | pyglm (pyglm later)
     feat_variant: "block_15s_conv3"

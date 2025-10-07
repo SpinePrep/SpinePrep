@@ -139,10 +139,30 @@ def compute_dvars(conf: Dict[str, List[float]]) -> List[float]:
     return [0.0] * n_vols
 
 
-def plot_series(out_png: str, series: List[float], title: str, ylabel: str) -> None:
-    """Create a time series plot and save as PNG."""
+def plot_series(
+    out_png: str, series: List[float], title: str, ylabel: str, censor: List[int] = None
+) -> None:
+    """Create a time series plot with optional censor overlays and save as PNG."""
     plt.figure(figsize=(10, 4))
-    plt.plot(series, linewidth=0.8)
+
+    # Plot the main series
+    plt.plot(series, linewidth=0.8, color="blue", alpha=0.7)
+
+    # Add censor overlays if provided
+    if censor is not None and len(censor) == len(series):
+        # Find censored frames
+        censored_frames = [i for i, val in enumerate(censor) if val == 1]
+
+        if censored_frames:
+            # Plot vertical lines for censored frames
+            for frame in censored_frames:
+                plt.axvline(x=frame, color="red", alpha=0.6, linewidth=1)
+
+            # Add shaded regions for censored frames
+            y_min, y_max = plt.ylim()
+            for frame in censored_frames:
+                plt.axvspan(frame - 0.4, frame + 0.4, alpha=0.2, color="red")
+
     plt.title(title, fontsize=12)
     plt.xlabel("Volume", fontsize=10)
     plt.ylabel(ylabel, fontsize=10)
@@ -229,17 +249,29 @@ def render_subject_report(
 
         dvars = compute_dvars(conf)
 
+        # Get censor information if available
+        censor = conf.get("frame_censor", None)
+        if censor is not None:
+            censor = [int(x) for x in censor]  # Convert to int list
+
         # Compute summary stats
         n_vols = len(fd)
         mean_fd = stats.mean(fd) if fd else 0.0
         mean_dvars = stats.mean(dvars) if dvars else 0.0
 
+        # Add censor stats
+        n_censored = sum(censor) if censor else 0
+        n_kept = n_vols - n_censored
+        pct_censored = (n_censored / n_vols * 100) if n_vols > 0 else 0.0
+
         # Create plots
         fd_plot = figures_dir / f"{sub}_run-{run_id}_fd.png"
         dvars_plot = figures_dir / f"{sub}_run-{run_id}_dvars.png"
 
-        plot_series(str(fd_plot), fd, f"{sub} run-{run_id} FD", "FD (mm)")
-        plot_series(str(dvars_plot), dvars, f"{sub} run-{run_id} DVARS", "DVARS")
+        plot_series(str(fd_plot), fd, f"{sub} run-{run_id} FD", "FD (mm)", censor)
+        plot_series(
+            str(dvars_plot), dvars, f"{sub} run-{run_id} DVARS", "DVARS", censor
+        )
 
         all_fd_plots.append(fd_plot.name)
         all_dvars_plots.append(dvars_plot.name)
@@ -278,6 +310,9 @@ def render_subject_report(
                 "n_vols": n_vols,
                 "mean_fd": round(mean_fd, 3),
                 "mean_dvars": round(mean_dvars, 3),
+                "n_censored": n_censored,
+                "n_kept": n_kept,
+                "pct_censored": round(pct_censored, 1),
                 "confounds_tsv": confounds_tsv,
                 "confounds_json": confounds_json,
                 "fd_plot": fd_plot.name,

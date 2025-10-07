@@ -193,3 +193,134 @@ def write_confounds_tsv_json(
     # Write JSON metadata
     with open(out_json, "w") as f:
         json.dump(meta, f, indent=2)
+
+
+def build_censor(fd: np.ndarray, dvars: np.ndarray, cfg: Dict) -> Dict:
+    """
+    Build censor vector based on FD and DVARS thresholds with contiguity rules.
+
+    Args:
+        fd: Framewise displacement array
+        dvars: DVARS array
+        cfg: Censor configuration dict with keys:
+             - fd_thresh_mm: FD threshold in mm
+             - dvars_thresh: DVARS threshold
+             - min_contig_vols: minimum consecutive non-censored volumes
+             - pad_vols: padding around censored frames
+
+    Returns:
+        Dict with keys:
+        - censor: binary array (1=censored, 0=kept)
+        - keep_mask: boolean array (True=kept, False=censored)
+        - kept_segments: list of [start, end] tuples for kept runs
+        - n_censored: number of censored frames
+        - n_kept: number of kept frames
+    """
+    if len(fd) != len(dvars):
+        raise ValueError(
+            f"FD and DVARS must have same length: {len(fd)} vs {len(dvars)}"
+        )
+
+    n_vols = len(fd)
+    fd_thresh = cfg["fd_thresh_mm"]
+    dvars_thresh = cfg["dvars_thresh"]
+    min_contig = cfg["min_contig_vols"]
+    pad_vols = cfg["pad_vols"]
+
+    # Step 1: Initial censoring based on thresholds
+    censor = ((fd > fd_thresh) | (dvars > dvars_thresh)).astype(int)
+
+    # Step 2: Apply padding around censored frames
+    if pad_vols > 0:
+        censor_padded = censor.copy()
+        for i in range(n_vols):
+            if censor[i] == 1:
+                # Pad before
+                start_pad = max(0, i - pad_vols)
+                censor_padded[start_pad:i] = 1
+                # Pad after
+                end_pad = min(n_vols, i + pad_vols + 1)
+                censor_padded[i + 1 : end_pad] = 1
+        censor = censor_padded
+
+    # Step 3: Remove short kept segments that violate min_contig_vols
+    if min_contig > 1:
+        # Find runs of kept frames (0s in censor array)
+        kept_runs = []
+        in_run = False
+        run_start = 0
+
+        for i in range(n_vols):
+            if censor[i] == 0:  # kept frame
+                if not in_run:
+                    run_start = i
+                    in_run = True
+            else:  # censored frame
+                if in_run:
+                    run_length = i - run_start
+                    if run_length >= min_contig:
+                        kept_runs.append((run_start, i))
+                    else:
+                        # Mark short runs as censored
+                        censor[run_start:i] = 1
+                    in_run = False
+
+        # Handle case where run extends to end
+        if in_run:
+            run_length = n_vols - run_start
+            if run_length >= min_contig:
+                kept_runs.append((run_start, n_vols))
+            else:
+                censor[run_start:] = 1
+    else:
+        # No contiguity requirement - all kept segments are valid
+        kept_runs = []
+        in_run = False
+        run_start = 0
+
+        for i in range(n_vols):
+            if censor[i] == 0:  # kept frame
+                if not in_run:
+                    run_start = i
+                    in_run = True
+            else:  # censored frame
+                if in_run:
+                    kept_runs.append((run_start, i))
+                    in_run = False
+
+        # Handle case where run extends to end
+        if in_run:
+            kept_runs.append((run_start, n_vols))
+
+    # Create boolean mask for kept frames
+    keep_mask = censor == 0
+
+    return {
+        "censor": censor,
+        "keep_mask": keep_mask,
+        "kept_segments": kept_runs,
+        "n_censored": int(censor.sum()),
+        "n_kept": int((1 - censor).sum()),
+    }
+
+
+def append_censor_columns(df: pd.DataFrame, censor_dict: Dict) -> pd.DataFrame:
+    """
+    Append censor columns to confounds DataFrame.
+
+    Args:
+        df: Base confounds DataFrame
+        censor_dict: Output from build_censor()
+
+    Returns:
+        DataFrame with additional 'frame_censor' column
+    """
+    df_out = df.copy()
+    df_out["frame_censor"] = censor_dict["censor"]
+
+    # Ensure canonical column order
+    canonical_cols = ["framewise_displacement", "dvars", "frame_censor"]
+    other_cols = [col for col in df_out.columns if col not in canonical_cols]
+    df_out = df_out[canonical_cols + other_cols]
+
+    return df_out
