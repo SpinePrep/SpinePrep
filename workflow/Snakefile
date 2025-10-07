@@ -6,7 +6,9 @@ from pathlib import Path
 
 from workflow.lib.samples import first_row, rows, row_by_id  # type: ignore
 from workflow.lib.samples import rows as _rows  # type: ignore
-from workflow.lib.deriv import derive_paths     # type: ignore
+from workflow.lib.deriv import derive_paths, stage_file   # type: ignore
+from workflow.lib.provenance import write_prov            # type: ignore
+from workflow.lib.qc import subjects_from_manifest, render_subject_report  # type: ignore
 
 CFG_PATH = os.environ.get("SPINEPREP_CONFIG", "configs/study.yaml")
 CFG_SCHEMA = "schemas/config.schema.json" if Path("schemas/config.schema.json").exists() else None
@@ -22,8 +24,18 @@ LOGS = CFG["paths"]["logs_dir"]
 Path(LOGS).mkdir(parents=True, exist_ok=True)
 
 SAMPLES = f"{LOGS}/samples.tsv"
-SAMPLE_ROWS = rows(SAMPLES)  # list of dicts
-N = len(SAMPLE_ROWS)
+MANIFEST_DERIV = f"{LOGS}/manifest_deriv.tsv"
+# Load rows only if files exist (for startup)
+try:
+    SAMPLE_ROWS = rows(SAMPLES) if Path(SAMPLES).exists() else []
+    DERIV_ROWS = rows(MANIFEST_DERIV) if Path(MANIFEST_DERIV).exists() else []
+    N = len(DERIV_ROWS)
+    SUBS = subjects_from_manifest(MANIFEST_DERIV) if Path(MANIFEST_DERIV).exists() else []
+except Exception:
+    SAMPLE_ROWS = []
+    DERIV_ROWS = []
+    N = 0
+    SUBS = []
 
 rule all:
     input:
@@ -32,6 +44,7 @@ rule all:
         f"{LOGS}/samples.tsv",
         f"{LOGS}/manifest_deriv.tsv",    # <-- add this
         "preproc_all",  # aggregate target
+        "reports_all",  # QC reports
 
 rule validate_config:
     output:
@@ -101,65 +114,109 @@ rule manifest_deriv:
 
 rule preproc_all:
     input:
-        expand("confounds_{id}.tsv", id=range(N)),
-        expand("confounds_{id}.json", id=range(N))
+        # all confounds derivatives for every row (TSV & JSON)
+        expand("{deriv_confounds_tsv}", deriv_confounds_tsv=[row_by_id(MANIFEST_DERIV, i)["deriv_confounds_tsv"] for i in range(N)]),
+        expand("{deriv_confounds_json}", deriv_confounds_json=[row_by_id(MANIFEST_DERIV, i)["deriv_confounds_json"] for i in range(N)])
 
 # Per-run MP-PCA
 rule mppca:
     output:
-        o = "mppca_{id}.ok"
+        o = expand("{deriv_mppca}", deriv_mppca=[row_by_id(MANIFEST_DERIV, i)["deriv_mppca"] for i in range(N)])
     run:
         import os, subprocess
-        r = row_by_id(SAMPLES, int(wildcards.id))
-        env = os.environ.copy()
-        env["IN_BOLD"] = r["bold_path"]
-        env["DENOISE_MPPCA"] = "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
-        Path("steps/spi05_mppca.sh").chmod(0o755)
-        subprocess.run(["bash", "steps/spi05_mppca.sh"], check=True, env=env)
-        Path(output.o).write_text("ok\n")
+        for i in range(N):
+            r = row_by_id(SAMPLES, i)
+            rD = row_by_id(MANIFEST_DERIV, i)
+            env = os.environ.copy()
+            env["IN_BOLD"] = r["bold_path"]
+            env["DENOISE_MPPCA"] = "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
+            Path("steps/spi05_mppca.sh").chmod(0o755)
+            subprocess.run(["bash", "steps/spi05_mppca.sh"], check=True, env=env)
+            # Stage to derivatives
+            stage_file(r["mppca_path"], rD["deriv_mppca"])
+            # Provenance
+            write_prov(
+                target=rD["deriv_mppca"],
+                step="mppca",
+                inputs={"IN_BOLD": r["bold_path"]},
+                params={"denoise_mppca": CFG.get("options", {}).get("denoise_mppca", False)},
+                tools={"step": "spi05_mppca.sh"},
+            )
 
 # Per-run motion (depends on mppca output or falls back)
 rule motion:
     input:
-        mppca = "mppca_{id}.ok"
+        mppca=expand("{deriv_mppca}", deriv_mppca=[row_by_id(MANIFEST_DERIV, i)["deriv_mppca"] for i in range(N)])
     output:
-        o = "motion_{id}.ok"
+        o = expand("{deriv_motion}", deriv_motion=[row_by_id(MANIFEST_DERIV, i)["deriv_motion"] for i in range(N)])
     run:
         import os, subprocess
         from pathlib import Path as _P
-        r = row_by_id(SAMPLES, int(wildcards.id))
-        in_bold = r["mppca_path"]
-        if not _P(in_bold).exists():
-            in_bold = r["bold_path"]
-        env = os.environ.copy()
-        env["IN_BOLD"] = in_bold
-        env["MOTION_ENABLE"] = "1"
-        Path("steps/spi06_motion.sh").chmod(0o755)
-        subprocess.run(["bash", "steps/spi06_motion.sh"], check=True, env=env)
-        Path(output.o).write_text("ok\n")
+        for i in range(N):
+            r = row_by_id(SAMPLES, i)
+            rD = row_by_id(MANIFEST_DERIV, i)
+            in_bold = r["mppca_path"] if _P(r["mppca_path"]).exists() else r["bold_path"]
+            env = os.environ.copy()
+            env["IN_BOLD"] = in_bold
+            env["MOTION_ENABLE"] = "1"
+            Path("steps/spi06_motion.sh").chmod(0o755)
+            subprocess.run(["bash", "steps/spi06_motion.sh"], check=True, env=env)
+            stage_file(r["motion_path"], rD["deriv_motion"])
+            write_prov(
+                target=rD["deriv_motion"],
+                step="motion",
+                inputs={"IN_BOLD": in_bold},
+                params={"enable": True},
+                tools={"step": "spi06_motion.sh"},
+            )
 
 # Per-run confounds (depends on motion output or falls back)
 rule confounds:
     input:
-        motion = "motion_{id}.ok"
+        motion=expand("{deriv_motion}", deriv_motion=[row_by_id(MANIFEST_DERIV, i)["deriv_motion"] for i in range(N)])
     output:
-        tsv  = "confounds_{id}.tsv",
-        json = "confounds_{id}.json"
+        tsv  = expand("{deriv_confounds_tsv}", deriv_confounds_tsv=[row_by_id(MANIFEST_DERIV, i)["deriv_confounds_tsv"] for i in range(N)]),
+        json = expand("{deriv_confounds_json}", deriv_confounds_json=[row_by_id(MANIFEST_DERIV, i)["deriv_confounds_json"] for i in range(N)])
     run:
         import os, subprocess
         from pathlib import Path as _P
-        r = row_by_id(SAMPLES, int(wildcards.id))
-        in_bold = r["motion_path"]
-        if not _P(in_bold).exists():
-            in_bold = r["bold_path"]
-        env = os.environ.copy()
-        env["IN_BOLD"] = in_bold
-        env["TR_S"] = str(CFG.get("acq", {}).get("tr", 1.0))
-        Path("steps/spi07_confounds.sh").chmod(0o755)
-        subprocess.run(["bash", "steps/spi07_confounds.sh"], check=True, env=env)
-        # Create placeholder outputs to satisfy Snakemake
-        Path(output.tsv).write_text("placeholder\n")
-        Path(output.json).write_text('{"placeholder": true}\n')
+        for i in range(N):
+            r = row_by_id(SAMPLES, i)
+            rD = row_by_id(MANIFEST_DERIV, i)
+            in_bold = r["motion_path"] if _P(r["motion_path"]).exists() else r["bold_path"]
+            env = os.environ.copy()
+            env["IN_BOLD"] = in_bold
+            env["TR_S"] = str(CFG.get("acq", {}).get("tr", 1.0))
+            Path("steps/spi07_confounds.sh").chmod(0o755)
+            subprocess.run(["bash", "steps/spi07_confounds.sh"], check=True, env=env)
+            # Stage both TSV and JSON
+            stage_file(r["confounds_tsv"], rD["deriv_confounds_tsv"])
+            stage_file(r["confounds_json"], rD["deriv_confounds_json"])
+            # Provenance (one file is enough to carry .prov.json; we attach to TSV)
+            write_prov(
+                target=rD["deriv_confounds_tsv"],
+                step="confounds",
+                inputs={"IN_BOLD": in_bold},
+                params={"TR_S": CFG.get("acq", {}).get("tr", 1.0)},
+                tools={"step": "spi07_confounds.sh"},
+                )
+
+# QC Report generation
+rule report_subject:
+    output:
+        html=f"{DERIV}/{{sub}}/reports/{{sub}}_desc-qc.html"
+    input:
+        manifest=MANIFEST_DERIV
+    params:
+        sub=lambda wc: wc.sub
+    run:
+        from spineprep.config import load_config
+        cfg = load_config(CFG_PATH, CFG_SCHEMA)
+        render_subject_report(params.sub, MANIFEST_DERIV, cfg, DERIV)
+
+rule reports_all:
+    input:
+        expand(f"{DERIV}/{{sub}}/reports/{{sub}}_desc-qc.html", sub=subjects_from_manifest(MANIFEST_DERIV))
 
 # deprecated: use per-run rules
 rule mppca_smoke:
