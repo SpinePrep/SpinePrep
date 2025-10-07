@@ -264,6 +264,16 @@ def render_subject_report(
         n_kept = n_vols - n_censored
         pct_censored = (n_censored / n_vols * 100) if n_vols > 0 else 0.0
 
+        # Read aCompCor metadata from JSON if available
+        acompcor_info = None
+        if Path(confounds_json).exists():
+            import json
+
+            with open(confounds_json, "r") as f:
+                meta = json.load(f)
+                if "aCompCor" in meta:
+                    acompcor_info = meta["aCompCor"]
+
         # Create plots
         fd_plot = figures_dir / f"{sub}_run-{run_id}_fd.png"
         dvars_plot = figures_dir / f"{sub}_run-{run_id}_dvars.png"
@@ -319,6 +329,7 @@ def render_subject_report(
                 "dvars_plot": dvars_plot.name,
                 "motion_group": group_info,
                 "temporal_crop": trim_info,
+                "acompcor": acompcor_info,
             }
         )
 

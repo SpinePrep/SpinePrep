@@ -76,7 +76,7 @@
 
     "options": {
       "type": "object",
-      "required": ["ingest", "denoise_mppca", "motion", "smoothing", "sdc", "temporal_crop", "confounds", "censor", "first_level", "cleanup"],
+      "required": ["ingest", "denoise_mppca", "motion", "smoothing", "sdc", "temporal_crop", "confounds", "censor", "masks", "acompcor", "first_level", "cleanup"],
       "properties": {
         "ingest": {
           "type": "object",
@@ -155,6 +155,35 @@
             "dvars_thresh": { "type": "number", "minimum": 0.5, "maximum": 5.0 },
             "min_contig_vols": { "type": "integer", "minimum": 3, "maximum": 50 },
             "pad_vols": { "type": "integer", "minimum": 0, "maximum": 3 }
+          },
+          "additionalProperties": false
+        },
+        "masks": {
+          "type": "object",
+          "required": ["enable", "source", "binarize_thr"],
+          "properties": {
+            "enable": { "type": "boolean" },
+            "source": { "type": "string", "enum": ["sct", "provided", "none"] },
+            "binarize_thr": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "acompcor": {
+          "type": "object",
+          "required": ["enable", "tissues", "n_components_per_tissue", "highpass_hz", "detrend", "standardize", "explained_variance_min"],
+          "properties": {
+            "enable": { "type": "boolean" },
+            "tissues": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["cord", "wm", "csf"] },
+              "minItems": 1,
+              "maxItems": 3
+            },
+            "n_components_per_tissue": { "type": "integer", "minimum": 1, "maximum": 10 },
+            "highpass_hz": { "type": "number", "minimum": 0, "maximum": 0.2 },
+            "detrend": { "type": "boolean" },
+            "standardize": { "type": "boolean" },
+            "explained_variance_min": { "type": "number", "minimum": 0, "maximum": 1 }
           },
           "additionalProperties": false
         },

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -324,3 +324,169 @@ def append_censor_columns(df: pd.DataFrame, censor_dict: Dict) -> pd.DataFrame:
     df_out = df_out[canonical_cols + other_cols]
 
     return df_out
+
+
+def load_bold_and_apply_crop(
+    bold_path: str, crop_json: Optional[str] = None
+) -> np.ndarray:
+    """
+    Load BOLD data and apply temporal cropping if specified.
+
+    Args:
+        bold_path: Path to 4D BOLD NIfTI file
+        crop_json: Optional path to crop JSON file
+
+    Returns:
+        4D BOLD data array (T, X, Y, Z)
+    """
+    if not HAS_NIBABEL:
+        raise ImportError("nibabel is required for BOLD data loading")
+
+    if not Path(bold_path).exists():
+        raise FileNotFoundError(f"BOLD file not found: {bold_path}")
+
+    # Load BOLD data
+    img = nib.load(bold_path)
+    data = img.get_fdata()
+
+    if len(data.shape) != 4:
+        raise ValueError(f"Expected 4D BOLD data, got {len(data.shape)}D")
+
+    # Apply temporal cropping if specified
+    if crop_json and Path(crop_json).exists():
+        with open(crop_json, "r") as f:
+            crop_info = json.load(f)
+            crop_from = crop_info.get("from", 0)
+            crop_to = crop_info.get("to", data.shape[3])
+
+            if crop_from > 0 or crop_to < data.shape[3]:
+                data = data[:, :, :, crop_from:crop_to]
+
+    return data
+
+
+def extract_mask_timeseries(
+    bold: np.ndarray, mask: np.ndarray, standardize: bool = True
+) -> np.ndarray:
+    """
+    Extract time series from BOLD data using a mask.
+
+    Args:
+        bold: 4D BOLD data (T, X, Y, Z)
+        mask: 3D mask (X, Y, Z)
+        standardize: Whether to standardize time series
+
+    Returns:
+        2D time series array (T, V) where V is number of voxels in mask
+    """
+    if bold.shape[:3] != mask.shape:
+        raise ValueError(
+            f"BOLD and mask spatial dimensions don't match: {bold.shape[:3]} vs {mask.shape}"
+        )
+
+    # Apply mask
+    masked_data = bold[mask > 0]  # Shape: (V, T)
+    masked_data = masked_data.T  # Shape: (T, V)
+
+    if standardize:
+        # Standardize each voxel's time series
+        masked_data = (masked_data - np.mean(masked_data, axis=0)) / (
+            np.std(masked_data, axis=0) + 1e-8
+        )
+
+    return masked_data
+
+
+def acompcor_pcs(
+    ts: np.ndarray,
+    n_components: int,
+    highpass_hz: float,
+    tr_s: float,
+    detrend: bool = True,
+    standardize: bool = True,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Extract principal components from time series data.
+
+    Args:
+        ts: Time series data (T, V)
+        n_components: Number of components to extract
+        highpass_hz: High-pass filter frequency in Hz
+        tr_s: Repetition time in seconds
+        detrend: Whether to detrend the data
+        standardize: Whether to standardize the data
+
+    Returns:
+        Tuple of (pcs, explained_variance) where:
+        - pcs: Principal components (T, K)
+        - explained_variance: Explained variance for each component (K,)
+    """
+    from scipy import signal
+    from sklearn.decomposition import PCA
+
+    # Detrend if requested
+    if detrend:
+        ts = signal.detrend(ts, axis=0)
+
+    # High-pass filter if requested
+    if highpass_hz > 0:
+        nyquist = 0.5 / tr_s
+        if highpass_hz < nyquist:
+            sos = signal.butter(4, highpass_hz / nyquist, btype="high", output="sos")
+            ts = signal.sosfilt(sos, ts, axis=0)
+
+    # Standardize if requested
+    if standardize:
+        ts = (ts - np.mean(ts, axis=0)) / (np.std(ts, axis=0) + 1e-8)
+
+    # Limit components to available rank
+    n_components = min(n_components, min(ts.shape) - 1)
+
+    # Perform PCA
+    pca = PCA(n_components=n_components)
+    pcs = pca.fit_transform(ts)
+    explained_variance = pca.explained_variance_ratio_
+
+    return pcs, explained_variance
+
+
+def append_acompcor(
+    df: pd.DataFrame, pcs_dict: Dict[str, Dict]
+) -> Tuple[pd.DataFrame, Dict]:
+    """
+    Append aCompCor principal components to confounds DataFrame.
+
+    Args:
+        df: Base confounds DataFrame
+        pcs_dict: Dictionary with tissue names as keys and dicts with 'pcs' and 'explained_variance' as values
+
+    Returns:
+        Tuple of (updated_df, metadata_dict)
+    """
+    df_out = df.copy()
+    meta = {}
+
+    for tissue, data in pcs_dict.items():
+        pcs = data["pcs"]  # Shape: (T, K)
+        explained_var = data["explained_variance"]  # Shape: (K,)
+
+        # Add PC columns
+        for i in range(pcs.shape[1]):
+            col_name = f"acomp_{tissue}_pc{i+1:02d}"
+            df_out[col_name] = pcs[:, i]
+
+        # Add metadata
+        meta[tissue] = {
+            "n_components": pcs.shape[1],
+            "explained_variance": explained_var.tolist(),
+        }
+
+    # Ensure canonical column order (aCompCor columns come after frame_censor)
+    canonical_cols = ["framewise_displacement", "dvars", "frame_censor"]
+    acompcor_cols = [col for col in df_out.columns if col.startswith("acomp_")]
+    other_cols = [
+        col for col in df_out.columns if col not in canonical_cols + acompcor_cols
+    ]
+    df_out = df_out[canonical_cols + acompcor_cols + other_cols]
+
+    return df_out, {"aCompCor": meta}
