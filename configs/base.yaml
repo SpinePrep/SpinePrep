@@ -52,6 +52,18 @@ options:
     dvars_thresh: 1.5             # DVARS threshold (0.5-5.0)
     min_contig_vols: 5            # minimum consecutive non-censored volumes to keep (3-50)
     pad_vols: 1                   # padding around censored frames (0-3)
+  masks:
+    enable: true                  # require SCT pipeline or fallbacks
+    source: "sct"                 # enum: sct|provided|none
+    binarize_thr: 0.5             # threshold for probabilistic masks (if any)
+  acompcor:
+    enable: true
+    tissues: ["cord", "wm", "csf"]
+    n_components_per_tissue: 5     # cap, compute up to available rank
+    highpass_hz: 0.008            # high-pass filter frequency
+    detrend: true                 # detrend time series
+    standardize: true             # standardize time series
+    explained_variance_min: 0.0   # keep PCs regardless; future could min variance
   first_level:
     engine: "feat"                 # feat | pyglm (pyglm later)
     feat_variant: "block_15s_conv3"

@@ -115,6 +115,46 @@ def derive_outputs(row: dict, deriv_root: str) -> Dict[str, str]:
     }
 
 
+def mask_paths(row: dict) -> Dict[str, str]:
+    """
+    Get mask paths for aCompCor from a manifest row.
+
+    Args:
+        row: Row from manifest_deriv.tsv
+
+    Returns:
+        Dictionary with mask paths for cord, wm, csf in EPI space
+    """
+    sub = row["sub"]
+    ses = row.get("ses", "")
+    run = row["run"]
+    task = row["task"]
+
+    # Construct base paths
+    deriv_sub_dir = Path("derivatives/spineprep") / sub
+    if ses:
+        deriv_ses_dir = deriv_sub_dir / f"ses-{ses}" / "func"
+    else:
+        deriv_ses_dir = deriv_sub_dir / "func"
+
+    # Create base filename
+    base_parts = [sub]
+    if ses:
+        base_parts.append(f"ses-{ses}")
+    base_parts.extend([f"task-{task}", f"run-{run}"])
+    base_name = "_".join(base_parts)
+
+    return {
+        "cord_mask_epi": str(
+            deriv_ses_dir / f"{base_name}_space-EPI_desc-cordmask.nii.gz"
+        ),
+        "wm_mask_epi": str(deriv_ses_dir / f"{base_name}_space-EPI_desc-wmmask.nii.gz"),
+        "csf_mask_epi": str(
+            deriv_ses_dir / f"{base_name}_space-EPI_desc-csfmask.nii.gz"
+        ),
+    }
+
+
 def write_prov(path: str, meta: dict) -> None:
     """
     Write provenance metadata to a .prov.json file.

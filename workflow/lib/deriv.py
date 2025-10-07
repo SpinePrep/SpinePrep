@@ -47,6 +47,11 @@ def derive_paths(row: dict, deriv_root: str) -> dict[str, str]:
     conf_tsv = out_dir / f"{base_no_bold}_desc-confounds_timeseries.tsv"
     conf_json = out_dir / f"{base_no_bold}_desc-confounds_timeseries.json"
 
+    # Mask paths for aCompCor
+    cord_mask = out_dir / f"{base_no_bold}_space-EPI_desc-cordmask.nii.gz"
+    wm_mask = out_dir / f"{base_no_bold}_space-EPI_desc-wmmask.nii.gz"
+    csf_mask = out_dir / f"{base_no_bold}_space-EPI_desc-csfmask.nii.gz"
+
     return {
         "deriv_mppca": str(mppca),
         "deriv_motion": str(motion),
@@ -54,6 +59,9 @@ def derive_paths(row: dict, deriv_root: str) -> dict[str, str]:
         "deriv_motion_params_json": str(motion_params_json),
         "deriv_confounds_tsv": str(conf_tsv),
         "deriv_confounds_json": str(conf_json),
+        "deriv_cord_mask": str(cord_mask),
+        "deriv_wm_mask": str(wm_mask),
+        "deriv_csf_mask": str(csf_mask),
     }
 
 

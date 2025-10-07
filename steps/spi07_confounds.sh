@@ -15,10 +15,19 @@ set -euo pipefail
 #   CENSOR_DVARS : DVARS threshold (optional)
 #   CENSOR_MIN_CONTIG : minimum consecutive non-censored volumes (optional)
 #   CENSOR_PAD : padding around censored frames (optional)
+#   ACOMPCOR_ENABLE : enable aCompCor (0/1, default 0)
+#   ACOMPCOR_TISSUES : comma-separated tissues (e.g., "cord,wm,csf")
+#   ACOMPCOR_N : number of components per tissue (optional)
+#   ACOMPCOR_HIGHPASS_HZ : high-pass filter frequency (optional)
+#   ACOMPCOR_DETREND : detrend time series (0/1, optional)
+#   ACOMPCOR_STANDARDIZE : standardize time series (0/1, optional)
+#   CORD_MASK : path to cord mask (optional)
+#   WM_MASK : path to white matter mask (optional)
+#   CSF_MASK : path to CSF mask (optional)
 #
 # Outputs:
-#   OUT_TSV (confounds TSV with framewise_displacement, dvars, frame_censor columns)
-#   OUT_JSON (metadata with Sources, FDMethod, DVARSMethod, Censor, etc.)
+#   OUT_TSV (confounds TSV with framewise_displacement, dvars, frame_censor, acompcor columns)
+#   OUT_JSON (metadata with Sources, FDMethod, DVARSMethod, Censor, aCompCor, etc.)
 #   OUT_TSV.prov.json (provenance)
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -77,7 +86,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "workflow"))
 from lib.confounds import (
     read_motion_params, compute_fd_from_params, compute_dvars,
-    assemble_confounds, write_confounds_tsv_json, build_censor, append_censor_columns
+    assemble_confounds, write_confounds_tsv_json, build_censor, append_censor_columns,
+    load_bold_and_apply_crop, extract_mask_timeseries, acompcor_pcs, append_acompcor
 )
 
 def main():
@@ -94,6 +104,15 @@ def main():
     censor_dvars = float(sys.argv[10]) if len(sys.argv) > 10 else 1.5
     censor_min_contig = int(sys.argv[11]) if len(sys.argv) > 11 else 5
     censor_pad = int(sys.argv[12]) if len(sys.argv) > 12 else 1
+    acompcor_enable = int(sys.argv[13]) if len(sys.argv) > 13 else 0
+    acompcor_tissues = sys.argv[14].split(",") if len(sys.argv) > 14 and sys.argv[14] != "None" else []
+    acompcor_n = int(sys.argv[15]) if len(sys.argv) > 15 else 5
+    acompcor_highpass_hz = float(sys.argv[16]) if len(sys.argv) > 16 else 0.008
+    acompcor_detrend = int(sys.argv[17]) if len(sys.argv) > 17 else 1
+    acompcor_standardize = int(sys.argv[18]) if len(sys.argv) > 18 else 1
+    cord_mask = sys.argv[19] if len(sys.argv) > 19 and sys.argv[19] != "None" else None
+    wm_mask = sys.argv[20] if len(sys.argv) > 20 and sys.argv[20] != "None" else None
+    csf_mask = sys.argv[21] if len(sys.argv) > 21 and sys.argv[21] != "None" else None
 
     # Compute FD from motion parameters if available
     if motion_params_tsv and Path(motion_params_tsv).exists():
@@ -149,6 +168,48 @@ def main():
         censor_dict = build_censor(fd, dvars, censor_cfg)
         df = append_censor_columns(df, censor_dict)
 
+    # Apply aCompCor if enabled
+    acompcor_meta = {}
+    if acompcor_enable and acompcor_tissues:
+        try:
+            # Load BOLD data with cropping
+            bold_data = load_bold_and_apply_crop(in_bold, crop_json if 'crop_json' in locals() else None)
+
+            # Process each tissue
+            pcs_dict = {}
+            for tissue in acompcor_tissues:
+                mask_path = None
+                if tissue == "cord" and cord_mask:
+                    mask_path = cord_mask
+                elif tissue == "wm" and wm_mask:
+                    mask_path = wm_mask
+                elif tissue == "csf" and csf_mask:
+                    mask_path = csf_mask
+
+                if mask_path and Path(mask_path).exists():
+                    # Load mask
+                    mask_img = nib.load(mask_path)
+                    mask_data = mask_img.get_fdata().astype(bool)
+
+                    # Extract time series
+                    ts = extract_mask_timeseries(bold_data, mask_data, acompcor_standardize)
+
+                    # Compute PCs
+                    pcs, explained_var = acompcor_pcs(
+                        ts, acompcor_n, acompcor_highpass_hz, tr_s,
+                        acompcor_detrend, acompcor_standardize
+                    )
+
+                    pcs_dict[tissue] = {"pcs": pcs, "explained_variance": explained_var}
+                else:
+                    print(f"Warning: Mask for {tissue} not found, skipping aCompCor for this tissue")
+
+            if pcs_dict:
+                df, acompcor_meta = append_acompcor(df, pcs_dict)
+        except Exception as e:
+            print(f"Warning: Failed to compute aCompCor: {e}")
+            acompcor_meta = {"error": str(e)}
+
     # Create metadata
     meta = {
         "Sources": [fd_source, "bold_data"],
@@ -170,6 +231,10 @@ def main():
             "n_censored": censor_dict["n_censored"],
             "n_kept": censor_dict["n_kept"]
         }
+
+    # Add aCompCor metadata if enabled
+    if acompcor_enable and acompcor_meta:
+        meta.update(acompcor_meta)
 
     # Write outputs
     write_confounds_tsv_json(df, out_tsv, out_json, meta)
@@ -193,7 +258,16 @@ python3 -c "$python_script" \
   "${CENSOR_FD_MM:-0.5}" \
   "${CENSOR_DVARS:-1.5}" \
   "${CENSOR_MIN_CONTIG:-5}" \
-  "${CENSOR_PAD:-1}"
+  "${CENSOR_PAD:-1}" \
+  "${ACOMPCOR_ENABLE:-0}" \
+  "${ACOMPCOR_TISSUES:-None}" \
+  "${ACOMPCOR_N:-5}" \
+  "${ACOMPCOR_HIGHPASS_HZ:-0.008}" \
+  "${ACOMPCOR_DETREND:-1}" \
+  "${ACOMPCOR_STANDARDIZE:-1}" \
+  "${CORD_MASK:-None}" \
+  "${WM_MASK:-None}" \
+  "${CSF_MASK:-None}"
 
 end="$(date +%s)"
 dur="$((end-start))"
@@ -201,6 +275,6 @@ log "Confounds builder done in ${dur}s → $OUT_TSV"
 
 # Write provenance
 tools_json="$(printf '{"step": "spi07_confounds.sh", "tr_s": %s}' "$TR_S")"
-inputs_json="$(printf '{"IN_BOLD": "%s", "MOTION_PARAMS_TSV": "%s"}' "$IN_BOLD" "${MOTION_PARAMS_TSV:-None}")"
-params_json="$(printf '{"TR_S": %s, "CROP_FROM": "%s", "CROP_TO": "%s", "CENSOR_ENABLE": "%s", "CENSOR_FD_MM": "%s", "CENSOR_DVARS": "%s", "CENSOR_MIN_CONTIG": "%s", "CENSOR_PAD": "%s"}' "$TR_S" "${CROP_FROM:-0}" "${CROP_TO:-0}" "${CENSOR_ENABLE:-0}" "${CENSOR_FD_MM:-0.5}" "${CENSOR_DVARS:-1.5}" "${CENSOR_MIN_CONTIG:-5}" "${CENSOR_PAD:-1}")"
+inputs_json="$(printf '{"IN_BOLD": "%s", "MOTION_PARAMS_TSV": "%s", "CORD_MASK": "%s", "WM_MASK": "%s", "CSF_MASK": "%s"}' "$IN_BOLD" "${MOTION_PARAMS_TSV:-None}" "${CORD_MASK:-None}" "${WM_MASK:-None}" "${CSF_MASK:-None}")"
+params_json="$(printf '{"TR_S": %s, "CROP_FROM": "%s", "CROP_TO": "%s", "CENSOR_ENABLE": "%s", "CENSOR_FD_MM": "%s", "CENSOR_DVARS": "%s", "CENSOR_MIN_CONTIG": "%s", "CENSOR_PAD": "%s", "ACOMPCOR_ENABLE": "%s", "ACOMPCOR_TISSUES": "%s", "ACOMPCOR_N": "%s", "ACOMPCOR_HIGHPASS_HZ": "%s", "ACOMPCOR_DETREND": "%s", "ACOMPCOR_STANDARDIZE": "%s"}' "$TR_S" "${CROP_FROM:-0}" "${CROP_TO:-0}" "${CENSOR_ENABLE:-0}" "${CENSOR_FD_MM:-0.5}" "${CENSOR_DVARS:-1.5}" "${CENSOR_MIN_CONTIG:-5}" "${CENSOR_PAD:-1}" "${ACOMPCOR_ENABLE:-0}" "${ACOMPCOR_TISSUES:-None}" "${ACOMPCOR_N:-5}" "${ACOMPCOR_HIGHPASS_HZ:-0.008}" "${ACOMPCOR_DETREND:-1}" "${ACOMPCOR_STANDARDIZE:-1}")"
 write_prov "$OUT_TSV" "spi07_confounds" "$inputs_json" "$params_json" "$tools_json"

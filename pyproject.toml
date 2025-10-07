@@ -19,6 +19,9 @@ dependencies = [
   "Jinja2>=3.1",
   "pandas",
   "numpy",
+  "scipy",
+  "scikit-learn",
+  "nibabel",
   "pytest",
 ]
 

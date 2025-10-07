@@ -49,10 +49,32 @@ rule all:
         f"{LOGS}/discover.json",
         f"{LOGS}/samples.tsv",
         f"{LOGS}/manifest_deriv.tsv",  # <-- add this
-        "preproc_all",  # aggregate target
-        "reports_all",  # QC reports
-        # Registration target (conditional)
-        "registration_all" if CFG.get("registration", {}).get("enable", False) else [],
+        # Preprocessing targets (confounds for all runs)
+        expand(
+            f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-confounds_timeseries.tsv",
+            sub=[row_by_id(SAMPLES, i)["sub"] for i in range(N)],
+            task=[row_by_id(SAMPLES, i)["task"] for i in range(N)],
+            run=[row_by_id(SAMPLES, i)["run"] for i in range(N)],
+        ) if N > 0 else [],
+        expand(
+            f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-confounds_timeseries.json",
+            sub=[row_by_id(SAMPLES, i)["sub"] for i in range(N)],
+            task=[row_by_id(SAMPLES, i)["task"] for i in range(N)],
+            run=[row_by_id(SAMPLES, i)["run"] for i in range(N)],
+        ) if N > 0 else [],
+        # QC reports (one per subject)
+        expand(
+            f"{DERIV}/{{sub}}/reports/{{sub}}_desc-qc.html",
+            sub=subjects_from_manifest(MANIFEST_DERIV) if N > 0 else [],
+        ),
+        # Registration targets (conditional, mask outputs)
+        expand(
+            "{cordmask_pam50}",
+            cordmask_pam50=[
+                derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_cord"]
+                for i in range(N)
+            ] if N > 0 else [],
+        ) if CFG.get("registration", {}).get("enable", False) else [],
 
 
 rule validate_config:
@@ -159,51 +181,56 @@ rule manifest_deriv:
 
 rule preproc_all:
     input:
+        manifest=MANIFEST_DERIV,
         # all confounds derivatives for every row (TSV & JSON)
-        expand(
+        confounds_tsv=expand(
             f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-confounds_timeseries.tsv",
             sub=[row_by_id(SAMPLES, i)["sub"] for i in range(N)],
             task=[row_by_id(SAMPLES, i)["task"] for i in range(N)],
             run=[row_by_id(SAMPLES, i)["run"] for i in range(N)],
-        ),
-        expand(
+        ) if N > 0 else [],
+        confounds_json=expand(
             f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-confounds_timeseries.json",
             sub=[row_by_id(SAMPLES, i)["sub"] for i in range(N)],
             task=[row_by_id(SAMPLES, i)["task"] for i in range(N)],
             run=[row_by_id(SAMPLES, i)["run"] for i in range(N)],
-        ),
+        ) if N > 0 else [],
 
 
 # Per-run MP-PCA
 rule mppca:
+    input:
+        manifest=SAMPLES,
     output:
-        o=expand(
-            "{deriv_mppca}",
-            deriv_mppca=[row_by_id(MANIFEST_DERIV, i)["deriv_mppca"] for i in range(N)],
-        ),
+        bold=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-mppca_bold.nii.gz",
+    log:
+        f"{LOGS}/mppca_{{sub}}_{{task}}_{{run}}.log",
+    resources:
+        mem_mb=500,
     run:
         import os, subprocess
+        from pathlib import Path as _P
 
-        for i in range(N):
-            r = row_by_id(SAMPLES, i)
-            rD = row_by_id(MANIFEST_DERIV, i)
-            env = os.environ.copy()
-            env["IN_BOLD"] = r["bold_path"]
-            env["DENOISE_MPPCA"] = (
-                "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
-            )
-            Path("steps/spi05_mppca.sh").chmod(0o755)
-            subprocess.run(["bash", "steps/spi05_mppca.sh"], check=True, env=env)
-            # Stage to derivatives
-            stage_file(r["mppca_path"], rD["deriv_mppca"])
-            # Provenance
-            write_prov(
-                target=rD["deriv_mppca"],
-                step="mppca",
-                inputs={"IN_BOLD": r["bold_path"]},
-                params={"denoise_mppca": CFG.get("options", {}).get("denoise_mppca", False)},
-                tools={"step": "spi05_mppca.sh"},
-            )
+        # Get run info for this wildcard
+        r = find_row_by_wildcards(wildcards.sub, wildcards.task, wildcards.run)
+
+        env = os.environ.copy()
+        env["IN_BOLD"] = r["bold_path"]
+        env["DENOISE_MPPCA"] = (
+            "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
+        )
+        Path("steps/spi05_mppca.sh").chmod(0o755)
+        subprocess.run(["bash", "steps/spi05_mppca.sh"], check=True, env=env)
+        # Stage to derivatives
+        stage_file(r["mppca_path"], output.bold)
+        # Provenance
+        write_prov(
+            target=output.bold,
+            step="mppca",
+            inputs={"IN_BOLD": r["bold_path"]},
+            params={"denoise_mppca": CFG.get("options", {}).get("denoise_mppca", False)},
+            tools={"step": "spi05_mppca.sh"},
+        )
 
 
 # Grouped motion correction (concatenate → SCT → split)
@@ -307,13 +334,9 @@ rule motion_concat_group:
 # Temporal crop detection (per-run wildcard rule)
 rule crop_detect:
     input:
-        bold=lambda wildcards: (
-            row_by_id(SAMPLES, int(wildcards.id))["mppca_path"]
-            if Path(row_by_id(SAMPLES, int(wildcards.id))["mppca_path"]).exists()
-            else row_by_id(SAMPLES, int(wildcards.id))["bold_path"]
-        ),
+        bold=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-mppca_bold.nii.gz",
     output:
-        crop_json=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-crop.json",
+        crop_json=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-crop.json",
     log:
         f"{LOGS}/crop_detect_{{sub}}_{{task}}_{{run}}.log",
     resources:
@@ -369,12 +392,12 @@ rule crop_detect:
 rule motion:
     input:
         manifest=MANIFEST_DERIV,
-        crop_json=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-crop.json",
-        mppca=lambda wildcards: row_by_id(MANIFEST_DERIV, int(wildcards.id))["deriv_mppca"],
+        crop_json=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-crop.json",
+        mppca=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-mppca_bold.nii.gz",
     output:
-        bold=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-motion_bold.nii.gz",
-        params_tsv=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-motion_params.tsv",
-        params_json=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-motion_params.json",
+        bold=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-motion_bold.nii.gz",
+        params_tsv=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-motion_params.tsv",
+        params_json=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-motion_params.json",
     log:
         f"{LOGS}/motion_{{sub}}_{{task}}_{{run}}.log",
     resources:
@@ -388,11 +411,11 @@ rule motion:
         slice_axis = CFG.get("options", {}).get("motion", {}).get("slice_axis", "IS")
 
         # Get run info for this wildcard
-        r = row_by_id(SAMPLES, int(wildcards.id))
+        r = find_row_by_wildcards(wildcards.sub, wildcards.task, wildcards.run)
         in_bold = input.mppca
 
         # Per-run motion correction
-        log(f"Running per-run motion correction for run {wildcards.id}")
+        log(f"Running per-run motion correction for run {wildcards.sub}_{wildcards.task}_{wildcards.run}")
 
         # Read crop information from input
         crop_from = 0
@@ -435,14 +458,22 @@ rule motion:
 
 
 # Per-run confounds (depends on motion output or falls back)
+def find_row_by_wildcards(sub, task, run):
+    """Find the manifest row matching the given wildcards."""
+    for i in range(N):
+        row = row_by_id(SAMPLES, i)
+        if row["sub"] == sub and row["task"] == task and row["run"] == run:
+            return row
+    return {}
+
 rule confounds:
     input:
-        motion=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-motion_bold.nii.gz",
-        motion_params_tsv=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-motion_params.tsv",
-        crop_json=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-crop.json",
+        motion=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-motion_bold.nii.gz",
+        motion_params_tsv=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-motion_params.tsv",
+        crop_json=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-crop.json",
     output:
-        tsv=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-confounds_timeseries.tsv",
-        json=f"{DERIV}/sub-{{sub}}/func/sub-{{sub}}_task-{{task}}_run-{{run}}_desc-confounds_timeseries.json",
+        tsv=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-confounds_timeseries.tsv",
+        json=f"{DERIV}/{{sub}}/func/{{sub}}_task-{{task}}_run-{{run}}_desc-confounds_timeseries.json",
     log:
         f"{LOGS}/confounds_{{sub}}_{{task}}_{{run}}.log",
     resources:
@@ -452,7 +483,7 @@ rule confounds:
         from pathlib import Path as _P
 
         # Get run info for this wildcard
-        r = row_by_id(SAMPLES, int(wildcards.id))
+        r = find_row_by_wildcards(wildcards.sub, wildcards.task, wildcards.run)
         in_bold = input.motion
         motion_params_tsv = input.motion_params_tsv
 
@@ -490,6 +521,30 @@ rule confounds:
             env["CENSOR_DVARS"] = "1.5"
             env["CENSOR_MIN_CONTIG"] = "5"
             env["CENSOR_PAD"] = "1"
+
+        # Get aCompCor configuration
+        acompcor_cfg = CFG.get("options", {}).get("acompcor", {})
+        acompcor_enable = acompcor_cfg.get("enable", False)
+
+        # Set aCompCor environment variables
+        env["ACOMPCOR_ENABLE"] = "1" if acompcor_enable else "0"
+        if acompcor_enable:
+            env["ACOMPCOR_TISSUES"] = ",".join(acompcor_cfg.get("tissues", []))
+            env["ACOMPCOR_N"] = str(acompcor_cfg.get("n_components_per_tissue", 5))
+            env["ACOMPCOR_HIGHPASS_HZ"] = str(acompcor_cfg.get("highpass_hz", 0.008))
+            env["ACOMPCOR_DETREND"] = "1" if acompcor_cfg.get("detrend", True) else "0"
+            env["ACOMPCOR_STANDARDIZE"] = "1" if acompcor_cfg.get("standardize", True) else "0"
+        else:
+            env["ACOMPCOR_TISSUES"] = "None"
+            env["ACOMPCOR_N"] = "5"
+            env["ACOMPCOR_HIGHPASS_HZ"] = "0.008"
+            env["ACOMPCOR_DETREND"] = "1"
+            env["ACOMPCOR_STANDARDIZE"] = "1"
+
+        # Set mask paths from manifest
+        env["CORD_MASK"] = r.get("deriv_cord_mask", "None") if r else "None"
+        env["WM_MASK"] = r.get("deriv_wm_mask", "None") if r else "None"
+        env["CSF_MASK"] = r.get("deriv_csf_mask", "None") if r else "None"
         Path("steps/spi07_confounds.sh").chmod(0o755)
         subprocess.run(["bash", "steps/spi07_confounds.sh"], check=True, env=env)
 
@@ -501,6 +556,9 @@ rule confounds:
                 "IN_BOLD": in_bold,
                 "MOTION_PARAMS_TSV": motion_params_tsv,
                 "CROP_JSON": input.crop_json,
+                "CORD_MASK": env["CORD_MASK"],
+                "WM_MASK": env["WM_MASK"],
+                "CSF_MASK": env["CSF_MASK"],
             },
             params={
                 "TR_S": CFG.get("acq", {}).get("tr", 1.0),
@@ -511,6 +569,14 @@ rule confounds:
                     "dvars_thresh": censor_cfg.get("dvars_thresh", 1.5),
                     "min_contig_vols": censor_cfg.get("min_contig_vols", 5),
                     "pad_vols": censor_cfg.get("pad_vols", 1),
+                },
+                "acompcor": {
+                    "enable": acompcor_enable,
+                    "tissues": acompcor_cfg.get("tissues", []),
+                    "n_components_per_tissue": acompcor_cfg.get("n_components_per_tissue", 5),
+                    "highpass_hz": acompcor_cfg.get("highpass_hz", 0.008),
+                    "detrend": acompcor_cfg.get("detrend", True),
+                    "standardize": acompcor_cfg.get("standardize", True),
                 },
             },
             tools={"step": "spi07_confounds.sh"},
@@ -534,9 +600,10 @@ rule report_subject:
 
 rule reports_all:
     input:
-        expand(
+        manifest=MANIFEST_DERIV,
+        reports=expand(
             f"{DERIV}/{{sub}}/reports/{{sub}}_desc-qc.html",
-            sub=subjects_from_manifest(MANIFEST_DERIV),
+            sub=subjects_from_manifest(MANIFEST_DERIV) if N > 0 else [],
         ),
 
 
@@ -913,27 +980,28 @@ if CFG.get("registration", {}).get("enable", False):
 
     rule registration_all:
         input:
+            manifest=MANIFEST_DERIV,
             # All mask outputs from warp_masks rule
-            expand(
+            cordmask_pam50=expand(
                 "{cordmask_pam50}",
                 cordmask_pam50=[
                     derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_cord"]
                     for i in range(N)
-                ],
+                ] if N > 0 else [],
             ),
-            expand(
+            wmmask_pam50=expand(
                 "{wmmask_pam50}",
                 wmmask_pam50=[
                     derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_wm"]
                     for i in range(N)
-                ],
+                ] if N > 0 else [],
             ),
-            expand(
+            csfmask_pam50=expand(
                 "{csfmask_pam50}",
                 csfmask_pam50=[
                     derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_csf"]
                     for i in range(N)
-                ],
+                ] if N > 0 else [],
             ),
         run:
             # This rule just aggregates the registration outputs
