@@ -4,6 +4,8 @@ import os
 import subprocess
 from pathlib import Path
 
+from workflow.lib.samples import first_row  # type: ignore
+
 CFG_PATH = os.environ.get("SPINEPREP_CONFIG", "configs/study.yaml")
 CFG_SCHEMA = "schemas/config.schema.json" if Path("schemas/config.schema.json").exists() else None
 
@@ -16,6 +18,8 @@ BIDS = CFG["paths"]["bids_dir"]
 DERIV = CFG["paths"]["deriv_dir"]
 LOGS = CFG["paths"]["logs_dir"]
 Path(LOGS).mkdir(parents=True, exist_ok=True)
+
+SAMPLES = f"{LOGS}/samples.tsv"
 
 rule all:
     input:
@@ -63,18 +67,12 @@ rule mppca_smoke:
     output:
         mark = f"{LOGS}/mppca_smoke.ok"
     run:
-        import json, os, subprocess
-        from spineprep.config import load_config
-        from spineprep.adapters.bids import bold_nii
-        cfg = load_config(CFG_PATH, CFG_SCHEMA)
-        summ = json.loads(Path(input.disc).read_text())
-        assert summ["subjects"], "No subjects with runs found in BIDS."
-        s0 = summ["subjects"][0]
-        sub = s0["id"]; ses = s0["sessions"][0]["id"]; runid = s0["sessions"][0]["runs"][0]
-        in_bold = bold_nii(BIDS, sub, ses, runid)
+        import os, subprocess
+        row = first_row(SAMPLES)
+        in_bold = row["bold_path"]
         env = os.environ.copy()
         env["IN_BOLD"] = in_bold
-        env["DENOISE_MPPCA"] = "1" if cfg.get("options", {}).get("denoise_mppca", False) else "0"
+        env["DENOISE_MPPCA"] = "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
         Path("steps/spi05_mppca.sh").chmod(0o755)
         subprocess.run(["bash", "steps/spi05_mppca.sh"], check=True, env=env)
         Path(output.mark).write_text("ok\n")
@@ -86,25 +84,14 @@ rule motion_smoke:
     output:
         mark = f"{LOGS}/motion_smoke.ok"
     run:
-        import json, os, subprocess
-        from spineprep.config import load_config
-        from spineprep.adapters.bids import bold_nii
+        import os, subprocess
         from pathlib import Path as _P
-
-        cfg = load_config(CFG_PATH, CFG_SCHEMA)
-        summ = json.loads(Path(input.disc).read_text())
-        s0 = summ["subjects"][0]
-        sub = s0["id"]; ses = s0["sessions"][0]["id"]; runid = s0["sessions"][0]["runs"][0]
-        in_bold = bold_nii(BIDS, sub, ses, runid)
-        in_dir = _P(in_bold).parent
-        in_base = _P(in_bold).name[:-7] if in_bold.endswith(".nii.gz") else _P(in_bold).stem
-        base_no_bold = in_base[:-5] if in_base.endswith("_bold") else in_base
-        mppca_bold = str(in_dir / f"{base_no_bold}_desc-mppca_bold.nii.gz")
-        if not _P(mppca_bold).exists():
-            mppca_bold = in_bold
-
+        row = first_row(SAMPLES)
+        in_bold = row["mppca_path"]
+        if not _P(in_bold).exists():
+            in_bold = row["bold_path"]
         env = os.environ.copy()
-        env["IN_BOLD"] = mppca_bold
+        env["IN_BOLD"] = in_bold
         env["MOTION_ENABLE"] = "1"
         Path("steps/spi06_motion.sh").chmod(0o755)
         subprocess.run(["bash", "steps/spi06_motion.sh"], check=True, env=env)
@@ -116,26 +103,15 @@ rule confounds_smoke:
     output:
         mark = f"{LOGS}/confounds_smoke.ok"
     run:
-        import json, os, subprocess
-        from spineprep.config import load_config
-        from spineprep.adapters.bids import bold_nii
+        import os, subprocess
         from pathlib import Path as _P
-
-        cfg = load_config(CFG_PATH, CFG_SCHEMA)
-        summ = json.loads(Path(f"{LOGS}/discover.json").read_text())
-        s0 = summ["subjects"][0]
-        sub = s0["id"]; ses = s0["sessions"][0]["id"]; runid = s0["sessions"][0]["runs"][0]
-        in_bold = bold_nii(BIDS, sub, ses, runid)
-        in_dir = _P(in_bold).parent
-        in_base = _P(in_bold).name[:-7] if in_bold.endswith(".nii.gz") else _P(in_bold).stem
-        base_no_bold = in_base[:-5] if in_base.endswith("_bold") else in_base
-        motion_bold = str(in_dir / f"{base_no_bold}_desc-motioncorr_bold.nii.gz")
-        if not _P(motion_bold).exists():
-            motion_bold = in_bold
-
+        row = first_row(SAMPLES)
+        in_bold = row["motion_path"]
+        if not _P(in_bold).exists():
+            in_bold = row["bold_path"]
         env = os.environ.copy()
-        env["IN_BOLD"] = motion_bold
-        env["TR_S"] = str(cfg.get("acq", {}).get("tr", 1.0))
+        env["IN_BOLD"] = in_bold
+        env["TR_S"] = str(CFG.get("acq", {}).get("tr", 1.0))
         Path("steps/spi07_confounds.sh").chmod(0o755)
         subprocess.run(["bash", "steps/spi07_confounds.sh"], check=True, env=env)
         Path(output.mark).write_text("ok\n")

@@ -44,16 +44,20 @@ fi
 
 params_tsv="${in_dir}/${base_no_bold}_desc-motionparams.tsv"
 
+# Create temporary TSV with header.
 tmp_tsv="${out_tsv}.tmp"
 {
   printf "trans_x\ttrans_y\ttrans_z\trot_x\trot_y\trot_z\tframewise_displacement\tdvars\tnon_steady_state_outlier00\n"
   if [[ -f "$params_tsv" ]]; then
-    awk 'BEGIN{FS="\t"; OFS="\t"} NR==1{next} {print $1,$2,$3,$4,$5,$6,0,0,0}' "$params_tsv"
+    # Copy columns if present; pad with zeros for FD/DVARS/NSS
+    awk -v nvols="$nvols" 'BEGIN{FS="\t"; OFS="\t"} NR==1{next} {print $1,$2,$3,$4,$5,$6,0,0,0}' "$params_tsv"
   else
+    # Synthesize zeros of length nvols
     awk -v nvols="$nvols" 'BEGIN{OFS="\t"} {for(i=1;i<=nvols;i++) print 0,0,0,0,0,0,0,0,0; exit}'
   fi
 } > "$tmp_tsv"
 
+# JSON sidecar with simple column descriptions
 tmp_json="${out_json}.tmp"
 cat > "$tmp_json" <<JSON
 {
@@ -73,6 +77,7 @@ JSON
 mv -f "$tmp_tsv" "$out_tsv"
 mv -f "$tmp_json" "$out_json"
 
+# Provenance
 tools='{"confounds":"placeholder"}'
 inputs_json="$(printf '{"IN_BOLD": "%s"}' "$IN_BOLD")"
 params_json="$(printf '{"TR_S": %.6f}' "$TR_S")"

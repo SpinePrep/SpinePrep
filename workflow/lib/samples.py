@@ -106,3 +106,17 @@ def build_samples(discover_json: str, bids_root: str, out_tsv: str) -> int:
         for r in rows:
             w.writerow(r)
     return len(rows)
+
+
+def first_row(samples_tsv: str) -> dict:
+    """Return the first non-header row as a dict. Raises FileNotFoundError or ValueError."""
+    p = Path(samples_tsv)
+    if not p.exists():
+        raise FileNotFoundError(samples_tsv)
+    import csv
+
+    with p.open("r", newline="") as f:
+        r = csv.DictReader(f, delimiter="\t")
+        for row in r:
+            return row
+    raise ValueError("samples.tsv has no rows")
