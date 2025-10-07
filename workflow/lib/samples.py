@@ -120,3 +120,24 @@ def first_row(samples_tsv: str) -> dict:
         for row in r:
             return row
     raise ValueError("samples.tsv has no rows")
+
+
+def rows(samples_tsv: str) -> list[dict]:
+    p = Path(samples_tsv)
+    if not p.exists():
+        raise FileNotFoundError(samples_tsv)
+    out = []
+    import csv
+
+    with p.open("r", newline="") as f:
+        r = csv.DictReader(f, delimiter="\t")
+        for row in r:
+            out.append(row)
+    return out
+
+
+def row_by_id(samples_tsv: str, idx: int) -> dict:
+    rs = rows(samples_tsv)
+    if idx < 0 or idx >= len(rs):
+        raise IndexError(f"row index out of range: {idx}")
+    return rs[idx]
