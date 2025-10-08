@@ -1,0 +1,18 @@
+# lychee configuration for SpinePrep docs
+# See: https://github.com/lycheeverse/lychee#configuration
+verbose = false
+no_progress = true
+max_retries = 2
+retry_wait = 2
+timeout = 20
+# Accept normal OK, partial content, and rate-limited
+accept = [200, 206, 429]
+# Skip mailto by default (Lychee already skips without --include-mail)
+# Include only http/https
+scheme = ["http", "https"]
+# Ignore CI-hosted shields that occasionally 429
+exclude = [
+  "https://img.shields.io/.*",
+  "https://github.com/SpinePrep/SpinePrep/actions/workflows/.*",
+]
+# Inputs are provided by CLI args in workflow
