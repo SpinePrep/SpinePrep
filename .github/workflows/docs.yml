@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-name: docs
-
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-=======
 name: Documentation CI
 
 on:
@@ -20,62 +9,87 @@ on:
       - 'mkdocs.yml'
       - 'schemas/**'
       - 'workflow/lib/**'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'docs/**'
-      - 'scripts/**'
-      - 'mkdocs.yml'
-      - 'schemas/**'
-      - 'workflow/lib/**'
->>>>>>> dadbaa4 (feat(docs): stand up MkDocs Material site with generators  [spi-011])
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  docs:
+    name: Build and Validate Docs
     runs-on: ubuntu-latest
-<<<<<<< HEAD
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    strategy:
+      fail-fast: false
 
-      - name: Setup Python
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
+          cache: 'pip'
 
-      - name: Install deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install mkdocs-material mkdocs-sitemap-plugin
+          pip install ruff codespell snakefmt
+          pip install lychee
 
-      # If you have generators with --check, add them here (optional):
-      # - name: Check generated refs
-      #   run: |
-      #     python scripts/gen_docs_config_ref.py --check
-      #     python scripts/gen_docs_api_ref.py --check
+      - name: Lint (ruff)
+        run: |
+          ruff check . && ruff format --check .
+
+      - name: Lint Snakefiles
+        run: |
+          snakefmt -l 100 workflow --check
+
+      - name: Spell check
+        run: |
+          codespell docs/ mkdocs.yml
+
+      - name: Generate references --check
+        run: |
+          python scripts/gen_docs_config_ref.py --check
+          python scripts/gen_docs_api_ref.py --check
+
+      - name: Link check
+        run: |
+          lychee "docs/**/*.md" --no-progress --accept 200,206,429 --exclude-mail --retry-wait 2 --max-retries 2
 
       - name: Build site
-        run: mkdocs build --strict
+        run: |
+          mkdocs build --strict
 
-      - name: Upload built site as artifact
+      - name: Upload site as artifact
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: site
           path: site
 
-  deploy_org_root:
+      - name: Upload screenshots
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: docs/_assets/screenshots/*.png
+
+  deploy:
     name: Deploy to spineprep.github.io
-    needs: build
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: docs
     runs-on: ubuntu-latest
     steps:
-      - name: Download built site
-        uses: actions/download-artifact@v4
-        with:
-          name: site
-          path: site
-
-      - name: Publish to spineprep/spineprep.github.io
+      - uses: actions/checkout@v4
+      - name: Deploy to spineprep.github.io
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
@@ -85,65 +99,3 @@ jobs:
           user_name: github-actions[bot]
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
           commit_message: "Deploy site from SpinePrep@${{ github.sha }}"
-=======
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install mkdocs-material
-        pip install mkdocs-minify
-        pip install mkdocs-redirects
-        pip install mkdocs-table-reader
-        pip install mkdocs-git-committers
-        pip install mkdocs-rss-plugin
-        pip install mkdocs-section-index
-        pip install pymdown-extensions
-        pip install ruff
-        pip install codespell
-        pip install lychee
-        pip install snakefmt
-
-    - name: Generate configuration reference
-      run: |
-        python scripts/gen_docs_config_ref.py --check
-
-    - name: Generate API reference
-      run: |
-        python scripts/gen_docs_api_ref.py --check
-
-    - name: Lint Python code
-      run: |
-        ruff check . && ruff format --check .
-
-    - name: Lint Snakefile
-      run: |
-        snakefmt -l 100 workflow --check
-
-    - name: Spell check
-      run: |
-        codespell --ignore-words-list="te,hist,nd" docs/
-
-    - name: Check links
-      run: |
-        lychee --no-progress --exclude-mail --accept 200,206,429 "docs/**/*.md"
-
-    - name: Build documentation
-      run: |
-        mkdocs build --strict
-
-    - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./site
-        cname: spineprep.readthedocs.io
->>>>>>> dadbaa4 (feat(docs): stand up MkDocs Material site with generators  [spi-011])

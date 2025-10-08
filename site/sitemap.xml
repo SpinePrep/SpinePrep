@@ -1,55 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://spineprep.readthedocs.io/</loc>
+         <loc>https://spineprep.github.io/spineprep/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/PLAYBOOK_ChatGPT/</loc>
+         <loc>https://spineprep.github.io/spineprep/CHANGELOG/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/PLAYBOOK_Cursor/</loc>
+         <loc>https://spineprep.github.io/spineprep/PLAYBOOK_ChatGPT/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/contributing/</loc>
+         <loc>https://spineprep.github.io/spineprep/PLAYBOOK_Cursor/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/getting-started/</loc>
+         <loc>https://spineprep.github.io/spineprep/contributing/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/how-tos/grouped-motion/</loc>
+         <loc>https://spineprep.github.io/spineprep/getting-started/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/how-tos/physio-hooks/</loc>
+         <loc>https://spineprep.github.io/spineprep/how-tos/grouped-motion/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/reference/api/</loc>
+         <loc>https://spineprep.github.io/spineprep/how-tos/physio-hooks/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/reference/config/</loc>
+         <loc>https://spineprep.github.io/spineprep/reference/api/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/user-guide/outputs/</loc>
+         <loc>https://spineprep.github.io/spineprep/reference/config/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/user-guide/qc/</loc>
+         <loc>https://spineprep.github.io/spineprep/user-guide/outputs/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/user-guide/registration/</loc>
+         <loc>https://spineprep.github.io/spineprep/user-guide/qc/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.readthedocs.io/user-guide/usage/</loc>
+         <loc>https://spineprep.github.io/spineprep/user-guide/registration/</loc>
+         <lastmod>2025-10-08</lastmod>
+    </url>
+    <url>
+         <loc>https://spineprep.github.io/spineprep/user-guide/usage/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
 </urlset>

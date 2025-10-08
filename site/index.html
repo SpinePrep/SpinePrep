@@ -12,7 +12,7 @@
         <meta name="author" content="SpinePrep Contributors">
 
 
-        <link rel="canonical" href="https://spineprep.readthedocs.io/">
+        <link rel="canonical" href="https://spineprep.github.io/spineprep/">
 
 
 
@@ -54,16 +54,6 @@
 
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
 
-
-
-
-
-
-
-
-<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-XXXXXXXXXX"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-XXXXXXXXXX",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
-
-    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
 
 
 
@@ -516,6 +506,15 @@
 </li>
 
         <li class="md-nav__item">
+  <a href="#whats-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      What's new
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
   <a href="#features" class="md-nav__link">
     <span class="md-ellipsis">
       Features
@@ -526,36 +525,36 @@
       <ul class="md-nav__list">
 
           <li class="md-nav__item">
-  <a href="#spinal-cord-optimized" class="md-nav__link">
+  <a href="#material-check-circle-green-spinal-cord-optimized" class="md-nav__link">
     <span class="md-ellipsis">
-      Spinal Cord Optimized
+      :material-check-circle:{ .green } Spinal Cord Optimized
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#bids-compliant" class="md-nav__link">
+  <a href="#material-check-circle-green-bids-compliant" class="md-nav__link">
     <span class="md-ellipsis">
-      BIDS Compliant
+      :material-check-circle:{ .green } BIDS Compliant
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#quality-control" class="md-nav__link">
+  <a href="#material-check-circle-green-quality-control" class="md-nav__link">
     <span class="md-ellipsis">
-      Quality Control
+      :material-check-circle:{ .green } Quality Control
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#reproducible" class="md-nav__link">
+  <a href="#material-check-circle-green-reproducible" class="md-nav__link">
     <span class="md-ellipsis">
-      Reproducible
+      :material-check-circle:{ .green } Reproducible
     </span>
   </a>
 
@@ -1005,6 +1004,11 @@
   </p>
 </div>
 
+<!-- Badges -->
+
+<p><a href="./"><img alt="Docs" src="https://img.shields.io/badge/docs-material-blue" /></a>
+<a href="https://github.com/spineprep/spineprep/actions/workflows/docs.yml"><img alt="CI" src="https://github.com/spineprep/spineprep/actions/workflows/docs.yml/badge.svg" /></a>
+<a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-green" /></a></p>
 <h2 id="why-spineprep">Why SpinePrep?<a class="headerlink" href="#why-spineprep" title="Permanent link">&para;</a></h2>
 <p>SpinePrep provides a comprehensive preprocessing pipeline specifically designed for spinal cord neuroimaging data. Unlike generic brain preprocessing tools, SpinePrep understands the unique challenges of spinal cord imaging:</p>
 <ul>
@@ -1032,33 +1036,35 @@
 <div class="grid cards">
 <ul>
 <li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m16 11.78 4.24-7.33 1.73 1-5.23 9.05-6.51-3.75L5.46 19H22v2H2V3h2v14.54L9.5 8z"/></svg></span> <strong>Quality Control</strong></p>
+<p>:material-chart-line:{ .lg .middle } <strong>Quality Control</strong></p>
 <hr />
 <p>Comprehensive QC metrics including motion, signal quality, and preprocessing artifacts</p>
-<p><a href="user-guide/qc/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> View QC Report</a></p>
+<p><a href="user-guide/qc/">:octicons-arrow-right-24: View QC Report</a></p>
 </li>
 <li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg></span> <strong>Processing Pipeline</strong></p>
+<p>:material-graph:{ .lg .middle } <strong>Processing Pipeline</strong></p>
 <hr />
 <p>Transparent, versioned processing steps with full provenance tracking</p>
-<p><a href="user-guide/usage/#processing-pipeline"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> View DAG</a></p>
+<p><a href="user-guide/usage/#processing-pipeline">:octicons-arrow-right-24: View DAG</a></p>
 </li>
 <li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4-3.58-4-8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4"/></svg></span> <strong>BIDS Derivatives</strong></p>
+<p>:material-database:{ .lg .middle } <strong>BIDS Derivatives</strong></p>
 <hr />
 <p>Standardized outputs following BIDS-Derivatives specification</p>
-<p><a href="user-guide/outputs/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> View Outputs</a></p>
+<p><a href="user-guide/outputs/">:octicons-arrow-right-24: View Outputs</a></p>
 </li>
 </ul>
 </div>
+<h2 id="whats-new">What's new<a class="headerlink" href="#whats-new" title="Permanent link">&para;</a></h2>
+<p>See recent changes and release notes in the <a href="CHANGELOG/">Changelog</a>.</p>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
-<h3 id="spinal-cord-optimized"><span class="twemoji green"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span> <strong>Spinal Cord Optimized</strong><a class="headerlink" href="#spinal-cord-optimized" title="Permanent link">&para;</a></h3>
+<h3 id="material-check-circle-green-spinal-cord-optimized">:material-check-circle:{ .green } <strong>Spinal Cord Optimized</strong><a class="headerlink" href="#material-check-circle-green-spinal-cord-optimized" title="Permanent link">&para;</a></h3>
 <p>Preprocessing steps specifically designed for spinal cord anatomy and physiology, including spinal cord-specific motion correction and registration.</p>
-<h3 id="bids-compliant"><span class="twemoji green"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span> <strong>BIDS Compliant</strong><a class="headerlink" href="#bids-compliant" title="Permanent link">&para;</a></h3>
+<h3 id="material-check-circle-green-bids-compliant">:material-check-circle:{ .green } <strong>BIDS Compliant</strong><a class="headerlink" href="#material-check-circle-green-bids-compliant" title="Permanent link">&para;</a></h3>
 <p>Full support for the Brain Imaging Data Structure standard, ensuring compatibility with the broader neuroimaging ecosystem.</p>
-<h3 id="quality-control"><span class="twemoji green"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span> <strong>Quality Control</strong><a class="headerlink" href="#quality-control" title="Permanent link">&para;</a></h3>
+<h3 id="material-check-circle-green-quality-control">:material-check-circle:{ .green } <strong>Quality Control</strong><a class="headerlink" href="#material-check-circle-green-quality-control" title="Permanent link">&para;</a></h3>
 <p>Comprehensive QC metrics including framewise displacement (FD), DVARS, aCompCor, and censor masks with detailed reporting.</p>
-<h3 id="reproducible"><span class="twemoji green"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span> <strong>Reproducible</strong><a class="headerlink" href="#reproducible" title="Permanent link">&para;</a></h3>
+<h3 id="material-check-circle-green-reproducible">:material-check-circle:{ .green } <strong>Reproducible</strong><a class="headerlink" href="#material-check-circle-green-reproducible" title="Permanent link">&para;</a></h3>
 <p>Version-controlled processing with full provenance tracking, containerized execution, and transparent parameter reporting.</p>
 <h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1076,8 +1082,6 @@
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="na">url</span><span class="p">=</span><span class="s">{https://github.com/spineprep/spineprep}</span>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">}</span>
 </span></code></pre></div>
-
-
 
 
 
@@ -1150,81 +1154,6 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
 
-
-      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
-        <div class="md-consent__overlay"></div>
-        <aside class="md-consent__inner">
-          <form class="md-consent__form md-grid md-typeset" name="consent">
-
-
-
-
-
-
-<h4>Cookie consent</h4>
-<p>We use cookies to recognize your repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better.</p>
-<input class="md-toggle" type="checkbox" id="__settings" >
-<div class="md-consent__settings">
-  <ul class="task-list">
-
-
-
-
-
-
-
-
-
-  <li class="task-list-item">
-    <label class="task-list-control">
-      <input type="checkbox" name="analytics" checked>
-      <span class="task-list-indicator"></span>
-      Google Analytics
-    </label>
-  </li>
-
-
-
-
-
-
-
-
-
-
-
-  <li class="task-list-item">
-    <label class="task-list-control">
-      <input type="checkbox" name="github" checked>
-      <span class="task-list-indicator"></span>
-      GitHub
-    </label>
-  </li>
-
-
-
-
-  </ul>
-</div>
-<div class="md-consent__controls">
-
-
-      <button class="md-button md-button--primary">Accept</button>
-
-
-
-
-
-
-
-      <label class="md-button" for="__settings">Manage settings</label>
-
-
-</div>
-          </form>
-        </aside>
-      </div>
-      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
 
 
 
