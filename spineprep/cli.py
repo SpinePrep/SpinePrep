@@ -6,6 +6,7 @@ from pathlib import Path
 from jsonschema import ValidationError
 
 from .config import print_config, resolve_config
+from .confounds import process as confounds_process
 from .doctor import cmd_doctor
 from .ingest import ingest
 from .motion import process_from_manifest
@@ -50,12 +51,12 @@ def main(argv=None) -> int:
         if a.print_config:
             print(print_config(cfg))
             # Don't return yet if also dry-run
-        
+
         # Handle dry-run (export DAG only)
         if getattr(a, "dry_run", False):
             import os
             import subprocess as sp
-            
+
             # Determine output directory from config
             # Handle both old-style (paths.deriv_dir) and new-style (output_dir)
             if "output_dir" in cfg:
@@ -64,39 +65,58 @@ def main(argv=None) -> int:
                 out_dir = Path(cfg["paths"]["deriv_dir"])
             else:
                 out_dir = Path("./out")
-            
+
             prov_dir = out_dir / "derivatives" / "spineprep" / "logs" / "provenance"
             prov_dir.mkdir(parents=True, exist_ok=True)
-            
+
             dag_svg = prov_dir / "dag.svg"
             env = os.environ.copy()
             repo_root = Path(__file__).resolve().parents[1]
-            env["PYTHONPATH"] = os.pathsep.join([str(repo_root), env.get("PYTHONPATH", "")])
-            
+            env["PYTHONPATH"] = os.pathsep.join(
+                [str(repo_root), env.get("PYTHONPATH", "")]
+            )
+
             try:
                 dag_result = sp.run(
-                    ["snakemake", "-n", "--dag", "--cores", "1", "--snakefile", str(repo_root / "workflow" / "Snakefile")],
+                    [
+                        "snakemake",
+                        "-n",
+                        "--dag",
+                        "--cores",
+                        "1",
+                        "--snakefile",
+                        str(repo_root / "workflow" / "Snakefile"),
+                    ],
                     capture_output=True,
                     text=True,
                     env=env,
                 )
                 # Extract digraph from output
                 lines = dag_result.stdout.splitlines()
-                dag_start = next((i for i, line in enumerate(lines) if line.startswith("digraph")), None)
+                dag_start = next(
+                    (i for i, line in enumerate(lines) if line.startswith("digraph")),
+                    None,
+                )
                 if dag_start is not None:
                     dag_dot = "\n".join(lines[dag_start:])
-                    dot_proc = sp.run(["dot", "-Tsvg"], input=dag_dot, capture_output=True, text=True, check=True)
+                    dot_proc = sp.run(
+                        ["dot", "-Tsvg"],
+                        input=dag_dot,
+                        capture_output=True,
+                        text=True,
+                        check=True,
+                    )
                     dag_svg.write_text(dot_proc.stdout)
                     print(f"[dry-run] DAG exported to {dag_svg}")
             except Exception as e:
                 print(f"[dry-run] Warning: Could not export DAG: {e}")
-            
+
             if a.print_config:
                 return 0  # Already printed config above
-            
+
             print("[dry-run] Pipeline check complete")
             return 0
-        
+
         # Run ingest (non-dry-run)
         out_dir = Path(cfg["output_dir"])
         stats = ingest(Path(cfg["bids_root"]), out_dir, hash_large=False)
@@ -107,7 +127,16 @@ def main(argv=None) -> int:
         # Run motion processing
         manifest_path = out_dir / "manifest.csv"
         motion_stats = process_from_manifest(manifest_path, out_dir)
-        print(f"[motion] {motion_stats['processed']} runs processed → confounds TSVs and plots")
+        print(
+            f"[motion] {motion_stats['processed']} runs processed → confounds TSVs and plots"
+        )
+
+        # Run confounds processing
+        confounds_stats = confounds_process(manifest_path, out_dir, cfg)
+        print(
+            f"[confounds] {confounds_stats['runs']} runs updated, {confounds_stats['skipped']} skipped, "
+            f"{confounds_stats['censored']} frames censored total"
+        )
 
         print("[run] config resolved ✓")
         return 0
