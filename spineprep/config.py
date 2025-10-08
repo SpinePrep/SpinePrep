@@ -1,11 +1,17 @@
 from __future__ import annotations
+
+import copy
+import json
 from pathlib import Path
 from typing import Any, Dict, Optional
-import copy, json, yaml
+
+import yaml
 from jsonschema import validate
+
 
 def _read_yaml(p: Path) -> Dict[str, Any]:
     return {} if not p.exists() else yaml.safe_load(p.read_text()) or {}
+
 
 def _deep_merge(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
     out = copy.deepcopy(a)
@@ -16,11 +22,14 @@ def _deep_merge(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Any]:
             out[k] = v
     return out
 
+
 def load_schema() -> Dict[str, Any]:
     return json.loads(Path("schemas/config.schema.json").read_text())
 
+
 def load_defaults() -> Dict[str, Any]:
     return _read_yaml(Path("configs/base.yaml"))
+
 
 def resolve_config(
     bids_root: Optional[str],
@@ -39,6 +48,7 @@ def resolve_config(
         cfg = _deep_merge(cfg, cli_overrides)
     validate(instance=cfg, schema=load_schema())
     return cfg
+
 
 def print_config(cfg: Dict[str, Any]) -> str:
     return yaml.safe_dump(cfg, sort_keys=False)

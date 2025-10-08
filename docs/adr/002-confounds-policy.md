@@ -1,8 +1,8 @@
 # ADR-002: Confounds and Censoring Policy
 
-**Status:** Accepted  
-**Date:** 2025-10-08  
-**Decision Makers:** CEO  
+**Status:** Accepted
+**Date:** 2025-10-08
+**Decision Makers:** CEO
 
 ## Context
 
@@ -65,4 +65,3 @@ options:
 - v0.2.0: tCompCor option, RETROICOR hooks
 - v0.3.0: Adaptive thresholds (data-driven)
 - v1.0.0: Physiological log parsing
-

@@ -1,4 +1,5 @@
 """Minimal tests for SCT registration wrapper."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
@@ -87,7 +88,7 @@ def test_header_consistency(tmp_path):
     src_affine[2, 2] = 2.0
 
     src_img = nib.Nifti1Image(src_data, src_affine)
-    
+
     # Set qform and sform explicitly
     src_img.header.set_qform(src_affine, code=1)  # Scanner anatomical
     src_img.header.set_sform(src_affine, code=1)
@@ -99,7 +100,7 @@ def test_header_consistency(tmp_path):
     # Save and reload to test persistence
     test_file = tmp_path / "test.nii.gz"
     nib.save(src_img, test_file)
-    
+
     reloaded = nib.load(test_file)
     loaded_affine = reloaded.affine
     np.testing.assert_array_almost_equal(loaded_affine, src_affine)
@@ -107,8 +108,9 @@ def test_header_consistency(tmp_path):
 
 def test_ssim_psnr_thresholds():
     """Test that SSIM and PSNR computation works on toy data."""
-    from spineprep.register.sct import compute_ssim, compute_psnr
     import numpy as np
+
+    from spineprep.register.sct import compute_psnr, compute_ssim
 
     # Create two identical images
     img1 = np.random.randn(16, 16, 8).astype(np.float32)
@@ -129,4 +131,3 @@ def test_ssim_psnr_thresholds():
     # Perturbed should still have high SSIM/PSNR
     assert ssim_pert >= 0.90, f"Expected SSIM >= 0.90, got {ssim_pert}"
     assert psnr_pert >= 25, f"Expected PSNR >= 25 dB, got {psnr_pert}"
-

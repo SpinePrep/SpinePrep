@@ -198,4 +198,3 @@ def process_from_manifest(manifest_path: Path, output_dir: Path) -> Dict[str, in
                     processed += 1
 
     return {"processed": processed}
-

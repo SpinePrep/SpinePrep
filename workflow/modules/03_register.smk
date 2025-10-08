@@ -5,7 +5,7 @@
 rule register_epi_to_pam50:
     """
     Register EPI reference to PAM50 template using SCT.
-    
+
     Conservative defaults: rigid + affine only (no deformable).
     """
     input:

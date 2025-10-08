@@ -76,7 +76,7 @@ jobs:
             /tmp/pytest-of-*/pytest-*/test_e2e_pipeline_completes*/spineprep-out/derivatives/spineprep/logs/**/*.ok
           if-no-files-found: warn
           retention-days: 7
-      
+
       - name: Create QC bundle zip
         if: always()
         run: |
@@ -93,7 +93,7 @@ jobs:
           cp /tmp/spineprep-ci/out/provenance/*.json /tmp/qc-bundle/ 2>/dev/null || true
           # Create zip
           cd /tmp/qc-bundle && zip -r ../qc-bundle.zip . || echo "No files to zip"
-      
+
       - name: Upload QC bundle zip
         if: always()
         uses: actions/upload-artifact@v4
@@ -102,4 +102,3 @@ jobs:
           path: /tmp/qc-bundle.zip
           if-no-files-found: warn
           retention-days: 30
-

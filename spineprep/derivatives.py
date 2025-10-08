@@ -1,4 +1,5 @@
 """BIDS-Derivatives tree layout and sidecar generation."""
+
 from __future__ import annotations
 
 import json
@@ -278,11 +279,13 @@ def build_intended_for(
     for src in sources:
         # Extract BIDS-relative path (strip leading directories until sub-XX)
         path_parts = Path(src).parts
-        sub_idx = next((i for i, p in enumerate(path_parts) if p.startswith("sub-")), None)
+        sub_idx = next(
+            (i for i, p in enumerate(path_parts) if p.startswith("sub-")), None
+        )
         if sub_idx is not None:
             bids_rel = "/".join(path_parts[sub_idx:])
             intended.append(bids_rel)
-    
+
     return intended
 
 
@@ -300,4 +303,3 @@ def write_dataset_description(
     desc = build_dataset_description(source_datasets, __version__)
     desc_path = deriv_root / "dataset_description.json"
     write_provenance_json(desc, desc_path)
-

@@ -1,8 +1,8 @@
 # ADR-001: Registration Strategy
 
-**Status:** Accepted  
-**Date:** 2025-10-08  
-**Decision Makers:** CEO  
+**Status:** Accepted
+**Date:** 2025-10-08
+**Decision Makers:** CEO
 
 ## Context
 
@@ -51,4 +51,3 @@ Use **Spinal Cord Toolbox (SCT)** with **conservative rigid + affine** defaults 
 - v0.2.0: Optional deformable step (user-gated)
 - v0.3.0: Fieldmap-based distortion correction
 - v1.0.0: Custom template support
-

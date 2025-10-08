@@ -96,9 +96,9 @@ study:
 
     # DAG should contain SVG content
     content = dag_svg.read_text()
-    assert "<svg" in content or "digraph" in content, (
-        "DAG file doesn't contain expected content"
-    )
+    assert (
+        "<svg" in content or "digraph" in content
+    ), "DAG file doesn't contain expected content"
 
 
 def test_doctor_command():
@@ -111,7 +111,11 @@ def test_doctor_command():
     )
     # Doctor should complete (may pass/warn/fail depending on environment)
     # Exit codes: 0=pass, 1=fail, 2=warn
-    assert result.returncode in [0, 1, 2], f"doctor command had unexpected exit code: {result.returncode}"
+    assert result.returncode in [
+        0,
+        1,
+        2,
+    ], f"doctor command had unexpected exit code: {result.returncode}"
     # Should print something
     output = result.stdout + result.stderr
     assert len(output) > 0, "doctor command produced no output"

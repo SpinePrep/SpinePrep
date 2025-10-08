@@ -75,7 +75,16 @@ def test_end_to_end_update_tsv(tmp_path: Path):
     with motion_tsv.open("w", newline="") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z", "fd", "dvars"],
+            fieldnames=[
+                "trans_x",
+                "trans_y",
+                "trans_z",
+                "rot_x",
+                "rot_y",
+                "rot_z",
+                "fd",
+                "dvars",
+            ],
             delimiter="\t",
         )
         writer.writeheader()
@@ -111,7 +120,17 @@ def test_end_to_end_update_tsv(tmp_path: Path):
             ]
         )
         writer.writerow(
-            [str(nifti_path), "sub-01/func/sub-01_task-rest_bold.nii.gz", 1000, "", "sub-01", "", "func", "bold", ".nii.gz"]
+            [
+                str(nifti_path),
+                "sub-01/func/sub-01_task-rest_bold.nii.gz",
+                1000,
+                "",
+                "sub-01",
+                "",
+                "func",
+                "bold",
+                ".nii.gz",
+            ]
         )
 
     # Create minimal config
@@ -143,4 +162,3 @@ def test_end_to_end_update_tsv(tmp_path: Path):
     # Verify censor count (last 2 frames should be censored)
     censored_count = sum(int(row["censor"]) for row in rows)
     assert censored_count == 2
-

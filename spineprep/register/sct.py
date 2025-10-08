@@ -1,4 +1,5 @@
 """Minimal SCT registration wrapper with conservative defaults."""
+
 from __future__ import annotations
 
 import subprocess
@@ -152,7 +153,9 @@ def compute_ssim(img1: np.ndarray, img2: np.ndarray) -> float:
             slice2 = img2[:, :, z]
             # Skip empty slices
             if slice1.max() > 0 and slice2.max() > 0:
-                ssim = structural_similarity(slice1, slice2, data_range=slice1.max() - slice1.min())
+                ssim = structural_similarity(
+                    slice1, slice2, data_range=slice1.max() - slice1.min()
+                )
                 ssim_vals.append(ssim)
         return float(np.mean(ssim_vals)) if ssim_vals else 0.0
 
@@ -176,5 +179,6 @@ def compute_psnr(img1: np.ndarray, img2: np.ndarray) -> float:
     if img1.shape != img2.shape:
         raise ValueError(f"Image shapes must match: {img1.shape} vs {img2.shape}")
 
-    return float(peak_signal_noise_ratio(img1, img2, data_range=img1.max() - img1.min()))
-
+    return float(
+        peak_signal_noise_ratio(img1, img2, data_range=img1.max() - img1.min())
+    )

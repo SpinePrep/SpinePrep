@@ -1,4 +1,5 @@
 """Environment diagnostics for SpinePrep."""
+
 from __future__ import annotations
 
 import json
@@ -58,7 +59,11 @@ def detect_sct() -> dict[str, Any]:
                 )
                 output = (proc.stdout or proc.stderr).strip()
                 version = output.splitlines()[0].strip() if output else "unknown"
-                return {"found": True, "version": version, "path": str(sct_bin_candidate)}
+                return {
+                    "found": True,
+                    "version": version,
+                    "path": str(sct_bin_candidate),
+                }
             except Exception:
                 return {"found": False, "version": "", "path": str(sct_bin_candidate)}
 
@@ -96,11 +101,13 @@ def detect_pam50(explicit: str | None) -> dict[str, Any]:
         candidates.append(Path(sct_dir) / "data" / "PAM50")
 
     # Common install locations
-    candidates.extend([
-        Path.home() / ".sct" / "data" / "PAM50",
-        Path("/opt/spinalcordtoolbox/data/PAM50"),
-        Path("/usr/local/sct/data/PAM50"),
-    ])
+    candidates.extend(
+        [
+            Path.home() / ".sct" / "data" / "PAM50",
+            Path("/opt/spinalcordtoolbox/data/PAM50"),
+            Path("/usr/local/sct/data/PAM50"),
+        ]
+    )
 
     for candidate in candidates:
         if candidate and candidate.is_dir():
@@ -185,7 +192,9 @@ def generate_report(
     # Check SCT (hard requirement)
     if not sct_info["found"]:
         status = "fail"
-        notes.append("HARD FAIL: SCT not found. Install from https://github.com/spinalcordtoolbox/spinalcordtoolbox")
+        notes.append(
+            "HARD FAIL: SCT not found. Install from https://github.com/spinalcordtoolbox/spinalcordtoolbox"
+        )
 
     # Check PAM50 (hard requirement)
     if not pam50_info["found"]:
@@ -193,7 +202,9 @@ def generate_report(
         notes.append("HARD FAIL: PAM50 directory not found.")
     elif not pam50_info.get("files_ok", False):
         status = "fail"
-        notes.append(f"HARD FAIL: PAM50 directory exists but required files are missing ({', '.join(REQ_PAM50)}).")
+        notes.append(
+            f"HARD FAIL: PAM50 directory exists but required files are missing ({', '.join(REQ_PAM50)})."
+        )
 
     # Check Python deps (soft requirement)
     missing_deps = [pkg for pkg, ver in python_deps.items() if not ver]
@@ -287,7 +298,9 @@ def print_doctor_table(report: dict[str, Any]) -> None:
     print("=" * 70)
     print(f"  {BOLD}SpinePrep Doctor - Environment Diagnostics{RESET}")
     print("=" * 70)
-    print(f"  Overall Status: [{status_color}{status_symbol}{RESET}] {status_color}{status.upper()}{RESET}")
+    print(
+        f"  Overall Status: [{status_color}{status_symbol}{RESET}] {status_color}{status.upper()}{RESET}"
+    )
     print("=" * 70)
     print()
 

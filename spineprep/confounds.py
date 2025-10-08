@@ -93,9 +93,7 @@ def build_fallback_masks(
     wm_mask[x_start:x_end, y_start:y_end, :] = wm_crop
     csf_mask[x_start:x_end, y_start:y_end, :] = csf_crop
 
-    notes = [
-        f"Fallback masks: WM={wm_mask.sum()} voxels, CSF={csf_mask.sum()} voxels"
-    ]
+    notes = [f"Fallback masks: WM={wm_mask.sum()} voxels, CSF={csf_mask.sum()} voxels"]
 
     # Validate minimum size
     if wm_mask.sum() < 50:
@@ -251,9 +249,9 @@ def process(manifest_csv: Path, out_dir: Path, cfg: Dict) -> Dict[str, int]:
             censor = compute_censor(fd, dvars, fd_thresh, dvars_thresh)
 
             # Update TSV with new columns
-            new_cols = existing_cols + [
-                f"acompcor{i+1:02d}" for i in range(6)
-            ] + ["censor"]
+            new_cols = (
+                existing_cols + [f"acompcor{i + 1:02d}" for i in range(6)] + ["censor"]
+            )
 
             with confounds_tsv.open("w", newline="") as tsv_f:
                 writer = csv.DictWriter(tsv_f, fieldnames=new_cols, delimiter="\t")
@@ -261,7 +259,7 @@ def process(manifest_csv: Path, out_dir: Path, cfg: Dict) -> Dict[str, int]:
                 for i, row_dict in enumerate(existing_rows):
                     # Add aCompCor columns
                     for j in range(6):
-                        row_dict[f"acompcor{j+1:02d}"] = acompcor[i, j]
+                        row_dict[f"acompcor{j + 1:02d}"] = acompcor[i, j]
                     # Add censor
                     row_dict["censor"] = censor[i]
                     writer.writerow(row_dict)
@@ -279,4 +277,3 @@ def process(manifest_csv: Path, out_dir: Path, cfg: Dict) -> Dict[str, int]:
         "skipped": runs_skipped,
         "censored": total_censored,
     }
-

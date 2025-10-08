@@ -112,4 +112,3 @@ def test_io_outputs(tmp_path: Path):
     # Check plots exist
     assert outputs["fd_png"].exists()
     assert outputs["dvars_png"].exists()
-

@@ -1,8 +1,8 @@
 # ADR-003: Distribution and Containerization Strategy
 
-**Status:** Accepted  
-**Date:** 2025-10-08  
-**Decision Makers:** CEO  
+**Status:** Accepted
+**Date:** 2025-10-08
+**Decision Makers:** CEO
 
 ## Context
 
@@ -97,4 +97,3 @@ SpinePrep v0.1.0 (DOI: 10.5281/zenodo.xxxxxxx)
 - v0.2.0: Multi-arch builds (amd64, arm64)
 - v0.3.0: Singularity/Apptainer images for HPC
 - v1.0.0: Docker Hub mirror, Zenodo DOI
-
