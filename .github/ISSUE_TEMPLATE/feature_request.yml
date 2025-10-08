@@ -1,0 +1,76 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for SpinePrep
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please describe your idea below.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Use Case
+      description: What problem does this feature solve?
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this feature to work?
+      placeholder: "Add a new command `spineprep analyze` that..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Other approaches you've thought about
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or References
+      description: Links to similar features in other tools, papers, etc.
+      placeholder: |
+        - fMRIPrep does X: https://...
+        - Paper describing method: https://...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Nice to have
+        - Would be helpful
+        - Critical for my work
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Contribution
+      description: Would you be willing to help implement this?
+      options:
+        - "Yes, I can submit a PR"
+        - "Yes, I can help test"
+        - "No, but I can provide domain expertise"
+        - "No, just suggesting"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I have checked existing issues for similar requests
+          required: true
+        - label: This aligns with SpinePrep's scope (spinal cord fMRI preprocessing)
+          required: true
+
