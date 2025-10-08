@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["spineprep","timestamp","status","platform","deps","notes"],
+  "properties": {
+    "spineprep": {"type":"object","required":["version"],"properties":{"version":{"type":"string"}}},
+    "timestamp": {"type":"string"},
+    "status": {"type":"string","enum":["pass","warn","fail"]},
+    "platform": {"type":"object","required":["os","python","cpu_count"],"properties":{
+      "os":{"type":"string"},"kernel":{"type":["string","null"]},"python":{"type":"string"},
+      "cpu_count":{"type":"integer"},"ram_gb":{"type":["number","null"]}
+    }},
+    "deps": {"type":"object","required":["sct","pam50","python"],"properties":{
+      "sct":{"type":"object","required":["found"],"properties":{
+        "found":{"type":"boolean"},"version":{"type":["string","null"]},"path":{"type":["string","null"]}
+      }},
+      "pam50":{"type":"object","required":["found","files_ok"],"properties":{
+        "found":{"type":"boolean"},"path":{"type":["string","null"]},"files_ok":{"type":["boolean","null"]}
+      }},
+      "python":{"type":"object"}
+    }},
+    "notes": {"type":"array","items":{"type":"string"}}
+  }
+}

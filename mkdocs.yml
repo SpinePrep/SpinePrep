@@ -122,6 +122,7 @@ nav:
   - Getting Started: getting-started.md
   - User Guide:
     - user-guide/usage.md
+    - user-guide/doctor.md
     - user-guide/outputs.md
     - user-guide/qc.md
     - user-guide/registration.md
