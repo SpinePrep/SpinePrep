@@ -1,6 +1,6 @@
 site_name: SpinePrep
 site_description: Spinal cord preprocessing pipeline for BIDS datasets
-site_url: https://spineprep.github.io/spineprep/
+site_url: https://spineprep.github.io/
 repo_url: https://github.com/spineprep/spineprep
 repo_name: spineprep/spineprep
 edit_uri: edit/main/docs/

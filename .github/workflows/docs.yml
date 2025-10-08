@@ -90,20 +90,19 @@ jobs:
           path: docs/_assets/screenshots/*.png
 
   deploy:
-    name: Deploy GitHub Pages
+    name: Deploy to spineprep.github.io
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: docs
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/checkout@v4
+      - name: Deploy to spineprep.github.io
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: 'site'
-      - name: Deploy to Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          external_repository: spineprep/spineprep.github.io
+          publish_branch: main
+          publish_dir: ./site
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_message: "Deploy site from SpinePrep@${{ github.sha }}"

@@ -10,8 +10,8 @@
 
 <!-- Badges -->
 
-[![Docs](https://img.shields.io/badge/docs-material-blue)](index.md)
-[![CI](https://github.com/spineprep/spineprep/actions/workflows/docs.yml/badge.svg)](https://github.com/spineprep/spineprep/actions/workflows/docs.yml)
+[![Docs Live](https://img.shields.io/badge/docs-live-blue)](https://spineprep.github.io/)
+[![Docs CI](https://github.com/spineprep/SpinePrep/actions/workflows/docs.yml/badge.svg)](https://github.com/spineprep/SpinePrep/actions/workflows/docs.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](../LICENSE)
 
 ## Why SpinePrep?

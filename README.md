@@ -1,5 +1,8 @@
 # SpinePrep
 
+[![Docs Live](https://img.shields.io/badge/docs-live-blue)](https://spineprep.github.io/)
+[![Docs CI](https://github.com/spineprep/SpinePrep/actions/workflows/docs.yml/badge.svg)](https://github.com/spineprep/SpinePrep/actions/workflows/docs.yml)
+
 SpinePrep is a BIDS-first spinal cord fMRI preprocessing pipeline built around the PAM50 template, optional modules such as MP-PCA denoising and spatial smoothing, FSL FEAT-based modeling for now with a Python GLM planned, Snakemake orchestration, and profiles for both local execution and SLURM clusters.
 
 ## Quick Start

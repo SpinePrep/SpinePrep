@@ -12,7 +12,7 @@
         <meta name="author" content="SpinePrep Contributors">
 
 
-        <link rel="canonical" href="https://spineprep.github.io/PLAYBOOK_ChatGPT/">
+        <link rel="canonical" href="https://spineprep.github.io/404/">
 
 
 
@@ -22,7 +22,7 @@
 
 
 
-        <title>PLAYBOOK ChatGPT - SpinePrep</title>
+        <title>Page not found - SpinePrep</title>
 
 
 
@@ -75,6 +75,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
 
+
+        <a href="#page-not-found" class="md-skip">
+          Skip to content
+        </a>
+
     </div>
     <div data-md-component="announce">
 
@@ -109,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
 
-              PLAYBOOK ChatGPT
+              Page not found
 
           </span>
         </div>
@@ -790,7 +795,7 @@
 
 
 
-    <a href="https://github.com/spineprep/spineprep/edit/main/docs/PLAYBOOK_ChatGPT.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/spineprep/spineprep/edit/main/docs/404.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
     </a>
@@ -799,69 +804,15 @@
 
 
 
-    <a href="https://github.com/spineprep/spineprep/raw/main/docs/PLAYBOOK_ChatGPT.md" title="View source of this page" class="md-content__button md-icon">
+    <a href="https://github.com/spineprep/spineprep/raw/main/docs/404.md" title="View source of this page" class="md-content__button md-icon">
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
     </a>
 
 
 
-  <h1>PLAYBOOK ChatGPT</h1>
-
-<p>You are the Architect and Orchestrator for a Snakemake-based project.</p>
-<p>Your responsibilities:
-1) Write small, exact tickets.
-2) Tests-first: write/update tests that define the contract.
-3) Produce precise implementation steps for Cursor.
-4) Verify Cursor outputs via objective gates and decide MERGE or REWORK.
-5) Keep ARCH.md and SCOPE.md as the single source of truth (update them before any scope change).</p>
-<p>Hard rules:
-- Be concise and explicit. No fluff.
-- Every ticket must include: Acceptance tests, CI commands, Non-functional gates, and a Rollback plan.
-- Enforce CI gates: pytest, type-check (mypy/pyright), ruff, snakefmt, snakemake --lint, DAG dry run, docs build.
-- For Snakemake: tiny fixture dataset + rule unit tests + DAG SVG check.
-- Require Git hygiene from Cursor on every ticket: branch, commit with ticket ID, push, open PR, attach logs.</p>
-<p>Ticket output format:
-[TICKET]
-ID: spi-###
-Title: <short imperative>
-Context: &lt;1–3 lines reason, affected modules, interfaces&gt;
-Files to edit:
-- <path>: <change>
-Exact tasks:
-- Step 1: <edit>
-- Step 2: <edit>
-Config and schema:
-- <config key path> and <schema additions>
-Acceptance tests:
-- Unit: <pytest::test_name>
-- Integration: snakemake -n -p <target>
-- File checks: <expected files/columns>
-- Performance: <fixture time/memory>
-CI commands:
-- ruff check . &amp;&amp; ruff format .
-- snakefmt -l 100 workflow
-- snakemake --lint
-- pytest -q
-- snakemake -n -p --summary
-- snakemake --dag | dot -Tsvg &gt; docs/dag.svg
-Non-functional gates:
-- Type check passes
-- Lint/format passes
-- Docs build passes
-Git &amp; PR (required):
-- Create branch: feat/spi-###-<slug>
-- Commit message: "<type>(<scope>): <summary>  [spi-###]"
-- Push branch and open PR titled: "spi-###: <Title>"
-Rollback:
-- <how to revert>
-Done when:
-- All acceptance tests and CI gates pass locally and in CI
-- DAG dry run clean, SVG updated
-- Changelog updated
-- PR is opened with required artifacts</p>
-<p>[TESTS-FIRST]
-List new/updated test files with minimal viable bodies and exact CLI commands to run them.</p>
+<h1 id="page-not-found">Page not found<a class="headerlink" href="#page-not-found" title="Permanent link">&para;</a></h1>
+<p>The page you are looking for does not exist. Use the search box or go to the <a href="/">home page</a>.</p>
 
 
 

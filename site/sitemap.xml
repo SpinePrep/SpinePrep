@@ -1,59 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://spineprep.github.io/spineprep/</loc>
+         <loc>https://spineprep.github.io/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/CHANGELOG/</loc>
+         <loc>https://spineprep.github.io/404/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/PLAYBOOK_ChatGPT/</loc>
+         <loc>https://spineprep.github.io/CHANGELOG/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/PLAYBOOK_Cursor/</loc>
+         <loc>https://spineprep.github.io/PLAYBOOK_ChatGPT/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/contributing/</loc>
+         <loc>https://spineprep.github.io/PLAYBOOK_Cursor/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/getting-started/</loc>
+         <loc>https://spineprep.github.io/contributing/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/how-tos/grouped-motion/</loc>
+         <loc>https://spineprep.github.io/getting-started/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/how-tos/physio-hooks/</loc>
+         <loc>https://spineprep.github.io/how-tos/grouped-motion/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/reference/api/</loc>
+         <loc>https://spineprep.github.io/how-tos/physio-hooks/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/reference/config/</loc>
+         <loc>https://spineprep.github.io/reference/api/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/user-guide/outputs/</loc>
+         <loc>https://spineprep.github.io/reference/config/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/user-guide/qc/</loc>
+         <loc>https://spineprep.github.io/user-guide/outputs/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/user-guide/registration/</loc>
+         <loc>https://spineprep.github.io/user-guide/qc/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
     <url>
-         <loc>https://spineprep.github.io/spineprep/user-guide/usage/</loc>
+         <loc>https://spineprep.github.io/user-guide/registration/</loc>
+         <lastmod>2025-10-08</lastmod>
+    </url>
+    <url>
+         <loc>https://spineprep.github.io/user-guide/usage/</loc>
          <lastmod>2025-10-08</lastmod>
     </url>
 </urlset>
