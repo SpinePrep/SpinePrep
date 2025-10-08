@@ -1,78 +1,94 @@
 # Registration
 
-SpinePrep uses spinal cord-specific registration methods to align data to standard space. This guide explains the registration pipeline, methods, and quality assessment.
+SpinePrep uses the Spinal Cord Toolbox (SCT) for minimal, conservative registration to the PAM50 template.
 
-## Registration Pipeline
+## Overview
 
-SpinePrep follows a multi-step registration process:
+The MVP registration pipeline uses `sct_register_multimodal` with **safe defaults** (rigid + affine only, no deformable registration) to:
 
-1. **Spinal cord segmentation**: Identify spinal cord boundaries
-2. **Vertebral level detection**: Identify vertebral levels
-3. **Template registration**: Align to standard space (PAM50)
-4. **Quality assessment**: Evaluate registration quality
+1. Create an EPI reference image (median of first 20 volumes)
+2. Register EPI reference → PAM50 T2 template
+3. Output warps and resampled images
+4. Log SCT version and command for provenance
 
-## Registration Methods
+## What vs. Out-of-Scope
 
-### SCT-Guided Registration
+**Included:**
+- Rigid + affine registration to PAM50
+- Warp field outputs (`*_from-EPI_to-PAM50_warp.nii.gz`)
+- Resampled reference in PAM50 space (`*_space-PAM50_desc-ref.nii.gz`)
+- Header consistency (qform/sform preserved)
+- Quality thresholds: SSIM ≥ 0.90, PSNR ≥ 25 dB
 
-SpinePrep primarily uses the Spinal Cord Toolbox (SCT) for registration:
+**Not Included (Future):**
+- Deformable/nonlinear registration
+- Multi-stage strategies
+- Fieldmap-based distortion correction
+- Advanced QC metrics (Dice, Hausdorff distance)
+
+## Inputs
+
+- **EPI reference**: Mean or median fMRI volume
+- **PAM50 T2 template**: From SCT installation (`$SCT_DIR/data/PAM50/PAM50_t2.nii.gz`)
+
+## Outputs
+
+- **Warp field**: `sub-XX/.../xfm/from-epi_to-pam50_warp.nii.gz`
+- **Resampled EPI**: `sub-XX/.../func/sub-XX_..._space-PAM50_desc-ref_bold.nii.gz`
+- **Provenance**: `.prov.json` with SCT version, command, timestamp
+- **Log**: Command output, return code
+
+## Configuration
+
+Enable registration in your config:
+
+```yaml
+registration:
+  enable: true
+  template: PAM50        # Only PAM50 supported in MVP
+  guidance: SCT          # Only SCT supported in MVP
+```
+
+## SCT Command
+
+SpinePrep builds and runs:
 
 ```bash
-# Spinal cord segmentation
-sct_deepseg_sc -i T2w.nii.gz -c t2
-
-# Vertebral level detection
-sct_label_vertebrae -i T2w.nii.gz -s cord_seg.nii.gz
-
-# Template registration
-sct_register_to_template -i T2w.nii.gz -s cord_seg.nii.gz -l labels.nii.gz
+sct_register_multimodal \
+  -i epi_ref.nii.gz \
+  -d PAM50_t2.nii.gz \
+  -owarp warp.nii.gz \
+  -o epi_in_pam50.nii.gz \
+  -param step=1,type=seg,algo=rigid:step=2,type=seg,algo=affine
 ```
 
-### Registration Steps
+**Parameters:**
+- `step=1`: Rigid alignment (6 DOF)
+- `step=2`: Affine alignment (12 DOF)
+- No `step=3` (deformable) in MVP for stability
 
-1. **Preprocessing**:
-   - Bias field correction
-   - Intensity normalization
-   - Cropping to spinal cord region
+## Quality Assessment
 
-2. **Segmentation**:
-   - Spinal cord segmentation using deep learning
-   - Vertebral level labeling
-   - Quality control of segmentation
+SpinePrep validates registration quality:
 
-3. **Registration**:
-   - Affine registration to template
-   - Non-linear registration (if specified)
-   - Quality assessment
+- **SSIM (Structural Similarity)**: ≥ 0.90 expected
+- **PSNR (Peak Signal-to-Noise Ratio)**: ≥ 25 dB expected
+- **Header checks**: qform and sform codes preserved
 
-## Template Spaces
+If quality checks fail, a warning is logged in QC but processing continues (soft-fail with guidance).
 
-### PAM50 Template
+## Caveats
 
-The PAM50 template is the standard space for spinal cord imaging:
+- **EPI distortion**: Not corrected in MVP (fieldmaps/SDC out-of-scope)
+- **Susceptibility**: Spinal cord fMRI often has strong susceptibility; manual QC recommended
+- **Conservative defaults**: May underfit in some cases; future tickets will add tuning
+- **PAM50 assumption**: Template must be available via SCT installation
 
-- **Resolution**: 0.5 × 0.5 × 0.5 mm
-- **Coverage**: C1-C7 vertebral levels
-- **Orientation**: RPI (Right-Posterior-Inferior)
+## Troubleshooting
 
-### Template Files
-
-```
-templates/
-├── PAM50/
-│   ├── PAM50_t2.nii.gz          # T2-weighted template
-│   ├── PAM50_cord.nii.gz         # Spinal cord mask
-│   ├── PAM50_levels.nii.gz       # Vertebral level labels
-│   └── PAM50_cord_labeled.nii.gz # Labeled spinal cord
-```
-
-## Registration Quality
-
-### Quality Metrics
-
-SpinePrep assesses registration quality using:
-
-- **Dice coefficient**: Overlap between registered and template masks
+- **"PAM50 not found"**: Run `spineprep doctor` to check PAM50 path
+- **"sct_register_multimodal not found"**: Ensure SCT is in PATH
+- **Poor alignment**: Check EPI reference quality; consider manual landmarks (future)
 - **Hausdorff distance**: Maximum distance between boundaries
 - **Jacobian determinant**: Local volume changes
 - **Visual inspection**: Overlay of registered and template images
