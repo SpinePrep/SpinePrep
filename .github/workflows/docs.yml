@@ -20,8 +20,6 @@ jobs:
   docs:
     name: Build and Validate Docs
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
 
     steps:
       - uses: actions/checkout@v4
