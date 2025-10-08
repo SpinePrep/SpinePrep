@@ -1,17 +1,25 @@
 cff-version: 1.2.0
-title: "SpinePrep: a BIDS-first spinal cord fMRI preprocessing pipeline"
-type: software
+message: "If you use SpinePrep in your research, please cite it as below."
+title: "SpinePrep: Spinal Cord fMRI Preprocessing Pipeline"
+version: 0.1.0
+date-released: 2025-10-08
 authors:
   - family-names: Sharifi
     given-names: Kiomars
-repository-code: https://github.com/kiomarssharifi/SpinePrep
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/SpinePrep/SpinePrep"
+url: "https://spineprep.github.io"
 license: Apache-2.0
-version: 0.2.0
-date-released: 2025-10-07
-preferred-citation:
-  type: article
-  title: "SpinePrep: a BIDS-first spinal cord fMRI preprocessing pipeline"
-  doi: 10.5281/zenodo.xxxxxxx
-  authors:
-    - family-names: Sharifi
-      given-names: Kiomars
+keywords:
+  - spinal cord
+  - fMRI
+  - preprocessing
+  - neuroimaging
+  - BIDS
+  - PAM50
+abstract: |
+  SpinePrep is a BIDS-first spinal cord fMRI preprocessing pipeline featuring
+  motion correction, confounds computation, optional MP-PCA denoising, and
+  registration to the PAM50 template via the Spinal Cord Toolbox (SCT).
+  It produces BIDS-Derivatives compliant outputs with comprehensive provenance
+  tracking and quality control reports.
