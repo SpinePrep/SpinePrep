@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BIDS-Derivatives sidecar schema for SpinePrep",
+  "description": "Common schema for derivative file JSON sidecars",
+  "type": "object",
+  "required": ["GeneratedBy", "Sources"],
+  "properties": {
+    "GeneratedBy": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["Name", "Version"],
+        "properties": {
+          "Name": {"type": "string"},
+          "Version": {"type": "string"},
+          "Description": {"type": "string"},
+          "CodeURL": {"type": "string", "format": "uri"}
+        }
+      }
+    },
+    "Sources": {
+      "type": "array",
+      "description": "List of source BIDS file paths",
+      "items": {"type": "string"}
+    },
+    "IntendedFor": {
+      "type": "array",
+      "description": "List of files this derivative is intended for",
+      "items": {"type": "string"}
+    },
+    "Parameters": {
+      "type": "object",
+      "description": "Processing parameters used"
+    },
+    "confounds": {
+      "type": "object",
+      "description": "Confounds column definitions"
+    }
+  }
+}
+
