@@ -152,9 +152,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install mike "mkdocs>=1.5,<2.0" "mkdocs-material>=9.5,<10.0"
       - name: Configure git identity
+        env:
+          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
         run: |
-          git config user.email "${{ secrets.GIT_USER_EMAIL || '41898282+github-actions[bot]@users.noreply.github.com' }}"
-          git config user.name  "${{ secrets.GIT_USER_NAME  || 'github-actions[bot]' }}"
+          git config user.email "${GIT_USER_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
+          git config user.name  "${GIT_USER_NAME:-github-actions[bot]}"
       - name: Set VERSION env
         run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
       - name: Add Pages repo remote
