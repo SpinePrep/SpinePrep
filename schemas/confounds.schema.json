@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SpinePrep confounds timeseries schema",
+  "description": "Schema for confounds TSV columns and JSON sidecar",
+  "type": "object",
+  "required": ["confounds", "parameters", "provenance"],
+  "properties": {
+    "confounds": {
+      "type": "object",
+      "description": "Column definitions for confounds TSV",
+      "properties": {
+        "framewise_displacement": {
+          "type": "object",
+          "required": ["description", "units"],
+          "properties": {
+            "description": {"type": "string"},
+            "units": {"type": "string"},
+            "method": {"type": "string"}
+          }
+        },
+        "dvars": {
+          "type": "object",
+          "required": ["description", "units"],
+          "properties": {
+            "description": {"type": "string"},
+            "units": {"type": "string"},
+            "method": {"type": "string"}
+          }
+        },
+        "frame_censor": {
+          "type": "object",
+          "required": ["description", "values"],
+          "properties": {
+            "description": {"type": "string"},
+            "values": {"type": "object"}
+          }
+        }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Processing parameters used",
+      "properties": {
+        "tr_s": {"type": "number"},
+        "temporal_crop": {"type": "object"},
+        "censor": {"type": "object"},
+        "acompcor": {"type": "object"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Processing provenance",
+      "properties": {
+        "timestamp": {"type": "string"},
+        "inputs": {"type": "object"},
+        "tools": {"type": "object"}
+      }
+    }
+  }
+}
+
