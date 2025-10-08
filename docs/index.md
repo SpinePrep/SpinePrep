@@ -92,21 +92,17 @@ See recent changes and release notes in the [Changelog](CHANGELOG.md).
 
 ## Features
 
-### :material-check-circle:{ .green } **Spinal Cord Optimized**
+- :material-check-circle:{ .success } **Spinal cord–optimized**  
+  Preprocessing tailored to cord anatomy/physiology (cord-aware motion correction, SCT-guided registration).
 
-Preprocessing steps specifically designed for spinal cord anatomy and physiology, including spinal cord-specific motion correction and registration.
+- :material-check-circle:{ .success } **BIDS compliant**  
+  Full BIDS-Derivatives outputs for seamless downstream use.
 
-### :material-check-circle:{ .green } **BIDS Compliant**
+- :material-check-circle:{ .success } **Quality control**  
+  FD, DVARS, aCompCor, censor masks, and rich HTML QC with overlays.
 
-Full support for the Brain Imaging Data Structure standard, ensuring compatibility with the broader neuroimaging ecosystem.
-
-### :material-check-circle:{ .green } **Quality Control**
-
-Comprehensive QC metrics including framewise displacement (FD), DVARS, aCompCor, and censor masks with detailed reporting.
-
-### :material-check-circle:{ .green } **Reproducible**
-
-Version-controlled processing with full provenance tracking, containerized execution, and transparent parameter reporting.
+- :material-check-circle:{ .success } **Reproducible**  
+  Version-locked, provenance-rich runs; containerized and parameter-transparent.
 
 ## Getting Help
 

@@ -253,3 +253,21 @@
 [data-md-color-scheme="slate"] .grid.cards .card p {
   color: #a0aec0;
 }
+
+/* Ensure code blocks and inline code are readable in dark mode */
+[data-md-color-scheme="slate"] .md-typeset code,
+[data-md-color-scheme="slate"] .md-typeset pre code {
+  background-color: var(--md-code-bg-color) !important;
+  color: var(--md-code-fg-color) !important;
+}
+[data-md-color-scheme="slate"] .md-typeset pre {
+  background-color: var(--md-code-bg-color) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Neutralize any forced white backgrounds for code */
+.md-typeset code,
+.md-typeset pre code {
+  background-color: var(--md-code-bg-color);
+  color: var(--md-code-fg-color);
+}
