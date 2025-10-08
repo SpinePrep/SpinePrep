@@ -89,3 +89,4 @@ To disable registration, set `registration.enable: false` in your config or remo
 Code is provided under the [Apache License 2.0](./LICENSE). Documentation and media assets, when added, may be released under the Creative Commons Attribution 4.0 International (CC BY 4.0) license.
 # Trigger docs workflow
 # Trigger fresh deploy
+# Trigger deploy with public target repo
