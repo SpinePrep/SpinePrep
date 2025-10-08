@@ -8,6 +8,12 @@
   </p>
 </div>
 
+<!-- Badges -->
+
+[![Docs](https://img.shields.io/badge/docs-material-blue)](index.md)
+[![CI](https://github.com/spineprep/spineprep/actions/workflows/docs.yml/badge.svg)](https://github.com/spineprep/spineprep/actions/workflows/docs.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green)](../LICENSE)
+
 ## Why SpinePrep?
 
 SpinePrep provides a comprehensive preprocessing pipeline specifically designed for spinal cord neuroimaging data. Unlike generic brain preprocessing tools, SpinePrep understands the unique challenges of spinal cord imaging:
@@ -74,6 +80,10 @@ See what SpinePrep produces:
     [:octicons-arrow-right-24: View Outputs](user-guide/outputs.md)
 
 </div>
+
+## What's new
+
+See recent changes and release notes in the [Changelog](CHANGELOG.md).
 
 ## Features
 

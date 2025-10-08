@@ -12,7 +12,7 @@
         <meta name="author" content="SpinePrep Contributors">
 
 
-        <link rel="canonical" href="https://spineprep.github.io/spineprep/PLAYBOOK_Cursor/">
+        <link rel="canonical" href="https://spineprep.github.io/spineprep/CHANGELOG/">
 
 
 
@@ -22,7 +22,7 @@
 
 
 
-        <title>PLAYBOOK Cursor - SpinePrep</title>
+        <title>Changelog - SpinePrep</title>
 
 
 
@@ -75,6 +75,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
 
+
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+
     </div>
     <div data-md-component="announce">
 
@@ -109,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
 
-              PLAYBOOK Cursor
+              Changelog
 
           </span>
         </div>
@@ -790,7 +795,7 @@
 
 
 
-    <a href="https://github.com/spineprep/spineprep/edit/main/docs/PLAYBOOK_Cursor.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/spineprep/spineprep/edit/main/docs/CHANGELOG.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
     </a>
@@ -799,52 +804,15 @@
 
 
 
-    <a href="https://github.com/spineprep/spineprep/raw/main/docs/PLAYBOOK_Cursor.md" title="View source of this page" class="md-content__button md-icon">
+    <a href="https://github.com/spineprep/spineprep/raw/main/docs/CHANGELOG.md" title="View source of this page" class="md-content__button md-icon">
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
     </a>
 
 
 
-  <h1>PLAYBOOK Cursor</h1>
-
-<p>You are the Senior Developer working inside the repository. Implement tickets exactly. Do not change scope. Tests-first. Always finish with branch/commit/push/PR.</p>
-<p>Workflow for every ticket:
-1) Read the [TICKET] and [TESTS-FIRST].
-2) Implement tests first or update them as specified, then code to make tests green.
-3) Run all commands under CI commands and Acceptance tests on the fixture.
-4) Git and PR:
-   - If you can run shell git: create a branch, commit with ticket ID, push, open PR.
-   - If git push or PR creation is not possible in your environment, output the exact commands for the human to run.</p>
-<p>Branch, commit, PR rules:
-- Branch: feat/spi-###-<kebab-slug>
-- Commit message (Conventional Commits + ticket tag):
-  <type>(<scope>): <imperative summary>  [spi-###]
-  e.g., feat(confounds): add motion regressors  [spi-042]
-- Squash small fixups into the feature branch before PR.
-- PR title: "spi-###: <Title>"
-- PR body: paste Acceptance tests status, key logs, and DAG SVG note.</p>
-<p>Return this exact structure:
-[DIFF]
-<single consolidated git diff with context></p>
-<p>[TEST LOG]
-<pytest output summary></p>
-<p>[SNAKEMAKE LINT]
-<snakemake --lint output></p>
-<p>[DAG DRY RUN]
-<snakemake -n -p \<primary target> output>
-<git status for docs/dag.svg after regeneration></p>
-<p>[PERF]
-<measured times on fixture if requested></p>
-<p>[GIT &amp; PR]
-- Branch: <name or command shown>
-- Commit: <final commit subject line>
-- Push: <result or exact commands to run>
-- PR: <URL if created, else command to create (gh)></p>
-<p>[NOTES]
-- Risks/debt or follow-up tickets (1–3 bullets max).</p>
-<p>If a step is ambiguous, choose the smallest correct change and note it under [NOTES].
-If you cannot execute shell/git, print the exact commands for the human to copy/paste.</p>
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>Coming soon.</p>
 
 
 

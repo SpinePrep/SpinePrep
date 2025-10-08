@@ -18,66 +18,92 @@ on:
       - 'schemas/**'
       - 'workflow/lib/**'
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  docs:
+    name: Build and Validate Docs
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install mkdocs-material
-        pip install mkdocs-minify
-        pip install mkdocs-redirects
-        pip install mkdocs-table-reader
-        pip install mkdocs-git-committers
-        pip install mkdocs-rss-plugin
-        pip install mkdocs-section-index
-        pip install pymdown-extensions
-        pip install ruff
-        pip install codespell
-        pip install lychee
-        pip install snakefmt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs-material mkdocs-sitemap-plugin
+          pip install ruff codespell snakefmt
+          pip install lychee
 
-    - name: Generate configuration reference
-      run: |
-        python scripts/gen_docs_config_ref.py --check
+      - name: Lint (ruff)
+        run: |
+          ruff check . && ruff format --check .
 
-    - name: Generate API reference
-      run: |
-        python scripts/gen_docs_api_ref.py --check
+      - name: Lint Snakefiles
+        run: |
+          snakefmt -l 100 workflow --check
 
-    - name: Lint Python code
-      run: |
-        ruff check . && ruff format --check .
+      - name: Spell check
+        run: |
+          codespell docs/ mkdocs.yml
 
-    - name: Lint Snakefile
-      run: |
-        snakefmt -l 100 workflow --check
+      - name: Generate references --check
+        run: |
+          python scripts/gen_docs_config_ref.py --check
+          python scripts/gen_docs_api_ref.py --check
 
-    - name: Spell check
-      run: |
-        codespell --ignore-words-list="te,hist,nd" docs/
+      - name: Link check
+        run: |
+          lychee "docs/**/*.md" --no-progress --accept 200,206,429 --exclude-mail --retry-wait 2 --max-retries 2
 
-    - name: Check links
-      run: |
-        lychee --no-progress --exclude-mail --accept 200,206,429 "docs/**/*.md"
+      - name: Build site
+        run: |
+          mkdocs build --strict
 
-    - name: Build documentation
-      run: |
-        mkdocs build --strict
+      - name: Upload site as artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site
 
-    - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./site
-        cname: spineprep.readthedocs.io
+      - name: Upload screenshots
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: docs/_assets/screenshots/*.png
+
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: docs
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'site'
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

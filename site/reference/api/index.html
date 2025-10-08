@@ -12,7 +12,7 @@
         <meta name="author" content="SpinePrep Contributors">
 
 
-        <link rel="canonical" href="https://spineprep.readthedocs.io/reference/api/">
+        <link rel="canonical" href="https://spineprep.github.io/spineprep/reference/api/">
 
 
         <link rel="prev" href="../config/">
@@ -56,16 +56,6 @@
 
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
 
-
-
-
-
-
-
-
-<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-XXXXXXXXXX"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-XXXXXXXXXX",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
-
-    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
 
 
 
@@ -825,54 +815,18 @@
       <ul class="md-nav__list">
 
           <li class="md-nav__item">
-  <a href="#read_motion_paramstsv_path" class="md-nav__link">
+  <a href="#acompcor_pcsts-n_components-highpass_hz-tr_s-detrend-standardize" class="md-nav__link">
     <span class="md-ellipsis">
-      read_motion_params(tsv_path)
+      acompcor_pcs(ts, n_components, highpass_hz, tr_s, detrend, standardize)
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#compute_fd_from_paramsparams-tr_s" class="md-nav__link">
+  <a href="#append_acompcordf-pcs_dict" class="md-nav__link">
     <span class="md-ellipsis">
-      compute_fd_from_params(params, tr_s)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#compute_dvarsbold_path-mask_path" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_dvars(bold_path, mask_path)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#assemble_confoundsfd-dvars-extra" class="md-nav__link">
-    <span class="md-ellipsis">
-      assemble_confounds(fd, dvars, extra)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#write_confounds_tsv_jsondf-out_tsv-out_json-meta" class="md-nav__link">
-    <span class="md-ellipsis">
-      write_confounds_tsv_json(df, out_tsv, out_json, meta)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#build_censorfd-dvars-cfg-dict" class="md-nav__link">
-    <span class="md-ellipsis">
-      build_censor(fd, dvars, cfg) -&gt; Dict
+      append_acompcor(df, pcs_dict)
     </span>
   </a>
 
@@ -888,9 +842,36 @@
 </li>
 
           <li class="md-nav__item">
-  <a href="#load_bold_and_apply_cropbold_path-crop_json" class="md-nav__link">
+  <a href="#assemble_confoundsfd-dvars-extra" class="md-nav__link">
     <span class="md-ellipsis">
-      load_bold_and_apply_crop(bold_path, crop_json)
+      assemble_confounds(fd, dvars, extra)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#build_censorfd-dvars-cfg-dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      build_censor(fd, dvars, cfg) -&gt; Dict
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#compute_dvarsbold_path-mask_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_dvars(bold_path, mask_path)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#compute_fd_from_paramsparams-tr_s" class="md-nav__link">
+    <span class="md-ellipsis">
+      compute_fd_from_params(params, tr_s)
     </span>
   </a>
 
@@ -906,18 +887,27 @@
 </li>
 
           <li class="md-nav__item">
-  <a href="#acompcor_pcsts-n_components-highpass_hz-tr_s-detrend-standardize" class="md-nav__link">
+  <a href="#load_bold_and_apply_cropbold_path-crop_json" class="md-nav__link">
     <span class="md-ellipsis">
-      acompcor_pcs(ts, n_components, highpass_hz, tr_s, detrend, standardize)
+      load_bold_and_apply_crop(bold_path, crop_json)
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#append_acompcordf-pcs_dict" class="md-nav__link">
+  <a href="#read_motion_paramstsv_path" class="md-nav__link">
     <span class="md-ellipsis">
-      append_acompcor(df, pcs_dict)
+      read_motion_params(tsv_path)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#write_confounds_tsv_jsondf-out_tsv-out_json-meta" class="md-nav__link">
+    <span class="md-ellipsis">
+      write_confounds_tsv_json(df, out_tsv, out_json, meta)
     </span>
   </a>
 
@@ -954,18 +944,18 @@
       <ul class="md-nav__list">
 
           <li class="md-nav__item">
-  <a href="#detect_cropconfounds_tsv-bold_path-cord_mask-opts" class="md-nav__link">
+  <a href="#crop_sidecar_pathbold_path-deriv_root-str" class="md-nav__link">
     <span class="md-ellipsis">
-      detect_crop(confounds_tsv, bold_path, cord_mask, opts)
+      crop_sidecar_path(bold_path, deriv_root) -&gt; str
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#write_crop_jsonout_path-info" class="md-nav__link">
+  <a href="#detect_cropconfounds_tsv-bold_path-cord_mask-opts" class="md-nav__link">
     <span class="md-ellipsis">
-      write_crop_json(out_path, info)
+      detect_crop(confounds_tsv, bold_path, cord_mask, opts)
     </span>
   </a>
 
@@ -981,9 +971,9 @@
 </li>
 
           <li class="md-nav__item">
-  <a href="#crop_sidecar_pathbold_path-deriv_root-str" class="md-nav__link">
+  <a href="#write_crop_jsonout_path-info" class="md-nav__link">
     <span class="md-ellipsis">
-      crop_sidecar_path(bold_path, deriv_root) -&gt; str
+      write_crop_json(out_path, info)
     </span>
   </a>
 
@@ -1107,54 +1097,18 @@
       <ul class="md-nav__list">
 
           <li class="md-nav__item">
-  <a href="#subjects_from_manifestmanifest_tsv" class="md-nav__link">
+  <a href="#collect_provenanceentries" class="md-nav__link">
     <span class="md-ellipsis">
-      subjects_from_manifest(manifest_tsv)
+      collect_provenance(entries)
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#rows_for_subjectmanifest_tsv-sub" class="md-nav__link">
+  <a href="#collect_registration_filesmanifest_tsv-sub" class="md-nav__link">
     <span class="md-ellipsis">
-      rows_for_subject(manifest_tsv, sub)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#read_confounds_tsvtsv" class="md-nav__link">
-    <span class="md-ellipsis">
-      read_confounds_tsv(tsv)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#compute_fdconf" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_fd(conf)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#read_motion_paramstsv" class="md-nav__link">
-    <span class="md-ellipsis">
-      read_motion_params(tsv)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#compute_fd_from_motion_paramsmotion_params_tsv" class="md-nav__link">
-    <span class="md-ellipsis">
-      compute_fd_from_motion_params(motion_params_tsv)
+      collect_registration_files(manifest_tsv, sub)
     </span>
   </a>
 
@@ -1170,45 +1124,18 @@
 </li>
 
           <li class="md-nav__item">
-  <a href="#plot_seriesout_png-series-title-ylabel-censor" class="md-nav__link">
+  <a href="#compute_fdconf" class="md-nav__link">
     <span class="md-ellipsis">
-      plot_series(out_png, series, title, ylabel, censor)
+      compute_fd(conf)
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#plot_ev_seriesout_png-ev_data-title" class="md-nav__link">
+  <a href="#compute_fd_from_motion_paramsmotion_params_tsv" class="md-nav__link">
     <span class="md-ellipsis">
-      plot_ev_series(out_png, ev_data, title)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#module_decisionscfg" class="md-nav__link">
-    <span class="md-ellipsis">
-      module_decisions(cfg)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#collect_provenanceentries" class="md-nav__link">
-    <span class="md-ellipsis">
-      collect_provenance(entries)
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#render_subject_reportsub-manifest_tsv-cfg-deriv_root-str" class="md-nav__link">
-    <span class="md-ellipsis">
-      render_subject_report(sub, manifest_tsv, cfg, deriv_root) -&gt; str
+      compute_fd_from_motion_params(motion_params_tsv)
     </span>
   </a>
 
@@ -1233,9 +1160,72 @@
 </li>
 
           <li class="md-nav__item">
-  <a href="#collect_registration_filesmanifest_tsv-sub" class="md-nav__link">
+  <a href="#module_decisionscfg" class="md-nav__link">
     <span class="md-ellipsis">
-      collect_registration_files(manifest_tsv, sub)
+      module_decisions(cfg)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#plot_ev_seriesout_png-ev_data-title" class="md-nav__link">
+    <span class="md-ellipsis">
+      plot_ev_series(out_png, ev_data, title)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#plot_seriesout_png-series-title-ylabel-censor" class="md-nav__link">
+    <span class="md-ellipsis">
+      plot_series(out_png, series, title, ylabel, censor)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#read_confounds_tsvtsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      read_confounds_tsv(tsv)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#read_motion_paramstsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      read_motion_params(tsv)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#render_subject_reportsub-manifest_tsv-cfg-deriv_root-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      render_subject_report(sub, manifest_tsv, cfg, deriv_root) -&gt; str
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#rows_for_subjectmanifest_tsv-sub" class="md-nav__link">
+    <span class="md-ellipsis">
+      rows_for_subject(manifest_tsv, sub)
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#subjects_from_manifestmanifest_tsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      subjects_from_manifest(manifest_tsv)
     </span>
   </a>
 
@@ -1365,18 +1355,18 @@
 </li>
 
           <li class="md-nav__item">
-  <a href="#rowssamples_tsv" class="md-nav__link">
+  <a href="#row_by_idsamples_tsv-idx-dict" class="md-nav__link">
     <span class="md-ellipsis">
-      rows(samples_tsv)
+      row_by_id(samples_tsv, idx) -&gt; dict
     </span>
   </a>
 
 </li>
 
           <li class="md-nav__item">
-  <a href="#row_by_idsamples_tsv-idx-dict" class="md-nav__link">
+  <a href="#rowssamples_tsv" class="md-nav__link">
     <span class="md-ellipsis">
-      row_by_id(samples_tsv, idx) -&gt; dict
+      rows(samples_tsv)
     </span>
   </a>
 
@@ -1422,6 +1412,33 @@
 </li>
 
           <li class="md-nav__item">
+  <a href="#confounds_json_pathderiv_root-sub-ses-task-run-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      confounds_json_path(deriv_root, sub, ses, task, run) -&gt; str
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#confounds_tsv_pathderiv_root-sub-ses-task-run-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      confounds_tsv_path(deriv_root, sub, ses, task, run) -&gt; str
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
+  <a href="#crop_json_pathderiv_root-sub-ses-task-run-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      crop_json_path(deriv_root, sub, ses, task, run) -&gt; str
+    </span>
+  </a>
+
+</li>
+
+          <li class="md-nav__item">
   <a href="#deriv_pathderiv_root-sub-ses-modality-fname-str" class="md-nav__link">
     <span class="md-ellipsis">
       deriv_path(deriv_root, sub, ses, modality, fname) -&gt; str
@@ -1440,36 +1457,9 @@
 </li>
 
           <li class="md-nav__item">
-  <a href="#confounds_tsv_pathderiv_root-sub-ses-task-run-str" class="md-nav__link">
-    <span class="md-ellipsis">
-      confounds_tsv_path(deriv_root, sub, ses, task, run) -&gt; str
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#confounds_json_pathderiv_root-sub-ses-task-run-str" class="md-nav__link">
-    <span class="md-ellipsis">
-      confounds_json_path(deriv_root, sub, ses, task, run) -&gt; str
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
   <a href="#mppca_bold_pathderiv_root-sub-ses-task-run-str" class="md-nav__link">
     <span class="md-ellipsis">
       mppca_bold_path(deriv_root, sub, ses, task, run) -&gt; str
-    </span>
-  </a>
-
-</li>
-
-          <li class="md-nav__item">
-  <a href="#crop_json_pathderiv_root-sub-ses-task-run-str" class="md-nav__link">
-    <span class="md-ellipsis">
-      crop_json_path(deriv_root, sub, ses, task, run) -&gt; str
     </span>
   </a>
 
@@ -1569,39 +1559,39 @@
 <h2 id="confounds">confounds<a class="headerlink" href="#confounds" title="Permanent link">&para;</a></h2>
 <p>Confounds computation utilities for SpinePrep.</p>
 <h3 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h3>
-<h4 id="read_motion_paramstsv_path"><code>read_motion_params(tsv_path)</code><a class="headerlink" href="#read_motion_paramstsv_path" title="Permanent link">&para;</a></h4>
-<p>Read motion parameters from TSV file.</p>
-<h4 id="compute_fd_from_paramsparams-tr_s"><code>compute_fd_from_params(params, tr_s)</code><a class="headerlink" href="#compute_fd_from_paramsparams-tr_s" title="Permanent link">&para;</a></h4>
-<p>Compute Framewise Displacement (Power) from motion parameters.</p>
-<h4 id="compute_dvarsbold_path-mask_path"><code>compute_dvars(bold_path, mask_path)</code><a class="headerlink" href="#compute_dvarsbold_path-mask_path" title="Permanent link">&para;</a></h4>
-<p>Compute DVARS from BOLD data.</p>
-<h4 id="assemble_confoundsfd-dvars-extra"><code>assemble_confounds(fd, dvars, extra)</code><a class="headerlink" href="#assemble_confoundsfd-dvars-extra" title="Permanent link">&para;</a></h4>
-<p>Assemble confounds DataFrame from FD and DVARS.</p>
-<h4 id="write_confounds_tsv_jsondf-out_tsv-out_json-meta"><code>write_confounds_tsv_json(df, out_tsv, out_json, meta)</code><a class="headerlink" href="#write_confounds_tsv_jsondf-out_tsv-out_json-meta" title="Permanent link">&para;</a></h4>
-<p>Write confounds TSV and JSON files.</p>
-<h4 id="build_censorfd-dvars-cfg-dict"><code>build_censor(fd, dvars, cfg) -&gt; Dict</code><a class="headerlink" href="#build_censorfd-dvars-cfg-dict" title="Permanent link">&para;</a></h4>
-<p>Build censor vector based on FD and DVARS thresholds with contiguity rules.</p>
-<h4 id="append_censor_columnsdf-censor_dict"><code>append_censor_columns(df, censor_dict)</code><a class="headerlink" href="#append_censor_columnsdf-censor_dict" title="Permanent link">&para;</a></h4>
-<p>Append censor columns to confounds DataFrame.</p>
-<h4 id="load_bold_and_apply_cropbold_path-crop_json"><code>load_bold_and_apply_crop(bold_path, crop_json)</code><a class="headerlink" href="#load_bold_and_apply_cropbold_path-crop_json" title="Permanent link">&para;</a></h4>
-<p>Load BOLD data and apply temporal cropping if specified.</p>
-<h4 id="extract_mask_timeseriesbold-mask-standardize"><code>extract_mask_timeseries(bold, mask, standardize)</code><a class="headerlink" href="#extract_mask_timeseriesbold-mask-standardize" title="Permanent link">&para;</a></h4>
-<p>Extract time series from BOLD data using a mask.</p>
 <h4 id="acompcor_pcsts-n_components-highpass_hz-tr_s-detrend-standardize"><code>acompcor_pcs(ts, n_components, highpass_hz, tr_s, detrend, standardize)</code><a class="headerlink" href="#acompcor_pcsts-n_components-highpass_hz-tr_s-detrend-standardize" title="Permanent link">&para;</a></h4>
 <p>Extract principal components from time series data.</p>
 <h4 id="append_acompcordf-pcs_dict"><code>append_acompcor(df, pcs_dict)</code><a class="headerlink" href="#append_acompcordf-pcs_dict" title="Permanent link">&para;</a></h4>
 <p>Append aCompCor principal components to confounds DataFrame.</p>
+<h4 id="append_censor_columnsdf-censor_dict"><code>append_censor_columns(df, censor_dict)</code><a class="headerlink" href="#append_censor_columnsdf-censor_dict" title="Permanent link">&para;</a></h4>
+<p>Append censor columns to confounds DataFrame.</p>
+<h4 id="assemble_confoundsfd-dvars-extra"><code>assemble_confounds(fd, dvars, extra)</code><a class="headerlink" href="#assemble_confoundsfd-dvars-extra" title="Permanent link">&para;</a></h4>
+<p>Assemble confounds DataFrame from FD and DVARS.</p>
+<h4 id="build_censorfd-dvars-cfg-dict"><code>build_censor(fd, dvars, cfg) -&gt; Dict</code><a class="headerlink" href="#build_censorfd-dvars-cfg-dict" title="Permanent link">&para;</a></h4>
+<p>Build censor vector based on FD and DVARS thresholds with contiguity rules.</p>
+<h4 id="compute_dvarsbold_path-mask_path"><code>compute_dvars(bold_path, mask_path)</code><a class="headerlink" href="#compute_dvarsbold_path-mask_path" title="Permanent link">&para;</a></h4>
+<p>Compute DVARS from BOLD data.</p>
+<h4 id="compute_fd_from_paramsparams-tr_s"><code>compute_fd_from_params(params, tr_s)</code><a class="headerlink" href="#compute_fd_from_paramsparams-tr_s" title="Permanent link">&para;</a></h4>
+<p>Compute Framewise Displacement (Power) from motion parameters.</p>
+<h4 id="extract_mask_timeseriesbold-mask-standardize"><code>extract_mask_timeseries(bold, mask, standardize)</code><a class="headerlink" href="#extract_mask_timeseriesbold-mask-standardize" title="Permanent link">&para;</a></h4>
+<p>Extract time series from BOLD data using a mask.</p>
+<h4 id="load_bold_and_apply_cropbold_path-crop_json"><code>load_bold_and_apply_crop(bold_path, crop_json)</code><a class="headerlink" href="#load_bold_and_apply_cropbold_path-crop_json" title="Permanent link">&para;</a></h4>
+<p>Load BOLD data and apply temporal cropping if specified.</p>
+<h4 id="read_motion_paramstsv_path"><code>read_motion_params(tsv_path)</code><a class="headerlink" href="#read_motion_paramstsv_path" title="Permanent link">&para;</a></h4>
+<p>Read motion parameters from TSV file.</p>
+<h4 id="write_confounds_tsv_jsondf-out_tsv-out_json-meta"><code>write_confounds_tsv_json(df, out_tsv, out_json, meta)</code><a class="headerlink" href="#write_confounds_tsv_jsondf-out_tsv-out_json-meta" title="Permanent link">&para;</a></h4>
+<p>Write confounds TSV and JSON files.</p>
 <h2 id="crop">crop<a class="headerlink" href="#crop" title="Permanent link">&para;</a></h2>
 <p>Temporal crop detection and IO utilities.</p>
 <h3 id="functions_1">Functions<a class="headerlink" href="#functions_1" title="Permanent link">&para;</a></h3>
-<h4 id="detect_cropconfounds_tsv-bold_path-cord_mask-opts"><code>detect_crop(confounds_tsv, bold_path, cord_mask, opts)</code><a class="headerlink" href="#detect_cropconfounds_tsv-bold_path-cord_mask-opts" title="Permanent link">&para;</a></h4>
-<p>Detect temporal crop indices using robust z-statistics on cord ROI mean signal.</p>
-<h4 id="write_crop_jsonout_path-info"><code>write_crop_json(out_path, info)</code><a class="headerlink" href="#write_crop_jsonout_path-info" title="Permanent link">&para;</a></h4>
-<p>Write crop information to JSON file.</p>
-<h4 id="read_crop_jsonpath"><code>read_crop_json(path)</code><a class="headerlink" href="#read_crop_jsonpath" title="Permanent link">&para;</a></h4>
-<p>Read crop information from JSON file.</p>
 <h4 id="crop_sidecar_pathbold_path-deriv_root-str"><code>crop_sidecar_path(bold_path, deriv_root) -&gt; str</code><a class="headerlink" href="#crop_sidecar_pathbold_path-deriv_root-str" title="Permanent link">&para;</a></h4>
 <p>Generate crop sidecar path from BOLD path and derivatives root.</p>
+<h4 id="detect_cropconfounds_tsv-bold_path-cord_mask-opts"><code>detect_crop(confounds_tsv, bold_path, cord_mask, opts)</code><a class="headerlink" href="#detect_cropconfounds_tsv-bold_path-cord_mask-opts" title="Permanent link">&para;</a></h4>
+<p>Detect temporal crop indices using robust z-statistics on cord ROI mean signal.</p>
+<h4 id="read_crop_jsonpath"><code>read_crop_json(path)</code><a class="headerlink" href="#read_crop_jsonpath" title="Permanent link">&para;</a></h4>
+<p>Read crop information from JSON file.</p>
+<h4 id="write_crop_jsonout_path-info"><code>write_crop_json(out_path, info)</code><a class="headerlink" href="#write_crop_jsonout_path-info" title="Permanent link">&para;</a></h4>
+<p>Write crop information to JSON file.</p>
 <h2 id="deriv">deriv<a class="headerlink" href="#deriv" title="Permanent link">&para;</a></h2>
 <h3 id="functions_2">Functions<a class="headerlink" href="#functions_2" title="Permanent link">&para;</a></h3>
 <h4 id="derive_pathsrow-deriv_root"><code>derive_paths(row, deriv_root)</code><a class="headerlink" href="#derive_pathsrow-deriv_root" title="Permanent link">&para;</a></h4>
@@ -1615,36 +1605,36 @@
 <h2 id="qc">qc<a class="headerlink" href="#qc" title="Permanent link">&para;</a></h2>
 <p>Quality control and reporting utilities for SpinePrep.</p>
 <h3 id="functions_4">Functions<a class="headerlink" href="#functions_4" title="Permanent link">&para;</a></h3>
-<h4 id="subjects_from_manifestmanifest_tsv"><code>subjects_from_manifest(manifest_tsv)</code><a class="headerlink" href="#subjects_from_manifestmanifest_tsv" title="Permanent link">&para;</a></h4>
-<p>Extract unique subject IDs from manifest_deriv.tsv.</p>
-<h4 id="rows_for_subjectmanifest_tsv-sub"><code>rows_for_subject(manifest_tsv, sub)</code><a class="headerlink" href="#rows_for_subjectmanifest_tsv-sub" title="Permanent link">&para;</a></h4>
-<p>Get all rows for a specific subject from manifest_deriv.tsv.</p>
-<h4 id="read_confounds_tsvtsv"><code>read_confounds_tsv(tsv)</code><a class="headerlink" href="#read_confounds_tsvtsv" title="Permanent link">&para;</a></h4>
-<p>Read confounds TSV and return as dict of column_name -&gt; list of values.</p>
-<h4 id="compute_fdconf"><code>compute_fd(conf)</code><a class="headerlink" href="#compute_fdconf" title="Permanent link">&para;</a></h4>
-<p>Compute Framewise Displacement (Power) from motion parameters.</p>
-<h4 id="read_motion_paramstsv"><code>read_motion_params(tsv)</code><a class="headerlink" href="#read_motion_paramstsv" title="Permanent link">&para;</a></h4>
-<p>Read motion parameters from motion correction TSV file.</p>
-<h4 id="compute_fd_from_motion_paramsmotion_params_tsv"><code>compute_fd_from_motion_params(motion_params_tsv)</code><a class="headerlink" href="#compute_fd_from_motion_paramsmotion_params_tsv" title="Permanent link">&para;</a></h4>
-<p>Compute FD from motion parameters TSV file.</p>
-<h4 id="compute_dvarsconf"><code>compute_dvars(conf)</code><a class="headerlink" href="#compute_dvarsconf" title="Permanent link">&para;</a></h4>
-<p>Compute DVARS from confounds data.</p>
-<h4 id="plot_seriesout_png-series-title-ylabel-censor"><code>plot_series(out_png, series, title, ylabel, censor)</code><a class="headerlink" href="#plot_seriesout_png-series-title-ylabel-censor" title="Permanent link">&para;</a></h4>
-<p>Create a time series plot with optional censor overlays and save as PNG.</p>
-<h4 id="plot_ev_seriesout_png-ev_data-title"><code>plot_ev_series(out_png, ev_data, title)</code><a class="headerlink" href="#plot_ev_seriesout_png-ev_data-title" title="Permanent link">&para;</a></h4>
-<p>Plot explained variance for aCompCor components.</p>
-<h4 id="module_decisionscfg"><code>module_decisions(cfg)</code><a class="headerlink" href="#module_decisionscfg" title="Permanent link">&para;</a></h4>
-<p>Extract module decisions from config.</p>
 <h4 id="collect_provenanceentries"><code>collect_provenance(entries)</code><a class="headerlink" href="#collect_provenanceentries" title="Permanent link">&para;</a></h4>
 <p>Collect provenance file paths from manifest entries.</p>
-<h4 id="render_subject_reportsub-manifest_tsv-cfg-deriv_root-str"><code>render_subject_report(sub, manifest_tsv, cfg, deriv_root) -&gt; str</code><a class="headerlink" href="#render_subject_reportsub-manifest_tsv-cfg-deriv_root-str" title="Permanent link">&para;</a></h4>
-<p>Generate HTML report for a subject.</p>
+<h4 id="collect_registration_filesmanifest_tsv-sub"><code>collect_registration_files(manifest_tsv, sub)</code><a class="headerlink" href="#collect_registration_filesmanifest_tsv-sub" title="Permanent link">&para;</a></h4>
+<p>No documentation available</p>
+<h4 id="compute_dvarsconf"><code>compute_dvars(conf)</code><a class="headerlink" href="#compute_dvarsconf" title="Permanent link">&para;</a></h4>
+<p>Compute DVARS from confounds data.</p>
+<h4 id="compute_fdconf"><code>compute_fd(conf)</code><a class="headerlink" href="#compute_fdconf" title="Permanent link">&para;</a></h4>
+<p>Compute Framewise Displacement (Power) from motion parameters.</p>
+<h4 id="compute_fd_from_motion_paramsmotion_params_tsv"><code>compute_fd_from_motion_params(motion_params_tsv)</code><a class="headerlink" href="#compute_fd_from_motion_paramsmotion_params_tsv" title="Permanent link">&para;</a></h4>
+<p>Compute FD from motion parameters TSV file.</p>
 <h4 id="generate_methods_boilerplatecfg-sub-n_runs-str"><code>generate_methods_boilerplate(cfg, sub, n_runs) -&gt; str</code><a class="headerlink" href="#generate_methods_boilerplatecfg-sub-n_runs-str" title="Permanent link">&para;</a></h4>
 <p>Generate methods boilerplate text.</p>
 <h4 id="get_registration_statusmanifest_tsv-sub"><code>get_registration_status(manifest_tsv, sub)</code><a class="headerlink" href="#get_registration_statusmanifest_tsv-sub" title="Permanent link">&para;</a></h4>
 <p>No documentation available</p>
-<h4 id="collect_registration_filesmanifest_tsv-sub"><code>collect_registration_files(manifest_tsv, sub)</code><a class="headerlink" href="#collect_registration_filesmanifest_tsv-sub" title="Permanent link">&para;</a></h4>
-<p>No documentation available</p>
+<h4 id="module_decisionscfg"><code>module_decisions(cfg)</code><a class="headerlink" href="#module_decisionscfg" title="Permanent link">&para;</a></h4>
+<p>Extract module decisions from config.</p>
+<h4 id="plot_ev_seriesout_png-ev_data-title"><code>plot_ev_series(out_png, ev_data, title)</code><a class="headerlink" href="#plot_ev_seriesout_png-ev_data-title" title="Permanent link">&para;</a></h4>
+<p>Plot explained variance for aCompCor components.</p>
+<h4 id="plot_seriesout_png-series-title-ylabel-censor"><code>plot_series(out_png, series, title, ylabel, censor)</code><a class="headerlink" href="#plot_seriesout_png-series-title-ylabel-censor" title="Permanent link">&para;</a></h4>
+<p>Create a time series plot with optional censor overlays and save as PNG.</p>
+<h4 id="read_confounds_tsvtsv"><code>read_confounds_tsv(tsv)</code><a class="headerlink" href="#read_confounds_tsvtsv" title="Permanent link">&para;</a></h4>
+<p>Read confounds TSV and return as dict of column_name -&gt; list of values.</p>
+<h4 id="read_motion_paramstsv"><code>read_motion_params(tsv)</code><a class="headerlink" href="#read_motion_paramstsv" title="Permanent link">&para;</a></h4>
+<p>Read motion parameters from motion correction TSV file.</p>
+<h4 id="render_subject_reportsub-manifest_tsv-cfg-deriv_root-str"><code>render_subject_report(sub, manifest_tsv, cfg, deriv_root) -&gt; str</code><a class="headerlink" href="#render_subject_reportsub-manifest_tsv-cfg-deriv_root-str" title="Permanent link">&para;</a></h4>
+<p>Generate HTML report for a subject.</p>
+<h4 id="rows_for_subjectmanifest_tsv-sub"><code>rows_for_subject(manifest_tsv, sub)</code><a class="headerlink" href="#rows_for_subjectmanifest_tsv-sub" title="Permanent link">&para;</a></h4>
+<p>Get all rows for a specific subject from manifest_deriv.tsv.</p>
+<h4 id="subjects_from_manifestmanifest_tsv"><code>subjects_from_manifest(manifest_tsv)</code><a class="headerlink" href="#subjects_from_manifestmanifest_tsv" title="Permanent link">&para;</a></h4>
+<p>Extract unique subject IDs from manifest_deriv.tsv.</p>
 <h2 id="registration">registration<a class="headerlink" href="#registration" title="Permanent link">&para;</a></h2>
 <p>Registration utilities for SpinePrep.</p>
 <h3 id="functions_5">Functions<a class="headerlink" href="#functions_5" title="Permanent link">&para;</a></h3>
@@ -1664,9 +1654,9 @@
 <p>Create a normalized per-run manifest for the workflow.</p>
 <h4 id="first_rowsamples_tsv-dict"><code>first_row(samples_tsv) -&gt; dict</code><a class="headerlink" href="#first_rowsamples_tsv-dict" title="Permanent link">&para;</a></h4>
 <p>Return the first non-header row as a dict. Raises FileNotFoundError or ValueError.</p>
-<h4 id="rowssamples_tsv"><code>rows(samples_tsv)</code><a class="headerlink" href="#rowssamples_tsv" title="Permanent link">&para;</a></h4>
-<p>No documentation available</p>
 <h4 id="row_by_idsamples_tsv-idx-dict"><code>row_by_id(samples_tsv, idx) -&gt; dict</code><a class="headerlink" href="#row_by_idsamples_tsv-idx-dict" title="Permanent link">&para;</a></h4>
+<p>No documentation available</p>
+<h4 id="rowssamples_tsv"><code>rows(samples_tsv)</code><a class="headerlink" href="#rowssamples_tsv" title="Permanent link">&para;</a></h4>
 <p>No documentation available</p>
 <h2 id="targets">targets<a class="headerlink" href="#targets" title="Permanent link">&para;</a></h2>
 <p>Path utilities for SpinePrep targets.</p>
@@ -1675,18 +1665,18 @@ No global imports, no IO operations - unit testable.</p>
 <h3 id="functions_7">Functions<a class="headerlink" href="#functions_7" title="Permanent link">&para;</a></h3>
 <h4 id="bold_fnamesub-ses-task-run-str"><code>bold_fname(sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#bold_fnamesub-ses-task-run-str" title="Permanent link">&para;</a></h4>
 <p>Generate BOLD filename from BIDS entities.</p>
+<h4 id="confounds_json_pathderiv_root-sub-ses-task-run-str"><code>confounds_json_path(deriv_root, sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#confounds_json_pathderiv_root-sub-ses-task-run-str" title="Permanent link">&para;</a></h4>
+<p>Generate confounds JSON path.</p>
+<h4 id="confounds_tsv_pathderiv_root-sub-ses-task-run-str"><code>confounds_tsv_path(deriv_root, sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#confounds_tsv_pathderiv_root-sub-ses-task-run-str" title="Permanent link">&para;</a></h4>
+<p>Generate confounds TSV path.</p>
+<h4 id="crop_json_pathderiv_root-sub-ses-task-run-str"><code>crop_json_path(deriv_root, sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#crop_json_pathderiv_root-sub-ses-task-run-str" title="Permanent link">&para;</a></h4>
+<p>Generate crop JSON path.</p>
 <h4 id="deriv_pathderiv_root-sub-ses-modality-fname-str"><code>deriv_path(deriv_root, sub, ses, modality, fname) -&gt; str</code><a class="headerlink" href="#deriv_pathderiv_root-sub-ses-modality-fname-str" title="Permanent link">&para;</a></h4>
 <p>Generate derivative path from BIDS entities.</p>
 <h4 id="motion_bold_pathderiv_root-sub-ses-task-run-str"><code>motion_bold_path(deriv_root, sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#motion_bold_pathderiv_root-sub-ses-task-run-str" title="Permanent link">&para;</a></h4>
 <p>Generate motion-corrected BOLD path.</p>
-<h4 id="confounds_tsv_pathderiv_root-sub-ses-task-run-str"><code>confounds_tsv_path(deriv_root, sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#confounds_tsv_pathderiv_root-sub-ses-task-run-str" title="Permanent link">&para;</a></h4>
-<p>Generate confounds TSV path.</p>
-<h4 id="confounds_json_pathderiv_root-sub-ses-task-run-str"><code>confounds_json_path(deriv_root, sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#confounds_json_pathderiv_root-sub-ses-task-run-str" title="Permanent link">&para;</a></h4>
-<p>Generate confounds JSON path.</p>
 <h4 id="mppca_bold_pathderiv_root-sub-ses-task-run-str"><code>mppca_bold_path(deriv_root, sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#mppca_bold_pathderiv_root-sub-ses-task-run-str" title="Permanent link">&para;</a></h4>
 <p>Generate MP-PCA denoised BOLD path.</p>
-<h4 id="crop_json_pathderiv_root-sub-ses-task-run-str"><code>crop_json_path(deriv_root, sub, ses, task, run) -&gt; str</code><a class="headerlink" href="#crop_json_pathderiv_root-sub-ses-task-run-str" title="Permanent link">&para;</a></h4>
-<p>Generate crop JSON path.</p>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>The SpinePrep API provides the following modules:</p>
 <ul>
@@ -1699,8 +1689,6 @@ No global imports, no IO operations - unit testable.</p>
 <li><strong>samples</strong>: 5 functions, 0 classes</li>
 <li><strong>targets</strong>: 7 functions, 0 classes</li>
 </ul>
-
-
 
 
 
@@ -1773,81 +1761,6 @@ No global imports, no IO operations - unit testable.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
 
-
-      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
-        <div class="md-consent__overlay"></div>
-        <aside class="md-consent__inner">
-          <form class="md-consent__form md-grid md-typeset" name="consent">
-
-
-
-
-
-
-<h4>Cookie consent</h4>
-<p>We use cookies to recognize your repeated visits and preferences, as well as to measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better.</p>
-<input class="md-toggle" type="checkbox" id="__settings" >
-<div class="md-consent__settings">
-  <ul class="task-list">
-
-
-
-
-
-
-
-
-
-  <li class="task-list-item">
-    <label class="task-list-control">
-      <input type="checkbox" name="analytics" checked>
-      <span class="task-list-indicator"></span>
-      Google Analytics
-    </label>
-  </li>
-
-
-
-
-
-
-
-
-
-
-
-  <li class="task-list-item">
-    <label class="task-list-control">
-      <input type="checkbox" name="github" checked>
-      <span class="task-list-indicator"></span>
-      GitHub
-    </label>
-  </li>
-
-
-
-
-  </ul>
-</div>
-<div class="md-consent__controls">
-
-
-      <button class="md-button md-button--primary">Accept</button>
-
-
-
-
-
-
-
-      <label class="md-button" for="__settings">Manage settings</label>
-
-
-</div>
-          </form>
-        </aside>
-      </div>
-      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
 
 
 

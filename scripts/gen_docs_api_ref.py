@@ -65,8 +65,16 @@ def parse_module(file_path: Path) -> Dict[str, Any]:
                         }
                         class_info["methods"].append(method_info)
 
+                # Sort methods deterministically by name
+                class_info["methods"] = sorted(
+                    class_info["methods"], key=lambda m: m["name"]
+                )
+
                 module_info["classes"].append(class_info)
 
+    # Sort functions and classes deterministically by name
+    module_info["functions"] = sorted(module_info["functions"], key=lambda f: f["name"])
+    module_info["classes"] = sorted(module_info["classes"], key=lambda c: c["name"])
     return module_info
 
 
@@ -172,7 +180,7 @@ def generate_api_reference(lib_dir: Path) -> str:
         return "\n".join(lines)
 
     # Process each module
-    for py_file in sorted(python_files):
+    for py_file in sorted(python_files, key=lambda p: p.stem):
         module_name = py_file.stem
         module_info = parse_module(py_file)
 
@@ -187,7 +195,7 @@ def generate_api_reference(lib_dir: Path) -> str:
     lines.append("The SpinePrep API provides the following modules:")
     lines.append("")
 
-    for py_file in sorted(python_files):
+    for py_file in sorted(python_files, key=lambda p: p.stem):
         module_name = py_file.stem
         module_info = parse_module(py_file)
 

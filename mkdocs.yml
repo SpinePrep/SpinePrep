@@ -1,6 +1,6 @@
 site_name: SpinePrep
 site_description: Spinal cord preprocessing pipeline for BIDS datasets
-site_url: https://spineprep.readthedocs.io
+site_url: https://spineprep.github.io/spineprep/
 repo_url: https://github.com/spineprep/spineprep
 repo_name: spineprep/spineprep
 edit_uri: edit/main/docs/
@@ -46,9 +46,6 @@ markdown_extensions:
       smart_enable: all
   - pymdownx.caret
   - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: material.extensions.emoji.twemoji
-      emoji_generator: material.extensions.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -93,16 +90,26 @@ extra:
       link: https://twitter.com/spineprep
   version:
     provider: mike
-  analytics:
-    provider: google
-    property: G-XXXXXXXXXX
-  consent:
-    title: Cookie consent
-    description: >-
-      We use cookies to recognize your repeated visits and preferences, as well
-      as to measure the effectiveness of our documentation and whether users
-      find what they're searching for. With your consent, you're helping us to
-      make our documentation better.
+  # Analytics can be added via theme extras in CI if desired.
+  meta:
+    - name: description
+      content: "SpinePrep: rigorous spinal cord preprocessing pipeline with QC, registration and BIDS derivatives."
+    - property: og:type
+      content: website
+    - property: og:title
+      content: SpinePrep
+    - property: og:description
+      content: "SpinePrep: rigorous spinal cord preprocessing with QC and BIDS compliance."
+    - property: og:image
+      content: /_assets/og.png
+    - name: twitter:card
+      content: summary_large_image
+    - name: twitter:title
+      content: SpinePrep
+    - name: twitter:description
+      content: "SpinePrep: rigorous spinal cord preprocessing with QC and BIDS compliance."
+    - name: twitter:image
+      content: /_assets/og.png
 
 nav:
   - Home: index.md

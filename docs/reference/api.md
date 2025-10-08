@@ -8,42 +8,6 @@ Confounds computation utilities for SpinePrep.
 
 ### Functions
 
-#### `read_motion_params(tsv_path)`
-
-Read motion parameters from TSV file.
-
-#### `compute_fd_from_params(params, tr_s)`
-
-Compute Framewise Displacement (Power) from motion parameters.
-
-#### `compute_dvars(bold_path, mask_path)`
-
-Compute DVARS from BOLD data.
-
-#### `assemble_confounds(fd, dvars, extra)`
-
-Assemble confounds DataFrame from FD and DVARS.
-
-#### `write_confounds_tsv_json(df, out_tsv, out_json, meta)`
-
-Write confounds TSV and JSON files.
-
-#### `build_censor(fd, dvars, cfg) -> Dict`
-
-Build censor vector based on FD and DVARS thresholds with contiguity rules.
-
-#### `append_censor_columns(df, censor_dict)`
-
-Append censor columns to confounds DataFrame.
-
-#### `load_bold_and_apply_crop(bold_path, crop_json)`
-
-Load BOLD data and apply temporal cropping if specified.
-
-#### `extract_mask_timeseries(bold, mask, standardize)`
-
-Extract time series from BOLD data using a mask.
-
 #### `acompcor_pcs(ts, n_components, highpass_hz, tr_s, detrend, standardize)`
 
 Extract principal components from time series data.
@@ -52,6 +16,42 @@ Extract principal components from time series data.
 
 Append aCompCor principal components to confounds DataFrame.
 
+#### `append_censor_columns(df, censor_dict)`
+
+Append censor columns to confounds DataFrame.
+
+#### `assemble_confounds(fd, dvars, extra)`
+
+Assemble confounds DataFrame from FD and DVARS.
+
+#### `build_censor(fd, dvars, cfg) -> Dict`
+
+Build censor vector based on FD and DVARS thresholds with contiguity rules.
+
+#### `compute_dvars(bold_path, mask_path)`
+
+Compute DVARS from BOLD data.
+
+#### `compute_fd_from_params(params, tr_s)`
+
+Compute Framewise Displacement (Power) from motion parameters.
+
+#### `extract_mask_timeseries(bold, mask, standardize)`
+
+Extract time series from BOLD data using a mask.
+
+#### `load_bold_and_apply_crop(bold_path, crop_json)`
+
+Load BOLD data and apply temporal cropping if specified.
+
+#### `read_motion_params(tsv_path)`
+
+Read motion parameters from TSV file.
+
+#### `write_confounds_tsv_json(df, out_tsv, out_json, meta)`
+
+Write confounds TSV and JSON files.
+
 
 ## crop
 
@@ -59,21 +59,21 @@ Temporal crop detection and IO utilities.
 
 ### Functions
 
+#### `crop_sidecar_path(bold_path, deriv_root) -> str`
+
+Generate crop sidecar path from BOLD path and derivatives root.
+
 #### `detect_crop(confounds_tsv, bold_path, cord_mask, opts)`
 
 Detect temporal crop indices using robust z-statistics on cord ROI mean signal.
-
-#### `write_crop_json(out_path, info)`
-
-Write crop information to JSON file.
 
 #### `read_crop_json(path)`
 
 Read crop information from JSON file.
 
-#### `crop_sidecar_path(bold_path, deriv_root) -> str`
+#### `write_crop_json(out_path, info)`
 
-Generate crop sidecar path from BOLD path and derivatives root.
+Write crop information to JSON file.
 
 
 ## deriv
@@ -104,53 +104,25 @@ Quality control and reporting utilities for SpinePrep.
 
 ### Functions
 
-#### `subjects_from_manifest(manifest_tsv)`
+#### `collect_provenance(entries)`
 
-Extract unique subject IDs from manifest_deriv.tsv.
+Collect provenance file paths from manifest entries.
 
-#### `rows_for_subject(manifest_tsv, sub)`
+#### `collect_registration_files(manifest_tsv, sub)`
 
-Get all rows for a specific subject from manifest_deriv.tsv.
-
-#### `read_confounds_tsv(tsv)`
-
-Read confounds TSV and return as dict of column_name -> list of values.
-
-#### `compute_fd(conf)`
-
-Compute Framewise Displacement (Power) from motion parameters.
-
-#### `read_motion_params(tsv)`
-
-Read motion parameters from motion correction TSV file.
-
-#### `compute_fd_from_motion_params(motion_params_tsv)`
-
-Compute FD from motion parameters TSV file.
+No documentation available
 
 #### `compute_dvars(conf)`
 
 Compute DVARS from confounds data.
 
-#### `plot_series(out_png, series, title, ylabel, censor)`
+#### `compute_fd(conf)`
 
-Create a time series plot with optional censor overlays and save as PNG.
+Compute Framewise Displacement (Power) from motion parameters.
 
-#### `plot_ev_series(out_png, ev_data, title)`
+#### `compute_fd_from_motion_params(motion_params_tsv)`
 
-Plot explained variance for aCompCor components.
-
-#### `module_decisions(cfg)`
-
-Extract module decisions from config.
-
-#### `collect_provenance(entries)`
-
-Collect provenance file paths from manifest entries.
-
-#### `render_subject_report(sub, manifest_tsv, cfg, deriv_root) -> str`
-
-Generate HTML report for a subject.
+Compute FD from motion parameters TSV file.
 
 #### `generate_methods_boilerplate(cfg, sub, n_runs) -> str`
 
@@ -160,9 +132,37 @@ Generate methods boilerplate text.
 
 No documentation available
 
-#### `collect_registration_files(manifest_tsv, sub)`
+#### `module_decisions(cfg)`
 
-No documentation available
+Extract module decisions from config.
+
+#### `plot_ev_series(out_png, ev_data, title)`
+
+Plot explained variance for aCompCor components.
+
+#### `plot_series(out_png, series, title, ylabel, censor)`
+
+Create a time series plot with optional censor overlays and save as PNG.
+
+#### `read_confounds_tsv(tsv)`
+
+Read confounds TSV and return as dict of column_name -> list of values.
+
+#### `read_motion_params(tsv)`
+
+Read motion parameters from motion correction TSV file.
+
+#### `render_subject_report(sub, manifest_tsv, cfg, deriv_root) -> str`
+
+Generate HTML report for a subject.
+
+#### `rows_for_subject(manifest_tsv, sub)`
+
+Get all rows for a specific subject from manifest_deriv.tsv.
+
+#### `subjects_from_manifest(manifest_tsv)`
+
+Extract unique subject IDs from manifest_deriv.tsv.
 
 
 ## registration
@@ -204,11 +204,11 @@ Create a normalized per-run manifest for the workflow.
 
 Return the first non-header row as a dict. Raises FileNotFoundError or ValueError.
 
-#### `rows(samples_tsv)`
+#### `row_by_id(samples_tsv, idx) -> dict`
 
 No documentation available
 
-#### `row_by_id(samples_tsv, idx) -> dict`
+#### `rows(samples_tsv)`
 
 No documentation available
 
@@ -226,6 +226,18 @@ No global imports, no IO operations - unit testable.
 
 Generate BOLD filename from BIDS entities.
 
+#### `confounds_json_path(deriv_root, sub, ses, task, run) -> str`
+
+Generate confounds JSON path.
+
+#### `confounds_tsv_path(deriv_root, sub, ses, task, run) -> str`
+
+Generate confounds TSV path.
+
+#### `crop_json_path(deriv_root, sub, ses, task, run) -> str`
+
+Generate crop JSON path.
+
 #### `deriv_path(deriv_root, sub, ses, modality, fname) -> str`
 
 Generate derivative path from BIDS entities.
@@ -234,21 +246,9 @@ Generate derivative path from BIDS entities.
 
 Generate motion-corrected BOLD path.
 
-#### `confounds_tsv_path(deriv_root, sub, ses, task, run) -> str`
-
-Generate confounds TSV path.
-
-#### `confounds_json_path(deriv_root, sub, ses, task, run) -> str`
-
-Generate confounds JSON path.
-
 #### `mppca_bold_path(deriv_root, sub, ses, task, run) -> str`
 
 Generate MP-PCA denoised BOLD path.
-
-#### `crop_json_path(deriv_root, sub, ses, task, run) -> str`
-
-Generate crop JSON path.
 
 
 ## Summary
