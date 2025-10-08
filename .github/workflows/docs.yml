@@ -81,7 +81,7 @@ jobs:
       - name: Guard require dev banner partial and robots noindex
         run: |
           set -euo pipefail
-          test -f docs/_overrides/partials/announce.html || { echo "Missing dev banner partial"; exit 1; }
+          test -f docs/_overrides/partials/outdated.html || { echo "Missing dev banner partial"; exit 1; }
           grep -q 'name: robots' mkdocs.yml && grep -q 'noindex' mkdocs.yml || { echo "Missing robots noindex meta"; exit 1; }
 
       - name: Generate references --check

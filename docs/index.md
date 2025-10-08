@@ -60,29 +60,29 @@ See what SpinePrep produces:
 
 <div class="grid cards" markdown>
 
--   :material-chart-line:{ .feature-icon } **Quality Control**
+-   **:material-chart-line: Quality Control**
 
     ---
 
     Comprehensive QC metrics including motion, signal quality, and preprocessing artifacts
 
-    [ :material-eye:{ .feature-icon } View QC Report ](user-guide/qc.md){ .md-button .md-button--primary }
+    [:material-eye: View QC Report](user-guide/qc.md){ .md-button .md-button--primary }
 
--   :material-graph:{ .feature-icon } **Processing Pipeline**
+-   **:material-graph: Processing Pipeline**
 
     ---
 
     Transparent, versioned processing steps with full provenance tracking
 
-    [ :material-graph-line:{ .feature-icon } View DAG ](user-guide/usage.md#processing-pipeline){ .md-button }
+    [:material-graph-line: View DAG](user-guide/usage.md#processing-pipeline){ .md-button }
 
--   :material-database:{ .feature-icon } **BIDS Derivatives**
+-   **:material-database: BIDS Derivatives**
 
     ---
 
     Standardized outputs following BIDS-Derivatives specification
 
-    [ :material-arrow-right:{ .feature-icon } View Outputs ](user-guide/outputs.md){ .md-button }
+    [:material-arrow-right: View Outputs](user-guide/outputs.md){ .md-button }
 
 </div>
 
@@ -92,22 +92,13 @@ See recent changes and release notes in the [Changelog](CHANGELOG.md).
 
 ## Features
 
-- :material-check-circle:{ .success .feature-icon } **Spinal cord–optimized**  
-  Preprocessing tailored to cord anatomy/physiology (cord-aware motion correction, SCT-guided registration).
+- :material-check-circle:{ .success } **Spinal cord–optimized** — Preprocessing tailored to cord anatomy/physiology (cord-aware motion correction, SCT-guided registration).
 
-- :material-check-circle:{ .success .feature-icon } **BIDS compliant**  
-  Full BIDS-Derivatives outputs for seamless downstream use.
+- :material-check-circle:{ .success } **BIDS compliant** — Full BIDS-Derivatives outputs for seamless downstream use.
 
-- :material-check-circle:{ .success .feature-icon } **Quality control**  
-  FD, DVARS, aCompCor, censor masks, and rich HTML QC with overlays.
+- :material-check-circle:{ .success } **Quality control** — FD, DVARS, aCompCor, censor masks, and rich HTML QC with overlays.
 
-- :material-check-circle:{ .success .feature-icon } **Reproducible**  
-  Version-locked, provenance-rich runs; containerized and parameter-transparent.
-
-## Quality Control
-
-:material-chart-line:{ .feature-icon } **Quality Control**  
-Comprehensive QC metrics including motion, signal quality, and preprocessing artifacts.
+- :material-check-circle:{ .success } **Reproducible** — Version-locked, provenance-rich runs; containerized and parameter-transparent.
 
 ## Getting Help
 
