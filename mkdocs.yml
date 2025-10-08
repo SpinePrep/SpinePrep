@@ -81,7 +81,6 @@ markdown_extensions:
 plugins:
   - search:
       lang: en
-  - sitemap
 
 extra:
   social:
