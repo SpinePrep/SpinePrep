@@ -77,7 +77,7 @@ See what SpinePrep produces:
 
     Transparent, versioned processing steps with full provenance tracking
 
-    [:material-graph-line: View DAG](user-guide/usage.md#processing-pipeline){ .md-button }
+    [:material-chart-timeline: View DAG](user-guide/usage.md#processing-pipeline){ .md-button }
 
 -   **:material-database: BIDS Derivatives**
 
