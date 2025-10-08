@@ -1,6 +1,6 @@
 # lychee configuration for SpinePrep docs
 # See: https://github.com/lycheeverse/lychee#configuration
-verbose = "false"
+verbose = "error"
 no_progress = true
 max_retries = 2
 retry_wait = 2
