@@ -77,12 +77,10 @@ jobs:
         run: |
           mkdocs build --strict
 
-      - name: Upload site as artifact
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: site
-          path: site
+          path: ./site
 
       - name: Upload screenshots
         if: github.event_name == 'pull_request'
@@ -97,13 +95,8 @@ jobs:
     needs: docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./site
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
