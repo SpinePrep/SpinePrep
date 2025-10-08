@@ -1,0 +1,64 @@
+name: docs
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install mkdocs-material mkdocs-sitemap-plugin
+
+      # If you have generators with --check, add them here (optional):
+      # - name: Check generated refs
+      #   run: |
+      #     python scripts/gen_docs_config_ref.py --check
+      #     python scripts/gen_docs_api_ref.py --check
+
+      - name: Build site
+        run: mkdocs build --strict
+
+      - name: Upload built site as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site
+
+  deploy_org_root:
+    name: Deploy to spineprep.github.io
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built site
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: site
+
+      - name: Publish to spineprep/spineprep.github.io
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          external_repository: spineprep/spineprep.github.io
+          publish_branch: main
+          publish_dir: ./site
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_message: "Deploy site from SpinePrep@${{ github.sha }}"
