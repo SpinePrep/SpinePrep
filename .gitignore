@@ -1,3 +1,7 @@
 
 # MkDocs build output
 site/
+
+# Private local playbooks (never commit)
+private/
+docs/PLAYBOOK_*.md

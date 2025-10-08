@@ -127,8 +127,6 @@ nav:
     - reference/api.md
   - Project:
     - CHANGELOG: CHANGELOG.md
-    - Playbook • ChatGPT: PLAYBOOK_ChatGPT.md
-    - Playbook • Cursor: PLAYBOOK_Cursor.md
     - 404 page: 404.md
   - Contributing: contributing.md
 
