@@ -96,6 +96,8 @@ extra:
     provider: mike
   # Analytics can be added via theme extras in CI if desired.
   meta:
+    - name: robots
+      content: noindex, nofollow
     - name: description
       content: "SpinePrep: rigorous spinal cord preprocessing pipeline with QC, registration and BIDS derivatives."
     - property: og:type
