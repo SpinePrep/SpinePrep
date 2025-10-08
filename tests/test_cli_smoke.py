@@ -40,7 +40,15 @@ study:
     out_dir = tmp_path / "out"
 
     result = subprocess.run(
-        ["spineprep", "run", "--config", str(config_file), "--out", str(out_dir), "--print-config"],
+        [
+            "spineprep",
+            "run",
+            "--config",
+            str(config_file),
+            "--out",
+            str(out_dir),
+            "--print-config",
+        ],
         capture_output=True,
         text=True,
         check=False,
@@ -101,9 +109,9 @@ def test_doctor_command():
         text=True,
         check=False,
     )
-    # Doctor stub should succeed
-    assert result.returncode == 0, f"doctor command failed: {result.returncode}"
+    # Doctor should complete (may pass/warn/fail depending on environment)
+    # Exit codes: 0=pass, 1=fail, 2=warn
+    assert result.returncode in [0, 1, 2], f"doctor command had unexpected exit code: {result.returncode}"
     # Should print something
     output = result.stdout + result.stderr
     assert len(output) > 0, "doctor command produced no output"
-

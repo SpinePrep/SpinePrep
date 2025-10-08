@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 
 
-
 def test_confounds_sidecar_schema():
     """Test that confounds JSON sidecar matches required schema."""
     from spineprep.derivatives import build_confounds_sidecar
@@ -14,7 +13,12 @@ def test_confounds_sidecar_schema():
         fd_method="power_fd",
         dvars_method="std_dvars",
         tr_s=2.0,
-        censor_params={"fd_thresh_mm": 0.5, "dvars_thresh": 1.5, "n_censored": 10, "n_kept": 190},
+        censor_params={
+            "fd_thresh_mm": 0.5,
+            "dvars_thresh": 1.5,
+            "n_censored": 10,
+            "n_kept": 190,
+        },
         acompcor_meta={},
     )
 
@@ -96,12 +100,12 @@ def test_provenance_snapshot():
     assert "timestamp" in prov
     assert "environment" in prov
     assert "paths" in prov
-    
+
     # Environment details
     env = prov["environment"]
     assert "python_version" in env
     assert "os" in env
-    
+
     # Paths
     paths = prov["paths"]
     assert "bids_root" in paths
@@ -127,7 +131,7 @@ def test_derivatives_path_rules():
     assert "task-rest" in paths["confounds_tsv"]
     assert "run-01" in paths["confounds_tsv"]
     assert "desc-confounds_timeseries.tsv" in paths["confounds_tsv"]
-    
+
     # Check motion paths
     assert "motion_params_tsv" in paths
     assert "desc-motion_params.tsv" in paths["motion_params_tsv"]
@@ -147,11 +151,11 @@ def test_write_provenance_json(tmp_path):
     write_provenance_json(prov_data, out_file)
 
     assert out_file.exists()
-    
+
     # Validate content
     with open(out_file) as f:
         loaded = json.load(f)
-    
+
     assert loaded["pipeline_version"] == "0.1.0-dev"
     assert "timestamp" in loaded
 
@@ -170,4 +174,3 @@ def test_intended_for_field():
     if intended:
         # Should be relative BIDS paths
         assert "sub-01" in intended[0]
-

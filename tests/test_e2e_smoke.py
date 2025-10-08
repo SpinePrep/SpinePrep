@@ -1,4 +1,5 @@
 """End-to-end smoke test on tiny BIDS fixture."""
+
 from __future__ import annotations
 
 import subprocess
@@ -12,11 +13,11 @@ def test_e2e_pipeline_completes(tmp_path):
     repo_root = Path(__file__).parent.parent
     bids_tiny = repo_root / "tests" / "fixtures" / "bids_tiny"
     assert bids_tiny.exists(), f"BIDS tiny fixture not found at {bids_tiny}"
-    
+
     # Create output directory
     out_root = tmp_path / "spineprep-out"
     out_root.mkdir()
-    
+
     # Use simplified approach: just use the bids and out args without full config
     # This tests the CLI with minimal configuration
     result = subprocess.run(
@@ -26,13 +27,18 @@ def test_e2e_pipeline_completes(tmp_path):
         check=False,
         cwd=repo_root,
     )
-    
+
     # Should succeed
-    assert result.returncode == 0, f"E2E dry-run failed: {result.stderr}\\n{result.stdout}"
-    
+    assert result.returncode == 0, (
+        f"E2E dry-run failed: {result.stderr}\\n{result.stdout}"
+    )
+
     # Check that command completed
-    assert "[dry-run] Pipeline check complete" in result.stdout or "DAG exported" in result.stdout
-    
+    assert (
+        "[dry-run] Pipeline check complete" in result.stdout
+        or "DAG exported" in result.stdout
+    )
+
     # DAG export is optional (may fail if snakemake/dot not available)
     # Just check that the process didn't crash
     deriv = out_root / "derivatives" / "spineprep"
@@ -48,17 +54,17 @@ def test_e2e_doctor_creates_report():
     """Test that doctor command creates report."""
     with tempfile.TemporaryDirectory() as tmpdir:
         out_dir = Path(tmpdir)
-        
+
         result = subprocess.run(
             ["spineprep", "doctor", "--out", str(out_dir)],
             capture_output=True,
             text=True,
             check=False,
         )
-        
+
         # Should complete (may pass/warn/fail depending on environment)
         assert result.returncode in [0, 1, 2]
-        
+
         # Should create JSON
         prov_dir = out_dir / "provenance"
         if prov_dir.exists():
@@ -74,8 +80,7 @@ def test_e2e_version_matches():
         text=True,
         check=True,
     )
-    
+
     version = result.stdout.strip()
     assert len(version) > 0
-    assert "0.1.0-dev" in version or "." in version
-
+    assert "0.1.0" in version or "." in version

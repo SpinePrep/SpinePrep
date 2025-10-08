@@ -151,7 +151,7 @@ def test_generate_report_all_pass():
     report = generate_report(sct_info, pam50_info, python_deps, os_info)
 
     assert report["status"] == "pass"
-    assert report["spineprep"]["version"] == "0.1.0-dev"
+    assert report["spineprep"]["version"] == "0.1.0"
     assert "timestamp" in report
     assert report["deps"]["sct"]["found"] is True
     assert report["deps"]["pam50"]["found"] is True
