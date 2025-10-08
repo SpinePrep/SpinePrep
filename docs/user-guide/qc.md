@@ -134,7 +134,7 @@ Here are examples of QC visualizations from the SpinePrep test fixture:
 
 <div class="grid cards" markdown>
 
--   :material-chart-line:{ .lg .middle } **Framewise Displacement**
+-   :material-chart-line:{ .feature-icon } **Framewise Displacement**
 
     ---
 
@@ -142,7 +142,7 @@ Here are examples of QC visualizations from the SpinePrep test fixture:
 
     ![FD Plot](../_assets/examples/fd_plot.png)
 
--   :material-chart-line:{ .lg .middle } **DVARS**
+-   :material-chart-line:{ .feature-icon } **DVARS**
 
     ---
 
@@ -156,7 +156,7 @@ Here are examples of QC visualizations from the SpinePrep test fixture:
 
 <div class="grid cards" markdown>
 
--   :material-chart-line:{ .lg .middle } **Global Signal**
+-   :material-chart-line:{ .feature-icon } **Global Signal**
 
     ---
 
@@ -164,7 +164,7 @@ Here are examples of QC visualizations from the SpinePrep test fixture:
 
     ![Global Signal](../_assets/examples/global_signal.png)
 
--   :material-chart-line:{ .lg .middle } **SNR Map**
+-   :material-chart-line:{ .feature-icon } **SNR Map**
 
     ---
 
@@ -178,7 +178,7 @@ Here are examples of QC visualizations from the SpinePrep test fixture:
 
 <div class="grid cards" markdown>
 
--   :material-chart-line:{ .lg .middle } **aCompCor Components**
+-   :material-chart-line:{ .feature-icon } **aCompCor Components**
 
     ---
 
@@ -186,7 +186,7 @@ Here are examples of QC visualizations from the SpinePrep test fixture:
 
     ![aCompCor](../_assets/examples/acompcor_plot.png)
 
--   :material-chart-line:{ .lg .middle } **Censor Mask**
+-   :material-chart-line:{ .feature-icon } **Censor Mask**
 
     ---
 
