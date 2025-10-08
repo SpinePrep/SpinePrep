@@ -92,13 +92,13 @@ See recent changes and release notes in the [Changelog](CHANGELOG.md).
 
 ## Features
 
-- :material-check-circle:{ .success } **Spinal cord–optimized** — Preprocessing tailored to cord anatomy/physiology (cord-aware motion correction, SCT-guided registration).
+- :material-check-circle: **Spinal cord–optimized** — Preprocessing tailored to cord anatomy/physiology (cord-aware motion correction, SCT-guided registration).
 
-- :material-check-circle:{ .success } **BIDS compliant** — Full BIDS-Derivatives outputs for seamless downstream use.
+- :material-check-circle: **BIDS compliant** — Full BIDS-Derivatives outputs for seamless downstream use.
 
-- :material-check-circle:{ .success } **Quality control** — FD, DVARS, aCompCor, censor masks, and rich HTML QC with overlays.
+- :material-check-circle: **Quality control** — FD, DVARS, aCompCor, censor masks, and rich HTML QC with overlays.
 
-- :material-check-circle:{ .success } **Reproducible** — Version-locked, provenance-rich runs; containerized and parameter-transparent.
+- :material-check-circle: **Reproducible** — Version-locked, provenance-rich runs; containerized and parameter-transparent.
 
 ## Getting Help
 
