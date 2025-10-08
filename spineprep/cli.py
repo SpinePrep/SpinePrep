@@ -1,9 +1,14 @@
 from __future__ import annotations
+
 import argparse
 from pathlib import Path
-from .doctor import cmd_doctor
-from .config import resolve_config, print_config
+
 from jsonschema import ValidationError
+
+from .config import print_config, resolve_config
+from .doctor import cmd_doctor
+from .ingest import ingest
+
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser("spineprep")
@@ -19,10 +24,13 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--bids", dest="bids_root", type=str, default=None)
     r.add_argument("--out", dest="output_dir", type=str, default=None)
     r.add_argument("--config", type=Path, default=None, help="YAML config path")
-    r.add_argument("--print-config", action="store_true", help="Print resolved config and exit")
+    r.add_argument(
+        "--print-config", action="store_true", help="Print resolved config and exit"
+    )
 
     sub.add_parser("version", help="Show version")
     return p
+
 
 def main(argv=None) -> int:
     p = build_parser()
@@ -38,17 +46,21 @@ def main(argv=None) -> int:
         if a.print_config:
             print(print_config(cfg))
             return 0
-        # stub: later stages will consume cfg
+        # Run ingest
+        stats = ingest(Path(cfg["bids_root"]), Path(cfg["output_dir"]), hash_large=False)
+        print(f"[ingest] {stats['total']} files indexed ({stats['func']} func, {stats['anat']} anat, {stats['other']} other) → {stats['manifest']}")
         print("[run] config resolved ✓")
         return 0
     if a.cmd == "version":
-        from importlib.metadata import version, PackageNotFoundError
+        from importlib.metadata import PackageNotFoundError, version
+
         try:
             print(f"spineprep {version('spineprep')}")
         except PackageNotFoundError:
             print("spineprep 0.0.0")
         return 0
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

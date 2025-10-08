@@ -124,6 +124,7 @@ nav:
     - user-guide/usage.md
     - user-guide/doctor.md
     - user-guide/config.md
+    - user-guide/ingest.md
     - user-guide/outputs.md
     - user-guide/qc.md
     - user-guide/registration.md
