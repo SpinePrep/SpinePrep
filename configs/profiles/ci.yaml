@@ -1,0 +1,103 @@
+# CI profile for fast e2e smoke tests
+pipeline_version: "0.1.0-dev"
+project_name: "SpinePrep-CI"
+
+study:
+  name: "CI-Smoke"
+
+paths:
+  root: "{TMPDIR}/spineprep-ci"  # Will be set via env
+  bids_dir: "tests/fixtures/bids_tiny"
+  deriv_dir: "{root}/derivatives/spineprep"
+  work_dir: "{root}/work"
+  logs_dir: "{deriv_dir}/logs"
+
+dataset:
+  sessions: null
+  runs_per_subject: null
+
+acq:
+  tr: 2.0
+  slice_timing: "ascending"
+  pe_dir: "AP"
+  echo_spacing_s: null
+
+options:
+  ingest:
+    enable: false
+  denoise_mppca: false  # Skip for CI speed
+  motion:
+    engine: "rigid3d"   # Simpler engine for CI
+    slice_axis: "z"
+    concat:
+      mode: "none"
+      require_same: ["tr"]
+  smoothing:
+    enable: false
+    fwhm_mm: 0.0
+  sdc:
+    enable: false
+    mode: "disabled"
+  temporal_crop:
+    enable: false  # Skip for CI speed
+    method: "cord_mean_robust_z"
+    max_trim_start: 0
+    max_trim_end: 0
+    z_thresh: 5.0
+  confounds:
+    fd_method: "power_fd"
+    dvars_method: "std_dvars"
+  censor:
+    enable: true
+    fd_thresh_mm: 0.5
+    dvars_thresh: 1.5
+    min_contig_vols: 5
+    pad_vols: 1
+  masks:
+    enable: false  # Skip for CI
+    source: "none"
+    binarize_thr: 0.5
+  acompcor:
+    enable: false  # Skip for CI speed
+    tissues: ["cord"]
+    n_components_per_tissue: 3
+    highpass_hz: 0.008
+    detrend: true
+    standardize: true
+    explained_variance_min: 0.0
+  first_level:
+    engine: "feat"
+    feat_variant: "block_15s_conv3"
+  cleanup:
+    keep_only_latest_stage: false
+
+registration:
+  enable: false  # Skip for CI
+  template: PAM50
+  guidance: SCT
+  levels: auto
+  use_gm_wm_masks: false
+  rootlets:
+    enable: false
+    mode: "atlas"
+
+templates:
+  pam50_version: "1.0"
+
+tools:
+  sct: ">=5.8"
+  fsl: "any"
+  ants: "any"
+  dcm2niix: "any"
+
+resources:
+  default_threads: 2  # Limited for CI
+  default_mem_gb: 4   # Limited for CI
+
+qc:
+  subject_report: true
+  cohort_report: false
+
+runtime:
+  container_engine: null
+

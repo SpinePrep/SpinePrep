@@ -1,0 +1,8 @@
+{
+  "Name": "SpinePrep Tiny Test Dataset",
+  "BIDSVersion": "1.8.0",
+  "DatasetType": "raw",
+  "License": "CC0",
+  "Authors": ["SpinePrep Contributors"]
+}
+
