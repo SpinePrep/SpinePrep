@@ -53,6 +53,12 @@ jobs:
         run: |
           ruff check . && ruff format --check .
 
+      - name: Snakefmt diff (diagnostics)
+        run: |
+          set +e
+          snakefmt -l 100 workflow --diff
+          exit 0
+
       - name: Lint Snakefiles
         run: |
           snakefmt -l 100 workflow --check

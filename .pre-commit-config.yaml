@@ -25,6 +25,13 @@ repos:
       - id: isort
         args: ["--profile", "black"]
 
+  - repo: https://github.com/snakemake/snakefmt
+    rev: 0.11.2
+    hooks:
+      - id: snakefmt
+        args: ["-l", "100"]
+        files: ^workflow/
+
 # IMPORTANT: do not touch virtualenvs, caches, build outputs
 exclude: |
   (?x)^(
