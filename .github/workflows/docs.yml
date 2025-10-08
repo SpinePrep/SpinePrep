@@ -46,9 +46,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mkdocs-material mkdocs-sitemap-plugin
+          pip install "mkdocs>=1.5,<2.0" "mkdocs-material>=9.5,<10.0"
           pip install ruff codespell snakefmt
-          pip install lychee
 
       - name: Lint (ruff)
         run: |
@@ -68,8 +67,9 @@ jobs:
           python scripts/gen_docs_api_ref.py --check
 
       - name: Link check
-        run: |
-          lychee "docs/**/*.md" --no-progress --accept 200,206,429 --exclude-mail --retry-wait 2 --max-retries 2
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --accept 200,206,429 --exclude-mail "docs/**/*.md"
 
       - name: Build site
         run: |
