@@ -254,7 +254,28 @@
   color: #a0aec0;
 }
 
-/* Ensure code blocks and inline code are readable in dark mode */
+/* Hero container: increase inner padding and constrain width for readability */
+.hero {
+  padding: 1.25rem 1.25rem;         /* increase side padding */
+  border-radius: 0.75rem;
+  background: var(--md-surface);
+  box-shadow: var(--md-shadow-z2);
+  margin-block: 1.25rem;
+}
+/* Constrain inner text width to avoid edge crowding on wide screens */
+.hero > * {
+  max-width: 72ch;                  /* readable line length */
+  margin-inline: auto;
+}
+
+/* Feature icon utilities for consistent sizing/alignment */
+.feature-icon {
+  vertical-align: text-bottom;
+  font-size: 1.05em;                /* slightly larger icon */
+  margin-right: 0.15em;
+}
+
+/* Dark-mode code fixes (ensure precedence) */
 [data-md-color-scheme="slate"] .md-typeset code,
 [data-md-color-scheme="slate"] .md-typeset pre code {
   background-color: var(--md-code-bg-color) !important;
@@ -264,8 +285,6 @@
   background-color: var(--md-code-bg-color) !important;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-
-/* Neutralize any forced white backgrounds for code */
 .md-typeset code,
 .md-typeset pre code {
   background-color: var(--md-code-bg-color);
