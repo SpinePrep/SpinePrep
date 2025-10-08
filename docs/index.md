@@ -10,6 +10,9 @@
 
 [➡️ Live Docs](https://spineprep.github.io/){ .md-button .md-button--primary }
 
+> You’re viewing **latest**. For citeable, frozen docs see **[stable](/stable/)**.
+> Browse other versions from the selector in the header.
+
 <!-- Badges -->
 
 [![Docs Live](https://img.shields.io/badge/docs-live-blue)](https://spineprep.github.io/)
