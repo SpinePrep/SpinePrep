@@ -87,9 +87,10 @@ jobs:
           fi
           ls -la site
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload site as artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: site
           path: ./site
 
       - name: Upload screenshots
@@ -105,10 +106,12 @@ jobs:
     needs: docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+      - name: Download site from docs job
+        uses: actions/download-artifact@v4
         with:
-          name: github-pages
-          path: site
+          name: site
+          path: ./site
       - name: Deploy to spineprep.github.io
         uses: peaceiris/actions-gh-pages@v3
         with:
