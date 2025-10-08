@@ -1,5 +1,9 @@
 # SpinePrep
 
+![Status](https://img.shields.io/badge/status-UNDER_DEVELOPMENT-orange)
+
+> ⚠️ **Under development** — Not ready for use. Interfaces and outputs may change without notice. Do not rely on current behavior.
+
 [![Docs Latest](https://img.shields.io/badge/docs-latest-blue)](https://spineprep.github.io/)
 [![Docs Stable](https://img.shields.io/badge/docs-stable-brightgreen)](https://spineprep.github.io/stable/)
 [![Docs CI](https://github.com/spineprep/SpinePrep/actions/workflows/docs.yml/badge.svg)](https://github.com/spineprep/SpinePrep/actions/workflows/docs.yml)

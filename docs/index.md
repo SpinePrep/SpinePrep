@@ -60,29 +60,29 @@ See what SpinePrep produces:
 
 <div class="grid cards" markdown>
 
--   :material-chart-line:{ .lg .middle } **Quality Control**
+-   :material-chart-line:{ .feature-icon } **Quality Control**
 
     ---
 
     Comprehensive QC metrics including motion, signal quality, and preprocessing artifacts
 
-    [:octicons-arrow-right-24: View QC Report](user-guide/qc.md)
+    [ :material-eye:{ .feature-icon } View QC Report ](user-guide/qc.md){ .md-button .md-button--primary }
 
--   :material-graph:{ .lg .middle } **Processing Pipeline**
+-   :material-graph:{ .feature-icon } **Processing Pipeline**
 
     ---
 
     Transparent, versioned processing steps with full provenance tracking
 
-    [:octicons-arrow-right-24: View DAG](user-guide/usage.md#processing-pipeline)
+    [ :material-graph-line:{ .feature-icon } View DAG ](user-guide/usage.md#processing-pipeline){ .md-button }
 
--   :material-database:{ .lg .middle } **BIDS Derivatives**
+-   :material-database:{ .feature-icon } **BIDS Derivatives**
 
     ---
 
     Standardized outputs following BIDS-Derivatives specification
 
-    [:octicons-arrow-right-24: View Outputs](user-guide/outputs.md)
+    [ :material-arrow-right:{ .feature-icon } View Outputs ](user-guide/outputs.md){ .md-button }
 
 </div>
 

@@ -290,3 +290,43 @@
   background-color: var(--md-code-bg-color);
   color: var(--md-code-fg-color);
 }
+
+/* Hero container spacing/readability */
+.hero {
+  padding: 1.25rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--md-surface);
+  box-shadow: var(--md-shadow-z2);
+  margin-block: 1.25rem;
+}
+.hero > * { max-width: 72ch; margin-inline: auto; }
+
+/* Ensure subtitle/lead text has adequate contrast in both themes */
+.hero .lead {
+  color: var(--md-default-fg-color);
+  opacity: 0.92;            /* readable in light; still soft in dark */
+}
+
+/* Icon utility */
+.feature-icon { vertical-align: text-bottom; margin-right: 0.2em; font-size: 1.05em; line-height: 1; }
+.md-button .feature-icon { margin-right: 0.35em; position: relative; top: 0.02em; }
+
+/* Dark-mode code fixes */
+[data-md-color-scheme="slate"] .md-typeset code,
+[data-md-color-scheme="slate"] .md-typeset pre code {
+  background-color: var(--md-code-bg-color) !important;
+  color: var(--md-code-fg-color) !important;
+}
+[data-md-color-scheme="slate"] .md-typeset pre {
+  background-color: var(--md-code-bg-color) !important;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+/* Light/dark neutral code baseline */
+.md-typeset code, .md-typeset pre code {
+  background-color: var(--md-code-bg-color);
+  color: var(--md-code-fg-color);
+}
+
+/* Link and button contrast tweaks */
+.md-typeset a { color: var(--md-primary-fg-color); }
+.md-button--primary { color: var(--md-primary-bg-color); }
