@@ -63,7 +63,7 @@ jobs:
         run: |
           codespell docs/ mkdocs.yml
 
-      - name: Guard: forbid public PLAYBOOK pages
+      - name: Guard forbid public PLAYBOOK pages
         run: |
           if git ls-files --error-unmatch "docs/PLAYBOOK_*.md" >/dev/null 2>&1; then
             echo "ERROR: docs/PLAYBOOK_*.md must not be committed."
