@@ -13,11 +13,7 @@ from workflow.lib.registration import derive_inputs, derive_outputs  # type: ign
 from workflow.lib.crop import detect_crop, write_crop_json  # type: ignore
 
 CFG_PATH = os.environ.get("SPINEPREP_CONFIG", "configs/study.yaml")
-CFG_SCHEMA = (
-    "schemas/config.schema.json"
-    if Path("schemas/config.schema.json").exists()
-    else None
-)
+CFG_SCHEMA = "schemas/config.schema.json" if Path("schemas/config.schema.json").exists() else None
 
 
 def _load():
@@ -39,9 +35,7 @@ try:
     SAMPLE_ROWS = rows(SAMPLES) if Path(SAMPLES).exists() else []
     DERIV_ROWS = rows(MANIFEST_DERIV) if Path(MANIFEST_DERIV).exists() else []
     N = len(DERIV_ROWS)
-    SUBS = (
-        subjects_from_manifest(MANIFEST_DERIV) if Path(MANIFEST_DERIV).exists() else []
-    )
+    SUBS = subjects_from_manifest(MANIFEST_DERIV) if Path(MANIFEST_DERIV).exists() else []
 except Exception:
     SAMPLE_ROWS = []
     DERIV_ROWS = []
@@ -82,9 +76,7 @@ rule all:
             "{cordmask_pam50}",
             cordmask_pam50=(
                 [
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "mask_pam50_cord"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_cord"]
                     for i in range(N)
                 ]
                 if N > 0
@@ -140,16 +132,10 @@ rule samples:
         # Load config and assign motion groups
         cfg = load_config(CFG_PATH, CFG_SCHEMA)
         concat_mode = (
-            cfg.get("options", {})
-            .get("motion", {})
-            .get("concat", {})
-            .get("mode", "session+task")
+            cfg.get("options", {}).get("motion", {}).get("concat", {}).get("mode", "session+task")
         )
         require_same = (
-            cfg.get("options", {})
-            .get("motion", {})
-            .get("concat", {})
-            .get("require_same", [])
+            cfg.get("options", {}).get("motion", {}).get("concat", {}).get("require_same", [])
         )
 
         # Read samples and assign motion groups
@@ -161,9 +147,7 @@ rule samples:
 
         with open(output.tsv, "w", newline="") as f:
             if rows_with_groups:
-                w = csv.DictWriter(
-                    f, fieldnames=list(rows_with_groups[0].keys()), delimiter="\t"
-                )
+                w = csv.DictWriter(f, fieldnames=list(rows_with_groups[0].keys()), delimiter="\t")
                 w.writeheader()
                 for r in rows_with_groups:
                     w.writerow(r)
@@ -255,9 +239,7 @@ rule mppca:
 
         env = os.environ.copy()
         env["IN_BOLD"] = r["bold_path"]
-        env["DENOISE_MPPCA"] = (
-            "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
-        )
+        env["DENOISE_MPPCA"] = "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
         Path("steps/spi05_mppca.sh").chmod(0o755)
         subprocess.run(["bash", "steps/spi05_mppca.sh"], check=True, env=env)
         # Stage to derivatives
@@ -267,9 +249,7 @@ rule mppca:
             target=output.bold,
             step="mppca",
             inputs={"IN_BOLD": r["bold_path"]},
-            params={
-                "denoise_mppca": CFG.get("options", {}).get("denoise_mppca", False)
-            },
+            params={"denoise_mppca": CFG.get("options", {}).get("denoise_mppca", False)},
             tools={"step": "spi05_mppca.sh"},
         )
 
@@ -285,9 +265,7 @@ rule motion_concat_group:
                 else row_by_id(SAMPLES, i)["bold_path"]
             )
             for i in range(N)
-            if row_by_id(SAMPLES, i)
-            .get("motion_group", "")
-            .startswith(wildcards.group)
+            if row_by_id(SAMPLES, i).get("motion_group", "").startswith(wildcards.group)
         ],
     output:
         group_bold=f"{DERIV}/motion_groups/{{group}}/group_desc-motioncorr_bold.nii.gz",
@@ -299,15 +277,10 @@ rule motion_concat_group:
         from pathlib import Path as _P
 
         # Get motion configuration
-        motion_engine = (
-            CFG.get("options", {}).get("motion", {}).get("engine", "sct+rigid3d")
-        )
+        motion_engine = CFG.get("options", {}).get("motion", {}).get("engine", "sct+rigid3d")
         slice_axis = CFG.get("options", {}).get("motion", {}).get("slice_axis", "IS")
         concat_mode = (
-            CFG.get("options", {})
-            .get("motion", {})
-            .get("concat", {})
-            .get("mode", "session+task")
+            CFG.get("options", {}).get("motion", {}).get("concat", {}).get("mode", "session+task")
         )
 
         # Find all runs in this group
@@ -332,18 +305,12 @@ rule motion_concat_group:
         frame_offset = 0
 
         for run_idx, (i, r) in enumerate(group_runs):
-            in_bold = (
-                r["mppca_path"] if _P(r["mppca_path"]).exists() else r["bold_path"]
-            )
+            in_bold = r["mppca_path"] if _P(r["mppca_path"]).exists() else r["bold_path"]
             input_files.append(in_bold)
 
             # Get number of volumes in this run
             try:
-                nvols = int(
-                    subprocess.check_output(
-                        ["fslval", in_bold, "dim4"], text=True
-                    ).strip()
-                )
+                nvols = int(subprocess.check_output(["fslval", in_bold, "dim4"], text=True).strip())
             except (subprocess.CalledProcessError, FileNotFoundError):
                 nvols = 100  # Fallback
 
@@ -379,9 +346,7 @@ rule motion_concat_group:
             "engine": motion_engine,
             "slice_axis": slice_axis,
             "concat_mode": concat_mode,
-            "timestamp": subprocess.check_output(
-                ["date", "-Iseconds"], text=True
-            ).strip(),
+            "timestamp": subprocess.check_output(["date", "-Iseconds"], text=True).strip(),
         }
         with open(output.group_prov, "w") as f:
             json.dump(prov_data, f, indent=2)
@@ -402,20 +367,12 @@ rule crop_detect:
         from pathlib import Path as _P
 
         # Get temporal crop configuration
-        crop_enabled = (
-            CFG.get("options", {}).get("temporal_crop", {}).get("enable", True)
-        )
+        crop_enabled = CFG.get("options", {}).get("temporal_crop", {}).get("enable", True)
         crop_method = (
-            CFG.get("options", {})
-            .get("temporal_crop", {})
-            .get("method", "cord_mean_robust_z")
+            CFG.get("options", {}).get("temporal_crop", {}).get("method", "cord_mean_robust_z")
         )
-        max_trim_start = (
-            CFG.get("options", {}).get("temporal_crop", {}).get("max_trim_start", 10)
-        )
-        max_trim_end = (
-            CFG.get("options", {}).get("temporal_crop", {}).get("max_trim_end", 10)
-        )
+        max_trim_start = CFG.get("options", {}).get("temporal_crop", {}).get("max_trim_start", 10)
+        max_trim_end = CFG.get("options", {}).get("temporal_crop", {}).get("max_trim_end", 10)
         z_thresh = CFG.get("options", {}).get("temporal_crop", {}).get("z_thresh", 2.5)
 
         # Get run info
@@ -471,9 +428,7 @@ rule motion:
         from pathlib import Path as _P
 
         # Get motion configuration
-        motion_engine = (
-            CFG.get("options", {}).get("motion", {}).get("engine", "sct+rigid3d")
-        )
+        motion_engine = CFG.get("options", {}).get("motion", {}).get("engine", "sct+rigid3d")
         slice_axis = CFG.get("options", {}).get("motion", {}).get("slice_axis", "IS")
 
         # Get run info for this wildcard
@@ -606,9 +561,7 @@ rule confounds:
             env["ACOMPCOR_N"] = str(acompcor_cfg.get("n_components_per_tissue", 5))
             env["ACOMPCOR_HIGHPASS_HZ"] = str(acompcor_cfg.get("highpass_hz", 0.008))
             env["ACOMPCOR_DETREND"] = "1" if acompcor_cfg.get("detrend", True) else "0"
-            env["ACOMPCOR_STANDARDIZE"] = (
-                "1" if acompcor_cfg.get("standardize", True) else "0"
-            )
+            env["ACOMPCOR_STANDARDIZE"] = "1" if acompcor_cfg.get("standardize", True) else "0"
         else:
             env["ACOMPCOR_TISSUES"] = "None"
             env["ACOMPCOR_N"] = "5"
@@ -648,9 +601,7 @@ rule confounds:
                 "acompcor": {
                     "enable": acompcor_enable,
                     "tissues": acompcor_cfg.get("tissues", []),
-                    "n_components_per_tissue": acompcor_cfg.get(
-                        "n_components_per_tissue", 5
-                    ),
+                    "n_components_per_tissue": acompcor_cfg.get("n_components_per_tissue", 5),
                     "highpass_hz": acompcor_cfg.get("highpass_hz", 0.008),
                     "detrend": acompcor_cfg.get("detrend", True),
                     "standardize": acompcor_cfg.get("standardize", True),
@@ -697,9 +648,7 @@ rule mppca_smoke:
         in_bold = row["bold_path"]
         env = os.environ.copy()
         env["IN_BOLD"] = in_bold
-        env["DENOISE_MPPCA"] = (
-            "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
-        )
+        env["DENOISE_MPPCA"] = "1" if CFG.get("options", {}).get("denoise_mppca", False) else "0"
         Path("steps/spi05_mppca.sh").chmod(0o755)
         subprocess.run(["bash", "steps/spi05_mppca.sh"], check=True, env=env)
         Path(output.mark).write_text("ok\n")
@@ -779,9 +728,7 @@ if CFG.get("registration", {}).get("enable", False):
 
                 if shutil.which("fslmaths"):
                     try:
-                        subprocess.run(
-                            ["fslmaths", in_bold, "-Tmean", out_mean], check=True
-                        )
+                        subprocess.run(["fslmaths", in_bold, "-Tmean", out_mean], check=True)
                     except subprocess.CalledProcessError:
                         # Fallback: copy input file if fslmaths fails
                         subprocess.run(["cp", in_bold, out_mean], check=True)
@@ -824,9 +771,7 @@ if CFG.get("registration", {}).get("enable", False):
                 env["IN_T2"] = t2_path
                 env["OUT_CORDMASK"] = out_cordmask
                 Path("steps/spi10_seg_cord.sh").chmod(0o755)
-                subprocess.run(
-                    ["bash", "steps/spi10_seg_cord.sh"], check=True, env=env
-                )
+                subprocess.run(["bash", "steps/spi10_seg_cord.sh"], check=True, env=env)
 
     rule label_levels:
         input:
@@ -841,9 +786,7 @@ if CFG.get("registration", {}).get("enable", False):
             levels=expand(
                 "{levels_native}",
                 levels_native=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "levels_native"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["levels_native"]
                     for i in range(N)
                 ],
             ),
@@ -861,9 +804,7 @@ if CFG.get("registration", {}).get("enable", False):
                 env["IN_CORDMASK"] = in_cordmask
                 env["OUT_LEVELS"] = out_levels
                 Path("steps/spi11_label_levels.sh").chmod(0o755)
-                subprocess.run(
-                    ["bash", "steps/spi11_label_levels.sh"], check=True, env=env
-                )
+                subprocess.run(["bash", "steps/spi11_label_levels.sh"], check=True, env=env)
 
     rule reg_epi2t2:
         input:
@@ -919,9 +860,7 @@ if CFG.get("registration", {}).get("enable", False):
                 env["OUT_WARP"] = out_warp
                 env["OUT_EPI_IN_T2"] = out_epi_in_t2
                 Path("steps/spi12_reg_epi2t2.sh").chmod(0o755)
-                subprocess.run(
-                    ["bash", "steps/spi12_reg_epi2t2.sh"], check=True, env=env
-                )
+                subprocess.run(["bash", "steps/spi12_reg_epi2t2.sh"], check=True, env=env)
 
     rule reg_t22pam50:
         input:
@@ -936,9 +875,7 @@ if CFG.get("registration", {}).get("enable", False):
             warp=expand(
                 "{warp_t22pam50}",
                 warp_t22pam50=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "warp_t22pam50"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["warp_t22pam50"]
                     for i in range(N)
                 ],
             ),
@@ -970,9 +907,7 @@ if CFG.get("registration", {}).get("enable", False):
                 env["OUT_WARP"] = out_warp
                 env["OUT_T2_IN_PAM50"] = out_t2_in_pam50
                 Path("steps/spi13_reg_t22pam50.sh").chmod(0o755)
-                subprocess.run(
-                    ["bash", "steps/spi13_reg_t22pam50.sh"], check=True, env=env
-                )
+                subprocess.run(["bash", "steps/spi13_reg_t22pam50.sh"], check=True, env=env)
 
     rule warp_masks:
         input:
@@ -993,9 +928,7 @@ if CFG.get("registration", {}).get("enable", False):
             warp_t22pam50=expand(
                 "{warp_t22pam50}",
                 warp_t22pam50=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "warp_t22pam50"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["warp_t22pam50"]
                     for i in range(N)
                 ],
             ),
@@ -1003,54 +936,42 @@ if CFG.get("registration", {}).get("enable", False):
             cordmask_native=expand(
                 "{cordmask_native_final}",
                 cordmask_native_final=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "mask_native_cord"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_native_cord"]
                     for i in range(N)
                 ],
             ),
             cordmask_pam50=expand(
                 "{cordmask_pam50}",
                 cordmask_pam50=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "mask_pam50_cord"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_cord"]
                     for i in range(N)
                 ],
             ),
             wmmask_native=expand(
                 "{wmmask_native}",
                 wmmask_native=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "mask_native_wm"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_native_wm"]
                     for i in range(N)
                 ],
             ),
             wmmask_pam50=expand(
                 "{wmmask_pam50}",
                 wmmask_pam50=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "mask_pam50_wm"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_wm"]
                     for i in range(N)
                 ],
             ),
             csfmask_native=expand(
                 "{csfmask_native}",
                 csfmask_native=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "mask_native_csf"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_native_csf"]
                     for i in range(N)
                 ],
             ),
             csfmask_pam50=expand(
                 "{csfmask_pam50}",
                 csfmask_pam50=[
-                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                        "mask_pam50_csf"
-                    ]
+                    derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_csf"]
                     for i in range(N)
                 ],
             ),
@@ -1083,9 +1004,7 @@ if CFG.get("registration", {}).get("enable", False):
                 env["OUT_CSFMASK_NATIVE"] = out_csfmask_native
                 env["OUT_CSFMASK_PAM50"] = out_csfmask_pam50
                 Path("steps/spi14_warp_masks.sh").chmod(0o755)
-                subprocess.run(
-                    ["bash", "steps/spi14_warp_masks.sh"], check=True, env=env
-                )
+                subprocess.run(["bash", "steps/spi14_warp_masks.sh"], check=True, env=env)
 
     rule registration_all:
         input:
@@ -1095,9 +1014,7 @@ if CFG.get("registration", {}).get("enable", False):
                 "{cordmask_pam50}",
                 cordmask_pam50=(
                     [
-                        derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                            "mask_pam50_cord"
-                        ]
+                        derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_cord"]
                         for i in range(N)
                     ]
                     if N > 0
@@ -1108,9 +1025,7 @@ if CFG.get("registration", {}).get("enable", False):
                 "{wmmask_pam50}",
                 wmmask_pam50=(
                     [
-                        derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                            "mask_pam50_wm"
-                        ]
+                        derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_wm"]
                         for i in range(N)
                     ]
                     if N > 0
@@ -1121,9 +1036,7 @@ if CFG.get("registration", {}).get("enable", False):
                 "{csfmask_pam50}",
                 csfmask_pam50=(
                     [
-                        derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)[
-                            "mask_pam50_csf"
-                        ]
+                        derive_outputs(row_by_id(MANIFEST_DERIV, i), DERIV)["mask_pam50_csf"]
                         for i in range(N)
                     ]
                     if N > 0
