@@ -1,289 +1,41 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "SpinePrep configuration",
-  "type": "object",
-  "required": [
-    "pipeline_version",
-    "project_name",
-    "study",
-    "paths",
-    "dataset",
-    "acq",
-    "options",
-    "registration",
-    "templates",
-    "tools",
-    "resources",
-    "qc",
-    "runtime"
-  ],
-  "properties": {
-    "pipeline_version": { "type": "string" },
-    "project_name": { "type": "string" },
-
-    "study": {
-      "type": "object",
-      "required": ["name"],
-      "properties": {
-        "name": { "type": "string", "minLength": 1 }
-      },
-      "additionalProperties": false
-    },
-
-    "paths": {
-      "type": "object",
-      "required": ["root", "bids_dir", "deriv_dir", "work_dir", "logs_dir"],
-      "properties": {
-        "root": { "type": "string", "minLength": 1 },
-        "bids_dir": { "type": "string", "minLength": 1 },
-        "deriv_dir": { "type": "string", "minLength": 1 },
-        "work_dir": { "type": "string", "minLength": 1 },
-        "logs_dir": { "type": "string", "minLength": 1 }
-      },
-      "additionalProperties": false
-    },
-
-    "dataset": {
-      "type": "object",
-      "properties": {
-        "sessions": {
-          "anyOf": [
-            { "type": "null" },
-            { "type": "array", "items": { "type": "string" } }
-          ]
-        },
-        "runs_per_subject": {
-          "anyOf": [
-            { "type": "null" },
-            { "type": "integer", "minimum": 1 }
-          ]
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object",
+  "required":["bids_root","output_dir","pipeline","confounds","registration","qc"],
+  "properties":{
+    "bids_root":{"type":["string","null"]},
+    "output_dir":{"type":"string"},
+    "pipeline":{
+      "type":"object",
+      "properties":{
+        "motion":{
+          "type":"object",
+          "properties":{
+            "fd_threshold":{"type":"number"},
+            "dvars_threshold":{"type":"number"}
+          },
+          "required":["fd_threshold","dvars_threshold"]
         }
-      },
-      "additionalProperties": false
+      }
     },
-
-    "acq": {
-      "type": "object",
-      "required": ["tr", "slice_timing", "pe_dir"],
-      "properties": {
-        "tr": { "type": "number", "exclusiveMinimum": 0 },
-        "slice_timing": { "type": "string" },
-        "pe_dir": { "type": "string" },
-        "echo_spacing_s": { "type": ["number", "null"], "exclusiveMinimum": 0 }
-      },
-      "additionalProperties": false
-    },
-
-    "options": {
-      "type": "object",
-      "required": ["ingest", "denoise_mppca", "motion", "smoothing", "sdc", "temporal_crop", "confounds", "censor", "masks", "acompcor", "first_level", "cleanup"],
-      "properties": {
-        "ingest": {
-          "type": "object",
-          "required": ["enable"],
-          "properties": { "enable": { "type": "boolean" } },
-          "additionalProperties": false
-        },
-        "denoise_mppca": { "type": "boolean" },
-        "motion": {
-          "type": "object",
-          "required": ["engine", "slice_axis", "concat"],
-          "properties": {
-            "engine": { "type": "string", "enum": ["sct", "rigid3d", "sct+rigid3d"] },
-            "slice_axis": { "type": "string", "enum": ["x", "y", "z", "IS", "SI"] },
-            "concat": {
-              "type": "object",
-              "required": ["mode", "require_same"],
-              "properties": {
-                "mode": { "type": "string", "enum": ["none", "subject", "session", "session+task"] },
-                "require_same": {
-                  "type": "array",
-                  "items": { "type": "string", "enum": ["pe_dir", "slice_axis", "tr", "voxel_size", "echo_spacing_s"] },
-                  "minItems": 1
-                }
-              },
-              "additionalProperties": false
-            }
-          },
-          "additionalProperties": false
-        },
-        "smoothing": {
-          "type": "object",
-          "required": ["enable", "fwhm_mm"],
-          "properties": {
-            "enable": { "type": "boolean" },
-            "fwhm_mm": { "type": "number", "minimum": 0 }
-          },
-          "additionalProperties": false
-        },
-        "sdc": {
-          "type": "object",
-          "required": ["enable", "mode"],
-          "properties": {
-            "enable": { "type": "boolean" },
-            "mode": { "type": "string", "enum": ["auto", "topup", "disabled"] }
-          },
-          "additionalProperties": false
-        },
-        "temporal_crop": {
-          "type": "object",
-          "required": ["enable", "method", "max_trim_start", "max_trim_end", "z_thresh"],
-          "properties": {
-            "enable": { "type": "boolean" },
-            "method": { "type": "string", "enum": ["cord_mean_robust_z"] },
-            "max_trim_start": { "type": "integer", "minimum": 0, "maximum": 10 },
-            "max_trim_end": { "type": "integer", "minimum": 0, "maximum": 10 },
-            "z_thresh": { "type": "number", "minimum": 1.0, "maximum": 5.0 }
-          },
-          "additionalProperties": false
-        },
-        "confounds": {
-          "type": "object",
-          "required": ["fd_method", "dvars_method"],
-          "properties": {
-            "fd_method": { "type": "string", "enum": ["power_fd"] },
-            "dvars_method": { "type": "string", "enum": ["std_dvars"] }
-          },
-          "additionalProperties": false
-        },
-        "censor": {
-          "type": "object",
-          "required": ["enable", "fd_thresh_mm", "dvars_thresh", "min_contig_vols", "pad_vols"],
-          "properties": {
-            "enable": { "type": "boolean" },
-            "fd_thresh_mm": { "type": "number", "minimum": 0.1, "maximum": 2.0 },
-            "dvars_thresh": { "type": "number", "minimum": 0.5, "maximum": 5.0 },
-            "min_contig_vols": { "type": "integer", "minimum": 3, "maximum": 50 },
-            "pad_vols": { "type": "integer", "minimum": 0, "maximum": 3 }
-          },
-          "additionalProperties": false
-        },
-        "masks": {
-          "type": "object",
-          "required": ["enable", "source", "binarize_thr"],
-          "properties": {
-            "enable": { "type": "boolean" },
-            "source": { "type": "string", "enum": ["sct", "provided", "none"] },
-            "binarize_thr": { "type": "number", "minimum": 0, "maximum": 1 }
-          },
-          "additionalProperties": false
-        },
-        "acompcor": {
-          "type": "object",
-          "required": ["enable", "tissues", "n_components_per_tissue", "highpass_hz", "detrend", "standardize", "explained_variance_min"],
-          "properties": {
-            "enable": { "type": "boolean" },
-            "tissues": {
-              "type": "array",
-              "items": { "type": "string", "enum": ["cord", "wm", "csf"] },
-              "minItems": 1,
-              "maxItems": 3,
-              "uniqueItems": true
-            },
-            "n_components_per_tissue": { "type": "integer", "minimum": 1, "maximum": 10 },
-            "highpass_hz": { "type": "number", "minimum": 0, "maximum": 0.2 },
-            "detrend": { "type": "boolean" },
-            "standardize": { "type": "boolean" },
-            "explained_variance_min": { "type": "number", "minimum": 0, "maximum": 1 }
-          },
-          "additionalProperties": false
-        },
-        "first_level": {
-          "type": "object",
-          "required": ["engine", "feat_variant"],
-          "properties": {
-            "engine": { "type": "string", "enum": ["feat", "pyglm"] },
-            "feat_variant": { "type": "string" }
-          },
-          "additionalProperties": false
-        },
-        "cleanup": {
-          "type": "object",
-          "required": ["keep_only_latest_stage"],
-          "properties": {
-            "keep_only_latest_stage": { "type": "boolean" }
-          },
-          "additionalProperties": false
+    "confounds":{
+      "type":"object",
+      "properties":{
+        "acompcor":{
+          "type":"object",
+          "properties":{"n_components":{"type":"integer","minimum":1}},
+          "required":["n_components"]
         }
-      },
-      "additionalProperties": false
+      }
     },
-
-    "registration": {
-      "type": "object",
-      "required": ["enable", "template", "guidance", "levels", "use_gm_wm_masks", "rootlets"],
-      "properties": {
-        "enable": { "type": "boolean" },
-        "template": { "type": "string", "enum": ["PAM50"] },
-        "guidance": { "type": "string", "enum": ["SCT"] },
-        "levels": { "type": "string", "enum": ["auto"] },
-        "use_gm_wm_masks": { "type": "boolean" },
-        "rootlets": {
-          "type": "object",
-          "required": ["enable", "mode"],
-          "properties": {
-            "enable": { "type": "boolean" },
-            "mode": { "type": "string", "enum": ["atlas"] }
-          },
-          "additionalProperties": false
-        }
+    "registration":{
+      "type":"object",
+      "properties":{
+        "target":{"type":"string","enum":["PAM50"]},
+        "sct":{"type":"object","properties":{"enable":{"type":"boolean"}},"required":["enable"]}
       },
-      "additionalProperties": false
+      "required":["target","sct"]
     },
-
-    "templates": {
-      "type": "object",
-      "required": ["pam50_version"],
-      "properties": {
-        "pam50_version": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-
-    "tools": {
-      "type": "object",
-      "required": ["sct", "fsl", "ants", "dcm2niix"],
-      "properties": {
-        "sct": { "type": "string" },
-        "sct_min_version": { "type": "string" },
-        "fsl": { "type": "string" },
-        "ants": { "type": "string" },
-        "dcm2niix": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-
-    "resources": {
-      "type": "object",
-      "required": ["default_threads", "default_mem_gb"],
-      "properties": {
-        "default_threads": { "type": "integer", "minimum": 1 },
-        "default_mem_gb": { "type": "integer", "minimum": 1 }
-      },
-      "additionalProperties": false
-    },
-
-    "qc": {
-      "type": "object",
-      "required": ["subject_report", "cohort_report"],
-      "properties": {
-        "subject_report": { "type": "boolean" },
-        "cohort_report": { "type": "boolean" }
-      },
-      "additionalProperties": false
-    },
-
-    "runtime": {
-      "type": "object",
-      "required": ["container_engine"],
-      "properties": {
-        "container_engine": {
-          "type": ["string", "null"],
-          "enum": ["docker", "singularity", null]
-        }
-      },
-      "additionalProperties": false
-    }
-  },
-  "additionalProperties": false
+    "qc":{"type":"object","properties":{"enable":{"type":"boolean"}},"required":["enable"]}
+  }
 }

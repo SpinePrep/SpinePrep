@@ -127,7 +127,7 @@ The `*_desc-confounds_timeseries.json` sidecar contains:
 
 ## Integration with Temporal Cropping
 
-Confounds are computed on cropped BOLD data (see [temporal crop](../how-tos/cropping.md)):
+Confounds are computed on cropped BOLD data (temporal crop feature):
 
 1. Temporal crop detection identifies artifacts at run start/end
 2. Motion correction uses cropped timepoints

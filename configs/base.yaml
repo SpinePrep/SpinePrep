@@ -1,102 +1,16 @@
-pipeline_version: "0.2.0"
-project_name: "SpinePrep"
-
-study:
-  name: "ExampleStudy"            # human-readable study name
-
-paths:
-  root: "/DATA/ExampleStudy"      # single folder for this study
-  bids_dir: "{root}/bids"
-  deriv_dir: "{root}/derivatives/spineprep"
-  work_dir: "{root}/work/spineprep"
-  logs_dir: "{deriv_dir}/logs"    # resolved at runtime
-
-dataset:
-  sessions: null                   # list of sessions or null
-  runs_per_subject: null           # null => discover from BIDS
-
-acq:
-  tr: 1.2
-  slice_timing: "ascending"
-  pe_dir: "AP"
-  echo_spacing_s: null
-
-options:
-  ingest:
-    enable: false
-  denoise_mppca: true
+# Minimal defaults (expand later as needed)
+bids_root: null
+output_dir: "./out"
+pipeline:
   motion:
-    engine: "sct+rigid3d"          # sct | rigid3d | sct+rigid3d
-    slice_axis: "IS"               # x | y | z | IS | SI (for SCT engines)
-    concat:
-      mode: "session+task"         # none | subject | session | session+task
-      require_same: ["pe_dir", "slice_axis", "tr", "voxel_size"]
-  smoothing:
-    enable: false
-    fwhm_mm: 2.0
-  sdc:
-    enable: true                   # run SDC iff fieldmaps present
-    mode: "auto"                   # auto | topup | disabled
-  temporal_crop:
-    enable: true                   # enable automatic temporal cropping
-    method: "cord_mean_robust_z"   # detection method
-    max_trim_start: 10             # maximum volumes to trim from start
-    max_trim_end: 10               # maximum volumes to trim from end
-    z_thresh: 2.5                  # z-score threshold for outlier detection
-  confounds:
-    fd_method: "power_fd"         # power_fd
-    dvars_method: "std_dvars"     # std_dvars
-  censor:
-    enable: true                  # enable frame censoring (scrubbing)
-    fd_thresh_mm: 0.5             # FD threshold in mm (0.1-2.0)
-    dvars_thresh: 1.5             # DVARS threshold (0.5-5.0)
-    min_contig_vols: 5            # minimum consecutive non-censored volumes to keep (3-50)
-    pad_vols: 1                   # padding around censored frames (0-3)
-  masks:
-    enable: true                  # require SCT pipeline or fallbacks
-    source: "sct"                 # enum: sct|provided|none
-    binarize_thr: 0.5             # threshold for probabilistic masks (if any)
+    fd_threshold: 0.5
+    dvars_threshold: 1.5
+confounds:
   acompcor:
-    enable: true
-    tissues: ["cord", "wm", "csf"]
-    n_components_per_tissue: 5     # cap, compute up to available rank
-    highpass_hz: 0.008            # high-pass filter frequency
-    detrend: true                 # detrend time series
-    standardize: true             # standardize time series
-    explained_variance_min: 0.0   # keep PCs regardless; future could min variance
-  first_level:
-    engine: "feat"                 # feat | pyglm (pyglm later)
-    feat_variant: "block_15s_conv3"
-  cleanup:
-    keep_only_latest_stage: false
-
+    n_components: 6
 registration:
-  enable: true
-  template: PAM50
-  guidance: SCT
-  levels: auto                     # future: explicit list (e.g., [C2, C3, ...])
-  use_gm_wm_masks: true
-  rootlets:
-    enable: false
-    mode: "atlas"                  # reserved for future
-
-templates:
-  pam50_version: "1.0"             # final outputs in PAM50 native mm resolution
-
-tools:
-  sct: "7.1.0"
-  sct_min_version: "5.8"          # minimum SCT version for registration features
-  fsl: "6.0.7"
-  ants: "2.5.3"
-  dcm2niix: "v1.0.2024"
-
-resources:
-  default_threads: 8
-  default_mem_gb: 24
-
+  target: "PAM50"
+  sct:
+    enable: true
 qc:
-  subject_report: true
-  cohort_report: false
-
-runtime:
-  container_engine: null           # docker | singularity | null
+  enable: true
