@@ -106,3 +106,7 @@ jobs:
           user_name: github-actions[bot]
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
           commit_message: "Deploy site from SpinePrep@${{ github.sha }}"
+      - name: Announce live URL
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          echo "Live site: https://spineprep.github.io" >> $GITHUB_STEP_SUMMARY
