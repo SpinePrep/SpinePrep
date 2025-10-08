@@ -84,8 +84,9 @@ def test_padding_with_contiguity():
     c = build_censor(fd, dvars, cfg)
 
     # With padding=1, the outlier at index 2 should censor indices 1,2,3
-    # This should leave two short segments that get removed
-    assert c["n_kept"] <= 2  # Very few frames should remain
+    # This should leave one segment of length 3 (indices 4,5,6) that is kept
+    # and one segment of length 1 (index 0) that is removed
+    assert c["n_kept"] == 3  # One segment of 3 frames should remain
 
 
 def test_all_frames_contiguous():

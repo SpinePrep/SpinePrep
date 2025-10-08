@@ -1,0 +1,255 @@
+/* Custom styles for SpinePrep documentation */
+
+/* Hero section styling */
+.hero {
+  text-align: center;
+  padding: 2rem 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.hero .lead {
+  font-size: 1.2rem;
+  margin-bottom: 0;
+  opacity: 0.9;
+}
+
+/* Callout boxes */
+.callout {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left: 4px solid #667eea;
+  background-color: #f8f9fa;
+  border-radius: 0 4px 4px 0;
+}
+
+.callout.info {
+  border-left-color: #17a2b8;
+  background-color: #d1ecf1;
+}
+
+.callout.warning {
+  border-left-color: #ffc107;
+  background-color: #fff3cd;
+}
+
+.callout.danger {
+  border-left-color: #dc3545;
+  background-color: #f8d7da;
+}
+
+.callout.success {
+  border-left-color: #28a745;
+  background-color: #d4edda;
+}
+
+/* Wide tables */
+.md-typeset table:not([class]) {
+  display: table;
+  width: 100%;
+}
+
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+
+/* Code blocks */
+.md-typeset pre {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+}
+
+.md-typeset code {
+  background-color: #f8f9fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Navigation cards */
+.grid.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.grid.cards .card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.grid.cards .card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.grid.cards .card h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.grid.cards .card p {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+/* Badge styling */
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  background-color: #6c757d;
+  color: white;
+}
+
+.badge.primary {
+  background-color: #007bff;
+}
+
+.badge.success {
+  background-color: #28a745;
+}
+
+.badge.info {
+  background-color: #17a2b8;
+}
+
+.badge.warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge.danger {
+  background-color: #dc3545;
+}
+
+/* Math equations */
+.md-typeset .arithmatex {
+  font-size: 1.1em;
+}
+
+/* Admonitions */
+.md-typeset .admonition {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.md-typeset .admonition-title {
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+}
+
+.md-typeset .admonition-content {
+  padding: 1rem;
+}
+
+/* Tabs */
+.md-typeset .tabbed {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.md-typeset .tabbed > input {
+  display: none;
+}
+
+.md-typeset .tabbed > label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-bottom: none;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+}
+
+.md-typeset .tabbed > input:checked + label {
+  background-color: white;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.md-typeset .tabbed > .tabbed-content {
+  display: none;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  background-color: white;
+}
+
+.md-typeset .tabbed > input:checked + label + .tabbed-content {
+  display: block;
+}
+
+/* Search highlighting */
+.md-typeset .search-highlight {
+  background-color: #fff3cd;
+  padding: 0.1em 0.2em;
+  border-radius: 2px;
+}
+
+/* Print styles */
+@media print {
+  .hero {
+    background: none !important;
+    color: black !important;
+  }
+
+  .grid.cards {
+    display: block;
+  }
+
+  .grid.cards .card {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Dark mode adjustments */
+[data-md-color-scheme="slate"] .hero {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+}
+
+[data-md-color-scheme="slate"] .callout {
+  background-color: #2d3748;
+  border-left-color: #4a5568;
+}
+
+[data-md-color-scheme="slate"] .grid.cards .card {
+  background-color: #2d3748;
+  border-color: #4a5568;
+}
+
+[data-md-color-scheme="slate"] .grid.cards .card h3 {
+  color: #e2e8f0;
+}
+
+[data-md-color-scheme="slate"] .grid.cards .card p {
+  color: #a0aec0;
+}

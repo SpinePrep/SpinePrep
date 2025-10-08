@@ -318,10 +318,11 @@ def append_censor_columns(df: pd.DataFrame, censor_dict: Dict) -> pd.DataFrame:
     df_out = df.copy()
     df_out["frame_censor"] = censor_dict["censor"]
 
-    # Ensure canonical column order
-    canonical_cols = ["framewise_displacement", "dvars", "frame_censor"]
-    other_cols = [col for col in df_out.columns if col not in canonical_cols]
-    df_out = df_out[canonical_cols + other_cols]
+    # Ensure canonical column order (only if DataFrame has columns)
+    if not df_out.empty:
+        canonical_cols = ["framewise_displacement", "dvars", "frame_censor"]
+        other_cols = [col for col in df_out.columns if col not in canonical_cols]
+        df_out = df_out[canonical_cols + other_cols]
 
     return df_out
 
@@ -424,6 +425,10 @@ def acompcor_pcs(
     from scipy import signal
     from sklearn.decomposition import PCA
 
+    # Handle empty masks (no voxels)
+    if ts.shape[1] == 0:
+        return np.zeros((ts.shape[0], 0)), np.array([])
+
     # Detrend if requested
     if detrend:
         ts = signal.detrend(ts, axis=0)
@@ -441,6 +446,10 @@ def acompcor_pcs(
 
     # Limit components to available rank
     n_components = min(n_components, min(ts.shape) - 1)
+
+    # Handle case where no components are possible
+    if n_components <= 0:
+        return np.zeros((ts.shape[0], 0)), np.array([])
 
     # Perform PCA
     pca = PCA(n_components=n_components)
@@ -470,9 +479,17 @@ def append_acompcor(
         pcs = data["pcs"]  # Shape: (T, K)
         explained_var = data["explained_variance"]  # Shape: (K,)
 
+        # Skip tissues with empty PCs
+        if pcs.shape[1] == 0:
+            meta[tissue] = {
+                "n_components": 0,
+                "explained_variance": [],
+            }
+            continue
+
         # Add PC columns
         for i in range(pcs.shape[1]):
-            col_name = f"acomp_{tissue}_pc{i+1:02d}"
+            col_name = f"acomp_{tissue}_pc{i + 1:02d}"
             df_out[col_name] = pcs[:, i]
 
         # Add metadata

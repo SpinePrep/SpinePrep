@@ -175,6 +175,42 @@ def plot_series(
     plt.close()
 
 
+def plot_ev_series(out_png: str, ev_data: Dict[str, List[float]], title: str) -> None:
+    """
+    Plot explained variance for aCompCor components.
+
+    Args:
+        out_png: Output PNG path
+        ev_data: Dictionary with tissue names as keys and explained variance lists as values
+        title: Plot title
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    colors = ["blue", "green", "red", "orange", "purple"]
+    for i, (tissue, ev) in enumerate(ev_data.items()):
+        if ev:  # Only plot if we have data
+            ax.plot(
+                range(1, len(ev) + 1),
+                ev,
+                "o-",
+                color=colors[i % len(colors)],
+                label=f"{tissue} (n={len(ev)})",
+                linewidth=2,
+                markersize=4,
+            )
+
+    ax.set_title(title)
+    ax.set_xlabel("Component")
+    ax.set_ylabel("Explained Variance")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim(0, 1)
+
+    plt.tight_layout()
+    plt.savefig(out_png, dpi=150, bbox_inches="tight")
+    plt.close()
+
+
 def module_decisions(cfg: dict) -> Dict[str, str]:
     """Extract module decisions from config."""
     opts = cfg.get("options", {})
@@ -286,6 +322,25 @@ def render_subject_report(
         all_fd_plots.append(fd_plot.name)
         all_dvars_plots.append(dvars_plot.name)
 
+        # Create aCompCor EV plot if available
+        ev_plot = None
+        if acompcor_info:
+            ev_plot = figures_dir / f"{sub}_run-{run_id}_acompcor_ev.png"
+            ev_data = {}
+            for tissue, tissue_info in acompcor_info.items():
+                if (
+                    isinstance(tissue_info, dict)
+                    and "explained_variance" in tissue_info
+                ):
+                    ev_data[tissue] = tissue_info["explained_variance"]
+
+            if ev_data:
+                plot_ev_series(
+                    str(ev_plot),
+                    ev_data,
+                    f"{sub} run-{run_id} aCompCor Explained Variance",
+                )
+
         # Check if this run used grouped motion
         motion_group = row.get("motion_group", "")
         group_info = None
@@ -313,6 +368,13 @@ def render_subject_report(
             "is_trimmed": crop_from > 0 or crop_to < n_vols,
         }
 
+        # Extract aCompCor PC counts
+        acompcor_pc_counts = {}
+        if acompcor_info:
+            for tissue, tissue_info in acompcor_info.items():
+                if isinstance(tissue_info, dict) and "n_components" in tissue_info:
+                    acompcor_pc_counts[tissue] = tissue_info["n_components"]
+
         run_summaries.append(
             {
                 "run": run_id,
@@ -327,9 +389,11 @@ def render_subject_report(
                 "confounds_json": confounds_json,
                 "fd_plot": fd_plot.name,
                 "dvars_plot": dvars_plot.name,
+                "ev_plot": ev_plot.name if ev_plot else None,
                 "motion_group": group_info,
                 "temporal_crop": trim_info,
                 "acompcor": acompcor_info,
+                "acompcor_pc_counts": acompcor_pc_counts,
             }
         )
 

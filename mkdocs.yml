@@ -1,0 +1,129 @@
+site_name: SpinePrep
+site_description: Spinal cord preprocessing pipeline for BIDS datasets
+site_url: https://spineprep.readthedocs.io
+repo_url: https://github.com/spineprep/spineprep
+repo_name: spineprep/spineprep
+edit_uri: edit/main/docs/
+site_author: SpinePrep Contributors
+# site_keywords removed - not supported in current version
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - content.code.copy
+    - toc.integrate
+    - search.highlight
+    - search.suggest
+    - content.action.edit
+    - content.action.view
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+  favicon: assets/favicon.png
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: material.extensions.emoji.twemoji
+      emoji_generator: material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: spineprep
+      repo: spineprep
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: pymdownx.slugs.slugify
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      lang: en
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/spineprep
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/spineprep
+  version:
+    provider: mike
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - User Guide:
+    - user-guide/usage.md
+    - user-guide/outputs.md
+    - user-guide/qc.md
+    - user-guide/registration.md
+  - How-tos:
+    - how-tos/physio-hooks.md
+    - how-tos/grouped-motion.md
+  - Reference:
+    - reference/config.md
+    - reference/api.md
+  - Contributing: contributing.md
+
+extra_css:
+  - _assets/styles.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

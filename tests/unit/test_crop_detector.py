@@ -24,9 +24,17 @@ def test_detector_trims_head_tail_with_bounds(tmp_path):
     tsv = tmp_path / "conf.tsv"
     _fake_tsv(tsv, s)
 
+    # Create a dummy NIfTI file for the test
+    bold_path = tmp_path / "bold.nii.gz"
+    import nibabel as nib
+
+    dummy_data = np.zeros((10, 10, 10, n))  # 4D dummy data
+    dummy_img = nib.Nifti1Image(dummy_data, np.eye(4))
+    dummy_img.to_filename(bold_path)
+
     out = detect_crop(
         confounds_tsv=str(tsv),
-        bold_path="",
+        bold_path=str(bold_path),
         cord_mask=None,
         opts={"z_thresh": 2.5, "max_trim_start": 10, "max_trim_end": 10},
     )
