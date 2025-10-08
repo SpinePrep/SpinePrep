@@ -10,7 +10,10 @@
 
 [➡️ Live Docs](https://spineprep.github.io/){ .md-button .md-button--primary }
 
-> You’re viewing **latest**. For citeable, frozen docs see **[stable](/stable/)**.
+!!! warning "Under Development"
+    SpinePrep is not ready for production use. Interfaces, outputs, and methods may change without notice. Do not rely on this software for research or clinical decisions.
+
+> You're viewing **latest**. For citeable, frozen docs see **[stable](/stable/)**.
 > Browse other versions from the selector in the header.
 
 <!-- Badges -->
