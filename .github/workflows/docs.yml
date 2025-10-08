@@ -3,12 +3,6 @@ name: Documentation CI
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'docs/**'
-      - 'scripts/**'
-      - 'mkdocs.yml'
-      - 'schemas/**'
-      - 'workflow/lib/**'
   workflow_dispatch:
 
 permissions:
