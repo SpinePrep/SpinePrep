@@ -227,4 +227,148 @@ options:
 
 - Censoring operates on **cropped** BOLD data (after temporal crop)
 - Crop information preserved in confounds JSON metadata
+
+## Masks & aCompCor
+
+### Overview
+
+The masks and aCompCor system provides anatomical component-based noise correction using tissue-specific masks. This system integrates with the registration pipeline to generate masks and extract principal components for physiological noise removal.
+
+### Mask Sources
+
+#### SCT-Generated Masks (Default)
+- **Cord Mask**: Spinal cord segmentation from T2w anatomical image
+- **White Matter Mask**: White matter regions within cord mask
+- **CSF Mask**: Cerebrospinal fluid regions within cord mask
+- **Source**: SCT registration pipeline (`sct_deepseg_sc`, `sct_register_multimodal`)
+- **Space**: EPI (functional) space for aCompCor computation
+
+#### Provided Masks (Alternative)
+- **User-supplied**: Pre-computed masks in EPI space
+- **Path**: Specified in configuration or manifest
+- **Format**: Binary NIfTI masks (0/1 values)
+
+#### Disabled Masks
+- **Fallback**: When SCT unavailable or masks disabled
+- **Behavior**: aCompCor skipped, confounds contain only FD/DVARS/censor
+
+### aCompCor Algorithm
+
+#### Step 1: Time Series Extraction
+- Load BOLD data with temporal cropping applied
+- Extract time series from each tissue mask
+- Standardize time series (optional, default: true)
+
+#### Step 2: Preprocessing
+- **Detrending**: Linear detrending (optional, default: true)
+- **High-pass Filtering**: Butterworth filter (default: 0.008 Hz)
+- **Standardization**: Z-score normalization (optional, default: true)
+
+#### Step 3: Principal Component Analysis
+- **PCA**: Extract principal components from tissue time series
+- **Components**: Up to `n_components_per_tissue` (default: 5)
+- **Rank Limiting**: Automatically cap at available rank
+- **Empty Masks**: Skip tissues with no voxels
+
+#### Step 4: Output Generation
+- **TSV Columns**: `acomp_{tissue}_pc{01..N}` (e.g., `acomp_cord_pc01`)
+- **JSON Metadata**: Component counts, explained variance per tissue
+- **Canonical Order**: aCompCor columns after `frame_censor`
+
+### Configuration
+
+```yaml
+options:
+  masks:
+    enable: true                  # require masks for aCompCor
+    source: "sct"                 # enum: sct|provided|none
+    binarize_thr: 0.5            # threshold for probabilistic masks (0-1)
+  acompcor:
+    enable: true
+    tissues: ["cord", "wm", "csf"]  # tissues to include
+    n_components_per_tissue: 5      # max components per tissue (1-10)
+    highpass_hz: 0.008            # high-pass filter frequency (0-0.2)
+    detrend: true                  # detrend time series
+    standardize: true              # standardize time series
+    explained_variance_min: 0.0    # minimum explained variance (0-1)
+```
+
+### Outputs
+
+#### TSV Files
+- **Path**: `*_desc-confounds_timeseries.tsv`
+- **Columns**: `framewise_displacement`, `dvars`, `frame_censor`, `acomp_{tissue}_pc{01..N}`
+- **Format**: Tab-separated values with headers
+
+#### JSON Metadata
+- **Path**: `*_desc-confounds_timeseries.json`
+- **Structure**:
+  ```json
+  {
+    "aCompCor": {
+      "cord": {
+        "n_components": 5,
+        "explained_variance": [0.45, 0.23, 0.15, 0.10, 0.07]
+      },
+      "wm": {
+        "n_components": 3,
+        "explained_variance": [0.38, 0.22, 0.18]
+      },
+      "csf": {
+        "n_components": 0,
+        "explained_variance": []
+      }
+    }
+  }
+  ```
+
+### Quality Control Integration
+
+#### Subject Reports
+- **EV Plots**: Explained variance plots per run and tissue
+- **PC Counts**: Number of components extracted per tissue
+- **Table Display**: aCompCor PC counts in run summary table
+- **Graceful Degradation**: Reports work with or without aCompCor data
+
+#### Provenance
+- **Mask Paths**: Source mask files for each tissue
+- **Parameters**: aCompCor settings (components, filtering, etc.)
+- **Tissue Status**: Which tissues had successful PC extraction
+
+### Integration Points
+
+#### Registration Pipeline
+- **Mask Generation**: SCT pipeline creates EPI-space masks
+- **Path Resolution**: `mask_paths()` function maps manifest rows to mask files
+- **Fallback Handling**: Empty strings when masks disabled/unavailable
+
+#### Confounds Pipeline
+- **Input**: Cropped BOLD data and tissue masks
+- **Processing**: Time series extraction and PCA computation
+- **Output**: Enhanced confounds with aCompCor columns
+
+#### Temporal Crop Integration
+- **Input**: aCompCor uses cropped BOLD data
+- **Consistency**: Same temporal window as motion correction and confounds
+- **Metadata**: Crop information preserved in JSON sidecar
 - QC plots show both temporal crop and censoring effects
+
+## Documentation Architecture
+
+### Site Goals
+The SpinePrep documentation site provides a first-class user experience that surpasses fMRIPrep in clarity and scientific rigor. The site serves as the primary interface for users to understand, configure, and troubleshoot the SpinePrep pipeline.
+
+### Site Structure
+- **Landing Page**: Value proposition, quickstart, and sample reports
+- **Getting Started**: Installation, minimal configuration, and first run
+- **User Guide**: Comprehensive usage documentation including CLI, configuration, outputs, QC, and registration
+- **How-tos**: Common recipes and advanced workflows
+- **Reference**: Auto-generated API and configuration documentation
+- **Contributing**: Development setup, CI gates, and contribution guidelines
+
+### CI/Deploy Policy
+- **Build**: MkDocs Material with strict mode enabled
+- **Quality Gates**: Linting (ruff), formatting (ruff format), spell checking (codespell), link checking (lychee)
+- **Generation**: Auto-generate reference docs from schema and source code
+- **Deployment**: Automatic deployment to GitHub Pages on main branch
+- **Versioning**: Support for versioned documentation using mike

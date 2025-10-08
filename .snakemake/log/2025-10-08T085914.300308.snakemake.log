@@ -1,0 +1,19 @@
+ValidationError in file "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 26:
+[] should be non-empty
+
+Failed validating 'minItems' in schema['properties']['options']['properties']['motion']['properties']['concat']['properties']['require_same']:
+    {'type': 'array',
+     'items': {'type': 'string',
+               'enum': ['pe_dir',
+                        'slice_axis',
+                        'tr',
+                        'voxel_size',
+                        'echo_spacing_s']},
+     'minItems': 1}
+
+On instance['options']['motion']['concat']['require_same']:
+    []
+  File "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 29, in <module>
+  File "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 26, in _load
+  File "/mnt/ssd1/SpinePrep/spineprep/config.py", line 81, in load_config
+  File "/mnt/ssd1/SpinePrep/.venv/lib/python3.12/site-packages/jsonschema/validators.py", line 1332, in validate

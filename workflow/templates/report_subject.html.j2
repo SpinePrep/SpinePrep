@@ -240,6 +240,7 @@
                     <th>Volumes</th>
                     <th>Mean FD (mm)</th>
                     <th>Mean DVARS</th>
+                    <th>aCompCor PCs</th>
                     <th>Files</th>
                 </tr>
             </thead>
@@ -251,6 +252,15 @@
                     <td>{{ run.n_vols }}</td>
                     <td>{{ run.mean_fd }}</td>
                     <td>{{ run.mean_dvars }}</td>
+                    <td>
+                        {% if run.acompcor_pc_counts %}
+                            {% for tissue, count in run.acompcor_pc_counts.items() %}
+                                {{ tissue }}: {{ count }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                     <td>
                         <a href="{{ run.confounds_tsv }}" target="_blank">TSV</a> |
                         <a href="{{ run.confounds_json }}" target="_blank">JSON</a>
@@ -275,6 +285,19 @@
                 <img src="../figures/{{ dvars_plots[i] }}" alt="DVARS plot for run {{ run_summaries[i].run }}">
                 <p>Mean DVARS: {{ run_summaries[i].mean_dvars }}</p>
             </div>
+            {% if run_summaries[i].ev_plot %}
+            <div class="plot-item">
+                <h4>Run {{ run_summaries[i].run }} - aCompCor Explained Variance</h4>
+                <img src="../figures/{{ run_summaries[i].ev_plot }}" alt="aCompCor EV plot for run {{ run_summaries[i].run }}">
+                <p>
+                    {% if run_summaries[i].acompcor_pc_counts %}
+                        PCs: {% for tissue, count in run_summaries[i].acompcor_pc_counts.items() %}{{ tissue }}: {{ count }}{% if not loop.last %}, {% endif %}{% endfor %}
+                    {% else %}
+                        No aCompCor data
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

@@ -1,0 +1,64 @@
+
+pipeline_version: "0.2.0"
+project_name: "SpinePrep"
+study: { name: "test" }
+paths:
+  root: /mnt/ssd1/SpinePrep/test_work4
+  bids_dir: bids
+  deriv_dir: derivatives/spineprep
+  work_dir: work
+  logs_dir: derivatives/spineprep/logs
+dataset: { sessions: null, runs_per_subject: null }
+acq: { tr: 2.0, slice_timing: "ascending", pe_dir: "AP", echo_spacing_s: null }
+options:
+  ingest: { enable: false }
+  denoise_mppca: false
+  motion:
+    engine: "rigid3d"
+    slice_axis: "z"
+    concat:
+      mode: "none"
+      require_same: ["pe_dir"]
+  smoothing: { enable: false, fwhm_mm: 2.0 }
+  sdc: { enable: false, mode: "auto" }
+  temporal_crop:
+    enable: true
+    method: "cord_mean_robust_z"
+    max_trim_start: 10
+    max_trim_end: 10
+    z_thresh: 2.5
+  confounds:
+    fd_method: "power_fd"
+    dvars_method: "std_dvars"
+  censor:
+    enable: true
+    fd_thresh_mm: 0.5
+    dvars_thresh: 1.5
+    min_contig_vols: 5
+    pad_vols: 1
+  masks:
+    enable: true
+    source: "sct"
+    binarize_thr: 0.5
+  acompcor:
+    enable: true
+    tissues: ["cord", "wm", "csf"]
+    n_components_per_tissue: 5
+    highpass_hz: 0.008
+    detrend: true
+    standardize: true
+    explained_variance_min: 0.0
+  first_level: { engine: "feat", feat_variant: "x" }
+  cleanup: { keep_only_latest_stage: false }
+templates: { pam50_version: "1.0" }
+tools: { sct: ">=5.8", fsl: "any", ants: "any", dcm2niix: "any" }
+resources: { default_threads: 2, default_mem_gb: 2 }
+qc: { subject_report: false, cohort_report: false }
+runtime: { container_engine: null }
+registration:
+  enable: true
+  template: PAM50
+  guidance: SCT
+  levels: auto
+  use_gm_wm_masks: true
+  rootlets: { enable: false, mode: atlas }

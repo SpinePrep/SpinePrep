@@ -123,7 +123,8 @@ def mask_paths(row: dict) -> Dict[str, str]:
         row: Row from manifest_deriv.tsv
 
     Returns:
-        Dictionary with mask paths for cord, wm, csf in EPI space
+        Dictionary with mask paths for cord, wm, csf in EPI space.
+        Returns empty strings when masks are disabled or not available.
     """
     sub = row["sub"]
     ses = row.get("ses", "")

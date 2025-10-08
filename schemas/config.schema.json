@@ -177,7 +177,8 @@
               "type": "array",
               "items": { "type": "string", "enum": ["cord", "wm", "csf"] },
               "minItems": 1,
-              "maxItems": 3
+              "maxItems": 3,
+              "uniqueItems": true
             },
             "n_components_per_tissue": { "type": "integer", "minimum": 1, "maximum": 10 },
             "highpass_hz": { "type": "number", "minimum": 0, "maximum": 0.2 },

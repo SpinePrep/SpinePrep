@@ -14,6 +14,15 @@ def _prep_fixture(tmp_path):
     (bids / "sub-01/func").mkdir(parents=True, exist_ok=True)
     (bids / "sub-01/func/sub-01_task-rest_run-01_bold.nii.gz").write_bytes(b"\x00")
     logs.mkdir(parents=True, exist_ok=True)
+
+    # Create required inputs for motion rule
+    (deriv / "sub-01/func").mkdir(parents=True, exist_ok=True)
+    (deriv / "sub-01/func/sub-01_task-rest_run-01_desc-mppca_bold.nii.gz").write_bytes(
+        b"\x00"
+    )
+    (deriv / "sub-01/func/sub-01_task-rest_run-01_desc-crop.json").write_text(
+        '{"from": 0, "to": 100}'
+    )
     # minimal manifests
     (logs / "samples.tsv").write_text(
         "sub\tses\trun\ttask\tbold_path\nsub-01\t\t01\trest\t"
@@ -48,7 +57,7 @@ def test_motion_rigid3d(tmp_path):
             "snakemake",
             "-n",
             "-p",
-            "motion_0",
+            "derivatives/spineprep/sub-01/func/sub-01_task-rest_run-01_desc-motion_bold.nii.gz",
             "--snakefile",
             "workflow/Snakefile",
             "--directory",
@@ -91,7 +100,7 @@ def test_motion_sct_graceful_skip(tmp_path):
             "-p",
             "-j",
             "2",
-            "motion_0",
+            "derivatives/spineprep/sub-01/func/sub-01_task-rest_run-01_desc-motion_bold.nii.gz",
             "--snakefile",
             "workflow/Snakefile",
             "--directory",
