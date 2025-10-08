@@ -35,5 +35,6 @@ exclude: |
     .*\.egg-info/|
     __pycache__/|
     spineprep\.egg-info/|
-    .*site-packages/.*
+    .*site-packages/.*|
+    site/
   )

@@ -30,6 +30,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Ensure built site is not tracked
+        run: |
+          if git ls-files --error-unmatch site 2>/dev/null; then
+            echo "ERROR: 'site/' is tracked by git. Remove it with 'git rm -r --cached site' and commit."
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
