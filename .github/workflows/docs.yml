@@ -77,6 +77,16 @@ jobs:
         run: |
           mkdocs build --strict
 
+      - name: Verify site output and list contents (diagnostics)
+        run: |
+          pwd
+          ls -la
+          if [ ! -d site ]; then
+            echo "ERROR: site/ directory not found after mkdocs build"
+            exit 1
+          fi
+          ls -la site
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
