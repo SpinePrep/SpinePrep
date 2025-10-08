@@ -96,8 +96,6 @@ extra:
     provider: mike
   # Analytics can be added via theme extras in CI if desired.
   meta:
-    - name: robots
-      content: noindex, nofollow
     - name: description
       content: "SpinePrep: rigorous spinal cord preprocessing pipeline with QC, registration and BIDS derivatives."
     - property: og:type
@@ -119,7 +117,10 @@ extra:
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
+  - What's New: whats-new.md
+  - Getting Started:
+    - Quickstart: user-guide/quickstart.md
+    - Installation: getting-started.md
   - User Guide:
     - user-guide/usage.md
     - user-guide/doctor.md
@@ -127,6 +128,7 @@ nav:
     - user-guide/ingest.md
     - user-guide/motion.md
     - user-guide/confounds.md
+    - user-guide/derivatives.md
     - user-guide/outputs.md
     - user-guide/qc.md
     - user-guide/registration.md
@@ -136,10 +138,16 @@ nav:
   - Reference:
     - reference/config.md
     - reference/api.md
+  - Architecture:
+    - architecture/index.md
+    - ADRs:
+      - adr/001-registration-strategy.md
+      - adr/002-confounds-policy.md
+      - adr/003-distribution-strategy.md
   - Project:
     - CHANGELOG: CHANGELOG.md
+    - Contributing: contributing.md
     - 404 page: 404.md
-  - Contributing: contributing.md
 
 extra_css:
   - _assets/styles.css
