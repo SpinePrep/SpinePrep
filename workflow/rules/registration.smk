@@ -143,7 +143,9 @@ rule registration_pam50:
             "header": header_validation,
             "sct_version": result["sct_version"],
             "template": pam50_template,
-            "status": ("pass" if (ssim_val >= ssim_min and psnr_val >= psnr_min) else "warn"),
+            "status": (
+                "pass" if (ssim_val >= ssim_min and psnr_val >= psnr_min) else "warn"
+            ),
         }
 
         Path(output.metrics).parent.mkdir(parents=True, exist_ok=True)
@@ -219,7 +221,9 @@ rule registration_pam50:
                     "sct_version": result["sct_version"],
                     "command": result["command"],
                     "metrics": metrics_data,
-                    "timestamp": subprocess.check_output(["date", "-Iseconds"], text=True).strip(),
+                    "timestamp": subprocess.check_output(
+                        ["date", "-Iseconds"], text=True
+                    ).strip(),
                 },
                 f,
                 indent=2,

@@ -110,9 +110,19 @@ rule confounds_compcor_censor:
         bold="{prefix}_desc-motion_bold.nii.gz",
         confounds_tsv="{prefix}_desc-confounds_timeseries.tsv",
         confounds_json="{prefix}_desc-confounds_timeseries.json",
-        mask_csf=("{prefix}_mask-CSF.nii.gz" if _P("{prefix}_mask-CSF.nii.gz").exists() else []),
-        mask_wm=("{prefix}_mask-WM.nii.gz" if _P("{prefix}_mask-WM.nii.gz").exists() else []),
-        mask_cord=("{prefix}_mask-cord.nii.gz" if _P("{prefix}_mask-cord.nii.gz").exists() else []),
+        mask_csf=(
+            "{prefix}_mask-CSF.nii.gz"
+            if _P("{prefix}_mask-CSF.nii.gz").exists()
+            else []
+        ),
+        mask_wm=(
+            "{prefix}_mask-WM.nii.gz" if _P("{prefix}_mask-WM.nii.gz").exists() else []
+        ),
+        mask_cord=(
+            "{prefix}_mask-cord.nii.gz"
+            if _P("{prefix}_mask-cord.nii.gz").exists()
+            else []
+        ),
     output:
         tsv="{prefix}_desc-confounds_extended_timeseries.tsv",
         json="{prefix}_desc-confounds_extended_timeseries.json",
