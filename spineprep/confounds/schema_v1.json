@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SpinePrep Confounds Schema v1.0",
+  "description": "Column definitions and metadata for confounds timeseries TSV and JSON sidecar",
+  "type": "object",
+  "required": ["SpinePrepSchemaVersion", "SoftwareName", "SoftwareVersion"],
+  "properties": {
+    "SpinePrepSchemaVersion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version for confounds metadata"
+    },
+    "SoftwareName": {
+      "type": "string",
+      "description": "Name of the software that generated the confounds"
+    },
+    "SoftwareVersion": {
+      "type": "string",
+      "description": "Version of the software"
+    },
+    "trans_x": {
+      "type": "object",
+      "required": ["LongName", "Description", "Units"],
+      "properties": {
+        "LongName": {"type": "string"},
+        "Description": {"type": "string"},
+        "Units": {"type": "string"}
+      }
+    },
+    "trans_y": {
+      "type": "object",
+      "required": ["LongName", "Description", "Units"],
+      "properties": {
+        "LongName": {"type": "string"},
+        "Description": {"type": "string"},
+        "Units": {"type": "string"}
+      }
+    },
+    "trans_z": {
+      "type": "object",
+      "required": ["LongName", "Description", "Units"],
+      "properties": {
+        "LongName": {"type": "string"},
+        "Description": {"type": "string"},
+        "Units": {"type": "string"}
+      }
+    },
+    "rot_x": {
+      "type": "object",
+      "required": ["LongName", "Description", "Units"],
+      "properties": {
+        "LongName": {"type": "string"},
+        "Description": {"type": "string"},
+        "Units": {"type": "string"}
+      }
+    },
+    "rot_y": {
+      "type": "object",
+      "required": ["LongName", "Description", "Units"],
+      "properties": {
+        "LongName": {"type": "string"},
+        "Description": {"type": "string"},
+        "Units": {"type": "string"}
+      }
+    },
+    "rot_z": {
+      "type": "object",
+      "required": ["LongName", "Description", "Units"],
+      "properties": {
+        "LongName": {"type": "string"},
+        "Description": {"type": "string"},
+        "Units": {"type": "string"}
+      }
+    },
+    "fd": {
+      "type": "object",
+      "required": ["LongName", "Description", "Units", "Method", "Reference"],
+      "properties": {
+        "LongName": {"type": "string"},
+        "Description": {"type": "string"},
+        "Units": {"type": "string"},
+        "Method": {"type": "string"},
+        "Reference": {"type": "string"},
+        "RotationRadius": {"type": "string"}
+      }
+    },
+    "dvars": {
+      "type": "object",
+      "required": ["LongName", "Description", "Units", "Method", "Reference"],
+      "properties": {
+        "LongName": {"type": "string"},
+        "Description": {"type": "string"},
+        "Units": {"type": "string"},
+        "Method": {"type": "string"},
+        "Reference": {"type": "string"}
+      }
+    }
+  }
+}

@@ -124,6 +124,7 @@ nav:
     - Quickstart: user-guide/quickstart.md
     - Installation: getting-started.md
   - User Guide:
+    - CLI: cli.md
     - user-guide/usage.md
     - user-guide/doctor.md
     - user-guide/config.md
