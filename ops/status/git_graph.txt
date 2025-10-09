@@ -1,0 +1,97 @@
+* b2ed3dd9 (HEAD -> feat/spi-A1-doctor-json-snapshot, origin/feat/spi-A1-doctor-json-snapshot) feat(cli): add doctor JSON snapshot with complete diagnostics  [spi-A1]
+* 0c1675fd (origin/feat/spi-a7-qc-html-scaffold, feat/spi-a7-qc-html-scaffold) feat(qc): scaffold per-subject QC HTML with overlays, motion, aCompCor, and env  [spi-a7]
+* 3d371981 feat(preproc): add cord and CSF masking with QC overlays
+| * 8283c88e (refs/stash) WIP on feat/spi-a7-qc-html-scaffold: 81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+|/|
+| * 36a6b2e5 index on feat/spi-a7-qc-html-scaffold: 81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+|/
+| * 58dff246 (origin/feat/spi-002-snakemake-dag-provenance, feat/spi-002-snakemake-dag-provenance) feat(workflow): add minimal Snakemake DAG with provenance export  [spi-002]
+|/
+* 81712fac (feat/spi-xxx-registration-pam50-wrapper, feat/spi-masking-cord-csf-qc, feat/spi-confounds-acompcor-tcompcor-censor) feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+* 1beeb730 (origin/feat/spi-confounds-fd-dvars-tsv-json-v1, feat/spi-confounds-fd-dvars-tsv-json-v1) feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+* 8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
+| * 33976e80 (origin/feat/spi-001-scaffold-cli-config) feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+|/
+* e2955226 (origin/main, origin/HEAD, main, feat/spi-001-scaffold-cli-config) chore: restore noindex - keep site private indefinitely
+* 729d9049 chore: sync remaining source files and formatting updates
+* 53e79421 docs: enable public discovery and add architecture section  [spi-docs-public]
+* 939c1c55 feat(support): add issue/PR templates, SECURITY, and quickstart guide  [spi-support]
+* d5cf856d (tag: v0.1.0) test(hardening): add pytest.ini with deterministic seeds and test fixes  [spi-hardening]
+* 442da771 chore(release): prepare v0.1.0 with ADRs  [spi-v0.1.0]
+* 9bd64cad feat(qc): static HTML QC pages with CI artifact bundle  [spi-qc]
+* 7149d528 feat(confounds): add aCompCor (6 PCs) and censor column with mask sourcing
+* f1a41727 feat(deriv): BIDS-Derivatives tree layout and provenance  [spi-deriv]
+* 7ff91949 feat(motion): compute FD & DVARS per run, write confounds TSV and plots
+* 86bc3b17 feat(e2e): add tiny BIDS fixture and CI smoke test  [spi-e2e]
+* 62ccb322 feat(ingest): BIDS ingest and manifest cache with hashing
+* 973898c6 feat(register): add minimal SCT EPI→PAM50 registration wrapper  [spi-register]
+* 4f45c90d feat(config): YAML config with JSON Schema validation and print-config
+* e16f95d3 docs(confounds): add schema and comprehensive usage guide  [spi-confounds-docs]
+* 4fcb7648 feat(doctor): implement environment diagnostics with color table  [spi-doctor]
+* ed19081d feat(doctor): add environment diagnostics with JSON schema, docs, tests
+* cac1da21 feat(cli): add version cmd, --print-config, -n support, DAG svg export  [spi-cli-scaffold]
+| * b858cb63 (origin/feat/spi-cli-scaffold, feat/spi-cli-scaffold) feat(doctor): implement environment diagnostics
+| * 5b5401b6 feat(doctor): implement environment diagnostics
+|/
+* 07bb6e2f (feat/doctor-environment-diagnostics) docs: add robots.txt and improve 404 page with home button  [spi-011-final]
+* 347788ae docs: fix invalid material-graph-line icon (use chart-timeline)  [spi-011m]
+* b13c52c4 docs: add pymdownx.emoji extension to render Material icons  [spi-011m]
+* 7ef8971f docs: add inline warning banner to homepage for extra visibility  [spi-011m]
+* 2cc8e194 docs: remove icon attributes to fix rendering  [spi-011m]
+* 283e03b5 docs: fix banner partial (outdated.html) and simplify icon syntax  [spi-011m]
+* 6ad3c274 ci: temporarily disable pa11y-ci due to Material theme contrast issues  [spi-011m]
+* f5008df4 ci: adjust pa11y config to ignore Material theme elements and set threshold  [spi-011m]
+* 741ddb06 ci: add Chrome sandbox args for pa11y-ci in GitHub Actions  [spi-011m]
+* 282fb111 docs: fix remaining .lg .middle icon patterns in qc.md  [spi-011m]
+* caa2f73b docs: banner+noindex, icon/CTA normalization, dark/light contrast fixes, and CI a11y checks  [spi-011m]
+* a0162c73 docs(ui): fix QC icon markup and add hero padding to avoid cramped text  [spi-011l]
+* d35bc427 ci: remove empty strategy block to satisfy matrix requirement  [spi-011k]
+* 40bfae99 ci: fix Actions expressions by using env fallbacks (string type)  [spi-011k]
+* 1b2a6569 ci: fix YAML step name causing syntax error  [spi-011k]
+* d5d92816 docs(ui): fix Features block; dark-mode code; privatize PLAYBOOK_* and guard CI  [spi-011k]
+* f6685928 docs(ui): remove public PLAYBOOK_* pages  [spi-011k]
+* caed971d ci(docs): enable mike versioning and tag-based publish  [spi-011h]
+* f7767218 ci(docs): add docs_release.sh for mike-based versioned deploy  [spi-011h]
+* 8596ec08 ci(docs): fix artifact download for cross-repo deploy  [spi-011j]
+* 372255dc trigger: deploy with public target repo  [spi-011j]
+* abab8e76 trigger: fresh deploy to org root  [spi-011j]
+* e0c205e9 ci(docs): switch deploy to cross-repo org root via gh-pages  [spi-011j]
+* 0d4a806a ci(docs): add diagnostics and fail early if site/ missing  [spi-011j]
+* 970f249c ci(docs): upload Pages artifact in build job and deploy it  [spi-011j]
+* 6e3759c1 docs(ci): remove sitemap plugin to unblock strict build  [spi-011j]
+* 0145ba81 ci(docs): fix lychee.toml verbose log level  [spi-011j]
+* 672865d7 ci(docs): fix deploy to use GitHub Pages instead of cross-repo  [spi-011j]
+* d7ebc597 ci(docs): fix lychee.toml verbose field type  [spi-011j]
+* c223771b ci(docs): simplify workflow triggers  [spi-011j]
+* 9c2573fb ci: add simple docs workflow to test  [spi-011j]
+* 40825b2a ci(docs): recreate docs workflow  [spi-011j]
+* be44bace ci: remove docs workflow to recreate  [spi-011j]
+* 91dea479 trigger: force docs workflow to run  [spi-011j]
+* b83b3fd4 ci: remove test workflow after verification  [spi-011j]
+* 66e02dcd ci: add test workflow to verify GitHub Actions  [spi-011j]
+* ab787a3a ci(docs): fix lychee args and add lychee.toml  [spi-011j]
+* daa58e15 ci(docs): fix lychee action args (remove invalid --exclude-mail)  [spi-011i]
+* 7604ff09 ci(pre-commit): enforce snakefmt on workflow dir  [spi-011i]
+* 362d4d20 style(workflow): apply snakefmt formatting  [spi-011g]
+* 1ed01d86 ci(docs): fix deps, use core sitemap and lychee action; complete deploy  [spi-011f]
+* 4d5b9f5f docs: add live docs badges and Actions summary link [spi-011e]
+* 06e2a7b0 chore(docs): untrack site/, fix nav and license link, guard CI  [spi-011d]
+* c68e426b (tag: v0.1.0-docs) ci(docs): publish to org root via cross-repo Pages  [spi-011b]
+* 4e8c15c1 ci(docs): harden docs CI and enable GitHub Pages [spi-011a]
+* 147a1443 feat(docs): stand up MkDocs Material site with generators  [spi-011]
+* e90b4fc0 spi-005c: Add aCompCor confounds (cord/WM/CSF masks + PCA)
+* 4d6f20e4 Add GitHub Actions workflow for documentation site
+| * 2c815ac1 (feat/spi-011a-docs-ci-pages) ci(docs): harden docs CI and enable GitHub Pages [spi-011a]
+| * dadbaa4e feat(docs): stand up MkDocs Material site with generators  [spi-011]
+| * afed40c8 spi-005c: Add aCompCor confounds (cord/WM/CSF masks + PCA)
+|/
+* 840d1474 (origin/cursor/harden-docs-ci-and-enable-github-pages-deployment-43de) spi-005b: confounds v2 — censoring + canonical columns; QC overlays
+* bb36f2b0 spi-005a: confounds v1 (FD from motion params + DVARS), derivative TSV/JSON, QC reads canonical confounds
+* 291cb062 feat(qc): per-subject HTML report with FD/DVARS plots and methods boilerplate
+* dbbc3695 feat(deriv): add derivatives path router and manifest_deriv.tsv
+* 9d2000c1 feat(workflow): per-run wildcard rules from samples.tsv; add preproc_all aggregate
+* fc3252a2 refactor(smoke): consume first row from samples.tsv for mppca/motion/confounds
+* fc224c53 Add samples manifest generation
+* 2c20a680 feat(confounds): add placeholder confounds builder & smoke; fix ruff unused var
+* 7538e04c style: black/ruff/isort auto-fixes
+* a9ed9735 Initial commit

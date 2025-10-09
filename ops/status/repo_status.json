@@ -1,0 +1,45 @@
+{
+  "timestamp": "2025-10-09T18:30:23+02:00",
+  "head": "b2ed3dd9",
+  "head_branch": "feat/spi-A1-doctor-json-snapshot",
+  "main_exists": true,
+  "origin_main_exists": true,
+  "branches": {
+    "local": [
+      "feat/doctor-environment-diagnostics",
+      "feat/spi-001-scaffold-cli-config",
+      "feat/spi-002-snakemake-dag-provenance",
+      "feat/spi-011a-docs-ci-pages",
+      "feat/spi-A1-doctor-json-snapshot",
+      "feat/spi-a7-qc-html-scaffold",
+      "feat/spi-cli-scaffold",
+      "feat/spi-confounds-acompcor-tcompcor-censor",
+      "feat/spi-confounds-fd-dvars-tsv-json-v1",
+      "feat/spi-masking-cord-csf-qc",
+      "feat/spi-xxx-registration-pam50-wrapper",
+      "main"
+    ],
+    "remote": [
+      "origin",
+      "origin/cursor/harden-docs-ci-and-enable-github-pages-deployment-43de",
+      "origin/feat/spi-001-scaffold-cli-config",
+      "origin/feat/spi-002-snakemake-dag-provenance",
+      "origin/feat/spi-A1-doctor-json-snapshot",
+      "origin/feat/spi-a7-qc-html-scaffold",
+      "origin/feat/spi-cli-scaffold",
+      "origin/feat/spi-confounds-fd-dvars-tsv-json-v1",
+      "origin/main"
+    ]
+  },
+  "tags": [
+    "v0.1.0",
+    "v0.1.0-docs"
+  ],
+  "health": {
+    "pytest_passed": false,
+    "mkdocs_strict_passed": true,
+    "ruff_clean": true,
+    "snakefmt_clean": false
+  },
+  "divergence_from_main": "0\t6"
+}

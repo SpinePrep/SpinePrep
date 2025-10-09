@@ -1,0 +1,51 @@
+=== feat/doctor-environment-diagnostics ===
+
+=== feat/spi-001-scaffold-cli-config ===
+
+=== feat/spi-002-snakemake-dag-provenance ===
+58dff246 feat(workflow): add minimal Snakemake DAG with provenance export  [spi-002]
+81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
+
+=== feat/spi-011a-docs-ci-pages ===
+2c815ac1 ci(docs): harden docs CI and enable GitHub Pages [spi-011a]
+dadbaa4e feat(docs): stand up MkDocs Material site with generators  [spi-011]
+afed40c8 spi-005c: Add aCompCor confounds (cord/WM/CSF masks + PCA)
+
+=== feat/spi-A1-doctor-json-snapshot ===
+b2ed3dd9 feat(cli): add doctor JSON snapshot with complete diagnostics  [spi-A1]
+0c1675fd feat(qc): scaffold per-subject QC HTML with overlays, motion, aCompCor, and env  [spi-a7]
+3d371981 feat(preproc): add cord and CSF masking with QC overlays
+81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+
+=== feat/spi-a7-qc-html-scaffold ===
+0c1675fd feat(qc): scaffold per-subject QC HTML with overlays, motion, aCompCor, and env  [spi-a7]
+3d371981 feat(preproc): add cord and CSF masking with QC overlays
+81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
+
+=== feat/spi-cli-scaffold ===
+b858cb63 feat(doctor): implement environment diagnostics
+5b5401b6 feat(doctor): implement environment diagnostics
+
+=== feat/spi-confounds-acompcor-tcompcor-censor ===
+81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
+
+=== feat/spi-confounds-fd-dvars-tsv-json-v1 ===
+1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
+
+=== feat/spi-masking-cord-csf-qc ===
+81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
+
+=== feat/spi-xxx-registration-pam50-wrapper ===
+81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
+1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
+8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]

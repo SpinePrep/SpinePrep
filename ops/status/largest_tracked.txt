@@ -1,0 +1,5 @@
+100755 blob 9865c641ca74bcfc9297b11fbc5049207e185f2b 7178823	.venv/lib/python3.12/site-packages/pulp/solverdir/cbc/linux/i64/cbc
+100755 blob 24b85924bbd33b772d4c82bd311606642c663b10 7678656	.venv/lib/python3.12/site-packages/pulp/solverdir/cbc/linux/arm64/cbc
+100755 blob 4507334689552ad74f65683cca24554e047ce654 10808937	.venv/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so
+100755 blob d10bfcb5b4a299191883022d75b8a52a2041aa74 24817849	.venv/lib/python3.12/site-packages/scipy.libs/libscipy_openblas-b75cc656.so
+100755 blob d6449096b01ecc38d4693856e30c8351d96bd559 25050385	.venv/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-8fb3d286.so

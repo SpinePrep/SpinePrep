@@ -1,0 +1,6 @@
+INFO    -  Cleaning site directory
+INFO    -  Building documentation to directory: /mnt/ssd1/SpinePrep/site
+INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
+  - workflow.md
+INFO    -  Doc file 'index.md' contains an absolute link '/stable/', it was left as is.
+INFO    -  Documentation built in 0.44 seconds

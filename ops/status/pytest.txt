@@ -1,0 +1,5 @@
+
+=========================== short test summary info ============================
+ERROR tests/test_confounds.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.40s
