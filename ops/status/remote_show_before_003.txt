@@ -1,0 +1,14 @@
+* remote origin
+  Fetch URL: git@github.com:spineprep/SpinePrep.git
+  Push  URL: git@github.com:spineprep/SpinePrep.git
+  HEAD branch: main
+  Remote branches:
+    cursor/harden-docs-ci-and-enable-github-pages-deployment-43de tracked
+    feat/spi-000-repo-status-snapshot                             tracked
+    main                                                          tracked
+  Local branches configured for 'git pull':
+    feat/spi-000-repo-status-snapshot merges with remote feat/spi-000-repo-status-snapshot
+    main                              merges with remote main
+  Local refs configured for 'git push':
+    feat/spi-000-repo-status-snapshot pushes to feat/spi-000-repo-status-snapshot (up to date)
+    main                              pushes to main                              (up to date)

@@ -1,0 +1,10 @@
+fba3f1e4 docs(ops): add Ticket 2 return package  [spi-002]
+c30133fe docs: add dev quickstart section to README  [spi-002]
+01ecc91c style: apply snakefmt formatting  [spi-002]
+018bfd7f fix(tests): update test signatures and remove outdated test  [spi-002]
+389bdcbf chore: add .gitignore and remove tracked artifacts  [spi-002]
+e4f6b425 docs(ops): add Ticket 1 return package and merge artifacts  [spi-001]
+74cdbfc2 feat(workflow): add minimal Snakemake DAG with provenance export  [spi-002]
+7f866063 feat: consolidate Phase-A baseline (doctor, QC, confounds, registration, masking)  [pre-A1]
+e2955226 chore: restore noindex - keep site private indefinitely
+729d9049 chore: sync remaining source files and formatting updates
