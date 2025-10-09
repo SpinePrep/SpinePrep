@@ -1,6 +1,6 @@
 {
-  "timestamp": "2025-10-09T18:43:01+02:00",
-  "head": "74cdbfc2",
+  "timestamp": "2025-10-09T18:54:52+02:00",
+  "head": "c30133fe",
   "head_branch": "main",
   "main_exists": true,
   "origin_main_exists": true,
@@ -25,7 +25,7 @@
     "pytest_passed": false,
     "mkdocs_strict_passed": true,
     "ruff_clean": true,
-    "snakefmt_clean": false
+    "snakefmt_clean": true
   },
   "divergence_from_main": "0\t0"
 }

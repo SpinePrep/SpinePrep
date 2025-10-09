@@ -1,5 +1,10 @@
+F........F........................F..................................F.F [ 35%]
 
 =========================== short test summary info ============================
-ERROR tests/test_confounds.py
-!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-1 error in 0.54s
+FAILED tests/integration/test_registration_rules.py::test_registration_all_fixture
+FAILED tests/unit/test_doctor.py::test_doctor_report_schema_compliance - json...
+FAILED tests/test_ingest.py::test_ingest_tiny_bids - pytest.PytestUnraisableE...
+FAILED tests/test_dag_render.py::test_scaffold_creation_non_dry_run - Asserti...
+FAILED tests/test_dag_render.py::test_dag_export_with_save_dag_flag - Asserti...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+5 failed, 67 passed in 5.49s

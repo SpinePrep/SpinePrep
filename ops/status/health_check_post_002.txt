@@ -1,0 +1,47 @@
+[0;34m======================================[0m
+[0;34mSpinePrep Repository Health Check[0m
+[0;34m======================================[0m
+
+[0;34m[1/10] Git Status[0m
+[0;32m✓[0m Git repository detected (branch: main @ c30133fe)
+[0;32m✓[0m Branch 'main' exists
+[0;32m✓[0m In sync with origin/main
+
+[0;34m[2/10] Large Tracked Files[0m
+[1;33m⚠[0m Large files detected (largest: 23MB) — see ops/status/largest_tracked.txt
+
+[0;34m[3/10] Untracked Files[0m
+[1;33m⚠[0m 1 untracked files (see ops/status/status_porcelain.txt)
+[1;33m⚠[0m 2 modified files not staged
+
+[0;34m[4/10] Ruff Linting[0m
+[0;32m✓[0m Ruff clean (ruff 0.14.0)
+
+[0;34m[5/10] Snakefmt Formatting[0m
+[0;32m✓[0m Snakefmt clean (snakefmt, version 0.11.2)
+
+[0;34m[6/10] Codespell[0m
+[0;31m✗[0m Codespell found 1254 potential typos — see ops/status/codespell.txt
+
+[0;34m[7/10] Pytest[0m
+[0;31m✗[0m Pytest failed (5 errors/failures) — see ops/status/pytest.txt
+
+[0;34m[8/10] MkDocs Strict Build[0m
+[0;32m✓[0m MkDocs build passed (mkdocs, version 1.6.1 from /home/kiomars/.local/lib/python3.12/site-packages/mkdocs (Python 3.12))
+
+[0;34m[9/10] Branch Inventory[0m
+[0;32m✓[0m Clean local branches (2 branches)
+[0;32m✓[0m Clean remote branches (4 branches)
+
+[0;34m[10/10] Generate Status JSON[0m
+[0;32m✓[0m Status JSON generated → ops/status/repo_status.json
+
+[0;34m======================================[0m
+[0;34mSummary[0m
+[0;34m======================================[0m
+[0;32mPassed:[0m  9
+[1;33mWarnings:[0m 3
+[0;31mFailed:[0m  2
+
+[1;33m⚠ Repository health: FAIR[0m
+Some checks failed. Review ops/status/ for details.

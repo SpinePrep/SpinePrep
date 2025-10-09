@@ -1,2 +1,1 @@
-[INFO] 2 file(s) would be changed 😬
-[INFO] 3 file(s) would be left unchanged 🎉
+[INFO] All 5 file(s) would be left unchanged 🎉
