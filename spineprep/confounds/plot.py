@@ -89,3 +89,124 @@ def plot_motion_png(
     plt.tight_layout()
     plt.savefig(png_path, dpi=100, bbox_inches="tight")
     plt.close(fig)
+
+
+def plot_compcor_spectra_png(
+    png_path: Path | str,
+    acompcor_variance: np.ndarray | None = None,
+    tcompcor_variance: np.ndarray | None = None,
+) -> None:
+    """
+    Create CompCor variance explained spectra plot.
+
+    Generates a 2-panel figure showing:
+    - Panel 1: Per-component variance explained (bar plot)
+    - Panel 2: Cumulative variance explained (line plot)
+
+    Args:
+        png_path: Output PNG file path
+        acompcor_variance: Optional aCompCor variance explained array (n_components,)
+        tcompcor_variance: Optional tCompCor variance explained array (n_components,)
+    """
+    png_path = Path(png_path)
+    png_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Determine if we have any data to plot
+    has_acompcor = acompcor_variance is not None and len(acompcor_variance) > 0
+    has_tcompcor = tcompcor_variance is not None and len(tcompcor_variance) > 0
+
+    if not has_acompcor and not has_tcompcor:
+        # Nothing to plot, create empty placeholder
+        fig, ax = plt.subplots(1, 1, figsize=(8, 4))
+        ax.text(
+            0.5,
+            0.5,
+            "No CompCor components available",
+            ha="center",
+            va="center",
+            fontsize=12,
+        )
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.axis("off")
+        plt.tight_layout()
+        plt.savefig(png_path, dpi=100, bbox_inches="tight")
+        plt.close(fig)
+        return
+
+    # Create figure with 2 subplots
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    # Panel 1: Per-component variance explained (bar plot)
+    ax1 = axes[0]
+    x_offset = 0
+
+    if has_acompcor:
+        n_a = len(acompcor_variance)
+        x_a = np.arange(n_a) + x_offset
+        ax1.bar(
+            x_a,
+            acompcor_variance * 100,
+            width=0.8,
+            label="aCompCor",
+            alpha=0.8,
+            color="steelblue",
+        )
+        x_offset += n_a + 1
+
+    if has_tcompcor:
+        n_t = len(tcompcor_variance)
+        x_t = np.arange(n_t) + x_offset
+        ax1.bar(
+            x_t,
+            tcompcor_variance * 100,
+            width=0.8,
+            label="tCompCor",
+            alpha=0.8,
+            color="darkorange",
+        )
+
+    ax1.set_xlabel("Component")
+    ax1.set_ylabel("Variance Explained (%)")
+    ax1.set_title("Per-Component Variance")
+    ax1.legend(loc="upper right", framealpha=0.9)
+    ax1.grid(True, alpha=0.3, axis="y")
+
+    # Panel 2: Cumulative variance explained (line plot)
+    ax2 = axes[1]
+
+    if has_acompcor:
+        cumsum_a = np.cumsum(acompcor_variance) * 100
+        ax2.plot(
+            np.arange(1, len(cumsum_a) + 1),
+            cumsum_a,
+            marker="o",
+            label="aCompCor",
+            linewidth=2,
+            alpha=0.8,
+            color="steelblue",
+        )
+
+    if has_tcompcor:
+        cumsum_t = np.cumsum(tcompcor_variance) * 100
+        ax2.plot(
+            np.arange(1, len(cumsum_t) + 1),
+            cumsum_t,
+            marker="s",
+            label="tCompCor",
+            linewidth=2,
+            alpha=0.8,
+            color="darkorange",
+        )
+
+    ax2.set_xlabel("Number of Components")
+    ax2.set_ylabel("Cumulative Variance (%)")
+    ax2.set_title("Cumulative Variance")
+    ax2.legend(loc="lower right", framealpha=0.9)
+    ax2.grid(True, alpha=0.3)
+    ax2.set_ylim(0, 100)
+
+    # Adjust layout and save
+    plt.tight_layout()
+    plt.savefig(png_path, dpi=100, bbox_inches="tight")
+    plt.close(fig)
