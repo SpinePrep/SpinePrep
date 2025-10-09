@@ -1,0 +1,2 @@
+[run] Exporting DAG to /tmp/out-a3/dag.svg
+[dag] Exported to /tmp/out-a3/dag.svg

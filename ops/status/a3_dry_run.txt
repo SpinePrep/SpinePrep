@@ -1,0 +1,3 @@
+[dry-run] Scanning BIDS directory: /tmp/bids-a3
+[dry-run] Manifest written: /tmp/out-a3/manifest.csv (1 series)
+[dry-run] Pipeline check complete

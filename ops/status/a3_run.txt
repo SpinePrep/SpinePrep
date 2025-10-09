@@ -1,0 +1,45 @@
+Assuming unrestricted shared filesystem usage.
+host: kiomars
+Building DAG of jobs...
+Using shell: /usr/local/fsl/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count
+--------------  -------
+all                   1
+touch_manifest        1
+total                 2
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu Oct  9 19:40:39 2025]
+localrule touch_manifest:
+    input: /tmp/out-a3/manifest.csv
+    output: /tmp/out-a3/.manifest.touch
+    jobid: 1
+    reason: Missing output files: /tmp/out-a3/.manifest.touch
+    resources: tmpdir=/tmp
+Manifest processed: /tmp/out-a3/manifest.csv
+2 /tmp/out-a3/manifest.csv
+[Thu Oct  9 19:40:39 2025]
+Finished jobid: 1 (Rule: touch_manifest)
+1 of 2 steps (50%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu Oct  9 19:40:39 2025]
+localrule all:
+    input: /tmp/out-a3/.manifest.touch
+    jobid: 0
+    reason: Input files updated by another job: /tmp/out-a3/.manifest.touch
+    resources: tmpdir=/tmp
+[Thu Oct  9 19:40:39 2025]
+Finished jobid: 0 (Rule: all)
+2 of 2 steps (100%) done
+Complete log(s): /mnt/ssd1/SpinePrep/.snakemake/log/2025-10-09T194039.761683.snakemake.log
+[run] Executing minimal workflow
+[run] BIDS: /tmp/bids-a3
+[run] Output: /tmp/out-a3
+[run] Manifest: /tmp/out-a3/manifest.csv

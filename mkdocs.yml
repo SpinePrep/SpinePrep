@@ -126,6 +126,7 @@ nav:
   - User Guide:
     - CLI: cli.md
     - user-guide/usage.md
+    - user-guide/run.md
     - user-guide/doctor.md
     - user-guide/config.md
     - user-guide/ingest.md

@@ -40,6 +40,12 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument(
         "-n", "--dry-run", action="store_true", dest="dry_run", help="Dry-run mode"
     )
+    r.add_argument(
+        "--save-dag",
+        type=Path,
+        default=None,
+        help="Export DAG to SVG or DOT file and exit",
+    )
 
     sub.add_parser("version", help="Show version")
     return p
@@ -169,10 +175,43 @@ def main(argv=None) -> int:
             print("[dry-run] Pipeline check complete")
             return 0
 
-        # Pipeline execution not yet implemented
-        print("[run] config resolved ✓")
-        print("[run] Pipeline execution deferred to Snakemake DAG")
-        return 0
+        # Handle actual workflow execution
+        if not a.bids_root or not a.output_dir:
+            print("[run] ERROR: --bids and --out are required for workflow execution")
+            return 1
+
+        from spineprep.ingest import scan_bids_directory, write_manifest
+        from spineprep.workflow.runner import run_workflow
+
+        bids_path = Path(a.bids_root)
+        out_path = Path(a.output_dir)
+
+        # Ensure manifest exists
+        manifest_path = out_path / "manifest.csv"
+        if not manifest_path.exists():
+            print(f"[run] Generating manifest from {bids_path}")
+            try:
+                rows = scan_bids_directory(bids_path)
+                write_manifest(rows, manifest_path)
+                print(f"[run] Manifest written: {manifest_path} ({len(rows)} series)")
+            except (FileNotFoundError, ValueError) as e:
+                print(f"[run] ERROR: {e}")
+                return 1
+
+        # Handle --save-dag
+        if getattr(a, "save_dag", None):
+            print(f"[run] Exporting DAG to {a.save_dag}")
+            return run_workflow(
+                bids_path, out_path, manifest_path, cores=1, export_dag=a.save_dag
+            )
+
+        # Execute workflow
+        print("[run] Executing minimal workflow")
+        print(f"[run] BIDS: {bids_path}")
+        print(f"[run] Output: {out_path}")
+        print(f"[run] Manifest: {manifest_path}")
+
+        return run_workflow(bids_path, out_path, manifest_path, cores=1)
     if a.cmd == "version":
         from importlib.metadata import PackageNotFoundError, version
 

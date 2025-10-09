@@ -1,0 +1,65 @@
+...........................FF.................FFF
+=================================== FAILURES ===================================
+________________________ test_motion_sct_graceful_skip _________________________
+tests/integration/test_motion_engines.py:97: in test_motion_sct_graceful_skip
+    subprocess.run(
+/usr/local/fsl/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['snakemake', '-p', '-j', '2', 'derivatives/spineprep/sub-01/func/sub-01_task-rest_run-01_desc-motion_bold.nii.gz', '--snakefile', 'workflow/Snakefile', '--directory', '/tmp/pytest-of-kiomars/pytest-138/test_motion_sct_graceful_skip0/work', '--config', 'options.motion.engine=sct']' returned non-zero exit status 1.
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+
+  File "/home/kiomars/.local/lib/python3.12/site-packages/snakemake/cli.py", line 2053, in args_to_api
+    config=parse_config(args.config),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/kiomars/.local/lib/python3.12/site-packages/snakemake/cli.py", line 314, in parse_config
+    raise ValueError(
+
+ValueError: Invalid config definition: Config entry must start with a valid identifier.
+
+_____________________________ test_motion_rigid3d ______________________________
+tests/integration/test_motion_engines.py:55: in test_motion_rigid3d
+    subprocess.run(
+/usr/local/fsl/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['snakemake', '-n', '-p', 'derivatives/spineprep/sub-01/func/sub-01_task-rest_run-01_desc-motion_bold.nii.gz', '--snakefile', 'workflow/Snakefile', '--directory', '/tmp/pytest-of-kiomars/pytest-138/test_motion_rigid3d0/work']' returned non-zero exit status 1.
+----------------------------- Captured stdout call -----------------------------
+Relative file path './out/.manifest.touch' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './out/manifest.csv' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './out/.manifest.touch' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+host: kiomars
+Building DAG of jobs...
+MissingRuleException:
+No rule to produce derivatives/spineprep/sub-01/func/sub-01_task-rest_run-01_desc-motion_bold.nii.gz (if you use input functions make sure that they don't raise unexpected exceptions).
+______________________ test_provenance_directory_creation ______________________
+tests/test_dag_render.py:216: in test_provenance_directory_creation
+    assert prov_dir.exists(), "Provenance directory should be created"
+E   AssertionError: Provenance directory should be created
+E   assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/tmpiyegx1ae/out/provenance').exists
+______________________ test_dag_export_with_save_dag_flag ______________________
+tests/test_dag_render.py:74: in test_dag_export_with_save_dag_flag
+    assert result.returncode == 0, (
+E   AssertionError: STDERR: usage: spineprep run [-h] [--bids BIDS_ROOT] [--out OUTPUT_DIR]
+E                          [--config CONFIG] [--print-config] [-n]
+E                          [--save-dag SAVE_DAG]
+E     spineprep run: error: argument --save-dag: expected one argument
+E
+E     STDOUT:
+E   assert 2 == 0
+E    +  where 2 = CompletedProcess(args=['spineprep', 'run', '--bids', '/tmp/tmpnupeqixe/bids', '--out', '/tmp/tmpnupeqixe/out', '--dry-... [-n]\n                     [--save-dag SAVE_DAG]\nspineprep run: error: argument --save-dag: expected one argument\n').returncode
+______________________ test_dag_export_format_preference _______________________
+tests/test_dag_render.py:164: in test_dag_export_format_preference
+    assert result.returncode == 0
+E   AssertionError: assert 2 == 0
+E    +  where 2 = CompletedProcess(args=['spineprep', 'run', '--bids', '/tmp/tmps_ycpeko/bids', '--out', '/tmp/tmps_ycpeko/out', '--dry-... [-n]\n                     [--save-dag SAVE_DAG]\nspineprep run: error: argument --save-dag: expected one argument\n').returncode
+=========================== short test summary info ============================
+FAILED tests/integration/test_motion_engines.py::test_motion_sct_graceful_skip
+FAILED tests/integration/test_motion_engines.py::test_motion_rigid3d - subpro...
+FAILED tests/test_dag_render.py::test_provenance_directory_creation - Asserti...
+FAILED tests/test_dag_render.py::test_dag_export_with_save_dag_flag - Asserti...
+FAILED tests/test_dag_render.py::test_dag_export_format_preference - Assertio...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+5 failed, 44 passed in 8.36s
