@@ -23,6 +23,22 @@ pip install -e .
 # coming next: spineprep validate / plan / run (CLI to be added)
 ```
 
+## Dev Quickstart
+
+```bash
+# 1. Clone and setup
+git clone https://github.com/kiomarssharifi/SpinePrep && cd SpinePrep
+
+# 2. Create venv (Python 3.11 recommended)
+python3.11 -m venv .venv && source .venv/bin/activate
+
+# 3. Install in editable mode
+pip install -e ".[dev]"
+
+# 4. Run health checks
+./ops/status/health_check.sh
+```
+
 ## How to cite
 
 See the [CITATION.cff](./CITATION.cff) file and forthcoming Zenodo record (DOI: 10.5281/zenodo.xxxxxxx) for citation details.
