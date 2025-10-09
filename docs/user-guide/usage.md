@@ -21,15 +21,34 @@ spineprep [OPTIONS] CONFIG_FILE
 ### Examples
 
 ```bash
-# Basic run
-spineprep config.yaml
+# Dry-run to generate manifest and verify BIDS
+spineprep run --bids /data/bids --out /data/out --dry-run
 
-# Dry run to see what would be executed
-spineprep --dry-run config.yaml
+# Dry-run with config
+spineprep run --bids /data/bids --out /data/out --config config.yaml --dry-run
 
-# Verbose output
-spineprep --verbose config.yaml
+# Full run (when implemented)
+spineprep run --bids /data/bids --out /data/out
 ```
+
+### Dry-Run and Manifest
+
+The `--dry-run` flag performs BIDS ingestion and generates a `manifest.csv` without executing the pipeline:
+
+```bash
+spineprep run --bids <bids-dir> --out <output-dir> --dry-run
+```
+
+**Manifest columns** (16 total):
+`subject, session, task, acq, run, modality, pe_dir, tr, te, voxel_size_mm, fov_mm, dim, nslices, volumes, coverage_desc, filepath`
+
+- **pe_dir**: Phase encoding direction from JSON (e.g., "j-", "i")
+- **tr, te**: Repetition and echo times in seconds
+- **voxel_size_mm**: Voxel dimensions (e.g., "2.00x2.00x3.00")
+- **fov_mm**: Field of view in mm
+- **coverage_desc**: "cord-only", "brain+cord", or "unknown" (heuristic)
+
+The manifest is written to `<output-dir>/manifest.csv` and summarizes all functional and anatomical series found in the BIDS directory
 
 ## Configuration
 

@@ -65,8 +65,47 @@ def main(argv=None) -> int:
             print(print_config(cfg))
             # Don't return yet if also dry-run
 
-        # Handle dry-run (export DAG only)
+        # Handle dry-run: generate manifest, optionally export DAG
         if getattr(a, "dry_run", False):
+            # First generate BIDS manifest if BIDS directory specified
+            if a.bids_root:
+                from spineprep.ingest import scan_bids_directory, write_manifest
+
+                try:
+                    bids_path = Path(a.bids_root)
+                    print(f"[dry-run] Scanning BIDS directory: {bids_path}")
+
+                    rows = scan_bids_directory(bids_path)
+
+                    if rows:
+                        # Determine output directory
+                        if a.output_dir:
+                            out_dir = Path(a.output_dir)
+                        else:
+                            out_dir = Path(cfg.get("output_dir", "./out"))
+
+                        manifest_path = out_dir / "manifest.csv"
+                        write_manifest(rows, manifest_path)
+                        print(
+                            f"[dry-run] Manifest written: {manifest_path} ({len(rows)} series)"
+                        )
+                    else:
+                        print(
+                            "[dry-run] Warning: No imaging files found in BIDS directory"
+                        )
+                        # Still write empty manifest
+                        out_dir = (
+                            Path(a.output_dir)
+                            if a.output_dir
+                            else Path(cfg.get("output_dir", "./out"))
+                        )
+                        manifest_path = out_dir / "manifest.csv"
+                        write_manifest([], manifest_path)
+                        print(f"[dry-run] Empty manifest written: {manifest_path}")
+
+                except (FileNotFoundError, ValueError) as e:
+                    print(f"[dry-run] ERROR: {e}")
+                    return 1
             import os
             import subprocess as sp
 
