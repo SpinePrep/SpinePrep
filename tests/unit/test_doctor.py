@@ -149,8 +149,13 @@ def test_generate_report_all_pass():
     }
 
     report = generate_report(
-        sct_info, pam50_info, python_deps, os_info,
-        disk_free=50.0, cwd_writeable=True, tmp_writeable=True
+        sct_info,
+        pam50_info,
+        python_deps,
+        os_info,
+        disk_free=50.0,
+        cwd_writeable=True,
+        tmp_writeable=True,
     )
 
     assert report["status"] == "pass"
@@ -174,8 +179,13 @@ def test_generate_report_hard_fail_no_sct():
     }
 
     report = generate_report(
-        sct_info, pam50_info, python_deps, os_info,
-        disk_free=50.0, cwd_writeable=True, tmp_writeable=True
+        sct_info,
+        pam50_info,
+        python_deps,
+        os_info,
+        disk_free=50.0,
+        cwd_writeable=True,
+        tmp_writeable=True,
     )
 
     assert report["status"] == "fail"
@@ -196,8 +206,13 @@ def test_generate_report_hard_fail_no_pam50():
     }
 
     report = generate_report(
-        sct_info, pam50_info, python_deps, os_info,
-        disk_free=50.0, cwd_writeable=True, tmp_writeable=True
+        sct_info,
+        pam50_info,
+        python_deps,
+        os_info,
+        disk_free=50.0,
+        cwd_writeable=True,
+        tmp_writeable=True,
     )
 
     assert report["status"] == "fail"
@@ -218,9 +233,14 @@ def test_generate_report_soft_warn_missing_deps():
     }
 
     report = generate_report(
-        sct_info, pam50_info, python_deps, os_info,
-        disk_free=50.0, cwd_writeable=True, tmp_writeable=True,
-        strict=False
+        sct_info,
+        pam50_info,
+        python_deps,
+        os_info,
+        disk_free=50.0,
+        cwd_writeable=True,
+        tmp_writeable=True,
+        strict=False,
     )
 
     assert report["status"] == "warn"
@@ -244,9 +264,14 @@ def test_generate_report_strict_mode():
     }
 
     report = generate_report(
-        sct_info, pam50_info, python_deps, os_info,
-        disk_free=50.0, cwd_writeable=True, tmp_writeable=True,
-        strict=True
+        sct_info,
+        pam50_info,
+        python_deps,
+        os_info,
+        disk_free=50.0,
+        cwd_writeable=True,
+        tmp_writeable=True,
+        strict=True,
     )
 
     # In strict mode, warnings become failures
@@ -418,8 +443,13 @@ def test_doctor_report_schema_compliance():
     }
 
     report = generate_report(
-        sct_info, pam50_info, python_deps, os_info,
-        disk_free=50.0, cwd_writeable=True, tmp_writeable=True
+        sct_info,
+        pam50_info,
+        python_deps,
+        os_info,
+        disk_free=50.0,
+        cwd_writeable=True,
+        tmp_writeable=True,
     )
 
     # Load schema

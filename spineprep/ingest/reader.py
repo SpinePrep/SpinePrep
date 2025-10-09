@@ -107,7 +107,7 @@ def extract_nifti_metadata(nifti_path: Path) -> dict[str, Any]:
 
         # Format strings
         voxel_size = f"{vx:.2f}x{vy:.2f}x{vz:.2f}"
-        fov = f"{nx*vx:.1f}x{ny*vy:.1f}x{nz*vz:.1f}"
+        fov = f"{nx * vx:.1f}x{ny * vy:.1f}x{nz * vz:.1f}"
         dim = f"{nx}x{ny}x{nz}"
 
         return {

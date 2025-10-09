@@ -24,6 +24,8 @@ dependencies = [
   "scikit-image",
   "nibabel",
   "pytest",
+  "pytest-timeout",
+  "snakemake>=9.0",
 ]
 
 [project.scripts]
