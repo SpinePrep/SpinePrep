@@ -1,16 +1,37 @@
-# Minimal defaults (expand later as needed)
+# SpinePrep default configuration
+# CLI args and user YAML files override these defaults
+
 bids_root: null
 output_dir: "./out"
-pipeline:
-  motion:
-    fd_threshold: 0.5
-    dvars_threshold: 1.5
+
+motion:
+  fd:
+    threshold: 0.5  # mm
+  dvars:
+    threshold: 1.5
+  highpass:
+    hz: 0.008  # Hz
+
 confounds:
   acompcor:
     n_components: 6
+  tcompcor:
+    n_components: 0
+  censor:
+    method: "fd"  # One of: fd, dvars, fd+dvars
+
 registration:
-  target: "PAM50"
-  sct:
-    enable: true
+  pam50:
+    spacing: "0.5mm"
+  resample:
+    to: "native"  # One of: native, pam50
+  deformable:
+    enabled: false
+
 qc:
-  enable: true
+  ssim:
+    min: 0.85
+  psnr:
+    min: 20.0
+  report:
+    embed_assets: true

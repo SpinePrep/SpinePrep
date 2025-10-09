@@ -2,180 +2,104 @@
 
 This page documents all configuration options available in SpinePrep.
 
-**Schema**: SpinePrep configuration
-
 ## Configuration Options
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-### acq
+| `bids_root` | ['string', 'null'] | None | Path to BIDS dataset root directory |
+### confounds
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `acq.echo_spacing_s` | ['number', 'null'] | None | No description available |
-| `acq.pe_dir` | string | None | No description available |
-| `acq.slice_timing` | string | None | No description available |
-| `acq.tr` | number | None | No description available |
-
-### dataset
+### confounds.acompcor
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `dataset.runs_per_subject` | any | None | No description available |
-| `dataset.sessions` | any | None | No description available |
+| `confounds.acompcor.n_components` | integer | None | Number of aCompCor components to extract |
 
-### options
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-### options.acompcor
+### confounds.censor
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `options.acompcor.detrend` | boolean | None | No description available |
-| `options.acompcor.enable` | boolean | None | No description available |
-| `options.acompcor.explained_variance_min` | number | None | No description available |
-| `options.acompcor.highpass_hz` | number | None | No description available |
-| `options.acompcor.n_components_per_tissue` | integer | None | No description available |
-| `options.acompcor.standardize` | boolean | None | No description available |
-| `options.acompcor.tissues` | array of string | None | No description available |
+| `confounds.censor.method` | string | None | Censoring method for high-motion frames |
 
-### options.censor
+### confounds.tcompcor
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `options.censor.dvars_thresh` | number | None | No description available |
-| `options.censor.enable` | boolean | None | No description available |
-| `options.censor.fd_thresh_mm` | number | None | No description available |
-| `options.censor.min_contig_vols` | integer | None | No description available |
-| `options.censor.pad_vols` | integer | None | No description available |
+| `confounds.tcompcor.n_components` | integer | None | Number of tCompCor components to extract |
 
-### options.cleanup
+
+### motion
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `options.cleanup.keep_only_latest_stage` | boolean | None | No description available |
-
-### options.confounds
+### motion.dvars
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `options.confounds.dvars_method` | string | None | No description available |
-| `options.confounds.fd_method` | string | None | No description available |
+| `motion.dvars.threshold` | number | None | DVARS threshold for motion detection |
 
-| `options.denoise_mppca` | boolean | None | No description available |
-### options.first_level
+### motion.fd
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `options.first_level.engine` | string | None | No description available |
-| `options.first_level.feat_variant` | string | None | No description available |
+| `motion.fd.threshold` | number | None | Framewise displacement threshold in mm |
 
-### options.ingest
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `options.ingest.enable` | boolean | None | No description available |
-
-### options.masks
+### motion.highpass
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `options.masks.binarize_thr` | number | None | No description available |
-| `options.masks.enable` | boolean | None | No description available |
-| `options.masks.source` | string | None | No description available |
-
-### options.motion
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-### options.motion.concat
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `options.motion.concat.mode` | string | None | No description available |
-| `options.motion.concat.require_same` | array of string | None | No description available |
-
-| `options.motion.engine` | string | None | No description available |
-| `options.motion.slice_axis` | string | None | No description available |
-
-### options.sdc
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `options.sdc.enable` | boolean | None | No description available |
-| `options.sdc.mode` | string | None | No description available |
-
-### options.smoothing
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `options.smoothing.enable` | boolean | None | No description available |
-| `options.smoothing.fwhm_mm` | number | None | No description available |
-
-### options.temporal_crop
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `options.temporal_crop.enable` | boolean | None | No description available |
-| `options.temporal_crop.max_trim_end` | integer | None | No description available |
-| `options.temporal_crop.max_trim_start` | integer | None | No description available |
-| `options.temporal_crop.method` | string | None | No description available |
-| `options.temporal_crop.z_thresh` | number | None | No description available |
+| `motion.highpass.hz` | number | None | Highpass filter cutoff frequency in Hz |
 
 
-### paths
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `paths.bids_dir` | string | None | No description available |
-| `paths.deriv_dir` | string | None | No description available |
-| `paths.logs_dir` | string | None | No description available |
-| `paths.root` | string | None | No description available |
-| `paths.work_dir` | string | None | No description available |
-
-| `pipeline_version` | string | None | No description available |
-| `project_name` | string | None | No description available |
+| `output_dir` | string | None | Path to output directory for derivatives |
 ### qc
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `qc.cohort_report` | boolean | None | No description available |
-| `qc.subject_report` | boolean | None | No description available |
+### qc.psnr
+
+No description available
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `qc.psnr.min` | number | None | Minimum acceptable PSNR in dB for QC |
+
+### qc.report
+
+No description available
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `qc.report.embed_assets` | boolean | None | Embed assets directly in QC HTML reports |
+
+### qc.ssim
+
+No description available
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `qc.ssim.min` | number | None | Minimum acceptable SSIM for QC |
+
 
 ### registration
 
@@ -183,65 +107,30 @@ No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `registration.enable` | boolean | None | No description available |
-| `registration.guidance` | string | None | No description available |
-| `registration.levels` | string | None | No description available |
-### registration.rootlets
+### registration.deformable
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `registration.rootlets.enable` | boolean | None | No description available |
-| `registration.rootlets.mode` | string | None | No description available |
+| `registration.deformable.enabled` | boolean | None | Enable deformable (non-linear) registration |
 
-| `registration.template` | string | None | No description available |
-| `registration.use_gm_wm_masks` | boolean | None | No description available |
-
-### resources
+### registration.pam50
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `resources.default_mem_gb` | integer | None | No description available |
-| `resources.default_threads` | integer | None | No description available |
+| `registration.pam50.spacing` | string | None | PAM50 template spacing (e.g., '0.5mm', '1mm') |
 
-### runtime
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `runtime.container_engine` | ['string', 'null'] | None | No description available |
-
-### study
+### registration.resample
 
 No description available
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `study.name` | string | None | No description available |
+| `registration.resample.to` | string | None | Target space for resampling |
 
-### templates
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `templates.pam50_version` | string | None | No description available |
-
-### tools
-
-No description available
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `tools.ants` | string | None | No description available |
-| `tools.dcm2niix` | string | None | No description available |
-| `tools.fsl` | string | None | No description available |
-| `tools.sct` | string | None | No description available |
-| `tools.sct_min_version` | string | None | No description available |
 
 
 ## Example Configuration

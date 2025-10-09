@@ -6,10 +6,7 @@ from pathlib import Path
 from jsonschema import ValidationError
 
 from .config import print_config, resolve_config
-from .confounds import process as confounds_process
 from .doctor import cmd_doctor
-from .ingest import ingest
-from .motion import process_from_manifest
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -117,28 +114,9 @@ def main(argv=None) -> int:
             print("[dry-run] Pipeline check complete")
             return 0
 
-        # Run ingest (non-dry-run)
-        out_dir = Path(cfg["output_dir"])
-        stats = ingest(Path(cfg["bids_root"]), out_dir, hash_large=False)
-        print(
-            f"[ingest] {stats['total']} files indexed ({stats['func']} func, {stats['anat']} anat, {stats['other']} other) → {stats['manifest']}"
-        )
-
-        # Run motion processing
-        manifest_path = out_dir / "manifest.csv"
-        motion_stats = process_from_manifest(manifest_path, out_dir)
-        print(
-            f"[motion] {motion_stats['processed']} runs processed → confounds TSVs and plots"
-        )
-
-        # Run confounds processing
-        confounds_stats = confounds_process(manifest_path, out_dir, cfg)
-        print(
-            f"[confounds] {confounds_stats['runs']} runs updated, {confounds_stats['skipped']} skipped, "
-            f"{confounds_stats['censored']} frames censored total"
-        )
-
+        # Pipeline execution not yet implemented
         print("[run] config resolved ✓")
+        print("[run] Pipeline execution deferred to Snakemake DAG")
         return 0
     if a.cmd == "version":
         from importlib.metadata import PackageNotFoundError, version

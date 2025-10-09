@@ -1,41 +1,169 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "type":"object",
-  "required":["bids_root","output_dir","pipeline","confounds","registration","qc"],
-  "properties":{
-    "bids_root":{"type":["string","null"]},
-    "output_dir":{"type":"string"},
-    "pipeline":{
-      "type":"object",
-      "properties":{
-        "motion":{
-          "type":"object",
-          "properties":{
-            "fd_threshold":{"type":"number"},
-            "dvars_threshold":{"type":"number"}
-          },
-          "required":["fd_threshold","dvars_threshold"]
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["bids_root", "output_dir", "motion", "confounds", "registration", "qc"],
+  "properties": {
+    "bids_root": {
+      "type": ["string", "null"],
+      "description": "Path to BIDS dataset root directory"
+    },
+    "output_dir": {
+      "type": "string",
+      "description": "Path to output directory for derivatives"
+    },
+    "motion": {
+      "type": "object",
+      "required": ["fd", "dvars", "highpass"],
+      "properties": {
+        "fd": {
+          "type": "object",
+          "required": ["threshold"],
+          "properties": {
+            "threshold": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Framewise displacement threshold in mm"
+            }
+          }
+        },
+        "dvars": {
+          "type": "object",
+          "required": ["threshold"],
+          "properties": {
+            "threshold": {
+              "type": "number",
+              "minimum": 0,
+              "description": "DVARS threshold for motion detection"
+            }
+          }
+        },
+        "highpass": {
+          "type": "object",
+          "required": ["hz"],
+          "properties": {
+            "hz": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Highpass filter cutoff frequency in Hz"
+            }
+          }
         }
       }
     },
-    "confounds":{
-      "type":"object",
-      "properties":{
-        "acompcor":{
-          "type":"object",
-          "properties":{"n_components":{"type":"integer","minimum":1}},
-          "required":["n_components"]
+    "confounds": {
+      "type": "object",
+      "required": ["acompcor", "tcompcor", "censor"],
+      "properties": {
+        "acompcor": {
+          "type": "object",
+          "required": ["n_components"],
+          "properties": {
+            "n_components": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of aCompCor components to extract"
+            }
+          }
+        },
+        "tcompcor": {
+          "type": "object",
+          "required": ["n_components"],
+          "properties": {
+            "n_components": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of tCompCor components to extract"
+            }
+          }
+        },
+        "censor": {
+          "type": "object",
+          "required": ["method"],
+          "properties": {
+            "method": {
+              "type": "string",
+              "enum": ["fd", "dvars", "fd+dvars"],
+              "description": "Censoring method for high-motion frames"
+            }
+          }
         }
       }
     },
-    "registration":{
-      "type":"object",
-      "properties":{
-        "target":{"type":"string","enum":["PAM50"]},
-        "sct":{"type":"object","properties":{"enable":{"type":"boolean"}},"required":["enable"]}
-      },
-      "required":["target","sct"]
+    "registration": {
+      "type": "object",
+      "required": ["pam50", "resample", "deformable"],
+      "properties": {
+        "pam50": {
+          "type": "object",
+          "required": ["spacing"],
+          "properties": {
+            "spacing": {
+              "type": "string",
+              "description": "PAM50 template spacing (e.g., '0.5mm', '1mm')"
+            }
+          }
+        },
+        "resample": {
+          "type": "object",
+          "required": ["to"],
+          "properties": {
+            "to": {
+              "type": "string",
+              "enum": ["native", "pam50"],
+              "description": "Target space for resampling"
+            }
+          }
+        },
+        "deformable": {
+          "type": "object",
+          "required": ["enabled"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Enable deformable (non-linear) registration"
+            }
+          }
+        }
+      }
     },
-    "qc":{"type":"object","properties":{"enable":{"type":"boolean"}},"required":["enable"]}
+    "qc": {
+      "type": "object",
+      "required": ["ssim", "psnr", "report"],
+      "properties": {
+        "ssim": {
+          "type": "object",
+          "required": ["min"],
+          "properties": {
+            "min": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Minimum acceptable SSIM for QC"
+            }
+          }
+        },
+        "psnr": {
+          "type": "object",
+          "required": ["min"],
+          "properties": {
+            "min": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Minimum acceptable PSNR in dB for QC"
+            }
+          }
+        },
+        "report": {
+          "type": "object",
+          "required": ["embed_assets"],
+          "properties": {
+            "embed_assets": {
+              "type": "boolean",
+              "description": "Embed assets directly in QC HTML reports"
+            }
+          }
+        }
+      }
+    }
   }
 }
