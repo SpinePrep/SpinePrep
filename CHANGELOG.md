@@ -76,6 +76,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **[A1] CLI skeleton and doctor with JSON snapshot**
+  - Entry point `spineprep` with subcommands: `run`, `doctor`, `version`
+  - `doctor` command with complete environment diagnostics
+  - JSON output with `--json` flag (file path or `-` for stdout)
+  - Required JSON fields: `python.version`, `spineprep.version`, `platform`, `packages`, `sct.present/version/path`, `pam50.present`, `disk.free_bytes`, `cwd_writeable`, `tmp_writeable`
+  - Non-zero exit code when SCT is missing
+  - Remediation text for missing SCT (Docker/Apptainer or local install)
+  - Disk space and write permission checks
+
 ### Planned
 
 - Nonlinear registration options
@@ -83,4 +94,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactive QC with motion plots
 - Performance profiling and caching
 - Container packaging (GHCR)
-

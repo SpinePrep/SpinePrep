@@ -16,7 +16,12 @@ def build_parser() -> argparse.ArgumentParser:
     d = sub.add_parser("doctor", help="Check environment and dependencies")
     d.add_argument("--out", type=Path, default=Path("./out"))
     d.add_argument("--pam50", type=str, default=None)
-    d.add_argument("--json", type=Path, default=None)
+    d.add_argument(
+        "--json",
+        type=str,
+        default=None,
+        help="Write JSON report to file or '-' for stdout",
+    )
     d.add_argument("--strict", action="store_true")
 
     r = sub.add_parser("run", help="Resolve config and run pipeline (stub)")
@@ -38,7 +43,11 @@ def main(argv=None) -> int:
     p = build_parser()
     a = p.parse_args(argv)
     if a.cmd == "doctor":
-        return cmd_doctor(a.out, a.pam50, a.json, a.strict)
+        # Handle --json argument: convert to Path unless it's "-"
+        json_arg = None
+        if a.json:
+            json_arg = Path(a.json) if a.json != "-" else a.json
+        return cmd_doctor(a.out, a.pam50, json_arg, a.strict)
     if a.cmd == "run":
         try:
             cfg = resolve_config(a.bids_root, a.output_dir, a.config)

@@ -7,6 +7,8 @@ import os
 import platform
 import shutil
 import subprocess
+import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -166,11 +168,48 @@ def detect_os_info() -> dict[str, Any]:
     return info
 
 
+def check_disk_space() -> int:
+    """
+    Check available disk space.
+
+    Returns:
+        Free bytes available on the filesystem containing cwd.
+    """
+    try:
+        stat = os.statvfs(Path.cwd())
+        return stat.f_bavail * stat.f_frsize
+    except Exception:
+        return 0
+
+
+def check_writeable(path: Path) -> bool:
+    """
+    Check if a directory is writeable.
+
+    Args:
+        path: Directory to check
+
+    Returns:
+        True if writeable, False otherwise.
+    """
+    try:
+        # Try to create a temporary file
+        test_file = path / f".spineprep_test_{os.getpid()}"
+        test_file.write_text("test")
+        test_file.unlink()
+        return True
+    except Exception:
+        return False
+
+
 def generate_report(
     sct_info: dict[str, Any],
     pam50_info: dict[str, Any],
     python_deps: dict[str, str],
     os_info: dict[str, Any],
+    disk_free: int,
+    cwd_writeable: bool,
+    tmp_writeable: bool,
     strict: bool = False,
 ) -> dict[str, Any]:
     """
@@ -181,10 +220,13 @@ def generate_report(
         pam50_info: PAM50 detection results
         python_deps: Python dependencies detection results
         os_info: OS information
+        disk_free: Free disk space in bytes
+        cwd_writeable: Whether cwd is writeable
+        tmp_writeable: Whether /tmp is writeable
         strict: If True, warnings become failures
 
     Returns:
-        Complete report dictionary.
+        Complete report dictionary matching ticket A1 format.
     """
     notes: list[str] = []
     status = "pass"
@@ -194,6 +236,10 @@ def generate_report(
         status = "fail"
         notes.append(
             "HARD FAIL: SCT not found. Install from https://github.com/spinalcordtoolbox/spinalcordtoolbox"
+        )
+        notes.append(
+            "Remediation: Use Docker (docker pull sctorg/sct:latest) or "
+            "Apptainer/Singularity, or install locally via official installer."
         )
 
     # Check PAM50 (hard requirement)
@@ -217,16 +263,31 @@ def generate_report(
     if strict and status == "warn":
         status = "fail"
 
+    # Build report matching ticket A1 format
     return {
+        "python": {"version": os_info["python"]},
         "spineprep": {"version": __version__},
+        "platform": {
+            "os": os_info["os"],
+            "kernel": os_info.get("kernel", "unknown"),
+            "cpu_count": os_info.get("cpu_count", 0),
+            "ram_gb": os_info.get("ram_gb", 0),
+        },
+        "packages": python_deps,
+        "sct": {
+            "present": sct_info["found"],
+            "version": sct_info.get("version", ""),
+            "path": sct_info.get("path", ""),
+        },
+        "pam50": {
+            "present": pam50_info["found"] and pam50_info.get("files_ok", False),
+            "path": pam50_info.get("path", ""),
+        },
+        "disk": {"free_bytes": disk_free},
+        "cwd_writeable": cwd_writeable,
+        "tmp_writeable": tmp_writeable,
         "timestamp": datetime.now(timezone.utc).astimezone().isoformat(),
         "status": status,
-        "platform": os_info,
-        "deps": {
-            "sct": sct_info,
-            "pam50": pam50_info,
-            "python": python_deps,
-        },
         "notes": notes,
     }
 
@@ -234,7 +295,7 @@ def generate_report(
 def write_doctor_report(
     report: dict[str, Any],
     out_dir: Path,
-    json_path: Path | None = None,
+    json_path: Path | str | None = None,
 ) -> Path:
     """
     Write doctor report to JSON file.
@@ -242,7 +303,7 @@ def write_doctor_report(
     Args:
         report: Report dictionary
         out_dir: Output directory for provenance files
-        json_path: Optional custom JSON path for additional copy
+        json_path: Optional custom JSON path for additional copy (Path or str, but not "-")
 
     Returns:
         Path to the main JSON report file.
@@ -260,9 +321,10 @@ def write_doctor_report(
         json.dump(report, f, indent=2)
 
     # Write additional copy if requested
-    if json_path:
-        json_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(json_path, "w") as f:
+    if json_path and json_path != "-":
+        json_p = Path(json_path) if isinstance(json_path, str) else json_path
+        json_p.parent.mkdir(parents=True, exist_ok=True)
+        with open(json_p, "w") as f:
             json.dump(report, f, indent=2)
 
     return main_json
@@ -306,21 +368,21 @@ def print_doctor_table(report: dict[str, Any]) -> None:
 
     # Platform info
     plat = report["platform"]
+    py_ver = report["python"]["version"]
     print("Platform:")
     print(f"  OS:       {plat['os']} {plat.get('kernel', 'unknown')}")
-    print(f"  Python:   {plat['python']}")
+    print(f"  Python:   {py_ver}")
     print(f"  CPU:      {plat['cpu_count']} cores")
     if plat.get("ram_gb"):
         print(f"  RAM:      {plat['ram_gb']} GB")
     print()
 
     # Dependencies
-    deps = report["deps"]
     print("Dependencies:")
 
     # SCT
-    sct = deps["sct"]
-    if sct["found"]:
+    sct = report["sct"]
+    if sct["present"]:
         print(f"  [{GREEN}✓{RESET}] SCT:")
         print(f"      Version: {sct.get('version', 'unknown')}")
         print(f"      Path:    {sct.get('path', 'unknown')}")
@@ -329,20 +391,20 @@ def print_doctor_table(report: dict[str, Any]) -> None:
         print("      Status:  NOT FOUND")
 
     # PAM50
-    pam50 = deps["pam50"]
-    if pam50["found"] and pam50.get("files_ok"):
+    pam50 = report["pam50"]
+    if pam50["present"]:
         print(f"  [{GREEN}✓{RESET}] PAM50:")
         print(f"      Path:    {pam50.get('path', 'unknown')}")
-    elif pam50["found"]:
-        print(f"  [{RED}✗{RESET}] PAM50:")
-        print(f"      Path:    {pam50.get('path', 'unknown')}")
-        print("      Status:  INCOMPLETE (missing required files)")
     else:
         print(f"  [{RED}✗{RESET}] PAM50:")
-        print("      Status:  NOT FOUND")
+        if pam50.get("path"):
+            print(f"      Path:    {pam50.get('path', 'unknown')}")
+            print("      Status:  INCOMPLETE (missing required files)")
+        else:
+            print("      Status:  NOT FOUND")
 
     # Python packages
-    py_deps = deps["python"]
+    py_deps = report.get("packages", {})
     if py_deps:
         missing = [pkg for pkg, ver in py_deps.items() if not ver]
         if not missing:
@@ -355,6 +417,16 @@ def print_doctor_table(report: dict[str, Any]) -> None:
             else:
                 print(f"      {pkg:15} {RED}MISSING{RESET}")
 
+    # Disk & permissions
+    print()
+    print("Disk & Permissions:")
+    disk_gb = report["disk"]["free_bytes"] / 1e9
+    print(f"  Disk free:    {disk_gb:.1f} GB")
+    cwd_symbol = f"{GREEN}✓{RESET}" if report["cwd_writeable"] else f"{RED}✗{RESET}"
+    tmp_symbol = f"{GREEN}✓{RESET}" if report["tmp_writeable"] else f"{RED}✗{RESET}"
+    print(f"  CWD write:    [{cwd_symbol}]")
+    print(f"  /tmp write:   [{tmp_symbol}]")
+
     # Notes
     if report["notes"]:
         print()
@@ -362,6 +434,8 @@ def print_doctor_table(report: dict[str, Any]) -> None:
         for note in report["notes"]:
             if "HARD FAIL" in note:
                 print(f"  {RED}•{RESET} {note}")
+            elif "Remediation" in note:
+                print(f"  {YELLOW}•{RESET} {note}")
             elif "Missing" in note or "missing" in note:
                 print(f"  {YELLOW}•{RESET} {note}")
             else:
@@ -375,7 +449,7 @@ def print_doctor_table(report: dict[str, Any]) -> None:
 def cmd_doctor(
     out_dir: Path,
     pam50: str | None,
-    json_path: Path | None,
+    json_path: Path | str | None,
     strict: bool,
 ) -> int:
     """
@@ -384,7 +458,7 @@ def cmd_doctor(
     Args:
         out_dir: Output directory for provenance files
         pam50: Explicit PAM50 path (optional)
-        json_path: Optional custom JSON path
+        json_path: Optional custom JSON path (Path object, "-" for stdout, or None)
         strict: Treat warnings as errors
 
     Returns:
@@ -395,21 +469,42 @@ def cmd_doctor(
     pam50_info = detect_pam50(pam50)
     python_deps = detect_python_deps()
     os_info = detect_os_info()
+    disk_free = check_disk_space()
+    cwd_writeable = check_writeable(Path.cwd())
+    tmp_writeable = check_writeable(Path(tempfile.gettempdir()))
 
     # Generate report
-    report = generate_report(sct_info, pam50_info, python_deps, os_info, strict=strict)
+    report = generate_report(
+        sct_info,
+        pam50_info,
+        python_deps,
+        os_info,
+        disk_free,
+        cwd_writeable,
+        tmp_writeable,
+        strict=strict,
+    )
 
-    # Write to disk
-    report_path = write_doctor_report(report, out_dir, json_path=json_path)
-
-    # Print table
-    print_doctor_table(report)
-
-    # Print artifact location
-    print(f"Doctor report written to: {report_path}")
+    # Handle JSON output
     if json_path:
-        print(f"Additional copy written to: {json_path}")
-    print()
+        if str(json_path) == "-":
+            # Output to stdout
+            json.dump(report, sys.stdout, indent=2)
+            sys.stdout.write("\n")
+            return 0 if report["status"] == "pass" else 1
+        else:
+            # Write to specified file
+            report_path = write_doctor_report(report, out_dir, json_path=json_path)
+            print(f"Doctor report written to: {report_path}")
+            if json_path:
+                print(f"Additional copy written to: {json_path}")
+            print()
+    else:
+        # Normal mode: write to provenance and print table
+        report_path = write_doctor_report(report, out_dir, json_path=None)
+        print_doctor_table(report)
+        print(f"Doctor report written to: {report_path}")
+        print()
 
     # Exit code based on status
     if report["status"] == "fail":
