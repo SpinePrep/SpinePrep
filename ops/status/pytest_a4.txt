@@ -1,0 +1,63 @@
+..............FF..............F......FF
+=================================== FAILURES ===================================
+______________________________ test_print_config _______________________________
+tests/test_cli_smoke.py:56: in test_print_config
+    assert result.returncode == 0, f"print-config failed: {result.stderr}"
+E   AssertionError: print-config failed:
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['spineprep', 'run', '--config', '/tmp/pytest-of-kiomars/pytest-141/test_print_config0/test.yaml...r}/logs'\nstudy:\n  name: TestStudy\n\n[run] ERROR: --bids and --out are required for workflow execution\n", stderr='').returncode
+___________________________ test_dag_export_dry_run ____________________________
+tests/test_cli_smoke.py:95: in test_dag_export_dry_run
+    assert dag_svg.exists(), f"DAG not exported to {dag_svg}"
+E   AssertionError: DAG not exported to /tmp/pytest-of-kiomars/pytest-141/test_dag_export_dry_run0/out/provenance/dag.svg
+E   assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-kiomars/pytest-141/test_dag_export_dry_run0/out/provenance/dag.svg').exists
+________________________ test_registration_all_fixture _________________________
+tests/integration/test_registration_rules.py:84: in test_registration_all_fixture
+    subprocess.run(
+/usr/local/fsl/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['snakemake', '-n', '-p', 'registration_all', '--snakefile', 'workflow/Snakefile', '--configfile', '/tmp/pytest-of-kiomars/pytest-141/test_registration_all_fixture0/cfg.yaml', '--directory', '/tmp/pytest-of-kiomars/pytest-141/test_registration_all_fixture0/work', '--cores', '2']' returned non-zero exit status 1.
+----------------------------- Captured stdout call -----------------------------
+KeyError in file "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 10:
+'out_dir'
+  File "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 26, in <module>
+  File "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 10, in get_func_series
+_____________________________ test_motion_rigid3d ______________________________
+tests/integration/test_motion_engines.py:55: in test_motion_rigid3d
+    subprocess.run(
+/usr/local/fsl/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['snakemake', '-n', '-p', 'derivatives/spineprep/sub-01/func/sub-01_task-rest_run-01_desc-motion_bold.nii.gz', '--snakefile', 'workflow/Snakefile', '--directory', '/tmp/pytest-of-kiomars/pytest-141/test_motion_rigid3d0/work']' returned non-zero exit status 1.
+----------------------------- Captured stdout call -----------------------------
+KeyError in file "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 10:
+'out_dir'
+  File "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 26, in <module>
+  File "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 10, in get_func_series
+________________________ test_motion_sct_graceful_skip _________________________
+tests/integration/test_motion_engines.py:97: in test_motion_sct_graceful_skip
+    subprocess.run(
+/usr/local/fsl/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['snakemake', '-p', '-j', '2', 'derivatives/spineprep/sub-01/func/sub-01_task-rest_run-01_desc-motion_bold.nii.gz', '--snakefile', 'workflow/Snakefile', '--directory', '/tmp/pytest-of-kiomars/pytest-141/test_motion_sct_graceful_skip0/work', '--config', 'options.motion.engine=sct']' returned non-zero exit status 1.
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+
+  File "/home/kiomars/.local/lib/python3.12/site-packages/snakemake/cli.py", line 2053, in args_to_api
+    config=parse_config(args.config),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/kiomars/.local/lib/python3.12/site-packages/snakemake/cli.py", line 314, in parse_config
+    raise ValueError(
+
+ValueError: Invalid config definition: Config entry must start with a valid identifier.
+
+=========================== short test summary info ============================
+FAILED tests/test_cli_smoke.py::test_print_config - AssertionError: print-con...
+FAILED tests/test_cli_smoke.py::test_dag_export_dry_run - AssertionError: DAG...
+FAILED tests/integration/test_registration_rules.py::test_registration_all_fixture
+FAILED tests/integration/test_motion_engines.py::test_motion_rigid3d - subpro...
+FAILED tests/integration/test_motion_engines.py::test_motion_sct_graceful_skip
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+5 failed, 34 passed in 2.75s

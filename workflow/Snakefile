@@ -1,5 +1,5 @@
-# SpinePrep Minimal Workflow (A3)
-# Consumes manifest.csv and creates a touch file to verify workflow execution
+# SpinePrep Minimal Workflow (A3 + A4)
+# Consumes manifest.csv, applies MP-PCA denoising to BOLD series
 
 import sys
 from pathlib import Path
@@ -16,10 +16,15 @@ OUT_DIR = config.get("out_dir", "./out")
 MANIFEST_CSV = config.get("manifest_csv", f"{OUT_DIR}/manifest.csv")
 
 
+# Include preprocessing rules
+include: "rules/preproc.smk"
+
+
 rule all:
-    """Target rule that depends on manifest processing."""
+    """Target rule that depends on manifest processing and denoising."""
     input:
         touch=f"{OUT_DIR}/.manifest.touch",
+        denoised=get_denoise_outputs(),
 
 
 rule touch_manifest:

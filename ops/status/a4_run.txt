@@ -1,0 +1,64 @@
+Assuming unrestricted shared filesystem usage.
+host: kiomars
+Building DAG of jobs...
+Using shell: /usr/local/fsl/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count
+--------------  -------
+all                   1
+denoise_bold          1
+touch_manifest        1
+total                 3
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu Oct  9 19:52:02 2025]
+localrule denoise_bold:
+    input: /tmp/bids-a4/sub-01/ses-01/func/sub-01_ses-01_task-rest_run-01_bold.nii.gz
+    output: /tmp/out-a4/denoised/sub-01_ses-01_task-rest_run-01_bold_desc-mppca_bold.nii.gz
+    jobid: 2
+    reason: Missing output files: /tmp/out-a4/denoised/sub-01_ses-01_task-rest_run-01_bold_desc-mppca_bold.nii.gz
+    wildcards: outdir=/tmp/out-a4, stem=sub-01_ses-01_task-rest_run-01_bold
+    resources: tmpdir=/tmp
+[A4][warn] DIPY not available, copying sub-01_ses-01_task-rest_run-01_bold.nii.gz without denoising
+[A4] Copy-through complete: /tmp/out-a4/denoised/sub-01_ses-01_task-rest_run-01_bold_desc-mppca_bold.nii.gz
+[Thu Oct  9 19:52:02 2025]
+Finished jobid: 2 (Rule: denoise_bold)
+1 of 3 steps (33%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu Oct  9 19:52:02 2025]
+localrule touch_manifest:
+    input: /tmp/out-a4/manifest.csv
+    output: /tmp/out-a4/.manifest.touch
+    jobid: 1
+    reason: Missing output files: /tmp/out-a4/.manifest.touch
+    resources: tmpdir=/tmp
+Manifest processed: /tmp/out-a4/manifest.csv
+2 /tmp/out-a4/manifest.csv
+[Thu Oct  9 19:52:02 2025]
+Finished jobid: 1 (Rule: touch_manifest)
+2 of 3 steps (67%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu Oct  9 19:52:02 2025]
+localrule all:
+    input: /tmp/out-a4/.manifest.touch, /tmp/out-a4/denoised/sub-01_ses-01_task-rest_run-01_bold_desc-mppca_bold.nii.gz
+    jobid: 0
+    reason: Input files updated by another job: /tmp/out-a4/.manifest.touch, /tmp/out-a4/denoised/sub-01_ses-01_task-rest_run-01_bold_desc-mppca_bold.nii.gz
+    resources: tmpdir=/tmp
+[Thu Oct  9 19:52:02 2025]
+Finished jobid: 0 (Rule: all)
+3 of 3 steps (100%) done
+Complete log(s): /mnt/ssd1/SpinePrep/.snakemake/log/2025-10-09T195202.010089.snakemake.log
+[run] Generating manifest from /tmp/bids-a4
+[run] Manifest written: /tmp/out-a4/manifest.csv (1 series)
+[run] Executing minimal workflow
+[run] BIDS: /tmp/bids-a4
+[run] Output: /tmp/out-a4
+[run] Manifest: /tmp/out-a4/manifest.csv
