@@ -1,0 +1,2650 @@
+diff --git a/ops/status/branch_divergence.txt b/ops/status/branch_divergence.txt
+new file mode 100644
+index 00000000..a4bbdb5b
+--- /dev/null
++++ b/ops/status/branch_divergence.txt
+@@ -0,0 +1,51 @@
++=== feat/doctor-environment-diagnostics ===
++
++=== feat/spi-001-scaffold-cli-config ===
++
++=== feat/spi-002-snakemake-dag-provenance ===
++58dff246 feat(workflow): add minimal Snakemake DAG with provenance export  [spi-002]
++81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
++
++=== feat/spi-011a-docs-ci-pages ===
++2c815ac1 ci(docs): harden docs CI and enable GitHub Pages [spi-011a]
++dadbaa4e feat(docs): stand up MkDocs Material site with generators  [spi-011]
++afed40c8 spi-005c: Add aCompCor confounds (cord/WM/CSF masks + PCA)
++
++=== feat/spi-A1-doctor-json-snapshot ===
++b2ed3dd9 feat(cli): add doctor JSON snapshot with complete diagnostics  [spi-A1]
++0c1675fd feat(qc): scaffold per-subject QC HTML with overlays, motion, aCompCor, and env  [spi-a7]
++3d371981 feat(preproc): add cord and CSF masking with QC overlays
++81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++
++=== feat/spi-a7-qc-html-scaffold ===
++0c1675fd feat(qc): scaffold per-subject QC HTML with overlays, motion, aCompCor, and env  [spi-a7]
++3d371981 feat(preproc): add cord and CSF masking with QC overlays
++81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
++
++=== feat/spi-cli-scaffold ===
++b858cb63 feat(doctor): implement environment diagnostics
++5b5401b6 feat(doctor): implement environment diagnostics
++
++=== feat/spi-confounds-acompcor-tcompcor-censor ===
++81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
++
++=== feat/spi-confounds-fd-dvars-tsv-json-v1 ===
++1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
++
++=== feat/spi-masking-cord-csf-qc ===
++81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
++
++=== feat/spi-xxx-registration-pam50-wrapper ===
++81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++1beeb730 feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
+diff --git a/ops/status/branch_file_changes.txt b/ops/status/branch_file_changes.txt
+new file mode 100644
+index 00000000..0116b79f
+--- /dev/null
++++ b/ops/status/branch_file_changes.txt
+@@ -0,0 +1,109 @@
++=== feat/spi-A1-doctor-json-snapshot ===
++M	CHANGELOG.md
++M	CITATION.cff
++M	configs/base.yaml
++A	docs/cli.md
++M	docs/reference/config.md
++M	mkdocs.yml
++M	pytest.ini
++M	schemas/config.schema.json
++A	spineprep/_sct.py
++M	spineprep/_version.py
++M	spineprep/cli.py
++A	spineprep/confounds/__init__.py
++A	spineprep/confounds/__pycache__/__init__.cpython-312.pyc
++A	spineprep/confounds/__pycache__/io.cpython-312.pyc
++A	spineprep/confounds/__pycache__/motion.cpython-312.pyc
++A	spineprep/confounds/__pycache__/plot.cpython-312.pyc
++A	spineprep/confounds/io.py
++A	spineprep/confounds/motion.py
++A	spineprep/confounds/plot.py
++A	spineprep/confounds/schema_v1.json
++
++=== feat/spi-a7-qc-html-scaffold ===
++M	CITATION.cff
++M	configs/base.yaml
++A	docs/cli.md
++M	docs/reference/config.md
++M	mkdocs.yml
++M	pytest.ini
++M	schemas/config.schema.json
++A	spineprep/_sct.py
++M	spineprep/_version.py
++M	spineprep/cli.py
++A	spineprep/confounds/__init__.py
++A	spineprep/confounds/__pycache__/__init__.cpython-312.pyc
++A	spineprep/confounds/__pycache__/io.cpython-312.pyc
++A	spineprep/confounds/__pycache__/motion.cpython-312.pyc
++A	spineprep/confounds/__pycache__/plot.cpython-312.pyc
++A	spineprep/confounds/io.py
++A	spineprep/confounds/motion.py
++A	spineprep/confounds/plot.py
++A	spineprep/confounds/schema_v1.json
++A	spineprep/preproc/__init__.py
++
++=== feat/spi-002-snakemake-dag-provenance ===
++M	CITATION.cff
++M	configs/base.yaml
++A	docs/cli.md
++M	docs/reference/config.md
++M	mkdocs.yml
++M	pytest.ini
++M	schemas/config.schema.json
++M	spineprep/_version.py
++M	spineprep/cli.py
++A	spineprep/confounds/__init__.py
++A	spineprep/confounds/__pycache__/__init__.cpython-312.pyc
++A	spineprep/confounds/__pycache__/censor.cpython-312.pyc
++A	spineprep/confounds/__pycache__/compcor.cpython-312.pyc
++A	spineprep/confounds/__pycache__/io.cpython-312.pyc
++A	spineprep/confounds/__pycache__/motion.cpython-312.pyc
++A	spineprep/confounds/__pycache__/plot.cpython-312.pyc
++A	spineprep/confounds/censor.py
++A	spineprep/confounds/compcor.py
++A	spineprep/confounds/io.py
++A	spineprep/confounds/motion.py
++
++=== feat/spi-confounds-acompcor-tcompcor-censor ===
++M	CITATION.cff
++M	configs/base.yaml
++A	docs/cli.md
++M	docs/reference/config.md
++M	mkdocs.yml
++M	pytest.ini
++M	schemas/config.schema.json
++M	spineprep/_version.py
++M	spineprep/cli.py
++A	spineprep/confounds/__init__.py
++A	spineprep/confounds/__pycache__/__init__.cpython-312.pyc
++A	spineprep/confounds/__pycache__/io.cpython-312.pyc
++A	spineprep/confounds/__pycache__/motion.cpython-312.pyc
++A	spineprep/confounds/__pycache__/plot.cpython-312.pyc
++A	spineprep/confounds/io.py
++A	spineprep/confounds/motion.py
++A	spineprep/confounds/plot.py
++A	spineprep/confounds/schema_v1.json
++A	spineprep/registration/__init__.py
++A	spineprep/registration/header.py
++
++=== feat/spi-confounds-fd-dvars-tsv-json-v1 ===
++M	CITATION.cff
++M	configs/base.yaml
++A	docs/cli.md
++M	docs/reference/config.md
++M	mkdocs.yml
++M	pytest.ini
++M	schemas/config.schema.json
++M	spineprep/_version.py
++M	spineprep/cli.py
++A	spineprep/confounds/__init__.py
++A	spineprep/confounds/__pycache__/__init__.cpython-312.pyc
++A	spineprep/confounds/__pycache__/io.cpython-312.pyc
++A	spineprep/confounds/__pycache__/motion.cpython-312.pyc
++A	spineprep/confounds/__pycache__/plot.cpython-312.pyc
++A	spineprep/confounds/io.py
++A	spineprep/confounds/motion.py
++A	spineprep/confounds/plot.py
++A	spineprep/confounds/schema_v1.json
++A	tests/confounds/__init__.py
++A	tests/confounds/__pycache__/__init__.cpython-312.pyc
+diff --git a/ops/status/branches.txt b/ops/status/branches.txt
+new file mode 100644
+index 00000000..c3ad3d5a
+--- /dev/null
++++ b/ops/status/branches.txt
+@@ -0,0 +1,12 @@
++feat/doctor-environment-diagnostics|07bb6e2f|2025-10-08 16:06:51 +0200
++feat/spi-001-scaffold-cli-config|e2955226|2025-10-08 22:21:23 +0200
++feat/spi-002-snakemake-dag-provenance|58dff246|2025-10-09 14:09:56 +0200
++feat/spi-011a-docs-ci-pages|2c815ac1|2025-10-08 11:10:04 +0200
++feat/spi-A1-doctor-json-snapshot|b2ed3dd9|2025-10-09 18:01:13 +0200
++feat/spi-a7-qc-html-scaffold|0c1675fd|2025-10-09 17:58:12 +0200
++feat/spi-cli-scaffold|b858cb63|2025-10-08 17:36:16 +0200
++feat/spi-confounds-acompcor-tcompcor-censor|81712fac|2025-10-09 14:01:35 +0200
++feat/spi-confounds-fd-dvars-tsv-json-v1|1beeb730|2025-10-09 14:00:17 +0200
++feat/spi-masking-cord-csf-qc|81712fac|2025-10-09 14:01:35 +0200
++feat/spi-xxx-registration-pam50-wrapper|81712fac|2025-10-09 14:01:35 +0200
++main|e2955226|2025-10-08 22:21:23 +0200
+diff --git a/ops/status/check_ignore_sample.txt b/ops/status/check_ignore_sample.txt
+new file mode 100644
+index 00000000..e69de29b
+diff --git a/ops/status/codespell.txt b/ops/status/codespell.txt
+new file mode 100644
+index 00000000..7d385056
+--- /dev/null
++++ b/ops/status/codespell.txt
+@@ -0,0 +1,1202 @@
++WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/litrature.pdf
++WARNING: Trying next encoding "iso-8859-1"
++WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/scopus_ai/3.pdf
++WARNING: Trying next encoding "iso-8859-1"
++WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/scopus_ai/4.pdf
++WARNING: Trying next encoding "iso-8859-1"
++WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/scopus_ai/8.pdf
++WARNING: Trying next encoding "iso-8859-1"
++./site/assets/javascripts/lunr/wordcut.js:122: ans ==> and
++./site/assets/javascripts/lunr/wordcut.js:136: ans ==> and
++./site/assets/javascripts/lunr/wordcut.js:145: ans ==> and
++./site/assets/javascripts/lunr/wordcut.js:3334: abd ==> and, bad
++./site/assets/javascripts/lunr/wordcut.js:4377: enviroments ==> environments
++./site/assets/javascripts/lunr/wordcut.js:4386: maddness ==> madness
++./site/assets/javascripts/lunr/wordcut.js:4393: hopfully ==> hopefully
++./site/assets/javascripts/lunr/wordcut.js:4402: enviroments ==> environments
++./site/assets/javascripts/lunr/wordcut.js:4411: maddness ==> madness
++./site/assets/javascripts/lunr/wordcut.js:4418: hopfully ==> hopefully
++./site/assets/javascripts/lunr/wordcut.js:4484: predictible ==> predictable
++./site/assets/javascripts/lunr/wordcut.js:5620: egal ==> equal
++./site/assets/javascripts/lunr/wordcut.js:5620: egal ==> equal
++./site/assets/javascripts/lunr/wordcut.js:5642: egal ==> equal
++./site/assets/javascripts/lunr/wordcut.js:5964: offest ==> offset
++./site/assets/stylesheets/main.2a3383ac.min.css:1: nd ==> and, 2nd
++./private/03_literature/library.bib:22: Ather ==> Other
++./private/03_literature/library.bib:1316: Oder ==> Order, Older, Coder, Odder, Odor, Over, Doer
++./private/03_literature/library.bib:2183: Hendler ==> Handler
++./private/03_literature/library.bib:2252: Yau ==> You, Yaw
++./private/03_literature/library.bib:2570: Claus ==> Clause
++./private/03_literature/library.bib:2750: Sherif ==> Sheriff
++./private/03_literature/library.bib:3505: Teh ==> The
++./private/03_literature/library.bib:4116: onl ==> only
++./private/03_literature/library.bib:4353: Bui ==> Buoy, Buy
++./private/03_literature/library.bib:4715: Leary ==> Leery
++./private/03_literature/library.bib:5531: Toom ==> Tomb
++./private/03_literature/library.bib:5901: Alle ==> All, Alley
++./private/03_literature/library.bib:5928: Nam ==> Name
++./private/03_literature/library.bib:6128: RIN ==> RING, RINK, RIND, RAIN, REIN, RUIN, GRIN
++./private/03_literature/library.bib:8011: Gage ==> Gauge
++./private/03_literature/library.bib:8432: Claus ==> Clause
++./private/03_literature/library.bib:8836: Alle ==> All, Alley
++./private/03_literature/litrature.pdf:527: YUr ==> your
++./private/03_literature/litrature.pdf:573: OLl ==> all, ole, old, olly, oil
++./private/03_literature/litrature.pdf:855: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/litrature.pdf:861: EdN ==> end
++./private/03_literature/litrature.pdf:1238: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/litrature.pdf:1311: eGe ==> edge
++./private/03_literature/litrature.pdf:2092: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:2699: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:3048: nd ==> and, 2nd
++./private/03_literature/litrature.pdf:3095: CaF ==> calf
++./private/03_literature/litrature.pdf:3106: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:3188: yuO ==> you
++./private/03_literature/litrature.pdf:3371: ths ==> the, this
++./private/03_literature/litrature.pdf:3495: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/litrature.pdf:3748: MOT ==> NOT
++./private/03_literature/litrature.pdf:3918: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:4249: TeY ==> they
++./private/03_literature/litrature.pdf:4293: toi ==> to, toy
++./private/03_literature/litrature.pdf:4479: ND ==> AND, 2ND
++./private/03_literature/litrature.pdf:4742: Nd ==> And, 2nd
++./private/03_literature/litrature.pdf:4919: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/litrature.pdf:5044: nD ==> and, 2nd
++./private/03_literature/litrature.pdf:5045: EGE ==> EDGE
++./private/03_literature/litrature.pdf:5055: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:5103: oNw ==> own
++./private/03_literature/litrature.pdf:5469: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:5502: HDa ==> had
++./private/03_literature/litrature.pdf:5515: oLY ==> only
++./private/03_literature/litrature.pdf:5889: nD ==> and, 2nd
++./private/03_literature/litrature.pdf:5923: aBd ==> and, bad
++./private/03_literature/litrature.pdf:5973: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/litrature.pdf:6154: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/litrature.pdf:6224: Yhe ==> The
++./private/03_literature/litrature.pdf:6289: OnW ==> own
++./private/03_literature/litrature.pdf:6634: nD ==> and, 2nd
++./private/03_literature/litrature.pdf:7588: tHq ==> the
++./private/03_literature/litrature.pdf:8092: sIZ ==> size, six
++./private/03_literature/litrature.pdf:8851: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/litrature.pdf:9009: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:9315: nD ==> and, 2nd
++./private/03_literature/litrature.pdf:9448: Nd ==> And, 2nd
++./private/03_literature/litrature.pdf:9522: NMAE ==> NAME
++./private/03_literature/litrature.pdf:9558: nd ==> and, 2nd
++./private/03_literature/litrature.pdf:9646: nd ==> and, 2nd
++./private/03_literature/litrature.pdf:9858: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/litrature.pdf:10992: oll ==> all, ole, old, olly, oil
++./private/03_literature/litrature.pdf:11170: yse ==> yes, use, nyse
++./private/03_literature/litrature.pdf:11256: Nd ==> And, 2nd
++./private/03_literature/litrature.pdf:11266: ND ==> AND, 2ND
++./private/03_literature/litrature.pdf:11417: ND ==> AND, 2ND
++./private/03_literature/litrature.pdf:11645: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:11988: myE ==> may, my
++./private/03_literature/litrature.pdf:12151: WEE ==> WE
++./private/03_literature/litrature.pdf:12624: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/litrature.pdf:13355: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:13454: nD ==> and, 2nd
++./private/03_literature/litrature.pdf:13589: onY ==> only, on, one
++./private/03_literature/litrature.pdf:13632: nd ==> and, 2nd
++./private/03_literature/litrature.pdf:14277: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/litrature.pdf:14756: nD ==> and, 2nd
++./private/03_literature/litrature.pdf:15392: 2rD ==> 2nd
++./private/03_literature/litrature.pdf:15563: vEW ==> view, vow, vex
++./private/03_literature/litrature.pdf:15663: nd ==> and, 2nd
++./private/03_literature/scopus_ai/3.pdf:163: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/scopus_ai/3.pdf:7252: myE ==> may, my
++./private/03_literature/scopus_ai/3.pdf:7540: WEE ==> WE
++./private/03_literature/scopus_ai/4.pdf:140: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/scopus_ai/4.pdf:490: nd ==> and, 2nd
++./private/03_literature/scopus_ai/4.pdf:537: CaF ==> calf
++./private/03_literature/scopus_ai/4.pdf:549: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/scopus_ai/4.pdf:631: yuO ==> you
++./private/03_literature/scopus_ai/4.pdf:826: ths ==> the, this
++./private/03_literature/scopus_ai/4.pdf:950: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/scopus_ai/8.pdf:249: nD ==> and, 2nd
++./private/03_literature/scopus_ai/8.pdf:283: aBd ==> and, bad
++./private/03_literature/scopus_ai/8.pdf:333: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/scopus_ai/8.pdf:517: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/scopus_ai/8.pdf:588: Yhe ==> The
++./private/03_literature/scopus_ai/8.pdf:653: OnW ==> own
++./private/03_literature/scopus_ai/8.pdf:8179: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/scopus_ai/scopus (1).bib:191: onl ==> only
++./private/03_literature/scopus_ai/scopus (1).bib:235: Gage ==> Gauge
++./private/03_literature/scopus_ai/scopus (1).bib:949: Teh ==> The
++./private/03_literature/scopus_ai/scopus (10).bib:79: Claus ==> Clause
++./private/03_literature/scopus_ai/scopus (10).bib:288: Ather ==> Other
++./private/03_literature/scopus_ai/scopus (10).bib:636: Hendler ==> Handler
++./private/03_literature/scopus_ai/scopus (10).bib:666: Leary ==> Leery
++WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/papers/imag-3-123.pdf
++WARNING: Trying next encoding "iso-8859-1"
++./private/03_literature/scopus_ai/scopus (10).bib:905: Bui ==> Buoy, Buy
++./private/03_literature/scopus_ai/scopus (10).bib:1056: onl ==> only
++./private/03_literature/scopus_ai/scopus (10).bib:1493: Alle ==> All, Alley
++./private/03_literature/scopus_ai/scopus (11).bib:79: Claus ==> Clause
++./private/03_literature/scopus_ai/scopus (11).bib:288: Ather ==> Other
++./private/03_literature/scopus_ai/scopus (11).bib:636: Hendler ==> Handler
++./private/03_literature/scopus_ai/scopus (11).bib:666: Leary ==> Leery
++./private/03_literature/scopus_ai/scopus (11).bib:905: Bui ==> Buoy, Buy
++./private/03_literature/scopus_ai/scopus (11).bib:1056: onl ==> only
++./private/03_literature/scopus_ai/scopus (11).bib:1493: Alle ==> All, Alley
++./private/03_literature/scopus_ai/scopus (2).bib:157: Yau ==> You, Yaw
++./private/03_literature/scopus_ai/scopus (2).bib:204: Toom ==> Tomb
++./private/03_literature/scopus_ai/scopus (3).bib:126: Oder ==> Order, Older, Coder, Odder, Odor, Over, Doer
++./private/03_literature/scopus_ai/scopus (3).bib:601: Yau ==> You, Yaw
++./private/03_literature/scopus_ai/scopus (5).bib:81: Claus ==> Clause
++./private/03_literature/scopus_ai/scopus (5).bib:169: Nam ==> Name
++./private/03_literature/scopus_ai/scopus (8).bib:124: Nam ==> Name
++./private/03_literature/scopus_ai/scopus (8).bib:278: Claus ==> Clause
++./private/03_literature/scopus_ai/scopus (9).bib:473: Claus ==> Clause
++./private/03_literature/scopus_ai/scopus (9).bib:489: Sherif ==> Sheriff
++./private/03_literature/scopus_ai/scopus (9).bib:778: RIN ==> RING, RINK, RIND, RAIN, REIN, RUIN, GRIN
++./private/03_literature/scopus_ai/scopus.bib:124: Alle ==> All, Alley
++./private/03_literature/papers/imag-3-123.pdf:239: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:403: nWE ==> new
++./private/03_literature/papers/imag-3-123.pdf:616: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:1071: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:1140: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:1445: weW ==> we
++./private/03_literature/papers/imag-3-123.pdf:1572: wll ==> will
++./private/03_literature/papers/imag-3-123.pdf:1935: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:2059: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:2076: oLY ==> only
++./private/03_literature/papers/imag-3-123.pdf:2087: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:2141: aDDD ==> add
++./private/03_literature/papers/imag-3-123.pdf:2368: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:2661: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:3283: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:3309: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:3517: Daa ==> Data
++./private/03_literature/papers/imag-3-123.pdf:3587: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:3751: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:3848: coo ==> coup
++./private/03_literature/papers/imag-3-123.pdf:3905: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:4452: gES ==> goes, guess
++./private/03_literature/papers/imag-3-123.pdf:4969: gir ==> git
++./private/03_literature/papers/imag-3-123.pdf:5020: MKE ==> MAKE
++./private/03_literature/papers/imag-3-123.pdf:5065: abl ==> able
++./private/03_literature/papers/imag-3-123.pdf:5195: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:5301: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:5479: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:5491: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:5733: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:5860: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:5864: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:6005: NaM ==> name
++./private/03_literature/papers/imag-3-123.pdf:6061: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:6153: nOO ==> no
++./private/03_literature/papers/imag-3-123.pdf:6435: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:6880: wEE ==> we
++./private/03_literature/papers/imag-3-123.pdf:6912: Hsa ==> Has
++./private/03_literature/papers/imag-3-123.pdf:6999: rIN ==> ring, rink, rind, rain, rein, ruin, grin
++./private/03_literature/papers/imag-3-123.pdf:7333: ALLL ==> ALL, ALLY
++./private/03_literature/papers/imag-3-123.pdf:7568: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:7665: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:7868: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:8353: NOo ==> no
++./private/03_literature/papers/imag-3-123.pdf:8372: ADDD ==> ADD
++./private/03_literature/papers/imag-3-123.pdf:8400: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:8900: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:9021: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:9181: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:9295: wYA ==> way
++./private/03_literature/papers/imag-3-123.pdf:9427: Wll ==> Will
++./private/03_literature/papers/imag-3-123.pdf:9574: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:9719: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:9775: daa ==> data
++./private/03_literature/papers/imag-3-123.pdf:9782: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:9935: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:10095: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:10140: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:10140: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:10212: DIsGN ==> design
++./private/03_literature/papers/imag-3-123.pdf:10512: daa ==> data
++./private/03_literature/papers/imag-3-123.pdf:10535: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:10557: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:10896: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:10937: oyU ==> you
++./private/03_literature/papers/imag-3-123.pdf:10943: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:11014: coo ==> coup
++./private/03_literature/papers/imag-3-123.pdf:11230: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:11336: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:11459: Haa ==> Has
++./private/03_literature/papers/imag-3-123.pdf:11760: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:11953: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:11972: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:12230: haX ==> hex
++./private/03_literature/papers/imag-3-123.pdf:12298: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:12533: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:13078: wIT ==> with
++./private/03_literature/papers/imag-3-123.pdf:13848: HAA ==> HAS
++./private/03_literature/papers/imag-3-123.pdf:13883: Joo ==> You
++./private/03_literature/papers/imag-3-123.pdf:13884: daa ==> data
++./private/03_literature/papers/imag-3-123.pdf:13895: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:14100: tHt ==> the, that
++./private/03_literature/papers/imag-3-123.pdf:14227: tBE ==> the
++./private/03_literature/papers/imag-3-123.pdf:14231: pTRSS ==> press
++./private/03_literature/papers/imag-3-123.pdf:14335: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:14378: JOO ==> YOU
++./private/03_literature/papers/imag-3-123.pdf:14509: Oll ==> All, Ole, Old, Olly, Oil
++./private/03_literature/papers/imag-3-123.pdf:14634: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:14674: afe ==> safe
++./private/03_literature/papers/imag-3-123.pdf:14693: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:14736: Coo ==> Coup
++./private/03_literature/papers/imag-3-123.pdf:14809: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:15344: VIE ==> VIA
++./private/03_literature/papers/imag-3-123.pdf:15438: AlO ==> also
++./private/03_literature/papers/imag-3-123.pdf:15447: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:15515: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:15528: MeY ==> may
++./private/03_literature/papers/imag-3-123.pdf:15594: sEh ==> she
++./private/03_literature/papers/imag-3-123.pdf:15704: SEh ==> she
++./private/03_literature/papers/imag-3-123.pdf:15766: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:15863: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:16069: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:16872: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:17094: wHn ==> when
++./private/03_literature/papers/imag-3-123.pdf:17167: haX ==> hex
++./private/03_literature/papers/imag-3-123.pdf:17382: OtU ==> out
++./private/03_literature/papers/imag-3-123.pdf:18180: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:18218: JOO ==> YOU
++./private/03_literature/papers/imag-3-123.pdf:18241: WEe ==> we
++./private/03_literature/papers/imag-3-123.pdf:18331: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:18660: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:19058: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:19178: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:19529: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:20489: Wih ==> With
++./private/03_literature/papers/imag-3-123.pdf:20836: fPt ==> ftp
++./private/03_literature/papers/imag-3-123.pdf:20855: TBe ==> the
++./private/03_literature/papers/imag-3-123.pdf:21028: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:21255: fom ==> from, form
++./private/03_literature/papers/imag-3-123.pdf:21278: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:21354: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:21415: hSi ==> his
++./private/03_literature/papers/imag-3-123.pdf:21572: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:21594: iSt ==> is, it, its, it's, sit, list
++./private/03_literature/papers/imag-3-123.pdf:21621: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:21935: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:22027: NWE ==> NEW
++./private/03_literature/papers/imag-3-123.pdf:22146: IHs ==> his
++./private/03_literature/papers/imag-3-123.pdf:22228: aNe ==> and
++./private/03_literature/papers/imag-3-123.pdf:22794: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:22857: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:23065: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:23176: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:23622: Aci ==> Acpi
++./private/03_literature/papers/imag-3-123.pdf:23751: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:23795: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:23889: Wee ==> We
++./private/03_literature/papers/imag-3-123.pdf:23889: vaI ==> via, vie
++./private/03_literature/papers/imag-3-123.pdf:23906: AnE ==> and
++./private/03_literature/papers/imag-3-123.pdf:24111: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:24349: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:24454: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:24495: Tye ==> Type, Tie
++./private/03_literature/papers/imag-3-123.pdf:25472: hDA ==> had
++./private/03_literature/papers/imag-3-123.pdf:25979: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:26002: iif ==> if
++./private/03_literature/papers/imag-3-123.pdf:26833: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:27199: TNe ==> the
++./private/03_literature/papers/imag-3-123.pdf:28353: tNE ==> the
++./private/03_literature/papers/imag-3-123.pdf:28622: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:28901: LeW ==> lieu, hew, sew, dew
++./private/03_literature/papers/imag-3-123.pdf:28929: vEW ==> view, vow, vex
++./private/03_literature/papers/imag-3-123.pdf:28934: Ned ==> Need, End, Nod
++./private/03_literature/papers/imag-3-123.pdf:29048: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:29320: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:29705: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:29899: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:30175: AfoR ==> for
++./private/03_literature/papers/imag-3-123.pdf:30371: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:31080: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:31139: tHt ==> the, that
++./private/03_literature/papers/imag-3-123.pdf:31184: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:31350: whN ==> when
++./private/03_literature/papers/imag-3-123.pdf:31472: 2rd ==> 2nd
++./private/03_literature/papers/imag-3-123.pdf:31542: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:31715: Fom ==> From, Form
++./private/03_literature/papers/imag-3-123.pdf:31879: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:31952: IiF ==> if
++./private/03_literature/papers/imag-3-123.pdf:31959: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:32408: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:32649: WTH ==> WITH
++./private/03_literature/papers/imag-3-123.pdf:32675: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:32680: Tge ==> The
++./private/03_literature/papers/imag-3-123.pdf:32689: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:32886: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:33037: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:33043: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:33095: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:33402: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:33504: Nwo ==> Now
++./private/03_literature/papers/imag-3-123.pdf:33527: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:33607: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:33937: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:33949: onW ==> own
++./private/03_literature/papers/imag-3-123.pdf:34060: bVE ==> be
++./private/03_literature/papers/imag-3-123.pdf:34125: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:34301: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:34327: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:34447: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:34508: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:34613: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:34790: Fot ==> For, Fit, Dot, Rot, Cot, Got, Tot, Fog
++./private/03_literature/papers/imag-3-123.pdf:34913: 1ND ==> 1ST
++./private/03_literature/papers/imag-3-123.pdf:35162: 2RD ==> 2ND
++./private/03_literature/papers/imag-3-123.pdf:35342: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:35361: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:35457: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:35479: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:35523: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:35738: FPr ==> for, far, fps
++./private/03_literature/papers/imag-3-123.pdf:35863: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:36379: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:36654: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:36733: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:36764: PTD ==> PDF
++./private/03_literature/papers/imag-3-123.pdf:36961: hEl ==> help, hell, heal
++./private/03_literature/papers/imag-3-123.pdf:37087: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:37158: Noo ==> No
++./private/03_literature/papers/imag-3-123.pdf:37384: iNH ==> in
++./private/03_literature/papers/imag-3-123.pdf:37415: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:37562: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:37566: ois ==> is
++./private/03_literature/papers/imag-3-123.pdf:37599: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:37704: wTh ==> with
++./private/03_literature/papers/imag-3-123.pdf:37750: CoO ==> coup
++./private/03_literature/papers/imag-3-123.pdf:38214: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:38297: weE ==> we
++./private/03_literature/papers/imag-3-123.pdf:38624: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:38635: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:38674: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:39313: nax ==> max, nad
++./private/03_literature/papers/imag-3-123.pdf:39767: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:39846: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:40109: Coo ==> Coup
++./private/03_literature/papers/imag-3-123.pdf:40195: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:40247: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:40376: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:40430: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:40512: COO ==> COUP
++./private/03_literature/papers/imag-3-123.pdf:40661: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:40738: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:40995: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:41101: DuM ==> dumb
++./private/03_literature/papers/imag-3-123.pdf:41178: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:41252: cppp ==> cpp
++./private/03_literature/papers/imag-3-123.pdf:41257: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:41260: cPPP ==> cpp
++./private/03_literature/papers/imag-3-123.pdf:41348: HSI ==> HIS
++./private/03_literature/papers/imag-3-123.pdf:41527: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:41569: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:41633: yhe ==> the
++./private/03_literature/papers/imag-3-123.pdf:41637: Alll ==> All, Ally
++./private/03_literature/papers/imag-3-123.pdf:41959: oLL ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:42004: HAA ==> HAS
++./private/03_literature/papers/imag-3-123.pdf:42078: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:42474: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:42610: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:42701: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:42768: nOO ==> no
++./private/03_literature/papers/imag-3-123.pdf:42942: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:42950: Noo ==> No
++./private/03_literature/papers/imag-3-123.pdf:42961: COO ==> COUP
++./private/03_literature/papers/imag-3-123.pdf:43156: Joo ==> You
++./private/03_literature/papers/imag-3-123.pdf:43186: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:43387: Coo ==> Coup
++./private/03_literature/papers/imag-3-123.pdf:43442: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:43591: coo ==> coup
++./private/03_literature/papers/imag-3-123.pdf:43692: JOO ==> YOU
++./private/03_literature/papers/imag-3-123.pdf:43796: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:43799: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:43799: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:43803: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:43808: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:43829: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:43925: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:44137: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:44275: HEL ==> HELP, HELL, HEAL
++./private/03_literature/papers/imag-3-123.pdf:44277: wlll ==> will
++./private/03_literature/papers/imag-3-123.pdf:44399: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:44682: WEL ==> WELL
++./private/03_literature/papers/imag-3-123.pdf:44779: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:44858: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:45135: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:45417: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:45545: EGE ==> EDGE
++./private/03_literature/papers/imag-3-123.pdf:45665: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:45915: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:46006: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:46150: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:46410: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:46477: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:46561: JOO ==> YOU
++./private/03_literature/papers/imag-3-123.pdf:46588: Joo ==> You
++./private/03_literature/papers/imag-3-123.pdf:46651: ALLL ==> ALL, ALLY
++./private/03_literature/papers/imag-3-123.pdf:47210: TIcH ==> thick, tick, titch, stitch
++./private/03_literature/papers/imag-3-123.pdf:47257: tYE ==> type, tie
++./private/03_literature/papers/imag-3-123.pdf:47712: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:47872: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:47932: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:48007: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:48062: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:48082: LOOS ==> LOOSE, LOSE
++./private/03_literature/papers/imag-3-123.pdf:48408: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:48731: Aadd ==> Add
++./private/03_literature/papers/imag-3-123.pdf:49336: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:49836: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:49941: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:49972: CAf ==> calf
++./private/03_literature/papers/imag-3-123.pdf:50010: oNy ==> only, on, one
++./private/03_literature/papers/imag-3-123.pdf:50278: tHs ==> the, this
++./private/03_literature/papers/imag-3-123.pdf:50944: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:50963: laf ==> laugh, leaf, loaf, lad, lag, lac, kaf, kaph
++./private/03_literature/papers/imag-3-123.pdf:50999: laf ==> laugh, leaf, loaf, lad, lag, lac, kaf, kaph
++./private/03_literature/papers/imag-3-123.pdf:51476: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:51614: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:51782: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:52095: fOm ==> from, form
++./private/03_literature/papers/imag-3-123.pdf:52259: dum ==> dumb
++./private/03_literature/papers/imag-3-123.pdf:52341: aFE ==> safe
++./private/03_literature/papers/imag-3-123.pdf:52594: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:53293: tOi ==> to, toy
++./private/03_literature/papers/imag-3-123.pdf:53336: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:53351: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:53482: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:53620: thS ==> the, this
++./private/03_literature/papers/imag-3-123.pdf:53646: COO ==> COUP
++./private/03_literature/papers/imag-3-123.pdf:53779: COO ==> COUP
++./private/03_literature/papers/imag-3-123.pdf:53876: iNh ==> in
++./private/03_literature/papers/imag-3-123.pdf:53943: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:54217: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:54326: coO ==> coup
++./private/03_literature/papers/imag-3-123.pdf:54459: hdA ==> had
++./private/03_literature/papers/imag-3-123.pdf:54487: aCi ==> acpi
++./private/03_literature/papers/imag-3-123.pdf:54520: HVe ==> have
++./private/03_literature/papers/imag-3-123.pdf:54929: hAx ==> hex
++./private/03_literature/papers/imag-3-123.pdf:54995: fOF ==> for
++./private/03_literature/papers/imag-3-123.pdf:55015: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:55101: aCII ==> ascii
++./private/03_literature/papers/imag-3-123.pdf:55189: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:55453: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:55533: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:55784: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:56174: Alll ==> All, Ally
++./private/03_literature/papers/imag-3-123.pdf:56326: DAA ==> DATA
++./private/03_literature/papers/imag-3-123.pdf:56505: TrU ==> through, true
++./private/03_literature/papers/imag-3-123.pdf:56782: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:56882: lIk ==> like, lick, link
++./private/03_literature/papers/imag-3-123.pdf:56886: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:57113: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:57144: ABd ==> and, bad
++./private/03_literature/papers/imag-3-123.pdf:57547: cppp ==> cpp
++./private/03_literature/papers/imag-3-123.pdf:57802: LOOS ==> LOOSE, LOSE
++./private/03_literature/papers/imag-3-123.pdf:57905: Coo ==> Coup
++./private/03_literature/papers/imag-3-123.pdf:58466: UesD ==> used
++./private/03_literature/papers/imag-3-123.pdf:58480: UesD ==> used
++./private/03_literature/papers/imag-3-123.pdf:58544: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:58768: wew ==> we
++./private/03_literature/papers/imag-3-123.pdf:58850: ACi ==> acpi
++./private/03_literature/papers/imag-3-123.pdf:59208: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:59358: TOOO ==> TODO, TOO, TOOL, TOOK
++./private/03_literature/papers/imag-3-123.pdf:59377: TOOO ==> TODO, TOO, TOOL, TOOK
++./private/03_literature/papers/imag-3-123.pdf:59441: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:59483: SAV ==> SAVE
++./private/03_literature/papers/imag-3-123.pdf:59599: wLLL ==> will
++./private/03_literature/papers/imag-3-123.pdf:60027: naM ==> name
++./private/03_literature/papers/imag-3-123.pdf:60104: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:60144: Coo ==> Coup
++./private/03_literature/papers/imag-3-123.pdf:60251: OnL ==> only
++./private/03_literature/papers/imag-3-123.pdf:60285: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:60354: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:60382: fOf ==> for
++./private/03_literature/papers/imag-3-123.pdf:60408: sHS ==> ssh, nhs
++./private/03_literature/papers/imag-3-123.pdf:60522: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:60775: LIk ==> like, lick, link
++./private/03_literature/papers/imag-3-123.pdf:60960: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:61003: Wlll ==> Will
++./private/03_literature/papers/imag-3-123.pdf:61028: Wee ==> We
++./private/03_literature/papers/imag-3-123.pdf:61065: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:61087: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:61277: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:61301: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:61313: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:61455: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:61724: wll ==> will
++./private/03_literature/papers/imag-3-123.pdf:61851: Coo ==> Coup
++./private/03_literature/papers/imag-3-123.pdf:62359: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:62598: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:62601: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:62612: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:62634: aaS ==> ass, as
++./private/03_literature/papers/imag-3-123.pdf:62683: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:62748: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:62872: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:63198: ihs ==> his
++./private/03_literature/papers/imag-3-123.pdf:63224: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:63355: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:63436: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:63592: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:64047: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:64273: AUoT ==> auto
++./private/03_literature/papers/imag-3-123.pdf:64422: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:64457: wee ==> we
++./private/03_literature/papers/imag-3-123.pdf:64479: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:64634: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:64691: ALLL ==> ALL, ALLY
++./private/03_literature/papers/imag-3-123.pdf:64694: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:64746: Yau ==> You, Yaw
++./private/03_literature/papers/imag-3-123.pdf:64957: lik ==> like, lick, link
++./private/03_literature/papers/imag-3-123.pdf:65322: TiCH ==> thick, tick, titch, stitch
++./private/03_literature/papers/imag-3-123.pdf:65343: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:65447: eDE ==> edge
++./private/03_literature/papers/imag-3-123.pdf:65674: COO ==> COUP
++./private/03_literature/papers/imag-3-123.pdf:65780: TyE ==> type, tie
++./private/03_literature/papers/imag-3-123.pdf:65804: soM ==> some
++./private/03_literature/papers/imag-3-123.pdf:65824: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:65890: TOi ==> to, toy
++./private/03_literature/papers/imag-3-123.pdf:65998: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:66103: ned ==> need, end, nod
++./private/03_literature/papers/imag-3-123.pdf:66600: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:66950: CPPP ==> CPP
++./private/03_literature/papers/imag-3-123.pdf:67141: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:67347: HSa ==> has
++./private/03_literature/papers/imag-3-123.pdf:67384: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:67624: Oll ==> All, Ole, Old, Olly, Oil
++./private/03_literature/papers/imag-3-123.pdf:67783: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:67807: cppp ==> cpp
++./private/03_literature/papers/imag-3-123.pdf:67827: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:67981: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:67983: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:68075: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:68119: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:68267: SEh ==> she
++./private/03_literature/papers/imag-3-123.pdf:68425: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:68700: eDE ==> edge
++./private/03_literature/papers/imag-3-123.pdf:68860: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:69778: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:69823: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:69891: FIlLL ==> fill
++./private/03_literature/papers/imag-3-123.pdf:70100: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:70186: slq ==> sql
++./private/03_literature/papers/imag-3-123.pdf:70338: bu ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:70584: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:70614: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:70775: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:71033: NOO ==> NO
++./private/03_literature/papers/imag-3-123.pdf:71052: MKE ==> MAKE
++./private/03_literature/papers/imag-3-123.pdf:71127: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:71343: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:71597: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:71638: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:71674: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:71734: daa ==> data
++./private/03_literature/papers/imag-3-123.pdf:71830: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:71834: udO ==> undo, sudo, judo, ado, udon, ufo
++./private/03_literature/papers/imag-3-123.pdf:71897: noo ==> no
++./private/03_literature/papers/imag-3-123.pdf:72316: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:72920: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:72952: alll ==> all, ally
++./private/03_literature/papers/imag-3-123.pdf:72971: joo ==> you
++./private/03_literature/papers/imag-3-123.pdf:73141: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:73184: wll ==> will
++./private/03_literature/papers/imag-3-123.pdf:73287: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:73351: LSIt ==> list, slit, sit
++./private/03_literature/papers/imag-3-123.pdf:73501: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:73619: TBe ==> the
++./private/03_literature/papers/imag-3-123.pdf:74359: wll ==> will
++./private/03_literature/papers/imag-3-123.pdf:74882: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:74892: Ser ==> Set
++./private/03_literature/papers/imag-3-123.pdf:74945: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:75024: LIK ==> LIKE, LICK, LINK
++./private/03_literature/papers/imag-3-123.pdf:75251: nOO ==> no
++./private/03_literature/papers/imag-3-123.pdf:75590: AnC ==> and
++./private/03_literature/papers/imag-3-123.pdf:75662: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:75729: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:75906: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:75948: ND ==> AND, 2ND
++./private/03_literature/papers/imag-3-123.pdf:76278: WLl ==> will
++./private/03_literature/papers/imag-3-123.pdf:76313: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./private/03_literature/papers/imag-3-123.pdf:76370: tOI ==> to, toy
++./private/03_literature/papers/imag-3-123.pdf:76402: dAA ==> data
++./private/03_literature/papers/imag-3-123.pdf:76425: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:76625: ded ==> dead
++./private/03_literature/papers/imag-3-123.pdf:76936: uNX ==> unix
++./private/03_literature/papers/imag-3-123.pdf:77535: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:77603: yaU ==> you, yaw
++./private/03_literature/papers/imag-3-123.pdf:77803: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:77810: kaKe ==> cake, take
++./private/03_literature/papers/imag-3-123.pdf:78131: TOi ==> to, toy
++./private/03_literature/papers/imag-3-123.pdf:78139: nD ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:78204: jus ==> just
++./private/03_literature/papers/imag-3-123.pdf:78210: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:78549: Daa ==> Data
++./private/03_literature/papers/imag-3-123.pdf:78615: TRU ==> THROUGH, TRUE
++./private/03_literature/papers/imag-3-123.pdf:78621: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:78756: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:78807: Nd ==> And, 2nd
++./private/03_literature/papers/imag-3-123.pdf:79363: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./private/03_literature/papers/imag-3-123.pdf:79417: OlT ==> old
++./private/03_literature/papers/imag-3-123.pdf:79570: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:79625: Hve ==> Have
++./private/03_literature/papers/imag-3-123.pdf:79899: oll ==> all, ole, old, olly, oil
++./private/03_literature/papers/imag-3-123.pdf:79936: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./private/03_literature/papers/imag-3-123.pdf:80769: nd ==> and, 2nd
++./private/03_literature/papers/imag-3-123.pdf:81633: bU ==> by, be, but, bug, bun, bud, buy, bum
++./private/03_literature/papers/imag-3-123.pdf:81879: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:9: ans ==> and
++./ops/status/codespell.txt:10: ans ==> and
++./ops/status/codespell.txt:11: ans ==> and
++./ops/status/codespell.txt:12: abd ==> and, bad
++./ops/status/codespell.txt:13: enviroments ==> environments
++./ops/status/codespell.txt:14: maddness ==> madness
++./ops/status/codespell.txt:15: hopfully ==> hopefully
++./ops/status/codespell.txt:16: enviroments ==> environments
++./ops/status/codespell.txt:17: maddness ==> madness
++./ops/status/codespell.txt:18: hopfully ==> hopefully
++./ops/status/codespell.txt:19: predictible ==> predictable
++./ops/status/codespell.txt:20: egal ==> equal
++./ops/status/codespell.txt:21: egal ==> equal
++./ops/status/codespell.txt:22: egal ==> equal
++./ops/status/codespell.txt:23: offest ==> offset
++./ops/status/codespell.txt:24: nd ==> and, 2nd
++./ops/status/codespell.txt:25: Ather ==> Other
++./ops/status/codespell.txt:26: Oder ==> Order, Older, Coder, Odder, Odor, Over, Doer
++./ops/status/codespell.txt:27: Hendler ==> Handler
++./ops/status/codespell.txt:28: Yau ==> You, Yaw
++./ops/status/codespell.txt:29: Claus ==> Clause
++./ops/status/codespell.txt:30: Sherif ==> Sheriff
++./ops/status/codespell.txt:31: Teh ==> The
++./ops/status/codespell.txt:32: onl ==> only
++./ops/status/codespell.txt:33: Bui ==> Buoy, Buy
++./ops/status/codespell.txt:34: Leary ==> Leery
++./ops/status/codespell.txt:35: Toom ==> Tomb
++./ops/status/codespell.txt:36: Alle ==> All, Alley
++./ops/status/codespell.txt:37: Nam ==> Name
++./ops/status/codespell.txt:38: RIN ==> RING, RINK, RIND, RAIN, REIN, RUIN, GRIN
++./ops/status/codespell.txt:39: Gage ==> Gauge
++./ops/status/codespell.txt:40: Claus ==> Clause
++./ops/status/codespell.txt:41: Alle ==> All, Alley
++./ops/status/codespell.txt:42: YUr ==> your
++./ops/status/codespell.txt:43: OLl ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:44: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:45: EdN ==> end
++./ops/status/codespell.txt:46: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:47: eGe ==> edge
++./ops/status/codespell.txt:48: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:49: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:50: nd ==> and, 2nd
++./ops/status/codespell.txt:51: CaF ==> calf
++./ops/status/codespell.txt:52: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:53: yuO ==> you
++./ops/status/codespell.txt:54: ths ==> the, this
++./ops/status/codespell.txt:55: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:56: MOT ==> NOT
++./ops/status/codespell.txt:57: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:58: TeY ==> they
++./ops/status/codespell.txt:59: toi ==> to, toy
++./ops/status/codespell.txt:60: ND ==> AND, 2ND
++./ops/status/codespell.txt:61: Nd ==> And, 2nd
++./ops/status/codespell.txt:62: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:63: nD ==> and, 2nd
++./ops/status/codespell.txt:64: EGE ==> EDGE
++./ops/status/codespell.txt:65: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:66: oNw ==> own
++./ops/status/codespell.txt:67: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:68: HDa ==> had
++./ops/status/codespell.txt:69: oLY ==> only
++./ops/status/codespell.txt:70: nD ==> and, 2nd
++./ops/status/codespell.txt:71: aBd ==> and, bad
++./ops/status/codespell.txt:72: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:73: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:74: Yhe ==> The
++./ops/status/codespell.txt:75: OnW ==> own
++./ops/status/codespell.txt:76: nD ==> and, 2nd
++./ops/status/codespell.txt:77: tHq ==> the
++./ops/status/codespell.txt:78: sIZ ==> size, six
++./ops/status/codespell.txt:79: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:80: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:81: nD ==> and, 2nd
++./ops/status/codespell.txt:82: Nd ==> And, 2nd
++./ops/status/codespell.txt:83: NMAE ==> NAME
++./ops/status/codespell.txt:84: nd ==> and, 2nd
++./ops/status/codespell.txt:85: nd ==> and, 2nd
++./ops/status/codespell.txt:86: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:87: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:88: yse ==> yes, use, nyse
++./ops/status/codespell.txt:89: Nd ==> And, 2nd
++./ops/status/codespell.txt:90: ND ==> AND, 2ND
++./ops/status/codespell.txt:91: ND ==> AND, 2ND
++./ops/status/codespell.txt:92: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:93: myE ==> may, my
++./ops/status/codespell.txt:94: WEE ==> WE
++./ops/status/codespell.txt:95: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:96: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:97: nD ==> and, 2nd
++./ops/status/codespell.txt:98: onY ==> only, on, one
++./ops/status/codespell.txt:99: nd ==> and, 2nd
++./ops/status/codespell.txt:100: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:101: nD ==> and, 2nd
++./ops/status/codespell.txt:102: 2rD ==> 2nd
++./ops/status/codespell.txt:103: vEW ==> view, vow, vex
++./ops/status/codespell.txt:104: nd ==> and, 2nd
++./ops/status/codespell.txt:105: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:106: myE ==> may, my
++./ops/status/codespell.txt:107: WEE ==> WE
++./ops/status/codespell.txt:108: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:109: nd ==> and, 2nd
++./ops/status/codespell.txt:110: CaF ==> calf
++./ops/status/codespell.txt:111: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:112: yuO ==> you
++./ops/status/codespell.txt:113: ths ==> the, this
++./ops/status/codespell.txt:114: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:115: nD ==> and, 2nd
++./ops/status/codespell.txt:116: aBd ==> and, bad
++./ops/status/codespell.txt:117: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:118: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:119: Yhe ==> The
++./ops/status/codespell.txt:120: OnW ==> own
++./ops/status/codespell.txt:121: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:122: onl ==> only
++./ops/status/codespell.txt:123: Gage ==> Gauge
++./ops/status/codespell.txt:124: Teh ==> The
++./ops/status/codespell.txt:125: Claus ==> Clause
++./ops/status/codespell.txt:126: Ather ==> Other
++./ops/status/codespell.txt:127: Hendler ==> Handler
++./ops/status/codespell.txt:128: Leary ==> Leery
++./ops/status/codespell.txt:131: Bui ==> Buoy, Buy
++./ops/status/codespell.txt:132: onl ==> only
++./ops/status/codespell.txt:133: Alle ==> All, Alley
++./ops/status/codespell.txt:134: Claus ==> Clause
++./ops/status/codespell.txt:135: Ather ==> Other
++./ops/status/codespell.txt:136: Hendler ==> Handler
++./ops/status/codespell.txt:137: Leary ==> Leery
++./ops/status/codespell.txt:138: Bui ==> Buoy, Buy
++./ops/status/codespell.txt:139: onl ==> only
++./ops/status/codespell.txt:140: Alle ==> All, Alley
++./ops/status/codespell.txt:141: Yau ==> You, Yaw
++./ops/status/codespell.txt:142: Toom ==> Tomb
++./ops/status/codespell.txt:143: Oder ==> Order, Older, Coder, Odder, Odor, Over, Doer
++./ops/status/codespell.txt:144: Yau ==> You, Yaw
++./ops/status/codespell.txt:145: Claus ==> Clause
++./ops/status/codespell.txt:146: Nam ==> Name
++./ops/status/codespell.txt:147: Nam ==> Name
++./ops/status/codespell.txt:148: Claus ==> Clause
++./ops/status/codespell.txt:149: Claus ==> Clause
++./ops/status/codespell.txt:150: Sherif ==> Sheriff
++./ops/status/codespell.txt:151: RIN ==> RING, RINK, RIND, RAIN, REIN, RUIN, GRIN
++./ops/status/codespell.txt:152: Alle ==> All, Alley
++./ops/status/codespell.txt:153: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:154: nWE ==> new
++./ops/status/codespell.txt:155: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:156: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:157: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:158: weW ==> we
++./ops/status/codespell.txt:159: wll ==> will
++./ops/status/codespell.txt:160: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:161: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:162: oLY ==> only
++./ops/status/codespell.txt:163: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:164: aDDD ==> add
++./ops/status/codespell.txt:165: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:166: nD ==> and, 2nd
++./ops/status/codespell.txt:167: nD ==> and, 2nd
++./ops/status/codespell.txt:168: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:169: Daa ==> Data
++./ops/status/codespell.txt:170: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:171: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:172: coo ==> coup
++./ops/status/codespell.txt:173: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:174: gES ==> goes, guess
++./ops/status/codespell.txt:175: gir ==> git
++./ops/status/codespell.txt:176: MKE ==> MAKE
++./ops/status/codespell.txt:177: abl ==> able
++./ops/status/codespell.txt:178: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:179: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:180: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:181: Nd ==> And, 2nd
++./ops/status/codespell.txt:182: joo ==> you
++./ops/status/codespell.txt:183: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:184: nd ==> and, 2nd
++./ops/status/codespell.txt:185: NaM ==> name
++./ops/status/codespell.txt:186: NOO ==> NO
++./ops/status/codespell.txt:187: nOO ==> no
++./ops/status/codespell.txt:188: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:189: wEE ==> we
++./ops/status/codespell.txt:190: Hsa ==> Has
++./ops/status/codespell.txt:191: rIN ==> ring, rink, rind, rain, rein, ruin, grin
++./ops/status/codespell.txt:192: ALLL ==> ALL, ALLY
++./ops/status/codespell.txt:193: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:194: nd ==> and, 2nd
++./ops/status/codespell.txt:195: ND ==> AND, 2ND
++./ops/status/codespell.txt:196: NOo ==> no
++./ops/status/codespell.txt:197: ADDD ==> ADD
++./ops/status/codespell.txt:198: nD ==> and, 2nd
++./ops/status/codespell.txt:199: nD ==> and, 2nd
++./ops/status/codespell.txt:200: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:201: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:202: wYA ==> way
++./ops/status/codespell.txt:203: Wll ==> Will
++./ops/status/codespell.txt:204: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:205: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:206: daa ==> data
++./ops/status/codespell.txt:207: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:208: joo ==> you
++./ops/status/codespell.txt:209: nd ==> and, 2nd
++./ops/status/codespell.txt:210: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:211: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:212: DIsGN ==> design
++./ops/status/codespell.txt:213: daa ==> data
++./ops/status/codespell.txt:214: joo ==> you
++./ops/status/codespell.txt:215: noo ==> no
++./ops/status/codespell.txt:216: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:217: oyU ==> you
++./ops/status/codespell.txt:218: nD ==> and, 2nd
++./ops/status/codespell.txt:219: coo ==> coup
++./ops/status/codespell.txt:220: noo ==> no
++./ops/status/codespell.txt:221: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:222: Haa ==> Has
++./ops/status/codespell.txt:223: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:224: ND ==> AND, 2ND
++./ops/status/codespell.txt:225: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:226: haX ==> hex
++./ops/status/codespell.txt:227: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:228: Nd ==> And, 2nd
++./ops/status/codespell.txt:229: wIT ==> with
++./ops/status/codespell.txt:230: HAA ==> HAS
++./ops/status/codespell.txt:231: Joo ==> You
++./ops/status/codespell.txt:232: daa ==> data
++./ops/status/codespell.txt:233: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:234: tHt ==> the, that
++./ops/status/codespell.txt:235: tBE ==> the
++./ops/status/codespell.txt:236: pTRSS ==> press
++./ops/status/codespell.txt:237: joo ==> you
++./ops/status/codespell.txt:238: JOO ==> YOU
++./ops/status/codespell.txt:239: Oll ==> All, Ole, Old, Olly, Oil
++./ops/status/codespell.txt:240: noo ==> no
++./ops/status/codespell.txt:241: afe ==> safe
++./ops/status/codespell.txt:242: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:243: Coo ==> Coup
++./ops/status/codespell.txt:244: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:245: VIE ==> VIA
++./ops/status/codespell.txt:246: AlO ==> also
++./ops/status/codespell.txt:247: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:248: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:249: MeY ==> may
++./ops/status/codespell.txt:250: sEh ==> she
++./ops/status/codespell.txt:251: SEh ==> she
++./ops/status/codespell.txt:252: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:253: nd ==> and, 2nd
++./ops/status/codespell.txt:254: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:255: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:256: wHn ==> when
++./ops/status/codespell.txt:257: haX ==> hex
++./ops/status/codespell.txt:258: OtU ==> out
++./ops/status/codespell.txt:259: Nd ==> And, 2nd
++./ops/status/codespell.txt:260: JOO ==> YOU
++./ops/status/codespell.txt:261: WEe ==> we
++./ops/status/codespell.txt:262: nD ==> and, 2nd
++./ops/status/codespell.txt:263: nd ==> and, 2nd
++./ops/status/codespell.txt:264: nD ==> and, 2nd
++./ops/status/codespell.txt:265: Nd ==> And, 2nd
++./ops/status/codespell.txt:266: nd ==> and, 2nd
++./ops/status/codespell.txt:267: Wih ==> With
++./ops/status/codespell.txt:268: fPt ==> ftp
++./ops/status/codespell.txt:269: TBe ==> the
++./ops/status/codespell.txt:270: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:271: fom ==> from, form
++./ops/status/codespell.txt:272: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:273: nd ==> and, 2nd
++./ops/status/codespell.txt:274: hSi ==> his
++./ops/status/codespell.txt:275: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:276: iSt ==> is, it, its, it's, sit, list
++./ops/status/codespell.txt:277: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:278: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:279: NWE ==> NEW
++./ops/status/codespell.txt:280: IHs ==> his
++./ops/status/codespell.txt:281: aNe ==> and
++./ops/status/codespell.txt:282: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:283: joo ==> you
++./ops/status/codespell.txt:284: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:285: ND ==> AND, 2ND
++./ops/status/codespell.txt:286: Aci ==> Acpi
++./ops/status/codespell.txt:287: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:288: ND ==> AND, 2ND
++./ops/status/codespell.txt:289: Wee ==> We
++./ops/status/codespell.txt:290: vaI ==> via, vie
++./ops/status/codespell.txt:290: vie ==> via
++./ops/status/codespell.txt:291: AnE ==> and
++./ops/status/codespell.txt:292: nd ==> and, 2nd
++./ops/status/codespell.txt:293: nD ==> and, 2nd
++./ops/status/codespell.txt:294: nD ==> and, 2nd
++./ops/status/codespell.txt:295: Tye ==> Type, Tie
++./ops/status/codespell.txt:296: hDA ==> had
++./ops/status/codespell.txt:297: ND ==> AND, 2ND
++./ops/status/codespell.txt:298: iif ==> if
++./ops/status/codespell.txt:299: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:300: TNe ==> the
++./ops/status/codespell.txt:301: tNE ==> the
++./ops/status/codespell.txt:302: nD ==> and, 2nd
++./ops/status/codespell.txt:303: LeW ==> lieu, hew, sew, dew
++./ops/status/codespell.txt:304: vEW ==> view, vow, vex
++./ops/status/codespell.txt:305: Ned ==> Need, End, Nod
++./ops/status/codespell.txt:306: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:307: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:308: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:309: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:310: AfoR ==> for
++./ops/status/codespell.txt:311: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:312: nD ==> and, 2nd
++./ops/status/codespell.txt:313: tHt ==> the, that
++./ops/status/codespell.txt:314: nd ==> and, 2nd
++./ops/status/codespell.txt:315: whN ==> when
++./ops/status/codespell.txt:316: 2rd ==> 2nd
++./ops/status/codespell.txt:317: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:318: Fom ==> From, Form
++./ops/status/codespell.txt:319: ND ==> AND, 2ND
++./ops/status/codespell.txt:320: IiF ==> if
++./ops/status/codespell.txt:321: nD ==> and, 2nd
++./ops/status/codespell.txt:322: Nd ==> And, 2nd
++./ops/status/codespell.txt:323: WTH ==> WITH
++./ops/status/codespell.txt:324: ND ==> AND, 2ND
++./ops/status/codespell.txt:325: Tge ==> The
++./ops/status/codespell.txt:326: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:327: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:328: nd ==> and, 2nd
++./ops/status/codespell.txt:329: nd ==> and, 2nd
++./ops/status/codespell.txt:330: noo ==> no
++./ops/status/codespell.txt:331: nD ==> and, 2nd
++./ops/status/codespell.txt:332: Nwo ==> Now
++./ops/status/codespell.txt:333: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:334: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:335: Nd ==> And, 2nd
++./ops/status/codespell.txt:336: onW ==> own
++./ops/status/codespell.txt:337: bVE ==> be
++./ops/status/codespell.txt:338: ND ==> AND, 2ND
++./ops/status/codespell.txt:339: Nd ==> And, 2nd
++./ops/status/codespell.txt:340: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:341: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:342: ND ==> AND, 2ND
++./ops/status/codespell.txt:343: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:344: Fot ==> For, Fit, Dot, Rot, Cot, Got, Tot, Fog
++./ops/status/codespell.txt:345: 1ND ==> 1ST
++./ops/status/codespell.txt:346: 2RD ==> 2ND
++./ops/status/codespell.txt:347: Nd ==> And, 2nd
++./ops/status/codespell.txt:348: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:349: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:350: nd ==> and, 2nd
++./ops/status/codespell.txt:351: ND ==> AND, 2ND
++./ops/status/codespell.txt:352: FPr ==> for, far, fps
++./ops/status/codespell.txt:353: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:354: Nd ==> And, 2nd
++./ops/status/codespell.txt:355: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:356: ND ==> AND, 2ND
++./ops/status/codespell.txt:357: PTD ==> PDF
++./ops/status/codespell.txt:358: hEl ==> help, hell, heal
++./ops/status/codespell.txt:359: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:360: Noo ==> No
++./ops/status/codespell.txt:361: iNH ==> in
++./ops/status/codespell.txt:362: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:363: ND ==> AND, 2ND
++./ops/status/codespell.txt:364: ois ==> is
++./ops/status/codespell.txt:365: Nd ==> And, 2nd
++./ops/status/codespell.txt:366: wTh ==> with
++./ops/status/codespell.txt:367: CoO ==> coup
++./ops/status/codespell.txt:368: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:369: weE ==> we
++./ops/status/codespell.txt:370: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:371: joo ==> you
++./ops/status/codespell.txt:372: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:373: nax ==> max, nad
++./ops/status/codespell.txt:374: noo ==> no
++./ops/status/codespell.txt:375: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:376: Coo ==> Coup
++./ops/status/codespell.txt:377: noo ==> no
++./ops/status/codespell.txt:378: NOO ==> NO
++./ops/status/codespell.txt:379: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:380: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:381: COO ==> COUP
++./ops/status/codespell.txt:382: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:383: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:384: nd ==> and, 2nd
++./ops/status/codespell.txt:385: DuM ==> dumb
++./ops/status/codespell.txt:386: nD ==> and, 2nd
++./ops/status/codespell.txt:387: cppp ==> cpp
++./ops/status/codespell.txt:388: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:389: cPPP ==> cpp
++./ops/status/codespell.txt:390: HSI ==> HIS
++./ops/status/codespell.txt:391: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:392: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:393: yhe ==> the
++./ops/status/codespell.txt:394: Alll ==> All, Ally
++./ops/status/codespell.txt:395: oLL ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:396: HAA ==> HAS
++./ops/status/codespell.txt:397: ND ==> AND, 2ND
++./ops/status/codespell.txt:398: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:399: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:400: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:401: nOO ==> no
++./ops/status/codespell.txt:402: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:403: Noo ==> No
++./ops/status/codespell.txt:404: COO ==> COUP
++./ops/status/codespell.txt:405: Joo ==> You
++./ops/status/codespell.txt:406: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:407: Coo ==> Coup
++./ops/status/codespell.txt:408: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:409: coo ==> coup
++./ops/status/codespell.txt:410: JOO ==> YOU
++./ops/status/codespell.txt:411: nd ==> and, 2nd
++./ops/status/codespell.txt:412: nd ==> and, 2nd
++./ops/status/codespell.txt:413: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:414: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:415: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:416: nD ==> and, 2nd
++./ops/status/codespell.txt:417: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:418: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:419: HEL ==> HELP, HELL, HEAL
++./ops/status/codespell.txt:420: wlll ==> will
++./ops/status/codespell.txt:421: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:422: WEL ==> WELL
++./ops/status/codespell.txt:423: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:424: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:425: NOO ==> NO
++./ops/status/codespell.txt:426: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:427: EGE ==> EDGE
++./ops/status/codespell.txt:428: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:429: nD ==> and, 2nd
++./ops/status/codespell.txt:430: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:431: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:432: joo ==> you
++./ops/status/codespell.txt:433: joo ==> you
++./ops/status/codespell.txt:434: JOO ==> YOU
++./ops/status/codespell.txt:435: Joo ==> You
++./ops/status/codespell.txt:436: ALLL ==> ALL, ALLY
++./ops/status/codespell.txt:437: TIcH ==> thick, tick, titch, stitch
++./ops/status/codespell.txt:438: tYE ==> type, tie
++./ops/status/codespell.txt:439: nd ==> and, 2nd
++./ops/status/codespell.txt:440: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:441: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:442: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:443: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:444: LOOS ==> LOOSE, LOSE
++./ops/status/codespell.txt:445: ND ==> AND, 2ND
++./ops/status/codespell.txt:446: Aadd ==> Add
++./ops/status/codespell.txt:447: nD ==> and, 2nd
++./ops/status/codespell.txt:448: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:449: Nd ==> And, 2nd
++./ops/status/codespell.txt:450: CAf ==> calf
++./ops/status/codespell.txt:451: oNy ==> only, on, one
++./ops/status/codespell.txt:452: tHs ==> the, this
++./ops/status/codespell.txt:453: NOO ==> NO
++./ops/status/codespell.txt:454: laf ==> laugh, leaf, loaf, lad, lag, lac, kaf, kaph
++./ops/status/codespell.txt:455: laf ==> laugh, leaf, loaf, lad, lag, lac, kaf, kaph
++./ops/status/codespell.txt:456: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:457: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:458: ND ==> AND, 2ND
++./ops/status/codespell.txt:459: fOm ==> from, form
++./ops/status/codespell.txt:460: dum ==> dumb
++./ops/status/codespell.txt:461: aFE ==> safe
++./ops/status/codespell.txt:462: noo ==> no
++./ops/status/codespell.txt:463: tOi ==> to, toy
++./ops/status/codespell.txt:464: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:465: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:466: nD ==> and, 2nd
++./ops/status/codespell.txt:467: thS ==> the, this
++./ops/status/codespell.txt:468: COO ==> COUP
++./ops/status/codespell.txt:469: COO ==> COUP
++./ops/status/codespell.txt:470: iNh ==> in
++./ops/status/codespell.txt:471: noo ==> no
++./ops/status/codespell.txt:472: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:473: coO ==> coup
++./ops/status/codespell.txt:474: hdA ==> had
++./ops/status/codespell.txt:475: aCi ==> acpi
++./ops/status/codespell.txt:476: HVe ==> have
++./ops/status/codespell.txt:477: hAx ==> hex
++./ops/status/codespell.txt:478: fOF ==> for
++./ops/status/codespell.txt:479: NOO ==> NO
++./ops/status/codespell.txt:480: aCII ==> ascii
++./ops/status/codespell.txt:481: nD ==> and, 2nd
++./ops/status/codespell.txt:482: ND ==> AND, 2ND
++./ops/status/codespell.txt:483: nD ==> and, 2nd
++./ops/status/codespell.txt:484: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:485: Alll ==> All, Ally
++./ops/status/codespell.txt:486: DAA ==> DATA
++./ops/status/codespell.txt:487: TrU ==> through, true
++./ops/status/codespell.txt:488: NOO ==> NO
++./ops/status/codespell.txt:489: lIk ==> like, lick, link
++./ops/status/codespell.txt:490: ND ==> AND, 2ND
++./ops/status/codespell.txt:491: NOO ==> NO
++./ops/status/codespell.txt:492: ABd ==> and, bad
++./ops/status/codespell.txt:493: cppp ==> cpp
++./ops/status/codespell.txt:494: LOOS ==> LOOSE, LOSE
++./ops/status/codespell.txt:495: Coo ==> Coup
++./ops/status/codespell.txt:496: UesD ==> used
++./ops/status/codespell.txt:497: UesD ==> used
++./ops/status/codespell.txt:498: ND ==> AND, 2ND
++./ops/status/codespell.txt:499: wew ==> we
++./ops/status/codespell.txt:500: ACi ==> acpi
++./ops/status/codespell.txt:501: nD ==> and, 2nd
++./ops/status/codespell.txt:502: TOOO ==> TODO, TOO, TOOL, TOOK
++./ops/status/codespell.txt:503: TOOO ==> TODO, TOO, TOOL, TOOK
++./ops/status/codespell.txt:504: nD ==> and, 2nd
++./ops/status/codespell.txt:505: SAV ==> SAVE
++./ops/status/codespell.txt:506: wLLL ==> will
++./ops/status/codespell.txt:507: naM ==> name
++./ops/status/codespell.txt:508: nD ==> and, 2nd
++./ops/status/codespell.txt:509: Coo ==> Coup
++./ops/status/codespell.txt:510: OnL ==> only
++./ops/status/codespell.txt:511: Nd ==> And, 2nd
++./ops/status/codespell.txt:512: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
++./ops/status/codespell.txt:513: fOf ==> for
++./ops/status/codespell.txt:514: sHS ==> ssh, nhs
++./ops/status/codespell.txt:515: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:516: LIk ==> like, lick, link
++./ops/status/codespell.txt:517: ND ==> AND, 2ND
++./ops/status/codespell.txt:518: Wlll ==> Will
++./ops/status/codespell.txt:519: Wee ==> We
++./ops/status/codespell.txt:520: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:521: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:522: nD ==> and, 2nd
++./ops/status/codespell.txt:523: nd ==> and, 2nd
++./ops/status/codespell.txt:524: ND ==> AND, 2ND
++./ops/status/codespell.txt:525: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:526: wll ==> will
++./ops/status/codespell.txt:527: Coo ==> Coup
++./ops/status/codespell.txt:528: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:529: NOO ==> NO
++./ops/status/codespell.txt:530: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:531: OLL ==> ALL, OLE, OLD, OLLY, OIL
++./ops/status/codespell.txt:532: aaS ==> ass, as
++./ops/status/codespell.txt:533: NOO ==> NO
++./ops/status/codespell.txt:534: ND ==> AND, 2ND
++./ops/status/codespell.txt:535: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
++./ops/status/codespell.txt:536: ihs ==> his
++./ops/status/codespell.txt:537: nD ==> and, 2nd
++./ops/status/codespell.txt:538: nD ==> and, 2nd
++./ops/status/codespell.txt:539: ND ==> AND, 2ND
++./ops/status/codespell.txt:540: ND ==> AND, 2ND
++./ops/status/codespell.txt:541: ND ==> AND, 2ND
++./ops/status/codespell.txt:542: AUoT ==> auto
++./ops/status/codespell.txt:543: ND ==> AND, 2ND
++./ops/status/codespell.txt:544: wee ==> we
++./ops/status/codespell.txt:545: ND ==> AND, 2ND
++./ops/status/codespell.txt:546: bU ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:547: ALLL ==> ALL, ALLY
++./ops/status/codespell.txt:548: oll ==> all, ole, old, olly, oil
++./ops/status/codespell.txt:549: Yau ==> You, Yaw
++./ops/status/codespell.txt:550: lik ==> like, lick, link
++./ops/status/codespell.txt:551: TiCH ==> thick, tick, titch, stitch
++./ops/status/codespell.txt:552: Nd ==> And, 2nd
++./ops/status/codespell.txt:553: eDE ==> edge
++./ops/status/codespell.txt:554: COO ==> COUP
++./ops/status/codespell.txt:555: TyE ==> type, tie
++./ops/status/codespell.txt:556: soM ==> some
++./ops/status/codespell.txt:557: NOO ==> NO
++./ops/status/codespell.txt:558: TOi ==> to, toy
++./ops/status/codespell.txt:559: bu ==> by, be, but, bug, bun, bud, buy, bum
++./ops/status/codespell.txt:560: ned ==> need, end, nod
++./ops/status/codespell.txt:561: nD ==> and, 2nd
++./ops/status/codespell.txt:562: CPPP ==> CPP
++./ops/status/codespell.txt:563: Nd ==> And, 2nd
++./ops/status/codespell.txt:564: HSa ==> has
+diff --git a/ops/status/git_graph.txt b/ops/status/git_graph.txt
+new file mode 100644
+index 00000000..df23e5c5
+--- /dev/null
++++ b/ops/status/git_graph.txt
+@@ -0,0 +1,97 @@
++* b2ed3dd9 (HEAD -> feat/spi-A1-doctor-json-snapshot, origin/feat/spi-A1-doctor-json-snapshot) feat(cli): add doctor JSON snapshot with complete diagnostics  [spi-A1]
++* 0c1675fd (origin/feat/spi-a7-qc-html-scaffold, feat/spi-a7-qc-html-scaffold) feat(qc): scaffold per-subject QC HTML with overlays, motion, aCompCor, and env  [spi-a7]
++* 3d371981 feat(preproc): add cord and CSF masking with QC overlays
++| * 8283c88e (refs/stash) WIP on feat/spi-a7-qc-html-scaffold: 81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++|/|
++| * 36a6b2e5 index on feat/spi-a7-qc-html-scaffold: 81712fac feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++|/
++| * 58dff246 (origin/feat/spi-002-snakemake-dag-provenance, feat/spi-002-snakemake-dag-provenance) feat(workflow): add minimal Snakemake DAG with provenance export  [spi-002]
++|/
++* 81712fac (feat/spi-xxx-registration-pam50-wrapper, feat/spi-masking-cord-csf-qc, feat/spi-confounds-acompcor-tcompcor-censor) feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++* 1beeb730 (origin/feat/spi-confounds-fd-dvars-tsv-json-v1, feat/spi-confounds-fd-dvars-tsv-json-v1) feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++* 8a30a885 feat(core): scaffold CLI with config loader and doctor command  [spi-001]
++| * 33976e80 (origin/feat/spi-001-scaffold-cli-config) feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++|/
++* e2955226 (origin/main, origin/HEAD, main, feat/spi-001-scaffold-cli-config) chore: restore noindex - keep site private indefinitely
++* 729d9049 chore: sync remaining source files and formatting updates
++* 53e79421 docs: enable public discovery and add architecture section  [spi-docs-public]
++* 939c1c55 feat(support): add issue/PR templates, SECURITY, and quickstart guide  [spi-support]
++* d5cf856d (tag: v0.1.0) test(hardening): add pytest.ini with deterministic seeds and test fixes  [spi-hardening]
++* 442da771 chore(release): prepare v0.1.0 with ADRs  [spi-v0.1.0]
++* 9bd64cad feat(qc): static HTML QC pages with CI artifact bundle  [spi-qc]
++* 7149d528 feat(confounds): add aCompCor (6 PCs) and censor column with mask sourcing
++* f1a41727 feat(deriv): BIDS-Derivatives tree layout and provenance  [spi-deriv]
++* 7ff91949 feat(motion): compute FD & DVARS per run, write confounds TSV and plots
++* 86bc3b17 feat(e2e): add tiny BIDS fixture and CI smoke test  [spi-e2e]
++* 62ccb322 feat(ingest): BIDS ingest and manifest cache with hashing
++* 973898c6 feat(register): add minimal SCT EPI→PAM50 registration wrapper  [spi-register]
++* 4f45c90d feat(config): YAML config with JSON Schema validation and print-config
++* e16f95d3 docs(confounds): add schema and comprehensive usage guide  [spi-confounds-docs]
++* 4fcb7648 feat(doctor): implement environment diagnostics with color table  [spi-doctor]
++* ed19081d feat(doctor): add environment diagnostics with JSON schema, docs, tests
++* cac1da21 feat(cli): add version cmd, --print-config, -n support, DAG svg export  [spi-cli-scaffold]
++| * b858cb63 (origin/feat/spi-cli-scaffold, feat/spi-cli-scaffold) feat(doctor): implement environment diagnostics
++| * 5b5401b6 feat(doctor): implement environment diagnostics
++|/
++* 07bb6e2f (feat/doctor-environment-diagnostics) docs: add robots.txt and improve 404 page with home button  [spi-011-final]
++* 347788ae docs: fix invalid material-graph-line icon (use chart-timeline)  [spi-011m]
++* b13c52c4 docs: add pymdownx.emoji extension to render Material icons  [spi-011m]
++* 7ef8971f docs: add inline warning banner to homepage for extra visibility  [spi-011m]
++* 2cc8e194 docs: remove icon attributes to fix rendering  [spi-011m]
++* 283e03b5 docs: fix banner partial (outdated.html) and simplify icon syntax  [spi-011m]
++* 6ad3c274 ci: temporarily disable pa11y-ci due to Material theme contrast issues  [spi-011m]
++* f5008df4 ci: adjust pa11y config to ignore Material theme elements and set threshold  [spi-011m]
++* 741ddb06 ci: add Chrome sandbox args for pa11y-ci in GitHub Actions  [spi-011m]
++* 282fb111 docs: fix remaining .lg .middle icon patterns in qc.md  [spi-011m]
++* caa2f73b docs: banner+noindex, icon/CTA normalization, dark/light contrast fixes, and CI a11y checks  [spi-011m]
++* a0162c73 docs(ui): fix QC icon markup and add hero padding to avoid cramped text  [spi-011l]
++* d35bc427 ci: remove empty strategy block to satisfy matrix requirement  [spi-011k]
++* 40bfae99 ci: fix Actions expressions by using env fallbacks (string type)  [spi-011k]
++* 1b2a6569 ci: fix YAML step name causing syntax error  [spi-011k]
++* d5d92816 docs(ui): fix Features block; dark-mode code; privatize PLAYBOOK_* and guard CI  [spi-011k]
++* f6685928 docs(ui): remove public PLAYBOOK_* pages  [spi-011k]
++* caed971d ci(docs): enable mike versioning and tag-based publish  [spi-011h]
++* f7767218 ci(docs): add docs_release.sh for mike-based versioned deploy  [spi-011h]
++* 8596ec08 ci(docs): fix artifact download for cross-repo deploy  [spi-011j]
++* 372255dc trigger: deploy with public target repo  [spi-011j]
++* abab8e76 trigger: fresh deploy to org root  [spi-011j]
++* e0c205e9 ci(docs): switch deploy to cross-repo org root via gh-pages  [spi-011j]
++* 0d4a806a ci(docs): add diagnostics and fail early if site/ missing  [spi-011j]
++* 970f249c ci(docs): upload Pages artifact in build job and deploy it  [spi-011j]
++* 6e3759c1 docs(ci): remove sitemap plugin to unblock strict build  [spi-011j]
++* 0145ba81 ci(docs): fix lychee.toml verbose log level  [spi-011j]
++* 672865d7 ci(docs): fix deploy to use GitHub Pages instead of cross-repo  [spi-011j]
++* d7ebc597 ci(docs): fix lychee.toml verbose field type  [spi-011j]
++* c223771b ci(docs): simplify workflow triggers  [spi-011j]
++* 9c2573fb ci: add simple docs workflow to test  [spi-011j]
++* 40825b2a ci(docs): recreate docs workflow  [spi-011j]
++* be44bace ci: remove docs workflow to recreate  [spi-011j]
++* 91dea479 trigger: force docs workflow to run  [spi-011j]
++* b83b3fd4 ci: remove test workflow after verification  [spi-011j]
++* 66e02dcd ci: add test workflow to verify GitHub Actions  [spi-011j]
++* ab787a3a ci(docs): fix lychee args and add lychee.toml  [spi-011j]
++* daa58e15 ci(docs): fix lychee action args (remove invalid --exclude-mail)  [spi-011i]
++* 7604ff09 ci(pre-commit): enforce snakefmt on workflow dir  [spi-011i]
++* 362d4d20 style(workflow): apply snakefmt formatting  [spi-011g]
++* 1ed01d86 ci(docs): fix deps, use core sitemap and lychee action; complete deploy  [spi-011f]
++* 4d5b9f5f docs: add live docs badges and Actions summary link [spi-011e]
++* 06e2a7b0 chore(docs): untrack site/, fix nav and license link, guard CI  [spi-011d]
++* c68e426b (tag: v0.1.0-docs) ci(docs): publish to org root via cross-repo Pages  [spi-011b]
++* 4e8c15c1 ci(docs): harden docs CI and enable GitHub Pages [spi-011a]
++* 147a1443 feat(docs): stand up MkDocs Material site with generators  [spi-011]
++* e90b4fc0 spi-005c: Add aCompCor confounds (cord/WM/CSF masks + PCA)
++* 4d6f20e4 Add GitHub Actions workflow for documentation site
++| * 2c815ac1 (feat/spi-011a-docs-ci-pages) ci(docs): harden docs CI and enable GitHub Pages [spi-011a]
++| * dadbaa4e feat(docs): stand up MkDocs Material site with generators  [spi-011]
++| * afed40c8 spi-005c: Add aCompCor confounds (cord/WM/CSF masks + PCA)
++|/
++* 840d1474 (origin/cursor/harden-docs-ci-and-enable-github-pages-deployment-43de) spi-005b: confounds v2 — censoring + canonical columns; QC overlays
++* bb36f2b0 spi-005a: confounds v1 (FD from motion params + DVARS), derivative TSV/JSON, QC reads canonical confounds
++* 291cb062 feat(qc): per-subject HTML report with FD/DVARS plots and methods boilerplate
++* dbbc3695 feat(deriv): add derivatives path router and manifest_deriv.tsv
++* 9d2000c1 feat(workflow): per-run wildcard rules from samples.tsv; add preproc_all aggregate
++* fc3252a2 refactor(smoke): consume first row from samples.tsv for mppca/motion/confounds
++* fc224c53 Add samples manifest generation
++* 2c20a680 feat(confounds): add placeholder confounds builder & smoke; fix ruff unused var
++* 7538e04c style: black/ruff/isort auto-fixes
++* a9ed9735 Initial commit
+diff --git a/ops/status/health_check.sh b/ops/status/health_check.sh
+new file mode 100755
+index 00000000..27be4528
+--- /dev/null
++++ b/ops/status/health_check.sh
+@@ -0,0 +1,284 @@
++#!/usr/bin/env bash
++#
++# health_check.sh — SpinePrep repository health checks
++# Run this before and after major changes (merges, refactors, releases)
++#
++# Usage: ./ops/status/health_check.sh
++# Exit: 0 if all checks pass, 1 if any fail
++
++set -euo pipefail
++
++# Colors
++RED='\033[0;31m'
++GREEN='\033[0;32m'
++YELLOW='\033[1;33m'
++BLUE='\033[0;34m'
++NC='\033[0m' # No Color
++
++# Counters
++PASS=0
++FAIL=0
++WARN=0
++
++# Output directory
++OUT_DIR="ops/status"
++mkdir -p "$OUT_DIR"
++
++echo -e "${BLUE}======================================${NC}"
++echo -e "${BLUE}SpinePrep Repository Health Check${NC}"
++echo -e "${BLUE}======================================${NC}\n"
++
++# Helper functions
++check_pass() {
++    echo -e "${GREEN}✓${NC} $1"
++    PASS=$((PASS + 1))
++}
++
++check_fail() {
++    echo -e "${RED}✗${NC} $1"
++    FAIL=$((FAIL + 1))
++}
++
++check_warn() {
++    echo -e "${YELLOW}⚠${NC} $1"
++    WARN=$((WARN + 1))
++}
++
++# 1. Git branch and commit status
++echo -e "${BLUE}[1/10] Git Status${NC}"
++if git rev-parse --git-dir > /dev/null 2>&1; then
++    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
++    CURRENT_SHA=$(git rev-parse --short HEAD)
++    check_pass "Git repository detected (branch: $CURRENT_BRANCH @ $CURRENT_SHA)"
++
++    # Check if main exists
++    if git show-ref --verify --quiet refs/heads/main; then
++        check_pass "Branch 'main' exists"
++    else
++        check_fail "Branch 'main' not found"
++    fi
++
++    # Check divergence from origin/main
++    if git show-ref --verify --quiet refs/remotes/origin/main; then
++        DIVERGENCE=$(git rev-list --left-right --count origin/main...HEAD 2>/dev/null || echo "? ?")
++        BEHIND=$(echo "$DIVERGENCE" | awk '{print $1}')
++        AHEAD=$(echo "$DIVERGENCE" | awk '{print $2}')
++        if [[ "$BEHIND" -eq 0 && "$AHEAD" -eq 0 ]]; then
++            check_pass "In sync with origin/main"
++        else
++            check_warn "Diverged from origin/main ($BEHIND behind, $AHEAD ahead)"
++        fi
++    else
++        check_warn "origin/main not found (local-only repo?)"
++    fi
++else
++    check_fail "Not a git repository"
++fi
++echo ""
++
++# 2. Largest tracked files (potential cleanup targets)
++echo -e "${BLUE}[2/10] Large Tracked Files${NC}"
++git ls-tree -r -l HEAD | sort -k4 -n | tail -n 5 > "$OUT_DIR/largest_tracked.txt"
++LARGEST_SIZE=$(git ls-tree -r -l HEAD | awk '{print $4}' | sort -n | tail -n 1)
++if [[ "$LARGEST_SIZE" -gt 10000000 ]]; then  # 10MB
++    check_warn "Large files detected (largest: $((LARGEST_SIZE / 1024 / 1024))MB) — see $OUT_DIR/largest_tracked.txt"
++elif [[ "$LARGEST_SIZE" -gt 1000000 ]]; then  # 1MB
++    check_warn "Moderately large files detected (largest: $((LARGEST_SIZE / 1024))KB)"
++else
++    check_pass "No unusually large tracked files"
++fi
++echo ""
++
++# 3. Untracked/ignored files
++echo -e "${BLUE}[3/10] Untracked Files${NC}"
++git status --porcelain=v1 > "$OUT_DIR/status_porcelain.txt"
++UNTRACKED_COUNT=$(grep -c "^??" "$OUT_DIR/status_porcelain.txt" || echo 0)
++MODIFIED_COUNT=$(grep -c "^ M" "$OUT_DIR/status_porcelain.txt" || echo 0)
++
++if [[ "$UNTRACKED_COUNT" -eq 0 ]]; then
++    check_pass "No untracked files"
++else
++    check_warn "$UNTRACKED_COUNT untracked files (see $OUT_DIR/status_porcelain.txt)"
++fi
++
++if [[ "$MODIFIED_COUNT" -eq 0 ]]; then
++    check_pass "No modified unstaged files"
++else
++    check_warn "$MODIFIED_COUNT modified files not staged"
++fi
++echo ""
++
++# 4. Ruff linting
++echo -e "${BLUE}[4/10] Ruff Linting${NC}"
++if command -v ruff &> /dev/null; then
++    RUFF_VERSION=$(ruff --version | head -n 1)
++    if ruff check --output-format=github . > "$OUT_DIR/ruff.txt" 2>&1; then
++        check_pass "Ruff clean ($RUFF_VERSION)"
++    else
++        VIOLATION_COUNT=$(wc -l < "$OUT_DIR/ruff.txt")
++        check_fail "Ruff violations detected ($VIOLATION_COUNT) — see $OUT_DIR/ruff.txt"
++    fi
++else
++    check_warn "Ruff not installed (skip linting)"
++fi
++echo ""
++
++# 5. Snakefmt formatting
++echo -e "${BLUE}[5/10] Snakefmt Formatting${NC}"
++if command -v snakefmt &> /dev/null; then
++    SNAKEFMT_VERSION=$(snakefmt --version | head -n 1)
++    if snakefmt --check . > "$OUT_DIR/snakefmt.txt" 2>&1; then
++        check_pass "Snakefmt clean ($SNAKEFMT_VERSION)"
++    else
++        # Extract number of files that would be changed
++        FILES_CHANGED=$(grep -c "would be changed" "$OUT_DIR/snakefmt.txt" || echo 0)
++        if [[ "$FILES_CHANGED" -le 1 ]]; then
++            check_warn "Snakefmt needs formatting ($FILES_CHANGED file)"
++        else
++            check_fail "Snakefmt needs formatting ($FILES_CHANGED files)"
++        fi
++    fi
++else
++    check_warn "Snakefmt not installed (skip formatting check)"
++fi
++echo ""
++
++# 6. Codespell
++echo -e "${BLUE}[6/10] Codespell${NC}"
++if command -v codespell &> /dev/null; then
++    CODESPELL_VERSION=$(codespell --version 2>&1 | head -n 1)
++    # Ignore common false positives and generated files
++    if codespell --ignore-words-list="te,hist,trys,ue,ot,fo" --skip="site/,*.min.js,*.map,.venv/" . > "$OUT_DIR/codespell.txt" 2>&1; then
++        check_pass "Codespell clean ($CODESPELL_VERSION)"
++    else
++        TYPO_COUNT=$(wc -l < "$OUT_DIR/codespell.txt")
++        if [[ "$TYPO_COUNT" -lt 10 ]]; then
++            check_warn "Codespell found $TYPO_COUNT potential typos — see $OUT_DIR/codespell.txt"
++        else
++            check_fail "Codespell found $TYPO_COUNT potential typos — see $OUT_DIR/codespell.txt"
++        fi
++    fi
++else
++    check_warn "Codespell not installed (skip spell check)"
++fi
++echo ""
++
++# 7. Pytest
++echo -e "${BLUE}[7/10] Pytest${NC}"
++if command -v pytest &> /dev/null; then
++    if pytest -q --tb=no > "$OUT_DIR/pytest.txt" 2>&1; then
++        TEST_COUNT=$(grep -c "passed" "$OUT_DIR/pytest.txt" || echo "?")
++        check_pass "Pytest passed ($TEST_COUNT tests)"
++    else
++        ERROR_COUNT=$(grep -c "ERROR\|FAILED" "$OUT_DIR/pytest.txt" || echo "?")
++        check_fail "Pytest failed ($ERROR_COUNT errors/failures) — see $OUT_DIR/pytest.txt"
++    fi
++else
++    check_warn "Pytest not installed (skip tests)"
++fi
++echo ""
++
++# 8. MkDocs strict build
++echo -e "${BLUE}[8/10] MkDocs Strict Build${NC}"
++if command -v mkdocs &> /dev/null; then
++    MKDOCS_VERSION=$(mkdocs --version | head -n 1)
++    if mkdocs build --strict > "$OUT_DIR/mkdocs.txt" 2>&1; then
++        check_pass "MkDocs build passed ($MKDOCS_VERSION)"
++    else
++        check_fail "MkDocs build failed — see $OUT_DIR/mkdocs.txt"
++    fi
++else
++    check_warn "MkDocs not installed (skip docs build)"
++fi
++echo ""
++
++# 9. Branch inventory
++echo -e "${BLUE}[9/10] Branch Inventory${NC}"
++BRANCH_COUNT=$(git branch | wc -l)
++REMOTE_BRANCH_COUNT=$(git branch -r | wc -l)
++
++if [[ "$BRANCH_COUNT" -le 3 ]]; then
++    check_pass "Clean local branches ($BRANCH_COUNT branches)"
++else
++    check_warn "Multiple local branches ($BRANCH_COUNT) — consider cleanup"
++fi
++
++if [[ "$REMOTE_BRANCH_COUNT" -le 5 ]]; then
++    check_pass "Clean remote branches ($REMOTE_BRANCH_COUNT branches)"
++else
++    check_warn "Multiple remote branches ($REMOTE_BRANCH_COUNT) — consider cleanup"
++fi
++
++# Save branch info
++git branch --format='%(refname:short)|%(objectname:short)|%(committerdate:iso8601)' > "$OUT_DIR/branches.txt"
++echo ""
++
++# 10. JSON status artifact
++echo -e "${BLUE}[10/10] Generate Status JSON${NC}"
++python3 - <<'PY'
++import json, subprocess, os, pathlib, sys
++
++def sh(x):
++    try:
++        return subprocess.check_output(x, shell=True, text=True, stderr=subprocess.DEVNULL).strip()
++    except:
++        return ""
++
++try:
++    data = {
++        "timestamp": sh("date -Iseconds"),
++        "head": sh("git rev-parse --short HEAD"),
++        "head_branch": sh("git rev-parse --abbrev-ref HEAD"),
++        "main_exists": os.system("git show-ref --verify --quiet refs/heads/main") == 0,
++        "origin_main_exists": os.system("git show-ref --verify --quiet refs/remotes/origin/main") == 0,
++        "branches": {
++            "local": sh("git branch --format='%(refname:short)'").splitlines(),
++            "remote": sh("git branch -r --format='%(refname:short)'").splitlines(),
++        },
++        "tags": sh("git tag").splitlines(),
++        "health": {
++            "pytest_passed": os.system("pytest -q --tb=no >/dev/null 2>&1") == 0,
++            "mkdocs_strict_passed": os.system("mkdocs build --strict >/dev/null 2>&1") == 0,
++            "ruff_clean": os.system("ruff check --quiet . 2>/dev/null") == 0,
++            "snakefmt_clean": os.system("snakefmt --check . >/dev/null 2>&1") == 0,
++        },
++        "divergence_from_main": sh("git rev-list --left-right --count origin/main...HEAD 2>/dev/null || echo '0 0'"),
++    }
++    pathlib.Path('ops/status').mkdir(parents=True, exist_ok=True)
++    with open('ops/status/repo_status.json', 'w') as f:
++        json.dump(data, f, indent=2)
++    sys.exit(0)
++except Exception as e:
++    print(f"Error: {e}", file=sys.stderr)
++    sys.exit(1)
++PY
++
++if [[ $? -eq 0 ]]; then
++    check_pass "Status JSON generated → $OUT_DIR/repo_status.json"
++else
++    check_fail "Failed to generate status JSON"
++fi
++echo ""
++
++# Summary
++echo -e "${BLUE}======================================${NC}"
++echo -e "${BLUE}Summary${NC}"
++echo -e "${BLUE}======================================${NC}"
++echo -e "${GREEN}Passed:${NC}  $PASS"
++echo -e "${YELLOW}Warnings:${NC} $WARN"
++echo -e "${RED}Failed:${NC}  $FAIL"
++echo ""
++
++if [[ "$FAIL" -eq 0 ]]; then
++    echo -e "${GREEN}✓ Repository health: GOOD${NC}"
++    echo "All critical checks passed. Warnings are acceptable."
++    exit 0
++elif [[ "$FAIL" -le 2 ]]; then
++    echo -e "${YELLOW}⚠ Repository health: FAIR${NC}"
++    echo "Some checks failed. Review $OUT_DIR/ for details."
++    exit 1
++else
++    echo -e "${RED}✗ Repository health: POOR${NC}"
++    echo "Multiple critical issues detected. Fix before proceeding."
++    exit 1
++fi
+diff --git a/ops/status/health_check_run.txt b/ops/status/health_check_run.txt
+new file mode 100644
+index 00000000..7d34e2ae
+--- /dev/null
++++ b/ops/status/health_check_run.txt
+@@ -0,0 +1,47 @@
++[0;34m======================================[0m
++[0;34mSpinePrep Repository Health Check[0m
++[0;34m======================================[0m
++
++[0;34m[1/10] Git Status[0m
++[0;32m✓[0m Git repository detected (branch: feat/spi-A1-doctor-json-snapshot @ b2ed3dd9)
++[0;32m✓[0m Branch 'main' exists
++[1;33m⚠[0m Diverged from origin/main (0 behind, 6 ahead)
++
++[0;34m[2/10] Large Tracked Files[0m
++[1;33m⚠[0m Large files detected (largest: 23MB) — see ops/status/largest_tracked.txt
++
++[0;34m[3/10] Untracked Files[0m
++[1;33m⚠[0m 50 untracked files (see ops/status/status_porcelain.txt)
++[1;33m⚠[0m 30 modified files not staged
++
++[0;34m[4/10] Ruff Linting[0m
++[0;32m✓[0m Ruff clean (ruff 0.14.0)
++
++[0;34m[5/10] Snakefmt Formatting[0m
++[1;33m⚠[0m Snakefmt needs formatting (1 file)
++
++[0;34m[6/10] Codespell[0m
++[0;31m✗[0m Codespell found 1202 potential typos — see ops/status/codespell.txt
++
++[0;34m[7/10] Pytest[0m
++[0;31m✗[0m Pytest failed (1 errors/failures) — see ops/status/pytest.txt
++
++[0;34m[8/10] MkDocs Strict Build[0m
++[0;32m✓[0m MkDocs build passed (mkdocs, version 1.6.1 from /home/kiomars/.local/lib/python3.12/site-packages/mkdocs (Python 3.12))
++
++[0;34m[9/10] Branch Inventory[0m
++[1;33m⚠[0m Multiple local branches (12) — consider cleanup
++[1;33m⚠[0m Multiple remote branches (9) — consider cleanup
++
++[0;34m[10/10] Generate Status JSON[0m
++[0;32m✓[0m Status JSON generated → ops/status/repo_status.json
++
++[0;34m======================================[0m
++[0;34mSummary[0m
++[0;34m======================================[0m
++[0;32mPassed:[0m  5
++[1;33mWarnings:[0m 7
++[0;31mFailed:[0m  2
++
++[1;33m⚠ Repository health: FAIR[0m
++Some checks failed. Review ops/status/ for details.
+diff --git a/ops/status/largest_tracked.txt b/ops/status/largest_tracked.txt
+new file mode 100644
+index 00000000..de646889
+--- /dev/null
++++ b/ops/status/largest_tracked.txt
+@@ -0,0 +1,5 @@
++100755 blob 9865c641ca74bcfc9297b11fbc5049207e185f2b 7178823	.venv/lib/python3.12/site-packages/pulp/solverdir/cbc/linux/i64/cbc
++100755 blob 24b85924bbd33b772d4c82bd311606642c663b10 7678656	.venv/lib/python3.12/site-packages/pulp/solverdir/cbc/linux/arm64/cbc
++100755 blob 4507334689552ad74f65683cca24554e047ce654 10808937	.venv/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so
++100755 blob d10bfcb5b4a299191883022d75b8a52a2041aa74 24817849	.venv/lib/python3.12/site-packages/scipy.libs/libscipy_openblas-b75cc656.so
++100755 blob d6449096b01ecc38d4693856e30c8351d96bd559 25050385	.venv/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-8fb3d286.so
+diff --git a/ops/status/merge_plan.md b/ops/status/merge_plan.md
+new file mode 100644
+index 00000000..1c8b3e2f
+--- /dev/null
++++ b/ops/status/merge_plan.md
+@@ -0,0 +1,294 @@
++# Merge Plan — Pre-Phase-A Repository Consolidation
++
++**Generated:** 2025-10-09
++**Current HEAD:** b2ed3dd9 (feat/spi-A1-doctor-json-snapshot)
++**Target:** Consolidate all feature work into `main` and prepare clean baseline for Phase A
++
++---
++
++## Summary
++
++- **12 local branches** (including `main`)
++- **8 remote branches** on origin
++- **Current divergence:** 0 commits ahead, 6 commits behind `origin/main`
++- **Key conflict zones:** `spineprep/cli.py`, `spineprep/_version.py`, `configs/base.yaml`, `CITATION.cff`
++- **Test status:** ❌ pytest failing (import error in confounds)
++- **Lint status:** ✅ ruff clean, ⚠️  snakefmt needs 1 file
++
++---
++
++## Branch Analysis & Strategy
++
++### 1. Already merged or at main (DELETE)
++
++**Branches:**
++- `feat/doctor-environment-diagnostics` — no commits ahead of main
++- `feat/spi-001-scaffold-cli-config` — no commits ahead of main
++
++**Action:** Delete locally and on remote (if present)
++
++```bash
++git branch -d feat/doctor-environment-diagnostics
++git branch -d feat/spi-001-scaffold-cli-config
++```
++
++---
++
++### 2. Active development - linear merge (FAST-FORWARD or SQUASH-MERGE)
++
++**Branch:** `feat/spi-A1-doctor-json-snapshot` (CURRENT HEAD)
++**Commits ahead:** 6
++**Key changes:** Doctor JSON snapshot, QC HTML scaffold, masking, registration, confounds
++**Conflicts:** High (multiple overlapping changes with other branches)
++**Strategy:** This is the most advanced branch. After merging other branches into main first, rebase this onto updated main, then squash-merge.
++
++**Branch:** `feat/spi-a7-qc-html-scaffold`
++**Commits ahead:** 5
++**Key changes:** QC HTML scaffold, masking, registration, confounds
++**Conflicts:** High (shares many commits with A1, but missing the final doctor snapshot)
++**Strategy:** This is a subset of spi-A1. ARCHIVE (covered by A1).
++
++**Branch:** `feat/spi-002-snakemake-dag-provenance`
++**Commits ahead:** 4
++**Key changes:** Snakemake DAG with provenance, includes censor/compcor
++**Conflicts:** Medium (confounds structure differs from A1)
++**Strategy:** Cherry-pick DAG changes if not in A1, otherwise ARCHIVE.
++
++**Branch:** `feat/spi-confounds-fd-dvars-tsv-json-v1`
++**Commits ahead:** 2
++**Key changes:** FD/DVARS confounds TSV/JSON
++**Conflicts:** Low (superseded by later work)
++**Strategy:** ARCHIVE (functionality included in A1).
++
++**Branch:** `feat/spi-confounds-acompcor-tcompcor-censor`
++**Commits ahead:** 3
++**Key changes:** Registration wrapper, confounds
++**Conflicts:** Medium
++**Strategy:** Check if registration code is in A1; if not, cherry-pick specific commits. Otherwise ARCHIVE.
++
++**Branch:** `feat/spi-masking-cord-csf-qc`
++**Commits ahead:** 3
++**Key changes:** Same as spi-confounds-acompcor (same SHA)
++**Conflicts:** Medium
++**Strategy:** ARCHIVE (duplicate/covered by A1).
++
++**Branch:** `feat/spi-xxx-registration-pam50-wrapper`
++**Commits ahead:** 3
++**Key changes:** Same as above (same SHA)
++**Conflicts:** Medium
++**Strategy:** ARCHIVE (duplicate/covered by A1).
++
++---
++
++### 3. Old experimental branches (ARCHIVE)
++
++**Branch:** `feat/spi-cli-scaffold`
++**Commits ahead:** 2
++**Key changes:** Doctor diagnostics (older version)
++**Strategy:** ARCHIVE (superseded by A1).
++
++**Branch:** `feat/spi-011a-docs-ci-pages`
++**Commits ahead:** 3
++**Key changes:** Docs CI and GitHub Pages setup
++**Conflicts:** Low (isolated to CI/docs)
++**Strategy:** Keep docs changes if valuable; likely ARCHIVE since docs workflow exists.
++
++---
++
++## Step-by-Step Merge Sequence
++
++### Phase 1: Pre-flight checks
++
++```bash
++# 1. Tag current main for rollback
++git checkout main
++git tag pre-phaseA-20251009
++git push origin pre-phaseA-20251009
++
++# 2. Ensure main is synced
++git fetch origin
++git pull origin main --ff-only
++
++# 3. Create backup branches for any uncertain merges
++git branch backup/spi-A1 feat/spi-A1-doctor-json-snapshot
++git branch backup/spi-002 feat/spi-002-snakemake-dag-provenance
++```
++
++### Phase 2: Delete already-merged branches
++
++```bash
++git branch -d feat/doctor-environment-diagnostics
++git branch -d feat/spi-001-scaffold-cli-config
++```
++
++### Phase 3: Main merge - feat/spi-A1-doctor-json-snapshot
++
++This branch contains the most complete work. Strategy: rebase then squash-merge.
++
++```bash
++# Checkout and rebase onto latest main
++git checkout feat/spi-A1-doctor-json-snapshot
++git rebase origin/main
++
++# If conflicts, resolve them, then:
++# git rebase --continue
++
++# Once clean, merge to main
++git checkout main
++git merge --squash feat/spi-A1-doctor-json-snapshot
++git commit -m "feat: consolidate Phase-A baseline (doctor, QC, confounds, registration, masking)  [pre-A1]
++
++Squashed commits:
++- feat(cli): add doctor JSON snapshot with complete diagnostics  [spi-A1]
++- feat(qc): scaffold per-subject QC HTML with overlays, motion, aCompCor, and env  [spi-a7]
++- feat(preproc): add cord and CSF masking with QC overlays
++- feat(registration): implement SCT EPI→PAM50 wrapper with metrics and rule  [spi-xxx]
++- feat(confounds): implement FD/DVARS + confounds TSV/JSON (schema v1) and motion plot  [spi-confounds]
++- feat(core): scaffold CLI with config loader and doctor command  [spi-001]
++
++Co-authored-by: Developer <dev@example.com>
++"
++```
++
++### Phase 4: Check for unique commits in other branches
++
++```bash
++# Check if spi-002 has unique DAG/provenance code not in A1
++git log feat/spi-A1-doctor-json-snapshot..feat/spi-002-snakemake-dag-provenance
++
++# If unique commits exist, cherry-pick:
++git checkout main
++git cherry-pick <commit-sha>
++
++# Otherwise, just delete the branch
++```
++
++### Phase 5: Archive remaining branches
++
++```bash
++# Archive branches that are subsets or superseded
++git branch -D feat/spi-a7-qc-html-scaffold
++git branch -D feat/spi-confounds-fd-dvars-tsv-json-v1
++git branch -D feat/spi-confounds-acompcor-tcompcor-censor
++git branch -D feat/spi-masking-cord-csf-qc
++git branch -D feat/spi-xxx-registration-pam50-wrapper
++git branch -D feat/spi-cli-scaffold
++git branch -D feat/spi-011a-docs-ci-pages
++git branch -D feat/spi-002-snakemake-dag-provenance  # if no unique commits
++
++# Remove from remote (only if they exist and you're sure)
++git push origin --delete feat/spi-a7-qc-html-scaffold 2>/dev/null || true
++git push origin --delete feat/spi-cli-scaffold 2>/dev/null || true
++git push origin --delete feat/spi-confounds-fd-dvars-tsv-json-v1 2>/dev/null || true
++git push origin --delete feat/spi-A1-doctor-json-snapshot 2>/dev/null || true
++git push origin --delete feat/spi-002-snakemake-dag-provenance 2>/dev/null || true
++```
++
++### Phase 6: Push consolidated main
++
++```bash
++git push origin main
++
++# Update remote tags
++git push origin pre-phaseA-20251009
++```
++
++### Phase 7: Verify and clean up
++
++```bash
++# List remaining branches
++git branch -a
++
++# Should see:
++# - main (local and remote)
++# - backup/* branches (local only, for safety)
++
++# Clean up local tracking of deleted remote branches
++git fetch --all --prune
++
++# Verify health
++./ops/status/health_check.sh
++```
++
++---
++
++## Conflict Resolution Strategy
++
++### High-probability conflicts
++
++1. **`spineprep/cli.py`**
++   - Multiple branches modify CLI structure
++   - Resolution: Accept latest (A1) version, verify all commands present
++
++2. **`spineprep/_version.py`**
++   - Version bumps in multiple branches
++   - Resolution: Use chronologically latest version string
++
++3. **`configs/base.yaml`**
++   - Config schema changes across branches
++   - Resolution: Merge all new fields, validate with schema
++
++4. **`CITATION.cff`**
++   - Date/version updates in multiple branches
++   - Resolution: Use latest date, consolidate authors
++
++### Mitigation steps
++
++- For each conflict file:
++  1. Accept theirs (A1 version)
++  2. Manually verify no missing functionality from other branches
++  3. Run tests after each resolution
++  4. If tests fail, inspect what was lost and manually add back
++
++---
++
++## Rollback Procedure
++
++If the merge process goes wrong:
++
++```bash
++# Reset main to pre-merge state
++git checkout main
++git reset --hard pre-phaseA-20251009
++
++# Restore branches from backups if needed
++git checkout -b feat/spi-A1-doctor-json-snapshot backup/spi-A1
++git checkout -b feat/spi-002-snakemake-dag-provenance backup/spi-002
++
++# Force push main (ONLY if you're certain)
++# git push origin main --force  # DANGER: only if solo developer
++```
++
++---
++
++## Post-Merge Checklist
++
++- [ ] `git branch -a` shows only `main` and `origin/main` (plus backups)
++- [ ] `ruff check .` passes
++- [ ] `snakefmt --check .` passes (or 1 acceptable file)
++- [ ] `pytest -q` passes (or known failures documented)
++- [ ] `mkdocs build --strict` passes
++- [ ] All desired features from branches present in main
++- [ ] Tag `pre-phaseA-20251009` exists and is pushed
++- [ ] CI passing on main
++- [ ] README updated to reflect consolidated state
++
++---
++
++## Estimated Impact
++
++- **Files changed:** ~50-70 files (including new modules, tests, configs)
++- **LOC touched:** ~3000-4000 lines (estimate)
++- **Test coverage impact:** Some tests may need fixes (confounds import errors)
++- **Breaking changes:** None (internal refactor only)
++- **Migration needed:** No (pre-release consolidation)
++
++---
++
++## Notes
++
++- The `feat/spi-A1-doctor-json-snapshot` branch is the most comprehensive and should be the primary merge source.
++- Several branches share identical commits (e.g., 81712fac appears in 3 branches), indicating parallel development on same features.
++- The `.venv` directory is being tracked (should be in .gitignore) — will be addressed in tree hygiene ticket.
++- `site/` directory (built docs) is tracked — should be in .gitignore or explicitly kept out of repo.
++- Many `__pycache__` files are staged — need .gitignore update.
+diff --git a/ops/status/mkdocs.txt b/ops/status/mkdocs.txt
+new file mode 100644
+index 00000000..12636301
+--- /dev/null
++++ b/ops/status/mkdocs.txt
+@@ -0,0 +1,6 @@
++INFO    -  Cleaning site directory
++INFO    -  Building documentation to directory: /mnt/ssd1/SpinePrep/site
++INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
++  - workflow.md
++INFO    -  Doc file 'index.md' contains an absolute link '/stable/', it was left as is.
++INFO    -  Documentation built in 0.44 seconds
+diff --git a/ops/status/pytest.txt b/ops/status/pytest.txt
+new file mode 100644
+index 00000000..e4689000
+--- /dev/null
++++ b/ops/status/pytest.txt
+@@ -0,0 +1,5 @@
++
++=========================== short test summary info ============================
++ERROR tests/test_confounds.py
++!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
++1 error in 0.40s
+diff --git a/ops/status/repo_risks.md b/ops/status/repo_risks.md
+new file mode 100644
+index 00000000..312f1d04
+--- /dev/null
++++ b/ops/status/repo_risks.md
+@@ -0,0 +1,315 @@
++# Repository Risks & Mitigations — Pre-Phase-A
++
++**Generated:** 2025-10-09
++**Assessment scope:** Branch consolidation, tree hygiene, test health
++**Risk horizon:** Ticket 1 (merge execution) through Phase A gate
++
++---
++
++## 🔴 Critical Risks
++
++### R1: Test Suite Broken (Import Errors)
++
++**Impact:** Cannot validate merges, regression risk
++**Likelihood:** CERTAIN (already failing)
++**Evidence:**
++```
++ERROR tests/test_confounds.py
++ImportError: cannot import name 'compute_censor' from 'spineprep.confounds'
++```
++
++**Root cause:**
++- `tests/test_confounds.py` expects `compute_censor` function
++- `spineprep/confounds/__init__.py` may not export it, or it's in a submodule
++- Different branches have different confounds structures
++
++**Mitigation:**
++1. After merge, immediately inspect `spineprep/confounds/__init__.py` exports
++2. Check if `compute_censor` moved to `spineprep/confounds/censor.py`
++3. Update test imports to match new module structure
++4. Add to merge checklist: "Fix confounds test imports"
++5. Run `pytest tests/test_confounds.py -v` after merge to verify
++
++**Fallback:**
++- Skip broken tests temporarily, create hotfix ticket
++- Document known test failures in merge commit
++
++---
++
++### R2: Merge Conflicts in Core CLI (High Complexity)
++
++**Impact:** CLI may be broken or have duplicate logic
++**Likelihood:** HIGH (4+ branches modify `spineprep/cli.py`)
++**Conflict zones:**
++- `spineprep/cli.py` (M in 5+ branches)
++- `spineprep/_version.py` (M in 5+ branches)
++- `configs/base.yaml` (M in 5+ branches)
++
++**Evidence:**
++- feat/spi-A1-doctor-json-snapshot: adds doctor JSON command
++- feat/spi-002-snakemake-dag-provenance: may add DAG commands
++- feat/spi-cli-scaffold: older doctor implementation
++
++**Mitigation:**
++1. Choose **feat/spi-A1-doctor-json-snapshot** as canonical (most recent, most complete)
++2. Before merge, manually diff other branches' cli.py to identify unique commands
++3. Extract unique functionality from other branches before archiving
++4. After merge, run `spineprep --help` to ensure all expected commands present
++5. Test each CLI command manually: `spineprep doctor`, `spineprep version`, etc.
++
++**Fallback:**
++- Keep backup branches (`backup/spi-*`) for 30 days to extract lost functionality
++
++---
++
++### R3: Large Tracked Files (.venv, __pycache__, site/)
++
++**Impact:** Bloated repo size, slow clones, accidental secrets exposure
++**Likelihood:** CERTAIN (already tracked)
++**Evidence:**
++- `.venv/lib/` contains 25MB+ of Python packages (numpy, scipy, pandas)
++- `site/` contains generated MkDocs output (~5MB+)
++- `__pycache__/` directories throughout
++
++**Current state:**
++- Largest tracked file: 25MB `libscipy_openblas64_`
++- Total .venv size: ~100MB+
++- These should NEVER be in git
++
++**Mitigation (urgent, do in Ticket 1):**
++1. **Before any merge**, add to `.gitignore`:
++   ```
++   .venv/
++   __pycache__/
++   *.pyc
++   site/
++   .snakemake/
++   .coverage
++   *.egg-info/
++   ```
++2. Remove from git history (careful!):
++   ```bash
++   git rm -r --cached .venv/
++   git rm -r --cached site/
++   git rm -r --cached **/__pycache__/
++   git rm -r --cached **/*.egg-info/
++   git commit -m "chore: remove build artifacts and venv from tracking"
++   ```
++3. Verify removal: `git ls-tree -r -l HEAD | grep venv` should be empty
++4. Force push to rewrite history (ONLY if no other collaborators):
++   ```bash
++   # DO NOT RUN without CEO approval
++   # git push origin main --force
++   ```
++
++**Fallback:**
++- If force-push not allowed, accept bloated history and add `.gitignore` going forward
++- Use `git-filter-repo` for deep clean (destructive, needs coordination)
++
++---
++
++## 🟡 Medium Risks
++
++### R4: Confounds Module Structure Inconsistency
++
++**Impact:** API instability, test fragility
++**Likelihood:** MEDIUM
++**Evidence:**
++- Branch `spi-002` has `confounds/censor.py` and `confounds/compcor.py`
++- Branch `spi-A1` has `confounds/io.py`, `confounds/motion.py`, `confounds/plot.py`
++- Different branches may have different `__init__.py` exports
++
++**Mitigation:**
++1. After merge, audit `spineprep/confounds/__init__.py`
++2. Ensure all submodules are properly exported
++3. Run full test suite: `pytest tests/confounds/ -v`
++4. Document public API in `spineprep/confounds/README.md`
++
++---
++
++### R5: Version String Conflicts
++
++**Impact:** Incorrect version displayed, changelog confusion
++**Likelihood:** MEDIUM (5 branches modify `_version.py`)
++**Evidence:**
++- Multiple branches bump version independently
++- `CITATION.cff` also has version strings and dates
++
++**Mitigation:**
++1. After merge, manually set version to `0.2.0-dev` or similar
++2. Sync version across: `_version.py`, `CITATION.cff`, `pyproject.toml`
++3. Update `CHANGELOG.md` with consolidated entry for all merged work
++4. Verify: `spineprep version` shows expected string
++
++---
++
++### R6: Duplicate Branches (Same SHA)
++
++**Impact:** Confusion, wasted merge effort
++**Likelihood:** CERTAIN (already exists)
++**Evidence:**
++- `feat/spi-confounds-acompcor-tcompcor-censor` @ 81712fac
++- `feat/spi-masking-cord-csf-qc` @ 81712fac
++- `feat/spi-xxx-registration-pam50-wrapper` @ 81712fac
++
++**Mitigation:**
++1. Identify duplicates: already done (see merge_plan.md)
++2. Keep one, archive others immediately
++3. No merge needed, just delete redundant branches
++
++---
++
++### R7: Untracked Generated Files (doctor.json, out/, test_work*)
++
++**Impact:** Repo clutter, potential sensitive data leak
++**Likelihood:** LOW (only local, not pushed)
++**Evidence:**
++```
++?? doctor.json
++?? out/
++?? test_work/
++?? test_work2/ ... test_work8/
++```
++
++**Mitigation:**
++1. Add to `.gitignore`:
++   ```
++   doctor.json
++   out/
++   test_work*/
++   *.ok
++   ```
++2. Delete locally:
++   ```bash
++   rm -rf test_work* out/ doctor.json *.ok
++   ```
++3. Verify not staged: `git status --porcelain` should show no untracked files
++
++---
++
++## 🟢 Low Risks
++
++### R8: Snakefmt Formatting (1 file)
++
++**Impact:** CI may fail on formatting checks
++**Likelihood:** LOW
++**Evidence:** `snakefmt --check .` reports 1 file needs formatting
++
++**Mitigation:**
++1. Run `snakefmt .` to auto-fix
++2. Commit: `style: apply snakefmt`
++3. Add pre-commit hook (optional, in Ticket 2)
++
++---
++
++### R9: Codespell False Positives (site/ minified JS)
++
++**Impact:** Noisy CI logs, mask real typos
++**Likelihood:** LOW (cosmetic)
++**Evidence:** 50+ false positives in `site/assets/javascripts/bundle.*.min.js`
++
++**Mitigation:**
++1. Add to `.codespellrc` or `pyproject.toml`:
++   ```toml
++   [tool.codespell]
++   skip = 'site/,*.min.js,*.map'
++   ignore-words-list = 'te,hist,trys,ue,ot'
++   ```
++2. Or, remove `site/` from repo (already recommended in R3)
++
++---
++
++### R10: Missing DAG/Provenance Code in A1
++
++**Impact:** Loss of Snakemake DAG export functionality
++**Likelihood:** MEDIUM
++**Evidence:** `feat/spi-002-snakemake-dag-provenance` has unique DAG work
++
++**Mitigation:**
++1. Before archiving spi-002, check if its DAG code is in A1
++2. If not, cherry-pick commit `58dff246` to main
++3. Verify DAG works: `snakemake -n -p --dag | dot -Tsvg > test.svg`
++
++---
++
++## Risk Scoring Matrix
++
++| Risk | Impact | Likelihood | Severity | Ticket |
++|------|--------|-----------|----------|--------|
++| R1 - Test suite broken | Critical | Certain | 🔴 10/10 | Ticket 1 |
++| R2 - CLI merge conflicts | High | High | 🔴 8/10 | Ticket 1 |
++| R3 - Tracked .venv/site | Medium | Certain | 🔴 7/10 | Ticket 1 |
++| R4 - Confounds API drift | Medium | Medium | 🟡 5/10 | Ticket 1 |
++| R5 - Version conflicts | Medium | Medium | 🟡 4/10 | Ticket 1 |
++| R6 - Duplicate branches | Low | Certain | 🟢 2/10 | Ticket 1 |
++| R7 - Untracked clutter | Low | Low | 🟢 2/10 | Ticket 1 |
++| R8 - Snakefmt | Low | Low | 🟢 1/10 | Ticket 2 |
++| R9 - Codespell noise | Low | Low | 🟢 1/10 | Ticket 2 |
++| R10 - Missing DAG code | Medium | Medium | 🟡 5/10 | Ticket 1 |
++
++---
++
++## Recommended Action Sequence (for Ticket 1)
++
++1. **Immediate (before any merge):**
++   - Update `.gitignore` (R3, R7)
++   - Remove `.venv`, `site/`, `__pycache__` from tracking (R3)
++   - Tag `pre-phaseA-20251009` for rollback
++
++2. **During merge:**
++   - Use feat/spi-A1-doctor-json-snapshot as base (R2)
++   - Cherry-pick DAG commits from spi-002 if missing (R10)
++   - Resolve conflicts by accepting A1 version, manually verify (R2)
++
++3. **After merge:**
++   - Fix confounds test imports (R1)
++   - Sync version strings (R5)
++   - Run full test suite and fix failures (R1, R4)
++   - Run `snakefmt .` (R8)
++
++4. **Verification:**
++   - `pytest -q` passes (or document known failures)
++   - `ruff check .` clean
++   - `snakefmt --check .` clean
++   - `mkdocs build --strict` clean
++   - `spineprep --help` shows all commands
++   - `spineprep doctor` runs without error
++
++---
++
++## Rollback Triggers
++
++Abort merge and rollback if:
++- ✅ More than 5 test files have import errors after merge
++- ✅ CLI commands entirely missing (not just broken)
++- ✅ Merge conflicts take >2 hours to resolve
++- ✅ Main branch becomes unbuildable (import errors in core modules)
++
++Use: `git reset --hard pre-phaseA-20251009`
++
++---
++
++## Long-term Debt (defer to Ticket 2 or later)
++
++- Add pre-commit hooks for ruff, snakefmt, codespell
++- Set up branch protection on `main` (require PR, CI pass)
++- Add `mypy` type checking to CI
++- Clean git history with `git-filter-repo` (if CEO approves force-push)
++- Document branching strategy in CONTRIBUTING.md
++
++---
++
++## Confidence Assessment
++
++**Overall confidence in merge success:** 🟡 MEDIUM (60%)
++
++**Blockers:**
++- Test suite must be fixed post-merge (not a blocker to merge, but to validation)
++- Confounds module structure must be reconciled
++
++**Enablers:**
++- Good commit history and messages
++- Clear feature separation across branches
++- Rollback tag in place
++
++**Recommendation:** Proceed with Ticket 1, but allocate 4-6 hours for merge + fixes.
+diff --git a/ops/status/repo_status.json b/ops/status/repo_status.json
+new file mode 100644
+index 00000000..659c89f1
+--- /dev/null
++++ b/ops/status/repo_status.json
+@@ -0,0 +1,45 @@
++{
++  "timestamp": "2025-10-09T18:30:23+02:00",
++  "head": "b2ed3dd9",
++  "head_branch": "feat/spi-A1-doctor-json-snapshot",
++  "main_exists": true,
++  "origin_main_exists": true,
++  "branches": {
++    "local": [
++      "feat/doctor-environment-diagnostics",
++      "feat/spi-001-scaffold-cli-config",
++      "feat/spi-002-snakemake-dag-provenance",
++      "feat/spi-011a-docs-ci-pages",
++      "feat/spi-A1-doctor-json-snapshot",
++      "feat/spi-a7-qc-html-scaffold",
++      "feat/spi-cli-scaffold",
++      "feat/spi-confounds-acompcor-tcompcor-censor",
++      "feat/spi-confounds-fd-dvars-tsv-json-v1",
++      "feat/spi-masking-cord-csf-qc",
++      "feat/spi-xxx-registration-pam50-wrapper",
++      "main"
++    ],
++    "remote": [
++      "origin",
++      "origin/cursor/harden-docs-ci-and-enable-github-pages-deployment-43de",
++      "origin/feat/spi-001-scaffold-cli-config",
++      "origin/feat/spi-002-snakemake-dag-provenance",
++      "origin/feat/spi-A1-doctor-json-snapshot",
++      "origin/feat/spi-a7-qc-html-scaffold",
++      "origin/feat/spi-cli-scaffold",
++      "origin/feat/spi-confounds-fd-dvars-tsv-json-v1",
++      "origin/main"
++    ]
++  },
++  "tags": [
++    "v0.1.0",
++    "v0.1.0-docs"
++  ],
++  "health": {
++    "pytest_passed": false,
++    "mkdocs_strict_passed": true,
++    "ruff_clean": true,
++    "snakefmt_clean": false
++  },
++  "divergence_from_main": "0\t6"
++}
+diff --git a/ops/status/ruff.txt b/ops/status/ruff.txt
+new file mode 100644
+index 00000000..e69de29b
+diff --git a/ops/status/snakefmt.txt b/ops/status/snakefmt.txt
+new file mode 100644
+index 00000000..817765e2
+--- /dev/null
++++ b/ops/status/snakefmt.txt
+@@ -0,0 +1,2 @@
++[INFO] 1 file(s) would be changed 😬
++[INFO] 4 file(s) would be left unchanged 🎉
+diff --git a/ops/status/status_porcelain.txt b/ops/status/status_porcelain.txt
+new file mode 100644
+index 00000000..22fb1f05
+--- /dev/null
++++ b/ops/status/status_porcelain.txt
+@@ -0,0 +1,80 @@
++ M spineprep.egg-info/PKG-INFO
++ M spineprep.egg-info/SOURCES.txt
++ M spineprep.egg-info/requires.txt
++ M spineprep.egg-info/top_level.txt
++ M spineprep/__pycache__/__init__.cpython-312.pyc
++ M spineprep/__pycache__/cli.cpython-312.pyc
++ M spineprep/__pycache__/config.cpython-312.pyc
++ M spineprep/confounds/__pycache__/__init__.cpython-312.pyc
++ M spineprep/confounds/__pycache__/io.cpython-312.pyc
++ M spineprep/confounds/__pycache__/motion.cpython-312.pyc
++ M spineprep/confounds/__pycache__/plot.cpython-312.pyc
++ M spineprep/preproc/__pycache__/__init__.cpython-312.pyc
++ M spineprep/preproc/__pycache__/masking.cpython-312.pyc
++ M spineprep/qc/report.py
++ M tests/confounds/__pycache__/__init__.cpython-312.pyc
++ M tests/confounds/__pycache__/test_motion.cpython-312-pytest-8.4.2.pyc
++ M tests/integration/__pycache__/test_confounds_acompcor_rule.cpython-312-pytest-8.4.2.pyc
++ M tests/integration/__pycache__/test_motion_engines.cpython-312-pytest-8.4.2.pyc
++ M tests/test_doctor_json.py
++ M tests/test_qc_report.py
++ M tests/unit/__pycache__/test_acompcor_math.cpython-312-pytest-8.4.2.pyc
++ M tests/unit/__pycache__/test_censor_contiguity.cpython-312-pytest-8.4.2.pyc
++ M tests/unit/__pycache__/test_confounds_columns_acompcor.cpython-312-pytest-8.4.2.pyc
++ M tests/unit/__pycache__/test_crop_detector.cpython-312-pytest-8.4.2.pyc
++ M tests/unit/__pycache__/test_docs_generators.cpython-312-pytest-8.4.2.pyc
++ M tests/unit/__pycache__/test_mask_paths.cpython-312-pytest-8.4.2.pyc
++ M workflow/lib/__pycache__/confounds.cpython-312.pyc
++ M workflow/lib/__pycache__/deriv.cpython-312.pyc
++ M workflow/lib/__pycache__/qc.cpython-312.pyc
++ M workflow/lib/__pycache__/registration.cpython-312.pyc
++?? .coverage
++?? .snakemake/log/2025-10-08T192411.244361.snakemake.log
++?? .snakemake/log/2025-10-09T135956.825827.snakemake.log
++?? .snakemake/log/2025-10-09T140016.592494.snakemake.log
++?? .snakemake/log/2025-10-09T140800.179998.snakemake.log
++?? .snakemake/log/2025-10-09T140801.439704.snakemake.log
++?? .snakemake/log/2025-10-09T140803.499669.snakemake.log
++?? .snakemake/log/2025-10-09T140804.645053.snakemake.log
++?? .snakemake/log/2025-10-09T140828.068964.snakemake.log
++?? .snakemake/log/2025-10-09T140838.914664.snakemake.log
++?? .snakemake/log/2025-10-09T140840.957756.snakemake.log
++?? .snakemake/log/2025-10-09T140906.024071.snakemake.log
++?? .snakemake/log/2025-10-09T175435.464133.snakemake.log
++?? .snakemake/metadata/L3RtcC90ZXN0X291dDMvZGVyaXZhdGl2ZXMvc3BpbmVwcmVwLy5zcGluZXByZXBfc2NhZmZvbGQ=
++?? .snakemake/metadata/L3RtcC90ZXN0X291dDMvcHJvdmVuYW5jZS9kYWcuc3Zn
++?? .snakemake/metadata/L3RtcC90bXBmYWllNWQ0cy9vdXQvZGVyaXZhdGl2ZXMvc3BpbmVwcmVwLy5zcGluZXByZXBfc2NhZmZvbGQ=
++?? .snakemake/metadata/L3RtcC90bXBmYWllNWQ0cy9vdXQvcHJvdmVuYW5jZS9kYWcuc3Zn
++?? docs/workflow.md
++?? doctor.json
++?? ops/
++?? out/
++?? spineprep/__pycache__/_sct.cpython-312.pyc
++?? spineprep/__pycache__/_version.cpython-312.pyc
++?? spineprep/__pycache__/confounds.cpython-312.pyc
++?? spineprep/__pycache__/derivatives.cpython-312.pyc
++?? spineprep/__pycache__/doctor.cpython-312.pyc
++?? spineprep/__pycache__/ingest.cpython-312.pyc
++?? spineprep/__pycache__/motion.cpython-312.pyc
++?? spineprep/__pycache__/provenance.cpython-312.pyc
++?? spineprep/__pycache__/qc.cpython-312.pyc
++?? spineprep/confounds/__pycache__/censor.cpython-312.pyc
++?? spineprep/confounds/__pycache__/compcor.cpython-312.pyc
++?? spineprep/confounds/censor.py
++?? spineprep/confounds/compcor.py
++?? spineprep/registration/__pycache__/
++?? test_acceptance_masking.py
++?? test_doctor.json
++?? tests/__pycache__/
++?? tests/confounds/__pycache__/test_censor.cpython-312-pytest-8.4.2.pyc
++?? tests/confounds/__pycache__/test_compcor.cpython-312-pytest-8.4.2.pyc
++?? tests/confounds/test_censor.py
++?? tests/confounds/test_compcor.py
++?? tests/test_dag_render.py
++?? tests/unit/__pycache__/test_doctor.cpython-312-pytest-8.4.2.pyc
++?? tests/unit/__pycache__/test_header_checks.cpython-312-pytest-8.4.2.pyc
++?? tests/unit/__pycache__/test_registration_metrics.cpython-312-pytest-8.4.2.pyc
++?? tests/unit/__pycache__/test_sct_wrapper.cpython-312-pytest-8.4.2.pyc
++?? tests/unit/__pycache__/test_targets.cpython-312-pytest-8.4.2.pyc
++?? workflow/Snakefile.backup
++?? workflow/lib/__pycache__/targets.cpython-312.pyc
