@@ -1,0 +1,1202 @@
+WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/litrature.pdf
+WARNING: Trying next encoding "iso-8859-1"
+WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/scopus_ai/3.pdf
+WARNING: Trying next encoding "iso-8859-1"
+WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/scopus_ai/4.pdf
+WARNING: Trying next encoding "iso-8859-1"
+WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/scopus_ai/8.pdf
+WARNING: Trying next encoding "iso-8859-1"
+./site/assets/javascripts/lunr/wordcut.js:122: ans ==> and
+./site/assets/javascripts/lunr/wordcut.js:136: ans ==> and
+./site/assets/javascripts/lunr/wordcut.js:145: ans ==> and
+./site/assets/javascripts/lunr/wordcut.js:3334: abd ==> and, bad
+./site/assets/javascripts/lunr/wordcut.js:4377: enviroments ==> environments
+./site/assets/javascripts/lunr/wordcut.js:4386: maddness ==> madness
+./site/assets/javascripts/lunr/wordcut.js:4393: hopfully ==> hopefully
+./site/assets/javascripts/lunr/wordcut.js:4402: enviroments ==> environments
+./site/assets/javascripts/lunr/wordcut.js:4411: maddness ==> madness
+./site/assets/javascripts/lunr/wordcut.js:4418: hopfully ==> hopefully
+./site/assets/javascripts/lunr/wordcut.js:4484: predictible ==> predictable
+./site/assets/javascripts/lunr/wordcut.js:5620: egal ==> equal
+./site/assets/javascripts/lunr/wordcut.js:5620: egal ==> equal
+./site/assets/javascripts/lunr/wordcut.js:5642: egal ==> equal
+./site/assets/javascripts/lunr/wordcut.js:5964: offest ==> offset
+./site/assets/stylesheets/main.2a3383ac.min.css:1: nd ==> and, 2nd
+./private/03_literature/library.bib:22: Ather ==> Other
+./private/03_literature/library.bib:1316: Oder ==> Order, Older, Coder, Odder, Odor, Over, Doer
+./private/03_literature/library.bib:2183: Hendler ==> Handler
+./private/03_literature/library.bib:2252: Yau ==> You, Yaw
+./private/03_literature/library.bib:2570: Claus ==> Clause
+./private/03_literature/library.bib:2750: Sherif ==> Sheriff
+./private/03_literature/library.bib:3505: Teh ==> The
+./private/03_literature/library.bib:4116: onl ==> only
+./private/03_literature/library.bib:4353: Bui ==> Buoy, Buy
+./private/03_literature/library.bib:4715: Leary ==> Leery
+./private/03_literature/library.bib:5531: Toom ==> Tomb
+./private/03_literature/library.bib:5901: Alle ==> All, Alley
+./private/03_literature/library.bib:5928: Nam ==> Name
+./private/03_literature/library.bib:6128: RIN ==> RING, RINK, RIND, RAIN, REIN, RUIN, GRIN
+./private/03_literature/library.bib:8011: Gage ==> Gauge
+./private/03_literature/library.bib:8432: Claus ==> Clause
+./private/03_literature/library.bib:8836: Alle ==> All, Alley
+./private/03_literature/litrature.pdf:527: YUr ==> your
+./private/03_literature/litrature.pdf:573: OLl ==> all, ole, old, olly, oil
+./private/03_literature/litrature.pdf:855: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/litrature.pdf:861: EdN ==> end
+./private/03_literature/litrature.pdf:1238: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/litrature.pdf:1311: eGe ==> edge
+./private/03_literature/litrature.pdf:2092: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:2699: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:3048: nd ==> and, 2nd
+./private/03_literature/litrature.pdf:3095: CaF ==> calf
+./private/03_literature/litrature.pdf:3106: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:3188: yuO ==> you
+./private/03_literature/litrature.pdf:3371: ths ==> the, this
+./private/03_literature/litrature.pdf:3495: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/litrature.pdf:3748: MOT ==> NOT
+./private/03_literature/litrature.pdf:3918: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:4249: TeY ==> they
+./private/03_literature/litrature.pdf:4293: toi ==> to, toy
+./private/03_literature/litrature.pdf:4479: ND ==> AND, 2ND
+./private/03_literature/litrature.pdf:4742: Nd ==> And, 2nd
+./private/03_literature/litrature.pdf:4919: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/litrature.pdf:5044: nD ==> and, 2nd
+./private/03_literature/litrature.pdf:5045: EGE ==> EDGE
+./private/03_literature/litrature.pdf:5055: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:5103: oNw ==> own
+./private/03_literature/litrature.pdf:5469: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:5502: HDa ==> had
+./private/03_literature/litrature.pdf:5515: oLY ==> only
+./private/03_literature/litrature.pdf:5889: nD ==> and, 2nd
+./private/03_literature/litrature.pdf:5923: aBd ==> and, bad
+./private/03_literature/litrature.pdf:5973: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/litrature.pdf:6154: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/litrature.pdf:6224: Yhe ==> The
+./private/03_literature/litrature.pdf:6289: OnW ==> own
+./private/03_literature/litrature.pdf:6634: nD ==> and, 2nd
+./private/03_literature/litrature.pdf:7588: tHq ==> the
+./private/03_literature/litrature.pdf:8092: sIZ ==> size, six
+./private/03_literature/litrature.pdf:8851: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/litrature.pdf:9009: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:9315: nD ==> and, 2nd
+./private/03_literature/litrature.pdf:9448: Nd ==> And, 2nd
+./private/03_literature/litrature.pdf:9522: NMAE ==> NAME
+./private/03_literature/litrature.pdf:9558: nd ==> and, 2nd
+./private/03_literature/litrature.pdf:9646: nd ==> and, 2nd
+./private/03_literature/litrature.pdf:9858: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/litrature.pdf:10992: oll ==> all, ole, old, olly, oil
+./private/03_literature/litrature.pdf:11170: yse ==> yes, use, nyse
+./private/03_literature/litrature.pdf:11256: Nd ==> And, 2nd
+./private/03_literature/litrature.pdf:11266: ND ==> AND, 2ND
+./private/03_literature/litrature.pdf:11417: ND ==> AND, 2ND
+./private/03_literature/litrature.pdf:11645: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:11988: myE ==> may, my
+./private/03_literature/litrature.pdf:12151: WEE ==> WE
+./private/03_literature/litrature.pdf:12624: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/litrature.pdf:13355: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:13454: nD ==> and, 2nd
+./private/03_literature/litrature.pdf:13589: onY ==> only, on, one
+./private/03_literature/litrature.pdf:13632: nd ==> and, 2nd
+./private/03_literature/litrature.pdf:14277: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/litrature.pdf:14756: nD ==> and, 2nd
+./private/03_literature/litrature.pdf:15392: 2rD ==> 2nd
+./private/03_literature/litrature.pdf:15563: vEW ==> view, vow, vex
+./private/03_literature/litrature.pdf:15663: nd ==> and, 2nd
+./private/03_literature/scopus_ai/3.pdf:163: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/scopus_ai/3.pdf:7252: myE ==> may, my
+./private/03_literature/scopus_ai/3.pdf:7540: WEE ==> WE
+./private/03_literature/scopus_ai/4.pdf:140: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/scopus_ai/4.pdf:490: nd ==> and, 2nd
+./private/03_literature/scopus_ai/4.pdf:537: CaF ==> calf
+./private/03_literature/scopus_ai/4.pdf:549: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/scopus_ai/4.pdf:631: yuO ==> you
+./private/03_literature/scopus_ai/4.pdf:826: ths ==> the, this
+./private/03_literature/scopus_ai/4.pdf:950: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/scopus_ai/8.pdf:249: nD ==> and, 2nd
+./private/03_literature/scopus_ai/8.pdf:283: aBd ==> and, bad
+./private/03_literature/scopus_ai/8.pdf:333: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/scopus_ai/8.pdf:517: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/scopus_ai/8.pdf:588: Yhe ==> The
+./private/03_literature/scopus_ai/8.pdf:653: OnW ==> own
+./private/03_literature/scopus_ai/8.pdf:8179: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/scopus_ai/scopus (1).bib:191: onl ==> only
+./private/03_literature/scopus_ai/scopus (1).bib:235: Gage ==> Gauge
+./private/03_literature/scopus_ai/scopus (1).bib:949: Teh ==> The
+./private/03_literature/scopus_ai/scopus (10).bib:79: Claus ==> Clause
+./private/03_literature/scopus_ai/scopus (10).bib:288: Ather ==> Other
+./private/03_literature/scopus_ai/scopus (10).bib:636: Hendler ==> Handler
+./private/03_literature/scopus_ai/scopus (10).bib:666: Leary ==> Leery
+WARNING: Cannot decode file using encoding "utf-8": ./private/03_literature/papers/imag-3-123.pdf
+WARNING: Trying next encoding "iso-8859-1"
+./private/03_literature/scopus_ai/scopus (10).bib:905: Bui ==> Buoy, Buy
+./private/03_literature/scopus_ai/scopus (10).bib:1056: onl ==> only
+./private/03_literature/scopus_ai/scopus (10).bib:1493: Alle ==> All, Alley
+./private/03_literature/scopus_ai/scopus (11).bib:79: Claus ==> Clause
+./private/03_literature/scopus_ai/scopus (11).bib:288: Ather ==> Other
+./private/03_literature/scopus_ai/scopus (11).bib:636: Hendler ==> Handler
+./private/03_literature/scopus_ai/scopus (11).bib:666: Leary ==> Leery
+./private/03_literature/scopus_ai/scopus (11).bib:905: Bui ==> Buoy, Buy
+./private/03_literature/scopus_ai/scopus (11).bib:1056: onl ==> only
+./private/03_literature/scopus_ai/scopus (11).bib:1493: Alle ==> All, Alley
+./private/03_literature/scopus_ai/scopus (2).bib:157: Yau ==> You, Yaw
+./private/03_literature/scopus_ai/scopus (2).bib:204: Toom ==> Tomb
+./private/03_literature/scopus_ai/scopus (3).bib:126: Oder ==> Order, Older, Coder, Odder, Odor, Over, Doer
+./private/03_literature/scopus_ai/scopus (3).bib:601: Yau ==> You, Yaw
+./private/03_literature/scopus_ai/scopus (5).bib:81: Claus ==> Clause
+./private/03_literature/scopus_ai/scopus (5).bib:169: Nam ==> Name
+./private/03_literature/scopus_ai/scopus (8).bib:124: Nam ==> Name
+./private/03_literature/scopus_ai/scopus (8).bib:278: Claus ==> Clause
+./private/03_literature/scopus_ai/scopus (9).bib:473: Claus ==> Clause
+./private/03_literature/scopus_ai/scopus (9).bib:489: Sherif ==> Sheriff
+./private/03_literature/scopus_ai/scopus (9).bib:778: RIN ==> RING, RINK, RIND, RAIN, REIN, RUIN, GRIN
+./private/03_literature/scopus_ai/scopus.bib:124: Alle ==> All, Alley
+./private/03_literature/papers/imag-3-123.pdf:239: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:403: nWE ==> new
+./private/03_literature/papers/imag-3-123.pdf:616: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:1071: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:1140: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:1445: weW ==> we
+./private/03_literature/papers/imag-3-123.pdf:1572: wll ==> will
+./private/03_literature/papers/imag-3-123.pdf:1935: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:2059: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:2076: oLY ==> only
+./private/03_literature/papers/imag-3-123.pdf:2087: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:2141: aDDD ==> add
+./private/03_literature/papers/imag-3-123.pdf:2368: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:2661: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:3283: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:3309: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:3517: Daa ==> Data
+./private/03_literature/papers/imag-3-123.pdf:3587: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:3751: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:3848: coo ==> coup
+./private/03_literature/papers/imag-3-123.pdf:3905: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:4452: gES ==> goes, guess
+./private/03_literature/papers/imag-3-123.pdf:4969: gir ==> git
+./private/03_literature/papers/imag-3-123.pdf:5020: MKE ==> MAKE
+./private/03_literature/papers/imag-3-123.pdf:5065: abl ==> able
+./private/03_literature/papers/imag-3-123.pdf:5195: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:5301: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:5479: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:5491: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:5733: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:5860: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:5864: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:6005: NaM ==> name
+./private/03_literature/papers/imag-3-123.pdf:6061: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:6153: nOO ==> no
+./private/03_literature/papers/imag-3-123.pdf:6435: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:6880: wEE ==> we
+./private/03_literature/papers/imag-3-123.pdf:6912: Hsa ==> Has
+./private/03_literature/papers/imag-3-123.pdf:6999: rIN ==> ring, rink, rind, rain, rein, ruin, grin
+./private/03_literature/papers/imag-3-123.pdf:7333: ALLL ==> ALL, ALLY
+./private/03_literature/papers/imag-3-123.pdf:7568: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:7665: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:7868: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:8353: NOo ==> no
+./private/03_literature/papers/imag-3-123.pdf:8372: ADDD ==> ADD
+./private/03_literature/papers/imag-3-123.pdf:8400: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:8900: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:9021: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:9181: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:9295: wYA ==> way
+./private/03_literature/papers/imag-3-123.pdf:9427: Wll ==> Will
+./private/03_literature/papers/imag-3-123.pdf:9574: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:9719: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:9775: daa ==> data
+./private/03_literature/papers/imag-3-123.pdf:9782: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:9935: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:10095: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:10140: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:10140: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:10212: DIsGN ==> design
+./private/03_literature/papers/imag-3-123.pdf:10512: daa ==> data
+./private/03_literature/papers/imag-3-123.pdf:10535: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:10557: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:10896: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:10937: oyU ==> you
+./private/03_literature/papers/imag-3-123.pdf:10943: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:11014: coo ==> coup
+./private/03_literature/papers/imag-3-123.pdf:11230: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:11336: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:11459: Haa ==> Has
+./private/03_literature/papers/imag-3-123.pdf:11760: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:11953: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:11972: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:12230: haX ==> hex
+./private/03_literature/papers/imag-3-123.pdf:12298: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:12533: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:13078: wIT ==> with
+./private/03_literature/papers/imag-3-123.pdf:13848: HAA ==> HAS
+./private/03_literature/papers/imag-3-123.pdf:13883: Joo ==> You
+./private/03_literature/papers/imag-3-123.pdf:13884: daa ==> data
+./private/03_literature/papers/imag-3-123.pdf:13895: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:14100: tHt ==> the, that
+./private/03_literature/papers/imag-3-123.pdf:14227: tBE ==> the
+./private/03_literature/papers/imag-3-123.pdf:14231: pTRSS ==> press
+./private/03_literature/papers/imag-3-123.pdf:14335: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:14378: JOO ==> YOU
+./private/03_literature/papers/imag-3-123.pdf:14509: Oll ==> All, Ole, Old, Olly, Oil
+./private/03_literature/papers/imag-3-123.pdf:14634: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:14674: afe ==> safe
+./private/03_literature/papers/imag-3-123.pdf:14693: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:14736: Coo ==> Coup
+./private/03_literature/papers/imag-3-123.pdf:14809: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:15344: VIE ==> VIA
+./private/03_literature/papers/imag-3-123.pdf:15438: AlO ==> also
+./private/03_literature/papers/imag-3-123.pdf:15447: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:15515: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:15528: MeY ==> may
+./private/03_literature/papers/imag-3-123.pdf:15594: sEh ==> she
+./private/03_literature/papers/imag-3-123.pdf:15704: SEh ==> she
+./private/03_literature/papers/imag-3-123.pdf:15766: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:15863: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:16069: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:16872: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:17094: wHn ==> when
+./private/03_literature/papers/imag-3-123.pdf:17167: haX ==> hex
+./private/03_literature/papers/imag-3-123.pdf:17382: OtU ==> out
+./private/03_literature/papers/imag-3-123.pdf:18180: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:18218: JOO ==> YOU
+./private/03_literature/papers/imag-3-123.pdf:18241: WEe ==> we
+./private/03_literature/papers/imag-3-123.pdf:18331: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:18660: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:19058: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:19178: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:19529: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:20489: Wih ==> With
+./private/03_literature/papers/imag-3-123.pdf:20836: fPt ==> ftp
+./private/03_literature/papers/imag-3-123.pdf:20855: TBe ==> the
+./private/03_literature/papers/imag-3-123.pdf:21028: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:21255: fom ==> from, form
+./private/03_literature/papers/imag-3-123.pdf:21278: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:21354: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:21415: hSi ==> his
+./private/03_literature/papers/imag-3-123.pdf:21572: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:21594: iSt ==> is, it, its, it's, sit, list
+./private/03_literature/papers/imag-3-123.pdf:21621: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:21935: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:22027: NWE ==> NEW
+./private/03_literature/papers/imag-3-123.pdf:22146: IHs ==> his
+./private/03_literature/papers/imag-3-123.pdf:22228: aNe ==> and
+./private/03_literature/papers/imag-3-123.pdf:22794: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:22857: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:23065: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:23176: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:23622: Aci ==> Acpi
+./private/03_literature/papers/imag-3-123.pdf:23751: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:23795: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:23889: Wee ==> We
+./private/03_literature/papers/imag-3-123.pdf:23889: vaI ==> via, vie
+./private/03_literature/papers/imag-3-123.pdf:23906: AnE ==> and
+./private/03_literature/papers/imag-3-123.pdf:24111: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:24349: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:24454: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:24495: Tye ==> Type, Tie
+./private/03_literature/papers/imag-3-123.pdf:25472: hDA ==> had
+./private/03_literature/papers/imag-3-123.pdf:25979: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:26002: iif ==> if
+./private/03_literature/papers/imag-3-123.pdf:26833: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:27199: TNe ==> the
+./private/03_literature/papers/imag-3-123.pdf:28353: tNE ==> the
+./private/03_literature/papers/imag-3-123.pdf:28622: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:28901: LeW ==> lieu, hew, sew, dew
+./private/03_literature/papers/imag-3-123.pdf:28929: vEW ==> view, vow, vex
+./private/03_literature/papers/imag-3-123.pdf:28934: Ned ==> Need, End, Nod
+./private/03_literature/papers/imag-3-123.pdf:29048: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:29320: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:29705: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:29899: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:30175: AfoR ==> for
+./private/03_literature/papers/imag-3-123.pdf:30371: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:31080: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:31139: tHt ==> the, that
+./private/03_literature/papers/imag-3-123.pdf:31184: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:31350: whN ==> when
+./private/03_literature/papers/imag-3-123.pdf:31472: 2rd ==> 2nd
+./private/03_literature/papers/imag-3-123.pdf:31542: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:31715: Fom ==> From, Form
+./private/03_literature/papers/imag-3-123.pdf:31879: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:31952: IiF ==> if
+./private/03_literature/papers/imag-3-123.pdf:31959: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:32408: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:32649: WTH ==> WITH
+./private/03_literature/papers/imag-3-123.pdf:32675: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:32680: Tge ==> The
+./private/03_literature/papers/imag-3-123.pdf:32689: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:32886: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:33037: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:33043: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:33095: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:33402: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:33504: Nwo ==> Now
+./private/03_literature/papers/imag-3-123.pdf:33527: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:33607: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:33937: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:33949: onW ==> own
+./private/03_literature/papers/imag-3-123.pdf:34060: bVE ==> be
+./private/03_literature/papers/imag-3-123.pdf:34125: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:34301: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:34327: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:34447: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:34508: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:34613: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:34790: Fot ==> For, Fit, Dot, Rot, Cot, Got, Tot, Fog
+./private/03_literature/papers/imag-3-123.pdf:34913: 1ND ==> 1ST
+./private/03_literature/papers/imag-3-123.pdf:35162: 2RD ==> 2ND
+./private/03_literature/papers/imag-3-123.pdf:35342: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:35361: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:35457: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:35479: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:35523: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:35738: FPr ==> for, far, fps
+./private/03_literature/papers/imag-3-123.pdf:35863: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:36379: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:36654: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:36733: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:36764: PTD ==> PDF
+./private/03_literature/papers/imag-3-123.pdf:36961: hEl ==> help, hell, heal
+./private/03_literature/papers/imag-3-123.pdf:37087: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:37158: Noo ==> No
+./private/03_literature/papers/imag-3-123.pdf:37384: iNH ==> in
+./private/03_literature/papers/imag-3-123.pdf:37415: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:37562: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:37566: ois ==> is
+./private/03_literature/papers/imag-3-123.pdf:37599: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:37704: wTh ==> with
+./private/03_literature/papers/imag-3-123.pdf:37750: CoO ==> coup
+./private/03_literature/papers/imag-3-123.pdf:38214: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:38297: weE ==> we
+./private/03_literature/papers/imag-3-123.pdf:38624: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:38635: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:38674: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:39313: nax ==> max, nad
+./private/03_literature/papers/imag-3-123.pdf:39767: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:39846: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:40109: Coo ==> Coup
+./private/03_literature/papers/imag-3-123.pdf:40195: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:40247: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:40376: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:40430: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:40512: COO ==> COUP
+./private/03_literature/papers/imag-3-123.pdf:40661: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:40738: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:40995: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:41101: DuM ==> dumb
+./private/03_literature/papers/imag-3-123.pdf:41178: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:41252: cppp ==> cpp
+./private/03_literature/papers/imag-3-123.pdf:41257: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:41260: cPPP ==> cpp
+./private/03_literature/papers/imag-3-123.pdf:41348: HSI ==> HIS
+./private/03_literature/papers/imag-3-123.pdf:41527: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:41569: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:41633: yhe ==> the
+./private/03_literature/papers/imag-3-123.pdf:41637: Alll ==> All, Ally
+./private/03_literature/papers/imag-3-123.pdf:41959: oLL ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:42004: HAA ==> HAS
+./private/03_literature/papers/imag-3-123.pdf:42078: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:42474: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:42610: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:42701: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:42768: nOO ==> no
+./private/03_literature/papers/imag-3-123.pdf:42942: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:42950: Noo ==> No
+./private/03_literature/papers/imag-3-123.pdf:42961: COO ==> COUP
+./private/03_literature/papers/imag-3-123.pdf:43156: Joo ==> You
+./private/03_literature/papers/imag-3-123.pdf:43186: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:43387: Coo ==> Coup
+./private/03_literature/papers/imag-3-123.pdf:43442: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:43591: coo ==> coup
+./private/03_literature/papers/imag-3-123.pdf:43692: JOO ==> YOU
+./private/03_literature/papers/imag-3-123.pdf:43796: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:43799: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:43799: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:43803: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:43808: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:43829: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:43925: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:44137: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:44275: HEL ==> HELP, HELL, HEAL
+./private/03_literature/papers/imag-3-123.pdf:44277: wlll ==> will
+./private/03_literature/papers/imag-3-123.pdf:44399: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:44682: WEL ==> WELL
+./private/03_literature/papers/imag-3-123.pdf:44779: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:44858: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:45135: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:45417: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:45545: EGE ==> EDGE
+./private/03_literature/papers/imag-3-123.pdf:45665: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:45915: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:46006: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:46150: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:46410: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:46477: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:46561: JOO ==> YOU
+./private/03_literature/papers/imag-3-123.pdf:46588: Joo ==> You
+./private/03_literature/papers/imag-3-123.pdf:46651: ALLL ==> ALL, ALLY
+./private/03_literature/papers/imag-3-123.pdf:47210: TIcH ==> thick, tick, titch, stitch
+./private/03_literature/papers/imag-3-123.pdf:47257: tYE ==> type, tie
+./private/03_literature/papers/imag-3-123.pdf:47712: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:47872: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:47932: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:48007: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:48062: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:48082: LOOS ==> LOOSE, LOSE
+./private/03_literature/papers/imag-3-123.pdf:48408: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:48731: Aadd ==> Add
+./private/03_literature/papers/imag-3-123.pdf:49336: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:49836: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:49941: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:49972: CAf ==> calf
+./private/03_literature/papers/imag-3-123.pdf:50010: oNy ==> only, on, one
+./private/03_literature/papers/imag-3-123.pdf:50278: tHs ==> the, this
+./private/03_literature/papers/imag-3-123.pdf:50944: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:50963: laf ==> laugh, leaf, loaf, lad, lag, lac, kaf, kaph
+./private/03_literature/papers/imag-3-123.pdf:50999: laf ==> laugh, leaf, loaf, lad, lag, lac, kaf, kaph
+./private/03_literature/papers/imag-3-123.pdf:51476: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:51614: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:51782: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:52095: fOm ==> from, form
+./private/03_literature/papers/imag-3-123.pdf:52259: dum ==> dumb
+./private/03_literature/papers/imag-3-123.pdf:52341: aFE ==> safe
+./private/03_literature/papers/imag-3-123.pdf:52594: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:53293: tOi ==> to, toy
+./private/03_literature/papers/imag-3-123.pdf:53336: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:53351: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:53482: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:53620: thS ==> the, this
+./private/03_literature/papers/imag-3-123.pdf:53646: COO ==> COUP
+./private/03_literature/papers/imag-3-123.pdf:53779: COO ==> COUP
+./private/03_literature/papers/imag-3-123.pdf:53876: iNh ==> in
+./private/03_literature/papers/imag-3-123.pdf:53943: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:54217: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:54326: coO ==> coup
+./private/03_literature/papers/imag-3-123.pdf:54459: hdA ==> had
+./private/03_literature/papers/imag-3-123.pdf:54487: aCi ==> acpi
+./private/03_literature/papers/imag-3-123.pdf:54520: HVe ==> have
+./private/03_literature/papers/imag-3-123.pdf:54929: hAx ==> hex
+./private/03_literature/papers/imag-3-123.pdf:54995: fOF ==> for
+./private/03_literature/papers/imag-3-123.pdf:55015: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:55101: aCII ==> ascii
+./private/03_literature/papers/imag-3-123.pdf:55189: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:55453: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:55533: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:55784: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:56174: Alll ==> All, Ally
+./private/03_literature/papers/imag-3-123.pdf:56326: DAA ==> DATA
+./private/03_literature/papers/imag-3-123.pdf:56505: TrU ==> through, true
+./private/03_literature/papers/imag-3-123.pdf:56782: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:56882: lIk ==> like, lick, link
+./private/03_literature/papers/imag-3-123.pdf:56886: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:57113: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:57144: ABd ==> and, bad
+./private/03_literature/papers/imag-3-123.pdf:57547: cppp ==> cpp
+./private/03_literature/papers/imag-3-123.pdf:57802: LOOS ==> LOOSE, LOSE
+./private/03_literature/papers/imag-3-123.pdf:57905: Coo ==> Coup
+./private/03_literature/papers/imag-3-123.pdf:58466: UesD ==> used
+./private/03_literature/papers/imag-3-123.pdf:58480: UesD ==> used
+./private/03_literature/papers/imag-3-123.pdf:58544: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:58768: wew ==> we
+./private/03_literature/papers/imag-3-123.pdf:58850: ACi ==> acpi
+./private/03_literature/papers/imag-3-123.pdf:59208: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:59358: TOOO ==> TODO, TOO, TOOL, TOOK
+./private/03_literature/papers/imag-3-123.pdf:59377: TOOO ==> TODO, TOO, TOOL, TOOK
+./private/03_literature/papers/imag-3-123.pdf:59441: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:59483: SAV ==> SAVE
+./private/03_literature/papers/imag-3-123.pdf:59599: wLLL ==> will
+./private/03_literature/papers/imag-3-123.pdf:60027: naM ==> name
+./private/03_literature/papers/imag-3-123.pdf:60104: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:60144: Coo ==> Coup
+./private/03_literature/papers/imag-3-123.pdf:60251: OnL ==> only
+./private/03_literature/papers/imag-3-123.pdf:60285: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:60354: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:60382: fOf ==> for
+./private/03_literature/papers/imag-3-123.pdf:60408: sHS ==> ssh, nhs
+./private/03_literature/papers/imag-3-123.pdf:60522: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:60775: LIk ==> like, lick, link
+./private/03_literature/papers/imag-3-123.pdf:60960: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:61003: Wlll ==> Will
+./private/03_literature/papers/imag-3-123.pdf:61028: Wee ==> We
+./private/03_literature/papers/imag-3-123.pdf:61065: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:61087: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:61277: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:61301: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:61313: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:61455: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:61724: wll ==> will
+./private/03_literature/papers/imag-3-123.pdf:61851: Coo ==> Coup
+./private/03_literature/papers/imag-3-123.pdf:62359: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:62598: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:62601: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:62612: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:62634: aaS ==> ass, as
+./private/03_literature/papers/imag-3-123.pdf:62683: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:62748: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:62872: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:63198: ihs ==> his
+./private/03_literature/papers/imag-3-123.pdf:63224: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:63355: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:63436: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:63592: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:64047: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:64273: AUoT ==> auto
+./private/03_literature/papers/imag-3-123.pdf:64422: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:64457: wee ==> we
+./private/03_literature/papers/imag-3-123.pdf:64479: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:64634: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:64691: ALLL ==> ALL, ALLY
+./private/03_literature/papers/imag-3-123.pdf:64694: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:64746: Yau ==> You, Yaw
+./private/03_literature/papers/imag-3-123.pdf:64957: lik ==> like, lick, link
+./private/03_literature/papers/imag-3-123.pdf:65322: TiCH ==> thick, tick, titch, stitch
+./private/03_literature/papers/imag-3-123.pdf:65343: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:65447: eDE ==> edge
+./private/03_literature/papers/imag-3-123.pdf:65674: COO ==> COUP
+./private/03_literature/papers/imag-3-123.pdf:65780: TyE ==> type, tie
+./private/03_literature/papers/imag-3-123.pdf:65804: soM ==> some
+./private/03_literature/papers/imag-3-123.pdf:65824: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:65890: TOi ==> to, toy
+./private/03_literature/papers/imag-3-123.pdf:65998: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:66103: ned ==> need, end, nod
+./private/03_literature/papers/imag-3-123.pdf:66600: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:66950: CPPP ==> CPP
+./private/03_literature/papers/imag-3-123.pdf:67141: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:67347: HSa ==> has
+./private/03_literature/papers/imag-3-123.pdf:67384: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:67624: Oll ==> All, Ole, Old, Olly, Oil
+./private/03_literature/papers/imag-3-123.pdf:67783: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:67807: cppp ==> cpp
+./private/03_literature/papers/imag-3-123.pdf:67827: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:67981: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:67983: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:68075: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:68119: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:68267: SEh ==> she
+./private/03_literature/papers/imag-3-123.pdf:68425: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:68700: eDE ==> edge
+./private/03_literature/papers/imag-3-123.pdf:68860: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:69778: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:69823: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:69891: FIlLL ==> fill
+./private/03_literature/papers/imag-3-123.pdf:70100: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:70186: slq ==> sql
+./private/03_literature/papers/imag-3-123.pdf:70338: bu ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:70584: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:70614: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:70775: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:71033: NOO ==> NO
+./private/03_literature/papers/imag-3-123.pdf:71052: MKE ==> MAKE
+./private/03_literature/papers/imag-3-123.pdf:71127: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:71343: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:71597: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:71638: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:71674: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:71734: daa ==> data
+./private/03_literature/papers/imag-3-123.pdf:71830: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:71834: udO ==> undo, sudo, judo, ado, udon, ufo
+./private/03_literature/papers/imag-3-123.pdf:71897: noo ==> no
+./private/03_literature/papers/imag-3-123.pdf:72316: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:72920: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:72952: alll ==> all, ally
+./private/03_literature/papers/imag-3-123.pdf:72971: joo ==> you
+./private/03_literature/papers/imag-3-123.pdf:73141: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:73184: wll ==> will
+./private/03_literature/papers/imag-3-123.pdf:73287: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:73351: LSIt ==> list, slit, sit
+./private/03_literature/papers/imag-3-123.pdf:73501: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:73619: TBe ==> the
+./private/03_literature/papers/imag-3-123.pdf:74359: wll ==> will
+./private/03_literature/papers/imag-3-123.pdf:74882: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:74892: Ser ==> Set
+./private/03_literature/papers/imag-3-123.pdf:74945: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:75024: LIK ==> LIKE, LICK, LINK
+./private/03_literature/papers/imag-3-123.pdf:75251: nOO ==> no
+./private/03_literature/papers/imag-3-123.pdf:75590: AnC ==> and
+./private/03_literature/papers/imag-3-123.pdf:75662: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:75729: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:75906: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:75948: ND ==> AND, 2ND
+./private/03_literature/papers/imag-3-123.pdf:76278: WLl ==> will
+./private/03_literature/papers/imag-3-123.pdf:76313: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./private/03_literature/papers/imag-3-123.pdf:76370: tOI ==> to, toy
+./private/03_literature/papers/imag-3-123.pdf:76402: dAA ==> data
+./private/03_literature/papers/imag-3-123.pdf:76425: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:76625: ded ==> dead
+./private/03_literature/papers/imag-3-123.pdf:76936: uNX ==> unix
+./private/03_literature/papers/imag-3-123.pdf:77535: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:77603: yaU ==> you, yaw
+./private/03_literature/papers/imag-3-123.pdf:77803: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:77810: kaKe ==> cake, take
+./private/03_literature/papers/imag-3-123.pdf:78131: TOi ==> to, toy
+./private/03_literature/papers/imag-3-123.pdf:78139: nD ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:78204: jus ==> just
+./private/03_literature/papers/imag-3-123.pdf:78210: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:78549: Daa ==> Data
+./private/03_literature/papers/imag-3-123.pdf:78615: TRU ==> THROUGH, TRUE
+./private/03_literature/papers/imag-3-123.pdf:78621: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:78756: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:78807: Nd ==> And, 2nd
+./private/03_literature/papers/imag-3-123.pdf:79363: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./private/03_literature/papers/imag-3-123.pdf:79417: OlT ==> old
+./private/03_literature/papers/imag-3-123.pdf:79570: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:79625: Hve ==> Have
+./private/03_literature/papers/imag-3-123.pdf:79899: oll ==> all, ole, old, olly, oil
+./private/03_literature/papers/imag-3-123.pdf:79936: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./private/03_literature/papers/imag-3-123.pdf:80769: nd ==> and, 2nd
+./private/03_literature/papers/imag-3-123.pdf:81633: bU ==> by, be, but, bug, bun, bud, buy, bum
+./private/03_literature/papers/imag-3-123.pdf:81879: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:9: ans ==> and
+./ops/status/codespell.txt:10: ans ==> and
+./ops/status/codespell.txt:11: ans ==> and
+./ops/status/codespell.txt:12: abd ==> and, bad
+./ops/status/codespell.txt:13: enviroments ==> environments
+./ops/status/codespell.txt:14: maddness ==> madness
+./ops/status/codespell.txt:15: hopfully ==> hopefully
+./ops/status/codespell.txt:16: enviroments ==> environments
+./ops/status/codespell.txt:17: maddness ==> madness
+./ops/status/codespell.txt:18: hopfully ==> hopefully
+./ops/status/codespell.txt:19: predictible ==> predictable
+./ops/status/codespell.txt:20: egal ==> equal
+./ops/status/codespell.txt:21: egal ==> equal
+./ops/status/codespell.txt:22: egal ==> equal
+./ops/status/codespell.txt:23: offest ==> offset
+./ops/status/codespell.txt:24: nd ==> and, 2nd
+./ops/status/codespell.txt:25: Ather ==> Other
+./ops/status/codespell.txt:26: Oder ==> Order, Older, Coder, Odder, Odor, Over, Doer
+./ops/status/codespell.txt:27: Hendler ==> Handler
+./ops/status/codespell.txt:28: Yau ==> You, Yaw
+./ops/status/codespell.txt:29: Claus ==> Clause
+./ops/status/codespell.txt:30: Sherif ==> Sheriff
+./ops/status/codespell.txt:31: Teh ==> The
+./ops/status/codespell.txt:32: onl ==> only
+./ops/status/codespell.txt:33: Bui ==> Buoy, Buy
+./ops/status/codespell.txt:34: Leary ==> Leery
+./ops/status/codespell.txt:35: Toom ==> Tomb
+./ops/status/codespell.txt:36: Alle ==> All, Alley
+./ops/status/codespell.txt:37: Nam ==> Name
+./ops/status/codespell.txt:38: RIN ==> RING, RINK, RIND, RAIN, REIN, RUIN, GRIN
+./ops/status/codespell.txt:39: Gage ==> Gauge
+./ops/status/codespell.txt:40: Claus ==> Clause
+./ops/status/codespell.txt:41: Alle ==> All, Alley
+./ops/status/codespell.txt:42: YUr ==> your
+./ops/status/codespell.txt:43: OLl ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:44: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:45: EdN ==> end
+./ops/status/codespell.txt:46: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:47: eGe ==> edge
+./ops/status/codespell.txt:48: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:49: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:50: nd ==> and, 2nd
+./ops/status/codespell.txt:51: CaF ==> calf
+./ops/status/codespell.txt:52: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:53: yuO ==> you
+./ops/status/codespell.txt:54: ths ==> the, this
+./ops/status/codespell.txt:55: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:56: MOT ==> NOT
+./ops/status/codespell.txt:57: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:58: TeY ==> they
+./ops/status/codespell.txt:59: toi ==> to, toy
+./ops/status/codespell.txt:60: ND ==> AND, 2ND
+./ops/status/codespell.txt:61: Nd ==> And, 2nd
+./ops/status/codespell.txt:62: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:63: nD ==> and, 2nd
+./ops/status/codespell.txt:64: EGE ==> EDGE
+./ops/status/codespell.txt:65: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:66: oNw ==> own
+./ops/status/codespell.txt:67: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:68: HDa ==> had
+./ops/status/codespell.txt:69: oLY ==> only
+./ops/status/codespell.txt:70: nD ==> and, 2nd
+./ops/status/codespell.txt:71: aBd ==> and, bad
+./ops/status/codespell.txt:72: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:73: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:74: Yhe ==> The
+./ops/status/codespell.txt:75: OnW ==> own
+./ops/status/codespell.txt:76: nD ==> and, 2nd
+./ops/status/codespell.txt:77: tHq ==> the
+./ops/status/codespell.txt:78: sIZ ==> size, six
+./ops/status/codespell.txt:79: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:80: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:81: nD ==> and, 2nd
+./ops/status/codespell.txt:82: Nd ==> And, 2nd
+./ops/status/codespell.txt:83: NMAE ==> NAME
+./ops/status/codespell.txt:84: nd ==> and, 2nd
+./ops/status/codespell.txt:85: nd ==> and, 2nd
+./ops/status/codespell.txt:86: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:87: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:88: yse ==> yes, use, nyse
+./ops/status/codespell.txt:89: Nd ==> And, 2nd
+./ops/status/codespell.txt:90: ND ==> AND, 2ND
+./ops/status/codespell.txt:91: ND ==> AND, 2ND
+./ops/status/codespell.txt:92: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:93: myE ==> may, my
+./ops/status/codespell.txt:94: WEE ==> WE
+./ops/status/codespell.txt:95: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:96: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:97: nD ==> and, 2nd
+./ops/status/codespell.txt:98: onY ==> only, on, one
+./ops/status/codespell.txt:99: nd ==> and, 2nd
+./ops/status/codespell.txt:100: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:101: nD ==> and, 2nd
+./ops/status/codespell.txt:102: 2rD ==> 2nd
+./ops/status/codespell.txt:103: vEW ==> view, vow, vex
+./ops/status/codespell.txt:104: nd ==> and, 2nd
+./ops/status/codespell.txt:105: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:106: myE ==> may, my
+./ops/status/codespell.txt:107: WEE ==> WE
+./ops/status/codespell.txt:108: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:109: nd ==> and, 2nd
+./ops/status/codespell.txt:110: CaF ==> calf
+./ops/status/codespell.txt:111: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:112: yuO ==> you
+./ops/status/codespell.txt:113: ths ==> the, this
+./ops/status/codespell.txt:114: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:115: nD ==> and, 2nd
+./ops/status/codespell.txt:116: aBd ==> and, bad
+./ops/status/codespell.txt:117: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:118: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:119: Yhe ==> The
+./ops/status/codespell.txt:120: OnW ==> own
+./ops/status/codespell.txt:121: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:122: onl ==> only
+./ops/status/codespell.txt:123: Gage ==> Gauge
+./ops/status/codespell.txt:124: Teh ==> The
+./ops/status/codespell.txt:125: Claus ==> Clause
+./ops/status/codespell.txt:126: Ather ==> Other
+./ops/status/codespell.txt:127: Hendler ==> Handler
+./ops/status/codespell.txt:128: Leary ==> Leery
+./ops/status/codespell.txt:131: Bui ==> Buoy, Buy
+./ops/status/codespell.txt:132: onl ==> only
+./ops/status/codespell.txt:133: Alle ==> All, Alley
+./ops/status/codespell.txt:134: Claus ==> Clause
+./ops/status/codespell.txt:135: Ather ==> Other
+./ops/status/codespell.txt:136: Hendler ==> Handler
+./ops/status/codespell.txt:137: Leary ==> Leery
+./ops/status/codespell.txt:138: Bui ==> Buoy, Buy
+./ops/status/codespell.txt:139: onl ==> only
+./ops/status/codespell.txt:140: Alle ==> All, Alley
+./ops/status/codespell.txt:141: Yau ==> You, Yaw
+./ops/status/codespell.txt:142: Toom ==> Tomb
+./ops/status/codespell.txt:143: Oder ==> Order, Older, Coder, Odder, Odor, Over, Doer
+./ops/status/codespell.txt:144: Yau ==> You, Yaw
+./ops/status/codespell.txt:145: Claus ==> Clause
+./ops/status/codespell.txt:146: Nam ==> Name
+./ops/status/codespell.txt:147: Nam ==> Name
+./ops/status/codespell.txt:148: Claus ==> Clause
+./ops/status/codespell.txt:149: Claus ==> Clause
+./ops/status/codespell.txt:150: Sherif ==> Sheriff
+./ops/status/codespell.txt:151: RIN ==> RING, RINK, RIND, RAIN, REIN, RUIN, GRIN
+./ops/status/codespell.txt:152: Alle ==> All, Alley
+./ops/status/codespell.txt:153: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:154: nWE ==> new
+./ops/status/codespell.txt:155: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:156: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:157: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:158: weW ==> we
+./ops/status/codespell.txt:159: wll ==> will
+./ops/status/codespell.txt:160: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:161: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:162: oLY ==> only
+./ops/status/codespell.txt:163: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:164: aDDD ==> add
+./ops/status/codespell.txt:165: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:166: nD ==> and, 2nd
+./ops/status/codespell.txt:167: nD ==> and, 2nd
+./ops/status/codespell.txt:168: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:169: Daa ==> Data
+./ops/status/codespell.txt:170: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:171: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:172: coo ==> coup
+./ops/status/codespell.txt:173: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:174: gES ==> goes, guess
+./ops/status/codespell.txt:175: gir ==> git
+./ops/status/codespell.txt:176: MKE ==> MAKE
+./ops/status/codespell.txt:177: abl ==> able
+./ops/status/codespell.txt:178: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:179: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:180: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:181: Nd ==> And, 2nd
+./ops/status/codespell.txt:182: joo ==> you
+./ops/status/codespell.txt:183: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:184: nd ==> and, 2nd
+./ops/status/codespell.txt:185: NaM ==> name
+./ops/status/codespell.txt:186: NOO ==> NO
+./ops/status/codespell.txt:187: nOO ==> no
+./ops/status/codespell.txt:188: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:189: wEE ==> we
+./ops/status/codespell.txt:190: Hsa ==> Has
+./ops/status/codespell.txt:191: rIN ==> ring, rink, rind, rain, rein, ruin, grin
+./ops/status/codespell.txt:192: ALLL ==> ALL, ALLY
+./ops/status/codespell.txt:193: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:194: nd ==> and, 2nd
+./ops/status/codespell.txt:195: ND ==> AND, 2ND
+./ops/status/codespell.txt:196: NOo ==> no
+./ops/status/codespell.txt:197: ADDD ==> ADD
+./ops/status/codespell.txt:198: nD ==> and, 2nd
+./ops/status/codespell.txt:199: nD ==> and, 2nd
+./ops/status/codespell.txt:200: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:201: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:202: wYA ==> way
+./ops/status/codespell.txt:203: Wll ==> Will
+./ops/status/codespell.txt:204: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:205: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:206: daa ==> data
+./ops/status/codespell.txt:207: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:208: joo ==> you
+./ops/status/codespell.txt:209: nd ==> and, 2nd
+./ops/status/codespell.txt:210: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:211: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:212: DIsGN ==> design
+./ops/status/codespell.txt:213: daa ==> data
+./ops/status/codespell.txt:214: joo ==> you
+./ops/status/codespell.txt:215: noo ==> no
+./ops/status/codespell.txt:216: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:217: oyU ==> you
+./ops/status/codespell.txt:218: nD ==> and, 2nd
+./ops/status/codespell.txt:219: coo ==> coup
+./ops/status/codespell.txt:220: noo ==> no
+./ops/status/codespell.txt:221: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:222: Haa ==> Has
+./ops/status/codespell.txt:223: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:224: ND ==> AND, 2ND
+./ops/status/codespell.txt:225: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:226: haX ==> hex
+./ops/status/codespell.txt:227: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:228: Nd ==> And, 2nd
+./ops/status/codespell.txt:229: wIT ==> with
+./ops/status/codespell.txt:230: HAA ==> HAS
+./ops/status/codespell.txt:231: Joo ==> You
+./ops/status/codespell.txt:232: daa ==> data
+./ops/status/codespell.txt:233: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:234: tHt ==> the, that
+./ops/status/codespell.txt:235: tBE ==> the
+./ops/status/codespell.txt:236: pTRSS ==> press
+./ops/status/codespell.txt:237: joo ==> you
+./ops/status/codespell.txt:238: JOO ==> YOU
+./ops/status/codespell.txt:239: Oll ==> All, Ole, Old, Olly, Oil
+./ops/status/codespell.txt:240: noo ==> no
+./ops/status/codespell.txt:241: afe ==> safe
+./ops/status/codespell.txt:242: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:243: Coo ==> Coup
+./ops/status/codespell.txt:244: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:245: VIE ==> VIA
+./ops/status/codespell.txt:246: AlO ==> also
+./ops/status/codespell.txt:247: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:248: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:249: MeY ==> may
+./ops/status/codespell.txt:250: sEh ==> she
+./ops/status/codespell.txt:251: SEh ==> she
+./ops/status/codespell.txt:252: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:253: nd ==> and, 2nd
+./ops/status/codespell.txt:254: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:255: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:256: wHn ==> when
+./ops/status/codespell.txt:257: haX ==> hex
+./ops/status/codespell.txt:258: OtU ==> out
+./ops/status/codespell.txt:259: Nd ==> And, 2nd
+./ops/status/codespell.txt:260: JOO ==> YOU
+./ops/status/codespell.txt:261: WEe ==> we
+./ops/status/codespell.txt:262: nD ==> and, 2nd
+./ops/status/codespell.txt:263: nd ==> and, 2nd
+./ops/status/codespell.txt:264: nD ==> and, 2nd
+./ops/status/codespell.txt:265: Nd ==> And, 2nd
+./ops/status/codespell.txt:266: nd ==> and, 2nd
+./ops/status/codespell.txt:267: Wih ==> With
+./ops/status/codespell.txt:268: fPt ==> ftp
+./ops/status/codespell.txt:269: TBe ==> the
+./ops/status/codespell.txt:270: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:271: fom ==> from, form
+./ops/status/codespell.txt:272: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:273: nd ==> and, 2nd
+./ops/status/codespell.txt:274: hSi ==> his
+./ops/status/codespell.txt:275: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:276: iSt ==> is, it, its, it's, sit, list
+./ops/status/codespell.txt:277: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:278: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:279: NWE ==> NEW
+./ops/status/codespell.txt:280: IHs ==> his
+./ops/status/codespell.txt:281: aNe ==> and
+./ops/status/codespell.txt:282: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:283: joo ==> you
+./ops/status/codespell.txt:284: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:285: ND ==> AND, 2ND
+./ops/status/codespell.txt:286: Aci ==> Acpi
+./ops/status/codespell.txt:287: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:288: ND ==> AND, 2ND
+./ops/status/codespell.txt:289: Wee ==> We
+./ops/status/codespell.txt:290: vaI ==> via, vie
+./ops/status/codespell.txt:290: vie ==> via
+./ops/status/codespell.txt:291: AnE ==> and
+./ops/status/codespell.txt:292: nd ==> and, 2nd
+./ops/status/codespell.txt:293: nD ==> and, 2nd
+./ops/status/codespell.txt:294: nD ==> and, 2nd
+./ops/status/codespell.txt:295: Tye ==> Type, Tie
+./ops/status/codespell.txt:296: hDA ==> had
+./ops/status/codespell.txt:297: ND ==> AND, 2ND
+./ops/status/codespell.txt:298: iif ==> if
+./ops/status/codespell.txt:299: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:300: TNe ==> the
+./ops/status/codespell.txt:301: tNE ==> the
+./ops/status/codespell.txt:302: nD ==> and, 2nd
+./ops/status/codespell.txt:303: LeW ==> lieu, hew, sew, dew
+./ops/status/codespell.txt:304: vEW ==> view, vow, vex
+./ops/status/codespell.txt:305: Ned ==> Need, End, Nod
+./ops/status/codespell.txt:306: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:307: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:308: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:309: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:310: AfoR ==> for
+./ops/status/codespell.txt:311: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:312: nD ==> and, 2nd
+./ops/status/codespell.txt:313: tHt ==> the, that
+./ops/status/codespell.txt:314: nd ==> and, 2nd
+./ops/status/codespell.txt:315: whN ==> when
+./ops/status/codespell.txt:316: 2rd ==> 2nd
+./ops/status/codespell.txt:317: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:318: Fom ==> From, Form
+./ops/status/codespell.txt:319: ND ==> AND, 2ND
+./ops/status/codespell.txt:320: IiF ==> if
+./ops/status/codespell.txt:321: nD ==> and, 2nd
+./ops/status/codespell.txt:322: Nd ==> And, 2nd
+./ops/status/codespell.txt:323: WTH ==> WITH
+./ops/status/codespell.txt:324: ND ==> AND, 2ND
+./ops/status/codespell.txt:325: Tge ==> The
+./ops/status/codespell.txt:326: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:327: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:328: nd ==> and, 2nd
+./ops/status/codespell.txt:329: nd ==> and, 2nd
+./ops/status/codespell.txt:330: noo ==> no
+./ops/status/codespell.txt:331: nD ==> and, 2nd
+./ops/status/codespell.txt:332: Nwo ==> Now
+./ops/status/codespell.txt:333: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:334: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:335: Nd ==> And, 2nd
+./ops/status/codespell.txt:336: onW ==> own
+./ops/status/codespell.txt:337: bVE ==> be
+./ops/status/codespell.txt:338: ND ==> AND, 2ND
+./ops/status/codespell.txt:339: Nd ==> And, 2nd
+./ops/status/codespell.txt:340: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:341: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:342: ND ==> AND, 2ND
+./ops/status/codespell.txt:343: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:344: Fot ==> For, Fit, Dot, Rot, Cot, Got, Tot, Fog
+./ops/status/codespell.txt:345: 1ND ==> 1ST
+./ops/status/codespell.txt:346: 2RD ==> 2ND
+./ops/status/codespell.txt:347: Nd ==> And, 2nd
+./ops/status/codespell.txt:348: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:349: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:350: nd ==> and, 2nd
+./ops/status/codespell.txt:351: ND ==> AND, 2ND
+./ops/status/codespell.txt:352: FPr ==> for, far, fps
+./ops/status/codespell.txt:353: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:354: Nd ==> And, 2nd
+./ops/status/codespell.txt:355: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:356: ND ==> AND, 2ND
+./ops/status/codespell.txt:357: PTD ==> PDF
+./ops/status/codespell.txt:358: hEl ==> help, hell, heal
+./ops/status/codespell.txt:359: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:360: Noo ==> No
+./ops/status/codespell.txt:361: iNH ==> in
+./ops/status/codespell.txt:362: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:363: ND ==> AND, 2ND
+./ops/status/codespell.txt:364: ois ==> is
+./ops/status/codespell.txt:365: Nd ==> And, 2nd
+./ops/status/codespell.txt:366: wTh ==> with
+./ops/status/codespell.txt:367: CoO ==> coup
+./ops/status/codespell.txt:368: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:369: weE ==> we
+./ops/status/codespell.txt:370: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:371: joo ==> you
+./ops/status/codespell.txt:372: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:373: nax ==> max, nad
+./ops/status/codespell.txt:374: noo ==> no
+./ops/status/codespell.txt:375: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:376: Coo ==> Coup
+./ops/status/codespell.txt:377: noo ==> no
+./ops/status/codespell.txt:378: NOO ==> NO
+./ops/status/codespell.txt:379: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:380: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:381: COO ==> COUP
+./ops/status/codespell.txt:382: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:383: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:384: nd ==> and, 2nd
+./ops/status/codespell.txt:385: DuM ==> dumb
+./ops/status/codespell.txt:386: nD ==> and, 2nd
+./ops/status/codespell.txt:387: cppp ==> cpp
+./ops/status/codespell.txt:388: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:389: cPPP ==> cpp
+./ops/status/codespell.txt:390: HSI ==> HIS
+./ops/status/codespell.txt:391: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:392: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:393: yhe ==> the
+./ops/status/codespell.txt:394: Alll ==> All, Ally
+./ops/status/codespell.txt:395: oLL ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:396: HAA ==> HAS
+./ops/status/codespell.txt:397: ND ==> AND, 2ND
+./ops/status/codespell.txt:398: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:399: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:400: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:401: nOO ==> no
+./ops/status/codespell.txt:402: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:403: Noo ==> No
+./ops/status/codespell.txt:404: COO ==> COUP
+./ops/status/codespell.txt:405: Joo ==> You
+./ops/status/codespell.txt:406: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:407: Coo ==> Coup
+./ops/status/codespell.txt:408: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:409: coo ==> coup
+./ops/status/codespell.txt:410: JOO ==> YOU
+./ops/status/codespell.txt:411: nd ==> and, 2nd
+./ops/status/codespell.txt:412: nd ==> and, 2nd
+./ops/status/codespell.txt:413: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:414: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:415: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:416: nD ==> and, 2nd
+./ops/status/codespell.txt:417: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:418: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:419: HEL ==> HELP, HELL, HEAL
+./ops/status/codespell.txt:420: wlll ==> will
+./ops/status/codespell.txt:421: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:422: WEL ==> WELL
+./ops/status/codespell.txt:423: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:424: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:425: NOO ==> NO
+./ops/status/codespell.txt:426: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:427: EGE ==> EDGE
+./ops/status/codespell.txt:428: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:429: nD ==> and, 2nd
+./ops/status/codespell.txt:430: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:431: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:432: joo ==> you
+./ops/status/codespell.txt:433: joo ==> you
+./ops/status/codespell.txt:434: JOO ==> YOU
+./ops/status/codespell.txt:435: Joo ==> You
+./ops/status/codespell.txt:436: ALLL ==> ALL, ALLY
+./ops/status/codespell.txt:437: TIcH ==> thick, tick, titch, stitch
+./ops/status/codespell.txt:438: tYE ==> type, tie
+./ops/status/codespell.txt:439: nd ==> and, 2nd
+./ops/status/codespell.txt:440: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:441: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:442: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:443: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:444: LOOS ==> LOOSE, LOSE
+./ops/status/codespell.txt:445: ND ==> AND, 2ND
+./ops/status/codespell.txt:446: Aadd ==> Add
+./ops/status/codespell.txt:447: nD ==> and, 2nd
+./ops/status/codespell.txt:448: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:449: Nd ==> And, 2nd
+./ops/status/codespell.txt:450: CAf ==> calf
+./ops/status/codespell.txt:451: oNy ==> only, on, one
+./ops/status/codespell.txt:452: tHs ==> the, this
+./ops/status/codespell.txt:453: NOO ==> NO
+./ops/status/codespell.txt:454: laf ==> laugh, leaf, loaf, lad, lag, lac, kaf, kaph
+./ops/status/codespell.txt:455: laf ==> laugh, leaf, loaf, lad, lag, lac, kaf, kaph
+./ops/status/codespell.txt:456: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:457: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:458: ND ==> AND, 2ND
+./ops/status/codespell.txt:459: fOm ==> from, form
+./ops/status/codespell.txt:460: dum ==> dumb
+./ops/status/codespell.txt:461: aFE ==> safe
+./ops/status/codespell.txt:462: noo ==> no
+./ops/status/codespell.txt:463: tOi ==> to, toy
+./ops/status/codespell.txt:464: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:465: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:466: nD ==> and, 2nd
+./ops/status/codespell.txt:467: thS ==> the, this
+./ops/status/codespell.txt:468: COO ==> COUP
+./ops/status/codespell.txt:469: COO ==> COUP
+./ops/status/codespell.txt:470: iNh ==> in
+./ops/status/codespell.txt:471: noo ==> no
+./ops/status/codespell.txt:472: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:473: coO ==> coup
+./ops/status/codespell.txt:474: hdA ==> had
+./ops/status/codespell.txt:475: aCi ==> acpi
+./ops/status/codespell.txt:476: HVe ==> have
+./ops/status/codespell.txt:477: hAx ==> hex
+./ops/status/codespell.txt:478: fOF ==> for
+./ops/status/codespell.txt:479: NOO ==> NO
+./ops/status/codespell.txt:480: aCII ==> ascii
+./ops/status/codespell.txt:481: nD ==> and, 2nd
+./ops/status/codespell.txt:482: ND ==> AND, 2ND
+./ops/status/codespell.txt:483: nD ==> and, 2nd
+./ops/status/codespell.txt:484: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:485: Alll ==> All, Ally
+./ops/status/codespell.txt:486: DAA ==> DATA
+./ops/status/codespell.txt:487: TrU ==> through, true
+./ops/status/codespell.txt:488: NOO ==> NO
+./ops/status/codespell.txt:489: lIk ==> like, lick, link
+./ops/status/codespell.txt:490: ND ==> AND, 2ND
+./ops/status/codespell.txt:491: NOO ==> NO
+./ops/status/codespell.txt:492: ABd ==> and, bad
+./ops/status/codespell.txt:493: cppp ==> cpp
+./ops/status/codespell.txt:494: LOOS ==> LOOSE, LOSE
+./ops/status/codespell.txt:495: Coo ==> Coup
+./ops/status/codespell.txt:496: UesD ==> used
+./ops/status/codespell.txt:497: UesD ==> used
+./ops/status/codespell.txt:498: ND ==> AND, 2ND
+./ops/status/codespell.txt:499: wew ==> we
+./ops/status/codespell.txt:500: ACi ==> acpi
+./ops/status/codespell.txt:501: nD ==> and, 2nd
+./ops/status/codespell.txt:502: TOOO ==> TODO, TOO, TOOL, TOOK
+./ops/status/codespell.txt:503: TOOO ==> TODO, TOO, TOOL, TOOK
+./ops/status/codespell.txt:504: nD ==> and, 2nd
+./ops/status/codespell.txt:505: SAV ==> SAVE
+./ops/status/codespell.txt:506: wLLL ==> will
+./ops/status/codespell.txt:507: naM ==> name
+./ops/status/codespell.txt:508: nD ==> and, 2nd
+./ops/status/codespell.txt:509: Coo ==> Coup
+./ops/status/codespell.txt:510: OnL ==> only
+./ops/status/codespell.txt:511: Nd ==> And, 2nd
+./ops/status/codespell.txt:512: Bu ==> By, Be, But, Bug, Bun, Bud, Buy, Bum
+./ops/status/codespell.txt:513: fOf ==> for
+./ops/status/codespell.txt:514: sHS ==> ssh, nhs
+./ops/status/codespell.txt:515: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:516: LIk ==> like, lick, link
+./ops/status/codespell.txt:517: ND ==> AND, 2ND
+./ops/status/codespell.txt:518: Wlll ==> Will
+./ops/status/codespell.txt:519: Wee ==> We
+./ops/status/codespell.txt:520: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:521: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:522: nD ==> and, 2nd
+./ops/status/codespell.txt:523: nd ==> and, 2nd
+./ops/status/codespell.txt:524: ND ==> AND, 2ND
+./ops/status/codespell.txt:525: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:526: wll ==> will
+./ops/status/codespell.txt:527: Coo ==> Coup
+./ops/status/codespell.txt:528: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:529: NOO ==> NO
+./ops/status/codespell.txt:530: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:531: OLL ==> ALL, OLE, OLD, OLLY, OIL
+./ops/status/codespell.txt:532: aaS ==> ass, as
+./ops/status/codespell.txt:533: NOO ==> NO
+./ops/status/codespell.txt:534: ND ==> AND, 2ND
+./ops/status/codespell.txt:535: BU ==> BY, BE, BUT, BUG, BUN, BUD, BUY, BUM
+./ops/status/codespell.txt:536: ihs ==> his
+./ops/status/codespell.txt:537: nD ==> and, 2nd
+./ops/status/codespell.txt:538: nD ==> and, 2nd
+./ops/status/codespell.txt:539: ND ==> AND, 2ND
+./ops/status/codespell.txt:540: ND ==> AND, 2ND
+./ops/status/codespell.txt:541: ND ==> AND, 2ND
+./ops/status/codespell.txt:542: AUoT ==> auto
+./ops/status/codespell.txt:543: ND ==> AND, 2ND
+./ops/status/codespell.txt:544: wee ==> we
+./ops/status/codespell.txt:545: ND ==> AND, 2ND
+./ops/status/codespell.txt:546: bU ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:547: ALLL ==> ALL, ALLY
+./ops/status/codespell.txt:548: oll ==> all, ole, old, olly, oil
+./ops/status/codespell.txt:549: Yau ==> You, Yaw
+./ops/status/codespell.txt:550: lik ==> like, lick, link
+./ops/status/codespell.txt:551: TiCH ==> thick, tick, titch, stitch
+./ops/status/codespell.txt:552: Nd ==> And, 2nd
+./ops/status/codespell.txt:553: eDE ==> edge
+./ops/status/codespell.txt:554: COO ==> COUP
+./ops/status/codespell.txt:555: TyE ==> type, tie
+./ops/status/codespell.txt:556: soM ==> some
+./ops/status/codespell.txt:557: NOO ==> NO
+./ops/status/codespell.txt:558: TOi ==> to, toy
+./ops/status/codespell.txt:559: bu ==> by, be, but, bug, bun, bud, buy, bum
+./ops/status/codespell.txt:560: ned ==> need, end, nod
+./ops/status/codespell.txt:561: nD ==> and, 2nd
+./ops/status/codespell.txt:562: CPPP ==> CPP
+./ops/status/codespell.txt:563: Nd ==> And, 2nd
+./ops/status/codespell.txt:564: HSa ==> has

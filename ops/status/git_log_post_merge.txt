@@ -1,0 +1,20 @@
+74cdbfc2 feat(workflow): add minimal Snakemake DAG with provenance export  [spi-002]
+7f866063 feat: consolidate Phase-A baseline (doctor, QC, confounds, registration, masking)  [pre-A1]
+e2955226 chore: restore noindex - keep site private indefinitely
+729d9049 chore: sync remaining source files and formatting updates
+53e79421 docs: enable public discovery and add architecture section  [spi-docs-public]
+939c1c55 feat(support): add issue/PR templates, SECURITY, and quickstart guide  [spi-support]
+d5cf856d test(hardening): add pytest.ini with deterministic seeds and test fixes  [spi-hardening]
+442da771 chore(release): prepare v0.1.0 with ADRs  [spi-v0.1.0]
+9bd64cad feat(qc): static HTML QC pages with CI artifact bundle  [spi-qc]
+7149d528 feat(confounds): add aCompCor (6 PCs) and censor column with mask sourcing
+f1a41727 feat(deriv): BIDS-Derivatives tree layout and provenance  [spi-deriv]
+7ff91949 feat(motion): compute FD & DVARS per run, write confounds TSV and plots
+86bc3b17 feat(e2e): add tiny BIDS fixture and CI smoke test  [spi-e2e]
+62ccb322 feat(ingest): BIDS ingest and manifest cache with hashing
+973898c6 feat(register): add minimal SCT EPI→PAM50 registration wrapper  [spi-register]
+4f45c90d feat(config): YAML config with JSON Schema validation and print-config
+e16f95d3 docs(confounds): add schema and comprehensive usage guide  [spi-confounds-docs]
+4fcb7648 feat(doctor): implement environment diagnostics with color table  [spi-doctor]
+ed19081d feat(doctor): add environment diagnostics with JSON schema, docs, tests
+cac1da21 feat(cli): add version cmd, --print-config, -n support, DAG svg export  [spi-cli-scaffold]

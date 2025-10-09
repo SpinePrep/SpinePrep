@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-10-09T18:43:01+02:00",
+  "head": "74cdbfc2",
+  "head_branch": "main",
+  "main_exists": true,
+  "origin_main_exists": true,
+  "branches": {
+    "local": [
+      "feat/spi-000-repo-status-snapshot",
+      "main"
+    ],
+    "remote": [
+      "origin",
+      "origin/cursor/harden-docs-ci-and-enable-github-pages-deployment-43de",
+      "origin/feat/spi-000-repo-status-snapshot",
+      "origin/main"
+    ]
+  },
+  "tags": [
+    "pre-phaseA-20251009",
+    "v0.1.0",
+    "v0.1.0-docs"
+  ],
+  "health": {
+    "pytest_passed": false,
+    "mkdocs_strict_passed": true,
+    "ruff_clean": true,
+    "snakefmt_clean": false
+  },
+  "divergence_from_main": "0\t0"
+}

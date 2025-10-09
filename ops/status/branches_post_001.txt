@@ -1,0 +1,4 @@
+  origin/HEAD -> origin/main
+  origin/main
+  origin/feat/spi-000-repo-status-snapshot
+  origin/cursor/harden-docs-ci-and-enable-github-pages-deployment-43de
