@@ -16,15 +16,17 @@ OUT_DIR = config.get("out_dir", "./out")
 MANIFEST_CSV = config.get("manifest_csv", f"{OUT_DIR}/manifest.csv")
 
 
-# Include preprocessing rules
+# Include preprocessing and confounds rules
 include: "rules/preproc.smk"
+include: "rules/confounds.smk"
 
 
 rule all:
-    """Target rule that depends on manifest processing and denoising."""
+    """Target rule that depends on manifest processing, denoising, and confounds."""
     input:
         touch=f"{OUT_DIR}/.manifest.touch",
         denoised=get_denoise_outputs(),
+        confounds=get_confounds_outputs(),
 
 
 rule touch_manifest:

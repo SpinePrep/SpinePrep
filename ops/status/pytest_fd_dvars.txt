@@ -1,0 +1,10 @@
+......F.                                                                 [100%]
+=================================== FAILURES ===================================
+_________________________ test_detect_spikes_combined __________________________
+tests/confounds/test_fd_dvars.py:125: in test_detect_spikes_combined
+    assert spike[3] == 1  # DVARS spike
+    ^^^^^^^^^^^^^^^^^^^^
+E   assert 0 == 1
+=========================== short test summary info ============================
+FAILED tests/confounds/test_fd_dvars.py::test_detect_spikes_combined - assert...
+1 failed, 7 passed in 0.16s

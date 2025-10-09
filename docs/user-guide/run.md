@@ -65,6 +65,23 @@ The denoising step:
 - Preserves image shape and affine
 - Runs automatically for all functional series in the manifest
 
+## Confounds (A5)
+
+SpinePrep computes basic confounds for each BOLD series:
+
+- **Motion parameters:** 6 rigid-body parameters (tx, ty, tz, rx, ry, rz)
+- **FD (Power):** Framewise displacement with 50mm head radius
+- **DVARS:** Temporal derivative RMS variance
+- **Spikes:** Binary regressor (FD ≥ 0.5mm OR DVARS Z-score ≥ 2.5)
+
+**Outputs:**
+- `<out>/confounds/*_desc-basic_confounds.tsv` (9 columns × T rows)
+- `<out>/confounds/*_desc-basic_confounds.json` (method metadata)
+
+**TSV columns:** `trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, fd_power, dvars, spike`
+
+**Note:** For A5, motion parameters are approximated (zeros if no volume-wise motion available). Refined motion estimation will be added in future iterations.
+
 ## Examples
 
 ```bash

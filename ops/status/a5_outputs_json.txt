@@ -1,0 +1,1 @@
+/tmp/out-a5/confounds/sub-01_ses-01_task-rest_run-01_bold_desc-basic_confounds.json

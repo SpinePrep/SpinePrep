@@ -1,0 +1,109 @@
+.............................................F.......................... [ 30%]
+FF...................................................................... [ 61%]
+.......................F........................F
+=================================== FAILURES ===================================
+__________________________ test_ssim_different_images __________________________
+tests/unit/test_registration_metrics.py:25: in test_ssim_different_images
+    assert 0.0 <= ssim < 1.0
+E   assert 0.0 <= -0.001954511386083596
+______________________________ test_print_config _______________________________
+tests/test_cli_smoke.py:56: in test_print_config
+    assert result.returncode == 0, f"print-config failed: {result.stderr}"
+E   AssertionError: print-config failed:
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['spineprep', 'run', '--config', '/tmp/pytest-of-kiomars/pytest-144/test_print_config0/test.yaml...r}/logs'\nstudy:\n  name: TestStudy\n\n[run] ERROR: --bids and --out are required for workflow execution\n", stderr='').returncode
+___________________________ test_dag_export_dry_run ____________________________
+tests/test_cli_smoke.py:95: in test_dag_export_dry_run
+    assert dag_svg.exists(), f"DAG not exported to {dag_svg}"
+E   AssertionError: DAG not exported to /tmp/pytest-of-kiomars/pytest-144/test_dag_export_dry_run0/out/provenance/dag.svg
+E   assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-kiomars/pytest-144/test_dag_export_dry_run0/out/provenance/dag.svg').exists
+_____________________ test_doctor_report_schema_compliance _____________________
+tests/unit/test_doctor.py:464: in test_doctor_report_schema_compliance
+    jsonschema.validate(report, schema)
+/home/kiomars/.local/lib/python3.12/site-packages/jsonschema/validators.py:934: in validate
+    raise error
+E   jsonschema.exceptions.ValidationError: 'deps' is a required property
+E
+E   Failed validating 'required' in schema:
+E       {'$schema': 'https://json-schema.org/draft/2020-12/schema',
+E        'properties': {'deps': {'properties': {'pam50': {'properties': {'files_ok': {'type': ['boolean',
+E                                                                                              'null']},
+E                                                                        'found': {'type': 'boolean'},
+E                                                                        'path': {'type': ['string',
+E                                                                                          'null']}},
+E                                                         'required': ['found',
+E                                                                      'files_ok'],
+E                                                         'type': 'object'},
+E                                               'python': {'type': 'object'},
+E                                               'sct': {'properties': {'found': {'type': 'boolean'},
+E                                                                      'path': {'type': ['string',
+E                                                                                        'null']},
+E                                                                      'version': {'type': ['string',
+E                                                                                           'null']}},
+E                                                       'required': ['found'],
+E                                                       'type': 'object'}},
+E                                'required': ['sct', 'pam50', 'python'],
+E                                'type': 'object'},
+E                       'notes': {'items': {'type': 'string'}, 'type': 'array'},
+E                       'platform': {'properties': {'cpu_count': {'type': 'integer'},
+E                                                   'kernel': {'type': ['string',
+E                                                                       'null']},
+E                                                   'os': {'type': 'string'},
+E                                                   'python': {'type': 'string'},
+E                                                   'ram_gb': {'type': ['number',
+E                                                                       'null']}},
+E                                    'required': ['os', 'python', 'cpu_count'],
+E                                    'type': 'object'},
+E                       'spineprep': {'properties': {'version': {'type': 'string'}},
+E                                     'required': ['version'],
+E                                     'type': 'object'},
+E                       'status': {'enum': ['pass', 'warn', 'fail'],
+E                                  'type': 'string'},
+E                       'timestamp': {'type': 'string'}},
+E        'required': ['spineprep',
+E                     'timestamp',
+E                     'status',
+E                     'platform',
+E                     'deps',
+E                     'notes'],
+E        'type': 'object'}
+E
+E   On instance:
+E       {'cwd_writeable': True,
+E        'disk': {'free_bytes': 50.0},
+E        'notes': [],
+E        'packages': {'numpy': '1.24.0', 'pandas': '2.0.0'},
+E        'pam50': {'path': '/data/PAM50', 'present': True},
+E        'platform': {'cpu_count': 4,
+E                     'kernel': '5.15',
+E                     'os': 'Linux',
+E                     'ram_gb': 16},
+E        'python': {'version': '3.11.0'},
+E        'sct': {'path': '/usr/bin/sct_version',
+E                'present': True,
+E                'version': '6.1'},
+E        'spineprep': {'version': '0.2.0'},
+E        'status': 'pass',
+E        'timestamp': '2025-10-09T20:20:02.787986+02:00',
+E        'tmp_writeable': True}
+________________________ test_registration_all_fixture _________________________
+tests/integration/test_registration_rules.py:84: in test_registration_all_fixture
+    subprocess.run(
+/usr/local/fsl/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['snakemake', '-n', '-p', 'registration_all', '--snakefile', 'workflow/Snakefile', '--configfile', '/tmp/pytest-of-kiomars/pytest-144/test_registration_all_fixture0/cfg.yaml', '--directory', '/tmp/pytest-of-kiomars/pytest-144/test_registration_all_fixture0/work', '--cores', '2']' returned non-zero exit status 1.
+----------------------------- Captured stdout call -----------------------------
+KeyError in file "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 10:
+'out_dir'
+  File "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 26, in <module>
+  File "/mnt/ssd1/SpinePrep/workflow/rules/preproc.smk", line 10, in get_func_series
+=========================== short test summary info ============================
+FAILED tests/unit/test_registration_metrics.py::test_ssim_different_images - ...
+FAILED tests/test_cli_smoke.py::test_print_config - AssertionError: print-con...
+FAILED tests/test_cli_smoke.py::test_dag_export_dry_run - AssertionError: DAG...
+FAILED tests/unit/test_doctor.py::test_doctor_report_schema_compliance - json...
+FAILED tests/integration/test_registration_rules.py::test_registration_all_fixture
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+5 failed, 188 passed in 13.63s
