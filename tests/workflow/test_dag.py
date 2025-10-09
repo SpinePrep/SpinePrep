@@ -52,9 +52,9 @@ def test_dag_export_svg(tmp_path):
         check=False,
     )
 
-    assert (
-        result.returncode == 0
-    ), f"DAG export failed: {result.stderr}\n{result.stdout}"
+    assert result.returncode == 0, (
+        f"DAG export failed: {result.stderr}\n{result.stdout}"
+    )
     assert dag_path.exists(), "DAG file not created"
     assert dag_path.stat().st_size > 0, "DAG file is empty"
 

@@ -102,9 +102,9 @@ def test_qc_html_has_required_elements(mock_subject_dir):
     assert "<table" in html, "HTML must contain at least one <table> tag"
 
     # Check for Environment section
-    assert (
-        "Environment" in html or "environment" in html.lower()
-    ), "HTML must contain Environment section"
+    assert "Environment" in html or "environment" in html.lower(), (
+        "HTML must contain Environment section"
+    )
 
 
 def test_qc_html_contains_motion_metrics(mock_subject_dir):
@@ -222,9 +222,9 @@ def test_qc_html_parses_with_beautifulsoup(mock_subject_dir):
     # Validate structure
     assert soup.find("img"), "Must have at least one img tag"
     assert soup.find("table"), "Must have at least one table"
-    assert soup.find(
-        string=lambda t: t and "Environment" in t
-    ), "Must have Environment text"
+    assert soup.find(string=lambda t: t and "Environment" in t), (
+        "Must have Environment text"
+    )
 
 
 def test_qc_handles_missing_assets_gracefully(mock_subject_dir):

@@ -96,9 +96,9 @@ study:
 
     # DAG should contain SVG content
     content = dag_svg.read_text()
-    assert (
-        "<svg" in content or "digraph" in content
-    ), "DAG file doesn't contain expected content"
+    assert "<svg" in content or "digraph" in content, (
+        "DAG file doesn't contain expected content"
+    )
 
 
 def test_doctor_command():

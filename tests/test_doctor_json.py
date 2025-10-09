@@ -51,9 +51,9 @@ def test_doctor_json_valid_structure(tmp_path):
 
     assert "disk" in data, "Missing disk field"
     assert "free_bytes" in data["disk"], "Missing disk.free_bytes"
-    assert isinstance(
-        data["disk"]["free_bytes"], (int, float)
-    ), "free_bytes should be numeric"
+    assert isinstance(data["disk"]["free_bytes"], (int, float)), (
+        "free_bytes should be numeric"
+    )
 
     assert "cwd_writeable" in data, "Missing cwd_writeable"
     assert isinstance(data["cwd_writeable"], bool), "cwd_writeable should be boolean"

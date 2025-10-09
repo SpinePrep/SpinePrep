@@ -31,9 +31,9 @@ def test_mppca_preserves_shape_and_affine(tmp_path):
     result_data = result_img.get_fdata()
 
     # Shape should be preserved
-    assert (
-        result_data.shape == data.shape
-    ), f"Shape mismatch: {result_data.shape} vs {data.shape}"
+    assert result_data.shape == data.shape, (
+        f"Shape mismatch: {result_data.shape} vs {data.shape}"
+    )
 
     # Affine should be preserved
     np.testing.assert_array_almost_equal(

@@ -29,9 +29,9 @@ def test_cli_version_command():
 
     # Each part should be a number
     for part in parts:
-        assert (
-            part.isdigit()
-        ), f"Version part '{part}' should be numeric in {version_str}"
+        assert part.isdigit(), (
+            f"Version part '{part}' should be numeric in {version_str}"
+        )
 
 
 def test_version_import():
