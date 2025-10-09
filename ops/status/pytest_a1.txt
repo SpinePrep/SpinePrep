@@ -1,0 +1,49 @@
+..............................FFFF..........................F
+=================================== FAILURES ===================================
+______________________ test_dag_export_with_save_dag_flag ______________________
+tests/test_dag_render.py:74: in test_dag_export_with_save_dag_flag
+    assert result.returncode == 0, (
+E   AssertionError: STDERR: usage: spineprep [-h] {doctor,run,version} ...
+E     spineprep: error: unrecognized arguments: --save-dag
+E
+E     STDOUT:
+E   assert 2 == 0
+E    +  where 2 = CompletedProcess(args=['spineprep', 'run', '--bids', '/tmp/tmpkjr_6j4d/bids', '--out', '/tmp/tmpkjr_6j4d/out', '--dry-...ut='', stderr='usage: spineprep [-h] {doctor,run,version} ...\nspineprep: error: unrecognized arguments: --save-dag\n').returncode
+______________________ test_scaffold_creation_non_dry_run ______________________
+tests/test_dag_render.py:133: in test_scaffold_creation_non_dry_run
+    assert (out_dir / "derivatives").exists(), "derivatives directory not created"
+E   AssertionError: derivatives directory not created
+E   assert False
+E    +  where False = exists()
+E    +    where exists = (PosixPath('/tmp/tmp4__n_goc/out') / 'derivatives').exists
+______________________ test_dag_export_format_preference _______________________
+tests/test_dag_render.py:164: in test_dag_export_format_preference
+    assert result.returncode == 0
+E   AssertionError: assert 2 == 0
+E    +  where 2 = CompletedProcess(args=['spineprep', 'run', '--bids', '/tmp/tmpp3_kphui/bids', '--out', '/tmp/tmpp3_kphui/out', '--dry-...ut='', stderr='usage: spineprep [-h] {doctor,run,version} ...\nspineprep: error: unrecognized arguments: --save-dag\n').returncode
+______________________ test_provenance_directory_creation ______________________
+tests/test_dag_render.py:216: in test_provenance_directory_creation
+    assert prov_dir.exists(), "Provenance directory should be created"
+E   AssertionError: Provenance directory should be created
+E   assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/tmph60fz_vs/out/provenance').exists
+________________________ test_registration_all_fixture _________________________
+tests/integration/test_registration_rules.py:84: in test_registration_all_fixture
+    subprocess.run(
+/usr/local/fsl/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['snakemake', '-n', '-p', 'registration_all', '--snakefile', 'workflow/Snakefile', '--configfile', '/tmp/pytest-of-kiomars/pytest-133/test_registration_all_fixture0/cfg.yaml', '--directory', '/tmp/pytest-of-kiomars/pytest-133/test_registration_all_fixture0/work', '--cores', '2']' returned non-zero exit status 1.
+----------------------------- Captured stdout call -----------------------------
+ImportError in file "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 29:
+cannot import name 'load_config' from 'spineprep.config' (/mnt/ssd1/SpinePrep/spineprep/config.py)
+  File "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 34, in <module>
+  File "/mnt/ssd1/SpinePrep/workflow/Snakefile", line 29, in _load
+=========================== short test summary info ============================
+FAILED tests/test_dag_render.py::test_dag_export_with_save_dag_flag - Asserti...
+FAILED tests/test_dag_render.py::test_scaffold_creation_non_dry_run - Asserti...
+FAILED tests/test_dag_render.py::test_dag_export_format_preference - Assertio...
+FAILED tests/test_dag_render.py::test_provenance_directory_creation - Asserti...
+FAILED tests/integration/test_registration_rules.py::test_registration_all_fixture
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+5 failed, 56 passed in 4.95s

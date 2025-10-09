@@ -446,11 +446,51 @@ def print_doctor_table(report: dict[str, Any]) -> None:
     print()
 
 
+def check_bids_dir(bids_dir: Path | None) -> dict[str, Any]:
+    """
+    Check if BIDS directory is valid.
+
+    Args:
+        bids_dir: Path to BIDS directory (optional)
+
+    Returns:
+        Dict with: checked, ok, reasons
+    """
+    if bids_dir is None:
+        return {"checked": False, "ok": None, "reasons": []}
+
+    reasons = []
+    ok = True
+
+    if not bids_dir.exists():
+        ok = False
+        reasons.append(f"BIDS directory does not exist: {bids_dir}")
+        return {"checked": True, "ok": ok, "reasons": reasons}
+
+    # Check for dataset_description.json
+    dataset_desc = bids_dir / "dataset_description.json"
+    if not dataset_desc.exists():
+        ok = False
+        reasons.append("Missing dataset_description.json")
+
+    # Check for at least one sub-* directory
+    subjects = list(bids_dir.glob("sub-*"))
+    if not subjects:
+        ok = False
+        reasons.append("No subject directories (sub-*) found")
+
+    if ok:
+        reasons.append(f"Valid BIDS directory with {len(subjects)} subject(s)")
+
+    return {"checked": True, "ok": ok, "reasons": reasons}
+
+
 def cmd_doctor(
     out_dir: Path,
     pam50: str | None,
     json_path: Path | str | None,
     strict: bool,
+    bids_dir: Path | None = None,
 ) -> int:
     """
     Run doctor diagnostics command.
@@ -472,6 +512,7 @@ def cmd_doctor(
     disk_free = check_disk_space()
     cwd_writeable = check_writeable(Path.cwd())
     tmp_writeable = check_writeable(Path(tempfile.gettempdir()))
+    bids_info = check_bids_dir(bids_dir)
 
     # Generate report
     report = generate_report(
@@ -484,6 +525,9 @@ def cmd_doctor(
         tmp_writeable,
         strict=strict,
     )
+
+    # Add BIDS check results
+    report["bids"] = bids_info
 
     # Handle JSON output
     if json_path:

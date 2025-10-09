@@ -17,6 +17,12 @@ def build_parser() -> argparse.ArgumentParser:
     d.add_argument("--out", type=Path, default=Path("./out"))
     d.add_argument("--pam50", type=str, default=None)
     d.add_argument(
+        "--bids-dir",
+        type=Path,
+        default=None,
+        help="Optional BIDS directory to validate",
+    )
+    d.add_argument(
         "--json",
         type=str,
         default=None,
@@ -47,7 +53,8 @@ def main(argv=None) -> int:
         json_arg = None
         if a.json:
             json_arg = Path(a.json) if a.json != "-" else a.json
-        return cmd_doctor(a.out, a.pam50, json_arg, a.strict)
+        bids_dir = getattr(a, "bids_dir", None)
+        return cmd_doctor(a.out, a.pam50, json_arg, a.strict, bids_dir)
     if a.cmd == "run":
         try:
             cfg = resolve_config(a.bids_root, a.output_dir, a.config)
