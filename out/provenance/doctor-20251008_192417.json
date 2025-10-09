@@ -1,0 +1,38 @@
+{
+  "spineprep": {
+    "version": "0.1.0"
+  },
+  "timestamp": "2025-10-08T19:24:17.714504+02:00",
+  "status": "fail",
+  "platform": {
+    "os": "Linux",
+    "kernel": "6.14.0-29-generic",
+    "python": "3.12.3",
+    "cpu_count": 32,
+    "ram_gb": 132.4
+  },
+  "deps": {
+    "sct": {
+      "found": true,
+      "version": "7.1",
+      "path": "/home/kiomars/sct_7.1/bin/sct_version"
+    },
+    "pam50": {
+      "found": true,
+      "path": "/home/kiomars/sct_7.1/data/PAM50",
+      "files_ok": false
+    },
+    "python": {
+      "numpy": "1.26.4",
+      "pandas": "2.2.3",
+      "scipy": "1.14.1",
+      "nibabel": "5.3.2",
+      "snakemake": "9.12.0",
+      "jsonschema": "3.2.0",
+      "jinja2": "3.1.4"
+    }
+  },
+  "notes": [
+    "HARD FAIL: PAM50 directory exists but required files are missing (PAM50_t1.nii.gz, PAM50_spinal_levels.nii.gz)."
+  ]
+}

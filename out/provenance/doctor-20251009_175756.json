@@ -1,0 +1,44 @@
+{
+  "python": {
+    "version": "3.12.3"
+  },
+  "spineprep": {
+    "version": "0.2.0"
+  },
+  "platform": {
+    "os": "Linux",
+    "kernel": "6.14.0-29-generic",
+    "cpu_count": 32,
+    "ram_gb": 132.4
+  },
+  "packages": {
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "scipy": "1.14.1",
+    "nibabel": "5.3.2",
+    "snakemake": "9.12.0",
+    "jsonschema": "3.2.0",
+    "jinja2": "3.1.4"
+  },
+  "sct": {
+    "present": false,
+    "version": "",
+    "path": ""
+  },
+  "pam50": {
+    "present": false,
+    "path": ""
+  },
+  "disk": {
+    "free_bytes": 430841786368
+  },
+  "cwd_writeable": true,
+  "tmp_writeable": true,
+  "timestamp": "2025-10-09T17:57:56.843369+02:00",
+  "status": "fail",
+  "notes": [
+    "HARD FAIL: SCT not found. Install from https://github.com/spinalcordtoolbox/spinalcordtoolbox",
+    "Remediation: Use Docker (docker pull sctorg/sct:latest) or Apptainer/Singularity, or install locally via official installer.",
+    "HARD FAIL: PAM50 directory not found."
+  ]
+}

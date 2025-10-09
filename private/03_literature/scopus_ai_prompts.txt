@@ -1,0 +1,25 @@
+Got it. Here are the 12 prompts, each under 500 characters.
+
+1. Map the full spinal cord fMRI preprocessing field. For every peer-reviewed study, extract a row with: acquisition, SDC, motion, coreg, template/normalization, masks, denoising/physio, slice-timing, resampling, smoothing/filtering, confounds/QC, software and versions. Include a timeline of key advances. Return study table, methods text, PDFs, .bib.
+
+2. Relate acquisition choices to preprocessing robustness. Compare single-shot EPI, multi-echo, PE direction, reduced FOV, z or dynamic shimming, TR. Show how each affects SDC, motion correction, physio modeling, and registration. Extract typical parameter ranges and trade-offs. Return table, methods text, PDFs, .bib.
+
+3. Compare motion and non-rigid cord dynamics handling: rigid 3D, slice-wise, centerline or cord-tracked methods, and explicit modeling of cardiac and respiratory displacement and CSF pulsatility. Report algorithms, reference frames, metrics (FD, DVARS variants, axial displacement), and failure modes. Return table, methods text, PDFs, .bib.
+
+4. Synthesize susceptibility distortion correction in scfMRI: fieldmaps, blip-up/blip-down, fieldmap-less to anatomy. Compare by cervical vs thoracic levels, recommended step order, evaluation metrics, and common artifacts. Identify best practices and caveats. Return table, methods text, PDFs, .bib.
+
+5. Detail anatomical coregistration and normalization: EPI→T1/T2 under low contrast, boundary-based or centerline-constrained methods, intermediate T2* references, and warping to spinal templates (PAM50, MNI-Poly-AMU). Provide parameters, vertebral-level quality metrics, pitfalls. Return table, methods text, PDFs, .bib.
+
+6. Inventory segmentation and masking for preprocessing: cord, CSF, and gray horn masks. Describe how they are derived (SCT, deep learning, manual) and how they drive confound extraction, registration constraints, and smoothing. Include training data and availability. Return table, methods text, PDFs, .bib.
+
+7. Summarize physiological noise modeling and denoising: RETROICOR variants, RVT/RRF, slice-wise physio, CompCor in cord/CSF, ME-ICA, ICA-AROMA, and thermal noise suppression (e.g., NORDIC). Report parameters, adoption, and gains in tSNR, activation, or connectivity reliability. Return table, methods text, PDFs, .bib.
+
+8. Clarify slice-timing and resampling: whether and when slice-timing is used relative to motion, and evidence for composing transforms for single-shot resampling (motion, SDC, EPI→anatomy, anatomy→template). List interpolation kernels and effects on effective smoothness. Return table, methods text, PDFs, .bib.
+
+9. Report smoothing, temporal filtering, and partial-volume control: kernel sizes and shapes, anisotropic or centerline-aware smoothing, surface or centerline sampling, and filter choices for task and rest. Link choices to structure size, coverage, and noise. Return table, methods text, PDFs, .bib.
+
+10. List software stacks and pipelines used: SCT, FSL, AFNI, SPM, ANTs, custom scripts, BIDS-Apps. Capture exact versions, containerization (Docker or Singularity), defaults, and step-by-step checklists. Include open repositories when available. Return table, methods text, PDFs, .bib.
+
+11. Compile validation and benchmarking: phantoms, simulations, test-retest, vertebral-level alignment error, distortion residuals, tSNR, effective smoothness, activation overlap, connectivity reliability. Identify datasets enabling head-to-head pipeline comparisons. Return table, methods text, PDFs, .bib.
+
+12. Cover edge cases and combined brain+cord workflows: lesions, compression, postoperative, pediatrics; fallbacks when SDC or registration fails; joint brain-cord pipelines and harmonized confounds and spaces. Include emerging DL or centerline-aware methods and a reporting checklist. Return table, methods text, PDFs, .bib.
