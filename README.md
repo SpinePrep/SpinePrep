@@ -9,8 +9,8 @@ SpinePrep is a spine fMRI/structural preprocessing and QC pipeline.
 
 ## Development workflow (minimal)
 
-- Create a branch per ticket: `build/S{N}-T{i}-short-desc`
-- Commit messages: `BUILD-S{N}-T{i}: summary`
+- Create a branch per step: `step/S{N}-short-desc`
+- Commit messages: `S{N}: summary` (optionally include ticket ids in the body)
 - Open a PR early and push often
 
 
