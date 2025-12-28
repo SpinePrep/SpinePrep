@@ -765,7 +765,17 @@ def _is_selected(
     if selection is None or selection.mode != "subset":
         return True
     if subject is not None and selection.subjects:
-        if subject not in selection.subjects:
+        # Policy subject ids can be heterogeneous across datasets (e.g. "ZS001" vs "01"/"1").
+        # Treat common normalized variants as equivalent for subset selection.
+        allowed = {str(s) for s in selection.subjects}
+        raw = str(subject)
+        normalized = {
+            raw,
+            raw.lstrip("0") or "0",
+            raw.zfill(2),
+            f"ZS{raw.zfill(3)}",
+        }
+        if not (normalized & allowed):
             return False
     if session is not None and selection.sessions:
         if session not in selection.sessions:

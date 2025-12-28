@@ -77,7 +77,7 @@ def run_pl00_setup(project_root: Path, step: str) -> StepResult:
         )
         status, failure_message = _overall_status(checks)
         qc = {"step": step, "status": status, "failure_message": failure_message, "checks": checks}
-        qc_path = logs_dir / "pl00_setup_qc.json"
+        qc_path = logs_dir / "S0_setup_qc.json"
         _write_json(qc_path, qc)
         state_path = state_dir / "setup_state.yaml"
         _write_yaml(
@@ -101,8 +101,6 @@ def run_pl00_setup(project_root: Path, step: str) -> StepResult:
 
     env_checks = _environment_checks()
 
-    env_checks = _environment_checks()
-
     checks = []
     checks.append(
         {
@@ -123,7 +121,7 @@ def run_pl00_setup(project_root: Path, step: str) -> StepResult:
         "checks": checks,
     }
 
-    qc_path = logs_dir / "pl00_setup_qc.json"
+    qc_path = logs_dir / "S0_setup_qc.json"
     _write_json(qc_path, qc)
 
     dataset_fingerprint = _fingerprint(policy_path)
@@ -156,7 +154,7 @@ def check_pl00_setup(project_root: Path, step: str) -> StepResult:
     policy_path = project_root / "policy" / "datasets.yaml"
     logs_dir = project_root / "logs"
     state_dir = project_root / "state"
-    qc_path = logs_dir / "pl00_setup_qc.json"
+    qc_path = logs_dir / "S0_setup_qc.json"
     state_path = state_dir / "setup_state.yaml"
 
     missing_artifacts = [
@@ -426,5 +424,17 @@ def _is_executable(cmd: str) -> bool:
 
 
 def _validate_step(step: str) -> None:
-    if step != "pl00_SETUP":
+    # Backwards-compatible acceptance of legacy step code.
+    if step not in ("S0_SETUP", "pl00_SETUP"):
         raise ValueError(f"Unsupported step: {step}")
+
+
+# Public API expected by tests and CLI.
+def run_S0_setup(project_root: Path, step: str) -> StepResult:
+    normalized = "S0_SETUP" if step == "pl00_SETUP" else step
+    return run_pl00_setup(project_root, normalized)
+
+
+def check_S0_setup(project_root: Path, step: str) -> StepResult:
+    normalized = "S0_SETUP" if step == "pl00_SETUP" else step
+    return check_pl00_setup(project_root, normalized)
