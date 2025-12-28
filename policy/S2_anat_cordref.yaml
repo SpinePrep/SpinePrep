@@ -1,0 +1,46 @@
+version: 1
+
+selection:
+  preference:
+    - T2w
+    - T1w
+
+standardize:
+  orientation: RPI
+
+discover:
+  method: sct_propseg
+  contrast_map:
+    T2w: t2
+    T1w: t1
+  min_z_slices: 20
+
+crop:
+  # Deprecated: size_vox, z_full (kept for backward compat but ignored)
+  size_vox: [96, 96]
+  z_full: true
+  mask_diameter_mm: 30
+  dilate_xyz: [0, 0, 0]
+  min_z_slices: 20
+
+segmentation:
+  method: sct_deepseg_sc
+  contrast_map:
+    T2w: t2
+    T1w: t1
+  centerline: true
+
+labeling:
+  method: sct_label_vertebrae
+  clean_labels: 1
+  initcenter: 3
+
+rootlets:
+  enabled: true
+  eligible_modalities:
+    - T2w
+    - T1w
+
+registration:
+  template: PAM50
+  prefer_rootlets: true

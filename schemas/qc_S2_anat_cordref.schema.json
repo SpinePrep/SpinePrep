@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S2_anat_cordref_qc",
+  "type": "object",
+  "required": ["dataset_key", "bids_root", "status", "counts", "runs"],
+  "properties": {
+    "dataset_key": {"type": "string"},
+    "bids_root": {"type": "string"},
+    "status": {"type": "string", "enum": ["PASS", "WARN", "FAIL"]},
+    "failure_message": {"type": ["string", "null"]},
+    "policy_path": {"type": "string"},
+    "counts": {
+      "type": "object",
+      "required": ["runs", "passed", "failed"],
+      "properties": {
+        "runs": {"type": "integer"},
+        "passed": {"type": "integer"},
+        "failed": {"type": "integer"}
+      }
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["subject", "session", "status", "run_id"],
+        "properties": {
+          "subject": {"type": ["string", "null"]},
+          "session": {"type": ["string", "null"]},
+          "status": {"type": "string", "enum": ["PASS", "FAIL"]},
+          "failure_message": {"type": ["string", "null"]},
+          "run_id": {"type": "string"},
+          "cordref_path": {"type": ["string", "null"]},
+          "cordmask_path": {"type": ["string", "null"]},
+          "centerline_path": {"type": ["string", "null"]},
+          "vertebral_labels_path": {"type": ["string", "null"]},
+          "rootlets_path": {"type": ["string", "null"]},
+          "disc_labels_path": {"type": ["string", "null"]},
+          "xfm": {
+            "type": "object",
+            "properties": {
+              "warp_to_template": {"type": ["string", "null"]},
+              "warp_to_cordref": {"type": ["string", "null"]}
+            }
+          },
+          "labels": {
+            "type": "object",
+            "properties": {
+              "status": {"type": "string", "enum": ["PASS", "NOT_FEASIBLE", "FAIL"]},
+              "failure_message": {"type": ["string", "null"]},
+              "metrics": {"type": ["object", "null"]},
+              "attempts": {"type": ["array", "null"]}
+            }
+          },
+          "rootlets": {
+            "type": "object",
+            "properties": {
+              "status": {"type": "string", "enum": ["PASS", "FAIL", "SKIP"]},
+              "eligible": {"type": ["boolean", "null"]},
+              "enabled": {"type": ["boolean", "null"]},
+              "rootlets_path": {"type": ["string", "null"]},
+              "failure_message": {"type": ["string", "null"]}
+            }
+          },
+          "reportlets": {
+            "type": "object",
+            "properties": {
+              "cordmask_montage": {"type": ["string", "null"]},
+              "centerline_montage": {"type": ["string", "null"]},
+              "vertebral_labels_montage": {"type": ["string", "null"]},
+              "pam50_reg_overlay": {"type": ["string", "null"]},
+              "rootlets_montage": {"type": ["string", "null"]}
+            }
+          }
+        }
+      }
+    }
+  }
+}

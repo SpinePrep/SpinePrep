@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+.tox/
+.nox/
+.venv/
+venv/
+
+# Editor/IDE
+.vscode/
+.cursor/
+
+# OS / misc
+.DS_Store
+
+# Local large docs / exports
+/os
+
+# Project runtime / outputs (do not version large or write-once artifacts)
+logs/
+work/
+state/
+
+# Local datasets / inputs (keep out of git)
+datasets/
+
+# Common medical imaging / large binaries (avoid accidental commits)
+*.nii
+*.nii.gz
+*.mgz
+*.mgh
+*.dcm
+
+# Docker / build outputs
+dist/
+build/
+*.egg-info/
+
+

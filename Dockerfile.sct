@@ -1,0 +1,3 @@
+FROM python:3.11-slim
+RUN printf '#!/bin/sh\necho 7.2\n' > /usr/local/bin/sct_version && chmod +x /usr/local/bin/sct_version
+CMD ["sct_version"]

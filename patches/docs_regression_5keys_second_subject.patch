@@ -1,0 +1,63 @@
+diff --git a/private/ROADMAP.md b/private/ROADMAP.md
+--- a/private/ROADMAP.md
++++ b/private/ROADMAP.md
+@@ -521,7 +521,10 @@
+ QC (vision, regression):
+ - Regression dataset keys:
+   - `reg_openneuro_ds005884_cospine_motor_subset`
+-  - `reg_openneuro_ds004386_rest_subset`
++  - `reg_openneuro_ds005883_cospine_pain_subset`
++  - `reg_openneuro_ds004386_rest_subset`
++  - `reg_openneuro_ds004616_handgrasp_subset`
++  - `reg_internal_balgrist_motor_11_subset`
+ - QC JSON (triage-ready, per regression dataset key):
+   - Required file: `{OUT}/logs/pl02_anat_cordref/{DATASET_KEY}/qc_status.json`
+   - Required fields (minimum):
+@@ -561,10 +564,16 @@
+ Acceptance (testable):
+ - All acceptance commands exit with code 0.
+ - Run only on regression dataset keys for acceptance.
+ - Required artifacts present and validated for every run included by `logs/pl01_input_verify_runs.jsonl` for that regression dataset key.
+ - QC JSON passes schema, and logs show `"checks": {"passed": true}` or equivalent.
+ - Exact commands (examples, adapt to real project CLI `spineprep`):
+   - `poetry run spineprep run pl02_anat_cordref --dataset-key reg_openneuro_ds004386_rest_subset --datasets-local config/datasets_local.yaml --out <OUT> --only-missing`
+   - `poetry run spineprep run pl02_anat_cordref --dataset-key reg_openneuro_ds005884_cospine_motor_subset --datasets-local config/datasets_local.yaml --out <OUT> --only-missing`
++  - `poetry run spineprep run pl02_anat_cordref --dataset-key reg_openneuro_ds005883_cospine_pain_subset --datasets-local config/datasets_local.yaml --out <OUT> --only-missing`
++  - `poetry run spineprep run pl02_anat_cordref --dataset-key reg_openneuro_ds004616_handgrasp_subset --datasets-local config/datasets_local.yaml --out <OUT> --only-missing`
++  - `poetry run spineprep run pl02_anat_cordref --dataset-key reg_internal_balgrist_motor_11_subset --datasets-local config/datasets_local.yaml --out <OUT> --only-missing`
+   - `poetry run spineprep check pl02_anat_cordref --dataset-key reg_openneuro_ds004386_rest_subset --datasets-local config/datasets_local.yaml --out <OUT>`
+   - `poetry run spineprep check pl02_anat_cordref --dataset-key reg_openneuro_ds005884_cospine_motor_subset --datasets-local config/datasets_local.yaml --out <OUT>`
++  - `poetry run spineprep check pl02_anat_cordref --dataset-key reg_openneuro_ds005883_cospine_pain_subset --datasets-local config/datasets_local.yaml --out <OUT>`
++  - `poetry run spineprep check pl02_anat_cordref --dataset-key reg_openneuro_ds004616_handgrasp_subset --datasets-local config/datasets_local.yaml --out <OUT>`
++  - `poetry run spineprep check pl02_anat_cordref --dataset-key reg_internal_balgrist_motor_11_subset --datasets-local config/datasets_local.yaml --out <OUT>`
+
+diff --git a/private/BLUEPRINT.md b/private/BLUEPRINT.md
+--- a/private/BLUEPRINT.md
++++ b/private/BLUEPRINT.md
+@@ -193,8 +193,9 @@
+ * v1 is not considered usable until it has run successfully and passed step gates on at least 4 distinct cervical fMRI datasets that represent the intended acquisition space.
+ * These datasets must include at least one task-based and one resting-state paradigm; where available, they should include repeated runs or sessions for reliability.
+ * Validation datasets are defined in `policy/datasets.yaml` and grouped by `intended_use`:
+ * `regression`: small subset used for frequent checks and rapid debugging.
++* Regression definition (v1 dev): the **second subject** of each core dataset (one regression key per core dataset).
+ * `v1_validation`: acceptance gate for v1 readiness.
+ * `extended`: slower end-to-end stress tests.
+ * When a failure is found outside the regression set, the failing session must be promoted into the regression set (or a designated bad-case subset) until the issue is resolved.
+
+diff --git a/private/convergence/BLUEPRINT.md b/private/convergence/BLUEPRINT.md
+--- a/private/convergence/BLUEPRINT.md
++++ b/private/convergence/BLUEPRINT.md
+@@ -193,8 +193,9 @@
+ * v1 is not considered usable until it has run successfully and passed step gates on at least 4 distinct cervical fMRI datasets that represent the intended acquisition space.
+ * These datasets must include at least one task-based and one resting-state paradigm; where available, they should include repeated runs or sessions for reliability.
+ * Validation datasets are defined in `policy/datasets.yaml` and grouped by `intended_use`:
+ * `regression`: small subset used for frequent checks and rapid debugging.
++* Regression definition (v1 dev): the **second subject** of each core dataset (one regression key per core dataset).
+ * `v1_validation`: acceptance gate for v1 readiness.
+ * `extended`: slower end-to-end stress tests.
+ * When a failure is found outside the regression set, the failing session must be promoted into the regression set (or a designated bad-case subset) until the issue is resolved.
+
+
+
+
+

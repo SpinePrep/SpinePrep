@@ -1,0 +1,102 @@
+$schema: "http://json-schema.org/draft-07/schema#"
+title: SpinePrep dataset manifest
+description: Schema for policy/datasets.yaml
+
+type: object
+required:
+  - version
+  - datasets
+properties:
+  version:
+    type: integer
+  datasets:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required:
+        - key
+        - title
+        - source
+        - accession
+        - license
+        - intended_use
+        - spec
+        - selection
+      properties:
+        key:
+          type: string
+        title:
+          type: string
+        source:
+          type: string
+        accession:
+          type: string
+        doi:
+          type: [string, "null"]
+        homepage:
+          type: [string, "null"]
+        license:
+          type: string
+        intended_use:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        counts:
+          type: [object, "null"]
+          properties:
+            participants:
+              type: [integer, "null"]
+            sessions:
+              type: [integer, "null"]
+        spec:
+          type: object
+          required:
+            - domains
+            - modalities
+            - paradigms
+            - tasks
+            - has_fmap
+            - has_physio
+          properties:
+            domains:
+              type: array
+              items:
+                type: string
+            modalities:
+              type: array
+              items:
+                type: string
+            paradigms:
+              type: array
+              items:
+                type: string
+            tasks:
+              type: array
+              items:
+                type: string
+            has_fmap:
+              type: [boolean, "null"]
+            has_physio:
+              type: [boolean, "null"]
+        selection:
+          type: object
+          required:
+            - mode
+            - subjects
+            - sessions
+          properties:
+            mode:
+              type: string
+              enum: [all, subset]
+            subjects:
+              type: array
+              items:
+                type: string
+            sessions:
+              type: array
+              items:
+                type: string
+        notes:
+          type: [string, "null"]

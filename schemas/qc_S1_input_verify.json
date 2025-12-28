@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S1_input_verify_qc",
+  "type": "object",
+  "required": ["dataset_key", "bids_root", "status", "checks", "counts"],
+  "properties": {
+    "dataset_key": {"type": "string"},
+    "bids_root": {"type": "string"},
+    "status": {"type": "string", "enum": ["PASS", "WARN", "FAIL"]},
+    "failure_message": {"type": ["string", "null"]},
+    "subjects": {"type": "array", "items": {"type": "string"}},
+    "sessions": {"type": "array", "items": {"type": "string"}},
+    "counts": {
+      "type": "object",
+      "required": ["files", "runs", "subjects", "sessions", "classification"],
+      "properties": {
+        "files": {"type": "integer"},
+        "runs": {"type": "integer"},
+        "subjects": {"type": "integer"},
+        "sessions": {"type": "integer"},
+        "classification": {
+          "type": "object",
+          "properties": {
+            "cord_likely": {"type": "integer"},
+            "non_cord_likely": {"type": "integer"},
+            "unknown": {"type": "integer"}
+          }
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "passed", "message", "severity"],
+        "properties": {
+          "name": {"type": "string"},
+          "passed": {"type": "boolean"},
+          "message": {"type": "string"},
+          "severity": {"type": "string"}
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "message"],
+        "properties": {
+          "severity": {"type": "string"},
+          "message": {"type": "string"},
+          "subject": {"type": ["string", "null"]},
+          "session": {"type": ["string", "null"]},
+          "path": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "heuristics": {"type": "object"}
+  }
+}

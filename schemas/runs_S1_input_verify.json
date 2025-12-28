@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "S1_input_verify_runs_record",
+  "type": "object",
+  "required": ["path", "subject", "session", "modality", "classification", "status"],
+  "properties": {
+    "path": {"type": "string"},
+    "subject": {"type": ["string", "null"]},
+    "session": {"type": ["string", "null"]},
+    "modality": {"type": "string"},
+    "classification": {"type": "string"},
+    "status": {"type": "string", "enum": ["PASS", "WARN", "FAIL"]},
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "message"],
+        "properties": {
+          "severity": {"type": "string"},
+          "message": {"type": "string"}
+        }
+      }
+    },
+    "details": {"type": "object"}
+  }
+}
