@@ -30,6 +30,9 @@ state/
 # Local datasets / inputs (keep out of git)
 datasets/
 
+# Private folder (never commit)
+private/
+
 # Common medical imaging / large binaries (avoid accidental commits)
 *.nii
 *.nii.gz
