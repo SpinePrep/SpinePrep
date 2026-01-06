@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coordinate systems &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Loading and Saving" href="data_loading_and_saving.html" />
+    <link rel="prev" title="User Interface" href="user_interface.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/coordinate_systems.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_interface.html">User Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Coordinate systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#world-coordinate-system">World coordinate system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#anatomical-coordinate-system">Anatomical coordinate system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#image-coordinate-system">Image coordinate system</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#image-transformation">Image transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#d-example-or-calculating-an-ijtols-matrix">2D example or calculating an <em>IJtoLS</em>-matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#coordinate-system-convention-in-slicer">Coordinate system convention in Slicer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#relations-to-other-software-conventions">Relations to other software/conventions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#itk">ITK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-matlab-to-map-slicer-ras-coordinates-e-g-fiducials-to-voxel-space-of-a-nifti-image">Using MATLAB to map Slicer RAS coordinates (e.g. fiducials) to voxel space of a NIfTI Image</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Coordinate systems</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/coordinate_systems.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="coordinate-systems">
+<h1>Coordinate systems<a class="headerlink" href="#coordinate-systems" title="Link to this heading"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>One of the issues while dealing with medical images and applications are the
+differences between the coordinate systems. There are three coordinate systems
+commonly used in imaging applications: a difference can be made between the
+<strong>world</strong>, <strong>anatomical</strong> and the <strong>image coordinate system</strong>.</p>
+<p>The following figure illustrates the three spaces and their corresponding
+axes:</p>
+<p><a class="reference internal" href="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems.png"><img alt="coordinate_systems" class="align-center" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems.png" style="width: 600px;" /></a></p>
+<p>Each coordinate system serves one purpose and represents its data in
+a particular way.</p>
+<p>Anatomy image based on an <a class="reference external" href="https://my-ms.org/mri_planes.htm">image shared by the My MS organization</a>.</p>
+<p>Note that Chand John of Stanford created a <a class="reference external" href="https://www.na-mic.org/w/img_auth.php/3/3f/Coordinate_Systems_Demystified.ppt">detailed presentation about the way coordinates are handled in Slicer</a>.</p>
+<section id="world-coordinate-system">
+<h3>World coordinate system<a class="headerlink" href="#world-coordinate-system" title="Link to this heading"></a></h3>
+<p>The world coordinate system is typically a Cartesian coordinate system in
+which a model (e.g. a MRI scanner or a patient) is positioned. Every model has
+its own coordinate system but there is only one world coordinate system to
+define the position and orientation of each model.</p>
+</section>
+<section id="anatomical-coordinate-system">
+<h3>Anatomical coordinate system<a class="headerlink" href="#anatomical-coordinate-system" title="Link to this heading"></a></h3>
+<p>The most important model coordinate system for medical imaging techniques is
+the anatomical space (also called patient coordinate system). This space
+consists of three planes to describe the standard anatomical position of a
+human:</p>
+<ul class="simple">
+<li><p>the <em>axial plane</em> is parallel to the ground and separates the head
+(Superior) from the feet (Inferior).</p></li>
+<li><p>the <em>coronal plane</em> is perpendicular to the ground and separates the front
+(Anterior) from the back (Posterior).</p></li>
+<li><p>the <em>sagittal plane</em> is perpendicular to the ground and separates the Left from the Right.</p></li>
+</ul>
+<p>From these planes it follows that all axes have their notation in a positive
+direction (e.g. the negative Superior axis is represented by the Inferior axis).</p>
+<p>The anatomical coordinate system is a continuous three-dimensional space in
+which an image has been sampled. In neuroimaging, it is common to define this
+space with respect to the human whose brain is being scanned. Hence, the 3D
+basis is defined along the anatomical axes of anterior-posterior,
+inferior-superior, and left-right.</p>
+<p>However different medical applications use different definitions of this 3D
+basis. Most common are the following bases:</p>
+<ul class="simple">
+<li><p>LPS (Left, Posterior, Superior) is used in DICOM images</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+LPS = \begin{Bmatrix}
+\text{from right towards left} \\
+\text{from anterior towards posterior} \\
+\text{from inferior towards superior}
+\end{Bmatrix}
+\end{split}\]</div>
+<ul class="simple">
+<li><p>RAS (Right, Anterior, Superior) is similar to LPS with the first two axes
+flipped</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+RAS = \begin{Bmatrix}
+\text{from left towards right} \\
+\text{from posterior towards anterior} \\
+\text{from inferior towards superior}
+\end{Bmatrix}
+\end{split}\]</div>
+<p>Thus, the only difference between the two conventions is that the sign of the
+first two coordinates is inverted.</p>
+<p>Both bases are equally useful and logical. It is just necessary to know to
+which basis an image is referenced.</p>
+</section>
+<section id="image-coordinate-system">
+<h3>Image coordinate system<a class="headerlink" href="#image-coordinate-system" title="Link to this heading"></a></h3>
+<p>The image coordinate system describes how an image was acquired with respect
+to the anatomy. Medical scanners create regular, rectangular arrays of points
+and cells which start at the upper left corner. The <span class="math notranslate nohighlight">\(i\)</span> axis increases to the
+right, the <span class="math notranslate nohighlight">\(j\)</span> axis to the bottom and the <span class="math notranslate nohighlight">\(k\)</span> axis backwards.</p>
+<p>In addition to the intensity value of each voxel <span class="math notranslate nohighlight">\((i j k)\)</span> the origin and
+spacing of the anatomical coordinates are stored too.</p>
+<ul class="simple">
+<li><p>The origin represents the position of the first voxel (0, 0, 0) in the
+anatomical coordinate system, e.g. (100, 50, -25) mm.</p></li>
+<li><p>The spacing specifies the distance between voxels along each axis, e.g.
+(1.5, 0.5, 0.5) mm.</p></li>
+</ul>
+<p>The following 2D example shows the meaning of origin and spacing:</p>
+<p><a class="reference internal" href="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems_image_coordinates.png"><img alt="image_coordinates" class="align-center" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems_image_coordinates.png" style="width: 300px;" /></a></p>
+<p>Using the origin and spacing, the corresponding position of each (image
+coordinate) voxel in anatomical coordinates can be calculated.</p>
+</section>
+</section>
+<section id="image-transformation">
+<h2>Image transformation<a class="headerlink" href="#image-transformation" title="Link to this heading"></a></h2>
+<p>The transformation from an image space vector <span class="math notranslate nohighlight">\((i j k)'\)</span> to an anatomical
+space vector <span class="math notranslate nohighlight">\(\vec{x}\)</span> is an affine transformation, consists of a linear
+transformation <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> followed by a translation <span class="math notranslate nohighlight">\(\vec{t}\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[
+\vec{x} = A \begin{pmatrix} i &amp; j &amp; k \end{pmatrix}' + \vec{t}
+\]</div>
+<p>The transformation matrix <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> is a <span class="math notranslate nohighlight">\(3 \times 3\)</span> matrix and carries
+all information about space directions and axis scaling.</p>
+<p><span class="math notranslate nohighlight">\(\vec{t}\)</span> is a <span class="math notranslate nohighlight">\(3 \times 1\)</span> vector and contains information about the
+geometric position of the first voxel.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{pmatrix} x_1 \\ x_2 \\ x_3 \end{pmatrix} =
+\begin{pmatrix} A_{11} &amp; A_{12} &amp; A_{13} \\ A_{21} &amp; A_{22} &amp; A_{23} \\ A_{31} &amp; A_{32} &amp; A_{33} \end{pmatrix}
+\begin{pmatrix} i \\ j \\ k \end{pmatrix} + \begin{pmatrix} t_1 \\ t_2 \\ t_3 \end{pmatrix}
+\end{split}\]</div>
+<p>The last equation shows that the linear transformation is performed by a
+matrix multiplication and the translation by a vector addition. To represent
+both, the transformation and the translation, by a matrix multiplication an
+augmented matrix must be used. This technique requires that the matrix
+<span class="math notranslate nohighlight">\(\mathbf{A}\)</span> is augmented with an extra row of zeros at the bottom, an extra
+column-the translation vector-to the right, and a <span class="math notranslate nohighlight">\(1\)</span> in the lower right
+corner. Additionally, all vectors have to be written as homogeneous
+coordinates, which means that a <span class="math notranslate nohighlight">\(1\)</span> is augmented at the end.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{pmatrix} x_1 \\ x_2 \\ x_3 \\ 1 \end{pmatrix} =
+\begin{pmatrix} A_{11} &amp; A_{12} &amp; A_{13} &amp; t_1 \\ A_{21} &amp; A_{22} &amp; A_{23} &amp; t_2 \\
+                A_{31} &amp; A_{32} &amp; A_{33} &amp; t_3 \\ 0 &amp; 0 &amp; 0 &amp; 1 \end{pmatrix}
+\begin{pmatrix} i \\ j \\ k \\ 1 \end{pmatrix}
+\end{split}\]</div>
+<p>Depending on the used anatomical space (LPS or RAS) the <span class="math notranslate nohighlight">\(4 \times 4\)</span> matrix is
+called <strong>IJKtoLPS</strong>- or <strong>IJKtoRAS</strong>-matrix, because it represents the
+transformation from IJK to LPS or RAS.</p>
+</section>
+<section id="d-example-or-calculating-an-ijtols-matrix">
+<h2>2D example or calculating an <em>IJtoLS</em>-matrix<a class="headerlink" href="#d-example-or-calculating-an-ijtols-matrix" title="Link to this heading"></a></h2>
+<p>The following figure shows the anatomical space with an L(P)S basis on the
+left and the corresponding image coordinates on the right.</p>
+<p><a class="reference internal" href="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems_IJtoLS.png"><img alt="IJtoLS" class="align-center" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems_IJtoLS.png" style="width: 550px;" /></a></p>
+<p>The origin (the coordinates of the first pixel in anatomical space) is
+(50, 300) mm and the spacing (the distance between two pixels) is
+(50, 50) mm.</p>
+<p>As this is a 2D example <span class="math notranslate nohighlight">\(\mathbf{A}\)</span> is a <span class="math notranslate nohighlight">\(2 \times 2\)</span> matrix and <span class="math notranslate nohighlight">\(\vec{t}\)</span> a
+<span class="math notranslate nohighlight">\(2 \times 1\)</span> vector. Therefore, the equation of the affine transformation is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{pmatrix} L \\ S \\ 1 \end{pmatrix} =
+\begin{pmatrix} A_{11} &amp; A_{12} &amp; t_1 \\ A_{21} &amp; A_{22} &amp; t_2 \\ 0 &amp; 0 &amp; 1 \end{pmatrix}
+\begin{pmatrix} i \\ j \\ 1 \end{pmatrix}
+\end{split}\]</div>
+<p>By multiplying the <strong>IJtoLS</strong>-matrix and the vector of the right side, the
+following product will be obtained:</p>
+<p><img alt="matrix_multiplication" class="align-center" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems_matrix_multiplication.png" /></p>
+<p>The last equation and the matrix product show that a total of 6 unknown
+variables <span class="math notranslate nohighlight">\((A_{11}, A_{12}, A_{21}, A_{22}, t_1, t_2)\)</span> have to be determined.
+The knowledge of origin and spacing however allows the following relations
+between image and anatomical space:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{pmatrix} L \\ S \end{pmatrix} \equiv \begin{pmatrix} i \\ j \end{pmatrix} \qquad
+\begin{pmatrix} 50 \\ 300 \end{pmatrix} \equiv \begin{pmatrix} 0 \\ 0 \end{pmatrix} \qquad
+\begin{pmatrix} 100 \\ 300 \end{pmatrix} \equiv \begin{pmatrix} 1 \\ 0 \end{pmatrix} \qquad
+\begin{pmatrix} 50 \\ 250 \end{pmatrix} \equiv \begin{pmatrix} 0 \\ 1 \end{pmatrix} \qquad \dots
+\end{split}\]</div>
+<p>Thus, at least six equations can be derived:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+50 &amp;= A_{11} \cdot 0 + A_{12} \cdot 0 + t_1 \cdot 1 \\
+300 &amp;= A_{21} \cdot 0 + A_{22} \cdot 0 + t_2 \cdot 1 \\
+100 &amp;= A_{11} \cdot 1 + A_{12} \cdot 0 + t_1 \cdot 1 \\
+300 &amp;= A_{21} \cdot 1 + A_{22} \cdot 0 + t_2 \cdot 1 \\
+50 &amp;= A_{11} \cdot 0 + A_{12} \cdot 1 + t_1 \cdot 1 \\
+250 &amp;= A_{21} \cdot 0 + A_{22} \cdot 1 + t_2 \cdot 1
+\end{align*}
+\end{split}\]</div>
+<p>As mentioned above, the translation <span class="math notranslate nohighlight">\(\vec{t}\)</span> contains the information about
+the geometric position of the first pixel and is therefore equivalent to the
+origin. This result is also confirmed by the first equations.</p>
+<p>The solution of the other equations leads to the following <strong>IJtoLS</strong>-matrix:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+IJtoLS = \begin{pmatrix} 50 &amp; 0 &amp; 50 \\ 0 &amp; -50 &amp; 300 \\ 0 &amp; 0 &amp; 1 \end{pmatrix}
+\end{split}\]</div>
+<p>In the event that a R(A)S basis was used, just the left and anterior axis of
+the anatomical space are flipped, and the image coordinate system appears in
+the same way as in the L(P)S case.</p>
+<p><a class="reference internal" href="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems_IJtoRS.png"><img alt="IJtoRS" class="align-center" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/coordinate_systems_IJtoRS.png" style="width: 550px;" /></a></p>
+<p>For this 2D example the <strong>IJtoRS</strong>-matrix would be:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+IJtoRS = \begin{pmatrix} -50 &amp; 0 &amp; 250 \\ 0 &amp; -50 &amp; 300 \\ 0 &amp; 0 &amp; 1 \end{pmatrix}
+\end{split}\]</div>
+<p>This matrix looks very similar to the <strong>IJtoLS</strong>-matrix with 2 differences:</p>
+<ul class="simple">
+<li><p>The translation <span class="math notranslate nohighlight">\(\vec{t}\)</span> has changed because of another origin.</p></li>
+<li><p>The right axis is flipped, so the first column of the <strong>IJtoRS</strong>-matrix
+has just an inverted sign.</p></li>
+</ul>
+</section>
+<section id="coordinate-system-convention-in-slicer">
+<h2>Coordinate system convention in Slicer<a class="headerlink" href="#coordinate-system-convention-in-slicer" title="Link to this heading"></a></h2>
+<p>DICOM and most medical imaging software use the <strong>LPS coordinate system</strong> for
+storing all data. The choice of origin is arbitrary because only relative
+differences have meaning, so there is no universal standard, but it is often
+set to some geometric center of the imaging system, or it is chosen to be
+near the center of an object of interest.</p>
+<p>Both LPS and RAS were in wide use in the early 2000s when development of
+Slicer was started and Slicer developers chose to use the RAS coordinate
+system. Historically scans by GE equipment used RAS while Siemens and others
+used LPS. Since several GE researchers were early contributors to Slicer, RAS
+was adopted for the internal representation.</p>
+<p>Slicer still <strong>uses RAS coordinate system for storing coordinate values
+internally</strong> for all data types, but for compatibility with other software, it
+<strong>assumes that all data in files are stored in LPS coordinate system</strong> (unless
+the coordinate system in the file is explicitly stated to be RAS). To achieve
+this, whenever Slicer reads or writes a file, it may need to flip the sign of
+the first two coordinate axes to convert the data to RAS coordinate system.</p>
+<section id="relations-to-other-software-conventions">
+<h3>Relations to other software/conventions<a class="headerlink" href="#relations-to-other-software-conventions" title="Link to this heading"></a></h3>
+<section id="itk">
+<h4>ITK<a class="headerlink" href="#itk" title="Link to this heading"></a></h4>
+<p><a class="reference external" href="https://itk.org/">ITK</a> uses the LPS convention.</p>
+</section>
+<section id="using-matlab-to-map-slicer-ras-coordinates-e-g-fiducials-to-voxel-space-of-a-nifti-image">
+<h4>Using MATLAB to map Slicer RAS coordinates (e.g. fiducials) to voxel space of a NIfTI Image<a class="headerlink" href="#using-matlab-to-map-slicer-ras-coordinates-e-g-fiducials-to-voxel-space-of-a-nifti-image" title="Link to this heading"></a></h4>
+<p>To extract the “voxel to world” transformation matrix from a NIFTI file’s
+header (entry: <code class="docutils literal notranslate"><span class="pre">qto_xyz:1-4</span></code>) in MATLAB:</p>
+<div class="highlight-Matlab notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">inv</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">]</span><span class="o">&#39;</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">M</span></code> is the matrix and <code class="docutils literal notranslate"><span class="pre">R</span> <span class="pre">A</span> <span class="pre">S</span></code> are coordinates in Slicer, then <code class="docutils literal notranslate"><span class="pre">d</span></code> gives
+a vector of voxel coordinates.</p>
+<p>(Solution courtesy of András Jakab, University of Debrecen)</p>
+</section>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://people.cs.uchicago.edu/~glk/unlinked/nrrd-iomf.pdf">https://people.cs.uchicago.edu/~glk/unlinked/nrrd-iomf.pdf</a></p></li>
+<li><p><a class="reference external" href="http://www.grahamwideman.com/gw/brain/orientation/orientterms.htm">http://www.grahamwideman.com/gw/brain/orientation/orientterms.htm</a></p></li>
+<li><p><a class="reference external" href="https://nifti.nimh.nih.gov/nifti-1/documentation/faq">https://nifti.nimh.nih.gov/nifti-1/documentation/faq</a></p></li>
+<li><p><a class="reference external" href="https://teem.sourceforge.net/nrrd/format.html">https://teem.sourceforge.net/nrrd/format.html</a></p></li>
+<li><p><a class="reference external" href="https://dicom.nema.org/dicom/2013/output/chtml/part03/sect_C.7.html#sect_C.7.6.2.1.1">DICOM 2013 PS3.3 Image Position and Image Orientation</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="user_interface.html" class="btn btn-neutral float-left" title="User Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="data_loading_and_saving.html" class="btn btn-neutral float-right" title="Data Loading and Saving" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

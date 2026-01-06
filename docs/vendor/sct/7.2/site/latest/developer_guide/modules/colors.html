@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Colors &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="DICOM (Digital Imaging and Communications in Medicine)" href="dicom.html" />
+    <link rel="prev" title="Modules API" href="index.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/modules/colors.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Modules API</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Colors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#color-table-csv-file-format-csv">Color table CSV file format (.csv)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#color-table-text-file-format-txt-ctbl">Color table text file format (.txt, .ctbl)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#debugging">Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selftests.html">Self Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequences.html">Sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumes.html">Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules API</a></li>
+      <li class="breadcrumb-item active">Colors</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/modules/colors.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="colors">
+<h1>Colors<a class="headerlink" href="#colors" title="Link to this heading"></a></h1>
+<section id="color-table-csv-file-format-csv">
+<h2>Color table CSV file format (.csv)<a class="headerlink" href="#color-table-csv-file-format-csv" title="Link to this heading"></a></h2>
+<p>The color file format can store a <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLColorTableNode.html">color table node</a> in a standard comma-separated value file with the <code class="docutils literal notranslate"><span class="pre">.csv</span></code> extension. Columns are separated by comma (<code class="docutils literal notranslate"><span class="pre">,</span></code>) character. Values that contain comma must be put between quotation marks (<code class="docutils literal notranslate"><span class="pre">&quot;</span></code>). Due to a limitation in VTK library’s delimited text reader/writer classes, values must not contain quotation mark characters.</p>
+<p>Columns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LabelValue</span></code>: label value that is associated with the color. Typically it is used for assigning color and meaning to a voxel value in a label image. It must be a positive integer. 0 value always corresponds to the background value and generally should not be included in the file (only in the rare case when the background needs to be colored). Label values do not have to be sorted. Label values may be skipped (left undefined), but since label values may be stored in a contiguous table from 0 to the largest label value, it is generally recommended to keep the range of values small (e.g., do not use label values such as 1000, 1001, 1002, 15000, 15001 but instead use the values 10, 11, 12, 20, 21).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Name</span></code>: internal (project-specific) name. It is only intended for convenience during development and testing. Content of a color table entry is intended to be described by standard terminology columns. Optional.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Color_R</span></code>, <code class="docutils literal notranslate"><span class="pre">Color_G</span></code>, <code class="docutils literal notranslate"><span class="pre">Color_B</span></code>, <code class="docutils literal notranslate"><span class="pre">Color_A</span></code>: red, green, blue, and opacity (alpha) component of the color. Values are integer, between 0 and 255. <code class="docutils literal notranslate"><span class="pre">Color_A</span></code> column is optional, if missing then the default value 255 (fully opaque) is used.</p></li>
+<li><p>Standard terminology columns for specifying content of the segment. The columns are optional and values in them can be empty. However, if there are non-empty values then <code class="docutils literal notranslate"><span class="pre">Category</span></code> and <code class="docutils literal notranslate"><span class="pre">Type</span></code> must be specified. For clinical imaging, it is recommended to use <a class="reference external" href="https://dicom.nema.org/medical/dicom/current/output/html/part16.html#chapter_8">coding schemes defined for use in DICOM</a>.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Category_CodingScheme</span></code>, <code class="docutils literal notranslate"><span class="pre">Category_CodeValue</span></code>, <code class="docutils literal notranslate"><span class="pre">Category_CodeMeaning</span></code>: category, such as “anatomical structure” or “physical object”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Type_CodingScheme</span></code>, <code class="docutils literal notranslate"><span class="pre">Type_CodeValue</span></code>, <code class="docutils literal notranslate"><span class="pre">Type_CodeMeaning</span></code>: type, such as “Kidney” or “Mass”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TypeModifier_CodingScheme</span></code>, <code class="docutils literal notranslate"><span class="pre">TypeModifier_CodeValue</span></code>, <code class="docutils literal notranslate"><span class="pre">TypeModifier_CodeMeaning</span></code>: type modifier, such as “Left” or “Right”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Region_CodingScheme</span></code>, <code class="docutils literal notranslate"><span class="pre">Region_CodeValue</span></code>, <code class="docutils literal notranslate"><span class="pre">Region_CodeMeaning</span></code>: region where the item is located in, such as “Kidney”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RegionModifier_CodingScheme</span></code>, <code class="docutils literal notranslate"><span class="pre">RegionModifier_CodeValue</span></code>, <code class="docutils literal notranslate"><span class="pre">RegionModifier_CodeMeaning</span></code>: region modifier, such as “Left” or “Right”</p></li>
+</ul>
+</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LabelValue</span><span class="p">,</span><span class="n">Name</span><span class="p">,</span><span class="n">Color_R</span><span class="p">,</span><span class="n">Color_G</span><span class="p">,</span><span class="n">Color_B</span><span class="p">,</span><span class="n">Color_A</span><span class="p">,</span><span class="n">Category_CodingScheme</span><span class="p">,</span><span class="n">Category_CodeValue</span><span class="p">,</span><span class="n">Category_CodeMeaning</span><span class="p">,</span><span class="n">Type_CodingScheme</span><span class="p">,</span><span class="n">Type_CodeValue</span><span class="p">,</span><span class="n">Type_CodeMeaning</span><span class="p">,</span><span class="n">TypeModifier_CodingScheme</span><span class="p">,</span><span class="n">TypeModifier_CodeValue</span><span class="p">,</span><span class="n">TypeModifier_CodeMeaning</span><span class="p">,</span><span class="n">Region_CodingScheme</span><span class="p">,</span><span class="n">Region_CodeValue</span><span class="p">,</span><span class="n">Region_CodeMeaning</span><span class="p">,</span><span class="n">RegionModifier_CodingScheme</span><span class="p">,</span><span class="n">RegionModifier_CodeValue</span><span class="p">,</span><span class="n">RegionModifier_CodeMeaning</span>
+<span class="mi">1</span><span class="p">,</span><span class="n">left_kidney</span><span class="p">,</span><span class="mi">185</span><span class="p">,</span><span class="mi">102</span><span class="p">,</span><span class="mi">83</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">123037004</span><span class="p">,</span><span class="n">Anatomical</span> <span class="n">Structure</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">64033007</span><span class="p">,</span><span class="n">Kidney</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">7771000</span><span class="p">,</span><span class="n">Left</span><span class="p">,,,,,,</span>
+<span class="mi">5</span><span class="p">,</span><span class="n">right_kidney</span><span class="p">,</span><span class="mi">185</span><span class="p">,</span><span class="mi">102</span><span class="p">,</span><span class="mi">83</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">123037004</span><span class="p">,</span><span class="n">Anatomical</span> <span class="n">Structure</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">64033007</span><span class="p">,</span><span class="n">Kidney</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">24028007</span><span class="p">,</span><span class="n">Right</span><span class="p">,,,,,,</span>
+<span class="mi">6</span><span class="p">,</span><span class="n">right_kidney_mass</span><span class="p">,</span><span class="mi">144</span><span class="p">,</span><span class="mi">238</span><span class="p">,</span><span class="mi">144</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">49755003</span><span class="p">,</span><span class="n">Morphologically</span> <span class="n">Altered</span> <span class="n">Structure</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">4147007</span><span class="p">,</span><span class="n">Mass</span><span class="p">,,,,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">64033007</span><span class="p">,</span><span class="n">Kidney</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">24028007</span><span class="p">,</span><span class="n">Right</span>
+<span class="mi">10</span><span class="p">,</span><span class="n">catheter_renal_artery</span><span class="p">,</span><span class="mi">127</span><span class="p">,</span><span class="mi">127</span><span class="p">,</span><span class="mi">127</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">260787004</span><span class="p">,</span><span class="n">Physical</span> <span class="nb">object</span><span class="p">,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">19923001</span><span class="p">,</span><span class="n">Catheter</span><span class="p">,,,,</span><span class="n">SCT</span><span class="p">,</span><span class="mi">2841007</span><span class="p">,</span><span class="n">Renal</span> <span class="n">artery</span><span class="p">,,,</span>
+</pre></div>
+</div>
+</section>
+<section id="color-table-text-file-format-txt-ctbl">
+<h2>Color table text file format (.txt, .ctbl)<a class="headerlink" href="#color-table-text-file-format-txt-ctbl" title="Link to this heading"></a></h2>
+<p>The color file format can store a <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLColorNode.html">color node</a> in a plain text file with the <code class="docutils literal notranslate"><span class="pre">.txt</span></code> or <code class="docutils literal notranslate"><span class="pre">.ctbl</span></code> extension. It is a text file with values separated by space, with a custom header to specify lookup table type. Header lines are prefixed with <code class="docutils literal notranslate"><span class="pre">#</span></code>.</p>
+<section id="discrete-scale-color-lookup-table">
+<h3>Discrete scale color lookup table<a class="headerlink" href="#discrete-scale-color-lookup-table" title="Link to this heading"></a></h3>
+<p>Header starts with <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">Color</span> <span class="pre">table</span> <span class="pre">file</span></code>. Each data line contains <code class="docutils literal notranslate"><span class="pre">color</span> <span class="pre">index</span></code> (integer), <code class="docutils literal notranslate"><span class="pre">color</span> <span class="pre">name</span></code> (string, if the name contains spaces then the spaces must be replaced by underscore), <code class="docutils literal notranslate"><span class="pre">red</span></code> (0-255), <code class="docutils literal notranslate"><span class="pre">green</span></code> (0-255), <code class="docutils literal notranslate"><span class="pre">blue</span></code> (0-255), and <code class="docutils literal notranslate"><span class="pre">opacity</span></code> (0-255).</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Color table file C:/Users/andra/OneDrive/Projects/SlicerTesting2022/20220109-ColorLegend/Segmentation-label_ColorTable.ctbl</span>
+<span class="c1"># 4 values</span>
+<span class="mi">0</span> <span class="n">Background</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="mi">1</span> <span class="n">artery</span> <span class="mi">216</span> <span class="mi">101</span> <span class="mi">79</span> <span class="mi">255</span>
+<span class="mi">2</span> <span class="n">bone</span> <span class="mi">241</span> <span class="mi">214</span> <span class="mi">145</span> <span class="mi">255</span>
+<span class="mi">3</span> <span class="n">connective_tissue</span> <span class="mi">111</span> <span class="mi">184</span> <span class="mi">210</span> <span class="mi">255</span>
+</pre></div>
+</div>
+</section>
+<section id="continuous-scale-color-lookup-table">
+<h3>Continuous scale color lookup table<a class="headerlink" href="#continuous-scale-color-lookup-table" title="Link to this heading"></a></h3>
+<p>Header starts with <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">Color</span> <span class="pre">procedural</span> <span class="pre">file</span></code>. Each data line contains <code class="docutils literal notranslate"><span class="pre">position</span></code> (mapped value, a floating-point number), <code class="docutils literal notranslate"><span class="pre">red</span></code> (0.0-1.0), <code class="docutils literal notranslate"><span class="pre">green</span></code> (0.0-1.0), <code class="docutils literal notranslate"><span class="pre">blue</span></code> (0.0-1.0).</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Color procedural file /path/to/file.txt</span>
+<span class="c1"># 5 points</span>
+<span class="c1"># position R G B</span>
+<span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="mi">63</span> <span class="mi">0</span> <span class="mf">0.501961</span> <span class="mf">0.490196</span>
+<span class="mi">128</span> <span class="mf">0.501961</span> <span class="mi">0</span> <span class="mi">1</span>
+<span class="mi">192</span> <span class="mi">1</span> <span class="mf">0.501961</span> <span class="mi">0</span>
+<span class="mi">255</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="debugging">
+<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading"></a></h2>
+<section id="access-scalar-bar-actor">
+<h3>Access scalar bar actor<a class="headerlink" href="#access-scalar-bar-actor" title="Link to this heading"></a></h3>
+<p>Access to the scalar bar VTK actor may can be useful for debugging and for experimenting with new features. This code snippet shows how to access the actor in the Red slice view using Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">displayableNode</span> <span class="o">=</span> <span class="n">getNode</span><span class="p">(</span><span class="s1">&#39;Model&#39;</span><span class="p">)</span>
+<span class="n">colorLegendDisplayNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">logic</span><span class="p">()</span><span class="o">.</span><span class="n">GetColorLegendDisplayNode</span><span class="p">(</span><span class="n">displayableNode</span><span class="p">)</span>
+<span class="n">sliceViewLabel</span> <span class="o">=</span> <span class="s2">&quot;Red&quot;</span>
+<span class="n">sliceViewNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">GetNodeByID</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;vtkMRMLSliceNode</span><span class="si">{</span><span class="n">sliceViewLabel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">appLogic</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">applicationLogic</span><span class="p">()</span>
+<span class="n">displayableManager</span> <span class="o">=</span> <span class="n">appLogic</span><span class="o">.</span><span class="n">GetViewDisplayableManagerByClassName</span><span class="p">(</span><span class="n">sliceViewNode</span><span class="p">,</span> <span class="s2">&quot;vtkMRMLColorLegendDisplayableManager&quot;</span><span class="p">)</span>
+<span class="n">colorLegendActor</span> <span class="o">=</span> <span class="n">displayableManager</span><span class="o">.</span><span class="n">GetColorLegendActor</span><span class="p">(</span><span class="n">colorLegendDisplayNode</span><span class="p">)</span>
+
+<span class="c1"># Experimental adjustment of a parameter that is not exposed via the colorLegendDisplayNode</span>
+<span class="n">colorLegendActor</span><span class="o">.</span><span class="n">SetBarRatio</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">sliceView</span><span class="o">.</span><span class="n">forceRender</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Modules API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dicom.html" class="btn btn-neutral float-right" title="DICOM (Digital Imaging and Communications in Medicine)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

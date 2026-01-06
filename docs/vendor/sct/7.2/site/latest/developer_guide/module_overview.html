@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module Overview &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parameter Nodes" href="parameter_nodes/index.html" />
+    <link rel="prev" title="MRML Overview" href="mrml_overview.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/module_overview.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Module Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#command-line-interface-cli">Command Line Interface (CLI)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loadable-modules">Loadable Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scripted-modules">Scripted Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-factory">Module Factory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#association-of-mrml-nodes-to-modules">Association of MRML nodes to modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#remote-module">Remote Module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#purpose-of-remote-modules">Purpose of Remote Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#policy-for-adding-remote-modules">Policy for Adding Remote Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#procedure-for-adding-a-remote-module">Procedure for Adding a Remote Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#procedure-for-updating-a-remote-module">Procedure for Updating a Remote Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Module Overview</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/module_overview.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="module-overview">
+<h1>Module Overview<a class="headerlink" href="#module-overview" title="Link to this heading"></a></h1>
+<p>Slicer supports multiple types of modules:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#command-line-interface-cli">Command Line Interface (CLI)</a></p></li>
+<li><p><a class="reference internal" href="#loadable-modules">Loadable</a></p></li>
+<li><p><a class="reference internal" href="#scripted-modules">Scripted</a></p></li>
+</ul>
+<p>The choice for a given type of module is usually based on the type of inputs/parameters for a given module.</p>
+<section id="command-line-interface-cli">
+<h2>Command Line Interface (CLI)<a class="headerlink" href="#command-line-interface-cli" title="Link to this heading"></a></h2>
+<p>CLIs are standalone executables with a limited input/output arguments complexity (simple argument types, no user interactions…).</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Recommended for implementing computational algorithms.</p>
+</div>
+<p>Specifications:</p>
+<ul class="simple">
+<li><p>CLI = Command-line interface</p></li>
+<li><p>Slicer can run any command-line application from the GUI (by providing an interface description <code class="docutils literal notranslate"><span class="pre">.xml</span></code> file).</p></li>
+<li><p>Can be implemented in any language (C++, Python, …).</p></li>
+<li><p>Inputs and outputs specified in XML file, GUI is generated automatically.</p></li>
+<li><p>Parameters passed through command line and files.</p></li>
+<li><p>Run in a separate processing thread, can report progress and be aborted.</p></li>
+</ul>
+<p>Not supported (anti-patterns):</p>
+<ul class="simple">
+<li><p>Pass back intermediate results.</p></li>
+<li><p>Update the <a class="reference internal" href="../user_guide/user_interface.html#views"><span class="std std-ref">views</span></a> while executing.</p></li>
+<li><p>Accept input while running to steer the module.</p></li>
+<li><p>Request input while running.</p></li>
+</ul>
+<div class="admonition-getting-started admonition">
+<p class="admonition-title">Getting started</p>
+<ul class="simple">
+<li><p>For CLI, <a class="reference internal" href="build_instructions/index.html"><span class="std std-doc">build Slicer</span></a> and create an initial skeleton using the <a class="reference internal" href="../user_guide/modules/extensionwizard.html#extension-wizard"><span class="std std-ref">Extension Wizard</span></a> adding a module of type <code class="docutils literal notranslate"><span class="pre">cli</span></code>.</p></li>
+<li><p>For Scripted CLI, create an initial skeleton using the <a class="reference internal" href="../user_guide/modules/extensionwizard.html#extension-wizard"><span class="std std-ref">Extension Wizard</span></a> adding a module of type <code class="docutils literal notranslate"><span class="pre">scriptedcli</span></code>.</p></li>
+</ul>
+</div>
+<p>More information:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="extensions.html#extensions"><span class="std std-ref">Developing and contributing extensions for 3D Slicer</span></a></p></li>
+<li><p><a class="reference external" href="https://training.slicer.org/#developer-tutorials">Tutorials for software developers</a></p></li>
+<li><p><a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/SlicerExecutionModel">Slicer execution model</a>: Describe the mechanism for incorporating command line programs as Slicer modules.</p></li>
+<li><p>Learn from existing Slicer <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Modules/CLI">CLI modules</a>.</p></li>
+</ul>
+</section>
+<section id="loadable-modules">
+<h2>Loadable Modules<a class="headerlink" href="#loadable-modules" title="Link to this heading"></a></h2>
+<p>Loadable modules are <a class="reference external" href="http://en.wikipedia.org/wiki/C%2B%2B">C++</a> plugins that are built against Slicer. They define custom GUIs for their specific behavior as they have full control over the application.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Recommended for implementing complex, performance-critical, interactive components, application infrastructure (e.g., reusable of low-level GUI widgets).</p>
+</div>
+<p>Specifications:</p>
+<ul class="simple">
+<li><p>Written in C++ and distributed as shared libraries.</p></li>
+<li><p>Full <a class="reference internal" href="api.html#c"><span class="std std-ref">Slicer API</span></a> is accessible.</p></li>
+<li><p>Full control over the Slicer UI (based on <a class="reference external" href="https://doc.qt.io/">Qt</a>) and Slicer internals (<a class="reference internal" href="mrml.html"><span class="std std-doc">MRML</span></a>, logics, display managers…).</p></li>
+</ul>
+<div class="admonition-getting-started admonition">
+<p class="admonition-title">Getting started</p>
+<p><a class="reference internal" href="build_instructions/index.html"><span class="std std-doc">Build Slicer</span></a> and create an initial skeleton using the <a class="reference internal" href="../user_guide/modules/extensionwizard.html#extension-wizard"><span class="std std-ref">Extension Wizard</span></a> adding a module of type <code class="docutils literal notranslate"><span class="pre">loadable</span></code>.</p>
+</div>
+<p>More information:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="extensions.html#extensions"><span class="std std-ref">Developing and contributing extensions for 3D Slicer</span></a></p></li>
+<li><p><a class="reference external" href="https://training.slicer.org/#developer-tutorials">Tutorials for software developers</a></p></li>
+<li><p>Learn from existing Slicer <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Modules/Loadable">loadable modules</a>.</p></li>
+</ul>
+</section>
+<section id="scripted-modules">
+<h2>Scripted Modules<a class="headerlink" href="#scripted-modules" title="Link to this heading"></a></h2>
+<p>Scripted modules are <a class="reference external" href="http://www.python.org/">Python</a> scripts that uses Slicer API. They define custom GUIs for their specific behavior as they have full control over the application.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Recommended for fast prototyping and custom workflow development.</p>
+</div>
+<p>Specifications:</p>
+<ul class="simple">
+<li><p>Written in Python.</p></li>
+<li><p>Full <a class="reference internal" href="api.html#python"><span class="std std-ref">Slicer API</span></a> is accessible.</p></li>
+<li><p>Full access to the API of <a class="reference internal" href="mrml.html"><span class="std std-doc">MRML</span></a>, <a class="reference external" href="https://docs.vtk.org">VTK</a>, <a class="reference external" href="https://doc.qt.io/">Qt</a>, <a class="reference external" href="https://docs.itk.org/">ITK</a> and <a class="reference external" href="https://simpleitk.readthedocs.io/">SimpleITK</a> since those are Python wrapped.</p></li>
+</ul>
+<div class="admonition-getting-started admonition">
+<p class="admonition-title">Getting started</p>
+<p>Download Slicer and create an initial skeleton using the <a class="reference internal" href="../user_guide/modules/extensionwizard.html#extension-wizard"><span class="std std-ref">Extension Wizard</span></a> adding a module of type <code class="docutils literal notranslate"><span class="pre">scripted</span></code>.</p>
+</div>
+<p>More information:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="extensions.html#extensions"><span class="std std-ref">Developing and contributing extensions for 3D Slicer</span></a></p></li>
+<li><p><a class="reference external" href="https://training.slicer.org/#developer-tutorials">Tutorials for software developers</a></p></li>
+<li><p><a class="reference internal" href="python_faq.html"><span class="std std-doc">Python FAQ</span></a></p></li>
+<li><p><a class="reference internal" href="script_repository.html"><span class="std std-doc">Script repository</span></a></p></li>
+<li><p>Learn from existing Slicer <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Modules/Scripted">scripted modules</a>.</p></li>
+</ul>
+</section>
+<section id="module-factory">
+<h2>Module Factory<a class="headerlink" href="#module-factory" title="Link to this heading"></a></h2>
+<p>Loading modules into slicer happens in multiple steps:</p>
+<ul class="simple">
+<li><p>Module factories must be registered into the factory manager.</p></li>
+<li><p>Directories where the modules to load are located must be passed to the factory manager.</p></li>
+<li><p>Optionally specify module names to ignore.</p></li>
+<li><p>Scan the directories and test which file is a module and register it (not instantiated yet).</p></li>
+<li><p>Instantiate all the register modules.</p></li>
+<li><p>Connect each module with the scene and the application.</p></li>
+</ul>
+<p>More details can be found in the <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerAbstractModuleFactoryManager.html">online doc</a></p>
+</section>
+<section id="association-of-mrml-nodes-to-modules">
+<h2>Association of MRML nodes to modules<a class="headerlink" href="#association-of-mrml-nodes-to-modules" title="Link to this heading"></a></h2>
+<p>Modules can be associated with MRML nodes, which for example allows determining what module can be used to edit a certain MRML node. A module can either specify the list of node types that it supports by overriding <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerAbstractCoreModule.html#a932cfab8cb00c2e770b95a97fce92670">qSlicerAbstractCoreModule::associatedNodeTypes()</a> method or a module can call <a class="reference external" href="https://apidocs.slicer.org/main//classqSlicerCoreApplication.html#a748d8b0ab3914bded820337534a1aa76">qSlicerCoreApplication::addModuleAssociatedNodeTypes()</a> to associate any node type with any module.</p>
+<p>Multiple modules can be associated with the same MRML node type. The best module for editing a specific node instance is determined run-time. The application framework calls <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerAbstractModuleWidget.html#a8e1bdbc248688677af5cd91f0849d44e">qSlicerAbstractModuleWidget::nodeEditable()</a> for each associated module candidate and will activate the one that has the highest confidence in handling the node.</p>
+<p>To select a MRML node as the “active” or “edited” node in a module the module widget’s <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerAbstractModuleRepresentation.html#adfd05c2484d8cab8e3e9cda09e45d227">qSlicerAbstractModuleWidget::setEditedNode()</a> method is called.</p>
+</section>
+<section id="remote-module">
+<h2>Remote Module<a class="headerlink" href="#remote-module" title="Link to this heading"></a></h2>
+<section id="purpose-of-remote-modules">
+<h3>Purpose of Remote Modules<a class="headerlink" href="#purpose-of-remote-modules" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Keep the Slicer core lean.</p></li>
+<li><p>Allow individuals or organizations to work on their own private modules and optionally make these modules available to the Slicer users without the need to use the extensions manager.</p></li>
+</ul>
+</section>
+<section id="policy-for-adding-remote-modules">
+<h3>Policy for Adding Remote Modules<a class="headerlink" href="#policy-for-adding-remote-modules" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Module is known to compile on Linux, MacOSX and Windows.</p></li>
+<li><p>Module is tested.</p></li>
+<li><p>Module is documented on the wiki.</p></li>
+<li><p>Module names must be unique.</p></li>
+<li><p>At no time in the future should a module in the main Slicer repository depend on Remote module.</p></li>
+<li><p>Remote modules MUST define a specific <strong>unique</strong> revision (i.e. git hash). It is important for debugging and scientific reproducibility that there be a unique set of code associated with each slicer revision.</p></li>
+</ul>
+</section>
+<section id="procedure-for-adding-a-remote-module">
+<h3>Procedure for Adding a Remote Module<a class="headerlink" href="#procedure-for-adding-a-remote-module" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Discuss with Slicer core Developers</p></li>
+<li><p>Add an entry into <code class="docutils literal notranslate"><span class="pre">SuperBuild.cmake</span></code> using <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/CMake/ExternalProjectAddSource.cmake#L143-L257">Slicer_Remote_Add()</a> macro. For example:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">Slicer_Remote_Add</span><span class="p">(</span><span class="s">Foo</span>
+<span class="w">  </span><span class="s">GIT_REPOSITORY</span><span class="w"> </span><span class="o">${</span><span class="nv">git_protocol</span><span class="o">}</span><span class="s">://github.com/awesome/foo</span>
+<span class="w">  </span><span class="s">GIT_TAG</span><span class="w"> </span><span class="s">abcdef</span>
+<span class="w">  </span><span class="s">OPTION_NAME</span><span class="w"> </span><span class="s">Slicer_BUILD_Foo</span>
+<span class="w">  </span><span class="s">LABELS</span><span class="w"> </span><span class="s">REMOTE_MODULE</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="nb">list_conditional_append</span><span class="p">(</span><span class="s">Slicer_BUILD_Foo</span><span class="w"> </span><span class="s">Slicer_REMOTE_DEPENDENCIES</span><span class="w"> </span><span class="s">Foo</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Corresponding commit message should be similar to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ENH: Add Foo remote module
+
+The Foo module provide the user with ...
+</pre></div>
+</div>
+</li>
+</ol>
+<p>..note::</p>
+<p>As a side effect of calling <code class="docutils literal notranslate"><span class="pre">Slicer_Remote_Add</span></code>, (1) the option <code class="docutils literal notranslate"><span class="pre">Slicer_BUILD_Foo</span></code> will automatically be added as an advanced option and (2) the CMake variables <code class="docutils literal notranslate"><span class="pre">Slicer_BUILD_Foo</span></code> and <code class="docutils literal notranslate"><span class="pre">Foo_SOURCE_DIR</span></code> will be passed to Slicer inner build.</p>
+<p>Additionally, by specifying the <code class="docutils literal notranslate"><span class="pre">REMOTE_MODULE</span></code> label, within <code class="docutils literal notranslate"><span class="pre">Slicer/Modules/Remote/CMakeLists.txt</span></code>, the corresponding source directory will automatically be added using a call to <code class="docutils literal notranslate"><span class="pre">add_directory</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Slicer_Remote_Add</span></code> creates an in-source module target within <code class="docutils literal notranslate"><span class="pre">Slicer/Modules/Remote</span></code>. The SuperBuild target for a remote module only runs the source update step; there is no separate build step.</p>
+</section>
+<section id="procedure-for-updating-a-remote-module">
+<h3>Procedure for Updating a Remote Module<a class="headerlink" href="#procedure-for-updating-a-remote-module" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Update the entry into <code class="docutils literal notranslate"><span class="pre">SuperBuild.cmake</span></code></p></li>
+<li><p>Commit with a message similar to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ENH: Update Foo remote module
+
+List of changes:
+
+$ git shortlog abc123..efg456
+John Doe (2):
+  Add support for ZZZ spacing
+  Refactor space handler to support multi-dimension
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mrml_overview.html" class="btn btn-neutral float-left" title="MRML Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="parameter_nodes/index.html" class="btn btn-neutral float-right" title="Parameter Nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

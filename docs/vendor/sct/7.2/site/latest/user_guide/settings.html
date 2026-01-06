@@ -1,0 +1,341 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application settings &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Developer Guide" href="../developer_guide/index.html" />
+    <link rel="prev" title="Extensions" href="extensions.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/settings.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Application settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#editing-application-settings">Editing application settings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules">Modules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#skip-loading">Skip loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#show-hidden-modules">Show hidden modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#temporary-directory">Temporary directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#additional-module-paths">Additional module paths</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#home">Home</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#favorites">Favorites</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#appearance">Appearance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#style">Style</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#developer">Developer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#developer-mode">Developer mode</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#information-for-advanced-users">Information for Advanced Users</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#settings-file-location">Settings file location</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#user-specific-settings">User specific settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#user-and-revision-specific-settings">User and revision specific settings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#application-startup-file">Application startup file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-environment-variables">Runtime environment variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qt-built-in-command-line-options">Qt built-in command-line options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Application settings</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/settings.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="application-settings">
+<h1>Application settings<a class="headerlink" href="#application-settings" title="Link to this heading"></a></h1>
+<section id="editing-application-settings">
+<h2>Editing application settings<a class="headerlink" href="#editing-application-settings" title="Link to this heading"></a></h2>
+<p>The application settings dialog allows users to customize application behavior.</p>
+<p>After starting Slicer, it can be accessed clicking in menu: <code class="docutils literal notranslate"><span class="pre">Edit</span></code> / <code class="docutils literal notranslate"><span class="pre">Application</span> <span class="pre">Settings</span></code>.</p>
+<section id="general">
+<h3>General<a class="headerlink" href="#general" title="Link to this heading"></a></h3>
+<p>Application startup script can be used to launch any custom Python code when Slicer application is started.</p>
+</section>
+<section id="modules">
+<h3>Modules<a class="headerlink" href="#modules" title="Link to this heading"></a></h3>
+<section id="skip-loading">
+<h4>Skip loading<a class="headerlink" href="#skip-loading" title="Link to this heading"></a></h4>
+<p>Select which <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/Modules">type of modules</a> to not load at startup. It is also possible to start Slicer by temporarily disabling those modules (not saved in settings) by passing the arguments in the command line.</p>
+<p>For example, this command will start Slicer without any CLI loaded:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Slicer.exe --disable-cli-modules
+</pre></div>
+</div>
+</section>
+<section id="show-hidden-modules">
+<h4>Show hidden modules<a class="headerlink" href="#show-hidden-modules" title="Link to this heading"></a></h4>
+<p>Some modules don’t have a user interface, they are hidden from the module’s list. For debugging purpose, it is possible to force their display</p>
+</section>
+<section id="temporary-directory">
+<h4>Temporary directory<a class="headerlink" href="#temporary-directory" title="Link to this heading"></a></h4>
+<p>Directory where modules can store their temporary outputs if needed.</p>
+</section>
+<section id="additional-module-paths">
+<h4>Additional module paths<a class="headerlink" href="#additional-module-paths" title="Link to this heading"></a></h4>
+<p>List of directories scanned at startup to load additional modules. Any CLI, Loadable or scripted modules located in these paths will be loaded.</p>
+<p>Module folders of extensions are included in this list. To remove modules of an extension, it is recommended to use the <a class="reference internal" href="extensions.html#extensions-manager"><span class="std std-ref">Extensions Manager</span></a> instead of just removing its module paths.</p>
+<p>It is also possible to start Slicer by temporarily adding module paths (not saved in settings) by passing the arguments in the command line.</p>
+<p>For example this command will start Slicer trying to load CLIs found in the specified directory:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Slicer.exe --additional-module-paths C:\path\to\lib\Slicer-X.Y\cli-modules
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h4>Modules<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p>List of modules loaded, ignored or failed to load in Slicer. An unchecked checkbox indicates that module should not be loaded (ignored) next time Slicer starts. A text color code is used to describe the state of each module:</p>
+<ul class="simple">
+<li><p>Black: module successfully loaded in Slicer</p></li>
+<li><p>Gray: module not loaded because it has been ignored (unchecked)</p></li>
+<li><p>Red: module failed to load. There are multiple reasons why a module can fail to load.</p></li>
+</ul>
+<p>Look at startup <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/SlicerApplication/ErrorLog">log outputs</a> to have more information.
+If a module is not loaded in Slicer (ignored or failed), all dependent modules won’t be loaded. You can verify the dependencies of a module in the tooltip of the module.</p>
+<p>You can filter the list of modules by untoggling in the advanced (&gt;&gt;) panel the “To Load”, “To Ignore”, “Loaded”, “Ignored” and “Failed” buttons.</p>
+</section>
+<section id="home">
+<h4>Home<a class="headerlink" href="#home" title="Link to this heading"></a></h4>
+<p>Module that is shown when Slicer starts up.</p>
+</section>
+<section id="favorites">
+<h4>Favorites<a class="headerlink" href="#favorites" title="Link to this heading"></a></h4>
+<p>List of modules that appear in the Favorites toolbar:</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/settings_favorites_toolbar.png" /></p>
+<p>To add a module, drag&amp;drop it from the <em>Modules</em> list above. Then use the advanced panel (&gt;&gt;) to reorganize/delete the modules within the toolbar.</p>
+</section>
+</section>
+<section id="appearance">
+<h3>Appearance<a class="headerlink" href="#appearance" title="Link to this heading"></a></h3>
+<section id="style">
+<h4>Style<a class="headerlink" href="#style" title="Link to this heading"></a></h4>
+<p>The overall theme of Slicer is controlled by the selected Style:</p>
+<ul class="simple">
+<li><p>Slicer (default): it sets the style based on theme settings set by the operating system.
+For example, on Windows if <a class="reference external" href="https://blogs.windows.com/windowsexperience/2016/08/08/windows-10-tip-personalize-your-pc-by-enabling-the-dark-theme/">dark mode</a>
+is turned on for apps, then the <code class="docutils literal notranslate"><span class="pre">Dark</span> <span class="pre">Slicer</span></code> style will be used upon launching Slicer. Currently, automatic detection of dark mode is not available on Linux,
+therefore use needs to manually select <code class="docutils literal notranslate"><span class="pre">Dark</span> <span class="pre">Slicer</span></code> style for a dark color scheme.</p></li>
+<li><p>Light Slicer: application window background is bright, regardless of operating system settings.</p></li>
+<li><p>Dark Slicer: application window background is dark, regardless of operating system settings.</p></li>
+</ul>
+</section>
+</section>
+<section id="developer">
+<h3>Developer<a class="headerlink" href="#developer" title="Link to this heading"></a></h3>
+<section id="developer-mode">
+<h4>Developer mode<a class="headerlink" href="#developer-mode" title="Link to this heading"></a></h4>
+<p>Enable the following features:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="user_interface.html#toolbar"><span class="std std-ref">Module selection toolbar</span></a>: Modules associated with the <em>Testing</em> category are visible by default.</p></li>
+<li><p><a class="reference internal" href="modules/webserver.html"><span class="std std-doc">WebServer module</span></a>: Javascript logging is enabled by default.</p></li>
+<li><p><a class="reference internal" href="user_interface.html#module-panel"><span class="std std-ref">Module panel</span></a>: <code class="docutils literal notranslate"><span class="pre">Reload</span> <span class="pre">&amp;</span> <span class="pre">Test</span></code> module panel section is displayed for scripted modules. It includes controls for reloading, testing and editing scripted modules as well as restarting the application.</p></li>
+</ul>
+<p>modules/webserver.html</p>
+</section>
+</section>
+</section>
+<section id="information-for-advanced-users">
+<h2>Information for Advanced Users<a class="headerlink" href="#information-for-advanced-users" title="Link to this heading"></a></h2>
+<section id="settings-file-location">
+<h3>Settings file location<a class="headerlink" href="#settings-file-location" title="Link to this heading"></a></h3>
+<p>Settings are stored in *.ini files. If the settings file is found in application home directory (within organization name or domain subfolder) then that .ini file is used. This can be used for creating a portable application that contains all software and settings in a relocatable folder. Relative paths in settings files are resolved using the application home directory, and therefore are portable along with the application.</p>
+<p>If .ini file is not found in the application home directory then it is searched in user profile:</p>
+<ul class="simple">
+<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">%USERPROFILE%\AppData\Roaming\slicer.org\</span></code> (typically <code class="docutils literal notranslate"><span class="pre">C:\Users\&lt;your_user_name&gt;\AppData\Roaming\slicer.org\</span></code>)</p></li>
+<li><p>Linux: <code class="docutils literal notranslate"><span class="pre">~/.config/slicer.org/</span></code></p></li>
+<li><p>Mac: <code class="docutils literal notranslate"><span class="pre">~/.config/slicer.org/</span></code></p></li>
+</ul>
+<p>Deleting the *.ini files restores all the settings to default.</p>
+<p>There are two types of settings: <code class="docutils literal notranslate"><span class="pre">user</span> <span class="pre">specific</span> <span class="pre">settings</span></code> and <code class="docutils literal notranslate"><span class="pre">user</span> <span class="pre">and</span> <span class="pre">revision</span> <span class="pre">specific</span> <span class="pre">settings</span></code>.</p>
+<section id="user-specific-settings">
+<h4>User specific settings<a class="headerlink" href="#user-specific-settings" title="Link to this heading"></a></h4>
+<p>This file is named <code class="docutils literal notranslate"><span class="pre">Slicer.ini</span></code> and it stores settings applying to <em>all versions</em> of Slicer installed by the <em>current user</em>.</p>
+<p>To display the exact location of this settings file, open a terminal and type:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>./Slicer --settings-path
+</pre></div>
+</div>
+<p>On Windows:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Slicer.exe --settings-path | more
+</pre></div>
+</div>
+<p>or enter the following in the Python console:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>slicer.app.slicerUserSettingsFilePath
+</pre></div>
+</div>
+</section>
+<section id="user-and-revision-specific-settings">
+<h4>User and revision specific settings<a class="headerlink" href="#user-and-revision-specific-settings" title="Link to this heading"></a></h4>
+<p>This file is named like <code class="docutils literal notranslate"><span class="pre">Slicer-&lt;REVISION&gt;.ini</span></code> and it stores settings applying to a <em>specific revision</em> of Slicer installed by the <em>current user</em>.</p>
+<p>To display the exact location of this settings file, enter the following in the Python console:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>slicer.app.slicerRevisionUserSettingsFilePath
+</pre></div>
+</div>
+</section>
+</section>
+<section id="application-startup-file">
+<h3>Application startup file<a class="headerlink" href="#application-startup-file" title="Link to this heading"></a></h3>
+<p>Each time Slicer starts, it will look up for a startup script file named <code>.slicerrc.py</code>. Content of this file is executed automatically at each startup of Slicer.</p>
+<p>The file is searched at multiple location and the first one that is found is used. Searched locations:</p>
+<ul class="simple">
+<li><p>Application home folder (<code class="docutils literal notranslate"><span class="pre">slicer.app.slicerHome</span></code>)</p></li>
+<li><p>Path defined in <code class="docutils literal notranslate"><span class="pre">SLICERRC</span></code> environment variable</p></li>
+<li><p>User profile folder (<code class="docutils literal notranslate"><span class="pre">~/.slicerrc.py</span></code>)</p></li>
+</ul>
+<p>You can find the path to the startup script in Slicer by opening in the menu: Edit / Application Settings. ‘’Application startup script’’ path is shown in the ‘’General’’ section (or running <code class="docutils literal notranslate"><span class="pre">getSlicerRCFileName()</span></code> command in Slicer Python console).</p>
+</section>
+<section id="runtime-environment-variables">
+<h3>Runtime environment variables<a class="headerlink" href="#runtime-environment-variables" title="Link to this heading"></a></h3>
+<p>The following environment variables can be set before the application is started to fine-tune its behavior:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PYTHONNOUSERSITE</span></code>: if it is set to <code class="docutils literal notranslate"><span class="pre">1</span></code> then import of user site packages is disabled. For example, this will prevent Slicer to reuse packages downloaded/built by Anaconda.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QT_SCALE_FACTOR</span></code>: see <a class="reference external" href="https://doc.qt.io/qt-5/highdpi.html">Qt documentation</a>. For example, font size can be reduced by running <code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">QT_SCALE_FACTOR=0.5</span></code> in the command console and then starting Slicer in that console.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QT_ENABLE_HIGHDPI_SCALING</span></code>: see <a class="reference external" href="https://doc.qt.io/qt-5/highdpi.html">Qt documentation</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QT_SCALE_FACTOR_ROUNDING_POLICY</span></code>: see <a class="reference external" href="https://doc.qt.io/qt-5/highdpi.html">Qt documentation</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QTWEBENGINE_REMOTE_DEBUGGING</span></code>: port number for Qt webengine remote debugger. Default value is <code class="docutils literal notranslate"><span class="pre">1337</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SLICER_OPENGL_PROFILE</span></code>: Requested OpenGL profile. Valid values are <code class="docutils literal notranslate"><span class="pre">no</span></code> (no profile), <code class="docutils literal notranslate"><span class="pre">core</span></code> (core profile),
+and <code class="docutils literal notranslate"><span class="pre">compatibility</span></code> (compatibility profile). Default value is <code class="docutils literal notranslate"><span class="pre">compatibility</span></code> on Windows systems.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SLICER_BACKGROUND_THREAD_PRIORITY</span></code>: Set priority for background processing tasks. On Linux, it may affect the
+entire process priority. An integer value is expected, default = <code class="docutils literal notranslate"><span class="pre">20</span></code> on Linux and macOS, and <code class="docutils literal notranslate"><span class="pre">-1</span></code> on Windows.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SLICERRC</span></code>: Custom application startup file path. Contains a full path to a Python script. By default it is <code class="docutils literal notranslate"><span class="pre">~/.slicerrc.py</span></code> (where ~ is the user profile a.k.a user home folder).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SLICER_EXTENSIONS_MANAGER_SERVER_URL</span></code>: URL of the extensions manager backend with the <code class="docutils literal notranslate"><span class="pre">/api</span></code> path. Default value is retrieved from the settings using the key <code class="docutils literal notranslate"><span class="pre">Extensions/ServerUrl</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SLICER_EXTENSIONS_MANAGER_FRONTEND_SERVER_URL</span></code>: URL of the extension manager frontend displaying the web page. Default value is retrieved from the settings using the key <code class="docutils literal notranslate"><span class="pre">Extensions/FrontendServerUrl</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SLICER_EXTENSIONS_MANAGER_SERVER_API</span></code>: Supported value is <code class="docutils literal notranslate"><span class="pre">Girder_v1</span></code>. Default value is hard-coded to <code class="docutils literal notranslate"><span class="pre">Girder_v1</span></code>.</p></li>
+</ul>
+</section>
+<section id="qt-built-in-command-line-options">
+<h3>Qt built-in command-line options<a class="headerlink" href="#qt-built-in-command-line-options" title="Link to this heading"></a></h3>
+<p>Slicer application accepts standard Qt command-line arguments that specify how Qt interacts with the windowing system.</p>
+<p>Examples of options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-qwindowgeometry</span> <span class="pre">geometry</span></code>, specifies window geometry for the main window using the X11-syntax. For example: <code class="docutils literal notranslate"><span class="pre">-qwindowgeometry</span> <span class="pre">100x100+50+50</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-display</span> <span class="pre">hostname:screen_number</span></code>, switches displays on X11 and overrides the <code class="docutils literal notranslate"><span class="pre">DISPLAY</span></code> environment variable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-platform</span> <span class="pre">windows:dpiawareness=[0|1|2]</span></code>, sets the <a class="reference external" href="https://doc.qt.io/qt-5/highdpi.html#microsoft-windows">DPI awareness</a> on Windows.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-widgetcount</span></code>, prints debug message at the end about number of widgets left undestroyed and maximum number of widgets existed at the same time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-reverse</span></code>, sets the application’s layout direction to <code class="docutils literal notranslate"><span class="pre">Qt::RightToLeft</span></code>.</p></li>
+</ul>
+<p>To learn about the supported options:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://doc.qt.io/qt-5/qapplication.html#QApplication">https://doc.qt.io/qt-5/qapplication.html#QApplication</a></p></li>
+<li><p><a class="reference external" href="https://doc.qt.io/qt-5/qguiapplication.html#supported-command-line-options">https://doc.qt.io/qt-5/qguiapplication.html#supported-command-line-options</a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since the Slicer launcher is itself a Qt application and the Qt built-in command-line options are expected to <strong>only</strong> be passed to
+the launched application <code class="docutils literal notranslate"><span class="pre">SlicerApp-real</span></code> and not the Slicer launcher, the list of arguments to filter is specified in the <a class="reference external" href="https://github.com/commontk/AppLauncher/blob/master/Main.cpp#L35">Main.cpp</a> found in the <code class="docutils literal notranslate"><span class="pre">commontk/AppLauncher</span></code> project.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="extensions.html" class="btn btn-neutral float-left" title="Extensions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../developer_guide/index.html" class="btn btn-neutral float-right" title="Developer Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

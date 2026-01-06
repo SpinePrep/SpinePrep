@@ -1,0 +1,613 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markups &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Models" href="models.html" />
+    <link rel="prev" title="DICOM" href="dicom.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/markups.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Markups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to">How to</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#place-new-markups">Place new markups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#edit-control-point-positions-in-existing-markups">Edit control point positions in existing markups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#edit-properties-of-a-markup-that-is-picked-in-a-view">Edit properties of a markup that is picked in a view</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#edit-plane-markups">Edit Plane markups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#edit-roi-markups">Edit ROI markups</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#keyboard-shortcuts">Keyboard shortcuts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#display-section">Display section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#control-points-section">Control points section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#measurements-section">Measurements section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#export-import-table-section">Export/Import Table section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#curve-setting-section">Curve setting section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#resample-section">Resample section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plane-settings-section">Plane settings section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#roi-settings-section">ROI settings section</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-template-landmarks">Creating Template Landmarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#quantification">Quantification</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Markups</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to">How to</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#keyboard-shortcuts">Keyboard shortcuts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-template-landmarks">Creating Template Landmarks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="lineprofile.html">Line Profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="petstandarduptakevaluecomputation.html">PET Standard Uptake Value Computation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmentstatistics.html">Segment statistics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Markups</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/markups.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="markups">
+<h1>Markups<a class="headerlink" href="#markups" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This module is used to create and edit markups (point list, line, angle, curve, closed curve, plane, ROI etc.) and adjust their display properties.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_markups_types.png" /></p>
+</section>
+<section id="how-to">
+<h2>How to<a class="headerlink" href="#how-to" title="Link to this heading"></a></h2>
+<section id="place-new-markups">
+<h3>Place new markups<a class="headerlink" href="#place-new-markups" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Click the “Toggle Markups Toolbar” button in the Mouse Interaction toolbar to show/hide the Markups toolbar.</p></li>
+</ol>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_markups_toggle_toolbar_2022_04_24.png" /></p>
+<p>Using the Markups toolbar, click a markups type button to create a new object. The mouse interaction mode will automatically switch into control point placement mode.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_markups_toolbar_2022_04_24.png" /></p>
+<p>Click the down arrow of the control point place button in the Markups toolbar to select the “Place multiple control points” checkbox to keep placing control points continuously, without the need to click the place button after each point.</p>
+<ol class="arabic simple" start="2">
+<li><p>Left-click in a slice view or 3D view to place points.</p></li>
+<li><p>Double-left-click or right-click to finish point placement.</p></li>
+</ol>
+</section>
+<section id="edit-control-point-positions-in-existing-markups">
+<h3>Edit control point positions in existing markups<a class="headerlink" href="#edit-control-point-positions-in-existing-markups" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Make sure that the correct markup is selected in the Markups module or Markups toolbar.</p></li>
+<li><p>Left-click-and drag a control point to move it.</p></li>
+<li><p>Left-click a control point to jump to it in all slice viewers. This helps in adjusting its position along all axes.</p></li>
+<li><p>Right-click to delete or rename a control point or change markup properties.</p></li>
+<li><p>Ctrl + Left-click to place a new control point on a markups curve.</p></li>
+<li><p>Enable Display / Interaction / Visible to show a widget that allows translation/rotation of the entire widget.</p></li>
+</ul>
+</section>
+<section id="edit-properties-of-a-markup-that-is-picked-in-a-view">
+<h3>Edit properties of a markup that is picked in a view<a class="headerlink" href="#edit-properties-of-a-markup-that-is-picked-in-a-view" title="Link to this heading"></a></h3>
+<p>To pick a markup in a viewer so that its properties can be edited in the Markups module, right-click on it in a slice view or 3D view and choose “Edit properties”.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_markups_context_menu_properties_2022_04_24.png" /></p>
+</section>
+<section id="edit-plane-markups">
+<h3>Edit Plane markups<a class="headerlink" href="#edit-plane-markups" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Planes can be defined using 3 “plane types”: Point normal (default, place one or two points defining the origin and normal), 3 points (place 3 points to define the origin and plane axes), and plane fit (place any number of points that will be fit to a plane).</p></li>
+<li><p>When placing a plane with the “point normal” plane type, Alt + Left-click will allow the placement of 2 points. Placing the first point will define the origin of the plane, while the second point will define the normal vector.</p></li>
+<li><p>If the handles are not visible, right-click on the plane outline, or on a control point, and check “Interaction handles visible”.</p></li>
+<li><p>Plane size can be changed using handles on the corners and edges of the plane.</p></li>
+<li><p>Left-click-and-drag on interaction handles to change the plane size.</p></li>
+<li><p>Resizing a plane will change the size mode to “absolute”, preventing changes in the control points from affecting the plane size.</p></li>
+<li><p>Plane type and size mode can be changed from the “Plane settings” section of the Markups module.</p></li>
+</ul>
+</section>
+<section id="edit-roi-markups">
+<h3>Edit ROI markups<a class="headerlink" href="#edit-roi-markups" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>ROI size can be changed using handles on the corners and faces of the ROI.</p></li>
+<li><p>If the handles are not visible, right-click on the ROI outline, or on a control point, and check “Interaction handles visible”.</p></li>
+<li><p>Left-click-and-drag on interaction handles to change the ROI size.</p></li>
+<li><p>Alt + Left-click-and-drag to symmetrically adjust the ROI size without changing the position of the center.</p></li>
+</ul>
+</section>
+</section>
+<section id="keyboard-shortcuts">
+<h2>Keyboard shortcuts<a class="headerlink" href="#keyboard-shortcuts" title="Link to this heading"></a></h2>
+<p>The following keyboard shortcuts are active when the markups toolbar is displayed.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Key</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl</code> + <code>Shift</code> + <code>A</code></td>
+<td>create new markup</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>Shift</code> + <code>T</code></td>
+<td>toggle placing multiple control points</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>Shift</code> + <code>space</code></td>
+<td>place new control point</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Create: click on any of the buttons to create a new markup. Click in any of the viewers to place control points.</p></li>
+<li><p>Markups list: Select a markup to populate the GUI and allow modifications. When control point placement is activated on the toolbar, then points are added to this selected markup.</p></li>
+</ul>
+<section id="display-section">
+<h3>Display section<a class="headerlink" href="#display-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Visibility: Toggle the markup visibility, which will override the individual control point visibility settings. If the eye icon is open, the list is visible, and pressing it will make it invisible. If the eye icon is closed, the list is invisible and pressing the button will make it visible.</p></li>
+<li><p>Opacity: Overall opacity of the selected markup.</p></li>
+<li><p>Glyph Size: Set control point glyph size relative to the screen size (if <code class="docutils literal notranslate"><span class="pre">absolute</span></code> button is not pressed) or as an absolute size (if <code class="docutils literal notranslate"><span class="pre">absolute</span></code> button is depressed).</p></li>
+<li><p>Text Scale: Label size relative to screen size.</p></li>
+<li><p>Interaction handles:</p>
+<ul>
+<li><p>Visibility: Check <code class="docutils literal notranslate"><span class="pre">Visible</span></code> to enable translation/rotation/scaling of the entire markups in slice and 3D views with an interactive widget.</p></li>
+<li><p>Translate, Rotate, Scale: enable/disable adjustment types.</p></li>
+<li><p>Size: size of the handles (relative to the application window size).</p></li>
+<li><p>More options: Clicking more options will show/hide check boxes for controlling the visibility of each interaction handle axis separately.</p></li>
+</ul>
+</li>
+<li><p>Advanced:</p>
+<ul>
+<li><p>View: Select which views the markup is displayed in</p></li>
+<li><p>Selected Color: Select the color that will be used to display the glyph and text when the markup is marked as selected.</p></li>
+<li><p>Unselected Color: Select the color that will be used to display the glyph and text when the markup is not marked as selected.</p></li>
+<li><p>Active Color: Select the color that will be used to display the glyph and text when the mouse hovers over the markup.</p></li>
+<li><p>Glyph Type: Select the symbol that will be used to mark each location. Default is the Sphere3D.</p></li>
+<li><p>Line thickness: The thickness of lines in markups. Defined as either an absolute thickness, or as a percentage of the glyph size.</p></li>
+<li><p>Outline: Visibility and opacity of the markups outline.</p></li>
+<li><p>Fill: Visibility and opacity of the markups fill.</p></li>
+<li><p>Properties Label: Check to display node name and measurements.</p></li>
+<li><p>Control Point Labels: Check to display a label for each control point.</p></li>
+<li><p>Text display:</p>
+<ul>
+<li><p>Font: Change the properties of the font used to display the labels.</p></li>
+<li><p>Background: Change the label background color and opacity.</p></li>
+</ul>
+</li>
+<li><p>3D Display:</p>
+<ul>
+<li><p>Placement mode: Defines how points are placed and moved in views</p>
+<ul>
+<li><p>Unconstrained: Point is moved independently from displayed objects in 3D views (e.g., in parallel with camera plane).</p></li>
+<li><p>Snap to visible surface: Point is snapped to any visible surface in 3D views.</p></li>
+</ul>
+</li>
+<li><p>Occluded visibility: Controls the visibility and opacity of markups that are occluded. If enabled, the markup will remain visible even when it is blocked from view by other nodes (eg. volume rendering, segmentations, models, etc.).</p></li>
+</ul>
+</li>
+<li><p>2D Display:</p>
+<ul>
+<li><p>Projection visibility: Check to enable or disable visualization of projected control points on 2D viewers. The projection of the control points in the 2D viewers will be displayed onto slices around the one on which the control points have been placed.</p></li>
+<li><p>Use Markup Color: If checked, color the projections the same color as the markup.</p></li>
+<li><p>Projection Color: If not using markup color for the projection, use this color.</p></li>
+<li><p>Outlined Behind Slice Plane: Control point projection is displayed filled (opacity = Projection Opacity) when on top of slice plane, outlined when behind, and with full opacity when in the plane. Outline isn’t used for some glyphs (Dash2D, Cross2D, Starburst).</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Scalars: Color markup according to a scalar, e.g. a per-control-point measurement (see Measurements section below)</p>
+<ul>
+<li><p>Visibility: Controls the visibility of the scalars on the markups node.</p></li>
+<li><p>Active Scalar: Select the scalar value that should be displayed.</p></li>
+<li><p>Color Table: Select the color table that should be used to display the scalars.</p></li>
+<li><p>Scalar Range Mode: Select the mode that should be used to control the mapping the scalar range onto the color node.</p>
+<ul>
+<li><p>Manual: range is set manually</p></li>
+<li><p>Data scalar range: range is set to the value range of the active scalar</p></li>
+<li><p>Color table: use range specified in the color table. Useful for showing several nodes using the same color mapping.</p></li>
+<li><p>Data type: range is set to the possible range of the active scalar’s data type. This is only useful mostly for 8-bit scalars.</p></li>
+<li><p>Direct color mapping: if active scalar has 3 or 4 components then those are interpreted as RGB or RGBA values.</p></li>
+</ul>
+</li>
+<li><p>Displayed Range: The currently used scalar range.</p></li>
+</ul>
+</li>
+<li><p>Color Legend: Controls the color legend for the currently active scalars.</p>
+<ul>
+<li><p>Visibility: Controls the visibility of the color legend in the views.</p></li>
+<li><p>Views: Select which views the color legend should be displayed in.</p></li>
+<li><p>Title: Set the title of the color legend.</p></li>
+<li><p>Label text: Display either the scalar values or the name of the color.</p></li>
+<li><p>Number of labels: Change the number of value labels that should be displayed on the legend.</p></li>
+<li><p>Number of colors: Change the maximum number of colors to display.</p></li>
+<li><p>Orientation: Change the display of the color legend between vertical and horizontal.</p></li>
+<li><p>Position: Adjust the position of the legend in the views.</p></li>
+<li><p>Size: Adjust the size of the legend in the views.</p></li>
+<li><p>Title/Label properties: Controls the display of the title.</p>
+<ul>
+<li><p>Format: Change the format used to display the scalar values in the legend (number of decimals, etc.) using a printf style string.</p></li>
+<li><p>Color: Change the color of the title/label.</p></li>
+<li><p>Opacity: Change the opacity of the title/label.</p></li>
+<li><p>Font: Change the font used to render the title/label.</p></li>
+<li><p>Style: Change the display properties of the title/label.</p></li>
+<li><p>Size: Change the size of the title.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Save to Defaults: Save the display properties of this markup to be the new system defaults. The control point label visibility and properties label visibility are settings that are not included when saving defaults, as typically it is better to initialize these based on the markup type (control point labels are more useful for markups point lists, while the properties label is more useful for other markup types).</p></li>
+<li><p>Reset to Defaults: Reset the display properties of this markup to the system defaults.
+Measurements section below)</p>
+<ul>
+<li><p>Visible: Whether scalar coloring should be shown or the original color of the markup</p></li>
+<li><p>Active Scalar: Which scalar array to use for coloring</p></li>
+<li><p>Color Table: Palette used for coloring</p></li>
+<li><p>Scalar Range Mode: Method for determining the range of the scalars (automatic range calculation based on the data is the default)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="control-points-section">
+<h3>Control points section<a class="headerlink" href="#control-points-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Interaction:</p>
+<ul>
+<li><p>Locked: Toggle the markups lock state (if it can be moved by mouse interactions in the viewers), which will override the individual control points lock settings.</p></li>
+<li><p>Fixed list of points: Toggle whether control points can be added or removed from the markups. Control point position can still be undefined.</p></li>
+</ul>
+</li>
+<li><p>Click to Jump Slices: If checked, click in name column to jump slices to that point. The radio buttons control if the slice is centered on the control point or not after the jump. Right click in the table allows jumping 2D slices to a highlighted control point (uses the center/offset radio button settings). Once checked, arrow keys moving the highlighted row will also jump slice viewers to that control point position.</p></li>
+<li><p>Show slice intersections: Toggle visibility of the slice intersection visibility in the 2D views.</p></li>
+<li><p>Buttons: These buttons apply changes to control points in the selected list.</p>
+<ul>
+<li><p>Toggle visibility flag: Toggle visibility flag on all control points in the list. Use the drop down menu to set all to visible or invisible.</p></li>
+<li><p>Toggle selected flag: Toggle selected flag on all control points in the list. Use the drop down menu to set all to selected or deselected. Only selected markups will be passed to command line modules.</p></li>
+<li><p>Toggle lock flag: Toggle lock flag on all control points in the list. Use the drop down menu to set all to locked or unlocked.</p></li>
+<li><p>Skip highlighted control points: Clear the current the position and sets the control point state to skip. When placing multiple control points, control points with this state will be skipped over for placement, moving on to the next unplaced control point.</p></li>
+<li><p>Clear highlighted control points: Clear the current the position and sets the control point state to clear. The control point position can be redefined using place mode.</p></li>
+<li><p>Delete the highlighted control points from the active list: After highlighting rows in the table to select control points, press this button to delete them from the list.</p></li>
+<li><p>Remove all control points from the active list: Pressing this button will delete all of the control points in the active list, leaving it with a list length of 0.</p></li>
+<li><p>Transformed: Check to show the transformed coordinates in the table. This will apply any transform to the points in the list and show that result. Keep unchecked to show the raw RAS values that are stored in MRML. If you harden the transform the transformed coordinates will be the same as the non transformed coordinates.</p></li>
+<li><p>Hide RAS: Check to hide the coordinate columns in the table and uncheck to show them. Right click in rows to see coordinates.</p></li>
+</ul>
+</li>
+<li><p>Control points table: Right click on rows in the table to bring up a context menu to show the full precision coordinates, distance between multiple highlighted control points, delete the highlighted control point, jump slice viewers to that location, refocus 3D viewers to that location, or if there are other lists, to copy or move the control point to another list.</p>
+<ul>
+<li><p>Selected: A check box is shown in this column, it’s check state depends on if the control point is selected or not. Click to toggle the selected state. Only selected control points will be passed to command line modules.</p></li>
+<li><p>Locked: An open or closed padlock is shown in this column, depending on if the control point is unlocked or locked. Click it to toggle the locked state.</p></li>
+<li><p>Visibility: An open or closed eye icon is shown in this column, depending on if the control point is visible or not. Click it to toggle the visibility state.</p></li>
+<li><p>Name: A short name for this control point, displayed in the viewers as text next to the glyphs.</p></li>
+<li><p>Description: A longer description for this control point, not displayed in the viewers.</p></li>
+<li><p>X, Y, Z: The RAS coordinates of this control point, 3 places of precision are shown.</p></li>
+<li><p>State: The current state of the control point. Clicking on the current state will cycle through the possible states.</p>
+<ul>
+<li><p>Edit: The control point is currently being placed. Only one control point can be in the edit state at a time. If the state of another control point is set to edit, then the current control point state will be set to clear.</p></li>
+<li><p>Skip: The control point is not currently defined, and cannot be selected for placement.</p></li>
+<li><p>Restore: The control point has a defined position. Entering this state will restore the last known position of the control point.</p></li>
+<li><p>Clear: The control point has not yet been placed, and can be selected for placement.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Advanced section:</p>
+<ul>
+<li><p>Move Up: Move a highlighted control point up one spot in the list.</p></li>
+<li><p>Move Down: Move a highlighted control point down one spot in the list.</p></li>
+<li><p>Add Control Point: Add a new unplaced control point to the selected list, creating it with an undefined position.</p></li>
+<li><p>Naming:</p>
+<ul>
+<li><p>Name Format: Format for creating names of new control points, using sprintf format style. <code class="docutils literal notranslate"><span class="pre">%N</span></code> is replaced by the list name, <code class="docutils literal notranslate"><span class="pre">%d</span></code> by an integer.</p></li>
+<li><p>Apply: Rename all control points in this list according to the current name format, trying to preserve numbers. A quick way to re-number all the control points according to their index is to use a name format with no number in it, rename, then add the number format specifier %d to the format and rename one more time. Note that if the control point label contains multiple numbers then the first number is assumed to be part of the name and the second number is used as the control point number.</p></li>
+<li><p>Reset: Reset the name format field to the default value, <code class="docutils literal notranslate"><span class="pre">%N-%d</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Convert annotation fiducials: Uses annotation fiducial hierarchies to convert them to markups. Removes the annotation nodes once completed.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="measurements-section">
+<h3>Measurements section<a class="headerlink" href="#measurements-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>This section lists the available measurements of the selected markup</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">length</span></code> for line and curve</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angle</span></code> for angle markups</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">curvature</span> <span class="pre">mean</span></code> and <code class="docutils literal notranslate"><span class="pre">curvature</span> <span class="pre">max</span></code> for curve markups</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">area</span></code> for plane markups</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volume</span></code> for ROI markups</p></li>
+</ul>
+</li>
+<li><p>In the table below the measurement descriptions, the measurements can be enabled/disabled</p>
+<ul>
+<li><p>Basic measurements (e.g. length, angle) are enabled by default</p></li>
+<li><p>Curve markups support curvature calculation, which is off by default</p>
+<ul>
+<li><p>When turned on, the curvature data can be displayed as scalar coloring (see Display/Scalars above)</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="export-import-table-section">
+<h3>Export/Import Table section<a class="headerlink" href="#export-import-table-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>This section controls the import and export of markups to <code class="docutils literal notranslate"><span class="pre">vtkMRMLTableNode</span></code>.</p></li>
+<li><p>Operation: Select the operation, either Export or Import.</p></li>
+<li><p>Output/Input table: Select the input/output node.</p></li>
+<li><p>Advanced:</p>
+<ul>
+<li><p>Export coordinate system: Choose if the markups are exported in RAS or LPS.</p></li>
+</ul>
+</li>
+<li><p>Import/Export: Execute export/import operation.</p></li>
+</ul>
+</section>
+<section id="curve-setting-section">
+<h3>Curve setting section<a class="headerlink" href="#curve-setting-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Curve type:</p>
+<ul>
+<li><p>linear: control points are connected with straight line</p></li>
+<li><p>spline, Kochanek spline: smooth interpolating curve</p></li>
+<li><p>polynomial: smooth approximating curve</p></li>
+<li><p>shortest distance on surface: curve points are forced to be on the selected model’s surface points, connected with a minimal-cost path across the model mesh’s edges</p></li>
+</ul>
+</li>
+<li><p>Constrain to Model: Model to constrain the curve to. For curve types linear, spline, Kochanek spline, and polynomial the curves will be generated from the control points and then projected onto the surface. For <code class="docutils literal notranslate"><span class="pre">shortest</span> <span class="pre">distance</span> <span class="pre">on</span> <span class="pre">surface</span></code> curve type the curve is generated directly on this model.</p></li>
+<li><p>Surface: surface used for <code class="docutils literal notranslate"><span class="pre">shortest</span> <span class="pre">distance</span> <span class="pre">on</span> <span class="pre">surface</span></code> curve type and cost function that is minimized to find path connecting two control points</p></li>
+<li><p>Advanced:</p>
+<ul>
+<li><p>Maximum projection distance: The maximum search radius tolerance defining the allowable projection distance for projecting curve points. It is specified as a percentage of the model’s bounding box diagonal in world coordinate system.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="resample-section">
+<h3>Resample section<a class="headerlink" href="#resample-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Output node: Replace control points by curve points sampled at equal distances.</p></li>
+<li><p>Constrain points to surface: If a model is selected, the resampled points will be projected to the chosen model surface.</p></li>
+<li><p>Advanced:</p>
+<ul>
+<li><p>Maximum projection distance: The maximum search radius tolerance defining the allowable projection distance for projecting resampled control points. It is specified as a percentage of the model’s bounding box diagonal in world coordinate system.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="plane-settings-section">
+<h3>Plane settings section<a class="headerlink" href="#plane-settings-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Plane type: The method used to define the plane using control points.</p>
+<ul>
+<li><p>Three points: Plane can be defined by placing 3 control points. The origin of the plane will be at the first control point, the x-axis will be defined by the second, and plane normal will be defined by the cross product of the vectors from the second and third points to the first point.</p></li>
+<li><p>Point normal: Plane is defined using a single point and a normal vector. The normal vector will be parallel with the view direction. If placing in 3D, can be placed on a surface or volume rendering, which will align the plane normal with the surface normal.</p></li>
+<li><p>Plane fit: The plane is defined by fitting a plane to any number of control points (minimum 3).</p></li>
+</ul>
+</li>
+<li><p>Size mode: Method used define the size of the plane.</p>
+<ul>
+<li><p>Auto: Plane size will be automatically defined based on the plane type.</p></li>
+<li><p>Absolute: Plane size will be fixed.</p></li>
+</ul>
+</li>
+<li><p>Size: The width and length of the plane. Can only be modified in absolute plane size mode.</p></li>
+<li><p>Bounds: The minimum and maximum bounds of the plane along the plane XY axes. Can only be modified in absolute plane size mode.</p></li>
+<li><p>Normal: Controls the plane normal direction arrow visibility and opacity.</p></li>
+</ul>
+</section>
+<section id="roi-settings-section">
+<h3>ROI settings section<a class="headerlink" href="#roi-settings-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>ROI type:</p>
+<ul>
+<li><p>Box: ROI is specified by a single control point in the center, axis directions, and size along each axis direction.</p></li>
+<li><p>BoundingBox: ROI is specified as the bounding box of all the control points.</p></li>
+</ul>
+</li>
+<li><p>Inside out: If enabled then the selected region is outside the ROI boundary. It is up to each module to decide if this information is used. For example, if ROI is used for cropping a volume then this flag is ignored, as an image cannot have a hole in it; but for example inside out can make sense for blanking out region of a volume.</p></li>
+<li><p>L-R, P-A, I-S Range: Extents of the ROI box along the ROI axes.</p></li>
+<li><p>Display ROI: show/hide the ROI in all views.</p></li>
+<li><p>Interactive mode: allow changing the ROI position, orientation, and size in views using interaction handles. If interaction handles are disabled, the ROI may still be changed by moving control points (unless control points are locked, too).</p></li>
+</ul>
+</section>
+</section>
+<section id="creating-template-landmarks">
+<h2>Creating Template Landmarks<a class="headerlink" href="#creating-template-landmarks" title="Link to this heading"></a></h2>
+<p>In order to define a workflow in which a known list of markups must be placed, it is possible to save/load predefined markups lists to use as templates.</p>
+<p>Defining a template:</p>
+<ol class="arabic simple">
+<li><p>Create a new point list using the toolbar, or the create button in the Markups module. You may want to exit place mode by clicking on the toolbar, or by right-clicking in a view.</p></li>
+<li><p>In the Markups module, select the newly created points list</p></li>
+<li><p>In the Control Points - Advanced section, create the required number of control points for the template by clicking on the Add Control Point button.</p></li>
+<li><p>Set the name/description of the control points in the control points table.</p></li>
+<li><p>To prevent points from being added or removed, click on the “Fixed list of points” button at the top of the control points section.</p></li>
+<li><p>Export the template to file by right-clicking on the points list in the markups module, or in the subject hierarchy, and select “Export to file…”.</p></li>
+</ol>
+<p>Loading a template:</p>
+<ol class="arabic simple">
+<li><p>Drag-and-drop the template file into 3D Slicer.</p></li>
+<li><p>Select the loaded template in the markups toolbar.</p></li>
+<li><p>Enter place mode with “Place multiple control points” enabled.</p></li>
+<li><p>Place points until all of the points in the template have been placed. Each point in the template will be selected for placement sequentially. Once all points have been placed, place mode will be automatically disabled.</p></li>
+</ol>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<p>See examples and other developer information in <a class="reference internal" href="../../developer_guide/modules/markups.html"><span class="std std-doc">Developer guide</span></a> and <a class="reference internal" href="../../developer_guide/script_repository.html#markups"><span class="std std-ref">Script repository</span></a>.</p>
+</section>
+<section id="related-modules">
+<h2>Related modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="endoscopy.html"><span class="std std-doc">Endoscopy</span></a> module uses control points</p></li>
+<li><p>This module replaced the legacy Annotations module.</p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Authors:</p>
+<ul class="simple">
+<li><p>Andras Lasso (PerkLab, Queen’s University)</p></li>
+<li><p>Davide Punzo (Kapteyn Astronomical Institute, University of Groningen)</p></li>
+<li><p>Kyle Sunderland (PerkLab, Queen’s University)</p></li>
+<li><p>Nicole Aucoin (SPL, BWH)</p></li>
+<li><p>Csaba Pinter (Pixel Medical / Ebatinca)</p></li>
+<li><p>Sara Rolfe (University of Washington, Seattle Children’s Research Institute)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is part of the National Alliance for Medical Image Computing (NA-MIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149. Information on NA-MIC can be obtained from the <a class="reference external" href="https://www.na-mic.org/">NA-MIC website</a>.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_spl.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dicom.html" class="btn btn-neutral float-left" title="DICOM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models.html" class="btn btn-neutral float-right" title="Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

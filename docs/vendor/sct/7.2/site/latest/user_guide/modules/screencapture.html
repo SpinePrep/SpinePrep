@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Screen Capture &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Dynamic Modeler" href="dynamicmodeler.html" />
+    <link rel="prev" title="Endoscopy" href="endoscopy.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/screencapture.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#utilities">Utilities</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="brainsdeface.html">Brain Deface from T1/T2 image (BRAINS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="brainsstriprotation.html">Strip Rotation (BRAINS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="brainstransformconvert.html">Transform Convert (BRAINS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dicompatcher.html">DICOM Patcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="endoscopy.html">Endoscopy</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Screen Capture</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setting-up-ffmpeg">Setting up ffmpeg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Screen Capture</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/screencapture.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="screen-capture">
+<h1>Screen Capture<a class="headerlink" href="#screen-capture" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This module is for creating videos, image sequences, or lightbox image from 3D and slice view contents.</p>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<section id="input">
+<h3>Input<a class="headerlink" href="#input" title="Link to this heading"></a></h3>
+<ul>
+<li><p><strong>Main view:</strong> This view is used for capturing (rotated, sweeped, etc.).</p></li>
+<li><p><strong>Capture all views:</strong> When enabled, all views in the layout will be captured. Otherwise, only the main view is captured. By capturing all views, it is possible to see the animated view (such as a moving slice) in 3D and in other slice views.</p></li>
+<li><p><strong>Capture mode:</strong> specifies how the main view will be modified during capture.</p>
+<ul>
+<li><p><strong>single frame:</strong> Acquire a single frame of selected main view or all views if “Capture all views” is enabled.</p></li>
+<li><p><strong>3D rotation:</strong> Acquire video of a rotating 3D view. For smooth repeated display of a 360-degree rotation it is recommended to choose 31 or 61 as “Number of images”.</p></li>
+<li><p><strong>slice sweep:</strong> Acquire video while going through selected range of image frames (for slice viewer only).</p></li>
+<li><p><strong>slice fade:</strong> Acquire video while fading between the foreground and background image (for slice viewer only).).</p></li>
+<li><p><strong>sequence:</strong> sequence: Acquire video while going through items in the selected sequence browser.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>3D rotation</p></th>
+<th class="head"><p>Slice sweep</p></th>
+<th class="head"><p>Slice fade</p></th>
+<th class="head"><p>Sequence</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><img alt="rotation animation" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_screencapture_rotation.gif" /></p></td>
+<td><p><img alt="sweep animation" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_screencapture_sweep.gif" /></p></td>
+<td><p><img alt="fade animation" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_screencapture_fade.gif" /></p></td>
+<td><p><img alt="sequence animation" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_screencapture_sequence.gif" /></p></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="output">
+<h3>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h3>
+<ul>
+<li><p><strong>Output type:</strong></p>
+<ul>
+<li><p><strong>image series:</strong> Save screenshots as separate image files (in jpg or png file format).</p></li>
+<li><p><strong>video:</strong> Save animation as a compressed video file. Requires installation of <a class="reference internal" href="#setting-up-ffmpeg">ffmpeg video encoder</a>.</p></li>
+<li><p><strong>lightbox image:</strong> Save screenshots as separate jpg or png files.</p>
+<p><img alt="lightbox image" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_screencapture_lightbox.png" /></p>
+</li>
+</ul>
+</li>
+<li><p><strong>Number of images:</strong> Defines how many frames are generated in the specified range. Higher number results in smoother animation but larger video file. If <strong>single frame</strong> capture mode is selected then a single image is captured (and counter in the filename is automatically incremented, therefore it can be used to acquire many screenshots manually).</p></li>
+<li><p><strong>Output directory:</strong> Output image or video will be saved in this directory.</p></li>
+<li><p><strong>Output file name:</strong> Output file name for video and lightbox.</p></li>
+<li><p><strong>Video format:</strong></p>
+<ul class="simple">
+<li><p><strong>H264:</strong> modern compressed video format, compatible with current video players.</p></li>
+<li><p><strong>H264 (high-quality):</strong> H264 with higher-quality setting, results in larger file.</p></li>
+<li><p><strong>MPEG4:</strong> commonly used compressed video format, mostly compatible with older video players.</p></li>
+<li><p><strong>MPEG4 (high-quality):</strong> MPEG4 with higher-quality setting, results in larger file.</p></li>
+<li><p><strong>Animated GIF:</strong> file format that provides lower quality images and large files, but it is more compatible with some legacy image viewers and websites.</p></li>
+<li><p><strong>Animated GIF (grayscale):</strong> animated GIF, saved as a grayscale image, resulting in slightly smaller files.</p></li>
+</ul>
+</li>
+<li><p><strong>Video length:</strong> Set total replay time of the video by adjusting the video frame rate.</p></li>
+<li><p><strong>Video frame rate:</strong> Set replay frame rate of the video by adjusting video length.</p></li>
+</ul>
+</section>
+<section id="advanced">
+<h3>Advanced<a class="headerlink" href="#advanced" title="Link to this heading"></a></h3>
+<ul>
+<li><p><strong>Forward-backward:</strong> After generating images by animating in forward direction, adds animation in reverse direction as well. It removes the “jump” at the end of the animation when it is played repeatedly in a loop.</p></li>
+<li><p><strong>Repeat:</strong> Repeat the entire animation the specified number of times. It is useful for making animations longer (e.g., for uploading to YouTube).</p></li>
+<li><p><strong>ffmpeg executable:</strong> Path to ffmpeg executable. Only used if video export is selected. Requires installation of <a class="reference internal" href="#setting-up-ffmpeg">ffmpeg video encoder</a>.</p></li>
+<li><p><strong>Video extra options:</strong> Options for ffmpeg that controls video format and quality. Only used if video export is selected.</p>
+<ul class="simple">
+<li><p>These parameters are already specified by the module and therefore should not be included in the extra options: <code class="docutils literal notranslate"><span class="pre">-i</span> <span class="pre">(input</span> <span class="pre">files)</span> <span class="pre">-y</span> <span class="pre">(overwrite</span> <span class="pre">without</span> <span class="pre">asking)</span> <span class="pre">-r</span> <span class="pre">(frame</span> <span class="pre">rate)</span> <span class="pre">-start_number</span></code>.</p></li>
+<li><p>Information about available options:</p>
+<ul>
+<li><p><a class="reference external" href="https://trac.ffmpeg.org/wiki/Encode/H.264">https://trac.ffmpeg.org/wiki/Encode/H.264</a></p></li>
+<li><p><a class="reference external" href="https://trac.ffmpeg.org/wiki/Encode/MPEG-4">https://trac.ffmpeg.org/wiki/Encode/MPEG-4</a></p></li>
+<li><p><a class="reference external" href="https://trac.ffmpeg.org/wiki/Encode/YouTube">https://trac.ffmpeg.org/wiki/Encode/YouTube</a></p></li>
+<li><p><a class="reference external" href="https://ffmpeg.org/ffmpeg-all.html">https://ffmpeg.org/ffmpeg-all.html</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Image file name pattern:</strong> Defines image file naming pattern. <code class="docutils literal notranslate"><span class="pre">%05d</span></code> will be replaced by the image number (5 numbers, padded with zeros). This is only used if image series output is selected.</p></li>
+<li><p><strong>Lightbox image columns:</strong> Number of columns in the generated lighbox image.</p></li>
+<li><p><strong>Maximum number of images:</strong> Specifies the maximum range of the “number of images” slider. Useful for creating very long animations.</p></li>
+<li><p><strong>Output volume node:</strong> If “single frame” capture mode is selected then the output can be saved into the selected volume node.</p></li>
+<li><p><strong>View controllers:</strong> Show view controllers. If unchecked then view controllers will be temporarily hidden during screen capture.</p></li>
+<li><p><strong>Transparent background:</strong> If checked then images will be captured with transparent background.</p></li>
+<li><p><strong>Watermark image:</strong> Adds a watermark image to the captured images.</p>
+<p><img alt="watermarked image" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_screencapture_watermark.png" /></p>
+<ul class="simple">
+<li><p><strong>Position:</strong> Position of the watermark image over the captured image.</p></li>
+<li><p><strong>Size:</strong> Watermark image size, as percentage of the original size.</p></li>
+<li><p><strong>Opacity:</strong>  Watermark image opacity, larger value makes the watermark more visible (less transparent).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="setting-up-ffmpeg">
+<h2>Setting up ffmpeg<a class="headerlink" href="#setting-up-ffmpeg" title="Link to this heading"></a></h2>
+<p>FFmpeg library is not packaged with 3D Slicer due to large package size and licensing requirements for some video compression methods (see <a class="reference external" href="https://ffmpeg.org/legal.html">https://ffmpeg.org/legal.html</a>). The FFmpeg library has to be downloaded and set up only once and 3D Slicer will remember its location.</p>
+<section id="windows-setup-instructions">
+<h3>Windows setup instructions<a class="headerlink" href="#windows-setup-instructions" title="Link to this heading"></a></h3>
+<p>On Windows, Screen Capture model can automatically download and install ffmpeg when needed. Follow these instructions for manual setup:</p>
+<ul class="simple">
+<li><p>Download ffmpeg from here: <a class="reference external" href="https://ffmpeg.org/download.html">https://ffmpeg.org/download.html</a> (click Windows icon, select a package, for example <code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">FFmpeg64-bit</span> <span class="pre">static</span></code>)</p></li>
+<li><p>Extract downloaded package (for example, to <code class="docutils literal notranslate"><span class="pre">C:\Users\Public</span></code>)</p></li>
+<li><p>In Advanced section, ffmpeg executable: select path for ffmpeg.exe (for example, <code class="docutils literal notranslate"><span class="pre">C:\Users\Public\ffmpeg-20160912-bc7066f-win32-static\bin\ffmpeg.exe</span></code>)</p></li>
+</ul>
+</section>
+<section id="macos-setup-instructions">
+<h3>MacOS setup instructions<a class="headerlink" href="#macos-setup-instructions" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Install homebrew (from <a class="reference external" href="https://brew.sh/">https://brew.sh/</a>)</p></li>
+<li><p>Run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">brew install ffmpeg</span>
+</pre></div>
+</div>
+</li>
+<li><p>In Advanced section, ffmpeg executable: select <code class="docutils literal notranslate"><span class="pre">/usr/local/bin/ffmpeg</span></code></p></li>
+</ul>
+</section>
+<section id="linux-setup-instructions">
+<h3>Linux setup instructions<a class="headerlink" href="#linux-setup-instructions" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Run these commands from the terminal:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg</span>
+<span class="go">cd ffmpeg</span>
+<span class="go">sudo apt-get install libx264-dev</span>
+<span class="go">./configure --enable-gpl --enable-libx264 --prefix=${HOME}</span>
+<span class="go">make install</span>
+</pre></div>
+</div>
+</li>
+<li><p>In Advanced section, ffmpeg executable: select <code class="docutils literal notranslate"><span class="pre">${HOME}/bin/ffmpeg</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="related-modules">
+<h2>Related modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SlicerMorph/SlicerMorph/tree/master/Docs/Animator#readme">Animator</a> module in <a class="reference external" href="https://slicermorph.github.io/">SlicerMorph extension</a> allows creating more complex animations, such as cutting through a volume (by changing region of interest), adjusting volume rendering transfer functions, or exploding view of complex model assembly.</p></li>
+<li><p><a class="reference internal" href="sceneviews.html"><span class="std std-doc">Scene Views</span></a> module can create snapshot of the entire scene content along with a screenshot, which are all saved in the scene.</p></li>
+<li><p>Capture Toolbar allows creation simple screenshots that are saved in the scene. The feature may be removed in the future. Screen Capture module’s “Output volume node” feature can be used for saving screenshots in the scene.</p></li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>This is a Python scripted module. Source code is available <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Modules/Scripted/ScreenCapture/ScreenCapture.py">here</a>.</p></li>
+<li><p>Examples of capturing images are available in the <a class="reference internal" href="../../developer_guide/script_repository.html#screen-capture"><span class="std std-ref">Script Repository</span></a></p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Andras Lasso (PerkLab, Queen’s University)</p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work was was funded by Cancer Care Ontario and the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO)</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_ocairo.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="endoscopy.html" class="btn btn-neutral float-left" title="Endoscopy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dynamicmodeler.html" class="btn btn-neutral float-right" title="Dynamic Modeler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

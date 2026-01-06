@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Broker &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Execution Model Tour" href="executionmodeltour.html" />
+    <link rel="prev" title="Cameras" href="cameras.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/eventbroker.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="cameras.html">Cameras</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Event Broker</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="executionmodeltour.html">Execution Model Tour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensionwizard.html">Extension Wizard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="webserver.html">WebServer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Event Broker</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/eventbroker.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="event-broker">
+<h1>Event Broker<a class="headerlink" href="#event-broker" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Profiling tool for the developers. The event broker manages observations between VTK objects in Slicer. Observed objects are populated in the tree view, their observers are listed under each observed object events. Selecting a VTK object in the list, dumps (PrintSelf()) all its information.</p>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Actions</strong>: Actions in the view.</p>
+<ul>
+<li><p><strong>Refresh</strong>: Rescan the event broker and populate the tree view with the observers of the MRML scene, nodes, logics.</p></li>
+<li><p><strong>Reset Times</strong>: Reset the time spent in all callbacks to 0 second. To be used with “Show observations with Elapsed Times</p></li>
+<li><p><strong>Show observations with Elapsed Times &gt;0</strong>: Filter the tree view to show only objects for which time has been spent in at least one of its callback.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Julien Finet (Kitware)</p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is part of the National Alliance for Medical Image Computing (NAMIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cameras.html" class="btn btn-neutral float-left" title="Cameras" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="executionmodeltour.html" class="btn btn-neutral float-right" title="Execution Model Tour" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

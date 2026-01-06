@@ -1,0 +1,991 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extensions &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python FAQ" href="python_faq.html" />
+    <link rel="prev" title="Volumes" href="modules/volumes.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/extensions.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/index.html">Modules API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Extensions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-an-extension">Create an extension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build-an-extension">Build an extension</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#linux-and-macos">Linux and macOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#test-an-extension">Test an extension</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-slicer-with-your-custom-modules">Run Slicer with your custom modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-automatic-tests">Run automatic tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#continuous-integration">Continuous integration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#create-an-extension-package">Create an extension package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Linux and macOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#write-documentation-for-an-extension">Write documentation for an extension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#distribute-an-extension">Distribute an extension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application-settings">Application settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extension-catalog-entry-file">Extension catalog entry file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extension-description-file">Extension description file</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#syntax">Syntax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#supported-metadata-fields">Supported metadata fields</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#extensions-server">Extensions server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extensions-index">Extensions Index</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extensions-build-system">Extensions build system</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#build-list-of-extensions-manually">Build list of extensions manually</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-complete-extensions-index-with-dashboard-submission">Build complete Extensions Index with dashboard submission</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#frequently-asked-questions">Frequently asked questions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#can-an-extension-contain-different-types-of-modules">Can an extension contain different types of modules?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#should-the-name-of-the-source-repository-match-the-name-of-the-extension">Should the name of the source repository match the name of the extension?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#where-can-i-find-the-extension-templates">Where can I find the extension templates?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-are-superbuild-extension-packaged">How are Superbuild extension packaged?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-build-a-custom-slicer-package-with-additional-extensions-bundled">How to build a custom Slicer package with additional extensions bundled?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#can-an-extension-depend-on-other-extensions">Can an extension depend on other extensions?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-dependent-extensions-are-configured-and-built">How dependent extensions are configured and built?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#what-are-the-extension-specific-targets-install-package-packageupload">What are the extension specific targets: INSTALL, PACKAGE, packageupload, …?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#is-launch-flag-available-for-a-macosx-installed-slicer-app">Is –launch flag available for a MacOSX installed Slicer.app?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-check-if-an-extension-is-built-by-slicer-extensions-build-system">How to check if an extension is built by Slicer Extensions build system?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-often-extensions-are-uploaded-on-the-extensions-server">How often extensions are uploaded on the extensions server?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#will-an-extension-be-uploaded-if-associated-tests-are-failing">Will an extension be uploaded if associated tests are failing?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-i-associate-a-remote-with-my-local-extension-git-source-directory">How do I associate a remote with my local extension git source directory?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#which-remote-name-is-expected-for-extension-git-checkout">Which remote name is expected for extension git checkout?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-extensionwizard-failed-to-describe-extension-script-does-not-set-extension-homepage">Why ExtensionWizard failed to describe extension: “script does not set ‘EXTENSION_HOMEPAGE’”?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#is-project-statement-allowed-in-extension-cmakelists-txt">Is project() statement allowed in extension CMakeLists.txt?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#is-call-to-if-not-slicer-source-dir-required-to-protect-find-package-slicer-in-extension-cmakelists-txt">Is call to “if(NOT Slicer_SOURCE_DIR)” required to protect “find_package(Slicer)” in extension CMakeLists.txt?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-is-the-contribute-option-is-not-available-with-the-extensionwizard">Why is the –contribute option is not available with the ExtensionWizard?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-package-third-party-libraries">How to package third party libraries?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#can-i-use-c-14-17-20-language-features">Can I use C++14/17/20 language features?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-i-publish-a-paper-about-my-extension">How do I publish a paper about my extension?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-force-slicer-to-download-extensions-corresponding-to-a-different-slicer-revision">How to force Slicer to download extensions corresponding to a different Slicer revision?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-address-itk-test-driver-caught-an-itk-exception-could-not-create-io-object-for-reading-file">How to address ITK test driver caught an ITK exception “Could not create IO object for reading file”?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Extensions</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/extensions.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="extensions">
+<h1>Extensions<a class="headerlink" href="#extensions" title="Link to this heading"></a></h1>
+<p>Developers can create extensions to provide additional features to users. See an overview of extensions in the <a class="reference internal" href="../user_guide/extensions.html#extensions-manager"><span class="std std-ref">Extensions manager page</span></a>.</p>
+<section id="create-an-extension">
+<h2>Create an extension<a class="headerlink" href="#create-an-extension" title="Link to this heading"></a></h2>
+<p>If you have developed a script or module that you would like to share with others then it is recommended to submit it to the Slicer Extensions Index. Indexed extensions get listed in the Extensions Manager in Slicer and user can install them by a few mouse clicks.</p>
+<ul class="simple">
+<li><p>Scan through the <a class="reference internal" href="../user_guide/extensions.html#extensions-manager"><span class="std std-ref">user</span></a> and <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/FAQ/Extensions">developer</a> extension FAQs</p></li>
+<li><p>Inform a community about your plans on the <a class="reference external" href="https://discourse.slicer.org">Slicer forum</a> to get information about potential parallel efforts (other developers may already work on a similar idea and you could join or build on each other’s work), past efforts (related tools might have been available in earlier Slicer versions or in other software that you may reuse), and get early feedback from prospective users. You may also seek advice on the name of your extension and how to organize features into modules. All these can save you a lot of time in the long term.</p></li>
+<li><p>If you have not done already, use the <a class="reference internal" href="../user_guide/modules/extensionwizard.html#extension-wizard"><span class="std std-ref">Extension Wizard</span></a> module in Slicer to create an extension that will contain your module(s).</p></li>
+<li><p>If developing <a class="reference internal" href="module_overview.html"><span class="std std-doc">C++ loadable or CLI modules</span></a> (not needed if developing in Python):</p>
+<ul>
+<li><p><a class="reference internal" href="build_instructions/index.html"><span class="std std-doc">build Slicer application</span></a>.</p></li>
+<li><p><a class="reference internal" href="#build-an-extension">build your extension</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="build-an-extension">
+<span id="extension-build"></span><h2>Build an extension<a class="headerlink" href="#build-an-extension" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To compile extensions containing C++-implemented modules, it’s essential to <a class="reference internal" href="build_instructions/index.html"><span class="std std-doc">build Slicer from source</span></a> on your local machine. These extensions cannot be compiled against a binary download. However, if your modules are solely developed in Python, there’s no need to build the extension.</p>
+<p>Once your work is ready for sharing, refer to <a class="reference internal" href="#extension-distribute"><span class="std std-ref">Distribute an extension</span></a> for guidelines.</p>
+</div>
+<p>Similarly to the building of Slicer core, multi-configuration builds are not supported: one build tree can be only used for one build mode (Release or Debug or RelWithDebInfo or MinSizeRel). If a release and debug mode build are needed then the same source code folder can be used (e.g., <code class="docutils literal notranslate"><span class="pre">C:\D\SlicerHeart</span></code>) but a separate binary folder must be created for each build mode (e.g., <code class="docutils literal notranslate"><span class="pre">C:\D\SlicerHeart-R</span></code> and <code class="docutils literal notranslate"><span class="pre">C:\D\SlicerHeart-D</span></code> for release and debug modes).</p>
+<p>Assuming that the source code of your extension is located in folder <code class="docutils literal notranslate"><span class="pre">MyExtension</span></code>, an extension can be built by the following steps.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For testing purposes, it is possible to force the Slicer revision associated with the extension build by setting the <code class="docutils literal notranslate"><span class="pre">Slicer_REVISION</span></code>
+environment variable before configuring the project:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>MyExtension-debug
+$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">Slicer_REVISION</span><span class="o">=</span><span class="m">31806</span>
+$<span class="w"> </span>cmake<span class="w"> </span>-DCMAKE_BUILD_TYPE:STRING<span class="o">=</span>Debug<span class="w"> </span>-DSlicer_DIR:PATH<span class="o">=</span>/path/to/Slicer-SuperBuild-Debug/Slicer-build<span class="w"> </span>../MyExtension
+<span class="o">[</span>...<span class="o">]</span>
+--<span class="w"> </span>SlicerConfig:<span class="w"> </span>Forcing<span class="w"> </span>Slicer_REVISION<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;31806&#39;</span>
+<span class="o">[</span>...<span class="o">]</span>
+--<span class="w"> </span>Configuring<span class="w"> </span><span class="k">done</span>
+--<span class="w"> </span>Generating<span class="w"> </span><span class="k">done</span>
+--<span class="w"> </span>Build<span class="w"> </span>files<span class="w"> </span>have<span class="w"> </span>been<span class="w"> </span>written<span class="w"> </span>to:<span class="w"> </span>/path/to/MyExtension-debug
+</pre></div>
+</div>
+</div>
+<section id="linux-and-macos">
+<h3>Linux and macOS<a class="headerlink" href="#linux-and-macos" title="Link to this heading"></a></h3>
+<p>Start a terminal.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mkdir<span class="w"> </span>MyExtension-debug
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>MyExtension-debug
+$<span class="w"> </span>cmake<span class="w"> </span>-DCMAKE_BUILD_TYPE:STRING<span class="o">=</span>Debug<span class="w"> </span>-DSlicer_DIR:PATH<span class="o">=</span>/path/to/Slicer-SuperBuild-Debug/Slicer-build<span class="w"> </span>../MyExtension
+$<span class="w"> </span>make
+</pre></div>
+</div>
+<section id="cmake-osx-variables">
+<h4>CMAKE_OSX_ variables<a class="headerlink" href="#cmake-osx-variables" title="Link to this heading"></a></h4>
+<p>On macOS, the extension must be configured specifying <code class="docutils literal notranslate"><span class="pre">CMAKE_OSX_*</span></code> variables matching the one used to configure Slicer: <code class="docutils literal notranslate"><span class="pre">-DCMAKE_OSX_ARCHITECTURES:STRING=x86_64</span> <span class="pre">-DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=/same/as/Slicer</span> <span class="pre">-DCMAKE_OSX_SYSROOT:PATH=SameAsSlicer</span></code></p>
+<p>Instead of manually setting these variables, within your extension, including the <code>ConfigurePrerequisites</code> component before the project statement should ensure it uses the same CMAKE_OSX_* variables as Slicer:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s">Slicer</span><span class="w"> </span><span class="s">COMPONENTS</span><span class="w"> </span><span class="s">ConfigurePrerequisites</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+
+<span class="nb">project</span><span class="p">(</span><span class="s">Foo</span><span class="p">)</span>
+
+<span class="c"># [...]</span>
+
+<span class="nb">find_package</span><span class="p">(</span><span class="s">Slicer</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">include</span><span class="p">(</span><span class="o">${</span><span class="nv">Slicer_USE_FILE</span><span class="o">}</span><span class="p">)</span>
+
+<span class="c"># [...]</span>
+</pre></div>
+</div>
+<p>For more details, see <a class="reference external" href="https://github.com/Slicer/Slicer/blob/6f4e2946bb129d317dfdb1116f06f5308b449044/CMake/SlicerConfig.cmake.in#L10-L38">here</a>.</p>
+</section>
+</section>
+<section id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Link to this heading"></a></h3>
+<p>Run <code class="docutils literal notranslate"><span class="pre">CMake</span> <span class="pre">(cmake-gui)</span></code> from the Windows Start menu.</p>
+<ul class="simple">
+<li><p>Select source and build directory</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Configure</span></code></p></li>
+<li><p>Select generator (just accept the default if you only have one compiler toolset installed)</p></li>
+<li><p>Choose to create build directory if asked</p></li>
+<li><p>The configuration is expected to display an error message due to <code class="docutils literal notranslate"><span class="pre">Slicer_DIR</span></code> variable not specified yet.</p></li>
+<li><p>Specify <code class="docutils literal notranslate"><span class="pre">Slicer_DIR</span></code> by replacing <code class="docutils literal notranslate"><span class="pre">Slicer_DIR-NOTFOUND</span></code> by the Slicer inner-build folder (for example <code class="docutils literal notranslate"><span class="pre">c:/D/SD/Slicer-build</span></code>).</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Configure</span></code>. No errors should be displayed.</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Generate</span></code> button.</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Open</span> <span class="pre">project</span></code> button to open <code class="docutils literal notranslate"><span class="pre">MyExtension.sln</span></code> in Visual Studio.</p></li>
+<li><p>Select build configuration (Debug, Release, …) that matches the build configuration (Release, Debug, …) of the chosen Slicer build.</p></li>
+<li><p>In the menu choose Build / Build Solution.</p></li>
+</ul>
+</section>
+</section>
+<section id="test-an-extension">
+<h2>Test an extension<a class="headerlink" href="#test-an-extension" title="Link to this heading"></a></h2>
+<section id="run-slicer-with-your-custom-modules">
+<h3>Run Slicer with your custom modules<a class="headerlink" href="#run-slicer-with-your-custom-modules" title="Link to this heading"></a></h3>
+<p>To test an extension, you need to specify location(s) where Slicer should look for additional modules.</p>
+<ul class="simple">
+<li><p>If the extension is not built: append all source code folders that contain module <code class="docutils literal notranslate"><span class="pre">.py</span></code> files to “additional module paths”.</p>
+<ul>
+<li><p>Option A (recommended): Drag-and-drop the <code class="docutils literal notranslate"><span class="pre">.py</span></code> files (or the parent folder, or that folder’s parent) to the application window, select <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Python</span> <span class="pre">scripted</span> <span class="pre">modules</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">application</span></code> in the popup window, click OK. Select which modules to add to load immediately and click <code class="docutils literal notranslate"><span class="pre">Yes</span></code>. The selected modules will be immediately loaded and made available in the module list. If you want to load the modules only in the current session, then uncheck <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">selected</span> <span class="pre">modules</span> <span class="pre">to</span> <span class="pre">'Additional</span> <span class="pre">module</span> <span class="pre">paths'</span></code> option before clicking <code class="docutils literal notranslate"><span class="pre">Yes</span></code>.</p></li>
+<li><p>Option B: In menu: Edit / Application settings / Modules panel, drag-and-drop files to the <code class="docutils literal notranslate"><span class="pre">Additional</span> <span class="pre">module</span> <span class="pre">paths</span></code> list.</p></li>
+</ul>
+</li>
+<li><p>If the extension is built:</p>
+<ul>
+<li><p>Option A: start the application using the <code class="docutils literal notranslate"><span class="pre">SlicerWithMyExtension</span></code> executable in your build directory. This starts Slicer, specifying additional module paths via command-line arguments.</p></li>
+<li><p>Option B: specify additional module paths manually in application settings. Assuming your extension has been built into folder <code class="docutils literal notranslate"><span class="pre">MyExtension-debug</span></code>, add these module folders (if they exist) to the additional module paths in Slicer’s application settings:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">C:\path\to\MyExtension-debug\lib\Slicer-4.13\qt-scripted-modules</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C:\path\to\MyExtension-debug\lib\Slicer-4.13\qt-loadable-modules\Debug</span></code> or <code class="docutils literal notranslate"><span class="pre">C:\path\to\MyExtension-debug\lib\Slicer-4.13\qt-loadable-modules\Release</span></code> or (on systems where multi-configuration builds are not used, such as linux) simply <code class="docutils literal notranslate"><span class="pre">C:\path\to\MyExtension-debug\lib\Slicer-4.13\qt-loadable-modules</span></code>:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C:\path\to\MyExtension-debug\lib\Slicer-4.13\cli-modules\Debug</span></code>, <code class="docutils literal notranslate"><span class="pre">C:\path\to\MyExtension-debug\lib\Slicer-4.13\cli-modules\Release</span></code>, or <code class="docutils literal notranslate"><span class="pre">C:\path\to\MyExtension-debug\lib\Slicer-4.13\cli-modules</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="run-automatic-tests">
+<h3>Run automatic tests<a class="headerlink" href="#run-automatic-tests" title="Link to this heading"></a></h3>
+<p>Automatic tests of your extension can be launched by following the instructions below.</p>
+<section id="id1">
+<h4>Linux and macOS<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p>Start a terminal.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ctest<span class="w"> </span>-j&lt;NUMBEROFCORES&gt;
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h4>Windows<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<section id="run-all-tests">
+<h5>Run all tests<a class="headerlink" href="#run-all-tests" title="Link to this heading"></a></h5>
+<p>Open a command prompt.</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">cd</span> C:\path\to\MyExtension-debug
+<span class="s2">&quot;c:\Program Files\CMake\bin\ctest.exe&quot;</span> -C Release -V
+</pre></div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">Release</span></code> with the build mode of your extension build (<code class="docutils literal notranslate"><span class="pre">Debug</span></code>, <code class="docutils literal notranslate"><span class="pre">Release</span></code>, …).</p>
+</section>
+<section id="to-debug-a-test">
+<h5>To debug a test<a class="headerlink" href="#to-debug-a-test" title="Link to this heading"></a></h5>
+<ul class="simple">
+<li><p>Launch Visual Studio from the Command Line Prompt: <code class="docutils literal notranslate"><span class="pre">C:\D\SD\Slicer-build\Slicer.exe</span> <span class="pre">--VisualStudio</span> <span class="pre">--launcher-no-splash</span> <span class="pre">--launcher-additional-settings</span> <span class="pre">C:\path\to\MyExtension-debug\AdditionalLauncherSettings.ini</span> <span class="pre">C:\path\to\MyExtension-debug\MyExtension.sln</span></code></p></li>
+<li><p>Find the project of the test you want to debug (e.g., <code class="docutils literal notranslate"><span class="pre">qSlicerMODULE_NAMEModuleGenericCxxTests</span></code>).</p></li>
+<li><p>Go to the project debugging properties (right-click -&gt; Properties, then Configuration Properties / Debugging).</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">Arguments</span></code>, type the name of the test you want to run (e.g., <code class="docutils literal notranslate"><span class="pre">qSlicerMODULE_NAMEModuleGenericTest</span></code>).</p></li>
+<li><p>If the test takes arguments, enter the arguments after the test name in <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">Arguments</span></code>.</p></li>
+<li><p>Set the project as the StartUp Project (right-click -&gt; Set As StartUp Project).</p></li>
+<li><p>Start debugging (F5).</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="continuous-integration">
+<span id="extension-continuous-integration"></span><h3>Continuous integration<a class="headerlink" href="#continuous-integration" title="Link to this heading"></a></h3>
+<p>If you shared your extension by using the ExtensionWizard, make sure you know about the Slicer testing dashboard:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://slicer.cdash.org/index.php?project=SlicerStable">Dashboard for Slicer Stable Releases</a></p></li>
+<li><p><a class="reference external" href="https://slicer.cdash.org/index.php?project=SlicerPreview">Dashboard for Slicer Preview Releases</a></p></li>
+</ul>
+<p>The dashboard will attempt to check out the source code of your extension, build, test and package it on Linux, macOS and Windows platforms.</p>
+<p>To find your extension, use the following link replacing <code class="docutils literal notranslate"><span class="pre">SlicerMyExtension</span></code> with the name of your extension:</p>
+<p><code class="docutils literal notranslate"><span class="pre">https://slicer.cdash.org/index.php?project=SlicerStable&amp;filtercount=1&amp;showfilters=1&amp;field1=buildname&amp;compare1=63&amp;value1=SlicerMyExtension</span></code></p>
+<p>For example, here is the link to check the status of the <code class="docutils literal notranslate"><span class="pre">SlicerDMRI</span></code> extension:</p>
+<p><code class="docutils literal notranslate"><span class="pre">https://slicer.cdash.org/index.php?project=SlicerStable&amp;filtercount=1&amp;showfilters=1&amp;field1=buildname&amp;compare1=63&amp;value1=SlicerDMRI</span></code></p>
+<p>If you see red in any of the columns for your extension, click on the hyperlinked number of errors to see the details.</p>
+<p>Always check the dashboard after you first introduce your extension, or after you make any changes to the code.</p>
+</section>
+</section>
+<section id="create-an-extension-package">
+<h2>Create an extension package<a class="headerlink" href="#create-an-extension-package" title="Link to this heading"></a></h2>
+<p>Assuming your extension has been built into folder <code class="docutils literal notranslate"><span class="pre">MyExtension-release</span></code> (redistributable packages must be built in release mode), this could be achieved doing:</p>
+<section id="id3">
+<h3>Linux and macOS<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>Start a terminal.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make<span class="w"> </span>package
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>Windows<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">MyExtension.sln</span></code> in Visual Studio.</p></li>
+<li><p>Right-click on <code class="docutils literal notranslate"><span class="pre">PACKAGES</span></code> project, then select <code class="docutils literal notranslate"><span class="pre">Build</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="write-documentation-for-an-extension">
+<h2>Write documentation for an extension<a class="headerlink" href="#write-documentation-for-an-extension" title="Link to this heading"></a></h2>
+<p>Keep documentation with your extension’s source code and keep it up-to-date whenever the software changes.</p>
+<p>Add at least a <a class="reference external" href="http://README.md">README.md</a> file in the root of the source code repository, which describes what the extension is for and how it works. Minimum information that is needed to make your extension usable is described in the <a class="reference external" href="https://github.com/Slicer/ExtensionsIndex/blob/main/.github/PULL_REQUEST_TEMPLATE.md#todo-list-for-submitting-a-new-extension">extension submission checklist</a>.</p>
+<p>Extension documentation examples:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/lassoan/SlicerSegmentMesher">SegmentMesher</a></p></li>
+<li><p><a class="reference external" href="https://github.com/moselhy/SlicerSequenceRegistration">SequenceRegistration</a></p></li>
+<li><p><a class="reference external" href="https://github.com/NVIDIA/ai-assisted-annotation-client/tree/master/slicer-plugin">AI-assisted annotation client</a></p></li>
+<li><p><a class="reference external" href="https://dmri.slicer.org/">SlicerDMRI</a> - large extension documented using Github pages</p></li>
+</ul>
+<p>Thumbnails to YouTube videos can be generated by using an URL of the form <code class="docutils literal notranslate"><span class="pre">https://img.youtube.com/vi/&lt;insert-youtube-video-id-here&gt;/0.jpg</span></code> and
+adding a playback button using <a class="reference external" href="https://addplaybuttontoimage.way4info.net/">this free service</a> (the second red arrow is recommended).</p>
+</section>
+<section id="distribute-an-extension">
+<span id="extension-distribute"></span><h2>Distribute an extension<a class="headerlink" href="#distribute-an-extension" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Upload source code of your extension to a publicly available repository. It is recommended to start the repository name with “Slicer” (to make Slicer extensions easier to identify) followed by your extension name (for example, “Sequences” extension is stored in “SlicerSequences” repository). However, this is not a mandatory requirement. If you have a compelling reason not to use Slicer prefix, please make a note while making the pull request. See more requirements in the <a class="reference external" href="https://github.com/Slicer/ExtensionsIndex/blob/main/.github/PULL_REQUEST_TEMPLATE.md#todo-list-for-submitting-a-new-extension">new extension submission checklist</a>.</p>
+<ul>
+<li><p>GitHub is recommended (due to large user community, free public project hosting): <a class="reference external" href="https://github.com/join">join Github</a> and <a class="reference external" href="https://docs.github.com/get-started/quickstart/set-up-git">setup Git</a>.</p></li>
+</ul>
+</li>
+<li><p>If developing an extension that contains <a class="reference internal" href="module_overview.html"><span class="std std-doc">C++ loadable or CLI modules</span></a> (not needed if developing in Python):</p>
+<ul>
+<li><p>Build the <code class="docutils literal notranslate"><span class="pre">PACKAGE</span></code> target to create a package file.</p></li>
+<li><p>Test your extension by installing the created package file using the Extensions Manager.</p></li>
+</ul>
+</li>
+<li><p>Complete the <a class="reference external" href="https://github.com/Slicer/ExtensionsIndex/blob/main/.github/PULL_REQUEST_TEMPLATE.md#todo-list-for-submitting-a-new-extension">extension submission checklist</a>) then submit it to the Slicer Extensions Index:</p></li>
+<li><p>Submit the extension to the Extensions Index:</p>
+<ul>
+<li><p>Fork ExtensionIndex repository on GitHub by clicking ‘’Fork’’ button on the <a class="reference external" href="https://github.com/Slicer/ExtensionsIndex">Slicer Extensions Index</a> page</p></li>
+<li><p>Create an <a class="reference internal" href="#extension-catalog-entry-file">extension catalog entry file (json)</a></p></li>
+<li><p>Add your <code class="docutils literal notranslate"><span class="pre">.json</span></code> file to your forked repository: it can be done using a git client or simply by clicking ‘’Upload files’’ button</p>
+<ul>
+<li><p>To make the extension appear in the latest Slicer Preview Release: upload the file into the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch.</p></li>
+<li><p>To make the extension appear in the latest Slicer Stable Release: upload the file into the branch corresponding to the stable release version, for example: <code class="docutils literal notranslate"><span class="pre">4.10</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Create a pull request: by clicking ‘’Create pull request’’ button</p></li>
+<li><p>Follow the instructions in the pull request template</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Once your extension is successfully integrated into the Extensions Index, you gain access to daily build and test reports for verification. For additional information, refer to <a class="reference internal" href="#extension-continuous-integration"><span class="std std-ref">Continuous integration</span></a>.</p>
+<p>While it is possible to develop Python-based extensions without a <a class="reference internal" href="#extension-build">local extension build</a>, creating one can significantly expedite the development cycle. This allows you to promptly confirm that the extension can be properly packaged and distributed, providing a quicker feedback loop compared to waiting for the daily build and test reports.</p>
+</div>
+</section>
+<section id="application-settings">
+<h2>Application settings<a class="headerlink" href="#application-settings" title="Link to this heading"></a></h2>
+<p>After installing an extension, the directories are added to revision-specific settings:</p>
+<ul class="simple">
+<li><p>Folders containing modules bundled within an extension are added to Modules / AdditionalPaths. This ensures that libraries associated with modules are found.</p></li>
+<li><p>Folders containing third-party dynamic libraries, Python libraries, etc. are added to LibraryPaths, Paths, PYTHONPATH, QT_PLUGIN_PATH. This ensures that libraries associated with modules can be successfully loaded.</p></li>
+</ul>
+</section>
+<section id="extension-catalog-entry-file">
+<span id="id5"></span><h2>Extension catalog entry file<a class="headerlink" href="#extension-catalog-entry-file" title="Link to this heading"></a></h2>
+<p>An extension catalog entry file is a JSON file describing how to build and package a Slicer extension.</p>
+<p>It is named after the extension name (e.g <code class="docutils literal notranslate"><span class="pre">ExtensionName.json</span></code>) and may include the following entries:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>category</p></td>
+<td><p>Extension category.</p></td>
+<td><p>Y</p></td>
+</tr>
+<tr class="row-odd"><td><p>scm_url</p></td>
+<td><p>Read-only url used to checkout the extension source code.</p></td>
+<td><p>Y</p></td>
+</tr>
+<tr class="row-even"><td><p>scm_revision</p></td>
+<td><p>Revision allowing to checkout the expected source code.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-odd"><td><p>scm_type</p></td>
+<td><p>Type of revision control system. Default to <code class="docutils literal notranslate"><span class="pre">git</span></code>.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-even"><td><p>build_dependencies</p></td>
+<td><p>List of extensions required to build this extension. For example: <code class="docutils literal notranslate"><span class="pre">[&quot;extensionA&quot;,</span> <span class="pre">&quot;extensionB&quot;]</span></code>.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-odd"><td><p>build_subdirectory</p></td>
+<td><p>Name of the inner build directory in case of superbuild based extension. Default to <code class="docutils literal notranslate"><span class="pre">.</span></code>.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-even"><td><p>enabled</p></td>
+<td><p>Specify if the extension should be enabled after its installation. Valid values are <code class="docutils literal notranslate"><span class="pre">true</span></code> (default) = enabled; <code class="docutils literal notranslate"><span class="pre">false</span></code> = disabled.</p></td>
+<td><p>N</p></td>
+</tr>
+</tbody>
+</table>
+<p>The full schema for the extension catalog entry file is below:</p>
+</section>
+<section id="extension-description-file">
+<span id="id6"></span><h2>Extension description file<a class="headerlink" href="#extension-description-file" title="Link to this heading"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This file is used internally by <a class="reference internal" href="#extensions-build-system"><span class="std std-ref">Extensions build system</span></a> and it has been superseded by <a class="reference internal" href="#extension-catalog-entry-file"><span class="std std-ref">Extension catalog entry file</span></a>.</p>
+</div>
+<p>An extension description file is a text file with <code class="docutils literal notranslate"><span class="pre">s4ext</span></code> extension allowing to specify metadata associated with an extensions.</p>
+<p>The description file is automatically generated by the build system in the build tree of the extension from the metadata specified in the top-level <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file in the source code of the extension. Since the description is a very simple text file, the description can be created using a text editor. It may be simpler to use a text editor to create the file if the extension only contains scripted modules, which can be developed without building the extension.</p>
+<p>Note that the Extension manager ignores many fields of the extension description file and instead uses information specified in <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>. Therefore, when making any changes to the extension description file, it has to be done in the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file as well.</p>
+<p>For superbuild-type extensions (that build their own dependencies, such as external libraries implemented in C++), it is critical that the build_subdirectory is initialized to the inner build location in s4ext. The value of this variable in <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> is not used in all places by the dashboard scripts.</p>
+<section id="syntax">
+<h3>Syntax<a class="headerlink" href="#syntax" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>A metadata is specified using a keyword followed by at least one spaces and the associated value.</p></li>
+<li><p>Multiline values are not supported.</p></li>
+<li><p>Empty lines are ignored</p></li>
+<li><p>Lines starting with a <code class="docutils literal notranslate"><span class="pre">#</span></code> are considered comments and ignored.</p></li>
+</ul>
+<p>The following code block illustrates how comments, metadata and associated value can be specified:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a comment</span>
+<span class="n">metadataname</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">value</span> <span class="n">associated</span> <span class="k">with</span> <span class="s1">&#39;metadataname&#39;</span>
+
+<span class="c1"># This is an other comment</span>
+<span class="n">anothermetadata</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">value</span> <span class="n">associated</span> <span class="k">with</span> <span class="s1">&#39;anothermetadata&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="supported-metadata-fields">
+<h3>Supported metadata fields<a class="headerlink" href="#supported-metadata-fields" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>scm</p></td>
+<td><p>Source code management system. Must be <code class="docutils literal notranslate"><span class="pre">git</span></code>.</p></td>
+<td><p>Y</p></td>
+</tr>
+<tr class="row-odd"><td><p>scmurl</p></td>
+<td><p>Read-only url used to checkout the extension source code.</p></td>
+<td><p>Y</p></td>
+</tr>
+<tr class="row-even"><td><p>scmrevision</p></td>
+<td><p>Revision allowing to checkout the expected source code.</p></td>
+<td><p>Y</p></td>
+</tr>
+<tr class="row-odd"><td><p>depends</p></td>
+<td><p>List of extensions required to build this extension. Specify “NA” if there are no dependency. Extension names should be separated by a single space. For example: extensionA extensionB.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-even"><td><p>build_subdirectory</p></td>
+<td><p>Name of the inner build directory in case of superbuild based extension. Default to <code class="docutils literal notranslate"><span class="pre">.</span></code>.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-odd"><td><p>homepage</p></td>
+<td><p>URL of the web page describing the extension.</p></td>
+<td><p>Y</p></td>
+</tr>
+<tr class="row-even"><td><p>contributors</p></td>
+<td><p>Extension contributor specified as <code class="docutils literal notranslate"><span class="pre">Firstname1</span> <span class="pre">Lastname1</span> <span class="pre">([SubOrg1,</span> <span class="pre">]Org1),</span> <span class="pre">Firstname2</span> <span class="pre">Lastname2</span> <span class="pre">([SubOrg2,</span> <span class="pre">]Org2)</span></code>.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-odd"><td><p>category</p></td>
+<td><p>Extension category.</p></td>
+<td><p>Y</p></td>
+</tr>
+<tr class="row-even"><td><p>iconurl</p></td>
+<td><p>URL to an icon (png file format and size of 128x128 pixels is recommended).</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-odd"><td><p>description</p></td>
+<td><p>One line describing what is the purpose of the extension.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-even"><td><p>screenshoturls</p></td>
+<td><p>Space separated list of urls to images.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-odd"><td><p>enabled</p></td>
+<td><p>Specify if the extension should be enabled after its installation. Valid values are <code class="docutils literal notranslate"><span class="pre">1</span></code> (default) = enabled; <code class="docutils literal notranslate"><span class="pre">0</span></code> = disabled.</p></td>
+<td><p>N</p></td>
+</tr>
+<tr class="row-even"><td><p>status</p></td>
+<td><p>Give people an idea what to expect from this code. This is currently not used.</p></td>
+<td><p>N</p></td>
+</tr>
+</tbody>
+</table>
+<p>Note: Parameters in URLS (such as <code class="docutils literal notranslate"><span class="pre">&amp;foo=bar</span></code>) are not supported. URL shortener services can be used if necessary.</p>
+</section>
+</section>
+<section id="extensions-server">
+<h2>Extensions server<a class="headerlink" href="#extensions-server" title="Link to this heading"></a></h2>
+<p>The official Slicer extensions server, the “Extensions Catalog” is available at <a class="reference external" href="https://extensions.slicer.org/">https://extensions.slicer.org/</a>. To get a list of extensions, specify the Slicer revision and platform in the URL, for example: <a class="reference external" href="https://extensions.slicer.org/catalog/All/30117/win">https://extensions.slicer.org/catalog/All/30117/win</a>.</p>
+<p>The Extensions Catalog is implemented a web application (<a class="reference external" href="https://github.com/KitwareMedical/slicer-extensions-webapp">source code</a>), which connects
+to a <a class="reference external" href="https://slicer-packages.kitware.com/#collection/5f4474d0e1d8c75dfc70547e/folder/5f4474d0e1d8c75dfc705482">Girder server</a>, a general-purpose
+storage server with the Slicer Package Manager plugin (<a class="reference external" href="https://github.com/girder/slicer_package_manager">source code</a>), which provides a
+convenient REST API for accessing Slicer extension packages and metadata.</p>
+<p>The “Manage extensions” tab in the Extensions Manager in Slicer uses this REST API to get information on updates and get packages to install or update.</p>
+<p>The extension server is designed so that organizations can set up and maintain their own extensions servers, for example to distribute
+extensions for custom applications. Extensions server address can be set in the Application Settings, in the Extensions section.</p>
+<p>Until August 2021, a Midas-based server at <code class="docutils literal notranslate"><span class="pre">https://slicer.kitware.com/midas3</span></code> was used. This server is not online anymore, as it was not feasible to perform all software updates that would have kept it secure.</p>
+</section>
+<section id="extensions-index">
+<h2>Extensions Index<a class="headerlink" href="#extensions-index" title="Link to this heading"></a></h2>
+<p>The ExtensionsIndex is a repository containing a list of <a class="reference internal" href="#extension-catalog-entry-file">extension catalog entry files</a> <code class="docutils literal notranslate"><span class="pre">*.json</span></code> used by the Slicer <a class="reference internal" href="#extensions-build-system">Extensions build system</a> to build, test, package and upload extensions on the <a class="reference internal" href="#extensions-server">extensions server</a>.</p>
+<p>The ExtensionsIndex is hosted on GitHub: <a class="reference external" href="https://github.com/Slicer/ExtensionsIndex">https://github.com/Slicer/ExtensionsIndex</a></p>
+<p>Each branch of the repository contains extension description files that corresponds to the same branch in the Slicer repository. For example, <code class="docutils literal notranslate"><span class="pre">main</span></code> branch contains descriptions for Slicer <code class="docutils literal notranslate"><span class="pre">main</span></code> branch, and <code class="docutils literal notranslate"><span class="pre">4.11</span></code> branch contains extension descriptions for Slicer’s <code class="docutils literal notranslate"><span class="pre">4.11</span></code> branch.</p>
+<p>Extension developers have to make sure that the extension description in each branch of the Extensions index is compatible with the corresponding Slicer version. Extension developers often create the same branches (<code class="docutils literal notranslate"><span class="pre">main</span></code>, <code class="docutils literal notranslate"><span class="pre">4.11</span></code>, <code class="docutils literal notranslate"><span class="pre">4.13</span></code>, …) in their repository and they specify this branch name in the extensions descriptor file.</p>
+</section>
+<section id="extensions-build-system">
+<span id="id7"></span><h2>Extensions build system<a class="headerlink" href="#extensions-build-system" title="Link to this heading"></a></h2>
+<p>The extensions build system allows to drive the build, test, packaging and upload of Slicer extensions.</p>
+<p>Using the <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Extensions/CMake">extensions build system source code</a>, it is possible to build extensions using either manual build or dashboard-driven automatic build. The extension description files must be simply placed in a folder, the same way as they are in the Extensions Index repository.</p>
+<section id="build-list-of-extensions-manually">
+<h3>Build list of extensions manually<a class="headerlink" href="#build-list-of-extensions-manually" title="Link to this heading"></a></h3>
+<p>Locally building a list of extensions is a convenient way to test building of extensions and get extension packages for a custom-build Slicer application.</p>
+<p>Given a directory containing one or more extension description files, with the help of the extensions build system it is possible to configure and build the associated extensions specifying the following CMake options:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>CMake variable</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Slicer_DIR</p></td>
+<td><p>Path to Slicer build tree. Required.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Slicer_EXTENSION_DESCRIPTION_DIR</p></td>
+<td><p>Path to folder containing extension description files. Required.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.cmake.org/cmake/help/v2.8.8/cmake.html#variable:CMAKE_BUILD_TYPE">CMAKE_BUILD_TYPE</a></p></td>
+<td><p>Build type of the associated Slicer build directory</p></td>
+</tr>
+<tr class="row-odd"><td><p>CTEST_MODEL</p></td>
+<td><p>By default set to <code class="docutils literal notranslate"><span class="pre">Experimental</span></code>.
+Allow to choose on which CDash track results are submitted as well as setting the submission type associated with the uploaded extension.</p></td>
+</tr>
+<tr class="row-even"><td><p>Slicer_UPLOAD_EXTENSIONS</p></td>
+<td><p>By default set to <code class="docutils literal notranslate"><span class="pre">OFF</span></code>.
+If enabled, extension builds will be submitted to Slicer dashboard and associated packages will be uploaded to extensions server.</p></td>
+</tr>
+<tr class="row-odd"><td><p>SLICER_PACKAGE_MANAGER_URL</p></td>
+<td><p>Slicer extensions server URL specifying where the extension should be uploaded. For example <code class="docutils literal notranslate"><span class="pre">https://slicer-packages.kitware.com</span></code>. source code.
+Note that this variable is expected to be set in place of <code class="docutils literal notranslate"><span class="pre">MIDAS_PACKAGE_URL</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>SLICER_PACKAGE_MANAGER_API_KEY</p></td>
+<td><p>Token allowing to authenticate to the extensions server.
+Note that this variable is expected to be set in place of <code class="docutils literal notranslate"><span class="pre">MIDAS_PACKAGE_API_KEY</span></code> and <code class="docutils literal notranslate"><span class="pre">MIDAS_PACKAGE_EMAIL</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The following folders will be used in the examples below:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Folder</th>
+<th>Linux/macOS</th>
+<th>Windows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Slicer source code tree (checked out from https://github.com/Slicer/Slicer.git)</td>
+<td><code>~/Slicer</code></td>
+<td><code>C:\D\S</code></td>
+</tr>
+<tr>
+<td>Slicer build tree (built by following Slicer build instructions)</td>
+<td><code>~/Slicer-SuperBuild-Release</code></td>
+<td><code>C:\D\SR</code></td>
+</tr>
+<tr>
+<td>List of extension description files (for example checked out from https://github.com/Slicer/ExtensionsIndex.git)</td>
+<td><code>~/ExtensionsIndex</code></td>
+<td><code>C:\D\ExtensionsIndex</code></td>
+</tr>
+<tr>
+<td>Folder to store built extensions (new empty folder)</td>
+<td><code>~/ExtensionsIndex-Release</code></td>
+<td><code>C:\D\ExtensionsIndexR</code></td>
+</tr>
+</tbody>
+</table>
+<section id="build-test-and-package">
+<h4>Build, test, and package<a class="headerlink" href="#build-test-and-package" title="Link to this heading"></a></h4>
+<p>Linux and macOS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">ExtensionsIndex</span><span class="o">-</span><span class="n">Release</span>
+
+<span class="n">cmake</span> <span class="o">-</span><span class="n">DSlicer_DIR</span><span class="p">:</span><span class="n">PATH</span><span class="o">=~/</span><span class="n">Slicer</span><span class="o">-</span><span class="n">SuperBuild</span><span class="o">-</span><span class="n">Release</span><span class="o">/</span><span class="n">Slicer</span><span class="o">-</span><span class="n">build</span> \
+ <span class="o">-</span><span class="n">DSlicer_EXTENSION_DESCRIPTION_DIR</span><span class="p">:</span><span class="n">PATH</span><span class="o">=~/</span><span class="n">ExtensionsIndex</span> \
+ <span class="o">-</span><span class="n">DCMAKE_BUILD_TYPE</span><span class="p">:</span><span class="n">STRING</span><span class="o">=</span><span class="n">Release</span> \
+ <span class="o">~/</span><span class="n">Slicer</span><span class="o">/</span><span class="n">Extensions</span><span class="o">/</span><span class="n">CMake</span>
+
+<span class="n">make</span>
+</pre></div>
+</div>
+<p>Windows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">d</span> <span class="n">C</span><span class="p">:</span>\<span class="n">D</span>\<span class="n">ExtensionsIndexR</span>
+
+<span class="s2">&quot;c:\Program Files\CMake</span><span class="se">\b</span><span class="s2">in\cmake.exe&quot;</span> <span class="o">-</span><span class="n">DSlicer_DIR</span><span class="p">:</span><span class="n">PATH</span><span class="o">=</span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">D</span><span class="o">/</span><span class="n">SR</span><span class="o">/</span><span class="n">Slicer</span><span class="o">-</span><span class="n">build</span> <span class="o">^</span>
+ <span class="o">-</span><span class="n">DSlicer_EXTENSION_DESCRIPTION_DIR</span><span class="p">:</span><span class="n">PATH</span><span class="o">=</span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">D</span><span class="o">/</span><span class="n">ExtensionsIndex</span> <span class="o">^</span>
+ <span class="o">-</span><span class="n">DCMAKE_BUILD_TYPE</span><span class="p">:</span><span class="n">STRING</span><span class="o">=</span><span class="n">Release</span> <span class="o">^</span>
+ <span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">D</span><span class="o">/</span><span class="n">S</span><span class="o">/</span><span class="n">Extensions</span><span class="o">/</span><span class="n">CMake</span>
+
+<span class="s2">&quot;c:\Program Files\CMake</span><span class="se">\b</span><span class="s2">in\cmake.exe&quot;</span> <span class="o">--</span><span class="n">build</span> <span class="o">.</span> <span class="o">--</span><span class="n">config</span> <span class="n">Release</span>
+</pre></div>
+</div>
+</section>
+<section id="build-test-package-and-upload-to-extensions-server">
+<h4>Build, test, package, and upload to extensions server<a class="headerlink" href="#build-test-package-and-upload-to-extensions-server" title="Link to this heading"></a></h4>
+<p>Submit the configure/build/test results to the Slicer Dashboard <code class="docutils literal notranslate"><span class="pre">Extensions-Experimental</span></code> track and upload the extension to a custom Extensions Server.</p>
+<p>Linux and macOS:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~/</span><span class="n">ExtensionsIndex</span><span class="o">-</span><span class="n">Release</span>
+<span class="n">cmake</span> <span class="o">-</span><span class="n">E</span> <span class="n">env</span> \
+  <span class="n">SLICER_PACKAGE_MANAGER_CLIENT_EXECUTABLE</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">slicer_package_manager_client</span> \
+  <span class="n">SLICER_PACKAGE_MANAGER_URL</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">slicer</span><span class="o">-</span><span class="n">packages</span><span class="o">.</span><span class="n">kitware</span><span class="o">.</span><span class="n">com</span> \
+  <span class="n">SLICER_PACKAGE_MANAGER_API_KEY</span><span class="o">=</span><span class="n">a0b012c0123d012abc01234a012345a0</span> \
+  \
+<span class="n">cmake</span> <span class="o">-</span><span class="n">DSlicer_DIR</span><span class="p">:</span><span class="n">PATH</span><span class="o">=~/</span><span class="n">Slicer</span><span class="o">-</span><span class="n">SuperBuild</span><span class="o">-</span><span class="n">Release</span><span class="o">/</span><span class="n">Slicer</span><span class="o">-</span><span class="n">build</span> \
+ <span class="o">-</span><span class="n">DSlicer_EXTENSION_DESCRIPTION_DIR</span><span class="p">:</span><span class="n">PATH</span><span class="o">=~/</span><span class="n">ExtensionsIndex</span> \
+ <span class="o">-</span><span class="n">DCMAKE_BUILD_TYPE</span><span class="p">:</span><span class="n">STRING</span><span class="o">=</span><span class="n">Release</span> \
+ <span class="o">-</span><span class="n">DCTEST_MODEL</span><span class="p">:</span><span class="n">STRING</span><span class="o">=</span><span class="n">Experimental</span> \
+ <span class="o">-</span><span class="n">DSlicer_UPLOAD_EXTENSIONS</span><span class="p">:</span><span class="n">BOOL</span><span class="o">=</span><span class="n">ON</span> \
+ <span class="o">~/</span><span class="n">Slicer</span><span class="o">/</span><span class="n">Extensions</span><span class="o">/</span><span class="n">CMake</span>
+
+<span class="n">make</span>
+</pre></div>
+</div>
+<p>Windows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">d</span> <span class="n">C</span><span class="p">:</span>\<span class="n">D</span>\<span class="n">ExtensionsIndexR</span>
+<span class="s2">&quot;c:\Program Files\CMake</span><span class="se">\b</span><span class="s2">in\cmake.exe&quot;</span> <span class="o">-</span><span class="n">E</span> <span class="n">env</span> <span class="o">^</span>
+  <span class="n">SLICER_PACKAGE_MANAGER_CLIENT_EXECUTABLE</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">slicer_package_manager_client</span> <span class="o">^</span>
+  <span class="n">SLICER_PACKAGE_MANAGER_URL</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">slicer</span><span class="o">-</span><span class="n">packages</span><span class="o">.</span><span class="n">kitware</span><span class="o">.</span><span class="n">com</span> <span class="o">^</span>
+  <span class="n">SLICER_PACKAGE_MANAGER_API_KEY</span><span class="o">=</span><span class="n">a0b012c0123d012abc01234a012345a0</span> <span class="o">^</span>
+  <span class="o">^</span>
+<span class="s2">&quot;c:\Program Files\CMake</span><span class="se">\b</span><span class="s2">in\cmake.exe&quot;</span> <span class="o">-</span><span class="n">DSlicer_DIR</span><span class="p">:</span><span class="n">PATH</span><span class="o">=~/</span><span class="n">Slicer</span><span class="o">-</span><span class="n">SuperBuild</span><span class="o">-</span><span class="n">Release</span><span class="o">/</span><span class="n">Slicer</span><span class="o">-</span><span class="n">build</span> <span class="o">^</span>
+ <span class="o">-</span><span class="n">DSlicer_EXTENSION_DESCRIPTION_DIR</span><span class="p">:</span><span class="n">PATH</span><span class="o">=</span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">D</span><span class="o">/</span><span class="n">ExtensionsIndex</span> <span class="o">^</span>
+ <span class="o">-</span><span class="n">DCMAKE_BUILD_TYPE</span><span class="p">:</span><span class="n">STRING</span><span class="o">=</span><span class="n">Release</span> <span class="o">^</span>
+ <span class="o">-</span><span class="n">DCTEST_MODEL</span><span class="p">:</span><span class="n">STRING</span><span class="o">=</span><span class="n">Experimental</span> <span class="o">^</span>
+ <span class="o">-</span><span class="n">DSlicer_UPLOAD_EXTENSIONS</span><span class="p">:</span><span class="n">BOOL</span><span class="o">=</span><span class="n">ON</span> <span class="o">^</span>
+ <span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">D</span><span class="o">/</span><span class="n">S</span><span class="o">/</span><span class="n">Extensions</span><span class="o">/</span><span class="n">CMake</span>
+
+<span class="n">make</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="build-complete-extensions-index-with-dashboard-submission">
+<h3>Build complete Extensions Index with dashboard submission<a class="headerlink" href="#build-complete-extensions-index-with-dashboard-submission" title="Link to this heading"></a></h3>
+<p>Continuous and nightly extension dashboards are setup on the Slicer factory machine maintained by <a class="reference external" href="https://www.kitware.com">Kitware</a>. Developers can set up similar infrastructure privately for their custom applications.</p>
+<p>By customizing the <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Extensions/CMake/SlicerExtensionsDashboardScript.TEMPLATE.cmake">extension template dashboard script</a>, it is possible to easily setup dashboard client submitting to <a class="reference external" href="https://slicer.cdash.org/index.php?project=SlicerPreview">CDash</a>. See example dashboard scripts that are used on official Slicer build machines <a class="reference external" href="https://github.com/Slicer/DashboardScripts">here</a>. Note that these scripts are more complex than the template to allow code reuse between different configurations, but they are tested regularly and so guaranteed to work.</p>
+</section>
+</section>
+<section id="frequently-asked-questions">
+<h2>Frequently asked questions<a class="headerlink" href="#frequently-asked-questions" title="Link to this heading"></a></h2>
+<section id="can-an-extension-contain-different-types-of-modules">
+<h3>Can an extension contain different types of modules?<a class="headerlink" href="#can-an-extension-contain-different-types-of-modules" title="Link to this heading"></a></h3>
+<p>Yes. Extensions are used to package together all types of Slicer modules.</p>
+</section>
+<section id="should-the-name-of-the-source-repository-match-the-name-of-the-extension">
+<h3>Should the name of the source repository match the name of the extension?<a class="headerlink" href="#should-the-name-of-the-source-repository-match-the-name-of-the-extension" title="Link to this heading"></a></h3>
+<p>Assuming your extension is named <code class="docutils literal notranslate"><span class="pre">AwesomeTool</span></code>, generally, we suggest to name the extension repository <code class="docutils literal notranslate"><span class="pre">SlicerAwesomeTool</span></code>. Doing so will minimize confusion by clearly stating that the code base is associated with Slicer.</p>
+<p>We suggest to use the <code class="docutils literal notranslate"><span class="pre">Slicer</span></code> prefix in the extension name, too, when the extension is a Slicer interface to some third-party library (such as SlicerOpenIGTLink, SlicerElastix, SlicerANTs SlicerOpenCV).</p>
+</section>
+<section id="where-can-i-find-the-extension-templates">
+<h3>Where can I find the extension templates?<a class="headerlink" href="#where-can-i-find-the-extension-templates" title="Link to this heading"></a></h3>
+<p>The module and extension templates are available in the Slicer source tree: <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Utilities/Templates/">https://github.com/Slicer/Slicer/tree/main/Utilities/Templates/</a></p>
+<p>Using the <a class="reference internal" href="../user_guide/modules/extensionwizard.html#extension-wizard"><span class="std std-ref">Extension Wizard</span></a> module, developers can easily create a new extension without having to copy, rename and update manually every files.</p>
+</section>
+<section id="how-are-superbuild-extension-packaged">
+<h3>How are Superbuild extension packaged?<a class="headerlink" href="#how-are-superbuild-extension-packaged" title="Link to this heading"></a></h3>
+<p>Extensions using the Superbuild mechanism build projects in two steps:</p>
+<ul class="simple">
+<li><p>First, the project dependencies are built in an outer-build directory.</p></li>
+<li><p>Then, the project itself is built in an inner-build directory.</p></li>
+</ul>
+<p>Extensions can use the Superbuild (i.e., CMake’s ExternalProject_Add) mechanism. However, developers have to be careful that the packaging macros clean the project before reconfiguring it. This means that if one uses the Slicer extension packaging macros inside the inner-build directory, when packaging and uploading the extension package, the project will be reconfigured, and variables passed from the outer-build directory will be lost. If the project only depends on libraries that Slicer builds, this is not an issue. If the project has specific dependencies that Slicer does not compile on its own, the developer should be careful to instantiate the Slicer extension packaging macros only in the outer-build directory. This only means that in the latter case, tests should be instantiated in the outer-build directory to allow the Slicer extension building process to test the extension before uploading the extension and the tests results.</p>
+</section>
+<section id="how-to-build-a-custom-slicer-package-with-additional-extensions-bundled">
+<h3>How to build a custom Slicer package with additional extensions bundled?<a class="headerlink" href="#how-to-build-a-custom-slicer-package-with-additional-extensions-bundled" title="Link to this heading"></a></h3>
+<p>To build custom Slicer versions, it is recommended to use the <a class="reference external" href="https://blog.kitware.com/slicercat-creating-custom-applications-based-on-3d-slicer/">Slicer Custom Application Template</a>.</p>
+</section>
+<section id="can-an-extension-depend-on-other-extensions">
+<h3>Can an extension depend on other extensions?<a class="headerlink" href="#can-an-extension-depend-on-other-extensions" title="Link to this heading"></a></h3>
+<p>Yes. The dependency should be specified as a list by setting the variable <code class="docutils literal notranslate"><span class="pre">EXTENSION_DEPENDS</span></code> in the extension <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> and in the <code class="docutils literal notranslate"><span class="pre">dependency</span></code> field in the extension description. If the user installs <code class="docutils literal notranslate"><span class="pre">Extension2</span></code> that depends on <code class="docutils literal notranslate"><span class="pre">Extension1</span></code> then the extension manager will install <code class="docutils literal notranslate"><span class="pre">Extension1</span></code> automatically.</p>
+<p>If you have <code class="docutils literal notranslate"><span class="pre">ModuleA</span></code>, <code class="docutils literal notranslate"><span class="pre">ModuleB</span></code> and <code class="docutils literal notranslate"><span class="pre">ModuleC</span></code> and <code class="docutils literal notranslate"><span class="pre">ModuleA</span></code> can be used as standalone one. You could create the following extensions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Extension1</span></code> containing <code class="docutils literal notranslate"><span class="pre">ModuleA</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Extension2</span></code> containing <code class="docutils literal notranslate"><span class="pre">ModuleB</span></code> and <code class="docutils literal notranslate"><span class="pre">ModuleC</span></code>, depending on <code class="docutils literal notranslate"><span class="pre">Extension1</span></code>.</p></li>
+</ul>
+<p>Add the following variable to <code class="docutils literal notranslate"><span class="pre">Extension2/CMakeLists.txt</span></code>:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_DEPENDS</span><span class="w"> </span><span class="s">Extension1</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="how-dependent-extensions-are-configured-and-built">
+<h3>How dependent extensions are configured and built?<a class="headerlink" href="#how-dependent-extensions-are-configured-and-built" title="Link to this heading"></a></h3>
+<p>If an ExtensionB depends on an ExtensionA, ExtensionA should be listed as dependency in the metadata of ExtensionB.</p>
+<p>This can be done setting <code>EXTENSION_DEPENDS</code> in the <code>CMakeLists.txt</code> or by specifying <code>depends</code> field in the [[Documentation/{{documentation/version}}/Developers/Extensions/DescriptionFile|description file]].</p>
+<p>Doing so will ensure that:</p>
+<p>*(1) the extension build system configure the extensions in the right order
+*(2) ExtensionB is configured with option <code>ExtensionA_DIR</code>.</p>
+</section>
+<section id="what-are-the-extension-specific-targets-install-package-packageupload">
+<h3>What are the extension specific targets: INSTALL, PACKAGE, packageupload, …?<a class="headerlink" href="#what-are-the-extension-specific-targets-install-package-packageupload" title="Link to this heading"></a></h3>
+<p>Slicer extension build system provides the developer with a set of convenient targets allowing to build and upload extensions.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">RUN_TESTS</span></code>: Locally execute all tests.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PACKAGE</span></code> or <code class="docutils literal notranslate"><span class="pre">package</span></code>: Locally package the extension.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">packageupload</span></code>: Locally package and upload the extension and upload to the extensions server. Requires access privileges to the server.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Experimental</span></code>: Configure, build, test the extension and publish result on CDash.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Continuous</span></code> / <code class="docutils literal notranslate"><span class="pre">Nightly</span></code>: retrieves the latest / latest nightly revision and runs the same steps as for the <code class="docutils literal notranslate"><span class="pre">Experimental</span></code> target.</p></li>
+</ul>
+</section>
+<section id="is-launch-flag-available-for-a-macosx-installed-slicer-app">
+<h3>Is –launch flag available for a MacOSX installed Slicer.app?<a class="headerlink" href="#is-launch-flag-available-for-a-macosx-installed-slicer-app" title="Link to this heading"></a></h3>
+<p>On MacOSx, running Slicer with the <code class="docutils literal notranslate"><span class="pre">--help</span></code> argument does NOT list the usual launcher related options.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>$<span class="w"> </span>./Slicer.app/Contents/MacOS/Slicer<span class="w"> </span>--help
+<span class="w"> </span>Usage
+<span class="w">  </span>Slicer<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+
+<span class="w">  </span>Options
+<span class="w">    </span>--,<span class="w"> </span>--ignore-rest<span class="w">                     </span>Ignores<span class="w"> </span>the<span class="w"> </span>rest<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>labeled<span class="w"> </span>arguments<span class="w"> </span>following<span class="w"> </span>this<span class="w"> </span>flag.<span class="w"> </span><span class="o">(</span>default:<span class="w"> </span><span class="nb">false</span><span class="o">)</span>
+<span class="w">    </span>-h,<span class="w"> </span>--help<span class="w">                            </span>Display<span class="w"> </span>available<span class="w"> </span><span class="nb">command</span><span class="w"> </span>line<span class="w"> </span>arguments.
+<span class="w">    </span><span class="o">[</span>...<span class="o">]</span>
+<span class="w">    </span>--version<span class="w">                             </span>Displays<span class="w"> </span>version<span class="w"> </span>information<span class="w"> </span>and<span class="w"> </span>exits.
+</pre></div>
+</div>
+<p>To provide some background information, when generating the package that will be distributed, an application bundle <code class="docutils literal notranslate"><span class="pre">Slicer.app</span></code> is created. As explained <a class="reference external" href="https://developer.apple.com/library/mac/#documentation/CoreFoundation/Conceptual/CFBundles/Introduction/Introduction.html">here</a>, a bundle is a directory with a standardized hierarchical structure that holds executable code and the resources used by that code. It means that since all libraries contained within a bundle are referenced relatively to the location of either the CLI or the Slicer executable, the use of launcher does NOT make sens.</p>
+<p>To help fixing-up the libraries, executables and plugins so that they reference each other in a relative way, CMake provides us with the <a class="reference external" href="https://www.cmake.org/cmake/help/v2.8.8/cmake.html#module:BundleUtilities">BundleUtilities</a> module.</p>
+<p>This module is used in two situations:</p>
+<ul class="simple">
+<li><p>Fixup of Slicer application itself. See <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/CMake/SlicerCPack.cmake#L36-68">SlicerCPack.cmake#L36-68</a> and <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/CMake/SlicerCPackBundleFixup.cmake.in">SlicerCPackBundleFixup.cmake.in</a>.</p></li>
+<li><p>Fixup of an extension package. See <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/CMake/SlicerExtensionCPack.cmake#L126-143">SlicerExtensionCPack.cmake#L126-143</a> and <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/CMake/SlicerExtensionCPackBundleFixup.cmake.in">SlicerExtensionCPackBundleFixup.cmake.in</a>.</p></li>
+</ul>
+</section>
+<section id="how-to-check-if-an-extension-is-built-by-slicer-extensions-build-system">
+<h3>How to check if an extension is built by Slicer Extensions build system?<a class="headerlink" href="#how-to-check-if-an-extension-is-built-by-slicer-extensions-build-system" title="Link to this heading"></a></h3>
+<p>Sometimes it is desirable to build the same source code in two different modes: as a standalone package or as a Slicer extension. To differentiate the two cases, the developer could check for the value of <code class="docutils literal notranslate"><span class="pre">&lt;ExtensionName&gt;_BUILD_SLICER_EXTENSION</span></code> CMake variable. This variable will be set to ON when the extension is built by the Slicer Extensions build system and it is not set otherwise. See details <a class="reference external" href="https://github.com/Slicer/Slicer/blob/0ac1d7c71e2faf6dc01262e48a9d18b93f731da4/Extensions/CMake/SlicerBlockBuildPackageAndUploadExtension.cmake#L142">here</a></p>
+</section>
+<section id="how-often-extensions-are-uploaded-on-the-extensions-server">
+<h3>How often extensions are uploaded on the extensions server?<a class="headerlink" href="#how-often-extensions-are-uploaded-on-the-extensions-server" title="Link to this heading"></a></h3>
+<p>Slicer extensions are built and uploaded to the extensions server every day.</p>
+<ul class="simple">
+<li><p>Packages for Slicer stable release are rebuilt and uploaded during the day (Eastern time). Results are available at <a class="reference external" href="https://slicer.cdash.org/index.php?project=SlicerStable">https://slicer.cdash.org/index.php?project=SlicerStable</a></p></li>
+<li><p>Packages for the latest Slicer Preview Release is built every night (Eastern time). Results are available at <a class="reference external" href="https://slicer.cdash.org/index.php?project=SlicerPreview">https://slicer.cdash.org/index.php?project=SlicerPreview</a></p></li>
+</ul>
+<p>Note that packages are not updated for previous Slicer Preview Releases. To get latest extensions for a Slicer Preview Release, install the latest Slicer Preview Release.</p>
+</section>
+<section id="will-an-extension-be-uploaded-if-associated-tests-are-failing">
+<h3>Will an extension be uploaded if associated tests are failing?<a class="headerlink" href="#will-an-extension-be-uploaded-if-associated-tests-are-failing" title="Link to this heading"></a></h3>
+<p>Independently of the extension test results, if the extension could be successfully packaged, it will be uploaded on the extensions server.</p>
+</section>
+<section id="how-do-i-associate-a-remote-with-my-local-extension-git-source-directory">
+<h3>How do I associate a remote with my local extension git source directory?<a class="headerlink" href="#how-do-i-associate-a-remote-with-my-local-extension-git-source-directory" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Start a terminal (or Git Bash on Windows)</p></li>
+<li><p>Get the associated SSH remote url. <a class="reference external" href="https://docs.github.com/get-started/getting-started-with-git/about-remote-repositories#cloning-with-ssh">Need help?</a></p></li>
+<li><p>Associate the remote URL with your local git source tree</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>origin<span class="w"> </span>https://github.com/&lt;username&gt;/MyExtension
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="which-remote-name-is-expected-for-extension-git-checkout">
+<h3>Which remote name is expected for extension git checkout?<a class="headerlink" href="#which-remote-name-is-expected-for-extension-git-checkout" title="Link to this heading"></a></h3>
+<p>When packaging an extension and generating the associated extension description file, the system will look for a remote named <code class="docutils literal notranslate"><span class="pre">origin</span></code>.</p>
+<p>In case you get the error reported below, you will have to either rename or add a remote. <a class="reference external" href="https://git-scm.com/book/en/Git-Basics-Working-with-Remotes">Need help?</a></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CMake Warning at /path/to/Slicer/CMake/FindGit.cmake:144 (message):
+No remote origin set for git repository: /path/to/MyExtension
+Call Stack (most recent call first):
+/path/to/Slicer/CMake/SlicerMacroExtractRepositoryInfo.cmake:99 (GIT_WC_INFO)
+/path/to/Slicer/CMake/SlicerExtensionCPack.cmake:55 (SlicerMacroExtractRepositoryInfo)
+CMakeLists.txt:25 (include)
+</pre></div>
+</div>
+</section>
+<section id="why-extensionwizard-failed-to-describe-extension-script-does-not-set-extension-homepage">
+<h3>Why ExtensionWizard failed to describe extension: “script does not set ‘EXTENSION_HOMEPAGE’”?<a class="headerlink" href="#why-extensionwizard-failed-to-describe-extension-script-does-not-set-extension-homepage" title="Link to this heading"></a></h3>
+<p>The issue is that the your extension has a “non standard” layout and the wizard has no way of extracting the expected information.</p>
+<p>Similar issue has been discussed and reported for the SPHARM-PDM or UKF extension.</p>
+<p>First half of the solution would be to move the metadata from <code class="docutils literal notranslate"><span class="pre">Common.cmake</span></code> to <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> as it is done in <a class="reference external" href="https://github.com/NIRALUser/SPHARM-PDM/commit/15badbabd930573a9e251d1fd525313ea000d028">here</a>. Then, you could make sure there is a project() statement by following what is suggested <a class="reference external" href="https://mantisarchive.slicer.org/view.php?id=3737#c12081">here</a>.</p>
+<p>If you prefer not to re-organize your extension, you could still contribute extension description file by creating it manually.</p>
+</section>
+<section id="is-project-statement-allowed-in-extension-cmakelists-txt">
+<h3>Is project() statement allowed in extension CMakeLists.txt?<a class="headerlink" href="#is-project-statement-allowed-in-extension-cmakelists-txt" title="Link to this heading"></a></h3>
+<p>Following <a class="reference external" href="https://github.com/Slicer/Slicer/commit/93cc799c97ca0528fc4cf25a1e49791bd3742677">Slicer r22038</a>, the project statement is required.</p>
+</section>
+<section id="is-call-to-if-not-slicer-source-dir-required-to-protect-find-package-slicer-in-extension-cmakelists-txt">
+<h3>Is call to “if(NOT Slicer_SOURCE_DIR)” required to protect “find_package(Slicer)” in extension CMakeLists.txt?<a class="headerlink" href="#is-call-to-if-not-slicer-source-dir-required-to-protect-find-package-slicer-in-extension-cmakelists-txt" title="Link to this heading"></a></h3>
+<p>Following <a class="reference external" href="https://github.com/Slicer/Slicer/commit/d1d0699aeaff85d7500269c7aaa78afdf8d3aa4a">Slicer r22063</a>, protecting call to <code class="docutils literal notranslate"><span class="pre">find_package(Slicer)</span></code> with <code class="docutils literal notranslate"><span class="pre">if(NOT</span> <span class="pre">Slicer_SOURCE_DIR)</span></code> is no longer needed and should be removed to keep code simpler and easier to maintain.</p>
+<p>Before:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">2.8.9</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">Slicer_SOURCE_DIR</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">find_package</span><span class="p">(</span><span class="s">Slicer</span><span class="w"> </span><span class="s">COMPONENTS</span><span class="w"> </span><span class="s">ConfigurePrerequisites</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">if</span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">Slicer_SOURCE_DIR</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_NAME</span><span class="w"> </span><span class="s">EmptyExtensionTemplate</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_HOMEPAGE</span><span class="w"> </span><span class="s2">&quot;https://www.slicer.org/wiki/Documentation/Nightly/Extensions/EmptyExtensionTemplate&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_CONTRIBUTORS</span><span class="w"> </span><span class="s2">&quot;Jean-Christophe Fillion-Robin (Kitware)&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_DESCRIPTION</span><span class="w"> </span><span class="s2">&quot;This is an example of extension bundling N module(s)&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_ICONURL</span><span class="w"> </span><span class="s2">&quot;http://viewvc.slicer.org/viewvc.cgi/Slicer4/trunk/Extensions/Testing/EmptyExtensionTemplate/EmptyExtensionTemplate.png?revision=21746&amp;view=co&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_SCREENSHOTURLS</span><span class="w"> </span><span class="s2">&quot;https://www.slicer.org/w/img_auth.php/4/42/Slicer-r19441-EmptyExtensionTemplate-screenshot.png&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">if</span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">Slicer_SOURCE_DIR</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">find_package</span><span class="p">(</span><span class="s">Slicer</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">include</span><span class="p">(</span><span class="o">${</span><span class="nv">Slicer_USE_FILE</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">ModuleA</span><span class="p">)</span>
+
+<span class="nb">if</span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">Slicer_SOURCE_DIR</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">include</span><span class="p">(</span><span class="o">${</span><span class="nv">Slicer_EXTENSION_CPACK</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">2.8.9</span><span class="p">)</span>
+
+<span class="nb">find_package</span><span class="p">(</span><span class="s">Slicer</span><span class="w"> </span><span class="s">COMPONENTS</span><span class="w"> </span><span class="s">ConfigurePrerequisites</span><span class="p">)</span>
+
+<span class="nb">project</span><span class="p">(</span><span class="s">EmptyExtensionTemplate</span><span class="p">)</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_HOMEPAGE</span><span class="w"> </span><span class="s2">&quot;https://www.slicer.org/wiki/Documentation/Nightly/Extensions/EmptyExtensionTemplate&quot;</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_CONTRIBUTORS</span><span class="w"> </span><span class="s2">&quot;Jean-Christophe Fillion-Robin (Kitware)&quot;</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_DESCRIPTION</span><span class="w"> </span><span class="s2">&quot;This is an example of empty extension&quot;</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_ICONURL</span><span class="w"> </span><span class="s2">&quot;http://viewvc.slicer.org/viewvc.cgi/Slicer4/trunk/Extensions/Testing/EmptyExtensionTemplate/EmptyExtensionTemplate.png?revision=21746&amp;view=co&quot;</span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="s">EXTENSION_SCREENSHOTURLS</span><span class="w"> </span><span class="s2">&quot;https://www.slicer.org/w/img_auth.php/4/42/Slicer-r19441-EmptyExtensionTemplate-screenshot.png&quot;</span><span class="p">)</span>
+
+<span class="nb">find_package</span><span class="p">(</span><span class="s">Slicer</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">include</span><span class="p">(</span><span class="o">${</span><span class="nv">Slicer_USE_FILE</span><span class="o">}</span><span class="p">)</span>
+
+<span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">ModuleA</span><span class="p">)</span>
+
+<span class="nb">include</span><span class="p">(</span><span class="o">${</span><span class="nv">Slicer_EXTENSION_CPACK</span><span class="o">}</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="why-is-the-contribute-option-is-not-available-with-the-extensionwizard">
+<h3>Why is the –contribute option is not available with the ExtensionWizard?<a class="headerlink" href="#why-is-the-contribute-option-is-not-available-with-the-extensionwizard" title="Link to this heading"></a></h3>
+<p>Wizard contribute option is available only (1) if Slicer is built with OpenSSL support or (2) directly from the nightly.</p>
+<p>To build Slicer with SSL support, you need to build (or download) Qt with SSL support and configure Slicer with <code class="docutils literal notranslate"><span class="pre">-DSlicer_USE_PYTHONQT_WITH_OPENSSL:BOOL=ON</span></code></p>
+</section>
+<section id="how-to-package-third-party-libraries">
+<h3>How to package third party libraries?<a class="headerlink" href="#how-to-package-third-party-libraries" title="Link to this heading"></a></h3>
+<p>Extensions integrating third party libraries should follow the <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Utilities/Templates/Extensions/SuperBuild">SuperBuild extension template</a>.</p>
+<p>Each third party libraries will be configured and built using a dedicated <code class="docutils literal notranslate"><span class="pre">External_MyLib.cmake</span></code> file, the install location of binaries and libraries should be set to <code class="docutils literal notranslate"><span class="pre">Slicer_INSTALL_BIN_DIR</span></code> and <code class="docutils literal notranslate"><span class="pre">Slicer_INSTALL_LIB_DIR</span></code>.</p>
+<p>Also, starting with <a class="reference external" href="https://github.com/Slicer/Slicer/releases/tag/v4.8.0">Slicer v4.8.0</a> (introduced in <a class="reference external" href="https://github.com/Slicer/Slicer/commit/b16753775e49bca14c456a4b45803e8fb9e97eab">this commit</a>), extension can package python modules and packages using <code class="docutils literal notranslate"><span class="pre">PYTHON_SITE_PACKAGES_SUBDIR</span></code> CMake variable to specify the install destination.</p>
+<p>These relative paths are the one that the extensions manager will consider when generating the launcher and application settings for a given extension.</p>
+</section>
+<section id="can-i-use-c-14-17-20-language-features">
+<h3>Can I use C++14/17/20 language features?<a class="headerlink" href="#can-i-use-c-14-17-20-language-features" title="Link to this heading"></a></h3>
+<p>We try to balance between compatibility and using new features. As a result, currently C++14 features are allowed, but usage of C++17/20 language features are discouraged in extensions (relying on C++17/20 features may lead to build errors on some build configurations).</p>
+<p>If your extension can be compiled as a standalone project where you would like to use newer feature, you could rely on CMake detecting compile features. See <a class="reference external" href="https://cmake.org/cmake/help/v3.5/manual/cmake-compile-features.7.html">cmake-compile-features</a> for more details.</p>
+<p>See the labs topic on <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Labs/UpgradingCompilerInfrastructure">upgrading compiler infrastructure</a> for additional information/status.</p>
+</section>
+<section id="how-do-i-publish-a-paper-about-my-extension">
+<h3>How do I publish a paper about my extension?<a class="headerlink" href="#how-do-i-publish-a-paper-about-my-extension" title="Link to this heading"></a></h3>
+<p>Consider publishing a paper describing your extension. <a class="reference external" href="https://www.software.ac.uk/resources/guides/which-journals-should-i-publish-my-software">This page</a> contains a list of journals that publish papers about software. <a class="reference internal" href="../user_guide/about.html#how-to-cite"><span class="std std-ref">Citing 3D Slicer</span></a> in all papers that use 3D Slicer is greatly appreciated.</p>
+</section>
+<section id="how-to-force-slicer-to-download-extensions-corresponding-to-a-different-slicer-revision">
+<h3>How to force Slicer to download extensions corresponding to a different Slicer revision?<a class="headerlink" href="#how-to-force-slicer-to-download-extensions-corresponding-to-a-different-slicer-revision" title="Link to this heading"></a></h3>
+<p>Since extensions available from the Extensions Manager are associated with a particular Slicer revision, for development versions, typically no extension builds will appear in the Extensions Manager. For testing purposes, the current revision can be overridden in the Python console in Slicer:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">extensionManagerModel</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">extensionsManagerModel</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">extensionManagerModel</span><span class="o">.</span><span class="n">slicerRevision</span> <span class="o">=</span> <span class="s2">&quot;25742&quot;</span>
+</pre></div>
+</div>
+<p>On other approach is to re-configure and build Slicer setting the <code class="docutils literal notranslate"><span class="pre">Slicer_FORCED_WC_REVISION</span></code> option.</p>
+</section>
+<section id="how-to-address-itk-test-driver-caught-an-itk-exception-could-not-create-io-object-for-reading-file">
+<h3>How to address ITK test driver caught an ITK exception “Could not create IO object for reading file”?<a class="headerlink" href="#how-to-address-itk-test-driver-caught-an-itk-exception-could-not-create-io-object-for-reading-file" title="Link to this heading"></a></h3>
+<p>If the following exception is reported when trying to run tests associated with a CLI modules:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span> ITK test driver caught an ITK exception:
+
+ itk::ImageFileReaderException (0x1bd8430)
+ Location: &quot;unknown&quot;
+ File: /path/to/Slicer-SuperBuild/ITK/Modules/IO/ImageBase/include/itkImageFileReader.hxx
+ Line: 139
+ Description:  Could not create IO object for reading file /path/to/image.nrrd
+   Tried to create one of the following:
+     MRMLIDImageIO
+   You probably failed to set a file suffix, or
+     set the suffix to an unsupported type.
+</pre></div>
+</div>
+<p>It most likely means that the test driver is not linking against <code class="docutils literal notranslate"><span class="pre">ITKFactoryRegistration</span></code> library and/or registering the ITK factories. To address this, the test driver should be updated:</p>
+<ul class="simple">
+<li><p>link against <code class="docutils literal notranslate"><span class="pre">${SlicerExecutionModel_EXTRA_EXECUTABLE_TARGET_LIBRARIES}</span></code></p></li>
+<li><p>include <code class="docutils literal notranslate"><span class="pre">itkFactoryRegistration.h</span></code></p></li>
+<li><p>call <code class="docutils literal notranslate"><span class="pre">itk::itkFactoryRegistration();</span></code> in its main function.</p></li>
+</ul>
+<p>For more details, read <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/FAQ#What_is_the_ITKFactoryRegistration_library_.3F">What is the ITKFactoryRegistration library?</a>.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules/volumes.html" class="btn btn-neutral float-left" title="Volumes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="python_faq.html" class="btn btn-neutral float-right" title="Python FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

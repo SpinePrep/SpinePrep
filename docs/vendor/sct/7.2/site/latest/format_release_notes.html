@@ -1,0 +1,1625 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Release Notes &mdash; NWB Format Specification 2.10.0-alpha documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=0c24fe83" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=9c85597e"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Credits" href="credits.html" />
+    <link rel="prev" title="Making a Pull Request" href="software_process.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="nwb-schema" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/format_release_notes.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            NWB Format Specification
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="format_description.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="format_description.html#comments-and-definitions">2. Comments and Definitions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Format Specification</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="format.html">1. Format Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="format.html#type-specifications">2. Type Specifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="format.html#schema-sources">3. Schema Sources</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">History &amp; Legal</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="software_process.html">Making a Pull Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_process.html#merging-prs-and-making-releases">Merging PRs and Making Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_process.html#making-a-release-checklist">Making a Release Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software_process.html#the-dev-branch-and-releases">The “dev” Branch and Releases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#upcoming">Upcoming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#minor-changes">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#june-26-2025">2.9.0 (June 26, 2025)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#major-changes">Major changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#november-24-2024">2.8.0 (November 24, 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Major changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#february-7-2024">2.7.0 (February 7, 2024)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#january-17-2023">2.6.0 (January 17, 2023)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#june-14-2022">2.5.0 (June 14, 2022)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Major changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Minor changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aug-11-2021">2.4.0 (Aug. 11, 2021)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Major changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deprecations">Deprecations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#may-12-2021">2.3.0 (May 12, 2021)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#may-29-2020">2.2.5 (May 29, 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#april-14-2020">2.2.4 (April 14, 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#april-13-2020">2.2.3 (April 13, 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#march-2-2020">2.2.2 (March 2, 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#january-14-2020">2.2.1 (January 14, 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#january-6-2020">2.2.0 (January 6, 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#september-2019">2.1.0 (September 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#june-2019">2.0.2 (June 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#march-2019">2.0.1 (March 2019)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#january-2019">2.0.0 (January 2019)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#added-new-base-data-types-nwbcontainer-nwbdata-nwbdatainterface">Added new base data types: <code class="docutils literal notranslate"><span class="pre">NWBContainer</span></code>, <code class="docutils literal notranslate"><span class="pre">NWBData</span></code>, <code class="docutils literal notranslate"><span class="pre">NWBDataInterface</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#support-general-data-structures-for-data-tables-and-vector-data">Support general data structures for data tables and vector data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#support-row-based-and-column-based-tables">Support row-based and column-based tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enable-efficient-storage-of-large-numbers-of-vector-data-elements">Enable efficient storage of large numbers of vector data elements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#use-new-table-and-vector-data-structures-to-improve-data-organization">Use new table and vector data structures to improve data organization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#improved-organization-of-electrode-metadata-in-general-extracellular-ephys">Improved organization of electrode metadata in <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-storage-of-lab-specific-meta-data">Improved storage of lab-specific meta-data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-storage-of-spectral-analyses-signal-decomposition">Improved storage of Spectral Analyses (Signal Decomposition)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-storage-of-images">Improved storage of Images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-storage-of-rois">Improved storage of ROIs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-storage-of-unit-based-data">Improved storage of unit-based data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-support-for-sweep-based-information">Improved support for sweep-based information</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#improved-specification-of-reference-time-stamp-s">Improved specification of reference time stamp(s)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#improve-standardization-of-reference-time-specification-using-iso8061">Improve standardization of reference time specification using ISO8061</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-specification-of-reference-time">Improved specification of reference time</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#improved-storage-of-time-intervals">Improved storage of time intervals</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#improved-storage-of-epoch-data">Improved storage of epoch data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-support-for-trial-based-data">Improved support for trial-based data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#generalized-storage-of-time-interval">Generalized storage of time interval</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#replaced-implicit-links-data-structures-with-explicit-links">Replaced Implicit Links/Data-Structures with Explicit Links</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#improved-consistency-identifiably-and-readability">Improved consistency, identifiably, and readability</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#improved-identifiably-of-objects">Improved identifiably of objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#simplified-extension-of-subject-metadata">Simplified extension of subject metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reduce-requirement-for-potentially-empty-groups">Reduce requirement for potentially empty groups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#added-missing-metadata">Added missing metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#improved-consistency">Improved Consistency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#added-keywords-field">Added <code class="docutils literal notranslate"><span class="pre">keywords</span></code> field</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removed-source-field">Removed <code class="docutils literal notranslate"><span class="pre">source</span></code> field</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removed-ancestry-field">Removed <code class="docutils literal notranslate"><span class="pre">ancestry</span></code> field</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#improved-organization-of-processed-and-acquisition-data">Improved organization of processed and acquisition data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#improved-organization-of-processed-data">Improved organization of processed data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#simplified-organization-of-acquisition-data">Simplified organization of acquisition data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#other-changes">Other changes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#improved-governance-and-accessibility">Improved governance and accessibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#specification-language-changes">Specification language changes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#specification-of-dataset-dimensions">Specification of dataset dimensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#added-link-type">Added <code class="docutils literal notranslate"><span class="pre">Link</span></code> type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removed-datasets-defined-via-autogen">Removed datasets defined via autogen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removed-neurodata-type-custom">Removed <code class="docutils literal notranslate"><span class="pre">'neurodata\_type=Custom'</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#x-09-2015-04-2017">1.0.x (09/2015 - 04/2017)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#april-8-2017">1.0.6, April 8, 2017</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-beta-dec-6-2016">1.0.5i_beta, Dec 6, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#h-beta-nov-30-2016">1.0.5h_beta, Nov 30, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#g-beta-oct-7-2016">1.0.5g_beta, Oct 7, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#f-beta-oct-3-2016">1.0.5f_beta, Oct 3, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#e-beta-sept-22-2016">1.0.5e_beta, Sept 22, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#d-beta-sept-6-2016">1.0.5d_beta, Sept 6, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c-beta-aug-17-2016">1.0.5c_beta, Aug 17, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#b-beta-aug-16-2016">1.0.5b_beta, Aug 16, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-beta-aug-10-2016">1.0.5a_beta, Aug 10, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#beta-aug-2016">1.0.5_beta Aug 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#beta-june-2016">1.0.4_beta June 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#april-2016">1.0.3 April, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#february-2016">1.0.2 February, 2016</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#october-7th-2015">1.0.1 October 7th, 2015</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#september-28th-2015">1.0.0 September 28<sup>th</sup>, 2015</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html#legal">Legal</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NWB Format Specification</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Release Notes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/format_release_notes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="release-notes">
+<span id="nwb-schema-release-notes"></span><h1>Release Notes<a class="headerlink" href="#release-notes" title="Link to this heading"></a></h1>
+<section id="upcoming">
+<h2>Upcoming<a class="headerlink" href="#upcoming" title="Link to this heading"></a></h2>
+<section id="minor-changes">
+<h3>Minor changes<a class="headerlink" href="#minor-changes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Improved documentation of <code class="docutils literal notranslate"><span class="pre">ElectrodeGroup</span></code> to clarify its purpose as a physical grouping of electrodes
+that are typically used together for analysis, such as spike sorting. (#659)</p></li>
+<li><p>Specified that units for <code class="docutils literal notranslate"><span class="pre">ElectrodesTable</span></code> coordinate fields (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">rel_x</span></code>, <code class="docutils literal notranslate"><span class="pre">rel_y</span></code>, <code class="docutils literal notranslate"><span class="pre">rel_z</span></code>)
+should be in microns. (#658)</p></li>
+</ul>
+</section>
+</section>
+<section id="june-26-2025">
+<h2>2.9.0 (June 26, 2025)<a class="headerlink" href="#june-26-2025" title="Link to this heading"></a></h2>
+<section id="major-changes">
+<h3>Major changes<a class="headerlink" href="#major-changes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">Device.model_number</span></code>, <code class="docutils literal notranslate"><span class="pre">Device.model_name</span></code>, <code class="docutils literal notranslate"><span class="pre">Device.manufacturer</span></code>. Use
+<code class="docutils literal notranslate"><span class="pre">Device.model</span></code> link and new <code class="docutils literal notranslate"><span class="pre">DeviceModel</span></code> neurodata type instead. The old <code class="docutils literal notranslate"><span class="pre">Device.model_name</span></code>
+corresponds to the new <code class="docutils literal notranslate"><span class="pre">DeviceModel.name</span></code>. (#608)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">DeviceModel</span></code> neurodata type to represent the model of a device instead of a specific instance of a device.
+This deduplicates information when a session involves multiple instances of the same device model, and it helps
+combine data across sessions and experiments when the model is the same.
+See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/607">https://github.com/NeurodataWithoutBorders/nwb-schema/issues/607</a> for details. (#608)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">BaseImage</span></code> and <code class="docutils literal notranslate"><span class="pre">ExternalImage</span></code> as new neurodata types. The first so both <code class="docutils literal notranslate"><span class="pre">Image</span></code> and <code class="docutils literal notranslate"><span class="pre">ExternalImage</span></code>
+can inherit from it. The second to store external images (#604, #623, #627)</p></li>
+<li><p>Changed <code class="docutils literal notranslate"><span class="pre">NWBFile.electrodes</span></code> from a generic <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> with added columns to a new <code class="docutils literal notranslate"><span class="pre">ElectrodesTable</span></code>
+neurodata type that extends <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> with added columns. (#539, #624)</p></li>
+<li><p>Changed <code class="docutils literal notranslate"><span class="pre">DecompositionSeries.bands</span></code> from a generic <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> with added columns to a new <code class="docutils literal notranslate"><span class="pre">FrequencyBandsTable</span></code>
+neurodata type that extends <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> with added columns. (#610)</p></li>
+<li><p>Made <code class="docutils literal notranslate"><span class="pre">SpikeEventSeries.timestamps</span></code> explicitly required as described in the documentation. (#629)</p></li>
+<li><p>Allowed <code class="docutils literal notranslate"><span class="pre">EventDetection</span></code> to have shape (num_events, 2) to store the channel index of the detected event. (#620)</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Minor changes<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Made group quantities consistent (“1 or more”) across data interfaces / wrapper types (#613)</p></li>
+<li><p>Fixed typo and removed HTML tag from doc of behavioral neurodata types. (#600)</p></li>
+<li><p>Improved the documentation of <code class="docutils literal notranslate"><span class="pre">IndexSeries</span></code>. (#614)</p></li>
+<li><p>Made <code class="docutils literal notranslate"><span class="pre">EventDetection.times</span></code> optional and deprecated. Use <cite>source_idx</cite> instead. (#620)</p></li>
+<li><p>Clarified documentation of <code class="docutils literal notranslate"><span class="pre">PlaneSegmentation</span></code> that at least one of <code class="docutils literal notranslate"><span class="pre">image_mask</span></code>, <code class="docutils literal notranslate"><span class="pre">pixel_mask</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">voxel_mask</span></code> is required. (#636)</p></li>
+</ul>
+</section>
+</section>
+<section id="november-24-2024">
+<h2>2.8.0 (November 24, 2024)<a class="headerlink" href="#november-24-2024" title="Link to this heading"></a></h2>
+<section id="id2">
+<h3>Major changes<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">EventWaveform</span></code> neurodata type. (#584)</p></li>
+<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">ImageMaskSeries</span></code> neurodata type. (#583)</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Minor changes<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added optional <code class="docutils literal notranslate"><span class="pre">was_generated_by</span></code> attribute to <code class="docutils literal notranslate"><span class="pre">NWBFile</span></code> to store provenance information. (#578)</p></li>
+<li><p>Made <code class="docutils literal notranslate"><span class="pre">band_mean</span></code> and <code class="docutils literal notranslate"><span class="pre">band_std</span></code> in <code class="docutils literal notranslate"><span class="pre">DecompositionSeries</span></code> optional. (#593)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">Device.model_number</span></code>, <code class="docutils literal notranslate"><span class="pre">Device.model_name</span></code>, <code class="docutils literal notranslate"><span class="pre">Device.serial_number</span></code>. (#594)</p></li>
+</ul>
+</section>
+</section>
+<section id="february-7-2024">
+<h2>2.7.0 (February 7, 2024)<a class="headerlink" href="#february-7-2024" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>Minor changes<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed typos in docstrings. (#560)</p></li>
+<li><p>Deprecated <code class="docutils literal notranslate"><span class="pre">ImagingRetinotopy</span></code> neurodata type. (#565)</p></li>
+<li><p>Modified <code class="docutils literal notranslate"><span class="pre">OptogeneticSeries</span></code> to allow 2D data, primarily in extensions of <code class="docutils literal notranslate"><span class="pre">OptogeneticSeries</span></code>. (#564)</p></li>
+<li><p>Added optional <code class="docutils literal notranslate"><span class="pre">stimulus_template</span></code> column to <code class="docutils literal notranslate"><span class="pre">IntracellularStimuliTable</span></code> as part of the <code class="docutils literal notranslate"><span class="pre">IntracellularRecordingsTable</span></code>. (#545)</p></li>
+<li><p>Added support for <code class="docutils literal notranslate"><span class="pre">NWBDataInterface</span></code> and <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> in <code class="docutils literal notranslate"><span class="pre">NWBFile.stimulus</span></code>. (#559)</p></li>
+</ul>
+</section>
+</section>
+<section id="january-17-2023">
+<h2>2.6.0 (January 17, 2023)<a class="headerlink" href="#january-17-2023" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>Minor changes<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added OnePhotonSeries. (#523)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Subject.age</span></code> has a new optional attribute, <code class="docutils literal notranslate"><span class="pre">reference</span></code>, which can take a value of “birth” (default) or “gestational”. (#525)</p></li>
+<li><p>Added “in seconds” to the doc of Units.spike_times. (#530)</p></li>
+</ul>
+</section>
+</section>
+<section id="june-14-2022">
+<h2>2.5.0 (June 14, 2022)<a class="headerlink" href="#june-14-2022" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>Major changes<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Shape of SpatialSeries.data is more restrictive to prevent &gt; 3 columns. (#510)</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>Minor changes<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The elements <cite>x</cite>, <cite>y</cite>, <cite>z</cite>, <cite>imp</cite> and <cite>filtering</cite> are now optional instead of required. (#506)</p></li>
+<li><p>Added an <code class="docutils literal notranslate"><span class="pre">offset</span></code> attribute to all <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects to allow enhanced translation to scientific units. (#494)</p></li>
+<li><p>Allowed <code class="docutils literal notranslate"><span class="pre">NWBFile/stimulus/templates</span></code> to contain <code class="docutils literal notranslate"><span class="pre">Images</span></code> objects. (#459)</p></li>
+<li><p>Added new optional “order_of_images” dataset to <code class="docutils literal notranslate"><span class="pre">Images</span></code> that contains an ordered list of object references to
+<code class="docutils literal notranslate"><span class="pre">Image</span></code> objects stored in the same <code class="docutils literal notranslate"><span class="pre">Images</span></code> object. This dataset must be used if the images are referred to
+by index, e.g., from an <code class="docutils literal notranslate"><span class="pre">IndexSeries</span></code> object. Created new neurodata type <code class="docutils literal notranslate"><span class="pre">ImageReferences</span></code> which should be used
+for this dataset. (#459, #518, #519, #520)</p></li>
+<li><p>Overhauled <code class="docutils literal notranslate"><span class="pre">IndexSeries</span></code> type (#459):
+- Fixed dtype of <code class="docutils literal notranslate"><span class="pre">data</span></code> dataset of <code class="docutils literal notranslate"><span class="pre">IndexSeries</span></code> (int32 -&gt; uint32).
+- Updated <code class="docutils literal notranslate"><span class="pre">unit</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">data</span></code> to have fixed value “N/A”.
+- Updated docstrings for the <code class="docutils literal notranslate"><span class="pre">conversion</span></code>, <code class="docutils literal notranslate"><span class="pre">resolution</span></code>, and <code class="docutils literal notranslate"><span class="pre">offset</span></code> attributes of <code class="docutils literal notranslate"><span class="pre">data</span></code> to indicate that
+these fields are not used.
+- Added link to an <code class="docutils literal notranslate"><span class="pre">Images</span></code> object, which contains an ordered collection of images.
+- Discouraged use of the <code class="docutils literal notranslate"><span class="pre">indexed_timeseries</span></code> link to an <code class="docutils literal notranslate"><span class="pre">ImageSeries</span></code>.</p></li>
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">TimeIntervals</span></code> to use the new <code class="docutils literal notranslate"><span class="pre">TimeSeriesReferenceVectorData</span></code> type. This does not alter the overall structure
+of <code class="docutils literal notranslate"><span class="pre">TimeIntervals</span></code> in a major way aside from changing the value of the <code class="docutils literal notranslate"><span class="pre">neurodata_type</span></code> attribute in the file
+from <code class="docutils literal notranslate"><span class="pre">VectorData</span></code> to <code class="docutils literal notranslate"><span class="pre">`TimeSeriesReferenceVectorData</span></code>. This change replaces the existing <code class="docutils literal notranslate"><span class="pre">TimeIntervals.timeseries</span></code>
+column with a <code class="docutils literal notranslate"><span class="pre">TimeSeriesReferenceVectorData</span></code> type column of the same name and overall schema. This change facilitates creating
+common functionality around <code class="docutils literal notranslate"><span class="pre">TimeSeriesReferenceVectorData</span></code>. This change affects all existing <code class="docutils literal notranslate"><span class="pre">TimeIntervals</span></code> tables
+as part of the <code class="docutils literal notranslate"><span class="pre">intervals/</span></code> group, i.e., <code class="docutils literal notranslate"><span class="pre">intervals/epochs</span></code>, <code class="docutils literal notranslate"><span class="pre">intervals/trials</span></code>, and <code class="docutils literal notranslate"><span class="pre">intervals/invalid_times</span></code>. (#486)</p></li>
+<li><p>Clarified the doc string for the <code class="docutils literal notranslate"><span class="pre">reference</span></code> column of the electrodes table. (#498)</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">cell_id</span></code> field to <code class="docutils literal notranslate"><span class="pre">IntracellularElectrode</span></code>. (#512)</p></li>
+</ul>
+</section>
+</section>
+<section id="aug-11-2021">
+<h2>2.4.0 (Aug. 11, 2021)<a class="headerlink" href="#aug-11-2021" title="Link to this heading"></a></h2>
+<section id="id8">
+<h3>Major changes<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Added new <code class="docutils literal notranslate"><span class="pre">TimeSeriesReferenceVectorData</span></code> type for referencing ranges of <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> from a <code class="docutils literal notranslate"><span class="pre">VectorData</span></code> column (#470)</p></li>
+<li><p>Integrated the intracellular electrophysiology experiment metadata table structure developed as part of the
+<a class="reference external" href="https://github.com/oruebel/ndx-icephys-meta">ndx-icephys-meta</a> extension project with NWB (#470). This includes the
+following new types:</p>
+<blockquote>
+<div><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">IntracellularRecordingsTable</span></code> is an <code class="docutils literal notranslate"><span class="pre">AlignedDynamicTable</span></code> for managing individual intracellular recordings and
+to group together a stimulus and response from a single electrode recording. The table contains the following category tables:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">IntracellularElectrodesTable</span></code>; a <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> for storing metadata about the <code class="docutils literal notranslate"><span class="pre">IntracellularElectrode</span></code> used</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IntracellularStimuliTable</span></code>; a <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> for storing metadata about the recorded stimulus <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>
+using the new <code class="docutils literal notranslate"><span class="pre">TimeSeriesReferenceVectorData</span></code> type to reference <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IntracellularResponsesTable</span></code>; a <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> for storing metadata about the recorded response <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>
+using the new <code class="docutils literal notranslate"><span class="pre">TimeSeriesReferenceVectorData</span></code> type to reference <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SimultaneousRecordingsTable</span></code> is a <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> for grouping different intracellular recordings from the
+<code class="docutils literal notranslate"><span class="pre">IntracellularRecordingsTable</span></code> together that were recorded simultaneously from different electrodes and for
+storing metadata about simultaneous recordings</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SequentialRecordingsTable</span></code> is a <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> for grouping different sequential recordings from the
+<code class="docutils literal notranslate"><span class="pre">SimultaneousRecordingsTable</span></code>  together and storing metadata about sequential recordings</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RepetitionsTable</span></code> a <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> for grouping different sequential intracellular recordings from the
+<code class="docutils literal notranslate"><span class="pre">SequentialRecordingsTable</span></code> together and storing metadata about repetitions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ExperimentalConditionsTable</span></code> is a <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> for grouping different intracellular recording repetitions
+from the <code class="docutils literal notranslate"><span class="pre">RepetitionsTable</span></code> together and storing metadata about experimental conditions</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Added the new intracellular electrophysiology metadata tables to <code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys</span></code> as part of <code class="docutils literal notranslate"><span class="pre">NWBFile</span></code> (#470)</p></li>
+</ul>
+</section>
+<section id="deprecations">
+<h3>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SweepTable</span></code> has been deprecated in favor of the new intracellular electrophysiology  metadata tables. Use of <code class="docutils literal notranslate"><span class="pre">SweepTable</span></code>
+is still possible but no longer recommended. (#470)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys/filtering</span></code> has been deprecated in favor of <code class="docutils literal notranslate"><span class="pre">IntracellularElectrode.filtering</span></code> (#470)</p></li>
+</ul>
+</section>
+<section id="bug-fixes">
+<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed incorrect dtype for electrodes table column “filtering” (float -&gt; text) (#478)</p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">quantity:</span> <span class="pre">*</span></code> from the type definitions of <code class="docutils literal notranslate"><span class="pre">OptogeneticStimulusSite</span></code> and <code class="docutils literal notranslate"><span class="pre">ImagingPlane</span></code>.
+This change improves clarity of the schema to follow best practices. It has no functional effect on the schema. (#472)</p></li>
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">ImageSeries</span></code> to have its <code class="docutils literal notranslate"><span class="pre">data</span></code> dataset be required. Since <code class="docutils literal notranslate"><span class="pre">ImageSeries</span></code> is a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeries.data</span></code>
+is required, <code class="docutils literal notranslate"><span class="pre">ImageSeries.data</span></code> should also be a required dataset. Otherwise this creates problems for
+inheritance and validation. If <code class="docutils literal notranslate"><span class="pre">ImageSeries</span></code> data are stored in an external file, then <code class="docutils literal notranslate"><span class="pre">ImageSeries.data</span></code> should
+be set to an empty 3D array. (#481)</p></li>
+</ul>
+</section>
+</section>
+<section id="may-12-2021">
+<h2>2.3.0 (May 12, 2021)<a class="headerlink" href="#may-12-2021" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add optional <code class="docutils literal notranslate"><span class="pre">waveforms</span></code> column to the <code class="docutils literal notranslate"><span class="pre">Units</span></code> table.</p></li>
+<li><p>Add optional <code class="docutils literal notranslate"><span class="pre">strain</span></code> field to <code class="docutils literal notranslate"><span class="pre">Subject</span></code>.</p></li>
+<li><p>Add to <code class="docutils literal notranslate"><span class="pre">DecompositionSeries</span></code> an optional <code class="docutils literal notranslate"><span class="pre">DynamicTableRegion</span></code> called <code class="docutils literal notranslate"><span class="pre">source_channels</span></code>.</p></li>
+<li><p>Add to <code class="docutils literal notranslate"><span class="pre">ImageSeries</span></code> an optional link to <code class="docutils literal notranslate"><span class="pre">Device</span></code>.</p></li>
+<li><p>Add optional <code class="docutils literal notranslate"><span class="pre">continuity</span></code> field to <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p></li>
+<li><p>Add optional <code class="docutils literal notranslate"><span class="pre">filtering</span></code> attribute to <code class="docutils literal notranslate"><span class="pre">ElectricalSeries</span></code>.</p></li>
+<li><p>Clarify documentation for electrode impedance and filtering.</p></li>
+<li><p>Add description of extra fields.</p></li>
+<li><p>Set the <code class="docutils literal notranslate"><span class="pre">stimulus_description</span></code> for <code class="docutils literal notranslate"><span class="pre">IZeroCurrentClamp</span></code> to have the fixed value <code class="docutils literal notranslate"><span class="pre">N/A</span></code>.</p></li>
+<li><p>Update hdmf-common-schema from 1.1.3 to version 1.5.0.
+- The HDMF-experimental namespace was added, which includes the <code class="docutils literal notranslate"><span class="pre">ExternalResources</span></code> and <code class="docutils literal notranslate"><span class="pre">EnumData</span></code>
+data types. Schema in the HDMF-experimental namespace are experimental and subject to breaking changes at any time.
+- Added experimental data type <code class="docutils literal notranslate"><span class="pre">ExternalResources</span></code> for storing ontology information / external resource references.
+- Added experimental data type <code class="docutils literal notranslate"><span class="pre">EnumData</span></code> to store data from a set of fixed values.
+- Changed dtype for datasets within <code class="docutils literal notranslate"><span class="pre">CSRMatrix</span></code> from ‘int’ to ‘uint’ and added missing <code class="docutils literal notranslate"><span class="pre">data_type_inc:</span> <span class="pre">Container</span></code>
+to the <code class="docutils literal notranslate"><span class="pre">CSRMatrix</span></code> type.
+- Added data type <code class="docutils literal notranslate"><span class="pre">SimpleMultiContainer</span></code>, a Container for storing other Container and Data objects together.
+- Added data type <code class="docutils literal notranslate"><span class="pre">AlignedDynamicTable</span></code>, a DynamicTable type with support for categories (or sub-headings) each described by a separate DynamicTable.
+- Fixed missing dtype for <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code>.
+- <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code> now extends <code class="docutils literal notranslate"><span class="pre">VectorData</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Index</span></code>.
+- Removed unused and non-functional <code class="docutils literal notranslate"><span class="pre">Index</span></code> data type.
+- See <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/latest/format_release_notes.html">https://hdmf-common-schema.readthedocs.io/en/latest/format_release_notes.html</a> for full release notes.</p></li>
+</ul>
+</section>
+<section id="may-29-2020">
+<h2>2.2.5 (May 29, 2020)<a class="headerlink" href="#may-29-2020" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add schema validation CI.</p></li>
+<li><p>Fix incorrect dims and shape for <code class="docutils literal notranslate"><span class="pre">ImagingPlane.origin_coords</span></code> and <code class="docutils literal notranslate"><span class="pre">ImagingPlane.grid_spacing</span></code>, and fix incorrect dims for <code class="docutils literal notranslate"><span class="pre">TwoPhotonSeries.field_of_view</span></code>.</p></li>
+</ul>
+</section>
+<section id="april-14-2020">
+<h2>2.2.4 (April 14, 2020)<a class="headerlink" href="#april-14-2020" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix typo in <code class="docutils literal notranslate"><span class="pre">nwb.ophys.yaml</span></code> that prevents proper parsing of the schema.</p></li>
+</ul>
+</section>
+<section id="april-13-2020">
+<h2>2.2.3 (April 13, 2020)<a class="headerlink" href="#april-13-2020" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Move nested type definitions to root of YAML files. This does not functionally change the schema but simplifies parsing of the schema and extensions by APIs.</p></li>
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">ImagingPlane.imaging_rate</span></code> optional to handle cases where an imaging plane is associated with multiple time series with different rates.</p></li>
+<li><p>Add release process documentation.</p></li>
+</ul>
+</section>
+<section id="march-2-2020">
+<h2>2.2.2 (March 2, 2020)<a class="headerlink" href="#march-2-2020" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix shape and dims of <code class="docutils literal notranslate"><span class="pre">OpticalSeries.data</span></code> for color images</p></li>
+<li><p>Allow more than one <code class="docutils literal notranslate"><span class="pre">OpticalChannel</span></code> object in <code class="docutils literal notranslate"><span class="pre">ImagingPlane</span></code></p></li>
+<li><p>Update hdmf-common-schema to 1.1.3. This fixes missing ‘shape’ and ‘dims’ key for types <code class="docutils literal notranslate"><span class="pre">VectorData</span></code>, <code class="docutils literal notranslate"><span class="pre">VectorIndex</span></code>, and <code class="docutils literal notranslate"><span class="pre">DynamicTableRegion</span></code>.</p></li>
+<li><p>Revert changes to <code class="docutils literal notranslate"><span class="pre">nwb.retinotopy.yaml</span></code> in 2.1.0 which break backward compatibility and were not supported by the APIs in any case. Changes will be revisited in a future version.</p></li>
+</ul>
+</section>
+<section id="january-14-2020">
+<h2>2.2.1 (January 14, 2020)<a class="headerlink" href="#january-14-2020" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fixed incorrect version numbers in <code class="docutils literal notranslate"><span class="pre">nwb.file.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">hdmf-common-schema/common/namespace.yaml</span></code>.</p></li>
+</ul>
+</section>
+<section id="january-6-2020">
+<h2>2.2.0 (January 6, 2020)<a class="headerlink" href="#january-6-2020" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Moved common data structures such as Container and DynamicTable to hdmf-common-schema.</p>
+<ul>
+<li><p>The hdmf-common-schema repo is now included as a submodule</p></li>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/pull/307">https://github.com/NeurodataWithoutBorders/nwb-schema/pull/307</a> for details</p></li>
+</ul>
+</li>
+<li><p>Added “channel_conversion” dataset to ElectricalSeries to represent per-channel conversion factors.</p></li>
+<li><p>Added “sampling_rate” and “unit” attributes to “waveform_mean” and “waveform_sd” datasets/columns in Units table.</p></li>
+<li><p>Added “description” and “manufacturer” attributes to Device.</p></li>
+<li><p>Deprecated ImagingPlane “manifold” in favor of “origin_coords” and “grid_spacing”</p></li>
+<li><p>Use “text” data type for all DynamicTable “colnames”. Previously, only ASCII was allowed.</p></li>
+<li><p>Use “text” data type for electrode table columns “location” and “group_name”. Previously, only ASCII was allowed.</p></li>
+<li><p>Added to description to make electrode x,y,z consistent with CCF reference. <a class="reference external" href="https://allensdk.readthedocs.io/en/latest/reference_space.html">https://allensdk.readthedocs.io/en/latest/reference_space.html</a></p></li>
+<li><p>Added “position” dataset with compound data type x,y,z in ElectrodeGroup.</p></li>
+<li><p>Avoid enforcing “uint64” for sweep numbers for better compatibility. Use uint instead which is 32bit.</p></li>
+<li><p>Set <cite>dtype</cite> for <cite>Image</cite> and its subtypes to <cite>numeric</cite>. (note: technically this breaks backwards compatibility, in the schema, but the <cite>pynwb</cite> API has always enforced that Images have a numeric type, and realistically we do not think users are storing strings in an <cite>Image</cite> dataset.)</p></li>
+<li><p>Added “resolution” attribute to “spike_times” column of Units.</p></li>
+<li><p>Changed the “quantity” key of attribute Units.resolution to “required” for schema language compliance.</p></li>
+<li><p>Removed “required” key from dataset ImageSeries.field_of_view for schema language compliance.</p></li>
+<li><p>Replaced “required” keys with “quantity” keys for ImagingPlane.origin_coords and ImagingPlane.grid_spacing for schema language compliance.</p></li>
+<li><p>Refactored ImagingRetinotopy type to reduce redundancy.</p></li>
+<li><p>Added “doc” key to ImagingRetinotopy.axis_2_power_map for schema language compliance.</p></li>
+<li><p>Fixed makefiles for generating documentation on Windows.</p></li>
+<li><p>Added optional “reference” column in “electrodes” table.</p></li>
+<li><p>Changed dims of ImageSeries from (frame, y, x) to (frame, x, y) and (frame, z, y, x) to (frame, x, y, z) to be consistent with the dimension ordering in PlaneSegmentation.</p></li>
+<li><p>Changed dims of Image from (y, x) to (x, y). (note: as far as we know, users of NWB 2.0 that use the Image type encode their data as (x, y)) to be consistent with the dimension ordering in ImageSeries.</p></li>
+<li><p>Updated hdmf-common-schema to version 1.1.0 which includes:</p>
+<ul>
+<li><p>The ‘colnames’ attribute of <code class="docutils literal notranslate"><span class="pre">DynamicTable</span></code> changed from data type ‘ascii’ to ‘text’.</p></li>
+<li><p>Improved documentation and type docstrings.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="september-2019">
+<h2>2.1.0 (September 2019)<a class="headerlink" href="#september-2019" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Improved documentation in “doc” attribute of many types</p></li>
+<li><p>Removed “help” attribute</p>
+<ul>
+<li><p>Now that the schema is cached in an NWB file by default, this attribute is redundant, confusing, used inconsistently, clutters the file and documentation, and adds substantial boilerplate to writing extensions</p></li>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/270">https://github.com/NeurodataWithoutBorders/nwb-schema/issues/270</a> for details</p></li>
+</ul>
+</li>
+<li><p>Removed static “description” attribute from some types</p>
+<ul>
+<li><p>These were intended to be a “help” attribute, which has now been removed</p></li>
+<li><p>For example, TimeIntervals dataset “start_time” attribute “description” had a fixed value that is now removed</p></li>
+</ul>
+</li>
+<li><p>Reordered keys</p>
+<ul>
+<li><p>This standardizes the order of keys across types and makes the schema more readable</p></li>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/274">https://github.com/NeurodataWithoutBorders/nwb-schema/issues/274</a> for details</p></li>
+</ul>
+</li>
+<li><p>Added “dims” attribute for datasets where “shape” was specified without “dims”</p>
+<ul>
+<li><p>The “dims” attribute describes the data along each dimension of the dataset and is helpful to provide alongside “shape”</p></li>
+<li><p>For example, NWBFile dataset “keywords” has attribute “shape” has one entry: “null”. The attribute “dims” was added with one entry: “num_keywords”</p></li>
+</ul>
+</li>
+<li><p>Removed redundant specifications that are inherited from a parent type</p></li>
+<li><p>ElectrodeGroup link “device”: optional -&gt; required</p>
+<ul>
+<li><p>This was previously required by PyNWB</p></li>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/1025">https://github.com/NeurodataWithoutBorders/pynwb/issues/1025</a> for details</p></li>
+</ul>
+</li>
+<li><p>Matched default and fixed values of datasets and attributes with the documentation and intended use</p>
+<ul>
+<li><p>IZeroClampSeries dataset “bias_current” unspecified value -&gt; fixed value 0.0</p></li>
+<li><p>IZeroClampSeries dataset “bridge_balance” unspecified value -&gt; fixed value 0.0</p></li>
+<li><p>IZeroClampSeries dataset “capacitance_compensation” unspecified value -&gt; fixed value 0.0</p></li>
+<li><p>TimeSeries dataset “resolution” default value: 0.0 -&gt; -1.0</p></li>
+<li><p>ImagingRetinotopy dataset “axis_descriptions” attribute “shape”: null -&gt; 2</p></li>
+<li><p>DecompositionSeries dataset “data” attribute “unit” default value unspecified -&gt; default value “no unit”</p></li>
+<li><p>VoltageClampStimulusSeries, CurrentClampSeries, IZeroClampSeries attribute “unit” has fixed value “volts”</p></li>
+<li><p>CurrentClampStimulusSeries, VoltageClampSeries, attribute “unit” has fixed value “amperes”</p></li>
+</ul>
+</li>
+<li><p>NWBFile dataset “experimenter” and “related_publications” change from scalar to 1-D, unlimited arrays</p>
+<ul>
+<li><p>This allows the “experimenter” and “related_publications” dataset to encode multiple values</p></li>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/985">https://github.com/NeurodataWithoutBorders/pynwb/issues/985</a> and <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/299">https://github.com/NeurodataWithoutBorders/nwb-schema/issues/299</a> for details</p></li>
+</ul>
+</li>
+<li><p>Standardized units to be plural, lower-case, SI units</p>
+<ul>
+<li><p>TimeSeries dataset “starting_time” attribute “unit” fixed value: “Seconds” -&gt; “seconds”</p></li>
+<li><p>TimeSeries dataset “timestamps” attribute “unit” fixed value: “Seconds” -&gt; “seconds”</p></li>
+<li><p>ElectricalSeries dataset “data” attribute “unit” default value (previously optional): “volt” -&gt; fixed value “volts”</p></li>
+<li><p>SpikeEventSeries dataset “data” attribute “unit” default value (previously optional): “volt” -&gt; fixed value “volts”</p></li>
+<li><p>SpikeEventSeries dataset “timestamps” attribute “unit” fixed value (previously optional): “Seconds” -&gt; fixed value “seconds”</p></li>
+<li><p>EventDetection dataset “times” attribute “unit” default value: “Seconds” -&gt; “seconds”</p></li>
+<li><p>VoltageClampSeries dataset “capacitance_fast” attribute “unit” default value “Farad” -&gt; fixed value “farads”</p></li>
+<li><p>VoltageClampSeries dataset “capacitance_slow” attribute “unit” default value “Farad” -&gt; fixed value “farads”</p></li>
+<li><p>VoltageClampSeries dataset “resistance_comp_bandwidth” attribute “unit” default value “Hz” -&gt; fixed value “hertz”</p></li>
+<li><p>VoltageClampSeries dataset “resistance_comp_correction” attribute “unit” default value “percent” -&gt; fixed value “percent”</p></li>
+<li><p>VoltageClampSeries dataset “resistance_comp_prediction” attribute “unit” default value “percent” -&gt; fixed value “percent”</p></li>
+<li><p>VoltageClampSeries dataset “whole_cell_capacitance_comp” attribute “unit” default value “Farad” -&gt; fixed value “farads”</p></li>
+<li><p>VoltageClampSeries dataset “whole_cell_series_resistance_comp” attribute “unit” default value “Ohm” -&gt; fixed value “ohms”</p></li>
+<li><p>OptogeneticSeries dataset “data” attribute “unit” default value “watt” -&gt; fixed value “watts”</p></li>
+<li><p>ImagingPlane dataset “manifold” attribute “unit” default value “Meter” -&gt; default value “meters”</p></li>
+<li><p>see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/277">https://github.com/NeurodataWithoutBorders/nwb-schema/issues/277</a> for details</p></li>
+</ul>
+</li>
+<li><p>Made Units table column “waveform_mean” and “waveform_sd” have shape num_units x num_samples x num_electrodes</p>
+<ul>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/1008">https://github.com/NeurodataWithoutBorders/pynwb/pull/1008</a> for details</p></li>
+</ul>
+</li>
+<li><p>Made CorrectedImageStack and ImagingRetinotopy inherit from the more specific NWBDataInterface instead of NWBContainer</p></li>
+<li><p>Added a scratch space for saving arbitrary datasets to an NWBFile</p>
+<ul>
+<li><p>NWB is cumbersome as a format for day-to-day work. There is a lot of overheard to save one-off analysis results to an NWB file. To save new datasets, a user has write an extension. This is a lot of work for a result that may just be tossed out.</p></li>
+<li><p>“scratch” is now an optional top-level group under NWBFile that can hold NWBContainer groups and ScratchData datasets</p></li>
+<li><p>The scratch space is explicitly for non-standardized data that is not intended for reuse
+by others. Standard NWB types, and extensions if required, should always be used for any data that you
+intend to share. As such, published data should not include scratch data and a user should be able
+to ignore any data stored in scratch to use a file.</p></li>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/286">https://github.com/NeurodataWithoutBorders/nwb-schema/issues/286</a> for details</p></li>
+</ul>
+</li>
+<li><p>Set the default value for the dataset “format” to “raw” and clarified the documentation for ImageSeries</p>
+<ul>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/pull/308/files">https://github.com/NeurodataWithoutBorders/nwb-schema/pull/308/files</a> for details</p></li>
+</ul>
+</li>
+<li><p>Add required attribute <code class="docutils literal notranslate"><span class="pre">object_id</span></code> to all NWB Groups and Datasets with an assigned neurodata_type</p>
+<ul>
+<li><p>See <a class="reference external" href="https://nwb-schema.readthedocs.io/en/latest/format_description.html#common-attributes">https://nwb-schema.readthedocs.io/en/latest/format_description.html#common-attributes</a> for details</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Backwards compatibility:</strong> The PyNWB and MatNWB APIs can read 2.0 files with the 2.1 schema.</p>
+</section>
+<section id="june-2019">
+<h2>2.0.2 (June 2019)<a class="headerlink" href="#june-2019" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Updated authors</p></li>
+<li><p>Removed NWBFile subgroup “specifications” because schema is now cached</p>
+<ul>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/953">https://github.com/NeurodataWithoutBorders/pynwb/pull/953</a> for details</p></li>
+</ul>
+</li>
+<li><p>Made DecompositionSeries link “source_timeseries” optional</p>
+<ul>
+<li><p>See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/955">https://github.com/NeurodataWithoutBorders/pynwb/pull/955</a> for details</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="march-2019">
+<h2>2.0.1 (March 2019)<a class="headerlink" href="#march-2019" title="Link to this heading"></a></h2>
+<p><strong>Change:</strong> Added <code class="docutils literal notranslate"><span class="pre">doc</span></code> and <code class="docutils literal notranslate"><span class="pre">title</span></code> descriptions for the individual source files included in the main namespace.</p>
+<p><strong>Reason:</strong> Enhance documentation of the namespace and facilitate presentation of types in autogenerated docs by
+making it easier to sort <code class="docutils literal notranslate"><span class="pre">neurodata_types</span></code> into meaningful categories (i.e., sections) with approbriate tiles and
+descriptions.</p>
+<p><strong>Backwards compatibility:</strong> No changes to the actual specification of the format are made. 2.0.1 is fully compatible
+with 2.0.0.</p>
+</section>
+<section id="january-2019">
+<h2>2.0.0 (January 2019)<a class="headerlink" href="#january-2019" title="Link to this heading"></a></h2>
+<p><strong>Main release:</strong> November 2017 (Beta), November 2018 (RC), January 2019 (final)</p>
+<section id="added-new-base-data-types-nwbcontainer-nwbdata-nwbdatainterface">
+<h3>Added new base data types: <code class="docutils literal notranslate"><span class="pre">NWBContainer</span></code>, <code class="docutils literal notranslate"><span class="pre">NWBData</span></code>, <code class="docutils literal notranslate"><span class="pre">NWBDataInterface</span></code><a class="headerlink" href="#added-new-base-data-types-nwbcontainer-nwbdata-nwbdatainterface" title="Link to this heading"></a></h3>
+<p><strong>Change:</strong> Added common base types for Groups, Datasets, and for Groups storing primary experiment data</p>
+<p><strong>Reason</strong> Collect common functionality and ease future evolution of the standard</p>
+<p><strong>Specific Changes</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="format.html#sec-nwbcontainer"><span class="std std-ref">NWBContainer</span></a> defines a common base type for all Groups with a <code class="docutils literal notranslate"><span class="pre">neurodata_type</span></code> and
+is now the base type of all main data group types in the NWB format,
+including <a class="reference internal" href="format.html#sec-timeseries"><span class="std std-ref">TimeSeries</span></a>. This also means that all group types now inherit the required
+<code class="docutils literal notranslate"><span class="pre">help</span></code> and <code class="docutils literal notranslate"><span class="pre">source</span></code> attribute from <code class="docutils literal notranslate"><span class="pre">NWBContainer</span></code>. A number of neurodata_types have been updated
+to add the missing <code class="docutils literal notranslate"><span class="pre">help</span></code> (see
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/pull/37/files">https://github.com/NeurodataWithoutBorders/nwb-schema/pull/37/files</a> for details)</p></li>
+<li><p><a class="reference internal" href="format.html#sec-nwbdatainterface"><span class="std std-ref">NWBDataInterface</span></a> extends <a class="reference internal" href="format.html#sec-nwbcontainer"><span class="std std-ref">NWBContainer</span></a> and replaces
+<code class="docutils literal notranslate"><span class="pre">Interface</span></code> from NWB 1.x. It has been renamed to ease intuition. <a class="reference internal" href="format.html#sec-nwbdatainterface"><span class="std std-ref">NWBDataInterface</span></a>
+serves as base type for primary data (e.g., experimental or analysis data) and is used to
+distinguish in the schema between non-metadata data containers and metadata containers.
+(see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/pull/116/files">https://github.com/NeurodataWithoutBorders/nwb-schema/pull/116/files</a> for details)</p></li>
+<li><p><a class="reference internal" href="format.html#sec-nwbdata"><span class="std std-ref">NWBData</span></a> defines a common base type for all Datasets with a <code class="docutils literal notranslate"><span class="pre">neurodata_type</span></code>
+and serves a similar function to <a class="reference internal" href="format.html#sec-nwbcontainer"><span class="std std-ref">NWBContainer</span></a> only for Datasets instead of Groups.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="support-general-data-structures-for-data-tables-and-vector-data">
+<h3>Support general data structures for data tables and vector data<a class="headerlink" href="#support-general-data-structures-for-data-tables-and-vector-data" title="Link to this heading"></a></h3>
+<section id="support-row-based-and-column-based-tables">
+<span id="sec-rn-tables"></span><h4>Support row-based and column-based tables<a class="headerlink" href="#support-row-based-and-column-based-tables" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Add support for storing tabular data via row-based and column-based table structures.</p>
+<p><strong>Reason:</strong> Simplify storage of complex metadata. Simplify storage of dynamic and variable-length metadata.</p>
+<p><strong>Format Changes:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Row-based tables:</strong> are implemented via a change in the specification language through support for
+compound data types The advantage of row-based tables is that they 1) allow referencing of sets of
+rows via region-references to a single dataset (e.g., a set of electrodes), 2) make it
+easy to add rows by appending to a single dataset, 3) make it easy to read individual rows
+of a table (but require reading the full table to extract the data of a single column).
+Row-based tables are used to simplify, e.g., the organization of electrode-metadata in NWB 2 (see above).
+(See the <a class="reference external" href="https://schema-language.readthedocs.io/en/latest/release_notes.html">specification language release notes</a>
+for details about the addition of compound data types in the schema).</p>
+<ul>
+<li><p><em>Referencing rows in a row-based tables:</em> Subsets of rows can referenced directly via a region-reference to the
+row-based table. Subsets</p></li>
+<li><p><em>Referencing columns in a row-based table:</em> This is currently not directly supported, but could be implemented
+via a combination of an object-reference to the table and a list of the labels of columns.</p></li>
+</ul>
+</li>
+<li><p><strong>Column-based tables:</strong> are implemented via the new neurodata_type <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a>.
+A DynamicTable is simplified-speaking just a collection of an arbitrary number of <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a>
+table column datasets (all with equal length) and a dataset storing row ids and a dataset storing column names. The
+advantage of the column-based store is that it 1) makes it easy to add new columns to the table without
+the need for extensions and 2) the column-based storage makes it easy to read individual columns
+efficiently (while reading full rows requires reading from multiple datasets). DynamicTable is used, e.g.,
+to enhance storage of trial data. (See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/536/files">https://github.com/NeurodataWithoutBorders/pynwb/pull/536/files</a> )</p>
+<ul>
+<li><p><em>Referencing rows in column-based tables:</em>  As <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> consist of multiple
+datasets (compared to row-based tables which consists of a single 1D dataset with a compound datatype)
+is not possible to reference a set of rows with a single region reference. To address this issue, NWB defines
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictableregion" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTableRegion</span></a> (added later in <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/634">PR634 (PyNWB)</a>)
+dataset type, which stores a list of integer indices (row index) and also has an attribute <code class="docutils literal notranslate"><span class="pre">table</span></code> with
+the object reference to the corresponding <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a>.</p></li>
+<li><p><em>Referencing columns in a columns-based table:</em> As each column is a separate dataset, columns of a column-based
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> can be directly references via links, object-references and
+region-references.</p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="enable-efficient-storage-of-large-numbers-of-vector-data-elements">
+<span id="sec-rn-vectordata-nwb2"></span><h4>Enable efficient storage of large numbers of vector data elements<a class="headerlink" href="#enable-efficient-storage-of-large-numbers-of-vector-data-elements" title="Link to this heading"></a></h4>
+<p><strong>Change</strong> Introduce neurodata_types <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> , <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectorindex" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorIndex</span></a>,
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-elementidentifiers" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">ElementIdentifiers</span></a></p>
+<p><strong>Reason</strong> To efficiently store spike data as part of UnitTimes a new, more efficient data structure was required.
+This builds the general, reusable types to define efficient data storage for large numbers of data vectors in
+efficient, consolidated arrays, which enable more efficient read, write, and search (see <a class="reference internal" href="#sec-rn-unittimes-nwb2"><span class="std std-ref">Improved storage of unit-based data</span></a>).</p>
+<p><strong>Format Changes</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> : Data values from a series of data elements are concatenated into a single
+array. This allows all elements to be stored efficiently in a single data array.</p></li>
+<li><p><a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectorindex" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorIndex</span></a> : 1D dataset of exclusive stop-indices selecting subranges in
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a>. In addition, the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute stores an object reference to the
+corresponding VectorData dataset. With this we can efficiently access single sub-vectors associated with single
+elements from the <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> collection. An alternative approach would be store
+region-references as part of the VectorIndex. We opted for stop-indices mainly because they are more
+space-efficient and are easier to use for introspection of index values than region references.</p></li>
+<li><p><a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-elementidentifiers" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">ElementIdentifiers</span></a> : 1D array for storing  unique identifiers for the elements in
+a VectorIndex.</p></li>
+</ul>
+<p>See <a class="reference internal" href="#sec-rn-unittimes-nwb2"><span class="std std-ref">Improved storage of unit-based data</span></a> for an illustration and specific example use in practice.
+See also <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/117">I116 (nwb-schema)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/382">PR382 (PyNWB)</a> for further details.</p>
+</section>
+</section>
+<section id="use-new-table-and-vector-data-structures-to-improve-data-organization">
+<h3>Use new table and vector data structures to improve data organization<a class="headerlink" href="#use-new-table-and-vector-data-structures-to-improve-data-organization" title="Link to this heading"></a></h3>
+<section id="improved-organization-of-electrode-metadata-in-general-extracellular-ephys">
+<h4>Improved organization of electrode metadata in <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys</span></code><a class="headerlink" href="#improved-organization-of-electrode-metadata-in-general-extracellular-ephys" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Consolidate metadata from related electrodes (e.g., from a single device) in a single location.</p>
+<p><strong>Example:</strong> Previous versions of the format specified in <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys</span></code> for each electrode a
+group <code class="docutils literal notranslate"><span class="pre">&lt;electrode_group_X&gt;</span></code> that stores 3 text datasets with a description, device name, and location, respectively.
+The main <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys</span> <span class="pre">group</span></code> then contained in addition the following datasets:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">electrode_group</span></code> text array describing for each electrode_group (implicitly referenced by index)
+which device (shank, probe, tetrode, etc.) was used,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">electrode_map</span></code> array with the x,y,z locations of each electrode</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filtering</span></code>, i.e., a single string describing the filtering for all electrodes (even though each
+electrode might be from different devices), and iv),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">impedance</span></code>, i.e., a single text array for impedance (i.e., the user has to know which format the
+string has, e.g., a float or a tuple of floats for impedance ranges).</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Reason:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Avoid explosion of the number of groups and datasets. For example, in the case of an ECoG grid with 128 channels
+one had to create 128 groups and corresponding datasets to store the required metadata about the electrodes
+using the original layout.</p></li>
+<li><p>Simplify access to related metadata. E.g., access to metadata from all electrodes of a single device requires
+resolution of a potentially large number of implicit links and access to a large number of groups (one per electrode)
+and datasets.</p></li>
+<li><p>Improve performance of metadata access operations. E.g., to access the <code class="docutils literal notranslate"><span class="pre">location</span></code> of all electrodes corresponding to a
+single recording in an <code class="docutils literal notranslate"><span class="pre">&lt;ElectricalSeries&gt;</span></code> in the original layout required iterating over a potentially large number of
+groups and datasets (one per electrode), hence, leading to a large number of small, independent read/write/seek operations,
+causing slow performance on common data accesses. Using the new layout, these kind of common data accesses can often be
+resolved via a single read/write</p></li>
+<li><p>Ease maintenance, use, and development through consolidation of related metadata</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Format Changes</strong></p>
+<blockquote>
+<div><ul>
+<li><p>Added specification of a new neurodata type <code class="docutils literal notranslate"><span class="pre">&lt;ElectrodeGroup&gt;</span></code> group.
+Each <code class="docutils literal notranslate"><span class="pre">&lt;ElectrodeGroup&gt;</span></code> contains the following datasets to describe the metadata of a set of related
+electrodes (e.g., all electrodes from a single device):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> : text dataset (for the group)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">device</span></code>: Soft link to the device in <code class="docutils literal notranslate"><span class="pre">/general/devices/</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">location</span></code>: Text description of the location of the device</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Added table-like dataset <code class="docutils literal notranslate"><span class="pre">electrodes</span></code> that consolidates all electrode-specific metadata. This is a
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> describing for each electrode:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> : a user-specified unique identifier</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code> : The floating point coordinate for the electrode</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imp</span></code> : the impedance of the channel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">location</span></code> : The location of channel within the subject e.g. brain region</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filtering</span></code> : Description of hardware filtering</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group</span></code> : Object reference to the <code class="docutils literal notranslate"><span class="pre">ElectrodeGroup</span></code> object</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group_name</span></code> : The name of the <code class="docutils literal notranslate"><span class="pre">ElectrodeGroup</span></code></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Updated <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys</span></code> as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Replaced <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys/&lt;electrode_group_X&gt;</span></code> group (and all its contents) with the new <code class="docutils literal notranslate"><span class="pre">&lt;ElectrodeGroup&gt;</span></code></p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys/electrode_map</span></code> dataset. This information is now stored in the <code class="docutils literal notranslate"><span class="pre">ElectrodeTable</span></code>.</p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys/electrode_group</span></code> dataset. This information is now stored in <code class="docutils literal notranslate"><span class="pre">&lt;ElectrodeGroup&gt;/device</span></code>.</p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys/impedance</span></code> This information is now stored in the <code class="docutils literal notranslate"><span class="pre">ElectrodeTable</span></code>.</p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys/filtering</span></code> This information is now stored in the <code class="docutils literal notranslate"><span class="pre">ElectrodeTable</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In NWB 2.0Beta the refactor originally used a row-based table for the <code class="docutils literal notranslate"><span class="pre">ElectrodeTable</span></code> based on a compound
+data type as described in <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/6">#I6 (new-schema)</a>, i.e.,
+<code class="docutils literal notranslate"><span class="pre">electrodes</span></code> was a 1D compound dataset. This was later changed to a column-based <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a>
+(see <a class="reference internal" href="#sec-rn-tables"><span class="std std-ref">Support row-based and column-based tables</span></a>). The main reason for this later change was mainly to avoid the need
+for large numbers of user-extensions to add electrode metadata
+(see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/623">#I623 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/634">PR634 (PyNWB)</a> for details.) This change
+also removed the optional <code class="docutils literal notranslate"><span class="pre">description</span></code> column as it can be added easily by the user to the
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> if required.</p>
+</div>
+</section>
+<section id="improved-storage-of-lab-specific-meta-data">
+<h4>Improved storage of lab-specific meta-data<a class="headerlink" href="#improved-storage-of-lab-specific-meta-data" title="Link to this heading"></a></h4>
+<p><strong>Reason:</strong> Labs commonly have specific meta-data associated with sessions, and we need a good way to organize this within NWB.</p>
+<p><strong>Changes:</strong> The datatype <code class="docutils literal notranslate"><span class="pre">LabMetaData</span></code> has been added to the schema within /general so that an extension can be added to /general by inheriting from LabMetaData.</p>
+<p>For further details see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/19">I19 (nwb-schema)</a> and <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/751">PR751 (PyNWB)</a>.</p>
+</section>
+<section id="improved-storage-of-spectral-analyses-signal-decomposition">
+<h4>Improved storage of Spectral Analyses (Signal Decomposition)<a class="headerlink" href="#improved-storage-of-spectral-analyses-signal-decomposition" title="Link to this heading"></a></h4>
+<p><strong>Reason:</strong> Labs commonly use analyses that involve frequency decomposition or bandpass filtering
+of neural or behavioral data, and it is difficult to standardize this data and meta-data across labs.</p>
+<p><strong>Changes:</strong> A new datatype, <a class="reference internal" href="format.html#sec-decompositionseries"><span class="std std-ref">DecompositionSeries</span></a> has been introduced to offer
+a common interface for labs to exchange the result of time-frequency analysis. The new type offers a
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> to allow users to flexibly add features of bands, and a place
+to directly link to the <cite>TimeSeries</cite> that was used.</p>
+<p>For further details see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/46">#I46 (nwb-schema)</a>
+and <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/764">#PR764 (PyNWB)</a></p>
+</section>
+<section id="improved-storage-of-images">
+<h4>Improved storage of Images<a class="headerlink" href="#improved-storage-of-images" title="Link to this heading"></a></h4>
+<p><strong>Reason:</strong></p>
+<ul class="simple">
+<li><p><strong>Improve consistency of schema:</strong> Previously there was a reference to <code class="docutils literal notranslate"><span class="pre">Image</span></code> from <code class="docutils literal notranslate"><span class="pre">ImageSeries</span></code>, however <code class="docutils literal notranslate"><span class="pre">Image</span></code> was not defined in the schema</p></li>
+<li><p><strong>Support different static image types</strong></p></li>
+</ul>
+<p><strong>Changes:</strong> <a class="reference internal" href="format.html#sec-image"><span class="std std-ref">Image</span></a>  was added as a base type, and subtypes were defined:
+<a class="reference internal" href="format.html#sec-grayscaleimage"><span class="std std-ref">GrayscaleImage</span></a>, <a class="reference internal" href="format.html#sec-rgbimage"><span class="std std-ref">RGBImage</span></a>, and <a class="reference internal" href="format.html#sec-rgbaimage"><span class="std std-ref">RGBAImage</span></a>
+(The “A” in “RGBA” is for alpha, i.e., opacity).</p>
+</section>
+<section id="improved-storage-of-rois">
+<h4>Improved storage of ROIs<a class="headerlink" href="#improved-storage-of-rois" title="Link to this heading"></a></h4>
+<p><strong>Reason:</strong></p>
+<ul class="simple">
+<li><p><strong>Improve efficiency:</strong> Similar to epochs, in NWB 1.x ROIs were stored as a single group per ROI. This structure is
+inefficient for storing large numbers of ROIs.</p></li>
+<li><p><strong>Make links explicit:</strong> The relationship of <code class="docutils literal notranslate"><span class="pre">RoiResponseSeries</span></code> to <code class="docutils literal notranslate"><span class="pre">ROI</span></code> objects was implicit (i.e. ROI was
+specified by a string), so one had to know a priori which <code class="docutils literal notranslate"><span class="pre">ImageSegmentation</span></code> and <code class="docutils literal notranslate"><span class="pre">ImagingPlane</span></code> was used
+to produce the ROIs.</p></li>
+<li><p><strong>Support 3D ROIs:</strong> Allow users to add 3D ROIs collected from a multi-plane image.</p></li>
+</ul>
+<p><strong>Changes:</strong> The main types for storing ROIs in NWB 2 are  <a class="reference internal" href="format.html#sec-imagesegmentation"><span class="std std-ref">ImageSegmentation</span></a>
+which stores 0 or more  <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a>. <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a>
+is a <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> for managing image segmentation results of a specific imaging plane.
+The ROIs are referenced by <a class="reference internal" href="format.html#sec-roiresponseseries"><span class="std std-ref">RoiResponseSeries</span></a> which stores the ROI responses over an
+imaging plane. During the development of NWB 2 the management of ROIs has been improved several times. Here we
+outline the main changes (several of which were ultimately merged together in the
+<a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a> type).</p>
+<ol class="arabic simple">
+<li><p>Added neurodata_type  <code class="docutils literal notranslate"><span class="pre">ImageMasks</span></code> replacing <code class="docutils literal notranslate"><span class="pre">ROI.img_mask</span></code> (from NWB 1.x) with
+<strong>(a)</strong> a 3D dataset with shape [num_rois, num_x_pixels, num_y_pixels] (i.e. an array of planar image masks) or
+<strong>(b)</strong> a 4D dataset with shape [num_rois, num_x_pixels, num_y_pixels, num_z_pixels] (i.e. an array of volumetric image masks)
+<code class="docutils literal notranslate"><span class="pre">ImageMasks</span></code> was subsequently merged with <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a>
+and is represented by the <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> table column <code class="docutils literal notranslate"><span class="pre">image_mask</span></code> in the table.</p></li>
+<li><p>Added neurodata_type <code class="docutils literal notranslate"><span class="pre">PixelMasks</span></code> which replaces ROI.pix_mask/ROI.pix_mask_weight (from NWB 1.x)
+with a table that has columns “x”, “y”, and “weight” (i.e. combining ROI.pix_mask and ROI.pix_mask_weight
+into a single table).  <code class="docutils literal notranslate"><span class="pre">PixelMasks</span></code> was subsequently merged with <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a>
+and is represented by the <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> dataset <code class="docutils literal notranslate"><span class="pre">pixel__mask</span></code> that is referenced from the table
+via the <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectorindex" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorIndex</span></a> column <code class="docutils literal notranslate"><span class="pre">pixel_mask_index</span></code>.</p></li>
+<li><p>Added analogous neurodata_type <code class="docutils literal notranslate"><span class="pre">VoxelMasks</span></code> with a table that has columns “x”, “y”, “z”, and “weight” for 3D ROIs.
+<code class="docutils literal notranslate"><span class="pre">VoxelMasks</span></code> was subsequently merged with <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a> and is represented
+by the <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> dataset <code class="docutils literal notranslate"><span class="pre">voxel_mask</span></code> that is referenced from the table via
+the <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectorindex" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorIndex</span></a> column <code class="docutils literal notranslate"><span class="pre">voxel_mask_index</span></code>.</p></li>
+<li><p>Added neurodata_type <code class="docutils literal notranslate"><span class="pre">ROITable</span></code> which defines a table  for storing references to the image mask
+and pixel mask for each ROI (see item 1,2). The <code class="docutils literal notranslate"><span class="pre">ROITable</span></code> type was subsequently merged with the
+<a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a>  type and as such does no longer appear as a separate type in the
+NWB 2 schema but <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a> takes the function of <code class="docutils literal notranslate"><span class="pre">ROITable</span></code>.</p></li>
+<li><p>Added neurodata_type <code class="docutils literal notranslate"><span class="pre">ROITableRegion</span></code> for referencing a subset of elements in an ROITable. Subsequently
+<code class="docutils literal notranslate"><span class="pre">ROITableRegion</span></code> has been replaced by <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictableregion" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTableRegion</span></a> as the <code class="docutils literal notranslate"><span class="pre">ROITable</span></code>
+changed to a <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> and was merged with
+<a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a> (see 8.)</p></li>
+<li><p>Replaced <code class="docutils literal notranslate"><span class="pre">RoiResponseSeries.roi_names</span></code> with <code class="docutils literal notranslate"><span class="pre">RoiResponseSeries.rois</span></code>, which is
+a <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictableregion" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTableRegion</span></a> into the <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a>
+table of ROIs (see items 3,4). (Before ROITable was converted from a row-based to a column-based table,
+<cite>RoiResponseSeries.rois`</cite> had been changed to a <code class="docutils literal notranslate"><span class="pre">ROITableRegion</span></code> which was then subsequently changed to
+a corresponding <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictableregion" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTableRegion</span></a>)</p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">RoiResponseSeries.segmentation_interface</span></code>. This information is available through
+<code class="docutils literal notranslate"><span class="pre">RoiResponseSeries.rois</span></code> (described above in 5.)</p></li>
+<li><p>Assigned neurodata_type <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a> to the image_plan group in
+<a class="reference internal" href="format.html#sec-imagesegmentation"><span class="std std-ref">ImageSegmentation</span></a> and updated it to use the <code class="docutils literal notranslate"><span class="pre">ROITable</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ImageMasks</span></code>, <code class="docutils literal notranslate"><span class="pre">PixelMasks</span></code>, and :<code class="docutils literal notranslate"><span class="pre">VoxelMasks</span></code>
+(see items 1-4 above). Specifically, <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a> has been changed to
+be a <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> and <code class="docutils literal notranslate"><span class="pre">ROITable</span></code>, <code class="docutils literal notranslate"><span class="pre">ImageMasks</span></code>, <code class="docutils literal notranslate"><span class="pre">PixelMasks</span></code>, and <code class="docutils literal notranslate"><span class="pre">VoxelMasks</span></code>
+have been merged into the <a class="reference internal" href="format.html#sec-planesegmentation"><span class="std std-ref">PlaneSegmentation</span></a> table, resulting in the removal of
+the <code class="docutils literal notranslate"><span class="pre">ROITable</span></code>, <code class="docutils literal notranslate"><span class="pre">ROITableRegion</span></code>, <code class="docutils literal notranslate"><span class="pre">ImageMasks</span></code>, <code class="docutils literal notranslate"><span class="pre">PixelMasks</span></code>, and <code class="docutils literal notranslate"><span class="pre">VoxelMasks</span></code> types.</p></li>
+</ol>
+<p>For additional details see also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/391">PR391 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/118">I118 (nwb-schema)</a> for details on the main
+refactoring of ROI storage,</p></li>
+<li><p><a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/665">PR665 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/663">I663 (PyNWB)</a> (and previous issue
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/643">I643 (PyNWB)</a>) for details on the
+subsequent refactor using <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a>, and</p></li>
+<li><p><a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/688">PR688 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/554">I554 (nwb-schema)</a> for details on 3D ROIs,</p></li>
+</ul>
+</section>
+<section id="improved-storage-of-unit-based-data">
+<span id="sec-rn-unittimes-nwb2"></span><h4>Improved storage of unit-based data<a class="headerlink" href="#improved-storage-of-unit-based-data" title="Link to this heading"></a></h4>
+<p>In NWB 1.0.x data about spike units was stored across a number of different neurodata_types, specifically
+<code class="docutils literal notranslate"><span class="pre">UnitTimes</span></code>, <code class="docutils literal notranslate"><span class="pre">ClusterWaveforms</span></code>, and <code class="docutils literal notranslate"><span class="pre">Clustering</span></code>. This structure had several critical shortcomings,
+which were addressed in three main phases during the development of NWB 2.</p>
+<p><strong>Problem 1: Efficiency:</strong> In NWB 1.x each unit was stored as a separate group <code class="docutils literal notranslate"><span class="pre">unit_n</span></code> containing the <code class="docutils literal notranslate"><span class="pre">times</span></code>
+and <code class="docutils literal notranslate"><span class="pre">unit_description</span></code> for unit with index <code class="docutils literal notranslate"><span class="pre">n</span></code>. In cases where users have a very large number of units, this
+was problematic with regard to performance. To address this challenge <code class="docutils literal notranslate"><span class="pre">UnitTimes</span></code> has been
+restructured in NWB 2 to use the new <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> ,
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectorindex" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorIndex</span></a>, <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-elementidentifiers" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">ElementIdentifiers</span></a> data structures
+(see <a class="reference internal" href="#sec-rn-vectordata-nwb2"><span class="std std-ref">Enable efficient storage of large numbers of vector data elements</span></a>).Specifically, NWB 2 replaced <code class="docutils literal notranslate"><span class="pre">unit_n</span></code> (from NWB 1.x, also referred to
+by neurodata_type <code class="docutils literal notranslate"><span class="pre">SpikeUnit</span></code> in NWB 2beta) groups in <code class="docutils literal notranslate"><span class="pre">UnitTimes</span></code>  with the following data:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">unit_ids</span></code> : <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-elementidentifiers" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">ElementIdentifiers</span></a> dataset for storing unique ids for each element</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spike_times_index</span></code>: <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectorindex" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorIndex</span></a> dataset with region references into the spike times dataset</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spike_times</span></code>: <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> dataset storing the actual spike times data of all units in
+a single data array (for efficiency).</p></li>
+</ul>
+</div></blockquote>
+<p>See also <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/117">I116 (nwb-schema)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/382">PR382 (PyNWB)</a> for further details.</p>
+<figure class="align-default" id="id14">
+<span id="fig-software-architecture"></span><a class="reference internal image-reference" href="_images/unit_times_refactor_nwb2_release_notesV2_Part1.png"><img alt="UnitTimes data structure overview" src="_images/unit_times_refactor_nwb2_release_notesV2_Part1.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Overview of the basic data structure for storing <code class="docutils literal notranslate"><span class="pre">UnitTimes</span></code> using the
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a> (<code class="docutils literal notranslate"><span class="pre">spike_times</span></code>), <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectorindex" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorIndex</span></a> (<code class="docutils literal notranslate"><span class="pre">spike_times_index</span></code>),
+and <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-elementidentifiers" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">ElementIdentifiers</span></a> (<code class="docutils literal notranslate"><span class="pre">unit_ids</span></code>) data structures.</span><a class="headerlink" href="#id14" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Problem 2: Dynamic Metadata:</strong> Users indicated that it was not easy to store user-defined  metadata about units.
+To address this challenge, NWB 2 added an optional top-level group <code class="docutils literal notranslate"><span class="pre">units/</span></code> (which was subsequently moved to
+<code class="docutils literal notranslate"><span class="pre">/intervals/units</span></code>)  which is a <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a>
+with <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> columns and optional additional user-defined table columns.
+See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/597">PR597 on PyNWB</a> for detailed code changes. See
+the <a class="reference external" href="https://pynwb.readthedocs.io/en/stable/tutorials/general/plot_read_basics.html#access-single-unit-data">PyNWB docs</a> for a
+short tutorial on how to use unit metadata. See <a class="reference internal" href="format.html#sec-nwbfile"><span class="std std-ref">NWBFile</span></a> <em>Groups: /units</em> for an overview of the
+unit schema.</p>
+<p><strong>Problem 3: Usability:</strong> Finally, users found that storing unit data was
+challenging due to the fact that the information was distributed across a number of different
+types. To address this challenge, NWB 2.0 integrates <code class="docutils literal notranslate"><span class="pre">UnitTimes</span></code>, <code class="docutils literal notranslate"><span class="pre">ClusterWaveforms</span></code>, and <code class="docutils literal notranslate"><span class="pre">Clustering</span></code> (deprecated)
+into the new column-based table <code class="docutils literal notranslate"><span class="pre">units/</span></code> (i.e., <code class="docutils literal notranslate"><span class="pre">intervals/units</span></code>) (which still uses the optimized vector data
+storage to efficiently store spike times). See for discussions and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/674">I674 on PyNWB</a>
+(and related <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/239">I239 on NWB Schema</a>) and the pull
+request <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/684">PR684 on PyNWB</a> for detailed changes.</p>
+<p>Together these changes have resulted in the following improved structure for storing unit data and metadata in
+NWB 2.0.</p>
+<figure class="align-default" id="id15">
+<a class="reference internal image-reference" href="_images/unit_times_refactor_nwb2_release_notesV2_Part2.png"><img alt="Spiking units data structure overview" src="_images/unit_times_refactor_nwb2_release_notesV2_Part2.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">Overview of the data structure for storing spiking unit data and metadata in NWB 2.0.</span><a class="headerlink" href="#id15" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<dl class="simple">
+<dt>In addition to <code class="docutils literal notranslate"><span class="pre">spike_times</span></code>, the units table includes the following optional columns:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_intervals</span></code>: intervals indicating the time intervals over which this unit was recorded.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">electrodes</span></code>: range references to the electrodes table indicating which electrodes from which this unit was recorded.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">electrode_group</span></code>: may be used instead of <code class="docutils literal notranslate"><span class="pre">electrodes</span></code> if mutually exclusive electrode groups are sufficient.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">waveform_mean</span></code>: mean waveform across all recorded spikes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">waveform_sd</span></code>: standard deviation from the mean across all recorded spikes.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="improved-support-for-sweep-based-information">
+<h4>Improved support for sweep-based information<a class="headerlink" href="#improved-support-for-sweep-based-information" title="Link to this heading"></a></h4>
+<p><strong>Changes</strong> Added <a class="reference internal" href="format.html#sec-sweeptable"><span class="std std-ref">SweepTable</span></a> type stored in <code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys</span></code></p>
+<p><strong>Reason:</strong> In Icephys it is common to have sweeps (i.e., a group of PatchClampSeries belonging together, were up
+to two TimeSeries are from one electrode, including other TimeSeries not related to an electrode (aka TTL channels)).
+NWB 1.0.x did not support the concept of sweeps, so it was not possible to link different TimeSeries for sweeps.
+The goal of this change is to allow users to find the TimeSeries which are from one sweep without having to iterate
+over all present TimeSeries.</p>
+<p><strong>Format Changes</strong> Added neurodata_type <a class="reference internal" href="format.html#sec-sweeptable"><span class="std std-ref">SweepTable</span></a> to <code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys</span></code>.
+SweepTable is a <cite>DynamicTable &lt;sec-DynamicTable&gt;</cite> storing for each sweep a the <code class="docutils literal notranslate"><span class="pre">sweep_number</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">series_index</span></code>.  The later is a <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectorindex" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorIndex</span></a> pointing to a <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-vectordata" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">VectorData</span></a>
+dataset describing belonging <a class="reference internal" href="format.html#sec-patchclampseries"><span class="std std-ref">PatchClampSeries</span></a>  to the sweeps.
+See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/499">I499 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/701">PR701 (PyNWB)</a> for further details.</p>
+</section>
+</section>
+<section id="improved-specification-of-reference-time-stamp-s">
+<h3>Improved specification of reference time stamp(s)<a class="headerlink" href="#improved-specification-of-reference-time-stamp-s" title="Link to this heading"></a></h3>
+<p>To improve the specification of reference time, NWB adopts ISO8061 for storing datetimes and adds
+<code class="docutils literal notranslate"><span class="pre">timestamps_reference_time</span></code> as explicit zero for all timestamps in addition to the <code class="docutils literal notranslate"><span class="pre">session_start_time</span></code>.</p>
+<section id="improve-standardization-of-reference-time-specification-using-iso8061">
+<h4>Improve standardization of reference time specification using ISO8061<a class="headerlink" href="#improve-standardization-of-reference-time-specification-using-iso8061" title="Link to this heading"></a></h4>
+<p><strong>Changes:</strong> Modify <code class="docutils literal notranslate"><span class="pre">session_start_time</span></code> an <code class="docutils literal notranslate"><span class="pre">file_create_date</span></code> to enforce use of ISO 8601 datetime strings</p>
+<p><strong>Reason:</strong> Standardize the specification of timestamps to ensure consistent programmatic and human interpretation</p>
+<p><strong>Format Changes:</strong> Updated <code class="docutils literal notranslate"><span class="pre">session_start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">file_create_date</span></code> to use <code class="docutils literal notranslate"><span class="pre">dtype:</span> <span class="pre">isodatetime</span></code> that was
+added as dedicated dtype to the specification language. For details see
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/641">PR641 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/50">I50 (nwb-schema)</a>.</p>
+</section>
+<section id="improved-specification-of-reference-time">
+<h4>Improved specification of reference time<a class="headerlink" href="#improved-specification-of-reference-time" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Add field <code class="docutils literal notranslate"><span class="pre">timestamps_reference_time</span></code>, allowing users to explicitly  specify a date and time
+corresponding to time zero for all timestamps in the nwb file.</p>
+<p><strong>Reason:</strong> Previously <code class="docutils literal notranslate"><span class="pre">session_start_time</span></code> served both as the indicator for the start time
+of a session as well as the global reference time for a file. Decoupling the two makes the
+global reference time explicit and enables users to use times relative to the session start as well
+as other reference time frames, e.g., using POSIX time. This also makes the specification easier to
+develop against, since this will explicitly specify the offset to obtain relative timestamps, eliminating
+the need for APIs to guess based on range.</p>
+<p><strong>Format Changes:</strong> Added top-level field <code class="docutils literal notranslate"><span class="pre">timestamps_reference_time</span></code>.
+See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/709">PR709 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/49">I49 (nwb-schema)</a>
+for further details.</p>
+</section>
+</section>
+<section id="improved-storage-of-time-intervals">
+<h3>Improved storage of time intervals<a class="headerlink" href="#improved-storage-of-time-intervals" title="Link to this heading"></a></h3>
+<section id="improved-storage-of-epoch-data">
+<h4>Improved storage of epoch data<a class="headerlink" href="#improved-storage-of-epoch-data" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Store epoch data as a table to improve efficiency, usability and extensibility.</p>
+<p><strong>Reason:</strong> In NWB 1.x Epochs are stored as a single group per Epoch. Within each Epoch, the index into each
+TimeSeries that the Epoch applies to was stored as a single group. This structure is inefficient for storing
+large numbers of Epochs.</p>
+<p><strong>Format Changes:</strong> In NWB 2 epochs are stored via a <a class="reference internal" href="format.html#sec-timeintervals"><span class="std std-ref">TimeIntervals</span></a> table (i.e., a
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> for storing time intervals) that is stored in the group <code class="docutils literal notranslate"><span class="pre">/intervals/epochs</span></code>.
+Over the course of the development of NWB 2 the epoch storage has been refined in several phases:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>First, we create a new neurodata_type <code class="docutils literal notranslate"><span class="pre">Epochs</span></code> which was included in <a class="reference internal" href="format.html#sec-nwbfile"><span class="std std-ref">NWBFile</span></a> as the group
+<code class="docutils literal notranslate"><span class="pre">epochs</span></code>. This simplified the extension of the epochs structure. <code class="docutils literal notranslate"><span class="pre">/epochs</span></code> at that point contained a
+compound (row-based) table with neurodata_type <code class="docutils literal notranslate"><span class="pre">EpochTable</span></code>  that described the start/stop times, tags,
+and a region reference into the <code class="docutils literal notranslate"><span class="pre">TimeSeriesIndex</span></code> to identify the timeseries
+parts the epoch applies to. Note, the types <code class="docutils literal notranslate"><span class="pre">Epochs</span></code>, <code class="docutils literal notranslate"><span class="pre">EpochTable</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesIndex</span></code> have been
+removed/superseded in subsequent changes. (See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/396">PR396 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/119">I119 (nwb-schema)</a> ).</p></li>
+<li><p>Later, an additional <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> for storing dynamic metadata about epochs was then
+added to the <code class="docutils literal notranslate"><span class="pre">Epochs</span></code> neurodata_type to support storage of dynamic metadata about epochs without requiring
+users to create custom extensions (see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/536/files">PR536 (PyNWB)</a>).</p></li>
+<li><p>Subsequently the epoch table was then fully converted to a  <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a> (see
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/682">PR682 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/664">I664 (PyNWB)</a>)</p></li>
+<li><p>Finally, the EpochTable was then moved to <code class="docutils literal notranslate"><span class="pre">/intervals/epochs</span></code> and the EpochTable type was replaced by the
+more general type <a class="reference internal" href="format.html#sec-timeintervals"><span class="std std-ref">TimeIntervals</span></a>. This also led to removal of the <code class="docutils literal notranslate"><span class="pre">Epochs</span></code> type
+(see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/690">PR690 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/683">I683 (PyNWB)</a>)</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="improved-support-for-trial-based-data">
+<h4>Improved support for trial-based data<a class="headerlink" href="#improved-support-for-trial-based-data" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Add dedicated concept for storing trial data.</p>
+<p><strong>Reason:</strong> Users indicated that it was not easy to store trial data in NWB 1.x.</p>
+<p><strong>Format Changes:</strong> Added optional group <code class="docutils literal notranslate"><span class="pre">/intervals/trials/</span></code> which is a <a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictable" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTable</span></a>
+with <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">start_time</span></code>, and <code class="docutils literal notranslate"><span class="pre">stop_time</span></code> columns and optional additional user-defined table columns.
+See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/536/files">PR536 on PyNWB</a> for detailed code changes. See
+the <a class="reference external" href="https://pynwb.readthedocs.io/en/stable/tutorials/general/plot_file.html#trials">PyNWB docs</a> for a
+short tutorial on how to use trials. See <a class="reference internal" href="format.html#sec-nwbfile"><span class="std std-ref">NWBFile</span></a> <em>Groups: /trials</em> for an overview of the trial
+schema. <strong>Note:</strong> Originally trials was added a top-level group trials which was then later moved to <code class="docutils literal notranslate"><span class="pre">/intervals/trials</span></code>
+as part of the generalization of time interval storage as part of
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/690">PR690 (PyNWB)</a> .</p>
+</section>
+<section id="generalized-storage-of-time-interval">
+<h4>Generalized storage of time interval<a class="headerlink" href="#generalized-storage-of-time-interval" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Create general type <a class="reference internal" href="format.html#sec-timeintervals"><span class="std std-ref">TimeIntervals</span></a> (which is a generalization of the
+previous EpochTable type) and create top-level group <code class="docutils literal notranslate"><span class="pre">/intervals</span></code> for organizing time interval data.</p>
+<p><strong>Reason:</strong> Previously all time interval data was stored in either <code class="docutils literal notranslate"><span class="pre">epochs</span></code> or <code class="docutils literal notranslate"><span class="pre">trials</span></code>. To facilitate reuse
+and extensibility this has been generalized to enable users to create arbitrary types of intervals in
+addition to the predefined types, i.e., epochs or trials.</p>
+<p><strong>Format Changes:</strong> See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/690">PR690 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/issues/683">I683 (PyNWB)</a> for details:</p>
+<blockquote>
+<div><ul>
+<li><p>Renamed <code class="docutils literal notranslate"><span class="pre">EpochTable</span></code> type to the more general type <a class="reference internal" href="format.html#sec-timeintervals"><span class="std std-ref">TimeIntervals</span></a> to facilitate
+reuse.</p></li>
+<li><p>Created top-level group <code class="docutils literal notranslate"><span class="pre">/intervals</span></code> for organizing time interval data.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Moved <code class="docutils literal notranslate"><span class="pre">/epochs</span></code> to <code class="docutils literal notranslate"><span class="pre">/intervals/epochs</span></code> and reused the TimeIntervals type</p></li>
+<li><p>Moved <code class="docutils literal notranslate"><span class="pre">/trials</span></code> to <code class="docutils literal notranslate"><span class="pre">/intervals/trials</span></code> and reused the TimeIntervals type</p></li>
+<li><p>Allow users to add arbitrary TimeIntervals tables to <code class="docutils literal notranslate"><span class="pre">/intervals</span></code></p></li>
+<li><p>Add optional <a class="reference internal" href="format.html#sec-timeintervals"><span class="std std-ref">TimeIntervals</span></a> object named <code class="docutils literal notranslate"><span class="pre">invalid_times</span></code> in ‘’/intervals``, which
+specifies time intervals that contain artifacts. See <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/224">I224 (nwb-schema)</a> and <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/731">PR731 (PyNWB)</a> for details.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="replaced-implicit-links-data-structures-with-explicit-links">
+<h3>Replaced Implicit Links/Data-Structures with Explicit Links<a class="headerlink" href="#replaced-implicit-links-data-structures-with-explicit-links" title="Link to this heading"></a></h3>
+<p><strong>Change</strong> Replace implicit links with explicit soft-links to the corresponding HDF5 objects where possible, i.e.,
+use explicit HDF5 mechanisms for expressing basic links between data rather than implicit ones that require
+users/developers to know how to use the specific data. In addition to links, NWB 2 adds support for object-
+and region references, enabling the creation of datasets (i.e., arrays) that store links to other data objects
+(groups or datasets) or regions (i.e., subsets) of datasets.</p>
+<p><strong>Reason:</strong> In several places datasets containing arrays of either 1) strings with object names, 2) strings with paths,
+or 3) integer indexes are used that implicitly point to other locations in the file. These forms of implicit
+links are not self-describing (e.g., the kind of linking, target location, implicit size and numbering assumptions
+are not easily identified). This hinders human interpretation of the data as well as programmatic resolution of these
+kind of links.</p>
+<p><strong>Format Changes:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Text dataset <code class="docutils literal notranslate"><span class="pre">image_plane</span></code> of <code class="docutils literal notranslate"><span class="pre">&lt;TwoPhotonSeries&gt;</span></code> is now a link to the corresponding <code class="docutils literal notranslate"><span class="pre">&lt;ImagingPlane&gt;</span></code>
+(which is stored in <code class="docutils literal notranslate"><span class="pre">/general/optophysiology</span></code>)</p></li>
+<li><p>Text dataset <code class="docutils literal notranslate"><span class="pre">image_plane_name</span></code> of <code class="docutils literal notranslate"><span class="pre">&lt;ImageSegmentation&gt;</span></code> is now a link to the corresponding <code class="docutils literal notranslate"><span class="pre">&lt;ImagingPlane&gt;</span></code>
+(which is stored in <code class="docutils literal notranslate"><span class="pre">/general/optophysiology</span></code>). The dataset is also renamed to <code class="docutils literal notranslate"><span class="pre">image_plane</span></code> for consistency with <code class="docutils literal notranslate"><span class="pre">&lt;TwoPhotonSeries&gt;</span></code></p></li>
+<li><p>Text dataset <code class="docutils literal notranslate"><span class="pre">electrode_name</span></code> of <code class="docutils literal notranslate"><span class="pre">&lt;PatchClampSeries&gt;</span></code> is now a link to the corresponding <code class="docutils literal notranslate"><span class="pre">&lt;IntracellularElectrode&gt;</span></code>
+(which is stored in <code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys</span></code>). The dataset is also renamed to <code class="docutils literal notranslate"><span class="pre">electrode</span></code> for consistency.</p></li>
+<li><p>Text dataset <code class="docutils literal notranslate"><span class="pre">site</span></code> in <code class="docutils literal notranslate"><span class="pre">&lt;OptogeneticSeries&gt;</span></code> is now a link to the corresponding <code class="docutils literal notranslate"><span class="pre">&lt;StimulusSite&gt;</span></code>
+(which is stored in <code class="docutils literal notranslate"><span class="pre">/general/optogenetics</span></code>).</p></li>
+<li><p>Integer dataset <code class="docutils literal notranslate"><span class="pre">electrode_idx</span></code> of <code class="docutils literal notranslate"><span class="pre">FeatureExtraction</span></code> is now a dataset <code class="docutils literal notranslate"><span class="pre">electrodes</span></code> of type
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictableregion" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTableRegion</span></a> pointing to a region of the <code class="docutils literal notranslate"><span class="pre">ElectrodeTable</span></code> stored in <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys/electrodes</span></code>.</p></li>
+<li><p>Integer array dataset <code class="docutils literal notranslate"><span class="pre">electrode_idx</span></code> of <code class="docutils literal notranslate"><span class="pre">&lt;ElectricalSeries&gt;</span></code> is now a dataset <code class="docutils literal notranslate"><span class="pre">electrodes</span></code> of type
+<a class="reference external" href="https://hdmf-common-schema.readthedocs.io/en/stable/format.html#sec-dynamictableregion" title="(in HDMF-common Specification vv1.8.0)"><span class="xref std std-ref">DynamicTableRegion</span></a> pointing to a region of the <code class="docutils literal notranslate"><span class="pre">ElectrodeTable</span></code> stored in <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys/electrodes</span></code>.</p></li>
+<li><p>Text dataset <code class="docutils literal notranslate"><span class="pre">/general/extracellular_ephys/&lt;electrode_group_X&gt;/device</span></code> is now a link <code class="docutils literal notranslate"><span class="pre">&lt;ElectrodeGroup&gt;/device</span></code></p></li>
+<li><p>The Epochs , Unit, Trial and other dynamic tables in NWB 2 also support (and use) region and object references
+to explicitly reference other data (e.g., vector data as part of the unit tables).</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="improved-consistency-identifiably-and-readability">
+<h3>Improved consistency, identifiably, and readability<a class="headerlink" href="#improved-consistency-identifiably-and-readability" title="Link to this heading"></a></h3>
+<section id="improved-identifiably-of-objects">
+<h4>Improved identifiably of objects<a class="headerlink" href="#improved-identifiably-of-objects" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> All groups and datasets are now required to either have a unique <code class="docutils literal notranslate"><span class="pre">name</span></code> or a unique <code class="docutils literal notranslate"><span class="pre">neurodata_type</span></code> defined.</p>
+<p><strong>Reason:</strong>  This greatly simplifies the unique identification of objects with variable names.</p>
+<p><strong>Format Changes:</strong> Defined missing neurodata_types for a number of objects, e.g.,:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Group <code class="docutils literal notranslate"><span class="pre">/general/optophysiology/&lt;imaging_plane_X&gt;</span></code> now has the neurodata type <code class="docutils literal notranslate"><span class="pre">ImagingPlane</span></code></p></li>
+<li><p>Group <code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys/&lt;electrode_X&gt;</span></code> now has the neurodata type <code class="docutils literal notranslate"><span class="pre">IntracellularElectrode</span></code></p></li>
+<li><p>Group <code class="docutils literal notranslate"><span class="pre">/general/optogenetics/&lt;site_X&gt;</span></code> now has the neurodata type <code class="docutils literal notranslate"><span class="pre">StimulusSite</span></code></p></li>
+<li><p>…</p></li>
+</ul>
+</div></blockquote>
+<p>To enable identification of the type of objects, the <code class="docutils literal notranslate"><span class="pre">neurodata_type</span></code> is stored in HDF5 files as an
+attribute on the corresponding object (i.e., group or dataset). Also information about the <code class="docutils literal notranslate"><span class="pre">namespace</span></code>
+(e.g., the name and version) are stored as attributed to allow unique identification of the specification
+for storage objects.</p>
+</section>
+<section id="simplified-extension-of-subject-metadata">
+<h4>Simplified extension of subject metadata<a class="headerlink" href="#simplified-extension-of-subject-metadata" title="Link to this heading"></a></h4>
+<p><strong>Specific Change:</strong> Assigned <code class="docutils literal notranslate"><span class="pre">neurodata_type</span></code> to <code class="docutils literal notranslate"><span class="pre">/general/subject</span></code> to enable extension of the subject container
+directly without having to extend <code class="docutils literal notranslate"><span class="pre">NWBFile</span></code> itself. (see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/120">https://github.com/NeurodataWithoutBorders/nwb-schema/issues/120</a>
+and <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/pull/121">https://github.com/NeurodataWithoutBorders/nwb-schema/pull/121</a> for details)</p>
+</section>
+<section id="reduce-requirement-for-potentially-empty-groups">
+<h4>Reduce requirement for potentially empty groups<a class="headerlink" href="#reduce-requirement-for-potentially-empty-groups" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Make several previously required fields optional</p>
+<p><strong>Reason:</strong> Reduce need for empty groups.</p>
+<p><strong>Format Changes:</strong> The following groups/datasets have been made optional:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/epochs</span></code> : not all experiments may require epochs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/general/optogenetics</span></code> : not all experiments may use optogenetic data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">device</span></code> in <a class="reference internal" href="format.html#sec-intracellularelectrode"><span class="std std-ref">IntracellularElectrode</span></a></p></li>
+<li></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="added-missing-metadata">
+<h4>Added missing metadata<a class="headerlink" href="#added-missing-metadata" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Add a few missing metadata attributes/datasets.</p>
+<p><strong>Reason:</strong> Ease data interpretation, improve format consistency, and enable storage of additional metadata</p>
+<p><strong>Format Changes:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/general/devices</span></code> text dataset becomes group with neurodata type <code class="docutils literal notranslate"><span class="pre">Device</span></code> to enable storage of more complex
+and structured metadata about devices (rather than just a single string)</p></li>
+<li><p>Added attribute <code class="docutils literal notranslate"><span class="pre">unit=Seconds</span></code> to <code class="docutils literal notranslate"><span class="pre">&lt;EventDetection&gt;/times</span></code> dataset to explicitly describe time units
+and improve human and programmatic data interpretation</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">filtering</span></code> dataset to type <code class="docutils literal notranslate"><span class="pre">&lt;IntracellularElectrode&gt;</span></code> (i.e., <code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys/&lt;electrode_X&gt;</span></code>)
+to enable specification of per-electrode filtering data</p></li>
+<li><p>Added default values for <code class="docutils literal notranslate"><span class="pre">&lt;TimeSeries&gt;/description</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;TimeSeries&gt;/comments</span></code></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="improved-consistency">
+<h4>Improved Consistency<a class="headerlink" href="#improved-consistency" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Rename objects, add missing objects, and refine types</p>
+<p><strong>Reason:</strong> Improve consistency in the naming of data objects that store similar types of information in different
+places and ensure that the same kind of information is available.</p>
+<p><strong>Format Changes:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Added missing <code class="docutils literal notranslate"><span class="pre">help</span></code> attribute for <code class="docutils literal notranslate"><span class="pre">&lt;BehavioralTimeSeries&gt;</span></code> to improve consistency with other types
+as well as human data interpretation</p></li>
+<li><p>Renamed dataset <code class="docutils literal notranslate"><span class="pre">image_plan_name</span></code> in <code class="docutils literal notranslate"><span class="pre">&lt;ImageSegmentation&gt;</span></code> to <code class="docutils literal notranslate"><span class="pre">image_plane</span></code> to ensure consistency
+in naming with <code class="docutils literal notranslate"><span class="pre">&lt;TwoPhotonSeries&gt;</span></code></p></li>
+<li><p>Renamed dataset <code class="docutils literal notranslate"><span class="pre">electrode_name</span></code> in <code class="docutils literal notranslate"><span class="pre">&lt;PatchClampSeries&gt;</span></code> to <code class="docutils literal notranslate"><span class="pre">electrode</span></code> for consistency (and
+since the dataset is now a link, rather than a text name).</p></li>
+<li><p>Renamed dataset <code class="docutils literal notranslate"><span class="pre">electrode_idx</span></code> in <code class="docutils literal notranslate"><span class="pre">&lt;FeatureExtraction&gt;</span></code> to <code class="docutils literal notranslate"><span class="pre">electrode_group</span></code> for consistency
+(and since the dataset is now a link to the <code class="docutils literal notranslate"><span class="pre">&lt;ElectrodeGroup&gt;</span></code>)</p></li>
+<li><p>Renamed dataset <code class="docutils literal notranslate"><span class="pre">electrode_idx</span></code> in <code class="docutils literal notranslate"><span class="pre">&lt;ElectricalSeries&gt;</span></code> to <code class="docutils literal notranslate"><span class="pre">electrode_group</span></code> for consistency
+(and since the dataset is now a link to the <code class="docutils literal notranslate"><span class="pre">&lt;ElectrodeGroup&gt;</span></code>)</p></li>
+<li><p>Changed <code class="docutils literal notranslate"><span class="pre">imaging_rate</span></code> field in <a class="reference internal" href="format.html#sec-imagingplane"><span class="std std-ref">ImagingPlane</span></a> from text to float. See
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/697">PR697 (PyNWB)</a> and
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/136">I136 (nwb-schema)</a> for details</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="added-keywords-field">
+<h4>Added <code class="docutils literal notranslate"><span class="pre">keywords</span></code> field<a class="headerlink" href="#added-keywords-field" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Added keywords fields to <code class="docutils literal notranslate"><span class="pre">/general</span></code></p>
+<p><strong>Reason:</strong> Data archive and search tools often rely on user-defined keywords to facilitate discovery. This
+enables users to specify keywords for a file. (see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/620">PR620 (PyNWB)</a>)</p>
+</section>
+<section id="removed-source-field">
+<h4>Removed <code class="docutils literal notranslate"><span class="pre">source</span></code> field<a class="headerlink" href="#removed-source-field" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Remove required attribute <code class="docutils literal notranslate"><span class="pre">source</span></code> from all neurodata_types</p>
+<p><strong>Reason:</strong> In NWB 1.0.x the attribute <code class="docutils literal notranslate"><span class="pre">source</span></code> was defined as a free text entry
+intended for storage of provenance information. In practice, however, this
+attribute was often either ignored, contained no useful information, and/or
+was misused to encode custom metadata (that should have been defined via extensions).</p>
+<p><strong>Specific Change:</strong> Removed attribute <code class="docutils literal notranslate"><span class="pre">source</span></code> from the core base neurodata_types
+which effects a large number of the types throughout the NWB schema. For further
+details see <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/695">PR695 (PyNWB)</a>)</p>
+</section>
+<section id="removed-ancestry-field">
+<h4>Removed <code class="docutils literal notranslate"><span class="pre">ancestry</span></code> field<a class="headerlink" href="#removed-ancestry-field" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Removed the explicit specification of ancestry as an attribute as part of the format specification</p>
+<p><strong>Reason:</strong> 1) avoid redundant information as the ancestry is encoded in the inheritance of types, 2) ease maintenance,
+and 3) avoid possible inconsistencies between the ancestry attribute and the true ancestry (i.e., inheritance hierarchy)
+as defined by the spec.</p>
+<p><strong>Note</strong> The new specification API as part of PyNWB/HDMF makes the ancestry still easily accessible to users. As
+the ancestry can be easily extracted from the spec, we currently do not write a separate ancestry attribute
+but this could be easily added if needed. (see also <a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/707">PR707 (PyNWB)</a>,
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/issues/24">I24 (nwb-schema)</a>)</p>
+</section>
+</section>
+<section id="improved-organization-of-processed-and-acquisition-data">
+<h3>Improved organization of processed and acquisition data<a class="headerlink" href="#improved-organization-of-processed-and-acquisition-data" title="Link to this heading"></a></h3>
+<section id="improved-organization-of-processed-data">
+<h4>Improved organization of processed data<a class="headerlink" href="#improved-organization-of-processed-data" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Relaxed requirements and renamed and refined core types used for storage of processed data.</p>
+<p><strong>Reason:</strong> Ease user intuition and provide greater flexibility for users.</p>
+<p><strong>Specific Changes:</strong> The following changes have been made to the organization of processed data:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt><em>Module</em> has been renamed to <a class="reference internal" href="format.html#sec-processingmodule"><span class="std std-ref">ProcessingModule</span></a> to avoid possible confusion</dt><dd><p>and to clarify its purpose. Also <a class="reference internal" href="format.html#sec-processingmodule"><span class="std std-ref">ProcessingModule</span></a> may now
+contain any  <a class="reference internal" href="format.html#sec-nwbdatainterface"><span class="std std-ref">NWBDataInterface</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><p>With <a class="reference internal" href="format.html#sec-nwbdatainterface"><span class="std std-ref">NWBDataInterface</span></a> now being a general base class of
+<a class="reference internal" href="format.html#sec-timeseries"><span class="std std-ref">TimeSeries</span></a>, this means that it is now
+possible to define data processing types that directly inherit from <a class="reference internal" href="format.html#sec-timeseries"><span class="std std-ref">TimeSeries</span></a>,
+which was not possible in NWB 1.x.</p></li>
+<li><p><em>Interface</em> has been renamed to <em>NWBDataInterface</em> to avoid confusion and ease intuition (see above)</p></li>
+<li><p>All <em>Interface</em> types in the original format had fixed names. The fixed names have been replaced by
+specification of corresponding default names. This change enables storage of
+multiple instances of the same analysis type in the same <a class="reference internal" href="format.html#sec-processingmodule"><span class="std std-ref">ProcessingModule</span></a> by allowing users to
+customize the name of the data processing types, whereas in version 1.0.x only a single instance of
+each analysis could be stored in a <em>ProcessingModule</em> due to the requirement for fixed names.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="simplified-organization-of-acquisition-data">
+<h4>Simplified organization of acquisition data<a class="headerlink" href="#simplified-organization-of-acquisition-data" title="Link to this heading"></a></h4>
+<p><strong>Specific Changes:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/acquisition</span></code> may now store any primary data defined via an <a class="reference internal" href="format.html#sec-nwbdatainterface"><span class="std std-ref">NWBDataInterface</span></a> type
+(not just TimeSeries).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/acquisition/timeseries</span></code> and <code class="docutils literal notranslate"><span class="pre">/acquisition/images</span></code> have been removed</p></li>
+<li><p>Created a new neurodata_type <a class="reference internal" href="format.html#sec-images"><span class="std std-ref">Images</span></a> for storing a collection of images to replace
+<code class="docutils literal notranslate"><span class="pre">acquisition/images</span></code> and provide a more general container for use elsewhere in NWB (i.e., this is not
+meant to replace <a class="reference internal" href="format.html#sec-imageseries"><span class="std std-ref">ImageSeries</span></a>)</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="other-changes">
+<h3>Other changes:<a class="headerlink" href="#other-changes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt><a class="reference external" href="https://github.com/NeurodataWithoutBorders/pynwb/pull/765">PR765</a> made the timestamps in</dt><dd><p><a class="reference internal" href="format.html#sec-spikeeventseries"><span class="std std-ref">SpikeEventSeries</span></a> required</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="improved-governance-and-accessibility">
+<h3>Improved governance and accessibility<a class="headerlink" href="#improved-governance-and-accessibility" title="Link to this heading"></a></h3>
+<p><strong>Change:</strong> Updated release and documentation mechanisms for the NWB format specification</p>
+<p><strong>Reason:</strong> Improve governance, ease-of-use, extensibility, and accessibility of the NWB format specification</p>
+<p><strong>Specific Changes</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The NWB format specification is now released in separate Git repository</p></li>
+<li><p>Format specifications are released as YAML files (rather than via Python .py file included in the API)</p></li>
+<li><p>Organized core types into a set of smaller YAML files to ease overview and maintenance</p></li>
+<li><p>Converted all documentation documents to Sphinx reStructuredText to improve portability, maintainability,
+deployment, and public access</p></li>
+<li><p>Sphinx documentation for the format are auto-generated from the YAML sources to ensure consistency between
+the specification and documentation</p></li>
+<li><p>The PyNWB API now provides dedicated data structured to interact with NWB specifications, enabling users to
+programmatically access and generate format specifications</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="specification-language-changes">
+<h3>Specification language changes<a class="headerlink" href="#specification-language-changes" title="Link to this heading"></a></h3>
+<p><strong>Change:</strong> Numerous changes have been made to the specification language itself in NWB 2.0. Most changes to
+the specification language effect mainly how the format is specified, rather than the actual structure of the format.
+The changes that have implications on the format itself are described next. For an overview and discussion of the
+changes to the specification language see <a class="reference external" href="https://schema-language.readthedocs.io/en/latest/release_notes.html">specification language release notes</a>.</p>
+<section id="specification-of-dataset-dimensions">
+<h4>Specification of dataset dimensions<a class="headerlink" href="#specification-of-dataset-dimensions" title="Link to this heading"></a></h4>
+<p><strong>Change:</strong> Updated the specification of the dimensions of dataset</p>
+<p><strong>Reason:</strong> To simplify the specification of dimension of datasets and attribute</p>
+<p><strong>Format Changes:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The shape of various dataset is now specified explicitly for several datasets via the new <code class="docutils literal notranslate"><span class="pre">shape</span></code> key</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">unit</span></code> for values in a dataset are specified via an attribute on the dataset itself rather than via
+<code class="docutils literal notranslate"><span class="pre">unit</span></code> definitions in structs that are available only in the specification itself but not the format.</p></li>
+<li><p>In some cases the length of a dimension was implicitly described by the length of structs describing the
+components of a dimension. This information is now explicitly described in the <code class="docutils literal notranslate"><span class="pre">shape</span></code> of a dataset.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="added-link-type">
+<h4>Added <code class="docutils literal notranslate"><span class="pre">Link</span></code> type<a class="headerlink" href="#added-link-type" title="Link to this heading"></a></h4>
+<p><strong>Change</strong> Added new type for links</p>
+<p><strong>Reason:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Links are usually a different type than datasets on the storage backend (e.g., HDF5)</p></li>
+<li><p>Make links more readily identifiable</p></li>
+<li><p>Avoid special type specification in datasets</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Format Changes:</strong> The format itself is not affected by this change aside from the fact that
+datasets that were links are now explicitly declared as links.</p>
+</section>
+<section id="removed-datasets-defined-via-autogen">
+<h4>Removed datasets defined via autogen<a class="headerlink" href="#removed-datasets-defined-via-autogen" title="Link to this heading"></a></h4>
+<p><strong>Change</strong> Support for <code class="docutils literal notranslate"><span class="pre">autogen</span></code> has been removed from the specification language. After review
+of all datasets that were produced via autogen it was decided that all autogen datasets should be
+removed from the format.</p>
+<p><strong>Reason</strong> The main reasons for removal of autogen dataset is to ease use and maintenance of NWB files by
+1) avoiding redundant storage of information (i.e., improve normalization of data) and 2) avoiding
+dependencies between data (i.e., datasets having to be updated due to changes in other locations in a file).</p>
+<p><strong>Format Changes</strong></p>
+<ul>
+<li><p>Datasets/Attributes that have been removed due to redundant storage of the path of links stored in the same group:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>IndexSeries/indexed_timeseries_path</p></li>
+<li><p>RoiResponseSeries/segmentation_interface_path</p></li>
+<li><p>ImageMaskSeries/masked_imageseries_path</p></li>
+<li><p>ClusterWaveforms/clustering_interface_path</p></li>
+<li><p>EventDetection/source_electricalseries_path</p></li>
+<li><p>MotionCorrection/image_stack_name/original_path</p></li>
+<li><p>NWBFile/epochs/epoch_X.links</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Datasets//Attributes that have been removed because they stored only a list of groups/datasets (of a given type or property)
+in the current group.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Module.interfaces  (now ProcessingModule)</p></li>
+<li><p>ImageSegmentation/image_plane/roi_list</p></li>
+<li><p>UnitTimes/unit_list</p></li>
+<li><p>TimeSeries.extern_fields</p></li>
+<li><p>TimeSeries.data_link</p></li>
+<li><p>TimeSeries.timestamp_link</p></li>
+<li><p>TimeSeries.missing_fields</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Other datasets/attributes that have been removed to ease use and maintenance because the data stored is redundant and can be
+easily extracted from the file:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>NWBFile/epochs.tags</p></li>
+<li><p>TimeSeries/num_samples</p></li>
+<li><p>Clustering/cluster_nums</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="removed-neurodata-type-custom">
+<h4>Removed <code class="docutils literal notranslate"><span class="pre">'neurodata\_type=Custom'</span></code><a class="headerlink" href="#removed-neurodata-type-custom" title="Link to this heading"></a></h4>
+<p><strong>Change</strong> The <code class="docutils literal notranslate"><span class="pre">'neurodata\_type=Custom'</span></code> has been removed.</p>
+<p><strong>Reason</strong> All additions of data should be governed by extensions. Custom datasets can be identified based on
+the specification, i.e., any objects that are not part of the specification are custom.</p>
+</section>
+</section>
+</section>
+<section id="x-09-2015-04-2017">
+<h2>1.0.x (09/2015 - 04/2017)<a class="headerlink" href="#x-09-2015-04-2017" title="Link to this heading"></a></h2>
+<p>NWB 1.0.x has been deprecated. For documents relating to the 1.0.x schema please see
+<a class="reference external" href="https://github.com/NeurodataWithoutBorders/specification_nwbn_1_0_x">https://github.com/NeurodataWithoutBorders/specification_nwbn_1_0_x</a>.</p>
+<section id="april-8-2017">
+<h3>1.0.6, April 8, 2017<a class="headerlink" href="#april-8-2017" title="Link to this heading"></a></h3>
+<p>Minor fixes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Modify &lt;IntervalSeries&gt;/ documentation to use html entities for &lt; and &gt;.</p></li>
+<li><p>Fix indentation of unit attribute data_type, and conversion attribute description in
+<code class="docutils literal notranslate"><span class="pre">/general/optophysiology/&lt;imaging_plane_X&gt;/manifold</span></code>.</p></li>
+<li><p>Fix typos in <code class="docutils literal notranslate"><span class="pre">&lt;AnnotationSeries&gt;/</span></code> conversion, resolution and unit attributes.</p></li>
+<li><p>Update documentation for <code class="docutils literal notranslate"><span class="pre">IndexSeries</span></code> to reflect more general usage.</p></li>
+<li><p>Change to all numerical version number to remove warning message when installing using setuptools.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="i-beta-dec-6-2016">
+<h3>1.0.5i_beta, Dec 6, 2016<a class="headerlink" href="#i-beta-dec-6-2016" title="Link to this heading"></a></h3>
+<p>Removed some comments. Modify author string in info section.</p>
+</section>
+<section id="h-beta-nov-30-2016">
+<h3>1.0.5h_beta, Nov 30, 2016<a class="headerlink" href="#h-beta-nov-30-2016" title="Link to this heading"></a></h3>
+<p>Add dimensions to <code class="docutils literal notranslate"><span class="pre">/acquisition/images/&lt;image_X&gt;</span></code></p>
+</section>
+<section id="g-beta-oct-7-2016">
+<h3>1.0.5g_beta, Oct 7, 2016<a class="headerlink" href="#g-beta-oct-7-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Replace group options: <code class="docutils literal notranslate"><span class="pre">autogen:</span> <span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;create&quot;}</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;closed&quot;:</span> <span class="pre">True</span></code>
+with <code class="docutils literal notranslate"><span class="pre">&quot;\_properties&quot;:</span> <span class="pre">{&quot;create&quot;:</span> <span class="pre">True}</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;\_properties&quot;:</span> <span class="pre">{&quot;closed&quot;:</span> <span class="pre">True}</span></code>.
+This was done to make the specification language more consistent by
+having these group properties specified in one place (<code class="docutils literal notranslate"><span class="pre">&quot;\_properties&quot;</span></code>
+dictionary).</p></li>
+</ul>
+</section>
+<section id="f-beta-oct-3-2016">
+<h3>1.0.5f_beta, Oct 3, 2016<a class="headerlink" href="#f-beta-oct-3-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Minor fixes to allow validation of schema using json-schema specification
+in file <code class="docutils literal notranslate"><span class="pre">meta-schema.py</span></code> using utility <code class="docutils literal notranslate"><span class="pre">check\_schema.py</span></code>.</p></li>
+</ul>
+</section>
+<section id="e-beta-sept-22-2016">
+<h3>1.0.5e_beta, Sept 22, 2016<a class="headerlink" href="#e-beta-sept-22-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Moved definition of <code class="docutils literal notranslate"><span class="pre">&lt;Module&gt;/</span></code> out of <code class="docutils literal notranslate"><span class="pre">/processing</span></code> group to allow creating subclasses of Module.
+This is useful for making custom Module types that specified required interfaces. Example of this
+is in <code class="docutils literal notranslate"><span class="pre">python-api/examples/create\_scripts/module-e.py</span></code> and the extension it uses (<code class="docutils literal notranslate"><span class="pre">extensions/e-module.py</span></code>).</p></li>
+<li><p>Fixed malformed html in <code class="docutils literal notranslate"><span class="pre">nwb\_core.py</span></code> documentation.</p></li>
+<li><p>Changed html generated by <code class="docutils literal notranslate"><span class="pre">doc\_tools.py</span></code> to html5 and fixed so passes validation at <a class="reference external" href="https://validator.w3.org">https://validator.w3.org</a>.</p></li>
+</ul>
+</section>
+<section id="d-beta-sept-6-2016">
+<h3>1.0.5d_beta, Sept 6, 2016<a class="headerlink" href="#d-beta-sept-6-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Changed ImageSeries img_mask dimensions to: <code class="docutils literal notranslate"><span class="pre">&quot;dimensions&quot;:</span> <span class="pre">[&quot;num\_y&quot;,&quot;num\_x&quot;]</span></code> to match description.</p></li>
+</ul>
+</section>
+<section id="c-beta-aug-17-2016">
+<h3>1.0.5c_beta, Aug 17, 2016<a class="headerlink" href="#c-beta-aug-17-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Change IndexSeries to allow linking to any form of TimeSeries, not just an <code class="docutils literal notranslate"><span class="pre">ImageSeries</span></code></p></li>
+</ul>
+</section>
+<section id="b-beta-aug-16-2016">
+<h3>1.0.5b_beta, Aug 16, 2016<a class="headerlink" href="#b-beta-aug-16-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">'manifold'</span></code> and <code class="docutils literal notranslate"><span class="pre">'reference\_frame'</span></code> (under
+<code class="docutils literal notranslate"><span class="pre">/general/optophysiology</span></code>) recommended rather than required.</p></li>
+<li><p>In all cases, allow subclasses of a TimeSeries to fulfill validation
+requirements when an instance of TimeSeries is required.</p></li>
+<li><p>Change unit attributes in <code class="docutils literal notranslate"><span class="pre">VoltageClampSeries</span></code> series datasets from
+required to recommended.</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">'const'=True</span></code> from <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> attributes in <code class="docutils literal notranslate"><span class="pre">AnnotationSeries</span></code>
+and <code class="docutils literal notranslate"><span class="pre">IntervalSeries</span></code>.</p></li>
+<li><p>Allow the base <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class to store multi-dimensional arrays in
+<code class="docutils literal notranslate"><span class="pre">'data'</span></code>. A user is expected to describe the contents of ‘data’ in the
+comments and/or description fields.</p></li>
+</ul>
+</section>
+<section id="a-beta-aug-10-2016">
+<h3>1.0.5a_beta, Aug 10, 2016<a class="headerlink" href="#a-beta-aug-10-2016" title="Link to this heading"></a></h3>
+<p>Expand class of Ids allowed in <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> <code class="docutils literal notranslate"><span class="pre">missing\_fields</span></code> attribute to
+allow custom uses.</p>
+</section>
+<section id="beta-aug-2016">
+<h3>1.0.5_beta Aug 2016<a class="headerlink" href="#beta-aug-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Allow subclasses to be used for merges instead of base class
+(specified by <code class="docutils literal notranslate"><span class="pre">'merge+'</span></code> in format specification file).</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">'neurodata\_type=Custom'</span></code> to flag additions that are not describe
+by a schema.</p></li>
+<li><p>Exclude TimeSeries timestamps and starting time from under
+<code class="docutils literal notranslate"><span class="pre">/stimulus/templates</span></code></p></li>
+</ul>
+</section>
+<section id="beta-june-2016">
+<h3>1.0.4_beta June 2016<a class="headerlink" href="#beta-june-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Generate documentation directly from format specification file.”</p></li>
+<li><p>Change ImageSeries <code class="docutils literal notranslate"><span class="pre">external\_file</span></code> to an array.</p></li>
+<li><p>Made TimeSeries description and comments recommended.</p></li>
+</ul>
+</section>
+<section id="april-2016">
+<h3>1.0.3 April, 2016<a class="headerlink" href="#april-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Renamed <code class="docutils literal notranslate"><span class="pre">&quot;ISI\_Retinotopy&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;ISIRetinotopy&quot;</span></code></p></li>
+<li><p>Change <code class="docutils literal notranslate"><span class="pre">ImageSeries</span></code> <code class="docutils literal notranslate"><span class="pre">external\_file</span></code> to an array. Added attribute <code class="docutils literal notranslate"><span class="pre">starting\_frame</span></code>.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">IZeroClampSeries</span></code>.</p></li>
+</ul>
+</section>
+<section id="february-2016">
+<h3>1.0.2 February, 2016<a class="headerlink" href="#february-2016" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed documentation error, updating <code class="docutils literal notranslate"><span class="pre">'neurodata\_version'</span></code> to <code class="docutils literal notranslate"><span class="pre">'nwb\_version'</span></code></p></li>
+<li><p>Created <code class="docutils literal notranslate"><span class="pre">ISI\_Retinotopy</span></code> interface</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">ImageSegmentation</span></code> module, moved <code class="docutils literal notranslate"><span class="pre">pix\_mask::weight</span></code> attribute to be its
+own dataset, named <code class="docutils literal notranslate"><span class="pre">pix\_mask\_weight</span></code>. Attribute proved inadequate for
+storing sufficiently large array data for some segments</p></li>
+<li><p>Moved <code class="docutils literal notranslate"><span class="pre">'gain'</span></code> field from <code class="docutils literal notranslate"><span class="pre">Current/VoltageClampSeries</span></code> to parent
+<code class="docutils literal notranslate"><span class="pre">PatchClampSeries</span></code>, due need of stimuli to sometimes store gain</p></li>
+<li><p>Added Ken Harris to the Acknowledgements section</p></li>
+</ul>
+</section>
+<section id="october-7th-2015">
+<h3>1.0.1 October 7th, 2015<a class="headerlink" href="#october-7th-2015" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">'required'</span></code> field to tables in the documentation, to indicate if
+<code class="docutils literal notranslate"><span class="pre">group/dataset/attribute</span></code> is required, standard or optional</p></li>
+<li><p>Obsoleted <code class="docutils literal notranslate"><span class="pre">'file\_create\_date'</span></code> attribute <code class="docutils literal notranslate"><span class="pre">'modification\_time'</span></code> and made <code class="docutils literal notranslate"><span class="pre">file\_create\_date</span></code> a text array</p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">'resistance\_compensation'</span></code> from <code class="docutils literal notranslate"><span class="pre">CurrentClampSeries</span></code> due being duplicate of another field</p></li>
+<li><p>Upgraded <code class="docutils literal notranslate"><span class="pre">TwoPhotonSeries::imaging\_plane</span></code> to be a required value</p></li>
+<li><p>Removed <code class="docutils literal notranslate"><span class="pre">'tags'</span></code> attribute to group ‘epochs’ as it was fully redundant with the <code class="docutils literal notranslate"><span class="pre">'epoch/tags'</span></code> dataset</p></li>
+<li><p>Added text to the documentation stating that specified sizes for integer
+values are recommended sizes, while sizes for floats are minimum sizes</p></li>
+<li><p>Added text to the documentation stating that, if the
+<code class="docutils literal notranslate"><span class="pre">TimeSeries::data::resolution</span></code> attribute value is unknown then store a <code class="docutils literal notranslate"><span class="pre">NaN</span></code></p></li>
+<li><p>Declaring the following groups as required (this was implicit before)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">acquisition</span><span class="o">/</span>
+
+\<span class="n">_</span> <span class="n">images</span><span class="o">/</span>
+
+\<span class="n">_</span> <span class="n">timeseries</span><span class="o">/</span>
+
+<span class="n">analysis</span><span class="o">/</span>
+
+<span class="n">epochs</span><span class="o">/</span>
+
+<span class="n">general</span><span class="o">/</span>
+
+<span class="n">processing</span><span class="o">/</span>
+
+<span class="n">stimulus</span><span class="o">/</span>
+
+\<span class="n">_</span> <span class="n">presentation</span><span class="o">/</span>
+
+\<span class="n">_</span> <span class="n">templates</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>This is to ensure consistency between <code class="docutils literal notranslate"><span class="pre">.nwb</span></code> files, to provide a minimum
+expected structure, and to avoid confusion by having someone expect time
+series to be in places they’re not. I.e., if <code class="docutils literal notranslate"><span class="pre">'acquisition/timeseries'</span></code> is
+not present, someone might reasonably expect that acquisition time
+series might reside in <code class="docutils literal notranslate"><span class="pre">'acquisition/'</span></code>. It is also a subtle reminder
+about what the file is designed to store, a sort of built-in
+documentation. Subfolders in <code class="docutils literal notranslate"><span class="pre">'general/'</span></code> are only to be included as
+needed. Scanning <code class="docutils literal notranslate"><span class="pre">'general/'</span></code> should provide the user a quick idea what
+the experiment is about, so only domain-relevant subfolders should be
+present (e.g., <code class="docutils literal notranslate"><span class="pre">'optogenetics'</span></code> and <code class="docutils literal notranslate"><span class="pre">'optophysiology'</span></code>). There should always
+be a <code class="docutils literal notranslate"><span class="pre">'general/devices'</span></code>, but it doesn’t seem worth making it mandatory
+without making all subfolders mandatory here.</p>
+</section>
+<section id="september-28th-2015">
+<h3>1.0.0 September 28<sup>th</sup>, 2015<a class="headerlink" href="#september-28th-2015" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Convert document to .html</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TwoPhotonSeries::imaging\_plane</span></code> was upgraded to mandatory to help
+enforce inclusion of important metadata in the file.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="software_process.html" class="btn btn-neutral float-left" title="Making a Pull Request" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="credits.html" class="btn btn-neutral float-right" title="Credits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, Neurodata Without Borders.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

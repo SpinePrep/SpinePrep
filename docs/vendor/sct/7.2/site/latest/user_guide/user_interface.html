@@ -1,0 +1,671 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Interface &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Coordinate systems" href="coordinate_systems.html" />
+    <link rel="prev" title="Get Help" href="get_help.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/user_interface.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_help.html">Get Help</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#application-overview">Application overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-panel">Module Panel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data-probe">Data Probe</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#views">Views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application-menu">Application Menu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toolbar">Toolbar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#status-bar">Status bar</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#review-loaded-data">Review loaded data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#selecting-displayed-data">Selecting displayed data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#interacting-with-views">Interacting with views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#view-cross-reference">View Cross-Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mouse-modes">Mouse Modes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adjusting-image-window-level">Adjusting image window/level</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#d-view">3D View</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ambient-shadows">Ambient shadows</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#slice-view">Slice View</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mouse-keyboard-shortcuts">Mouse &amp; Keyboard Shortcuts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#alternate-macos-keybindings">Alternate macOS Keybindings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generic-shortcuts">Generic shortcuts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slice-views">Slice views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#d-views">3D views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python-console">Python console</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">User Interface</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/user_interface.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="user-interface">
+<h1>User Interface<a class="headerlink" href="#user-interface" title="Link to this heading"></a></h1>
+<section id="application-overview">
+<h2>Application overview<a class="headerlink" href="#application-overview" title="Link to this heading"></a></h2>
+<p>Slicer stores all loaded data in a data repository, called the “scene” (or Slicer scene or MRML scene). Each data set, such as an image volume, surface model, or point set, is represented in the scene as a “node”.</p>
+<p>Slicer provides a large number “modules”, each implementing a specific set of functions for creating or manipulating data in the scene. Modules typically do not interact with each other directly: they just all operate on the data nodes in the scene. Slicer package contains over 100 built-in modules and additional modules can be installed by using the Extensions Manager.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/user_interface_main_window_rev02.png" /></p>
+<section id="module-panel">
+<h3>Module Panel<a class="headerlink" href="#module-panel" title="Link to this heading"></a></h3>
+<p>This panel (located by default on the left side of the application main window) displays all the options and features that the current module offers to the user. Current module can be selected using the <strong>Module Selection</strong> toolbar.</p>
+<section id="data-probe">
+<h4>Data Probe<a class="headerlink" href="#data-probe" title="Link to this heading"></a></h4>
+<p>Data Probe is located at the bottom of the module panel. It displays information about view content at the position of the mouse pointer:</p>
+<ul class="simple">
+<li><p>Slice view information (displayed when the mouse is over a slice view):</p>
+<ul>
+<li><p>Slice view name: <code class="docutils literal notranslate"><span class="pre">Red</span></code>, <code class="docutils literal notranslate"><span class="pre">Green</span></code>, <code class="docutils literal notranslate"><span class="pre">Yellow</span></code>, etc.</p></li>
+<li><p>Anatomical position: three coordinate values, prefixed with <code class="docutils literal notranslate"><span class="pre">R</span></code>/<code class="docutils literal notranslate"><span class="pre">L</span></code> (right/left), <code class="docutils literal notranslate"><span class="pre">A</span></code>/<code class="docutils literal notranslate"><span class="pre">P</span></code> (anterior/posterior), <code class="docutils literal notranslate"><span class="pre">S</span></code>/<code class="docutils literal notranslate"><span class="pre">I</span></code> (superior/inferior). The origin - (0,0,0) position - was chosen by the imaging technologist when the image was created. For example <code class="docutils literal notranslate"><span class="pre">(R</span> <span class="pre">17.6,</span> <span class="pre">P</span> <span class="pre">35.3,</span> <span class="pre">S</span> <span class="pre">12.1)</span></code> for a clinical image means that the current position is 17.6mm to the right from the origin, 35.3mm towards posterior, 12.1mm superior from the origin.</p></li>
+<li><p>View orientation: <code class="docutils literal notranslate"><span class="pre">Axial</span></code>, <code class="docutils literal notranslate"><span class="pre">Sagittal</span></code>, <code class="docutils literal notranslate"><span class="pre">Coronal</span></code> for standard anatomical orientations, and <code class="docutils literal notranslate"><span class="pre">Reformat</span></code> for any other orientation.</p></li>
+<li><p>Slice spacing: distance between slices in this orientation. For a clinical image <code class="docutils literal notranslate"><span class="pre">Sp:</span> <span class="pre">2.5</span></code> means that slices are 2.5mm distance from each other.</p></li>
+</ul>
+</li>
+<li><p>Volume layer information: three lines, one for each volume layer</p>
+<ul>
+<li><p>Layer type: <code class="docutils literal notranslate"><span class="pre">L</span></code> (label), <code class="docutils literal notranslate"><span class="pre">F</span></code> (foreground), <code class="docutils literal notranslate"><span class="pre">B</span></code> (background).</p></li>
+<li><p>Volume name, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no volume is selected for that layer.</p></li>
+<li><p>Volume voxel (IJK) coordinates.</p></li>
+<li><p>Voxel value. For label volumes the label name corresponding to the voxel value is also displayed.</p></li>
+</ul>
+</li>
+<li><p>Segmentation information: for each segmentation visible at that position</p>
+<ul>
+<li><p>Layer type: <code class="docutils literal notranslate"><span class="pre">S</span></code> (segmentation)</p></li>
+<li><p>Segmentation name.</p></li>
+<li><p>Segment names. Multiple segment names are listed if multiple segments are displayed at that position (the segments overlap).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="views">
+<h3>Views<a class="headerlink" href="#views" title="Link to this heading"></a></h3>
+<p>Slicer displays data in various views. The user can choose between a number of predefined layouts, which may contain slice, 3D, chart, and table views.</p>
+<p>The Layout Toolbar provides a drop-down menu of layouts useful for many types of studies. When Slicer is exited normally, the selected layout is saved and restored next time the application is started.</p>
+</section>
+<section id="application-menu">
+<h3>Application Menu<a class="headerlink" href="#application-menu" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>File</strong>: Functions for loading a previously saved scene or individual datasets of various types, and for downloading sample datasets from the internet. An option for saving scenes and data is also provided here. <strong>Add Data</strong> allows loading data from files. <strong>DICOM</strong> module is recommended to import data from DICOM files and loading of imported DICOM data. <strong>Save</strong> opens the “Save Data” window, which offers a variety of options for saving all data or selected datasets.</p></li>
+<li><p><strong>Edit</strong>: Contains an option for showing Application Settings, which allows users to customize appearance and behavior of Slicer, such as modules displayed in the toolbar, application font size, temporary directory location, location of additional Slicer modules to include.</p></li>
+<li><p><strong>View</strong>: Functions for showing/hiding additional windows and widgets, such as <strong>Extensions Manager</strong> for installing extensions from Slicer app store, <strong>Error Log</strong> for checking if the application encountered any potential errors, <strong>Python Console</strong> for getting a Python console to interact with the loaded data or modules, <strong>show/hide toolbars</strong>, or <strong>switch view layout</strong>.</p></li>
+<li><p><strong>Help</strong>: Contains links to documentation, guides, and community sites. <strong>Report a Bug</strong> provides instructions for bug reporting and and convenient access to log messages. There are also links to search for <strong>Slicer Publications</strong> and learn <strong>How to Cite</strong> Slicer.</p></li>
+</ul>
+</section>
+<section id="toolbar">
+<h3>Toolbar<a class="headerlink" href="#toolbar" title="Link to this heading"></a></h3>
+<p>Toolbar provides quick access to commonly used functions. Individual toolbar panels can be shown/hidden using menu: View / Toolbars section.</p>
+<p><strong>Module Selection</strong> toolbar is used for selecting the currently active “module”. The toolbar provides options for searching for module names (<code class="docutils literal notranslate"><span class="pre">Ctrl</span></code> + <code class="docutils literal notranslate"><span class="pre">f</span></code> or click on magnify glass icon) or selecting from a menu. <strong>Module history dropdown button</strong> shows the list of recently used modules. <strong>Arrow buttons</strong> can be used for going back to/returning from previously used module.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/user_interface_module_toolbar.png" /></p>
+<p><strong>Favorite modules</strong> toolbar contains a list of most frequently used modules. The list can be customized using menu: Edit / Application settings / Modules / Favorite Modules. Drag-and-drop modules from the Modules list to the Favorite Modules list to add a module.</p>
+</section>
+<section id="status-bar">
+<h3>Status bar<a class="headerlink" href="#status-bar" title="Link to this heading"></a></h3>
+<p>This panel may display application status, such as current operation in progress. Clicking the little <strong>X</strong> icons displays the Error Log window.</p>
+</section>
+</section>
+<section id="review-loaded-data">
+<h2>Review loaded data<a class="headerlink" href="#review-loaded-data" title="Link to this heading"></a></h2>
+<p>Data available in Slicer can be reviewed in the Data module, which can be found on the toolbar or the modules list <img alt="" src="../_images/SubjectHierarchy.png" />. More details about the module can be found on the <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Modules/Data">Slicer wiki</a>.</p>
+<p>The Data module’s default Subject hierarchy tab can show the datasets in a tree hierarchy, arranged as patient/study/series as typical in DICOM, or any other folder structure:</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/data_loading_and_saving_subject_hier.png" /></p>
+<p>The Subject hierarchy view contains numerous built-in functions for all types of data. These functions can be accessed by right-clicking the node in the tree. The list of actions differs for each data type, so it is useful to explore the options.</p>
+<p>Medical imaging data comes in various forms and representations, which may confuse people just starting in the field. The following diagram gives a brief overview about the most typical data types encountered when using Slicer, especially in a workflow that involves segmentation.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/data_loading_and_saving_formats.png" /></p>
+<section id="selecting-displayed-data">
+<h3>Selecting displayed data<a class="headerlink" href="#selecting-displayed-data" title="Link to this heading"></a></h3>
+<p>Data module’s Subject hierarchy tab shows all data sets in the scene. Click the “eye” icon to show/hide an item in all views. Drag-and-drop an item into a view to show it in that view.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/drag_to_view.gif" /></p>
+<p>Multiple items can be selected in the subject hierarchy tree using Ctrl-Left-Click or Shift-Left-Click and dragged at once into selected view. If two volumes are dragged into a view at the same time then they will be both shown, blended together.</p>
+<p>If a view is displayed only in selected views, you can right-click on the item and select “Show in all views” to quickly show in all views.</p>
+<p>If view link is enabled for a slice view then dragging a volume to any of the views will show the volume in all the views in that group.</p>
+<p>Display options can be adjusted by right-clicking the eye icon in the display column of the tree. Note that these options are different from options that are offered when right-clicking on the “Node” or “Transform” column in the tree.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/getting_started_sh_display_menu.png" /></p>
+<p>For volumes, display options include:</p>
+<ul class="simple">
+<li><p>Reset field of view on show: if enabled, then showing a volume makes adjust views to show the volume in the center, filling the field of view.</p></li>
+<li><p>Reset view orientation on show: if enabled, then showing a volume makes the slice views aligned with the volume axes.</p></li>
+</ul>
+</section>
+</section>
+<section id="interacting-with-views">
+<h2>Interacting with views<a class="headerlink" href="#interacting-with-views" title="Link to this heading"></a></h2>
+<section id="view-cross-reference">
+<h3>View Cross-Reference<a class="headerlink" href="#view-cross-reference" title="Link to this heading"></a></h3>
+<p>Holding down the <code class="docutils literal notranslate"><span class="pre">Shift</span></code> key while moving the mouse in any slice or 3D view will cause the Crosshair to move to the selected position in all views. By default, when the Crosshair is moved in any views, all slice views are scrolled to the same RAS position indexed by the mouse. This feature is useful when inspecting.</p>
+<p>To show/hide the Crosshair position, click crosshair icon
+<img alt="" src="../_images/SlicesCrosshair.png" />.</p>
+<p>To customize behavior and appearance of the Crosshair, click the “down arrow” button on the right side of the crosshair icon.</p>
+</section>
+<section id="mouse-modes">
+<h3>Mouse Modes<a class="headerlink" href="#mouse-modes" title="Link to this heading"></a></h3>
+<p>Slicer has multiple mouse modes: <strong>Transform</strong> (which allows interactive rotate, translate and zoom operations), <strong>Window/Level</strong> to adjust brightness/contrast of the image volumes, and <strong>Place</strong> (which permits objects to be interactively placed in slice and 3D views).</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/user_interface_mousemode_toolbar.png" /></p>
+<p>The toolbar icons that switch between these mouse modes are shown from left to right above, respectively. Place Point List is the default place option as shown above; options to place other nodes such as Ruler and Region of Interest Widgets are also available from the drop-down Place Mode menu.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Transform mode is the default interaction mode. By default, Place mode persists for one “place” operation after the Place Mode icon is selected, and then the mode switches back to Transform. Place mode can be made persistent (useful for placing multiple control points) by checking the Persistent checkbox shown rightmost in the Mouse Mode Toolbar.</p>
+</div>
+<section id="adjusting-image-window-level">
+<h4>Adjusting image window/level<a class="headerlink" href="#adjusting-image-window-level" title="Link to this heading"></a></h4>
+<p>Medical images typically contain thousands of gray levels, but regular computer displays can display only 256 gray levels, and the human eye also has limitation in what minimum contrast difference it can notice (see <a class="reference external" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3043920/">Kimpe 2007</a> for more specific information). Therefore, medical images are displayed with adjustable brightness/contrast (window/level).</p>
+<p>By default 3D Slicer uses window/level setting that is specified in the DICOM file. If it is not available then window/level is set to contain the entire intensity range of the image (except top/bottom 0.1%, calculated using percentiles, to not let a very thin tail of the intensity distribution to decrease the image contrast too much).</p>
+<p>Window/level can be manually adjusted anytime by clicking on “Adjust window/level” button on the toolbar then left-click-and-drag in any of the slice viewers. Optimal window/level can be computed for a chosen area by lef-click-and-dragging while holding down <kbd>Ctrl</kbd> key.</p>
+<p><a class="reference external" href="https://youtu.be/u1B0F1KcVsk" title="Demo video of how to adjust image window/level"><img alt="" src="https://img.youtube.com/vi/u1B0F1KcVsk/0.jpg" /></a></p>
+<p>Additional window/level options, presets, intensity histogram, automatic adjustments are available in Display section of <a class="reference internal" href="modules/volumes.html"><span class="std std-doc">Volumes</span></a> module.  Presets are also available in the context menu of the Slice views.  You can reset to the automatically calculated window/level settings using the context menu or by using <code class="docutils literal notranslate"><span class="pre">Ctrl</span></code> + <code class="docutils literal notranslate"><span class="pre">left-double-click</span></code> on the Slice view.</p>
+</section>
+</section>
+<section id="d-view">
+<h3>3D View<a class="headerlink" href="#d-view" title="Link to this heading"></a></h3>
+<p>Displays a rendered 3D view of the scene along with visual references to specify orientation and scale.</p>
+<p>Default orientation axes: A = anterior, P = posterior, R = right, L = left, S = superior and I = inferior.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/user_interface_3d_view_controls_2025_03_09.png" /></p>
+<p>3D View Controls: The blue bar across any 3D View shows a pushpin icon on its left. When the mouse rolls over this icon, a panel for configuring the 3D View is displayed. The panel is hidden when the mouse moves away. For persistent display of this panel, just click the pushpin icon.</p>
+<ul class="simple">
+<li><p><strong>Center 3D view</strong> (small square) centers the slice on the currently visible 3D view content and all loaded volumes (even if volumes that are not visible). The field of view (zoom factor) is not adjusted, therefore it may be necessary to zoom in/out to see all objects. To reset the center and field of view at the same time, click in the 3D view and hit <kbd>r</kbd> key.</p></li>
+<li><p><strong>Maximize view</strong> / <strong>Restore view layout</strong> temporarily maximizes the selected view / restores the full view layout.</p></li>
+<li><p><strong>Viewpoint direction</strong> switches orientation of the view between standard directions. Clicking on <strong>L</strong>eft, <strong>R</strong>ight, <strong>A</strong>nterior, <strong>P</strong>osterior, <strong>S</strong>uperior, <strong>I</strong>nferior button will make the 3D content viewed from that direction.</p></li>
+<li><p><strong>View link</strong> button synchronizes properties across 3D views (viewpoint position, direction, ruler, orientation marker, etc. settings).</p></li>
+<li><p><strong>Orthographic/perspective rendering</strong> mode toggle. Orthographic mode (parallel projection) is useful for assessing size, because displayed object size does not depend on distance from the viewpoint. Perspective mode provides better depth perception, because objects that are closer appear larger.</p></li>
+<li><p><strong>Ruler</strong> controls display of ruler. Only available in orthographic rendering mode.</p></li>
+<li><p><strong>Stereo viewing</strong> enables stereoscopic display. Red/blue and anaglyph modes just require inexpensive red/blue colored glasses. Other modes require special 3D display hardware. Note that <a class="reference external" href="https://www.slicervr.org/">SlicerVirtualReality extension</a> offers superior stereo viewing and interaction experience, with fully immersive 3D visualization by a single click of a button, and rich interaction with objects in the scene using 3D controllers.</p></li>
+<li><p>More options (…)</p>
+<ul>
+<li><p><strong>Use depth peeling</strong> must be enabled for correct rendering of semi-transparent surfaces (in models, markups, etc). It may make rendering updates slightly slower and artifacts when volume rendering is used in the view.</p></li>
+<li><p><strong>Show/Hide frames per second (FPS)</strong> displays rendering speed in the corner of the view.</p></li>
+</ul>
+</li>
+<li><p><strong>Orientation Marker</strong> controls display of human, cube, etc in lower right corner.</p></li>
+<li><p><strong>Visibility options</strong> controls visibility of view background color and displayed components.</p></li>
+<li><p><strong>Spin</strong> continuously spins the view around.</p></li>
+<li><p><strong>Rock</strong> continuously rocks the view left-to-right.</p></li>
+<li><p><strong>Zoom in/out</strong> slightly zooms in/out the view. Convenient buttons for touchscreens.</p></li>
+<li><p><strong>Tilt Lock</strong> can be toggled using <code class="docutils literal notranslate"><span class="pre">Ctrl</span></code> + <code class="docutils literal notranslate"><span class="pre">b</span></code> keyboard shortcut. In tilt lock mode 3D view rotation is restricted to the azimuth axis (left-right direction) by disabling rotation around elevation axis (up-down direction).</p></li>
+</ul>
+<section id="ambient-shadows">
+<h4>Ambient shadows<a class="headerlink" href="#ambient-shadows" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Shadows visibility: if enabled then ambient shadows are displayed to improve depth perception</p>
+<ul>
+<li><p>Size scale (default: 0): Size of features to be emphasized by shadows. Lower values emphasize surface unevenness (bumps and depressions). Higher size scale makes larger regions that are much farther much darker. The optimal value can be determined by adjusting the value starting from the highest value gradually until regions that are behind objects appear darker. Very high values (1.5 to 3.0) may make the entire image appear darker, therefore it is important to go below this range, typically down to about 0.5 to 1.5.</p></li>
+<li><p>Intensity scale: (default: 1): Intensity of darkening by shadows. Increase the value to make shadows darker.</p></li>
+<li><p>Intensity shift: (default: 0): Minimum amount of occlusion required for visible darkening by shadows. It is usually only necessary to increase this value if the intensity scale is increased, which makes the entire image somewhat darker. In this case, increasing the intensity shift can compensate the overall darkening.</p></li>
+<li><p>Volume opacity threshold (0% to 100%; default: 25%): This value only affects volume rendering. Voxels that have opacity above this value will cast shadows. Choosing too low value results in dark artifacts in regions that have very low opacity. Choosing too high value results artifacts near opaque regions that have somewhat lower opacity value.</p></li>
+</ul>
+</li>
+</ul>
+<p>Examples:
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/user_interface_ambient_shadows.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Default ambient shadows settings can be chosen in the application menu (Edit / Application Settings / Views / 3D viewer defaults).</p>
+</div>
+</section>
+</section>
+<section id="slice-view">
+<h3>Slice View<a class="headerlink" href="#slice-view" title="Link to this heading"></a></h3>
+<p>Three default slice views are provided (with Red, Yellow and Green colored bars) in which Axial, Sagittal, Coronal or Oblique 2D slices of volume images can be displayed. Additional generic slice views have a grey colored bar and an identifying number in their upper left corner.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/user_interface_slice_view_controls.png" /></p>
+<p>Slice View Controls: The colored bar across any slice view shows a pushpin icon on its left (<strong>Show view controls</strong>). When the mouse rolls over this icon, a panel for configuring the slice view is displayed. The panel is hidden when the mouse moves away. For persistent display of this panel, just click the pushpin icon. For more options, click the double-arrow icon (<strong>Show all options</strong>).</p>
+<p>View Controllers module provides an alternate way of displaying these controllers in the Module Panel.</p>
+<ul class="simple">
+<li><p><strong>Reset field of view</strong> (small square) centers the slice on the current background volume</p></li>
+<li><p><strong>Show in 3D</strong> “eye” button in the top row can show the current slice in 3D views. Drop-down menu of the button contains advanced options to customize how this slice is rendered: “…match volume” means that the properties are taken from the full volume, while “…match 2D” means that the properties are copied from the current slice view (for example, copies zoom and pan position). Typically these differences are subtle and the settings can be left at default.</p></li>
+<li><p><strong>Slice orientation</strong> displays allows you to choose the orientation for this slice view.</p></li>
+<li><p><strong>Reformat</strong> allows interactive manipulation of the slice orientation.</p></li>
+<li><p><strong>Slice offset slider</strong> allows slicing through the volume. Step size is set to the background volume’s spacing by default but can be modified by clicking on “Spacing and field of view” button. The label next to the offset value (e.g., <code class="docutils literal notranslate"><span class="pre">S</span></code>, <code class="docutils literal notranslate"><span class="pre">L</span></code>, <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">IL</span></code>, <code class="docutils literal notranslate"><span class="pre">IRP</span></code>) reflects the slice normal direction. If the offset slider moved to the right then the slice moves in this normal direction. If the slice normal direction is not aligned with an axis then the label contains a combination of directions, with the order of axes reflecting the dominance of the axis. For example, if the plane normal points to anterior and slightly left then the label is <code class="docutils literal notranslate"><span class="pre">AL</span></code>, while if the plane normal mostly left and slightly anterior then the label is <code class="docutils literal notranslate"><span class="pre">LA</span></code>.</p></li>
+<li><p><strong>Blending mode</strong> specifies how foreground and background layers are mixed.</p></li>
+<li><p><strong>Spacing and field of view</strong> Spacing defines the increment for the slice offset slider. Field of view sets the zoom level for the slice.</p></li>
+<li><p><strong>Rotate to volume plane</strong> changes the orientation of the slice to match the closest acquisition orientation of the displayed volume.</p></li>
+<li><p><strong>Orientation Marker</strong> controls display of human, cube, etc in lower right corner.</p></li>
+<li><p><strong>Ruler</strong> controls display of ruler in slice view.</p></li>
+<li><p><strong>View link</strong> button synchronizes properties of views in the same view group, such as foreground/background/label volume selection, foreground/label volume opacity, zoom factor.</p>
+<ul>
+<li><p>For parallel views (i.e., that are set to the same orientation,OD such as <code class="docutils literal notranslate"><span class="pre">axial</span></code>), the view center position is synchronized as well.</p></li>
+<li><p>Long-click on the button exposes <strong>hot-linked</strong> option, which controls when properties are synchronized (immediately or when the mouse button is released).</p></li>
+<li><p>A view group typically consists of 3 orthogonal views (e.g., in <code class="docutils literal notranslate"><span class="pre">Four-Up</span></code> view, <code class="docutils literal notranslate"><span class="pre">R</span></code>, <code class="docutils literal notranslate"><span class="pre">G</span></code>, <code class="docutils literal notranslate"><span class="pre">Y,</span> <span class="pre">views</span> <span class="pre">are</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">group).</span> <span class="pre">In</span> <span class="pre">layouts</span> <span class="pre">that</span> <span class="pre">contain</span> <span class="pre">multiple</span> <span class="pre">triplets</span> <span class="pre">of</span> <span class="pre">slice</span> <span class="pre">views,</span> <span class="pre">each</span> <span class="pre">triplet</span> <span class="pre">forms</span> <span class="pre">a</span> <span class="pre">separate</span> <span class="pre">group</span> <span class="pre">(e.g.,</span> <span class="pre">in</span> </code>Three over three<code class="docutils literal notranslate"><span class="pre">layout</span> <span class="pre">there</span> <span class="pre">are</span> <span class="pre">two</span> <span class="pre">view</span> <span class="pre">groups,</span> <span class="pre">one</span> <span class="pre">group</span> <span class="pre">is</span></code>R<code class="docutils literal notranslate"><span class="pre">,</span> </code>G<code class="docutils literal notranslate"><span class="pre">,</span> </code>Y<code class="docutils literal notranslate"><span class="pre">,</span> <span class="pre">the</span> <span class="pre">other</span> <span class="pre">groups</span> <span class="pre">is</span> </code>R+<code class="docutils literal notranslate"><span class="pre">,</span> </code>G+<code class="docutils literal notranslate"><span class="pre">,</span> </code>Y+`).</p></li>
+</ul>
+</li>
+<li><p><strong>Layer visibility</strong> “eye” buttons and <strong>Layer opacity</strong> spinboxes control visibility of segmentations and volumes in the slice view.</p></li>
+<li><p><strong>Foreground volume opacity</strong> slider allows fading between foreground and background volumes.</p></li>
+<li><p><strong>Interpolation</strong> allows displaying voxel values without interpolation. Recommended to keep interpolation enabled, and only disable it for testing and troubleshooting.</p></li>
+<li><p><strong>Node selectors</strong> are used to choose which background, foreground, and labelmap volumes and segmentations to display in this slice view. Note: multiple segmentations can be displayed in a slice view, but slice view controls only allow adjusting visibility of the currently selected segmentation node.</p></li>
+</ul>
+</section>
+</section>
+<section id="mouse-keyboard-shortcuts">
+<h2>Mouse &amp; Keyboard Shortcuts<a class="headerlink" href="#mouse-keyboard-shortcuts" title="Link to this heading"></a></h2>
+<section id="alternate-macos-keybindings">
+<h3>Alternate macOS Keybindings<a class="headerlink" href="#alternate-macos-keybindings" title="Link to this heading"></a></h3>
+<p>When using shortcuts on macOS, replace the following keys with their corresponding macOS version.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Key</th>
+<th>macOS Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl</code></td>
+<td><code>Command</code> / <code>⌘</code></td>
+</tr>
+<tr>
+<td><code>Alt</code></td>
+<td><code>Option</code> / <code>⌥</code> / <code>Alt</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="generic-shortcuts">
+<h3>Generic shortcuts<a class="headerlink" href="#generic-shortcuts" title="Link to this heading"></a></h3>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl</code> + <code>f</code></td>
+<td>find module by name (hit <code>Enter</code> to select)</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>o</code></td>
+<td>add data from file</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>s</code></td>
+<td>save data to files</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>w</code></td>
+<td>close scene</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>0</code></td>
+<td>show Error Log</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>1</code></td>
+<td>show Application Help</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>2</code></td>
+<td>show Application Settings</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>3</code> / <code>Ctrl</code> + <code>`</code></td>
+<td>show/hide Python Console</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>4</code></td>
+<td>show Extensions Manager</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>5</code></td>
+<td>show/hide Module Panel</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>h</code></td>
+<td>open default startup module (configurable in Application Settings)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="slice-views">
+<h3>Slice views<a class="headerlink" href="#slice-views" title="Link to this heading"></a></h3>
+<p>The following shortcuts are available when a slice view is active. To
+activate a view, click inside the view: if you do not want to change
+anything in the view, just activate it then do <code class="docutils literal notranslate"><span class="pre">right-click</span></code> without
+moving the mouse. Note that simply hovering over the mouse over a slice
+view will not activate the view.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>right-click</code> + <code>drag up/down</code></td>
+<td>zoom image in/out (<code>Alt</code> optional, useful during point placement)</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>mouse wheel</code></td>
+<td>zoom image in/out</td>
+</tr>
+<tr>
+<td><code>middle-click</code> + <code>drag</code></td>
+<td>pan (translate) view (<code>Alt</code> optional, useful during point placement)</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>left-click</code> + <code>drag</code></td>
+<td>pan (translate) view (<code>Alt</code> optional, useful during point placement)</td>
+</tr>
+<tr>
+<td><code>left arrow</code> / <code>right arrow</code></td>
+<td>move to previous/next slice</td>
+</tr>
+<tr>
+<td><code>b</code> / <code>f</code></td>
+<td>move to previous/next slice</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>mouse move</code></td>
+<td>move crosshair in all views</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>Alt</code> + <code>left-click</code> + <code>drag</code></td>
+<td>rotate slice intersection of other views (<code>Slice intersections</code> must be enabled in <code>Crosshair selection</code> toolbar)</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td>toggle slice visibility in 3D view</td>
+</tr>
+<tr>
+<td><code>r</code></td>
+<td>reset zoom and pan to default</td>
+</tr>
+<tr>
+<td><code>g</code></td>
+<td>toggle segmentation or labelmap volume</td>
+</tr>
+<tr>
+<td><code>t</code></td>
+<td>toggle foreground volume visibility</td>
+</tr>
+<tr>
+<td><code>[</code> / <code>]</code></td>
+<td>use previous/next volume as background</td>
+</tr>
+<tr>
+<td><code>{</code> / <code>}</code></td>
+<td>use previous/next volume as foreground</td>
+</tr>
+<tr>
+<td><code>left-double-click</code></td>
+<td>maximize view/restore view layout</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="d-views">
+<h3>3D views<a class="headerlink" href="#d-views" title="Link to this heading"></a></h3>
+<p>The following shortcuts are available when a 3D view is active. To
+activate a view, click inside the view: if you do not want to change
+anything in the view, just activate it then do <code class="docutils literal notranslate"><span class="pre">right-click</span></code> without
+moving the mouse. Note that simply hovering over the mouse over a slice
+view will not activate the view.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Shift</code> + <code>mouse move</code></td>
+<td>move crosshair in all views</td>
+</tr>
+<tr>
+<td><code>left-click</code> + <code>drag</code></td>
+<td>rotate view (<code>Alt</code> optional, useful during point placement)</td>
+</tr>
+<tr>
+<td><code>left arrow</code> / <code>right arrow</code></td>
+<td>rotate view</td>
+</tr>
+<tr>
+<td><code>up arrow</code> / <code>down arrow</code></td>
+<td>rotate view</td>
+</tr>
+<tr>
+<td><code>End</code> or <code>Keypad 1</code></td>
+<td>rotate to view from anterior</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>End</code> or <code>Shift</code> + <code>Keypad 1</code></td>
+<td>rotate to view from posterior</td>
+</tr>
+<tr>
+<td><code>Page Down</code> or <code>Keypad 3</code></td>
+<td>rotate to view from left side</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>Page Down</code> or <code>Shift</code> + <code>Keypad 3</code></td>
+<td>rotate to view from right side</td>
+</tr>
+<tr>
+<td><code>Home</code> or <code>Keypad 7</code></td>
+<td>rotate to view from superior</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>Home</code> or <code>Shift</code> + <code>Keypad 7</code></td>
+<td>rotate to view from inferior</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>left-click</code> + <code>drag</code></td>
+<td>rotate view clockwise/counterclockwise</td>
+</tr>
+<tr>
+<td><code>right-click</code> + <code>drag up/down</code></td>
+<td>zoom view in/out (<code>Alt</code> optional, useful during point placement)</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>mouse wheel</code></td>
+<td>zoom view in/out</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>b</code></td>
+<td>toggle tilt lock</td>
+</tr>
+<tr>
+<td><code>+</code> / <code>-</code></td>
+<td>zoom view in/out</td>
+</tr>
+<tr>
+<td><code>middle-click</code> + <code>drag</code></td>
+<td>pan (translate) view (<code>Alt</code> optional, useful during point placement)</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>left-click</code> + <code>drag</code></td>
+<td>pan (translate) view (<code>Alt</code> optional, useful during point placement)</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>left arrow</code> / <code>Shift</code> + <code>right arrow</code></td>
+<td>pan (translate) view</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>up arrow</code> / <code>Shift</code> + <code>down arrow</code></td>
+<td>pan (translate) view</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>Keypad 2</code> / <code>Shift</code> + <code>Keypad 4</code></td>
+<td>pan (translate) view</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>Keypad 6</code> / <code>Shift</code> + <code>Keypad 8</code></td>
+<td>pan (translate) view</td>
+</tr>
+<tr>
+<td><code>Keypad 0</code> or <code>Insert</code></td>
+<td>reset zoom and pan, rotate to nearest standard view</td>
+</tr>
+<tr>
+<td><code>left-double-click</code></td>
+<td>maximize view/restore view layout</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Simulation if shortcuts not available on your device:</p>
+<ul class="simple">
+<li><p>One-button mouse: instead of <code class="docutils literal notranslate"><span class="pre">right-click</span></code> do <code class="docutils literal notranslate"><span class="pre">Ctrl</span></code> + <code class="docutils literal notranslate"><span class="pre">click</span></code></p></li>
+<li><p>Trackpad: instead of <code class="docutils literal notranslate"><span class="pre">right-click</span></code> do <code class="docutils literal notranslate"><span class="pre">two-finger</span> <span class="pre">click</span></code></p></li>
+</ul>
+</div>
+</section>
+<section id="python-console">
+<h3>Python console<a class="headerlink" href="#python-console" title="Link to this heading"></a></h3>
+<p>The following shortcuts are available in the Python console.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tab</code></td>
+<td>auto-complete</td>
+</tr>
+<tr>
+<td><code>up arrow</code> / <code>down arrow</code></td>
+<td>command history</td>
+</tr>
+<tr>
+<td><code>Esc</code></td>
+<td>clear selection, return to current command line, clear current command line</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>g</code></td>
+<td>run Python script from a file</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>v</code></td>
+<td>paste Python script from clipboard and run it</td>
+</tr>
+</tbody>
+</table>
+<p>Note that when code is pasted into an empty line then all the code in the clipboard is executed <em>at once</em>. If the current command line is not empty then the code from the clipboard is pasted into the console and executed <em>line by line</em>. When code is executed line by line, the behavior is different in that an empty input line immediately closes the current block, and output is printed after executing each line.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="get_help.html" class="btn btn-neutral float-left" title="Get Help" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="coordinate_systems.html" class="btn btn-neutral float-right" title="Coordinate systems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

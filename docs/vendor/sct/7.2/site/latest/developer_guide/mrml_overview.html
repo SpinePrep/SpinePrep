@@ -1,0 +1,824 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRML Overview &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module Overview" href="module_overview.html" />
+    <link rel="prev" title="vtkITK" href="vtkITK.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/mrml_overview.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api.html">Slicer API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MRML Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mrml-scene">MRML Scene</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mrml-nodes">MRML nodes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basic-mrml-node-types">Basic MRML node types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mrml-node-attributes">MRML node attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mrml-node-references">MRML Node References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mrml-events-and-observers">MRML Events and Observers</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-topics">Advanced topics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter-nodes">Parameter Nodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scene-undo-redo">Scene undo/redo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-custom-mrml-node-classes">Creating Custom MRML Node Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#slice-view-pipeline">Slice view pipeline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#layout">Layout</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">MRML Overview</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/mrml_overview.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="mrml-overview">
+<h1>MRML Overview<a class="headerlink" href="#mrml-overview" title="Link to this heading"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>Medical Reality Modeling Language (MRML, pronounced “MURml”) is a data model developed to represent all data sets that may be used in medical software applications.</p>
+<ul class="simple">
+<li><p>MRML software library: An open-source software library that implements MRML data in-memory representation, reading/writing files, visualization, processing framework, and GUI widgets for viewing and editing. The library is based on the VTK toolkit, uses ITK for reading/writing some file formats, and has a few additional optional dependencies, such as Qt for GUI widgets. The library is kept fully independent from 3D Slicer and so it can be used in any other medical applications, but 3D Slicer is the only major application that uses it and therefore MRML library source code is maintained in 3D Slicer’s source code repository.</p></li>
+<li><p>MRML file: When MRML data is saved to file, an XML document is created (with a .mrml file extension), which contains an index of all data sets and it may refer to other data files for bulk data storage. A variant of this file format is the MRML bundle file, which contains the .mrml file and all referenced data files in a single zip file (with .mrb extension).</p></li>
+</ul>
+</section>
+<section id="mrml-scene">
+<h2>MRML Scene<a class="headerlink" href="#mrml-scene" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>All data is stored in a <em>MRML scene</em>, which contains a list of <em>MRML nodes</em>.</p></li>
+<li><p>Each MRML node has a unique ID in the scene, has a name, custom attributes (key:value pairs), and a number of additional properties to store information specific to its data type. Node types include image volume, surface mesh, point set, transformation, etc.</p></li>
+<li><p>Nodes can keep <em>references</em> (links) to each other.</p></li>
+<li><p>Nodes can <em>invoke events</em> when their contents or internal state change. The most common event is a “Modified” event, which is invoked whenever the node content is changed. Other nodes, <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/Logics">application logic objects</a>, or user interface widgets may add <em>observers</em>, which are callback functions that are executed whenever the corresponding event is invoked.</p></li>
+</ul>
+</section>
+<section id="mrml-nodes">
+<h2>MRML nodes<a class="headerlink" href="#mrml-nodes" title="Link to this heading"></a></h2>
+<section id="basic-mrml-node-types">
+<h3>Basic MRML node types<a class="headerlink" href="#basic-mrml-node-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Data nodes</strong> store basic properties of a data set. Because the same data set can be displayed in different ways (even within the same application, you may want to show the same data set differently in each view), display properties are not stored in the data node. Similarly, the same data set can be stored in various file formats, therefore file storage properties are not stored in a data node. Data nodes are typically thin wrappers over VTK objects, such as vtkPolyData, vtkImageData, vtkTable. The most important 3D Slicer core data nodes are the following:</p>
+<ul>
+<li><p><strong>Volume</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLVolumeNode.html">vtkMRMLVolume</a> and its subclasses): stores a 3D image. Each voxel of a volume may be a scalar (to store images with continuous grayscale values, such as a CT image), label (to store discrete labels, such as a segmentation result), vector (for storing displacement fields or RGB color images), or tensor (MRI diffusion images). 2D image volumes are represented as single-slice 3D volumes. 4D volumes are stored in sequence nodes (vtkMRMLSequenceNode).</p></li>
+<li><p><strong>Model</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLModelNode.html">vtkMRMLModelNode</a>): stores a surface mesh (polygonal elements, points, lines, etc.) or a volumetric mesh (tetrahedral, wedge elements, unstructured grid, etc.).</p></li>
+<li><p><strong>Segmentation</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSegmentationNode.html">vtkMRMLSegmentationNode</a>): complex data node that can store an image segmentation (also known as contouring, labeling). It can store multiple representations internally; for example it can store both a binary labelmap image and a closed surface mesh.</p></li>
+<li><p><strong>Markups</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLMarkupsNode.html">vtkMRMLMarkupsNode</a> and subclasses): stores simple geometrical objects, such as point lists (formerly called “fiducial lists”), lines, angles, curves, planes for annotation and measurements.</p></li>
+<li><p><strong>Transform</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformNode.html">vtkMRMLTransformNode</a>): stores a geometrical transformation that can be applied to any <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformableNode.html">transformable nodes</a>. A transformation can contain any number of linear or non-linear (warping) transforms chained together. In general, it is recommended to use vtkMRMLTransformNode. Child types (vtkMRMLLinearTransformNode, vtkMRMLBSplineTransformNode, vtkMRMLGridTransformNode) are kept for backward compatibility and to allow filtering for specific transformation types in user interface widgets.</p></li>
+<li><p><strong>Text</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTextNode.html">vtkMRMLTextNode</a>): stores text data, such as configuration files, descriptive text, etc.</p></li>
+<li><p><strong>Table</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTableNode.html">vtkMRMLTableNode</a>): stores tabular data (multiple scalar or vector arrays), used mainly for showing quantitative results in tables and plots</p></li>
+</ul>
+</li>
+<li><p><strong>Display nodes</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLDisplayNode.html">vtkMRMLDisplayNode</a> and its subclasses) specify properties for displaying data nodes. For example, a model node’s color is stored in a display node associated with a model node.</p>
+<ul>
+<li><p>Multiple display nodes may be added for a single data node, each specifying different display properties and view nodes. Built-in 3D Slicer modules typically show and allow editing of only the <em>first</em> display node associated with a data node.</p></li>
+<li><p>If a display node specifies a list of view nodes then the associated data node is displayed in only those views.</p></li>
+<li><p>Display nodes may refer to <em>color nodes</em> to specify a list of colors or color look-up-tables.</p></li>
+<li><p>When a data node is created, a default display node can be added by calling its <code class="docutils literal notranslate"><span class="pre">CreateDefaultDisplayNodes()</span></code> method. In some cases, 3D Slicer detects if the display and storage node are missing and tries to create default nodes, but developers should not rely on this error-recovery mechanism.</p></li>
+</ul>
+</li>
+<li><p><strong>Storage nodes</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html">vtkMRMLStorageNode</a> and its subclasses) specify how to store a data node in a file. It can store one or more file names, compression options, coordinate system information, etc.</p>
+<ul>
+<li><p>A default storage node may be created for a data node by calling its <code class="docutils literal notranslate"><span class="pre">CreateDefaultStorageNode()</span></code> method.</p></li>
+</ul>
+</li>
+<li><p><strong>View nodes</strong> (<a class="reference external" href="https://apidocs.slicer.org/v4.8/classvtkMRMLAbstractViewNode.html">vtkMRMLAbstractViewNode</a> and subclasses) specify view layout and appearance of views, such as background color. Additional nodes related to view nodes include:</p>
+<ul>
+<li><p>vtkMRMLCameraNode stores properties of camera of a 3D view.</p></li>
+<li><p>vtkMRMLClipModelsNode defines how to clip models with slice planes.</p></li>
+<li><p>vtkMRMLCrosshairNode stores position and display properties of a view crosshair (that is positioned by holding down <code class="docutils literal notranslate"><span class="pre">Shift</span></code> key while moving the mouse in slice or 3D views) and also provides the current mouse pointer position at any time.</p></li>
+<li><p>vtkMRMLLayoutNode defines the current view layout: what views (slice, 3D, table, etc.) are displayed and where. In addition to switching between built-in view layouts, custom view layouts can be specified using an XML description.</p></li>
+<li><p>vtkMRMLInteractionNode specifies an interaction mode of viewers (view/transform, window/level, place markups), such as what happens when the user clicks in a view</p></li>
+<li><p>vtkMRMLSelectionNode stores global state information of the scene, such as active markup (that is being placed), units (length, time, etc.) used in the scene, etc</p></li>
+</ul>
+</li>
+<li><p><strong>Plot nodes</strong> specify how to display table node contents as plots. A <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLPlotSeriesNode.html">plot series node</a> specifies a data series using one or two columns of a table node. A <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLPlotChartNode.html">plot chart node</a> specifies which series to plot and how. A <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLPlotViewNode.html">plot view node</a> specifies which plot chart to show in a view and how the user can interact with it.</p></li>
+<li><p><strong>Subject hierarchy node</strong> (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSubjectHierarchyNode.html">vtkMRMLSubjectHierarchyNode</a>) allows organization of data nodes into folders. Subject hierarchy folders may be associated with display nodes, which can be used to override display properties of all children in that folder. It replaces all previous hierarchy management methods, such as model or annotation hierarchies.</p></li>
+<li><p><a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Libs/MRML/Core/vtkMRMLSequenceNode.h"><strong>Sequence node</strong></a> stores a list of data nodes to represent time sequences or other multidimensional data sets in the scene. A <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Modules/Loadable/Sequences/MRML/vtkMRMLSequenceBrowserNode.h">sequence browser node</a> specifies which one of the internal data nodes should be copied to the scene so that it can be displayed or edited. The node that represents a node of the internal scene is called a <em>proxy node</em>. When a proxy node is modified in the scene, all changes can be saved into the internal scene.</p></li>
+</ul>
+<p>Detailed documentation of MRML API can be found <a class="reference external" href="https://apidocs.slicer.org/main/classes.html">here</a>.</p>
+</section>
+<section id="mrml-node-attributes">
+<h3>MRML node attributes<a class="headerlink" href="#mrml-node-attributes" title="Link to this heading"></a></h3>
+<p>MRML nodes can store custom attributes as (attribute name and value) pairs, which allow storing additional application-specific information in nodes without the need to create new node types.</p>
+<p>To avoid name clashes, custom modules that add attributes to nodes should prefix the attribute name with the module’s name and the ‘.’ character. Example: the DoseVolumeHistogram module can use attribute names such as <code class="docutils literal notranslate"><span class="pre">DoseVolumeHistogram.StructureSetName</span></code>, <code class="docutils literal notranslate"><span class="pre">DoseVolumeHistogram.Unit</span></code>, <code class="docutils literal notranslate"><span class="pre">DoseVolumeHistogram.LineStyle</span></code>.</p>
+<p>MRML node attributes can also be used as filter criteria in MRML node selector widgets in the user interface.</p>
+</section>
+<section id="mrml-node-references">
+<h3>MRML Node References<a class="headerlink" href="#mrml-node-references" title="Link to this heading"></a></h3>
+<p>MRML nodes can reference and observe other MRML nodes using the node reference API. A node may reference multiple nodes, each performing a distinct role, and each addressed by a unique string. The same role name can be used to reference multiple nodes.</p>
+<p>Node references are used, for example, for linking data nodes to display and storage nodes and modules can add more node references without changing the referring or referred node.</p>
+<p>For more details, see <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/MRML/NodeReferences">this page</a>.</p>
+</section>
+<section id="mrml-events-and-observers">
+<h3>MRML Events and Observers<a class="headerlink" href="#mrml-events-and-observers" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Changes in the MRML scene and individual nodes propagate to other observing nodes, GUI, and Logic objects via VTK events and VTK’s command-observer mechanism.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkSetMacro()</span></code> automatically invokes ModifiedEvent. Additional events can be invoked using the <code class="docutils literal notranslate"><span class="pre">InvokeEvent()</span></code> method.</p></li>
+<li><p>Using the <code class="docutils literal notranslate"><span class="pre">AddObserver()</span></code>/<code class="docutils literal notranslate"><span class="pre">RemoveObserver()</span></code> methods is tedious and error-prone, therefore it is recommended to instead use <a class="reference external" href="https://www.slicer.org/wiki/Slicer3:EventBroker">EventBroker</a> and the vtkObserverManager helper class, macros, and callback methods.</p>
+<ul>
+<li><p>MRML observer macros are defined in Libs/MRML/vtkMRMLNode.h</p></li>
+<li><p>vtkSetMRMLObjectMacro - registers a MRML node with another VTK object (another MRML node, Logic or GUI). No observers are added.</p></li>
+<li><p>vtkSetAndObserveMRMLObjectMacro - registers a MRML node and adds an observer for vtkCommand::ModifiedEvent.</p></li>
+<li><p>vtkSetAndObserveMRMLObjectEventsMacro - registers a MRML node and adds an observer for a specified set of events.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">SetAndObserveMRMLScene()</span></code> and <code class="docutils literal notranslate"><span class="pre">SetAndObserveMRMLSceneEvents()</span></code> methods are used in GUI and Logic objects to observe Modified, NewScene, NodeAdded, etc. events.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ProcessMRMLEvents()</span></code> method should be implemented in MRML nodes, Logic, and GUI classes in order to process events from the observed nodes.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="advanced-topics">
+<h2>Advanced topics<a class="headerlink" href="#advanced-topics" title="Link to this heading"></a></h2>
+<section id="parameter-nodes">
+<h3>Parameter Nodes<a class="headerlink" href="#parameter-nodes" title="Link to this heading"></a></h3>
+<p>Parameter nodes are a specific use of MRML nodes to store parameters for a given function/module. For more information, see <a class="reference internal" href="parameter_nodes/overview.html"><span class="std std-doc">Parameter Nodes</span></a>.</p>
+</section>
+<section id="scene-undo-redo">
+<h3>Scene undo/redo<a class="headerlink" href="#scene-undo-redo" title="Link to this heading"></a></h3>
+<p>MRML Scene provides an Undo/Redo mechanism that restores a previous state of the scene and individual nodes. By default, undo/redo is disabled and not displayed on the user interface, because it increased memory usage and was not tested thoroughly.</p>
+<p>Basic mechanism:</p>
+<ul class="simple">
+<li><p>Undo/redo is based on saving and restoring the state of MRML nodes in the Scene.</p></li>
+<li><p>A MRML scene can save a snapshot of all nodes into special Undo and Redo stacks.</p></li>
+<li><p>The Undo and Redo stacks store copies of nodes that have changed from the previous snapshot. The nodes that have not changed are stored by a reference (pointer).</p></li>
+<li><p>When an Undo is called on the scene, the current state of the Undo stack is copied into the current scene and also into the Redo stack.</p></li>
+<li><p>All Undoable operations must store their data as MRML nodes</p></li>
+</ul>
+<p>The developer controls at what point the snapshot is saved by calling the <code class="docutils literal notranslate"><span class="pre">SaveStateForUndo()</span></code> method on the MRML scene. <code class="docutils literal notranslate"><span class="pre">SaveStateForUndo()</span></code> saves the state of all nodes in the scene. It should be called in GUI/Logic classes before changing the state of MRML nodes. This is usually done in the ProcessGUIEvents method that processes events from the user interactions with GUI widgets. <code class="docutils literal notranslate"><span class="pre">SaveStateForUndo()</span></code> should not be called while processing transient events such as continuous events sent by the user interface while dragging a slider (for example vtkKWScale::ScaleValueStartChangingEvent).</p>
+<p>The following methods on the MRML scene are used to manage Undo/Redo stacks:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScene::Undo()</span></code> restores the previously saved state of the MRML scene.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScene::Redo()</span></code> restores the previously undone state of the MRML scene.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScene::SetUndoOff()</span></code> ignores following SaveStateForUndo calls (useful when making multiple changes to the scene/nodes that do not need to be undoable separately).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScene::SetUndoOn()</span></code> enables following SaveStateForUndo calls.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScene::ClearUndoStack()</span></code> clears the undo history.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScene::ClearRedoStack()</span></code> clears the redo history.</p></li>
+</ul>
+</section>
+<section id="creating-custom-mrml-node-classes">
+<h3>Creating Custom MRML Node Classes<a class="headerlink" href="#creating-custom-mrml-node-classes" title="Link to this heading"></a></h3>
+<p>If you are adding new functionality to 3D Slicer either via extensions, or even updates to the core, most of the time the existing MRML nodes will be sufficient. Many powerful C++ and Python extensions simply use and combine the existing node types to create new functionality. Instead of creating new MRML nodes from scratch, other extensions subclass from existing nodes and add just a few methods to get the needed functionality. That said, if existing MRML nodes do not offer enough (or almost enough) functionality to enable what needs to be done, it is possible to create custom MRML node classes with a little bit of effort.</p>
+<p>There are a number of different MRML nodes and helper classes that can be implemented to enable new MRML data type functionality. Here is the not-so-short list. We will go over each of these in detail.</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#the-data-node">Data node</a></p></li>
+<li><p><a class="reference internal" href="#the-display-node">Display node</a></p></li>
+<li><p><a class="reference internal" href="#the-widget">Widget</a></p></li>
+<li><p><a class="reference internal" href="#the-widget-representation">Widget Representation</a></p></li>
+<li><p><a class="reference internal" href="#the-displayable-manager">Displayable Manager</a></p></li>
+<li><p><a class="reference internal" href="#the-storage-node">Storage node</a></p></li>
+<li><p><a class="reference internal" href="#the-reader">Reader</a></p></li>
+<li><p><a class="reference internal" href="#the-writer">Writer</a></p></li>
+<li><p><a class="reference internal" href="#the-subject-hierarchy-plugin">Subject Hierarchy Plugin</a></p></li>
+<li><p><a class="reference internal" href="#the-module-aka-putting-it-all-together">Module</a></p></li>
+</ol>
+<p>While technically not all of these need to be implemented for a new MRML type to be used and useful, implementing all of them will yield the best results. The resulting MRML type will “be like the Model” and will streamline future maintenance work by providing relevant hints.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>MRML nodes are implemented in C++.</p>
+<p>MRML nodes can be implemented in a 3D Slicer extension.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All links to API class and function documentation redirecting to <code class="docutils literal notranslate"><span class="pre">https://apidocs.slicer.org</span></code> correspond to documentation generated from the latest commit of the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch of 3D Slicer. This means that versions of this documentation associated with an older version of 3D Slicer may be out of sync with the linked API.</p>
+</div>
+<section id="convention">
+<h4>Convention<a class="headerlink" href="#convention" title="Link to this heading"></a></h4>
+<p>For the filenames and classes, replace <code class="docutils literal notranslate"><span class="pre">&lt;MyCustomType&gt;</span></code> with the name of your type.</p>
+</section>
+<section id="the-data-node">
+<h4>The data node<a class="headerlink" href="#the-data-node" title="Link to this heading"></a></h4>
+<p>The data node is where the essence of the new MRML type will live. It is where the actual data resides. Notably absent from the data node is any description of how the data should be displayed or stored on disk.</p>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">MRML</span>
+                    <span class="o">|--</span> <span class="n">vtkMRML</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Node</span><span class="o">.</span><span class="n">h</span>
+                    <span class="o">|--</span> <span class="n">vtkMRML</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Node</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">vtkMRML&lt;MyCustomType&gt;Node</span></code></p>
+<ul>
+<li><p>E.g. <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLModelNode.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLModelNode</span></code></a></p></li>
+</ul>
+</li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLDisplayableNode.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLDisplayableNode</span></code></a> if it is going to be displayed in the 3D or slice views.</p></li>
+<li><p>Constructing a new node:</p>
+<ul>
+<li><p>Declare <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLNode.html#a6acd6b70ed94ae7384372bd5cb569639"><code class="docutils literal notranslate"><span class="pre">vtkMRMLNode*</span> <span class="pre">CreateNodeInstance()</span> <span class="pre">override</span></code></a> and <code class="docutils literal notranslate"><span class="pre">static</span> <span class="pre">vtkMRMLYourNodeType*</span> <span class="pre">New()</span></code>. The implementations will be generated by using the macro <a class="reference external" href="https://apidocs.slicer.org/main/vtkMRMLNode_8h.html#acfdcb323c511216ccf8279632a8f8e94"><code class="docutils literal notranslate"><span class="pre">vtkMRMLNodeNewMacro(vtkMRMLYourNodeType);</span></code></a> in your cxx file.</p></li>
+<li><p>Create a protected default constructor.</p>
+<ul>
+<li><p>It must be protected because VTK allows its objects to be created through only the <code class="docutils literal notranslate"><span class="pre">New()</span></code> factory function.</p></li>
+<li><p>Because of the use of the <code class="docutils literal notranslate"><span class="pre">New()</span></code> factory function, constructors with parameters are not typically used.</p></li>
+</ul>
+</li>
+<li><p>Create a destructor if needed.</p></li>
+<li><p>Delete copy/move constructors and copy/move assignment operators.</p></li>
+</ul>
+</li>
+<li><p>To save to a Medical Reality Bundle (MRB) file:</p>
+<ul>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLNode.html#a65538ef0ba40565a13a6f42d49031592"><code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char*</span> <span class="pre">GetNodeTagName()</span></code></a> to return a unique XML tag.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLNode.html#a7ab4e8e10cadd4486acb626763d0a891"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">ReadXMLAttributes(const</span> <span class="pre">char**</span> <span class="pre">atts)</span></code></a> and <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLNode.html#aaff972a037da725aaa318bf4b8a6f9a8"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">WriteXML(ostream&amp;</span> <span class="pre">of,</span> <span class="pre">int</span> <span class="pre">indent)</span></code></a> to save to XML any attributes of the data node that will not be saved by the writer.</p></li>
+</ul>
+</li>
+<li><p>To work with Transforms:</p>
+<ul>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformableNode.html#a7a7dda29c7ba59e55dcbaeb0f06c7f6b"><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">CanApplyNonLinearTransforms()</span> <span class="pre">const</span></code></a> to return true or false depending on whether non-linear transforms can be applied to your data type.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformableNode.html#aaf5e6afd30216db5aafeb7e1141e9eee"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">OnTransformNodeReferenceChanged(vtkMRMLTransformNode*</span> <span class="pre">transformNode)</span></code></a>. It will be called when a new transform is applied to your data node.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformableNode.html#add3fb3ed7b65c0f2de92f535f013869b"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">ApplyTransform(vtkAbstractTransform*</span> <span class="pre">transform)</span></code></a>, which will be called when a transform is hardened.</p></li>
+<li><p>See bullet on <code class="docutils literal notranslate"><span class="pre">ProcessMRMLEvents</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLDisplayableNode.html#aa7fbcfe229f9249e1701bef2bbf7d64b"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">GetRASBounds(double</span> <span class="pre">bounds[6])</span></code></a> and <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLDisplayableNode.html#a0976f1f4f57c701f3301391e9b95e6f9"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">GetBounds(double</span> <span class="pre">bounds[6])</span></code></a> to allow the “Center the 3D view on scene” button in the 3D viewer to work. Note that the difference between these functions is that <code class="docutils literal notranslate"><span class="pre">GetRASBounds</span></code> returns the bounds after all transforms have been applied, while <code class="docutils literal notranslate"><span class="pre">GetBounds</span></code> returns the pre-transform bounds.</p></li>
+<li><p>Use macro <code class="docutils literal notranslate"><span class="pre">vtkMRMLCopyContentMacro(vtkMRMLYourNodeType)</span></code> in the class definition and implement <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLNode.html#a94940453f557fbc3a59f65bd37311cef"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">CopyContent(vtkMRMLNode*</span> <span class="pre">anode,</span> <span class="pre">bool</span> <span class="pre">deepCopy)</span></code></a> in the cxx file. This should copy the data content of your node via either a shallow or deep copy.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorableNode.html#aa35937e99fbb721847c3aea7a818fa10"><code class="docutils literal notranslate"><span class="pre">vtkMRMLStorageNode*</span> <span class="pre">CreateDefaultStorageNode()</span></code></a> to return an owning pointer default storage node type for your class (see <a class="reference internal" href="#the-storage-node">The storage node</a>).</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLDisplayableNode.html#ac9f1e28f999d5ccc035317246b728b03"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">CreateDefaultDisplayNodes()</span></code></a> to create the default display nodes (for 3D and/or 2D viewing).</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLNode.html#afce3fc71df4f8d1e56901846f3c86a51"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">ProcessMRMLEvents(vtkObject*</span> <span class="pre">caller,</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">event,</span> <span class="pre">void*</span> <span class="pre">callData)</span></code></a>:</p>
+<ul>
+<li><p>This is used to process any events that happen regarding this object.</p></li>
+<li><p>This method should handle the <code class="docutils literal notranslate"><span class="pre">vtkMRMLTransformableNode::TransformModifiedEvent</span></code> which is emitted any time the transform that is associated with the data object is changed.</p></li>
+</ul>
+</li>
+<li><p>Convenience methods - while not necessarily needed, they are nice to have.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Get&lt;MyCustomType&gt;DisplayNode()</span></code> function that returns the downcast version of <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLDisplayableNode.html#ab2cac46d934a10817b75b37471fe65a8"><code class="docutils literal notranslate"><span class="pre">GetDisplayNode()</span></code></a> saves users of your class a bit of downcasting.</p></li>
+</ul>
+</li>
+<li><p>Other methods:</p>
+<ul>
+<li><p>Add other methods as your heart desires to view/modify the actual content of the data being stored.</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Any methods with signatures that contain only primitives, raw pointers to VTK derived objects, or a few std library items like <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> will be automatically wrapped for use in Python. Any functions signatures that contain other classes (custom classes, smart pointers from the std library, etc) will not be wrapped. For best results, try to use existing VTK data objects, or have your custom classes derive from <a class="reference external" href="https://vtk.org/doc/nightly/html/classvtkObject.html"><code class="docutils literal notranslate"><span class="pre">vtkObject</span></code></a> to get automatic wrapping.</p>
+</div>
+</section>
+<section id="the-display-node">
+<h4>The display node<a class="headerlink" href="#the-display-node" title="Link to this heading"></a></h4>
+<p>The display node, contrary to what one may think, is not actually how a MRML object is displayed on screen. Instead it is the list of options for displaying a MRML object. Things like colors, visibility, opacity; all of these can be found in the display node.</p>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">MRML</span>
+                    <span class="o">|--</span> <span class="n">vtkMRML</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">DisplayNode</span><span class="o">.</span><span class="n">h</span>
+                    <span class="o">|--</span> <span class="n">vtkMRML</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">DisplayNode</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key Points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">vtkMRML&lt;MyCustomType&gt;DisplayNode</span></code></p>
+<ul>
+<li><p>E.g. <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLModelDisplayNode.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLModelDisplayNode</span></code></a></p></li>
+</ul>
+</li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLDisplayNode.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLDisplayNode</span></code></a>.</p></li>
+<li><p>Constructing a new node is same as the <a class="reference internal" href="#the-data-node">data node</a>.</p></li>
+<li><p>To save to an MRB is same as for the <a class="reference internal" href="#the-data-node">data node</a>:</p>
+<ul>
+<li><p>Some MRML types like Markups store display information when the actual data is being stored via the writer/storage node. If you do that, no action is needed in this class.</p></li>
+</ul>
+</li>
+<li><p>Convenience methods:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Get&lt;YourDataType&gt;Node()</span></code> function that returns a downcasted version of <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLDisplayNode.html#a7100d9379c0b96b2a9ab1ad0a8514af7"><code class="docutils literal notranslate"><span class="pre">vtkMRMLDisplayableNode*</span> <span class="pre">GetDisplayableNode()</span></code></a>.</p></li>
+</ul>
+</li>
+<li><p>Other methods:</p>
+<ul>
+<li><p>Add any methods regarding coloring/sizing/displaying your data node.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="the-widget">
+<h4>The widget<a class="headerlink" href="#the-widget" title="Link to this heading"></a></h4>
+<p>The widget is interaction half of actually putting a usable object in the 2D or 3D viewer. It is in charge of making the widget representation and interacting with it.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your MRML node is display only without any interaction from the viewers, the widget is not necessary, just the <a class="reference internal" href="#the-widget-representation">widget representation</a> for displaying.</p>
+</div>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">VTKWidgets</span>
+                    <span class="o">|--</span> <span class="n">vtkSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Widget</span><span class="o">.</span><span class="n">h</span>
+                    <span class="o">|--</span> <span class="n">vtkSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Widget</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">vtkSlicer&lt;MyCustomType&gt;Widget</span></code></p></li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidget.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLAbstractWidget</span></code></a>.</p></li>
+<li><p>Constructing a new node is same as the <a class="reference internal" href="#the-data-node">data node</a>.</p></li>
+<li><p>For viewing:</p>
+<ul>
+<li><p>Add function(s) to create <a class="reference internal" href="#the-widget-representation">widget representation</a>(s). These will typically take a display node, a view node, and a vtkRenderer.</p></li>
+<li><p>E.g. <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">CreateDefaultRepresentation(vtkMRML&lt;MyCustomType&gt;DisplayNode*</span> <span class="pre">myCustomTypeDisplayNode,</span> <span class="pre">vtkMRMLAbstractViewNode*</span> <span class="pre">viewNode,</span> <span class="pre">vtkRenderer*</span> <span class="pre">renderer);</span></code></p></li>
+</ul>
+</li>
+<li><p>For interaction override some or all of the following methods from vtkMRMLAbstractWidget:</p>
+<ul>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidget.html#a18d9e1148c3d53ea6244c69265e6176a"><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">CanProcessInteractionEvent(vtkMRMLInteractionEventData*</span> <span class="pre">eventData,</span> <span class="pre">double&amp;</span> <span class="pre">distance2)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidget.html#ab8d51be6df9402eb96943e0e2d0b3123"><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">ProcessInteractionEvent(vtkMRMLInteractionEventData*</span> <span class="pre">eventData)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidget.html#a6428fe2d100bd1f38c306d3af74802a5"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">Leave(vtkMRMLInteractionEventData*</span> <span class="pre">eventData)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidget.html#aaca79315fd1e7dce0f09e82c0b1c5e6e"><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">GetInteractive()</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidget.html#a8a6e0f8a3b81636e58f60cebbbd6f4d7"><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">GetMouseCursor()</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="the-widget-representation">
+<h4>The widget representation<a class="headerlink" href="#the-widget-representation" title="Link to this heading"></a></h4>
+<p>The widget representation is the visualization half of displaying a node on screen. This is where any data structures describing your type are turned into <a class="reference external" href="https://vtk.org/doc/nightly/html/classvtkActor.html"><code class="docutils literal notranslate"><span class="pre">vtkActor</span></code></a>s that can be displayed in a VTK render window.</p>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">VTKWidgets</span>
+                    <span class="o">|--</span> <span class="n">vtkSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">WidgetRepresentation</span><span class="o">.</span><span class="n">h</span>
+                    <span class="o">|--</span> <span class="n">vtkSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">WidgetRepresentation</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key Points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">vtkSlicer&lt;MyCustomType&gt;WidgetRepresentation</span></code></p></li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidgetRepresentation.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLAbstractWidgetRepresentation</span></code></a>.</p></li>
+<li><p>Constructing a new node is same as the <a class="reference internal" href="#the-data-node">data node</a>.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidgetRepresentation.html#a404ce09ab17e92d203c82fee2a71b0ee"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">UpdateFromMRML(vtkMRMLNode*</span> <span class="pre">caller,</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">event,</span> <span class="pre">void*</span> <span class="pre">callData</span> <span class="pre">=</span> <span class="pre">nullptr)</span></code></a> to update the widget representation when the underlying data or display nodes change.</p></li>
+<li><p>To make the class behave like a vtkProp override:</p>
+<ul>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidgetRepresentation.html#ab0124c85fa2d5032a37c690d58c1ef2f"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">GetActors(vtkPropCollection*)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidgetRepresentation.html#aa1949d0b26d58d83df1c0764db6d19bf"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">ReleaseGraphicsResources(vtkWindow*)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidgetRepresentation.html#a51314976a613b4c7324a571ee7243cbc"><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">RenderOverlay(vtkViewport*</span> <span class="pre">viewport)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidgetRepresentation.html#a14e33bf29e9272dd9fe29c7baadec730"><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">RenderOpaqueGeometry(vtkViewport*</span> <span class="pre">viewport)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidgetRepresentation.html#a0d00da2fcb99df807c6884ac757e1735"><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">RenderTranslucentPolygonalGeometry(vtkViewport*</span> <span class="pre">viewport)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractWidgetRepresentation.html#a16347752784cec5542751b9e6d81cf2b"><code class="docutils literal notranslate"><span class="pre">vtkTypeBool</span> <span class="pre">HasTranslucentPolygonalGeometry()</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The points/lines/etc pulled from the data node should be post-transform, if there are any transforms applied.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Minimize the number of actors used for better rendering performance.</p>
+</div>
+</section>
+<section id="the-displayable-manager">
+<h4>The displayable manager<a class="headerlink" href="#the-displayable-manager" title="Link to this heading"></a></h4>
+<p>The data node, display node, widget, and widget representation are all needed pieces for data actually showing up on the screen. The displayable manager is the glue that brings all the pieces together. It monitors the MRML scene, and when data and display nodes are added or removed, it creates or destroys the corresponding widgets and widget representations.</p>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">MRMLDM</span>
+                    <span class="o">|--</span> <span class="n">vtkMRML</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">DisplayableManager</span><span class="o">.</span><span class="n">h</span>
+                    <span class="o">|--</span> <span class="n">vtkMRML</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">DisplayableManager</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key Points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">vtkSlicer&lt;MyCustomType&gt;DisplayableManager</span></code></p></li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractDisplayableManager.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLAbstractDisplayableManager</span></code></a>.</p></li>
+<li><p>Constructing a new node is same as the <a class="reference internal" href="#the-data-node">data node</a>.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractLogic.html#ac0102310f18a3880f00e93b8e37210c9"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">OnMRMLSceneNodeAdded(vtkMRMLNode*</span> <span class="pre">node)</span></code></a> to watch for if a new node of your type is added to the scene. Add an appropriate widget(s) and widget representation(s) for any display nodes.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractLogic.html#a92b1149d08ec5099a9ec61c0636f37c4"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">OnMRMLSceneNodeRemoved(vtkMRMLNode*</span> <span class="pre">node)</span></code></a> to watch for if a node of your type is removed from the scene. Remove corresponding widget(s) and widget representation(s).</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractLogic.html#ae826dc18ec31156f0eae3456608eb1c4"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">OnMRMLSceneEndImport()</span></code></a> to watch for an MRB file that has finished importing.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractLogic.html#a5f8a69a47eacec0cd95857beceb8eb34"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">OnMRMLSceneEndClose()</span></code></a> to clean up when a scene closes.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractLogic.html#a43a759874ce32846c6dffc52e5941744"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">ProcessMRMLNodesEvents(vtkObject*</span> <span class="pre">caller,</span> <span class="pre">unsigned</span> <span class="pre">long</span> <span class="pre">event,</span> <span class="pre">void*</span> <span class="pre">callData)</span></code></a> to watch for changes in the data node that would require the display to change.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractDisplayableManager.html#a0e691194d46e40d73e598ba318324388"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">UpdateFromMRML()</span></code></a> and <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractLogic.html#a50caeb3a373ccd53635ae2c08bc2e63e"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">UpdateFromMRMLScene()</span></code></a> to bring the displayable manager in line with the MRML Scene.</p></li>
+</ul>
+</section>
+<section id="the-storage-node">
+<h4>The storage node<a class="headerlink" href="#the-storage-node" title="Link to this heading"></a></h4>
+<p>A storage node is responsible for reading and writing data nodes to files. A single data node type can have multiple storage node types associated with it for reading/writing different formats. A storage node will be created for both normal save/load operations for a single data node, as well as when you are saving a whole scene to an MRB.</p>
+<p>It is common for a data node’s storage node to also write relevant values out of the display node (colors, opacity, etc) at the same time it writes the data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The storage node is not sufficient in itself to allow the new data node to be saved/loaded from the normal 3D Slicer save/load facilities; the <a class="reference internal" href="#the-reader">reader</a> and <a class="reference internal" href="#the-writer">writer</a> will help with that.</p>
+</div>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">MRML</span>
+                    <span class="o">|--</span> <span class="n">vtkMRML</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">StorageNode</span><span class="o">.</span><span class="n">h</span>
+                    <span class="o">|--</span> <span class="n">vtkMRML</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">StorageNode</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key Points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">vtkMRML&lt;MyCustomType&gt;StorageNode</span></code></p>
+<ul>
+<li><p>If you have multiple storage nodes you may have other information in the name, such as the format that is written. E.g. <code class="docutils literal notranslate"><span class="pre">vtkMRMLMarkupsJSONStorageNode</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLStorageNode</span></code></a>.</p></li>
+<li><p>Constructing a new node is same as the <a class="reference internal" href="#the-data-node">data node</a>.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html#af76f30cec1ccdc03bc496e5d39c784da"><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">CanReadInReferenceNode(vtkMRMLNode*</span> <span class="pre">refNode)</span></code></a> to allow a user to inquire at runtime if a particular node can be read in by this storage node.</p></li>
+<li><p>Override protected <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html#af7c838cb215a8a5b1dd87a123b3fbc81"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">InitializeSupportedReadFileTypes()</span></code></a> to show what file types and extensions this storage node can read (can be more than one).</p></li>
+<li><p>Override protected <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html#ab161ed9e9869cb61441659fe7c358906"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">InitializeSupportedWriteFileTypes()</span></code></a> to show what types and extensions this storage node can read (can be more than one).</p>
+<ul>
+<li><p>It is recommended to be able to read and write the same file types within a single storage node.</p></li>
+</ul>
+</li>
+<li><p>Override protected <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html#a56aa52786dad2724a0a6a706b7fcf014"><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">ReadDataInternal(vtkMRMLNode*</span> <span class="pre">refNode)</span></code></a>:</p>
+<ul>
+<li><p>This is called by the public <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html#afeeb4c95ee3164bd1d3374c053ffb04f"><code class="docutils literal notranslate"><span class="pre">ReadData</span></code></a> method.</p></li>
+<li><p>This is where the actually reading data from a file happens.</p></li>
+</ul>
+</li>
+<li><p>Override protected <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html#a739831f001a7cebbeb72484944e842bf"><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">WriteDataInternal(vtkMRMLNode*</span> <span class="pre">refNode)</span></code></a>:</p>
+<ul>
+<li><p>This is called by the public <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLStorageNode.html#a1eb7a2b35d28175e2c490ac51cbf5baf"><code class="docutils literal notranslate"><span class="pre">WriteData</span></code></a> method.</p></li>
+<li><p>This is where the actually writing data to a file happens.</p></li>
+</ul>
+</li>
+<li><p>If your data node uses any coordinates (most nodes that get displayed should) it is recommended to be specific in your storage format whether the saved coordinates are RAS or LPS coordinates.</p>
+<ul>
+<li><p>Having a way to allow the user to specify this is even better.</p></li>
+</ul>
+</li>
+<li><p>Other methods</p>
+<ul>
+<li><p>Adding a <code class="docutils literal notranslate"><span class="pre">vtkMRML&lt;MyCustomType&gt;Node*</span> <span class="pre">Create&lt;MyCustomType&gt;Node(const</span> <span class="pre">char*</span> <span class="pre">nodeName)</span></code> function will be convenient for implementing the writer and is also convenient for users of the storage node.</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If your storage node reads/writes JSON, <a class="reference external" href="https://rapidjson.org/index.html">RapidJSON</a> is already in the superbuild and is the recommended JSON parser.</p>
+<p>It is recommended to have your extension be <code class="docutils literal notranslate"><span class="pre">.&lt;something&gt;.json</span></code> where the <code class="docutils literal notranslate"><span class="pre">&lt;something&gt;</span></code> is related to your node type (e.g. <code class="docutils literal notranslate"><span class="pre">.mrk.json</span></code> for Markups).</p>
+</div>
+</section>
+<section id="the-reader">
+<h4>The reader<a class="headerlink" href="#the-reader" title="Link to this heading"></a></h4>
+<p>The recommended way to read a file into a MRML node is through the storage node. The reader, on the other hand, exists to interface with the loading facilities of 3D Slicer (drag and drop, as well as the button to load data into the scene). As such, the reader uses the storage node in its implementation.</p>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">qSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Reader</span><span class="o">.</span><span class="n">h</span>
+              <span class="o">|--</span> <span class="n">qSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Reader</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key Points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">qSlicer&lt;MyCustomType&gt;Reader</span></code></p></li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerFileReader.html"><code class="docutils literal notranslate"><span class="pre">qSlicerFileReader</span></code></a>.</p></li>
+<li><p>In the class definition, the following macros should be used:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Q_OBJECT</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Q_DECLARE_PRIVATE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Q_DISABLE_COPY</span></code></p></li>
+</ul>
+</li>
+<li><p>Constructing a new node:</p>
+<ul>
+<li><p>Create constructor <code class="docutils literal notranslate"><span class="pre">qSlicer&lt;MyCustomType&gt;Reader(QObject*</span> <span class="pre">parent</span> <span class="pre">=</span> <span class="pre">nullptr)</span></code>.</p>
+<ul>
+<li><p>This constructor, even if it is not explicitly used, allows this file to be wrapped in Python.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerIO.html#af44106dbf852df0e6cc836b377630f5e"><code class="docutils literal notranslate"><span class="pre">QString</span> <span class="pre">description()</span> <span class="pre">const</span></code></a> to provide a short description on the types of files read.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerIO.html#aac38b570ec5c0692caefa7d87657e58b"><code class="docutils literal notranslate"><span class="pre">IOFileType</span> <span class="pre">fileType()</span> <span class="pre">const</span></code></a> to give a string to associate with the types of files read.</p>
+<ul>
+<li><p>This string can be used in conjunction with the python method <a class="reference external" href="https://slicer.readthedocs.io/en/latest/developer_guide/slicer.html#slicer.util.loadNodeFromFile"><code class="docutils literal notranslate"><span class="pre">slicer.util.loadNodeFromFile</span></code></a></p></li>
+</ul>
+</li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerFileReader.html#afb3187915977b2253d86634cc465b23d"><code class="docutils literal notranslate"><span class="pre">QStringList</span> <span class="pre">extensions()</span> <span class="pre">const</span></code></a> to provide the extensions that can be read.</p>
+<ul>
+<li><p>Should be the same as the storage node because the reader uses the storage node.</p></li>
+</ul>
+</li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerFileReader.html#ac9acb878cd8adcc426e9a7a9edac15df"><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">load(const</span> <span class="pre">IOProperties&amp;</span> <span class="pre">properties)</span></code></a>. This is the function that actually loads the node from the file into the scene.</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The reader is not a VTK object, like the previous objects discussed. It is actually a QObject, so we follow Qt guidelines. One such guideline is the <a class="reference external" href="https://wiki.qt.io/D-Pointer">D-Pointer pattern</a>, which is recommended for use.</p>
+</div>
+</section>
+<section id="the-writer">
+<h4>The writer<a class="headerlink" href="#the-writer" title="Link to this heading"></a></h4>
+<p>The writer is the companion to the reader, so, similar to the reader, it does not implement the actual writing of files, but rather it uses the storage node. Its existence is necessary to use 3D Slicer’s built in saving facilities, such as the save button.</p>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">qSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Writer</span><span class="o">.</span><span class="n">h</span>
+              <span class="o">|--</span> <span class="n">qSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Writer</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">qSlicer&lt;MyCustomType&gt;Writer</span></code></p></li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerNodeWriter.html"><code class="docutils literal notranslate"><span class="pre">qSlicerNodeWriter</span></code></a>.</p></li>
+<li><p>See the <a class="reference internal" href="#the-reader">reader</a> for information on defining and constructing Qt style classes.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerNodeWriter.html#aa2d7322c22d3d5fa7b9ef2843948b31a"><code class="docutils literal notranslate"><span class="pre">QStringList</span> <span class="pre">extensions(vtkObject*</span> <span class="pre">object)</span> <span class="pre">const</span></code></a> to provide file extensions that can be written to.</p>
+<ul>
+<li><p>File extensions may be different, but don’t have to be, for different data nodes that in the same hierarchy (e.g. Markups Curve and Plane could reasonably require different file extensions, but they don’t).</p></li>
+</ul>
+</li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerNodeWriter.html#aa7e3af9bf485b46735131e6363223ad8"><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">write(const</span> <span class="pre">qSlicerIO::IOProperties&amp;</span> <span class="pre">properties)</span></code></a> to do the actual writing (by way of a storage node, of course).</p></li>
+</ul>
+</section>
+<section id="the-subject-hierarchy-plugin">
+<h4>The subject hierarchy plugin<a class="headerlink" href="#the-subject-hierarchy-plugin" title="Link to this heading"></a></h4>
+<p>A convenient module in 3D Slicer is the Data module. It brings all the different data types together under one roof and offers operations such as cloning, deleting, and renaming nodes that work regardless of the node type. The Data module uses the Subject Hierarchy, which is what we need to plug into so our new node type can be seen in and modified by the Data module.</p>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">SubjectHierarchyPlugins</span>
+                    <span class="o">|--</span> <span class="n">qSlicerSubjectHierarchy</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Plugin</span><span class="o">.</span><span class="n">h</span>
+                    <span class="o">|--</span> <span class="n">qSlicerSubjectHierarchy</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Plugin</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>Key Points:</p>
+<ul class="simple">
+<li><p>Naming convention for class: <code class="docutils literal notranslate"><span class="pre">qSlicerSubjectHierarchy&lt;MyCustomType&gt;Plugin</span></code></p></li>
+<li><p>Inherits from <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html"><code class="docutils literal notranslate"><span class="pre">qSlicerSubjectHierarchyAbstractPlugin</span></code></a>.</p></li>
+<li><p>See the <a class="reference internal" href="#the-reader">reader</a> for information on defining and constructing Qt style classes.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html#a91df5054dd11126a05e730922b5e9e43"><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">canAddNodeToSubjectHierarchy(vtkMRMLNode*</span> <span class="pre">node,</span> <span class="pre">vtkIdType</span> <span class="pre">parentItemID=vtkMRMLSubjectHierarchyNode::INVALID_ITEM_ID)</span> <span class="pre">const</span></code></a>.</p>
+<ul>
+<li><p>This method is used to determine if a data node can be placed in the hierarchy using this plugin.</p></li>
+</ul>
+</li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html#afe009201b32cc0a115aff0022cc1dd9f"><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">canOwnSubjectHierarchyItem(vtkIdType</span> <span class="pre">itemID)</span> <span class="pre">const</span></code></a> to say if this plugin can own a particular subject hierarchy item.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html#a55f0d686fe8e38576bc890de95622ad5"><code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">QString</span> <span class="pre">roleForPlugin()</span> <span class="pre">const</span></code></a> to give the plugin’s role (most often meaning the data type the plugin can handle, e.g. Markup).</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html#a7a1b0b5a55a2a13d7b88f3746ea573bc"><code class="docutils literal notranslate"><span class="pre">QIcon</span> <span class="pre">icon(vtkIdType</span> <span class="pre">itemID)</span></code></a> and <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html#a5bbd27154c71e174804bd833d50ce070"><code class="docutils literal notranslate"><span class="pre">QIcon</span> <span class="pre">visibilityIcon(int</span> <span class="pre">visible)</span></code></a> to set icons for your node type.</p></li>
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html#a7c748f1c4437fb4f63f88324b68157ef"><code class="docutils literal notranslate"><span class="pre">QString</span> <span class="pre">tooltip(vtkIdType</span> <span class="pre">itemID)</span> <span class="pre">const</span></code></a> to set a tool tip for your node type.</p></li>
+<li><p>Override the following to determine what happens when a user gets/sets the node color through the subject hierarchy:</p>
+<ul>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html#ad8b6d1065e78bfc73e6dcc71fce61c42"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">setDisplayColor(vtkIdType</span> <span class="pre">itemID,</span> <span class="pre">QColor</span> <span class="pre">color,</span> <span class="pre">QMap&lt;int,</span> <span class="pre">QVariant&gt;</span> <span class="pre">terminologyMetaData)</span></code></a></p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyAbstractPlugin.html#a7be968d5ad3840512686b7c8501cf847"><code class="docutils literal notranslate"><span class="pre">QColor</span> <span class="pre">getDisplayColor(vtkIdType</span> <span class="pre">itemID,</span> <span class="pre">QMap&lt;int,</span> <span class="pre">QVariant&gt;</span> <span class="pre">&amp;terminologyMetaData)</span> <span class="pre">const</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="the-module-aka-putting-it-all-together">
+<h4>The module (aka putting it all together)<a class="headerlink" href="#the-module-aka-putting-it-all-together" title="Link to this heading"></a></h4>
+<p>If you have used 3D Slicer for any length of time, you have probably noticed that for each type of node (or set of types as in something like markups) there is a dedicated module that is used solely for interacting with the single node type (or set of types). Examples would be the Models, Volumes, and Markups modules. These modules are useful from a user perspective and also necessary to get your new node registered everywhere it needs to be.</p>
+<p>As these are normal 3D Slicer modules, they come in three main parts, the module, the logic, and the module widget. The recommended way to create a new module is through the <a class="reference internal" href="../user_guide/modules/extensionwizard.html#extension-wizard"><span class="std std-ref">Extension Wizard</span></a>.</p>
+<p>Files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">|--</span> <span class="o">&lt;</span><span class="n">Extension</span><span class="o">&gt;</span>
+       <span class="o">|--</span> <span class="o">&lt;</span><span class="n">Module</span><span class="o">&gt;</span>
+              <span class="o">|--</span> <span class="n">qSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Module</span><span class="o">.</span><span class="n">h</span>
+              <span class="o">|--</span> <span class="n">qSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Module</span><span class="o">.</span><span class="n">cxx</span>
+              <span class="o">|--</span> <span class="n">qSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">ModuleWidget</span><span class="o">.</span><span class="n">h</span>
+              <span class="o">|--</span> <span class="n">qSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">ModuleWidget</span><span class="o">.</span><span class="n">cxx</span>
+              <span class="o">|--</span> <span class="n">Logic</span>
+                    <span class="o">|--</span> <span class="n">vtkSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Logic</span><span class="o">.</span><span class="n">h</span>
+                    <span class="o">|--</span> <span class="n">vtkSlicer</span><span class="o">&lt;</span><span class="n">MyCustomType</span><span class="o">&gt;</span><span class="n">Logic</span><span class="o">.</span><span class="n">cxx</span>
+</pre></div>
+</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">qSlicer&lt;MyCustomType&gt;Module.cxx</span></code>:</p>
+<ul class="simple">
+<li><p>Override the <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerAbstractCoreModule.html#a9ad37e756338e7226f157b4eb54b9bcd"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">setup()</span></code></a> function:</p>
+<ul>
+<li><p>Register your displayable manager with the <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLThreeDViewDisplayableManagerFactory.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLThreeDViewDisplayableManagerFactory</span></code></a> and/or the <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSliceViewDisplayableManagerFactory.html"><code class="docutils literal notranslate"><span class="pre">vtkMRMLSliceViewDisplayableManagerFactory</span></code></a>.</p></li>
+<li><p>Register your subject hierarchy plugin with the <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerSubjectHierarchyPluginHandler.html"><code class="docutils literal notranslate"><span class="pre">qSlicerSubjectHierarchyPluginHandler</span></code></a>.</p></li>
+<li><p>Register your reader and writer with the <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerIOManager.html"><code class="docutils literal notranslate"><span class="pre">qSlicerIOManager</span></code></a>.</p></li>
+</ul>
+</li>
+<li><p>Override the <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerAbstractCoreModule.html#a51d7c31d4901b3a313cb53b4891961f9"><code class="docutils literal notranslate"><span class="pre">QStringList</span> <span class="pre">associatedNodeTypes()</span> <span class="pre">const</span></code></a> function and return all the new MRML classes created (data, display, and storage nodes).</p></li>
+</ul>
+<p>In <code class="docutils literal notranslate"><span class="pre">vtkSlicer&lt;MyCustomType&gt;Logic.cxx</span></code>:</p>
+<ul class="simple">
+<li><p>Override the protected <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractLogic.html#acfa7f65f53d5fbe6d056e7cf32a23058"><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">RegisterNodes()</span></code></a> function and register all the new MRML classes created (data, display, and storage nodes) with the MRML scene.</p></li>
+</ul>
+<p>In <code class="docutils literal notranslate"><span class="pre">qSlicer&lt;MyCustomType&gt;ModuleWidget.cxx</span></code>:</p>
+<ul class="simple">
+<li><p>Override <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerAbstractModuleWidget.html#a52fe94bcc034b4d841d7fc05a4899d3c"><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">setEditedNode(vtkMRMLNode*</span> <span class="pre">node,</span> <span class="pre">QString</span> <span class="pre">role</span> <span class="pre">=</span> <span class="pre">QString(),</span> <span class="pre">QString</span> <span class="pre">context</span> <span class="pre">=</span> <span class="pre">QString())</span></code></a> and <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerAbstractModuleWidget.html#adebae2ce9686043d7f9dee09620b28bb"><code class="docutils literal notranslate"><span class="pre">double</span> <span class="pre">nodeEditable(vtkMRMLNode*</span> <span class="pre">node)</span></code></a> if you want this module to be connected to the Data module’s “Edit properties…” option in the right click menu.</p></li>
+</ul>
+</section>
+</section>
+<section id="slice-view-pipeline">
+<h3>Slice view pipeline<a class="headerlink" href="#slice-view-pipeline" title="Link to this heading"></a></h3>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/slice_view_pipeline.png" /></p>
+<p>Another view of <a class="reference external" href="https://www.slicer.org/wiki/File:SliceView.pptx">VTK/MRML pipeline for the 2D slice views</a>.</p>
+<p>Notes: the MapToWindowLevelColors has no lookup table set, so it maps the scalar volume data to 0,255 with no “color” operation. This is controlled by the Window/Level settings of the volume display node. The MapToColors applies the current lookup table to go from 0-255 to full RGBA.</p>
+<p>Management of slice views is distributed between several objects:</p>
+<ul class="simple">
+<li><p>Slice node (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSliceNode.html">vtkMRMLSliceNode</a>): Stores the position, orientation, and size of the slice. This is a <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLAbstractViewNode.html">view node</a> and as such it stores common view properties, such as the view name, layout color, background color.</p></li>
+<li><p>Slice display node (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSliceDisplayNode.html">vtkMRMLSliceDisplayNode</a>): Specifies how the slice should be displayed, such as visibility and style of display of intersecting slices. The class is based on <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLModelDisplayNode.html">classvtkMRMLModelDisplayNode</a>, therefore it also specifies which 3D views the slice is displayed in.</p></li>
+<li><p>Slice composite node (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSliceCompositeNode.html">vtkMRMLSliceCompositeNode</a>): Specifies what volumes are displayed in the slice and how to blend them. It is ended up being a separate node probably because it is somewhat a mix between a data node (that tells what data to display) and a display node (that specifies how the data is displayed).</p></li>
+<li><p>Slice model node (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLModelNode.html">vtkMRMLModelNode</a>): It is a model node that displays the slice in 3D views. It stores a simple rectangle mesh on that the image cross-section is rendered as a texture.</p></li>
+<li><p>Slice model transform node (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformNode.html">vtkMRMLTransformNode</a>). The transform node is used for positioning the slice model node in 3D views. It is faster to use a transform node to position the plane than modifying the plane points each time the slice is moved.</p></li>
+<li><p>Slice logic (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSliceLogic.html">vtkMRMLSliceLogic</a>): This is not a MRML node but a logic class, which implements operationson MRML nodes. There is one logic for each slice view. The object keeps reference to all MRML nodes, so it is a good starting point for accessing any data related to slices and performing operations on slices. Slice logics are stored in the application logic object and can be retrieved like this: <code class="docutils literal notranslate"><span class="pre">sliceLogic</span> <span class="pre">=</span> <span class="pre">slicer.app.applicationLogic().GetSliceLogicByLayoutName('Red')</span></code>. There are a few other <code class="docutils literal notranslate"><span class="pre">GetSlicerLogic...</span></code> methods to get slice logic based on slice node, slice model display node, and to get all the slice logics.</p></li>
+<li><p>Slice layer logic(<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSliceLayerLogic.html">vtkMRMLSliceLayerLogic</a>): Implements reslicing and interpolation for a volume. There is one slice layer logic for each volume layer (foreground, background, label) for each slice view.</p></li>
+<li><p>Slice link logic (<a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSliceLinkLogic.html">vtkMRMLSliceLinkLogic</a>): There is only a singla instance of this object in the entire application. This object synchronizes slice view property changes between all slice views in the same view group.</p></li>
+</ul>
+</section>
+<section id="layout">
+<h3>Layout<a class="headerlink" href="#layout" title="Link to this heading"></a></h3>
+<p>A layout manager (<a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerLayoutManager.html">qSlicerLayoutManager</a>) shows or hides layouts:</p>
+<ul class="simple">
+<li><p>It instantiates, shows or hides relevant view widgets.</p></li>
+<li><p>It is associated with a <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLLayoutNode.html">vtkMRMLLayoutNode</a> describing the current layout configuration and ensuring it can be saved and restored.</p></li>
+<li><p>It owns an instance of <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLLayoutLogic.html">vtkMRMLLayoutLogic</a> that controls the layout node and the view nodes in a MRML scene.</p></li>
+<li><p>Pre-defined layouts are described using XML and are registered in <code class="docutils literal notranslate"><span class="pre">vtkMRMLLayoutLogic::AddDefaultLayouts()</span></code>.</p></li>
+<li><p>Developer may register additional layout.</p></li>
+</ul>
+<section id="registering-a-custom-layout">
+<h4>Registering a custom layout<a class="headerlink" href="#registering-a-custom-layout" title="Link to this heading"></a></h4>
+<p>See <a class="reference internal" href="script_repository.html#customize-view-layout"><span class="std std-ref">example in the script repository</span></a>.</p>
+</section>
+<section id="layout-xml-format">
+<h4>Layout XML Format<a class="headerlink" href="#layout-xml-format" title="Link to this heading"></a></h4>
+<p>Layout description may be validated using the following DTD:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;!DOCTYPE layout SYSTEM &quot;https://slicer.org/layout.dtd&quot;
+[
+&lt;!ELEMENT layout (item+)&gt;
+&lt;!ELEMENT item (layout*, view)&gt;
+&lt;!ELEMENT view (property*)&gt;
+&lt;!ELEMENT property (#PCDATA)&gt;
+
+&lt;!ATTLIST layout
+type (horizontal|grid|tab|vertical) #IMPLIED &quot;horizontal&quot;
+split (true|false) #IMPLIED &quot;true&quot; &gt;
+
+&lt;!ATTLIST item
+multiple (true|false) #IMPLIED &quot;false&quot;
+splitSize CDATA #IMPLIED &quot;0&quot;
+row CDATA #IMPLIED &quot;0&quot;
+column CDATA #IMPLIED &quot;0&quot;
+rowspan CDATA #IMPLIED &quot;1&quot;
+colspan CDATA #IMPLIED &quot;1&quot;
+&gt;
+
+&lt;!ATTLIST view
+class CDATA #REQUIRED
+singletontag CDATA #IMPLIED
+horizontalStretch CDATA #IMPLIED &quot;-1&quot;
+verticalStretch CDATA #IMPLIED &quot;-1&quot; &gt;
+
+&lt;!ATTLIST property
+name CDATA #REQUIRED
+action (default|relayout) #REQUIRED &gt;
+
+]&gt;
+</pre></div>
+</div>
+<p>Notes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layout</span></code> element:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">split</span></code> attribute applies only to layout of type <code class="docutils literal notranslate"><span class="pre">horizontal</span></code> and <code class="docutils literal notranslate"><span class="pre">vertical</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">item</span></code> element:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">row</span></code>, <code class="docutils literal notranslate"><span class="pre">column</span></code>, <code class="docutils literal notranslate"><span class="pre">rowspan</span></code> and <code class="docutils literal notranslate"><span class="pre">colspan</span></code> attributes applies only to layout of type <code class="docutils literal notranslate"><span class="pre">grid</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">splitSize</span></code> must be specified only for <code class="docutils literal notranslate"><span class="pre">layout</span></code> element with <code class="docutils literal notranslate"><span class="pre">split</span></code> attribute set to <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view</span></code> element:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code> must correspond to a MRML view node class name (e.g <code class="docutils literal notranslate"><span class="pre">vtkMRMLViewNode</span></code>, <code class="docutils literal notranslate"><span class="pre">vtkMRMLSliceNode</span></code> or <code class="docutils literal notranslate"><span class="pre">vtkMRMLPlotViewNode</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">singletontag</span></code> must always be specified when <code class="docutils literal notranslate"><span class="pre">multiple</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">item</span></code> element is specified.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">property</span></code> element:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> attribute may be set to the following values:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">viewlabel</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">viewcolor</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">viewgroup</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">orientation</span></code> applies only if parent <code class="docutils literal notranslate"><span class="pre">view</span></code> element is associated with <code class="docutils literal notranslate"><span class="pre">class</span></code> (or subclass) of type <code class="docutils literal notranslate"><span class="pre">vtkMRMLSliceNode</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="vtkITK.html" class="btn btn-neutral float-left" title="vtkITK" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="module_overview.html" class="btn btn-neutral float-right" title="Module Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

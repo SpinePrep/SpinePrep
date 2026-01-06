@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tedana.metrics.external.fit_model_with_stats &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="../_static/tedana_favicon.png"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=643184eb"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="tedana.metrics.external.fit_regressors" href="tedana.metrics.external.fit_regressors.html" />
+    <link rel="prev" title="tedana.metrics.external.fit_mixing_to_regressors" href="tedana.metrics.external.fit_mixing_to_regressors.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/generated/tedana.metrics.external.fit_model_with_stats.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.workflows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code>: Common workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.decay"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.decay</span></code>: Modeling signal decay across echoes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.combine"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.combine</span></code>: Combining time series across echoes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.decomposition"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.decomposition</span></code>: Data decomposition</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-tedana.metrics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.metrics</span></code>: Computing TE-dependence metrics</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tedana.metrics.collect.html">tedana.metrics.collect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.metrics.dependence.html">tedana.metrics.dependence</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="tedana.metrics.external.html">tedana.metrics.external</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="tedana.metrics.external.build_fstat_regressor_models.html">tedana.metrics.external.build_fstat_regressor_models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.metrics.external.fit_mixing_to_regressors.html">tedana.metrics.external.fit_mixing_to_regressors</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">tedana.metrics.external.fit_model_with_stats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.metrics.external.fit_regressors.html">tedana.metrics.external.fit_regressors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.metrics.external.load_validate_external_regressors.html">tedana.metrics.external.load_validate_external_regressors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.metrics.external.validate_extern_regress.html">tedana.metrics.external.validate_extern_regress</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.metrics.external.RegressError.html">tedana.metrics.external.RegressError</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.selection"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.selection</span></code>: Component selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.gscontrol"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.gscontrol</span></code>: Global signal control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.io</span></code>: Reading and writing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.reporting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.reporting</span></code>: Reporting functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.stats"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.stats</span></code>: Statistical functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.bibtex"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.bibtex</span></code>: Tools for working with BibTeX files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.utils</span></code>: Utility functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="tedana.metrics.external.html">tedana.metrics.external</a></li>
+      <li class="breadcrumb-item active">tedana.metrics.external.fit_model_with_stats</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/tedana.metrics.external.fit_model_with_stats.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tedana-metrics-external-fit-model-with-stats">
+<h1>tedana.metrics.external.fit_model_with_stats<a class="headerlink" href="#tedana-metrics-external-fit-model-with-stats" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="tedana.metrics.external.fit_model_with_stats">
+<span class="sig-name descname"><span class="pre">fit_model_with_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regressor_models</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'full'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.3)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference external" href="https://github.com/me-ica/tedana/blob/e093290/tedana/metrics/external.py#L522"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tedana.metrics.external.fit_model_with_stats" title="Link to this definition"></a></dt>
+<dd><p>Fit full and partial models and calculate F stats, R2, and p values.</p>
+<p>Math from page 11-14 of <a class="reference external" href="https://afni.nimh.nih.gov/pub/dist/doc/manual/3dDeconvolve.pdf">https://afni.nimh.nih.gov/pub/dist/doc/manual/3dDeconvolve.pdf</a>
+Calculates Y=betas*X + error for the base and the full model
+F = ((SSE_base-SSE_full)/(DF_base-DF_full)) / (SSE_full/DF_full)
+DF = degrees of freedom
+SSE = sum of squares error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> ((T X C) <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Time by mixing matrix components for the time series for fitting</p></li>
+<li><p><strong>regressor_models</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Each element in the dictionary is a numpy array defining the regressors in a
+regressor model.
+Inclues ‘full’, ‘base’ and partial models.</p></li>
+<li><p><strong>base_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The base model to compare the full model against.
+For F stat for the full model, this should be ‘base’.
+For partial models, this should be the name of the partial model (i.e. “no motion”).</p></li>
+<li><p><strong>full_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The full model to use.
+Default=”full”.
+“full” is expected if the goal is to compare all nuissance regressors to a base model.
+“task_keep” for the special case of fitting pre-defined task-locked regressors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>betas_full</strong> ((C x R) <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – The beta fits for the full model (components x regressors)</p></li>
+<li><p><strong>f_vals</strong> ((C x M) <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – The F statistics for the fits to the full and partial models</p></li>
+<li><p><strong>p_vals</strong> ((C x M) <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – The p values for the fits to the full and partial models</p></li>
+<li><p><strong>r2_vals</strong> ((C x M) <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – The R2 statistics for the fits to the full and partial models</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tedana.metrics.external.fit_mixing_to_regressors.html" class="btn btn-neutral float-left" title="tedana.metrics.external.fit_mixing_to_regressors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tedana.metrics.external.fit_regressors.html" class="btn btn-neutral float-right" title="tedana.metrics.external.fit_regressors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ debugging on Windows &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="C++ debugging on GNU/Linux systems" href="linuxcpp.html" />
+    <link rel="prev" title="C++ debugging" href="cpp.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/debugging/windowscpp.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Debugging</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="python.html">Python debugging</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="cpp.html">C++ debugging</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">C++ debugging on Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="linuxcpp.html">C++ debugging on GNU/Linux systems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="macoscpp.html">C++ debugging on macOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vscodecpp.html">C++ debugging with Visual Studio Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qtcreatorcpp.html">C++ debugging with Qt Creator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="codelitecpp.html">C++ debugging with CodeLite</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tips.html">Tips and tricks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Debugging</a></li>
+          <li class="breadcrumb-item"><a href="cpp.html">C++ debugging</a></li>
+      <li class="breadcrumb-item active">C++ debugging on Windows</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/debugging/windowscpp.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="c-debugging-on-windows">
+<h1>C++ debugging on Windows<a class="headerlink" href="#c-debugging-on-windows" title="Link to this heading"></a></h1>
+<section id="debugging-using-visual-studio">
+<h2>Debugging using Visual Studio<a class="headerlink" href="#debugging-using-visual-studio" title="Link to this heading"></a></h2>
+<p>Prerequisites:</p>
+<ul class="simple">
+<li><p>Build 3D Slicer in Debug by following the <a class="reference internal" href="../build_instructions/overview.html"><span class="std std-doc">build instructions</span></a>.</p></li>
+</ul>
+<ol class="arabic">
+<li><p>To run Slicer, the launcher needs to set certain environment variables. The easiest is to use the launcher to set these and start Visual Studio in this environment. All these can be accomplished by running the following command in <code class="docutils literal notranslate"><span class="pre">&lt;Slicer_BUILD&gt;/Slicer-build</span></code> folder:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>Slicer.exe --VisualStudioProject
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><p>If you just want to start VisualStudio with the launcher (and then load project file manually), run: <code class="docutils literal notranslate"><span class="pre">Slicer.exe</span> <span class="pre">--VisualStudio</span></code></p></li>
+<li><p>To debug an extension that builds third-party DLLs, also specify <code class="docutils literal notranslate"><span class="pre">--launcher-additional-settings</span></code> option.</p></li>
+<li><p>While you can launch debugger using Slicer’s solution file, it is usually more convenient to load your extension’s solution file (because your extension solution is smaller and most likely you want to have that solution open anyway for making changes in your code). For example, you can launch Visual Studio to debug your extension like this:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>.\SD\Slicer-build\Slicer.exe --VisualStudio --launcher-no-splash --launcher-additional-settings ./SlicerRT_D/inner-build/AdditionalLauncherSettings.ini c:\d\_Extensions\SlicerRT_D\inner-build\SlicerRT.sln
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li><p>In Solution Explorer window in Visual Studio, expand <code class="docutils literal notranslate"><span class="pre">App-Slicer</span></code>, right-click on <code class="docutils literal notranslate"><span class="pre">SlicerApp</span></code> (NOT qSlicerApp) and select “Set as Startup Project”</p>
+<p>To debug in an extension’s solution: set <code class="docutils literal notranslate"><span class="pre">ALL_BUILD</span></code> project as startup project and in project settings, set <code class="docutils literal notranslate"><span class="pre">Debugging</span></code> / <code class="docutils literal notranslate"><span class="pre">Command</span></code> field to the full path of <code class="docutils literal notranslate"><span class="pre">SlicerApp-real.exe</span></code> - something like <code class="docutils literal notranslate"><span class="pre">.../Slicer-build/bin/Debug/SlicerApp-real.exe</span></code></p>
+</li>
+<li><p>Run Slicer in debug mode by Start Debugging command (in Debug menu).</p>
+<p>Note that because CMake re-creates the solution file from within the build process, Visual Studio will sometimes need to stop and reload the project, requiring manual button pressing on your part (just press Yes or OK whenever you are asked). To avoid this, you can use a script to complete the build process and then re-start the Visual Studio.</p>
+<p>For more debugging tips and tricks, check out <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/Tutorials/Troubleshooting">this page</a>.</p>
+</li>
+</ol>
+<section id="debugging-tests">
+<h3>Debugging tests<a class="headerlink" href="#debugging-tests" title="Link to this heading"></a></h3>
+<p>Once VisualStudio is open with the Slicer environment loaded, it is possible to run and debug tests. See general information about running tests <a class="reference internal" href="tips.html#debugging-tests"><span class="std std-ref">here</span></a>. Specific instructions for Visual Studio:</p>
+<ul class="simple">
+<li><p>To debug a test, find its project in the Solution explorer tree.</p></li>
+<li><p>Make the project the startup project (right-click -&gt; Set As Startup Project).</p></li>
+<li><p>Specify test name and additional input arguments:</p>
+<ul>
+<li><p>Go to the project debugging properties (right click -&gt; Properties, then Configuration Properties/Debugging)</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">Arguments</span></code>, type the name of the test (e.g. <code class="docutils literal notranslate"><span class="pre">vtkMRMLSceneImportTest</span></code> for project <code class="docutils literal notranslate"><span class="pre">MRMLCoreCxxTests</span></code>) followed by additional arguments (if any).</p></li>
+</ul>
+</li>
+<li><p>Start debugging by choosing <code class="docutils literal notranslate"><span class="pre">Start</span> <span class="pre">debugging</span></code> in Edit menu.</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To run all tests, build the <code class="docutils literal notranslate"><span class="pre">RUN_TESTS</span></code> project.</p>
+</div>
+</section>
+</section>
+<section id="debugging-using-cross-platform-ides">
+<h2>Debugging using cross-platform IDEs<a class="headerlink" href="#debugging-using-cross-platform-ides" title="Link to this heading"></a></h2>
+<p>On Windows, Visual Studio is the most feature-rich and powerful debugger, but in case somebody wants to use cross-platform tools then these instructions may help:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="qtcreatorcpp.html"><span class="std std-doc">Debugging using Qt Creator</span></a></p></li>
+<li><p><a class="reference internal" href="vscodecpp.html"><span class="std std-doc">Debugging using Visual Studio Code</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cpp.html" class="btn btn-neutral float-left" title="C++ debugging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="linuxcpp.html" class="btn btn-neutral float-right" title="C++ debugging on GNU/Linux systems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

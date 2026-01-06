@@ -1,0 +1,601 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Style Guide &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advanced Topics" href="advanced_topics.html" />
+    <link rel="prev" title="Contributing to Slicer" href="contributing.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/style_guide.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Style Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general">General</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toolkits-and-libraries">Toolkits and libraries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#languages">Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#naming-conventions">Naming conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comments">Comments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#don-t-mix-different-levels-of-abstraction">Don’t mix different levels of abstraction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#file-layout">File layout</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#includes">Includes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#library-dependencies">Library Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#development-practices">Development Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coordinate-systems">Coordinate Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#string-encoding-utf-8-everywhere">String encoding: UTF-8 everywhere</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-and-warning-messages">Error and warning messages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#in-qt-based-classes">In Qt-based classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#in-vtk-based-classes">In VTK-based classes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#commits">Commits</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#commit-message-prefix">Commit message prefix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#message-content">Message content</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#importing-changes-from-external-project-repository">Importing changes from external project/repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#resources">Resources</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-design-guidelines">UI Design Guidelines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Style Guide</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/style_guide.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="style-guide">
+<h1>Style Guide<a class="headerlink" href="#style-guide" title="Link to this heading"></a></h1>
+<section id="general">
+<h2>General<a class="headerlink" href="#general" title="Link to this heading"></a></h2>
+<p>If you are editing code, take a few minutes to look at the code around you and determine its style.
+If they use spaces around their if clauses, you should, too.
+If their comments have little boxes of stars around them, make your comments have little boxes of stars around them too.</p>
+<p>The point of having style guidelines is to have a common vocabulary of coding so people can concentrate on what you are saying, rather than on how you are saying it. We present global style rules here so people know the vocabulary. But local style is also important. If code you add to a file looks drastically different from the existing code around it, the discontinuity throws readers out of their rhythm when they go to read it. Try to avoid this.</p>
+<p>Slicer uses and extends libraries and toolkits multiple languages, which each has its own conventions. As a general rule, follow these conventions. For example, to get number of items in a VTK class use GetNumberOfXXX, but use XXXCount in a Qt class.</p>
+<p>Line length: Preferably keep lines shorter than 80 characters. Always keep lines shorter than 120 characters. Markdown (.md) files are excluded from this restriction, to allow editing the text without worrying about line breaks.</p>
+<section id="toolkits-and-libraries">
+<h3>Toolkits and libraries<a class="headerlink" href="#toolkits-and-libraries" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.vtk.org/en/latest/developers_guide/coding_conventions.html">VTK coding conventions</a></p></li>
+<li><p><a class="reference external" href="https://wiki.qt.io/Qt_Coding_Style">Qt style guide</a></p></li>
+<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0008/">Python style guide</a></p></li>
+</ul>
+</section>
+<section id="languages">
+<h3>Languages<a class="headerlink" href="#languages" title="Link to this heading"></a></h3>
+<section id="python">
+<h4>Python<a class="headerlink" href="#python" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Follow the Slicer repository Flake8 configuration and run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pre_commit</span> <span class="pre">run</span> <span class="pre">--all-files</span></code> to confirm compliance.</p></li>
+<li><p>Text encoding: UTF-8 is preferred, Latin-1 is acceptable</p></li>
+<li><p>Comparisons:</p>
+<ul>
+<li><p>To singletons (e.g. None): use ‘is’ or ‘is not’, never equality operations.</p></li>
+<li><p>To Booleans (True, False): don’t ever compare with True or False (for further explanation, see PEP 8).</p></li>
+</ul>
+</li>
+<li><p>Prefix class definitions with two blank lines</p></li>
+<li><p>Imports</p>
+<ul>
+<li><p>Grouped in order of scope/commonallity</p>
+<ul>
+<li><p>Standard library imports</p></li>
+<li><p>Related third party imports</p></li>
+<li><p>Local apps/library specific imports</p>
+<ul>
+<li><p>Slicer application imports and local/module imports may be grouped independently.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>One package per line (with or without multiple function/module/class imports from the package)</p></li>
+</ul>
+</li>
+<li><p>Naming conventions: when <a class="reference external" href="https://www.python.org/dev/peps/pep-0008/#package-and-module-names">PEP 8</a> and Slicer naming conventions conflict, Slicer wins.</p></li>
+</ul>
+</section>
+<section id="c">
+<h4>C++<a class="headerlink" href="#c" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Use the old-style VTK indentation (braces are in new line, indented by two spaces), until the entire Slicer code base will be updated to use current VTK indentation style.</p></li>
+<li><p>Use VTK naming conventions:</p>
+<ul>
+<li><p>Local variable should start with a lower case.
+Use:
+<code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">vtkSlicerSliceLogic::SetForegroundLayer(vtkSlicerSliceLayerLogic*</span> <span class="pre">foregroundLayer)</span></code>
+Instead of:
+<code class="docutils literal notranslate"> <span class="pre">void</span> <span class="pre">vtkSlicerSliceLogic::SetForegroundLayer(vtkSlicerSliceLayerLogic*</span> <span class="pre">ForegroundLayer)</span> <span class="pre">//</span> <span class="pre">wrong!</span></code></p></li>
+<li><p>Member variable should start with a capital letter, and in implementation should be used in conjunction with <code class="docutils literal notranslate"><span class="pre">this-&gt;</span></code> convention.</p></li>
+</ul>
+</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Node</span>
+<span class="p">{</span>
+  <span class="n">Object</span> <span class="o">&amp;</span><span class="n">Foo</span><span class="p">();</span>
+  <span class="n">Object</span> <span class="n">Bla</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="n">Object</span><span class="o">&amp;</span> <span class="n">Node</span><span class="p">::</span><span class="n">Foo</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="k">return</span> <span class="n">this</span><span class="o">-&gt;</span><span class="n">Bla</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Useful information about some coding style decisions: <a class="reference external" href="https://google.github.io/styleguide/cppguide.html">https://google.github.io/styleguide/cppguide.html</a></p>
+<p>Source file name rules:</p>
+<ul class="simple">
+<li><p>C++ source files files shall have a <code class="docutils literal notranslate"><span class="pre">.cxx</span></code> extension.</p></li>
+<li><p>C++ Headers with declarations shall have a <code class="docutils literal notranslate"><span class="pre">.h</span></code> extension, and header definition files shall have a <code class="docutils literal notranslate"><span class="pre">.hxx</span></code> extension.
+The <code class="docutils literal notranslate"><span class="pre">.hxx</span></code> files shall only be included from the corresponding <code class="docutils literal notranslate"><span class="pre">.h</span></code> files or <code class="docutils literal notranslate"><span class="pre">.cxx</span></code> files.</p></li>
+</ul>
+</section>
+<section id="cmake">
+<h4>CMake<a class="headerlink" href="#cmake" title="Link to this heading"></a></h4>
+<ul>
+<li><p>Macros/functions should be lower case and words separated with underscores</p>
+<p><code class="docutils literal notranslate"><span class="pre">include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Logic)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Logic)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">find_package(VTK</span> <span class="pre">REQUIRED)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">FIND_PACKAGE(VTK</span> <span class="pre">REQUIRED)</span></code> or <code class="docutils literal notranslate"><span class="pre">Find_Package(VTK</span> <span class="pre">REQUIRED)</span></code></p>
+</li>
+<li><p>Global variables are uppercase and words separated with underscores</p>
+<p><code class="docutils literal notranslate"><span class="pre">CMAKE_CURRENT_SOURCE_DIR</span></code> instead of <code class="docutils literal notranslate"><span class="pre">cmake_current_source_dir</span></code></p>
+</li>
+<li><p>Local variables are lowercase and words separated with underscores</p>
+<p><code class="docutils literal notranslate"><span class="pre">foreach</span> <span class="pre">(file</span> <span class="pre">${FILES_TO_CONFIGURE})...</span></code> instead of <code class="docutils literal notranslate"><span class="pre">foreach</span> <span class="pre">(FILE</span> <span class="pre">${FILES_TO_CONFIGURE})...</span></code></p>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="naming-conventions">
+<h2>Naming conventions<a class="headerlink" href="#naming-conventions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Acronyms should be written with the same case for each letter (all uppercase or all lowercase).</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">RASToSlice</span></code> not <code class="docutils literal notranslate"><span class="pre">RasToSlice</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRML</span></code> not <code class="docutils literal notranslate"><span class="pre">vtkMrml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkSlicer</span></code> not <code class="docutils literal notranslate"><span class="pre">vTKSlicer</span></code></p></li>
+</ul>
+</li>
+<li><p>Words should be spelled out and not abbreviated</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">GetWindow</span></code> not <code class="docutils literal notranslate"><span class="pre">GetWin</span></code></p></li>
+</ul>
+</li>
+<li><p>File names must follow the <a class="reference external" href="https://en.wikipedia.org/wiki/CamelCase">Camel case</a> convention</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">TestMyFeature.cxx</span></code> not <code class="docutils literal notranslate"><span class="pre">Test-My_Feature.cxx</span></code></p></li>
+</ul>
+</li>
+<li><p>Use US English words and spelling</p>
+<ul>
+<li><p>“Millimeter” not “Millimetre”</p></li>
+<li><p>“Color” not “Colour”</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="comments">
+<h2>Comments<a class="headerlink" href="#comments" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Include extensive comments in the header files</p></li>
+<li><p>Keep the comments up to date as the code changes</p></li>
+<li><p>Use the keyword <code>\todo</code> to flag spots in the code that need to be revisited</p></li>
+<li><p>Do not leave blocks of commented out code in the source file – if needed insert links to prior svn versions as comments</p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<section id="don-t-mix-different-levels-of-abstraction">
+<h3>Don’t mix different levels of abstraction<a class="headerlink" href="#don-t-mix-different-levels-of-abstraction" title="Link to this heading"></a></h3>
+<p>Examples:</p>
+<p>When dealing with files names and path, use:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/Kitware/VTK/blob/master/Utilities/KWSys/vtksys/SystemTools.hxx.in">kwsys::SystemTools</a> in VTK classes</p></li>
+<li><p><a class="reference external" href="https://doc.qt.io/qt-5/qfileinfo.html">QFileInfo</a>/<a class="reference external" href="https://doc.qt.io/qt-5/qdir.html">QDir</a> in Qt classes</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/library/os.path.html">os.path</a> in Python.</p></li>
+</ul>
+<p>Instead of doing string manipulation manually:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>QString filePath = directoryPath + &quot;/&quot; + fileName + &quot;.exe&quot;
+</pre></div>
+</div>
+<p>Prefer instead:</p>
+<ul>
+<li><p>VTK:</p>
+<p>SystemTools::JoinPath(), SystemTools::GetFilenameName()…</p>
+</li>
+<li><p>Qt:</p>
+<p>QFileInfo(QDir directory, QString fileName), QFileInfo::suffix(), QFileInfo::absoluteFilePath()…</p>
+</li>
+<li><p>Python:</p>
+<p>os.path.join(), os.path.splitext(), os.path.abspath()…</p>
+</li>
+</ul>
+<p>References: <a class="reference external" href="https://www.amazon.com/gp/product/0132350882?ie=UTF8&amp;amp;tag=solisyntprog-20&amp;amp;linkCode=as2&amp;amp;camp=1789&amp;amp;creative=9325&amp;amp;creativeASIN=0132350882">Clean Code</a> from <code class="docutils literal notranslate"><span class="pre">Robert</span> <span class="pre">C.</span> <span class="pre">Martin</span></code>: <code class="docutils literal notranslate"><span class="pre">Mixing</span> <span class="pre">levels</span> <span class="pre">of</span> <span class="pre">abstraction</span> <span class="pre">within</span> <span class="pre">a</span> <span class="pre">function</span> <span class="pre">is</span> <span class="pre">always</span> <span class="pre">confusing.</span> <span class="pre">Readers</span> <span class="pre">may</span> <span class="pre">not</span> <span class="pre">be</span> <span class="pre">able</span> <span class="pre">to</span> <span class="pre">tell</span> <span class="pre">whether</span> <span class="pre">a</span> <span class="pre">particular</span> <span class="pre">expression</span> <span class="pre">is</span> <span class="pre">an</span> <span class="pre">essential</span> <span class="pre">concept</span> <span class="pre">or</span> <span class="pre">a</span> <span class="pre">detail.</span> <span class="pre">Worse,</span> <span class="pre">like</span> <span class="pre">broken</span> <span class="pre">windows,</span> <span class="pre">once</span> <span class="pre">details</span> <span class="pre">are</span> <span class="pre">mixed</span> <span class="pre">with</span> <span class="pre">essential</span> <span class="pre">concepts,</span> <span class="pre">more</span> <span class="pre">and</span> <span class="pre">more</span> <span class="pre">details</span> <span class="pre">tend</span> <span class="pre">to</span> <span class="pre">accrete</span> <span class="pre">within</span> <span class="pre">the</span> <span class="pre">functions.</span></code></p>
+<ol class="arabic simple" start="2">
+<li><p>Use STL where you can, but:</p></li>
+</ol>
+<ul class="simple">
+<li><p>In VTK classes follow the [<a class="reference external" href="https://www.vtk.org/Wiki/VTK_FAQ#Can_I_use_STL_with_VTK.3F">https://www.vtk.org/Wiki/VTK_FAQ#Can_I_use_STL_with_VTK.3F</a> VTK guidelines]</p>
+<ul>
+<li><p>Note that a <a class="reference external" href="https://www.vtk.org/doc/nightly/html/classvtkCollection.html">vtkCollection</a> is somewhat equivalent to <code class="docutils literal notranslate"><span class="pre">std::list&lt;vtkSmartPointer&lt;vtkObject*&gt;&gt;</span></code></p></li>
+</ul>
+</li>
+<li><p>In Qt classes prefer <a class="reference external" href="https://doc.qt.io/qt-5/containers.html">Qt Container classes</a></p></li>
+</ul>
+</section>
+</section>
+<section id="file-layout">
+<h2>File layout<a class="headerlink" href="#file-layout" title="Link to this heading"></a></h2>
+<section id="includes">
+<h3>Includes<a class="headerlink" href="#includes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Only include the necessary files, no more.</p></li>
+<li><p>Group includes per library</p></li>
+<li><p>Alphabetically sort files within groups</p></li>
+<li><p>Order groups from local to global: for example, module then MRML then CTK then Qt then VTK then ITK then STL.</p></li>
+<li><p>Implementation files should include the header files first</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="o">//</span> <span class="n">header</span>
+ <span class="o">//</span> <span class="o">...</span>
+ <span class="o">//</span> <span class="n">end</span> <span class="n">header</span>
+
+ <span class="c1">#include &quot;qSlicerMyModule.h&quot;</span>
+
+ <span class="o">//</span> <span class="n">MyModule</span> <span class="n">includes</span>
+ <span class="c1">#include &quot;qSlicerMyModuleWidget.h&quot;</span>
+ <span class="c1">#include &quot;vtkSlicerMyModuleLogic.h&quot;</span>
+
+ <span class="o">//</span> <span class="n">MRML</span> <span class="n">includes</span>
+ <span class="c1">#include &quot;vtkMRMLScene.h&quot;</span>
+
+ <span class="o">//</span> <span class="n">Qt</span> <span class="n">includes</span>
+ <span class="c1">#include &lt;QDialog&gt;</span>
+
+ <span class="o">//</span> <span class="n">VTK</span> <span class="n">includes</span>
+ <span class="c1">#include &lt;vtkSmartPointer.h&gt;</span>
+
+ <span class="o">//</span> <span class="n">STD</span> <span class="n">includes</span>
+ <span class="c1">#include &lt;vector&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="library-dependencies">
+<h2>Library Dependencies<a class="headerlink" href="#library-dependencies" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>MRML classes should only depend on vtk and itk (not Slicer Logic or Qt)</p></li>
+<li><p>Logic classes depend on MRML to store state</p></li>
+<li><p>Logic classes should encapsulate vtk and itk pipelines to accomplish specific slicer tasks (such as resampling volumes for display)</p></li>
+<li><p>GUI classes can depend on MRML and Logic and Qt</p></li>
+</ul>
+</section>
+<section id="development-practices">
+<h2>Development Practices<a class="headerlink" href="#development-practices" title="Link to this heading"></a></h2>
+<p>While developing code, enable VTK_DEBUG_LEAKS (ON by default) in your vtk build and be sure to clean up any leaks that arise from your contributions.</p>
+</section>
+<section id="coordinate-systems">
+<h2>Coordinate Systems<a class="headerlink" href="#coordinate-systems" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>World space for 3D Views is in RAS (Right Anterior Superior) space. See the
+<a class="reference internal" href="../user_guide/coordinate_systems.html"><span class="std std-doc">Coordinate systems</span></a> page for details.</p></li>
+<li><p>All units are expressed in millimeters (mm)</p></li>
+</ul>
+</section>
+<section id="string-encoding-utf-8-everywhere">
+<h2>String encoding: UTF-8 everywhere<a class="headerlink" href="#string-encoding-utf-8-everywhere" title="Link to this heading"></a></h2>
+<p>Slicer uses <a class="reference external" href="https://utf8everywhere.org/">UTF-8 everywhere</a>: all strings in <code class="docutils literal notranslate"><span class="pre">std::string</span></code>, <code class="docutils literal notranslate"><span class="pre">char[]</span></code> arrays, files, etc. are in UTF-8 (except in rare exceptions where this is very clearly indicated). We don’t use code pages or any other unicode encoding. If this leads to incorrect behavior anywhere then the underlying issue must be fixed (e.g., if a VTK function does not work correctly with UTF-8 encoded string input then a fix has to be submitted to VTK).</p>
+<p>On Windows, process code page of all Slicer executables (main application, CLI modules, tests, etc.) are explicitly set to UTF-8 by using “ctk_add_executable_utf8” function instead of plain “add_executable” in CMake. This makes all standard API functions to use UTF-8 encoding, even in third-party libraries. This mechanism requires Windows Version 1903 (May 2019 Update) or later. On Linux and Mac, encoding is already expected to be UTF-8 (it is currently not checked or enforced in any way).</p>
+<p>Conversion from std::string to QString:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">ss</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">QString</span> <span class="n">qs1</span> <span class="o">=</span> <span class="n">QString</span><span class="p">::</span><span class="n">fromUtf8</span><span class="p">(</span><span class="n">ss</span><span class="p">);</span> <span class="o">//</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">slightly</span> <span class="n">preferred</span><span class="p">,</span> <span class="k">as</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">very</span> <span class="n">clear</span> <span class="ow">and</span> <span class="n">explicit</span>
+<span class="n">QString</span> <span class="n">qs2</span> <span class="o">=</span> <span class="n">QString</span><span class="p">(</span><span class="n">ss</span><span class="p">);</span> <span class="o">//</span> <span class="n">same</span> <span class="n">result</span> <span class="k">as</span> <span class="n">fromUtf8</span><span class="p">,</span> <span class="n">acceptable</span><span class="p">,</span> <span class="k">as</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">bit</span> <span class="n">simpler</span> <span class="ow">and</span> <span class="n">used</span> <span class="n">throughout</span> <span class="n">the</span> <span class="n">code</span> <span class="n">base</span> <span class="n">anyway</span>
+</pre></div>
+</div>
+<p>Conversion from QString to std::string:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QString</span> <span class="n">qs</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">std</span><span class="p">::</span><span class="n">string</span> <span class="n">ss</span>  <span class="o">=</span> <span class="n">QString</span><span class="p">::</span><span class="n">toUtf8</span><span class="p">(</span><span class="n">qs</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Printing to console: in general, VTK, Qt, or ITK logging macros are preferred but if for some reason text must be printed on console then use qPrintable macro. This macro converts the string</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="p">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;Failed to create file &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">qPrintable</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Qt logging macros (qDebug, qWarning, QFatal): these macros expect UTF-8 encoded strings, therefore do not use qPrintable macro.</p>
+<p>File management: All filenames have to be passed to file functions (such as fopen) must be UTF-8 encoded. All text file content is expected to be UTF-8 encoded, except very rare cases when a different encoding is explicitly specified in the file (for example in incoming DICOM files may use different encoding).</p>
+</section>
+<section id="error-and-warning-messages">
+<h2>Error and warning messages<a class="headerlink" href="#error-and-warning-messages" title="Link to this heading"></a></h2>
+<p>The ITK, VTK, Qt, std::cout, std::cerr .. all appear in the error log and can easily be filtered according to their type (debug/warning/error).</p>
+<ul class="simple">
+<li><p><strong>Errors</strong>: Error should be used to signal something that should not happen. They usually mean that the execution of the current function/code should be stopped.</p></li>
+<li><p><strong>Warnings</strong>: Warning should be used to signal potentially dangerous behavior. Also consider using these in deprecated methods to warn your fellow developers.</p></li>
+<li><p><strong>Debugs</strong>: For general debug and developer aimed information, one can use the debug messages.</p></li>
+</ul>
+<section id="in-qt-based-classes">
+<h3>In Qt-based classes<a class="headerlink" href="#in-qt-based-classes" title="Link to this heading"></a></h3>
+<p>For error messages, use <a class="reference external" href="https://doc.qt.io/qt-5/qtglobal.html#qCritical">qCritical()</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">somethingWrongHappened</span><span class="p">)</span>
+  <span class="p">{</span>
+  <span class="n">qCritical</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;I encountered an error&quot;</span><span class="p">;</span>
+  <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>For warnings, use <a class="reference external" href="https://doc.qt.io/qt-5/qtglobal.html#qWarning">qWarning()</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qWarning</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;Be careful here, this is dangerous&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>For debug, use <a class="reference external" href="https://doc.qt.io/qt-5/qtglobal.html#qDebug">qDebug()</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qDebug</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;This variable has the value: &quot;</span><span class="o">&lt;&lt;</span> <span class="n">value</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="in-vtk-based-classes">
+<h3>In VTK-based classes<a class="headerlink" href="#in-vtk-based-classes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>For error messages, use <a class="reference external" href="https://www.vtk.org/doc/release/3/html/vtkSetGet_8h.html">vtkErrorMacro()</a>:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">somethingWrongHappened</span><span class="p">)</span>
+  <span class="p">{</span>
+  <span class="n">vtkErrorMacro</span><span class="p">(</span><span class="s2">&quot;I encountered an error&quot;</span><span class="p">);</span>
+  <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>For warnings, use <a class="reference external" href="https://www.vtk.org/doc/release/3/html/vtkSetGet_8h.html">vtkWarningMacro()</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vtkWarningMacro</span><span class="p">(</span><span class="s2">&quot;Be careful here, this is dangerous&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>For debug, use <a class="reference external" href="https://www.vtk.org/doc/release/3/html/vtkSetGet_8h.html">vtkDebugMacro()</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vtkDebugMacro</span><span class="p">(</span><span class="s2">&quot;This variable has the value: &quot;</span><span class="o">&lt;&lt;</span> <span class="n">value</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="commits">
+<h2>Commits<a class="headerlink" href="#commits" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Separate the subject from body with a blank line</p></li>
+<li><p>Limit the subject line to 78 characters</p></li>
+<li><p>Capitalize the subject line</p></li>
+<li><p>Do not end the subject line with a period</p></li>
+<li><p>Use the imperative mood in the subject line</p></li>
+<li><p>Wrap the body at 72 characters</p></li>
+<li><p>Use the body to explain what and why vs. how. If there was important/useful/essential conversation or information, copy or include a reference</p></li>
+<li><p>Prefix the commit message title with “BUG:”, “COMP:”, “DOC:”, “ENH:”, “STYLE:”. Note the ‘:’ (colon) character.</p></li>
+<li><p>When possible, one keyword to scope the change in the subject (i.e. “STYLE: README: …”, “BUG: vtkMRMLSliceLogic: …”)</p></li>
+</ul>
+<section id="commit-message-prefix">
+<h3>Commit message prefix<a class="headerlink" href="#commit-message-prefix" title="Link to this heading"></a></h3>
+<p>Commits to the Slicer repository require commit type in the comment.</p>
+<p>Valid commit types are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">BUG</span><span class="p">:</span>   <span class="o">-</span> <span class="n">a</span> <span class="n">change</span> <span class="n">made</span> <span class="n">to</span> <span class="n">fix</span> <span class="n">a</span> <span class="n">runtime</span> <span class="n">issue</span>
+            <span class="p">(</span><span class="n">crash</span><span class="p">,</span> <span class="n">segmentation</span> <span class="n">fault</span><span class="p">,</span> <span class="n">exception</span><span class="p">,</span> <span class="ow">or</span> <span class="n">incorrect</span> <span class="n">result</span><span class="p">,</span>
+   <span class="n">COMP</span><span class="p">:</span>  <span class="o">-</span> <span class="n">a</span> <span class="n">fix</span> <span class="k">for</span> <span class="n">a</span> <span class="n">compilation</span> <span class="n">issue</span><span class="p">,</span> <span class="n">error</span> <span class="ow">or</span> <span class="n">warning</span><span class="p">,</span>
+   <span class="n">DOC</span><span class="p">:</span>   <span class="o">-</span> <span class="n">a</span> <span class="n">documentation</span> <span class="n">change</span><span class="p">,</span>
+   <span class="n">ENH</span><span class="p">:</span>   <span class="o">-</span> <span class="n">new</span> <span class="n">functionality</span> <span class="n">added</span> <span class="n">to</span> <span class="n">the</span> <span class="n">project</span><span class="p">,</span>
+   <span class="n">PERF</span><span class="p">:</span>  <span class="o">-</span> <span class="n">a</span> <span class="n">performance</span> <span class="n">improvement</span><span class="p">,</span>
+   <span class="n">STYLE</span><span class="p">:</span> <span class="o">-</span> <span class="n">a</span> <span class="n">change</span> <span class="n">that</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">impact</span> <span class="n">the</span> <span class="n">logic</span> <span class="ow">or</span> <span class="n">execution</span> <span class="n">of</span> <span class="n">the</span> <span class="n">code</span><span class="o">.</span>
+            <span class="p">(</span><span class="n">improve</span> <span class="n">coding</span> <span class="n">style</span><span class="p">,</span> <span class="n">comments</span><span class="p">)</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Note that the ‘:’(colon) directly follows the commit tag. For example, it is: “STYLE:” not “STYLE :”</p>
+</section>
+<section id="message-content">
+<h3>Message content<a class="headerlink" href="#message-content" title="Link to this heading"></a></h3>
+<p>A good commit message title (first line) should <strong>explain what the commit does for the user, not ‘’how’’ it is done</strong>. <em>How</em> can be explained in the body of the commit message (if looking at the code of the commit is not self explanatory enough).</p>
+<p>Examples:</p>
+<ul class="simple">
+<li><p>Bad: <code class="docutils literal notranslate"><span class="pre">BUG:</span> <span class="pre">Check</span> <span class="pre">pointer</span> <span class="pre">validity</span> <span class="pre">before</span> <span class="pre">dereferencing</span></code> -&gt; <em>implementation detail</em>, <em>self-explanatory</em> (by looking at the code)</p></li>
+<li><p>Good: <code class="docutils literal notranslate"><span class="pre">BUG:</span> <span class="pre">Fix</span> <span class="pre">crash</span> <span class="pre">in</span> <span class="pre">Module</span> <span class="pre">X</span> <span class="pre">when</span> <span class="pre">clicking</span> <span class="pre">Apply</span> <span class="pre">button</span></code></p></li>
+<li><p>Bad: <code class="docutils literal notranslate"><span class="pre">ENH:</span> <span class="pre">More</span> <span class="pre">work</span> <span class="pre">in</span> <span class="pre">qSlicerXModuleWidget</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">more</span> <span class="pre">work</span></code> is <em>too vague</em>, <code class="docutils literal notranslate"><span class="pre">qSlicerXModuleWidget</span></code> is too <em>low level</em></p></li>
+<li><p>Good: <code class="docutils literal notranslate"><span class="pre">ENH:</span> <span class="pre">Add</span> <span class="pre">float</span> <span class="pre">image</span> <span class="pre">outputs</span> <span class="pre">in</span> <span class="pre">module</span> <span class="pre">X</span></code></p></li>
+<li><p>Bad: <code class="docutils literal notranslate"><span class="pre">COMP:</span> <span class="pre">Typo</span> <span class="pre">in</span> <span class="pre">cmake</span> <span class="pre">variable</span></code> -&gt; <em>implementation detail</em>, <em>self-explanatory</em></p></li>
+<li><p>Good: <code class="docutils literal notranslate"><span class="pre">COMP:</span> <span class="pre">Fix</span> <span class="pre">compilation</span> <span class="pre">error</span> <span class="pre">with</span> <span class="pre">Numpy</span> <span class="pre">on</span> <span class="pre">Visual</span> <span class="pre">Studio</span></code></p></li>
+</ul>
+<p>If the commit is related to an <a class="reference external" href="https://issues.slicer.org/">issue</a> (bug or feature request), you can mention it at the end of the message body by preceding the issue number with a <code class="docutils literal notranslate"><span class="pre">#</span></code> (pound) character:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BUG</span><span class="p">:</span> <span class="n">Fix</span> <span class="n">crash</span> <span class="ow">in</span> <span class="n">Volume</span> <span class="n">Rendering</span> <span class="n">module</span> <span class="n">when</span> <span class="n">switching</span> <span class="n">view</span> <span class="n">layout</span>
+
+<span class="n">vtkSetAndObserveMRMLNodeEventsMacro</span> <span class="n">can</span><span class="s1">&#39;t be used for observing all types of vtkObjects,</span>
+<span class="n">only</span> <span class="n">vtkMRMLNode</span> <span class="ow">is</span> <span class="n">expected</span> <span class="n">by</span> <span class="n">vtkMRMLAbstractLogic</span><span class="p">::</span><span class="n">OnMRMLNodeModified</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">see</span> <span class="c1">#1641</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">1641</span></code> refers to the <a class="reference external" href="https://github.com/Slicer/Slicer/issues/1641">issue number</a> in the issue tracker. Use <code class="docutils literal notranslate"><span class="pre">see</span></code> before the issue number to refer to an issue. If the commit fixes an issue and no further testing is needed then <code class="docutils literal notranslate"><span class="pre">fixed</span> <span class="pre">#1641</span></code> can be added to the body, which automatically closes the issue when merged.</p>
+</section>
+<section id="importing-changes-from-external-project-repository">
+<h3>Importing changes from external project/repository<a class="headerlink" href="#importing-changes-from-external-project-repository" title="Link to this heading"></a></h3>
+<p>When you update the git tag of any external project, explain in the commit message what the update does instead of just mentioning that an update in made.</p>
+<p>This will avoid having a Slicer commit history made of uninformative messages such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">r19180</span> <span class="o">-</span> <span class="n">ENH</span><span class="p">:</span> <span class="n">Update</span> <span class="n">git</span> <span class="n">tag</span>
+<span class="n">r19181</span> <span class="o">-</span> <span class="n">BUG</span><span class="p">:</span> <span class="n">Update</span> <span class="n">svn</span> <span class="n">revision</span>
+<span class="n">r19182</span> <span class="o">-</span> <span class="n">ENH</span><span class="p">:</span> <span class="n">revision</span> <span class="n">updated</span>
+</pre></div>
+</div>
+<p>Ideally it should be the same message than the commit(s) in the external repository.</p>
+<p>Read <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/ProjectForks">Project forks page</a> for an exhaustive list of recommendations.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>COMP: Update MultiVolumeExplorer to fix unused-local-typedefs warnings
+
+$ git shortlog 17a9095..d68663f --no-merges
+Jean-Christophe Fillion-Robin (1):
+      COMP: Fix unused-local-typedefs warnings
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://github.com/Slicer/Slicer/commit/3e04040d2e960ec4cd294cb8404169f16cfe0656">r23377</a>.</p>
+</section>
+<section id="resources">
+<h3>Resources<a class="headerlink" href="#resources" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Read more on <a class="reference external" href="https://chris.beams.io/posts/git-commit/">How to Write a Git Commit Message</a></p></li>
+<li><p>Discussion section of <a class="reference external" href="https://git-scm.com/docs/git-commit">git-commit(1)</a></p></li>
+</ul>
+</section>
+</section>
+<section id="ui-design-guidelines">
+<h2>UI Design Guidelines<a class="headerlink" href="#ui-design-guidelines" title="Link to this heading"></a></h2>
+<p>See <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/Style_Guide/UI">UI Style Guide</a>.</p>
+</section>
+<section id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Link to this heading"></a></h2>
+<p>The following log levels are used in Slicer:</p>
+<ul class="simple">
+<li><p>Error: detected errors, conditions that should never occur</p></li>
+<li><p>Warning: potential errors, possible computation inaccuracies</p></li>
+<li><p>Info: important events, application state changes (helps to determine what the steps lead to a certain error or warning); one user action should not generate more than 1-2 info level messages</p></li>
+<li><p>Debug: any information that may be useful for debugging and troubleshooting</p></li>
+</ul>
+<p>In VTK classes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkErrorMacro(&quot;vtkMRMLClipModelsNode::</span> <span class="pre">Invalid</span> <span class="pre">Clip</span> <span class="pre">Type&quot;);</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkWarningMacro(&quot;Model</span> <span class="pre">&quot;</span> <span class="pre">&lt;&lt;</span> <span class="pre">modelNode-&gt;GetName()</span> <span class="pre">&lt;&lt;</span> <span class="pre">&quot;'s</span> <span class="pre">display</span> <span class="pre">node</span> <span class="pre">is</span> <span class="pre">null\n&quot;);</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkDebugMacro(&quot;CreateWidget:</span> <span class="pre">found</span> <span class="pre">a</span> <span class="pre">glyph</span> <span class="pre">type</span> <span class="pre">already</span> <span class="pre">defined</span> <span class="pre">for</span> <span class="pre">this</span> <span class="pre">node:</span> <span class="pre">&quot;</span> <span class="pre">&lt;&lt;</span> <span class="pre">iter-&gt;second);</span></code></p></li>
+</ul>
+<p>In QT classes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">qCritical()</span> <span class="pre">&lt;&lt;</span> <span class="pre">&quot;qSlicerUtils::setPermissionsRecursively:</span> <span class="pre">Failed</span> <span class="pre">to</span> <span class="pre">set</span> <span class="pre">permissions</span> <span class="pre">on</span> <span class="pre">file&quot;</span> <span class="pre">&lt;&lt;</span> <span class="pre">info.filePath();</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qWarning()</span> <span class="pre">&lt;&lt;</span> <span class="pre">&quot;qSlicerIOManager::openScreenshotDialog:</span> <span class="pre">Unable</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">Annotations</span> <span class="pre">module</span> <span class="pre">(annotations),</span> <span class="pre">using</span> <span class="pre">the</span> <span class="pre">CTK</span> <span class="pre">screen</span> <span class="pre">shot</span> <span class="pre">dialog.&quot;;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qDebug()</span> <span class="pre">&lt;&lt;</span> <span class="pre">&quot;qMRMLSceneFactoryWidget::deleteNode(&quot;</span> <span class="pre">&lt;&lt;className</span> <span class="pre">&lt;&lt;&quot;)</span> <span class="pre">no</span> <span class="pre">node&quot;;</span></code></p></li>
+</ul>
+<p>In Python:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.error(&quot;This</span> <span class="pre">is</span> <span class="pre">an</span> <span class="pre">error</span> <span class="pre">message.</span> <span class="pre">It</span> <span class="pre">is</span> <span class="pre">printed</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">console</span> <span class="pre">(to</span> <span class="pre">standard</span> <span class="pre">error)</span> <span class="pre">and</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">application</span> <span class="pre">log.&quot;)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.warning(&quot;This</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">warning</span> <span class="pre">message.</span> <span class="pre">It</span> <span class="pre">is</span> <span class="pre">printed</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">console</span> <span class="pre">(to</span> <span class="pre">standard</span> <span class="pre">error)</span> <span class="pre">and</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">application</span> <span class="pre">log.&quot;)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.info(&quot;This</span> <span class="pre">is</span> <span class="pre">an</span> <span class="pre">information</span> <span class="pre">message.</span> <span class="pre">It</span> <span class="pre">is</span> <span class="pre">printed</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">console</span> <span class="pre">(to</span> <span class="pre">standard</span> <span class="pre">output)</span> <span class="pre">and</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">application</span> <span class="pre">log.&quot;)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.debug(&quot;This</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">debug</span> <span class="pre">message.</span> <span class="pre">It</span> <span class="pre">is</span> <span class="pre">only</span> <span class="pre">recorded</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">application</span> <span class="pre">log</span> <span class="pre">but</span> <span class="pre">not</span> <span class="pre">displayed</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">console.</span> <span class="pre">File</span> <span class="pre">name</span> <span class="pre">and</span> <span class="pre">line</span> <span class="pre">number</span> <span class="pre">is</span> <span class="pre">added</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">log</span> <span class="pre">record.&quot;)</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="contributing.html" class="btn btn-neutral float-left" title="Contributing to Slicer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_topics.html" class="btn btn-neutral float-right" title="Advanced Topics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

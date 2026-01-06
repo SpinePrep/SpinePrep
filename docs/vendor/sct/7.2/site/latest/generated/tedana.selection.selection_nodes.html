@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tedana.selection.selection_nodes &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="../_static/tedana_favicon.png"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=643184eb"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="tedana.selection.selection_nodes.calc_extend_factor" href="tedana.selection.selection_nodes.calc_extend_factor.html" />
+    <link rel="prev" title="tedana.selection.component_selector.validate_tree" href="tedana.selection.component_selector.validate_tree.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/generated/tedana.selection.selection_nodes.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.workflows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code>: Common workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.decay"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.decay</span></code>: Modeling signal decay across echoes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.combine"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.combine</span></code>: Combining time series across echoes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.decomposition"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.decomposition</span></code>: Data decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.metrics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.metrics</span></code>: Computing TE-dependence metrics</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-tedana.selection"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.selection</span></code>: Component selection</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.component_selector.ComponentSelector.html">tedana.selection.component_selector.ComponentSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.component_selector.TreeError.html">tedana.selection.component_selector.TreeError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.component_selector.load_config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.selection.component_selector</span></code>.load_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.component_selector.validate_tree.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.selection.component_selector</span></code>.validate_tree</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">tedana.selection.selection_nodes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_extend_factor.html">tedana.selection.selection_nodes.calc_extend_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_kappa_elbow.html">tedana.selection.selection_nodes.calc_kappa_elbow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_max_good_meanmetricrank.html">tedana.selection.selection_nodes.calc_max_good_meanmetricrank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_median.html">tedana.selection.selection_nodes.calc_median</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_revised_meanmetricrank_guesses.html">tedana.selection.selection_nodes.calc_revised_meanmetricrank_guesses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_rho_elbow.html">tedana.selection.selection_nodes.calc_rho_elbow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_varex_kappa_ratio.html">tedana.selection.selection_nodes.calc_varex_kappa_ratio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_varex_thresh.html">tedana.selection.selection_nodes.calc_varex_thresh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.dec_classification_doesnt_exist.html">tedana.selection.selection_nodes.dec_classification_doesnt_exist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.dec_left_op_right.html">tedana.selection.selection_nodes.dec_left_op_right</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.dec_reclassify_high_var_comps.html">tedana.selection.selection_nodes.dec_reclassify_high_var_comps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.dec_variance_lessthan_thresholds.html">tedana.selection.selection_nodes.dec_variance_lessthan_thresholds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.manual_classify.html">tedana.selection.selection_nodes.manual_classify</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.selection_utils.html">tedana.selection.selection_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.tedica.html">tedana.selection.tedica</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.tedpca.html">tedana.selection.tedpca</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.gscontrol"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.gscontrol</span></code>: Global signal control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.io</span></code>: Reading and writing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.reporting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.reporting</span></code>: Reporting functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.stats"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.stats</span></code>: Statistical functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.bibtex"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.bibtex</span></code>: Tools for working with BibTeX files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.utils</span></code>: Utility functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+      <li class="breadcrumb-item active">tedana.selection.selection_nodes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/tedana.selection.selection_nodes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-tedana.selection.selection_nodes">
+<span id="tedana-selection-selection-nodes"></span><h1>tedana.selection.selection_nodes<a class="headerlink" href="#module-tedana.selection.selection_nodes" title="Link to this heading"></a></h1>
+<p>Functions that will be used as steps in a decision tree.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.calc_extend_factor.html#tedana.selection.selection_nodes.calc_extend_factor" title="tedana.selection.selection_nodes.calc_extend_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_extend_factor</span></code></a>(selector[, ...])</p></td>
+<td><p>Calculate the scalar used to set a threshold for d_table_score.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.calc_kappa_elbow.html#tedana.selection.selection_nodes.calc_kappa_elbow" title="tedana.selection.selection_nodes.calc_kappa_elbow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_kappa_elbow</span></code></a>(selector, decide_comps[, ...])</p></td>
+<td><p>Calculate elbow for kappa across components.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.calc_max_good_meanmetricrank.html#tedana.selection.selection_nodes.calc_max_good_meanmetricrank" title="tedana.selection.selection_nodes.calc_max_good_meanmetricrank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_max_good_meanmetricrank</span></code></a>(selector, ...)</p></td>
+<td><p>Calculate the metric &quot;max_good_meanmetricrank&quot;.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.calc_median.html#tedana.selection.selection_nodes.calc_median" title="tedana.selection.selection_nodes.calc_median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_median</span></code></a>(selector, decide_comps, ...[, ...])</p></td>
+<td><p>Calculate the median across components for the metric defined by metric_name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.calc_revised_meanmetricrank_guesses.html#tedana.selection.selection_nodes.calc_revised_meanmetricrank_guesses" title="tedana.selection.selection_nodes.calc_revised_meanmetricrank_guesses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_revised_meanmetricrank_guesses</span></code></a>(...[, ...])</p></td>
+<td><p>Calculate a new d_table_score (meanmetricrank).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.calc_rho_elbow.html#tedana.selection.selection_nodes.calc_rho_elbow" title="tedana.selection.selection_nodes.calc_rho_elbow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_rho_elbow</span></code></a>(selector, decide_comps[, ...])</p></td>
+<td><p>Calculate elbow for rho across components.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.calc_varex_kappa_ratio.html#tedana.selection.selection_nodes.calc_varex_kappa_ratio" title="tedana.selection.selection_nodes.calc_varex_kappa_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_varex_kappa_ratio</span></code></a>(selector, decide_comps)</p></td>
+<td><p>Calculate the cross-component metric &quot;kappa_rate&quot;.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.calc_varex_thresh.html#tedana.selection.selection_nodes.calc_varex_thresh" title="tedana.selection.selection_nodes.calc_varex_thresh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_varex_thresh</span></code></a>(selector, decide_comps, ...)</p></td>
+<td><p>Calculate the variance explained threshold to use in the kundu decision tree.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.dec_classification_doesnt_exist.html#tedana.selection.selection_nodes.dec_classification_doesnt_exist" title="tedana.selection.selection_nodes.dec_classification_doesnt_exist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dec_classification_doesnt_exist</span></code></a>(selector, ...)</p></td>
+<td><p>Change the classification of all components in decide_comps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.dec_left_op_right.html#tedana.selection.selection_nodes.dec_left_op_right" title="tedana.selection.selection_nodes.dec_left_op_right"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dec_left_op_right</span></code></a>(selector, if_true, ...[, ...])</p></td>
+<td><p>Perform a relational comparison.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.dec_reclassify_high_var_comps.html#tedana.selection.selection_nodes.dec_reclassify_high_var_comps" title="tedana.selection.selection_nodes.dec_reclassify_high_var_comps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dec_reclassify_high_var_comps</span></code></a>(selector, ...)</p></td>
+<td><p>Identify and reclassify a couple components with the largest gaps in variance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.dec_variance_lessthan_thresholds.html#tedana.selection.selection_nodes.dec_variance_lessthan_thresholds" title="tedana.selection.selection_nodes.dec_variance_lessthan_thresholds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dec_variance_lessthan_thresholds</span></code></a>(selector, ...)</p></td>
+<td><p>Change classifications for components with variance&lt;single_comp_threshold.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tedana.selection.selection_nodes.manual_classify.html#tedana.selection.selection_nodes.manual_classify" title="tedana.selection.selection_nodes.manual_classify"><code class="xref py py-obj docutils literal notranslate"><span class="pre">manual_classify</span></code></a>(selector, decide_comps, ...)</p></td>
+<td><p>Assign a classification defined in new_classification to the components in decide_comps.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tedana.selection.component_selector.validate_tree.html" class="btn btn-neutral float-left" title="tedana.selection.component_selector.validate_tree" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tedana.selection.selection_nodes.calc_extend_factor.html" class="btn btn-neutral float-right" title="tedana.selection.selection_nodes.calc_extend_factor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

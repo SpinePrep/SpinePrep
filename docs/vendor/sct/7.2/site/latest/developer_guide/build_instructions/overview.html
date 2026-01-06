@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Windows" href="windows.html" />
+    <link rel="prev" title="Build Instructions" href="index.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/build_instructions/overview.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Build Instructions</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#extensions-for-developer-builds-of-slicer">Extensions for developer builds of Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-builds">Custom builds</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="windows.html">Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="macos.html">macOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linux.html">GNU/Linux systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_errors.html">Common errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_errors.html#other-errors">Other errors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Build Instructions</a></li>
+      <li class="breadcrumb-item active">Overview</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/build_instructions/overview.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<p>Building Slicer is the process of obtaining a copy of the source code of the project and use tools, such as compilers, project generators and build systems, to create binary libraries and executables. Slicer documentation is also generated in this process.</p>
+<p>Users of Slicer application and extensions do not need to build the application and they can download and install pre-built packages instead. Python scripting and development of new Slicer modules in Python does not require building the application either. Only software developers interested in developing Slicer <a class="reference internal" href="../../user_guide/modules/index.html"><span class="std std-doc">modules</span></a> in C++ language or contributing to the development of Slicer core must build the application.</p>
+<p>Slicer is based on a <em>superbuild</em> architecture. This means that the in the building process, most of the dependencies of Slicer will be downloaded in local directories (within the Slicer build directory) and will be configured, built and installed locally, before Slicer itself is built. This helps reducing the complexity for developers.</p>
+<p>As Slicer is continuously developed, build instructions may change, too. Therefore, it is recommended to use build instructions that have the same version as the source code.</p>
+<section id="extensions-for-developer-builds-of-slicer">
+<h2>Extensions for developer builds of Slicer<a class="headerlink" href="#extensions-for-developer-builds-of-slicer" title="Link to this heading"></a></h2>
+<p>In general, Slicer versions that a developer builds on his own computer are not expected to work with extensions in the Extensions Server.</p>
+<p>Often the Extensions Manager does not show any extensions for a developer build. The reason is that extensions are only built for one Slicer version a day, and so there are many Slicer versions for that no extensions are available.</p>
+<p>Even if the Extensions Manager is not empty, the listed extensions are not expected to be compatible with developer builds, created on a different computer, in a different build environment or build options, due to porential ABI incompatibility issues.</p>
+<p>If a developer builds the Slicer application then it is expected that the developer will also build all the extension he needs. Building all the extensions after Slicer build is completed <a class="reference internal" href="../extensions.html#build-test-and-package"><span class="std std-ref">is a simple one-line command</span></a>. It is also possible to just <a class="reference internal" href="../extensions.html#build-an-extension"><span class="std std-ref">build selected extensions</span></a>.</p>
+</section>
+<section id="custom-builds">
+<h2>Custom builds<a class="headerlink" href="#custom-builds" title="Link to this heading"></a></h2>
+<p>Customized editions of Slicer can be generated without changing Slicer source code, just by modifying CMake variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SlicerApp_APPLICATION_NAME</span></code>: Custom application name to be used, instead of default “Slicer”. The name is the internal, programmatic name of the application.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SlicerApp_APPLICATION_DISPLAY_NAME</span></code>: Custom application name to be used in display situations. The name is used in user facing text such as window title bar, installation directory name, desktop shortcut names etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_DISCLAIMER_AT_STARTUP</span></code>: String that is displayed to the user after first startup of Slicer after installation (disclaimer, welcome message, etc).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_DEFAULT_HOME_MODULE</span></code>: Module name that is activated automatically on application start.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_DEFAULT_FAVORITE_MODULES</span></code>: Modules that will be added to the toolbar by default for easy access. List contains module names, separated by space character.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_CLIMODULES_DISABLED</span></code>: Built-in CLI modules that will be removed from the application. List contains module names, separated by semicolon character.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_QTLOADABLEMODULES_DISABLED</span></code>: Built-in Qt loadable modules that will be removed from the application. List contains module names, separated by semicolon character.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_QTSCRIPTEDMODULES_DISABLED</span></code>: Built-in scripted loadable modules that will be removed from the application. List contains module names, separated by semicolon character.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_USE_PYTHONQT_WITH_OPENSSL</span></code>: enable/disable building the application with SSL support (ON/OFF)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_USE_DCMTK_WITH_OPENSSL</span></code>: enable/disable building DCMTK with SSL support (ON/OFF)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_USE_SimpleITK</span></code>: enable/disable SimpleITK support (ON/OFF)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_BUILD_SimpleFilters</span></code>: enable/disable building SimpleFilters. Requires SimpleITK. (ON/OFF)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_EXTENSION_SOURCE_DIRS</span></code>: Defines additional extensions that will be included in the application package as built-in modules. Full paths of extension source directories has to be specified, separated by semicolons.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Slicer_BUILD_WIN32_CONSOLE_LAUNCHER</span></code>: Show/hide console (terminal window) on Windows.</p></li>
+</ul>
+<p>Moreoptions are listed in CMake files, such as in <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/CMake/SlicerApplicationOptions.cmake">SlicerApplicationOptions.cmake</a> and further customization is achievable by using <a class="reference external" href="https://github.com/KitwareMedical/SlicerCustomAppTemplate">SlicerCustomAppTemplate</a> project maintained by Kitware.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Build Instructions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="windows.html" class="btn btn-neutral float-right" title="Windows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

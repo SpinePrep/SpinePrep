@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transforms &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Volume rendering" href="volumerendering.html" />
+    <link rel="prev" title="Sequences" href="sequences.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/modules/transforms.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Modules API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selftests.html">Self Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequences.html">Sequences</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Transforms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#related-mrml-nodes">Related MRML nodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transform-files">Transform files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#displacement-field-files">Displacement field files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#events">Events</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumes.html">Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules API</a></li>
+      <li class="breadcrumb-item active">Transforms</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/modules/transforms.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="transforms">
+<h1>Transforms<a class="headerlink" href="#transforms" title="Link to this heading"></a></h1>
+<section id="related-mrml-nodes">
+<h2>Related MRML nodes<a class="headerlink" href="#related-mrml-nodes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformableNode.html#">vtkMRMLTransformableNode</a>: any node that can be transformed</p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformNode.html#">vtkMRMLTransformNode</a>: it can store any linear or deformable transform or composite of multiple transforms</p>
+<ul>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLLinearTransformNode.html#">vtkMRMLLinearTransformNode</a>: Deprecated. The transform does exactly the same as <code class="docutils literal notranslate"><span class="pre">vtkMRMLTransformNode</span></code> but has a different class name, which are still used for showing only certain transform types in node selectors. In the future this class will be removed. A <code class="docutils literal notranslate"><span class="pre">vtkMRMLLinearTransformNode</span></code> may contain non-linear components after a non-linear transform is hardened on it. Therefore, to check linearity of a transform the <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformNode#a9c74edde3b65797fc7e8977da61cbe66">vtkMRMLTransformNode::IsLinear()</a> and <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformNode#a4fc0d0bae53e5fb5bf5305e86e7f2c63">vtkMRMLTransformNode::IsTransformToWorldLinear()</a> and <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformNode.html#a57268248288580dbc901482b820be9f4">vtkMRMLTransformNode::IsTransformToNodeLinear()</a> methods must be used instead of using <code class="docutils literal notranslate"><span class="pre">vtkMRMLLinearTransformNode::SafeDownCast(transform)</span> <span class="pre">!=</span> <span class="pre">nullptr</span></code>.</p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLBSplineTransformNode.html#">vtkMRMLBSplineTransformNode</a>: Deprecated. The transform does exactly the same as <code class="docutils literal notranslate"><span class="pre">vtkMRMLTransformNode</span></code> but has a different class name, which are still used for showing only certain transform types in node selectors. In the future this class will be removed.</p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLGridTransformNode.html#">vtkMRMLGridTransformNode</a>: Deprecated. The transform does exactly the same as <code class="docutils literal notranslate"><span class="pre">vtkMRMLTransformNode</span></code> but has a different class name, which are still used for showing only certain transform types in node selectors. In the future this class will be removed.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="transform-files">
+<h2>Transform files<a class="headerlink" href="#transform-files" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Slicer stores transforms in VTK classes in memory, but uses ITK transform IO classes to read/write transforms to files. ITK’s convention is to use LPS coordinate system as opposed to RAS coordinate system in Slicer (see the <a class="reference internal" href="../../user_guide/coordinate_systems.html"><span class="std std-doc">Coordinate systems</span></a> page for details). Conversion between VTK and ITK transform classes are implemented in <a class="reference external" href="https://apidocs.slicer.org/main/classvtkITKTransformConverter#">vtkITKTransformConverter</a>.</p></li>
+<li><p>ITK stores the transform in resampling (a.k.a., image processing) convention, i.e., that transforms points from fixed to moving coordinate system. This transform is usable as is for resampling a moving image in the coordinate system of a fixed image. For transforming points and surface models to the fixed coordinate system, one needs the transform in the modeling (a.k.a. computer graphics) convention, i.e., transform from moving to fixed coordinate system (which is the inverse of the “image processing” convention).</p></li>
+<li><p>Transform nodes in Slicer can store transforms in both modeling (when “to parent” transform is set) and resampling way (when “from parent” transform is set). When writing transform to ITK files, linear transforms are inverted as needed and written as an <code class="docutils literal notranslate"><span class="pre">AffineTransform</span></code>. Non-linear transforms cannot be inverted without losing information (in general), therefore if a non-linear transform is defined in resampling convention in Slicer then it is written to ITK file using special “Inverse” transform types (e.g., <code class="docutils literal notranslate"><span class="pre">InverseDisplacementFieldTransform</span></code> instead of <code class="docutils literal notranslate"><span class="pre">DisplacementFieldTransform</span></code>). Definition of the inverse classes are available in <a class="reference external" href="https://apidocs.slicer.org/main/classvtkITKTransformInverse#">vtkITKTransformInverse</a>. The inverse classes are only usable for file IO, because currently ITK does not provide a generic inverse transform computation method. Options to manage inverse transforms in applications:</p>
+<ul>
+<li><p>Create VTK transforms from ITK transforms: VTK transforms can compute their inverse, transform can be changed dynamically, the inverse will be always updated automatically in real-time (this approach is used by Slicer)</p></li>
+<li><p>Invert transform in ITK statically: by converting to displacement field and inverting the displacement field; whenever the forward transform changes, the complete inverse transform has to be computed again (which is typically very time consuming)</p></li>
+<li><p>Avoid inverse non-linear transforms: make sure that non-linear transforms are only set as FromParent</p></li>
+</ul>
+</li>
+<li><p>Transforms module in Slicer shows linear transform matrix values “to parent” (modeling convention) in RAS coordinate system. Therefore to retrieve the same values from an ITK transforms as shown in Slicer GUI, one has switch between RAS/LPS and modeling/resampling. See example <a class="reference internal" href="../script_repository.html#convert-between-itk-and-slicer-linear-transforms"><span class="std std-ref">here</span></a>.</p></li>
+</ul>
+</section>
+<section id="displacement-field-files">
+<h2>Displacement field files<a class="headerlink" href="#displacement-field-files" title="Link to this heading"></a></h2>
+<p>Slicer can store displacement field transforms (or “grid transforms” in VTK naming convention) in 3D NRRD or NIFTI format; or sequence of transforms in NRRD format. Image file header fields are used to distinguish the displacement field transforms form regular images and specify how to correctly interpret these images as transforms.</p>
+<section id="nrrd">
+<h3>NRRD<a class="headerlink" href="#nrrd" title="Link to this heading"></a></h3>
+<p><strong>Required <code class="docutils literal notranslate"><span class="pre">kinds</span></code>:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vector</span> <span class="pre">domain</span> <span class="pre">domain</span> <span class="pre">domain</span></code> for a single 3D displacement field</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vector</span> <span class="pre">domain</span> <span class="pre">domain</span> <span class="pre">domain</span> <span class="pre">list</span></code> for a <strong>sequence</strong> of displacement fields</p></li>
+</ul>
+<p><strong>Required custom <code class="docutils literal notranslate"><span class="pre">intent_code</span></code>:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">intent_code</span> <span class="pre">:=</span> <span class="pre">1006</span></code>
+Mirrors the NIfTI convention <code class="docutils literal notranslate"><span class="pre">NIFTI_INTENT_DISPVECT</span></code>, allowing ITK readers to detect displacement fields reliably.</p></li>
+</ul>
+<p><strong>Recommended <code class="docutils literal notranslate"><span class="pre">measurement</span> <span class="pre">frame</span></code>:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">measurement</span> <span class="pre">frame:</span> <span class="pre">(1,0,0)</span> <span class="pre">(0,1,0)</span> <span class="pre">(0,0,1)</span></code>
+Use identity to state unambiguously that vector components are spatial and expressed in world space.</p></li>
+</ul>
+<p><strong>Optional usage hint (<code class="docutils literal notranslate"><span class="pre">displacement</span> <span class="pre">field</span> <span class="pre">type</span></code>):</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">displacement</span> <span class="pre">field</span> <span class="pre">type</span> <span class="pre">:=</span> <span class="pre">resampling</span> <span class="pre">|</span> <span class="pre">modeling</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">resampling</span></code> (default): Interpret as a <strong>resampling</strong> transform (ITK convention, fixed to moving). In Slicer’s transform tree this corresponds to <strong>“from parent”</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">modeling</span></code>: Interpret as a <strong>modeling</strong> transform (useful for points/markups/models, moving to fixed). In Slicer’s transform tree this corresponds to <strong>“to parent”</strong>.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Per-item attributes for sequences (custom fields):</strong>
+Use these only when <code class="docutils literal notranslate"><span class="pre">kinds</span></code> includes a <code class="docutils literal notranslate"><span class="pre">list</span></code> axis.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">index</span> <span class="pre">type</span> <span class="pre">:=</span> <span class="pre">numeric</span> <span class="pre">|</span> <span class="pre">text</span></code>
+Declares the type of the list-axis index values (affects parsing/sorting).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">index</span> <span class="pre">values</span> <span class="pre">:=</span> <span class="pre">&lt;v0&gt;</span> <span class="pre">&lt;v1&gt;</span> <span class="pre">...</span> <span class="pre">&lt;vN-1&gt;</span></code>
+Provides one index value per sequence item (values may be non-uniform or non-numeric).
+Provides the explicit index value for each sequence item, separated by spaces. Values can be arbitrary strings, stored using URL encoding.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">item</span> <span class="pre">&lt;I&gt;</span> <span class="pre">&lt;AttrName&gt;</span> <span class="pre">:=</span> <span class="pre">&lt;AttrValue&gt;</span></code>
+Stores an arbitrary per-item attribute (becomes a node attribute on the corresponding MRML data node).</p></li>
+</ul>
+<p>Where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;A&gt;</span></code> = the <strong>list axis index</strong> (the axis whose <code class="docutils literal notranslate"><span class="pre">kinds</span></code> entry is <code class="docutils literal notranslate"><span class="pre">list</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;I&gt;</span></code> = <strong>0-based</strong> item index along the list axis</p></li>
+<li><p>Quote values that contain spaces per NRRD rules</p></li>
+<li><p>The count of <code class="docutils literal notranslate"><span class="pre">index</span> <span class="pre">values</span></code> <strong>must equal</strong> the size of the list axis</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In 3D + time sequences the vector axis is typically 0, followed by three spatial <code class="docutils literal notranslate"><span class="pre">domain</span></code> axes, and the <code class="docutils literal notranslate"><span class="pre">list</span></code> axis last. Do not assume a fixed number—always use the axis where <code class="docutils literal notranslate"><span class="pre">kinds</span></code> is <code class="docutils literal notranslate"><span class="pre">list</span></code> for <code class="docutils literal notranslate"><span class="pre">&lt;A&gt;</span></code>.</p>
+</div>
+<section id="example-3d-displacement-field-file-header">
+<h4>Example 3D displacement field file header<a class="headerlink" href="#example-3d-displacement-field-file-header" title="Link to this heading"></a></h4>
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>NRRD0005
+# Complete NRRD file format specification at:
+# http://teem.sourceforge.net/nrrd/format.html
+type: double
+dimension: 4
+space: left-posterior-superior
+sizes: 3 256 256 130
+space directions: none (0,1,0) (0,0,-1) (-1.2999954223632812,0,0)
+kinds: vector domain domain domain
+endian: little
+encoding: raw
+space origin: (86.644897460937486,-133.92860412597656,116.78569793701172)
+measurement frame: (1,0,0) (0,1,0) (0,0,1)
+displacement field type:=resampling
+intent_code:=1006
+</pre></div>
+</div>
+</section>
+<section id="example-3d-t-displacement-field-sequence-file-header">
+<h4>Example 3D+t displacement field sequence file header<a class="headerlink" href="#example-3d-t-displacement-field-sequence-file-header" title="Link to this heading"></a></h4>
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>NRRD0005
+# Complete NRRD file format specification at:
+# http://teem.sourceforge.net/nrrd/format.html
+type: double
+dimension: 5
+space: left-posterior-superior
+sizes: 3 88 160 72 14
+space directions: none (0,1.5,0) (0.13855585501996717,0,-1.4935870497027235) (-1.4935870497027182,0,-0.13855585501997181) none
+kinds: vector domain domain domain list
+labels: &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; &quot;time&quot;
+units: &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; &quot;ms&quot;
+endian: little
+encoding: gzip
+space origin: (43.348771859606991,-103.34095001221,82.564098750818999)
+measurement frame: (1,0,0) (0,1,0) (0,0,1)
+axis 3 index type:=numeric
+axis 3 index values:=18.551218032837 55.653656005859 92.756088256836 129.8585357666 166.96096801758 204.06340026855 241.16584777832 278.26824951172 315.37069702148 352.47314453125 389.57556152344 426.6780090332 463.78045654297 500.88287353516
+displacement field type:=modeling
+intent_code:=1006
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">3</span></code> in <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">3</span> <span class="pre">index</span> <span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">3</span> <span class="pre">index</span> <span class="pre">values</span></code> fields refer to the 4th range axis (list).</p>
+</section>
+</section>
+<section id="nifti">
+<h3>NIfTI<a class="headerlink" href="#nifti" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">intent_code</span></code> <strong>must</strong> be <code class="docutils literal notranslate"><span class="pre">1006</span></code> (<code class="docutils literal notranslate"><span class="pre">NIFTI_INTENT_DISPVECT</span></code>)</p></li>
+<li><p>Displacement vector components are stored in the <strong>RAS</strong> coordinate system</p></li>
+</ul>
+</section>
+</section>
+<section id="events">
+<h2>Events<a class="headerlink" href="#events" title="Link to this heading"></a></h2>
+<p>When a transform node is observed by a transformable node, <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformableNode.html#a2614fa4d0c7c096d4782ceae75af0c82a4993bf6e23a6dfc138cb2efc1b9ce43b">vtkMRMLTransformableNode::TransformModifiedEvent</a> is fired on the transformable node at observation time. Anytime a transform is modified, vtkCommand::ModifiedEvent is fired on the transform node and <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLTransformableNode.html#a2614fa4d0c7c096d4782ceae75af0c82a4993bf6e23a6dfc138cb2efc1b9ce43b">vtkMRMLTransformableNode::TransformModifiedEvent</a> is fired on the transformable node.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>Examples for common operations on transform are provided in the <a class="reference internal" href="../script_repository.html#transforms"><span class="std std-ref">script repository</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sequences.html" class="btn btn-neutral float-left" title="Sequences" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="volumerendering.html" class="btn btn-neutral float-right" title="Volume rendering" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

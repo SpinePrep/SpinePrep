@@ -1,0 +1,1219 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Filters &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Subtract Scalar Volumes" href="subtractscalarvolumes.html" />
+    <link rel="prev" title="Image Label Combine" href="imagelabelcombine.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/simplefilters.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#filtering">Filtering</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="addscalarvolumes.html">Add Scalar Volumes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="castscalarvolume.html">Cast Scalar Volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="curvatureanisotropicdiffusion.html">Curvature Anisotropic Diffusion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gaussianblurimagefilter.html">Gaussian Blur Image Filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gradientanisotropicdiffusion.html">Gradient Anisotropic Diffusion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grayscalefillholeimagefilter.html">Grayscale Fill Hole Image Filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grayscalegrindpeakimagefilter.html">Grayscale Grind Peak Image Filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="maskscalarvolume.html">Mask Scalar Volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="medianimagefilter.html">Median Image Filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="multiplyscalarvolumes.html">Multiply Scalar Volumes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="n4itkbiasfieldcorrection.html">N4ITK MRI Bias correction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="checkerboardfilter.html">CheckerBoard Filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extractskeleton.html">Extract Skeleton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="histogrammatching.html">Histogram Matching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="imagelabelcombine.html">Image Label Combine</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Simple Filters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#filters">Filters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="subtractscalarvolumes.html">Subtract Scalar Volumes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="thresholdscalarvolume.html">Threshold Scalar Volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="votingbinaryholefillingimagefilter.html">Voting Binary Hole Filling Image Filter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Simple Filters</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/simplefilters.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="simple-filters">
+<h1>Simple Filters<a class="headerlink" href="#simple-filters" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The SimpleFilters module provides a simple interface to hundreds of basic and advanced filters from ITK.</p>
+<p>The algorithms available include binary morphology, grayscale morphology, denoising, thresholding, image intensity manipulation, region growing, FFT, and many advanced algorithms.</p>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Filters</strong> section at the top enables the selection of one of the hundred of filters available. The <strong>Search</strong> text box is use quickly find a filter based on it’s name.</p></li>
+<li><p><strong>Parameters</strong> section dynamically changes based of the Filter selected above, it presents a list of input filter and parameters which the filter needs. Along with the output image for the filter.</p></li>
+<li><p><strong>Apply</strong> button at the bottom runs the filter.</p></li>
+<li><p><strong>Cancel</strong> button can be used to stop a running filter.</p></li>
+<li><p><strong>Restore Defaults</strong> button revert the filter parameters to their initial settings.</p></li>
+<li><p><strong>LabelMap</strong> checkbox indicates if the selected output volume is a labelmap. This can be used for verifying if the selected output volume is appropriate for storing the filtering result.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most filters which take more than one image as input expect that all the inputs are of the same pixel type, and the images occupy the same physical space.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Many filters only work on <code class="docutils literal notranslate"><span class="pre">float</span></code> pixel type. When an <code class="docutils literal notranslate"><span class="pre">integer</span></code> image is used as input, the <code class="docutils literal notranslate"><span class="pre">Exception</span> <span class="pre">thrown...</span> <span class="pre">Pixel</span> <span class="pre">type:</span> <span class="pre">...</span> <span class="pre">integer</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">supported...</span></code> error message is displayed. To use such filters, the pixel type can be converted to <code class="docutils literal notranslate"><span class="pre">float</span></code> using <a class="reference internal" href="castscalarvolume.html"><span class="std std-doc">Cast Scalar Volume</span></a> module.</p>
+</div>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_simplefilters.png" /></p>
+</section>
+<section id="filters">
+<h2>Filters<a class="headerlink" href="#filters" title="Link to this heading"></a></h2>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Filter name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AbsImageFilter.html">AbsImageFilter</a></td>
+<td>Computes the absolute value of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AbsoluteValueDifferenceImageFilter.html">AbsoluteValueDifferenceImageFilter</a></td>
+<td>Implements pixel-wise the computation of absolute value difference.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AcosImageFilter.html">AcosImageFilter</a></td>
+<td>Computes the inverse cosine of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AdaptiveHistogramEqualizationImageFilter.html">AdaptiveHistogramEqualizationImageFilter</a></td>
+<td>Power Law Adaptive Histogram Equalization.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AddImageFilter.html">AddImageFilter</a></td>
+<td>Pixel-wise addition of two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AndImageFilter.html">AndImageFilter</a></td>
+<td>Implements the AND bitwise operator pixel-wise between two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AntiAliasBinaryImageFilter.html">AntiAliasBinaryImageFilter</a></td>
+<td>A method for estimation of a surface from a binary volume.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ApproximateSignedDistanceMapImageFilter.html">ApproximateSignedDistanceMapImageFilter</a></td>
+<td>Create a map of the approximate signed distance from the boundaries of a binary image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AsinImageFilter.html">AsinImageFilter</a></td>
+<td>Computes the sine of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1Atan2ImageFilter.html">Atan2ImageFilter</a></td>
+<td>Computes two argument inverse tangent.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1AtanImageFilter.html">AtanImageFilter</a></td>
+<td>Computes the one-argument inverse tangent of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BilateralImageFilter.html">BilateralImageFilter</a></td>
+<td>Blurs an image while preserving edges.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinShrinkImageFilter.html">BinShrinkImageFilter</a></td>
+<td>Reduce the size of an image by an integer factor in each dimension while performing averaging of an input neighborhood.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryClosingByReconstructionImageFilter.html">BinaryClosingByReconstructionImageFilter</a></td>
+<td>binary closing by reconstruction of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryContourImageFilter.html">BinaryContourImageFilter</a></td>
+<td>Labels the pixels on the border of the objects in a binary image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryDilateImageFilter.html">BinaryDilateImageFilter</a></td>
+<td>Fast binary dilation.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryErodeImageFilter.html">BinaryErodeImageFilter</a></td>
+<td>Fast binary erosion.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFillholeImageFilter.html">BinaryFillholeImageFilter</a></td>
+<td>Remove holes not connected to the boundary of the image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryGrindPeakImageFilter.html">BinaryGrindPeakImageFilter</a></td>
+<td>Remove the objects not connected to the boundary of the image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryMagnitudeImageFilter.html">BinaryMagnitudeImageFilter</a></td>
+<td>Computes the square root of the sum of squares of corresponding input pixels.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryMedianImageFilter.html">BinaryMedianImageFilter</a></td>
+<td>Applies a version of the median filter optimized for binary images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryMinMaxCurvatureFlowImageFilter.html">BinaryMinMaxCurvatureFlowImageFilter</a></td>
+<td>Denoise a binary image using min/max curvature flow.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryMorphologicalClosingImageFilter.html">BinaryMorphologicalClosingImageFilter</a></td>
+<td>binary morphological closing of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryMorphologicalOpeningImageFilter.html">BinaryMorphologicalOpeningImageFilter</a></td>
+<td>binary morphological opening of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryNotImageFilter.html">BinaryNotImageFilter</a></td>
+<td>Implements the BinaryNot logical operator pixel-wise between two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryOpeningByReconstructionImageFilter.html">BinaryOpeningByReconstructionImageFilter</a></td>
+<td>binary morphological closing of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryProjectionImageFilter.html">BinaryProjectionImageFilter</a></td>
+<td>Binary projection.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryReconstructionByDilationImageFilter.html">BinaryReconstructionByDilationImageFilter</a></td>
+<td>binary reconstruction by dilation of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryReconstructionByErosionImageFilter.html">BinaryReconstructionByErosionImageFilter</a></td>
+<td>binary reconstruction by erosion of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryThinningImageFilter.html">BinaryThinningImageFilter</a></td>
+<td>This filter computes one-pixel-wide edges of the input image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryThresholdImageFilter.html">BinaryThresholdImageFilter</a></td>
+<td>Binarize an input image by thresholding.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryThresholdProjectionImageFilter.html">BinaryThresholdProjectionImageFilter</a></td>
+<td>BinaryThreshold projection.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinomialBlurImageFilter.html">BinomialBlurImageFilter</a></td>
+<td>Performs a separable blur on each dimension of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1UnaryFunctorImageFilter.html">BitwiseNotImageFilter</a></td>
+<td>Implements pixel-wise generic operation on one image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BlackTopHatImageFilter.html">BlackTopHatImageFilter</a></td>
+<td>Black top hat extract local minima that are smaller than the structuring element.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BoundedReciprocalImageFilter.html">BoundedReciprocalImageFilter</a></td>
+<td>Computes 1/(1+x) for each pixel in the image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BoxMeanImageFilter.html">BoxMeanImageFilter</a></td>
+<td>Implements a fast rectangular mean filter using the accumulator approach.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BoxSigmaImageFilter.html">BoxSigmaImageFilter</a></td>
+<td>Implements a fast rectangular sigma filter using the accumulator approach.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1CannyEdgeDetectionImageFilter.html">CannyEdgeDetectionImageFilter</a></td>
+<td>This filter is an implementation of a Canny edge detector for scalar-valued images. Based on John Canny's paper "A Computational Approach to Edge Detection"""</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1CastImageFilter.html">CastImageFilter</a></td>
+<td>Casts input image's pixels to output pixel type.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1CheckerBoardImageFilter.html">CheckerBoardImageFilter</a></td>
+<td>Combines two images in a checkerboard pattern.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ClampImageFilter.html">ClampImageFilter</a></td>
+<td>Casts input pixels to output pixel type and clamps the output pixel values to a specified range.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ClosingByReconstructionImageFilter.html">ClosingByReconstructionImageFilter</a></td>
+<td>Closing by reconstruction of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ComplexToImaginaryImageFilter.html">ComplexToImaginaryImageFilter</a></td>
+<td>Computes pixel-wise the imaginary part of a complex image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ComplexToModulusImageFilter.html">ComplexToModulusImageFilter</a></td>
+<td>Computes pixel-wise the Modulus of a complex image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ComplexToPhaseImageFilter.html">ComplexToPhaseImageFilter</a></td>
+<td>Computes pixel-wise the modulus of a complex image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ComplexToRealImageFilter.html">ComplexToRealImageFilter</a></td>
+<td>Computes pixel-wise the real(x) part of a complex image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ComposeImageFilter.html">ComposeImageFilter</a></td>
+<td>ComposeImageFiltercombine several scalar images into a multicomponent image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ConfidenceConnectedImageFilter.html">ConfidenceConnectedImageFilter</a></td>
+<td>Segment pixels with similar statistics using connectivity.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ConnectedComponentImageFilter.html">ConnectedComponentImageFilter</a></td>
+<td>Label the objects in a binary image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ConnectedThresholdImageFilter.html">ConnectedThresholdImageFilter</a></td>
+<td>Label pixels that are connected to a seed and lie within a range of values.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ConstantPadImageFilter.html">ConstantPadImageFilter</a></td>
+<td>Increase the image size by padding with a constant value.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ConvolutionImageFilter.html">ConvolutionImageFilter</a></td>
+<td>Convolve a given image with an arbitrary image kernel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1CosImageFilter.html">CosImageFilter</a></td>
+<td>Computes the cosine of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1CropImageFilter.html">CropImageFilter</a></td>
+<td>Decrease the image size by cropping the image by an itk::Sizeat both the upper and lower bounds of the largest possible region.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1CurvatureAnisotropicDiffusionImageFilter.html">CurvatureAnisotropicDiffusionImageFilter</a></td>
+<td>Performs anisotropic diffusion on a scalar image using the modified curvature diffusion equation (MCDE).</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1CurvatureFlowImageFilter.html">CurvatureFlowImageFilter</a></td>
+<td>Denoise an image using curvature driven flow.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1CyclicShiftImageFilter.html">CyclicShiftImageFilter</a></td>
+<td>Perform a cyclic spatial shift of image intensities on the image grid.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1DanielssonDistanceMapImageFilter.html">DanielssonDistanceMapImageFilter</a></td>
+<td>This filter computes the distance map of the input image as an approximation with pixel accuracy to the Euclidean distance.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1DerivativeImageFilter.html">DerivativeImageFilter</a></td>
+<td>Computes the directional derivative of an image by convolution with a derivative operator of user-specified order.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1DilateObjectMorphologyImageFilter.html">DilateObjectMorphologyImageFilter</a></td>
+<td>dilation of an object in an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1DiscreteGaussianDerivativeImageFilter.html">DiscreteGaussianDerivativeImageFilter</a></td>
+<td>Calculates image derivatives using discrete derivative Gaussian kernels.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1DiscreteGaussianImageFilter.html">DiscreteGaussianImageFilter</a></td>
+<td>Blurs an image by separable convolution with discrete gaussian kernels.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFunctorImageFilter.html">DivideFloorImageFilter</a></td>
+<td>Implements pixel-wise generic operation of two images, or of an image and a constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1DivideImageFilter.html">DivideImageFilter</a></td>
+<td>Pixel-wise division of two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFunctorImageFilter.html">DivideRealImageFilter</a></td>
+<td>Implements pixel-wise generic operation of two images, or of an image and a constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1DoubleThresholdImageFilter.html">DoubleThresholdImageFilter</a></td>
+<td>Binarize an input image using double thresholding.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1EdgePotentialImageFilter.html">EdgePotentialImageFilter</a></td>
+<td>Computes the edge potential of an image from the image gradient.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFunctorImageFilter.html">EqualImageFilter</a></td>
+<td>Implements pixel-wise generic operation of two images, or of an image and a constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ErodeObjectMorphologyImageFilter.html">ErodeObjectMorphologyImageFilter</a></td>
+<td>Erosion of an object in an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ExpImageFilter.html">ExpImageFilter</a></td>
+<td>Computes the exponential function of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ExpNegativeImageFilter.html">ExpNegativeImageFilter</a></td>
+<td>Computes the function exp(-K.x) for each input pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ExpandImageFilter.html">ExpandImageFilter</a></td>
+<td>Expand the size of an image by an integer factor in each dimension.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ExtractImageFilter.html">ExtractImageFilter</a></td>
+<td>Decrease the image size by cropping the image to the selected region bounds.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1FFTConvolutionImageFilter.html">FFTConvolutionImageFilter</a></td>
+<td>Convolve a given image with an arbitrary image kernel using multiplication in the Fourier domain.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1FFTNormalizedCorrelationImageFilter.html">FFTNormalizedCorrelationImageFilter</a></td>
+<td>Calculate normalized cross correlation using FFTs.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1FFTShiftImageFilter.html">FFTShiftImageFilter</a></td>
+<td>Shift the zero-frequency components of a Fourier transform to the center of the image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1FastApproximateRankImageFilter.html">FastApproximateRankImageFilter</a></td>
+<td>A separable rank filter.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1FastMarchingImageFilterBase.html">FastMarchingImageFilter</a></td>
+<td>Solve an Eikonal equation using Fast Marching.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1FlipImageFilter.html">FlipImageFilter</a></td>
+<td>Flips an image across user specified axes.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ForwardFFTImageFilter.html">ForwardFFTImageFilter</a></td>
+<td>Base class for forward Fast Fourier Transform.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GaborImageSource.html">GaborImageSource</a></td>
+<td>Generate an n-dimensional image of a Gabor filter.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GaussianImageSource.html">GaussianImageSource</a></td>
+<td>Generate an n-dimensional image of a Gaussian.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GeodesicActiveContourLevelSetImageFilter.html">GeodesicActiveContourLevelSetImageFilter</a></td>
+<td>Segments structures in images based on a user supplied edge potential map.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GradientAnisotropicDiffusionImageFilter.html">GradientAnisotropicDiffusionImageFilter</a></td>
+<td>Performs anisotropic diffusion on a scalar image using the classic Perona-Malik, gradient magnitude based equation.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GradientImageFilter.html">GradientImageFilter</a></td>
+<td>Computes the gradient of an image using directional derivatives.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GradientMagnitudeImageFilter.html">GradientMagnitudeImageFilter</a></td>
+<td>Computes the gradient magnitude of an image region at each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GradientMagnitudeRecursiveGaussianImageFilter.html">GradientMagnitudeRecursiveGaussianImageFilter</a></td>
+<td>Computes the Magnitude of the Gradient of an image by convolution with the first derivative of a Gaussian.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GradientRecursiveGaussianImageFilter.html">GradientRecursiveGaussianImageFilter</a></td>
+<td>Computes the gradient of an image by convolution with the first derivative of a Gaussian.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleConnectedClosingImageFilter.html">GrayscaleConnectedClosingImageFilter</a></td>
+<td>Enhance pixels associated with a dark object (identified by a seed pixel) where the dark object is surrounded by a brighter object.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleConnectedOpeningImageFilter.html">GrayscaleConnectedOpeningImageFilter</a></td>
+<td>Enhance pixels associated with a bright object (identified by a seed pixel) where the bright object is surrounded by a darker object.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleDilateImageFilter.html">GrayscaleDilateImageFilter</a></td>
+<td>gray scale dilation of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleErodeImageFilter.html">GrayscaleErodeImageFilter</a></td>
+<td>gray scale dilation of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleFillholeImageFilter.html">GrayscaleFillholeImageFilter</a></td>
+<td>Remove local minima not connected to the boundary of the image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleGeodesicDilateImageFilter.html">GrayscaleGeodesicDilateImageFilter</a></td>
+<td>geodesic gray scale dilation of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleGeodesicErodeImageFilter.html">GrayscaleGeodesicErodeImageFilter</a></td>
+<td>geodesic gray scale erosion of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleGrindPeakImageFilter.html">GrayscaleGrindPeakImageFilter</a></td>
+<td>Remove local maxima not connected to the boundary of the image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleMorphologicalClosingImageFilter.html">GrayscaleMorphologicalClosingImageFilter</a></td>
+<td>gray scale dilation of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GrayscaleMorphologicalOpeningImageFilter.html">GrayscaleMorphologicalOpeningImageFilter</a></td>
+<td>gray scale dilation of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFunctorImageFilter.html">GreaterEqualImageFilter</a></td>
+<td>Implements pixel-wise generic operation of two images, or of an image and a constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFunctorImageFilter.html">GreaterImageFilter</a></td>
+<td>Implements pixel-wise generic operation of two images, or of an image and a constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1GridImageSource.html">GridImageSource</a></td>
+<td>Generate an n-dimensional image of a grid.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1HConcaveImageFilter.html">HConcaveImageFilter</a></td>
+<td>Identify local minima whose depth below the baseline is greater than h.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1HConvexImageFilter.html">HConvexImageFilter</a></td>
+<td>Identify local maxima whose height above the baseline is greater than h.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1HMaximaImageFilter.html">HMaximaImageFilter</a></td>
+<td>Suppress local maxima whose height above the baseline is less than h.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1HMinimaImageFilter.html">HMinimaImageFilter</a></td>
+<td>Suppress local minima whose depth below the baseline is less than h.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1HalfHermitianToRealInverseFFTImageFilter.html">HalfHermitianToRealInverseFFTImageFilter</a></td>
+<td>Base class for specialized complex-to-real inverse Fast Fourier Transform.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1HausdorffDistanceImageFilter.html">HausdorffDistanceImageFilter</a></td>
+<td>Computes the Hausdorff distance between the set of non-zero pixels of two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1HistogramMatchingImageFilter.html">HistogramMatchingImageFilter</a></td>
+<td>Normalize the grayscale values between two images by histogram matching.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1HuangThresholdImageFilter.html">HuangThresholdImageFilter</a></td>
+<td>Threshold an image using the Huang Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1IntensityWindowingImageFilter.html">IntensityWindowingImageFilter</a></td>
+<td>Applies a linear transformation to the intensity levels of the input Imagethat are inside a user-defined interval.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1IntermodesThresholdImageFilter.html">IntermodesThresholdImageFilter</a></td>
+<td>Threshold an image using the Intermodes Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1InverseDeconvolutionImageFilter.html">InverseDeconvolutionImageFilter</a></td>
+<td>The direct linear inverse deconvolution filter.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1InverseFFTImageFilter.html">InverseFFTImageFilter</a></td>
+<td>Base class for inverse Fast Fourier Transform.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1InvertIntensityImageFilter.html">InvertIntensityImageFilter</a></td>
+<td>Invert the intensity of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1IsoContourDistanceImageFilter.html">IsoContourDistanceImageFilter</a></td>
+<td>Compute an approximate distance from an interpolated isocontour to the close grid points.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1IsoDataThresholdImageFilter.html">IsoDataThresholdImageFilter</a></td>
+<td>Threshold an image using the IsoData Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1IsolatedConnectedImageFilter.html">IsolatedConnectedImageFilter</a></td>
+<td>Label pixels that are connected to one set of seeds but not another.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1IsolatedWatershedImageFilter.html">IsolatedWatershedImageFilter</a></td>
+<td>Isolate watershed basins using two seeds.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1JoinSeriesImageFilter.html">JoinSeriesImageFilter</a></td>
+<td>Join N-D images into an (N+1)-D image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1KittlerIllingworthThresholdImageFilter.html">KittlerIllingworthThresholdImageFilter</a></td>
+<td>Threshold an image using the KittlerIllingworth Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LabelContourImageFilter.html">LabelContourImageFilter</a></td>
+<td>Labels the pixels on the border of the objects in a labeled image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LabelOverlayImageFilter.html">LabelOverlayImageFilter</a></td>
+<td>Apply a colormap to a label image and put it on top of the input image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LabelToRGBImageFilter.html">LabelToRGBImageFilter</a></td>
+<td>Apply a colormap to a label image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LabelVotingImageFilter.html">LabelVotingImageFilter</a></td>
+<td>Performs pixelwise voting among an arbitrary number of input images, where each of them represents a segmentation of the same image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LandweberDeconvolutionImageFilter.html">LandweberDeconvolutionImageFilter</a></td>
+<td>Deconvolve an image using the Landweber deconvolution algorithm.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LaplacianImageFilter.html">LaplacianImageFilter</a></td>
+<td>This filter computes the Laplacian (i.e., the 2nd spatial derivative) of a scalar-valued image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LaplacianRecursiveGaussianImageFilter.html">LaplacianRecursiveGaussianImageFilter</a></td>
+<td>Computes the Laplacian of Gaussian (LoG) of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LaplacianSegmentationLevelSetImageFilter.html">LaplacianSegmentationLevelSetImageFilter</a></td>
+<td>Segments structures in images based on a second derivative image features.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LaplacianSharpeningImageFilter.html">LaplacianSharpeningImageFilter</a></td>
+<td>This filter sharpens an image using a Laplacian to to enhance rapid intensity change and therefore the edges.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFunctorImageFilter.html">LessEqualImageFilter</a></td>
+<td>Implements pixel-wise generic operation of two images, or of an image and a constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFunctorImageFilter.html">LessImageFilter</a></td>
+<td>Implements pixel-wise generic operation of two images, or of an image and a constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LiThresholdImageFilter.html">LiThresholdImageFilter</a></td>
+<td>Threshold an image using the Li Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1Log10ImageFilter.html">Log10ImageFilter</a></td>
+<td>Computes the log10 of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1LogImageFilter.html">LogImageFilter</a></td>
+<td>Computes the log() of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MagnitudeAndPhaseToComplexImageFilter.html">MagnitudeAndPhaseToComplexImageFilter</a></td>
+<td>Implements pixel-wise conversion of magnitude and phase data into complex voxels.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MaskImageFilter.html">MaskImageFilter</a></td>
+<td>Mask an image with a mask.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MaskNegatedImageFilter.html">MaskNegatedImageFilter</a></td>
+<td>Mask an image with the negative of a mask.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MaskedFFTNormalizedCorrelationImageFilter.html">MaskedFFTNormalizedCorrelationImageFilter</a></td>
+<td>Calculate masked normalized cross correlation using FFTs.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MaximumEntropyThresholdImageFilter.html">MaximumEntropyThresholdImageFilter</a></td>
+<td>Threshold an image using the MaximumEntropy Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MaximumImageFilter.html">MaximumImageFilter</a></td>
+<td>Implements a pixel-wise operator Max(a,b) between two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MaximumProjectionImageFilter.html">MaximumProjectionImageFilter</a></td>
+<td>Maximum projection.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MeanImageFilter.html">MeanImageFilter</a></td>
+<td>Applies an averaging filter to an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MeanProjectionImageFilter.html">MeanProjectionImageFilter</a></td>
+<td>Mean projection.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MedianImageFilter.html">MedianImageFilter</a></td>
+<td>Applies a median filter to an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MedianProjectionImageFilter.html">MedianProjectionImageFilter</a></td>
+<td>Median projection.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MinMaxCurvatureFlowImageFilter.html">MinMaxCurvatureFlowImageFilter</a></td>
+<td>Denoise an image using min/max curvature flow.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MinimumImageFilter.html">MinimumImageFilter</a></td>
+<td>Implements a pixel-wise operator Min(a,b) between two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MinimumMaximumImageFilter.html">MinimumMaximumImageFilter</a></td>
+<td>Computes the minimum and the maximum intensity values of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MinimumProjectionImageFilter.html">MinimumProjectionImageFilter</a></td>
+<td>Minimum projection.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MirrorPadImageFilter.html">MirrorPadImageFilter</a></td>
+<td>Increase the image size by padding with replicants of the input image value.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ModulusImageFilter.html">ModulusImageFilter</a></td>
+<td>Computes the modulus (x % dividend) pixel-wise.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MomentsThresholdImageFilter.html">MomentsThresholdImageFilter</a></td>
+<td>Threshold an image using the Moments Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MorphologicalGradientImageFilter.html">MorphologicalGradientImageFilter</a></td>
+<td>gray scale dilation of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MorphologicalWatershedFromMarkersImageFilter.html">MorphologicalWatershedFromMarkersImageFilter</a></td>
+<td>Morphological watershed transform from markers.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MorphologicalWatershedImageFilter.html">MorphologicalWatershedImageFilter</a></td>
+<td>Watershed segmentation implementation with morphological operators.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1MultiplyImageFilter.html">MultiplyImageFilter</a></td>
+<td>Pixel-wise multiplication of two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1N4BiasFieldCorrectionImageFilter.html">N4BiasFieldCorrectionImageFilter</a></td>
+<td>Implementation of the N4 bias field correction algorithm.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1NaryAddImageFilter.html">NaryAddImageFilter</a></td>
+<td>Pixel-wise addition of N images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1NaryMaximumImageFilter.html">NaryMaximumImageFilter</a></td>
+<td>Computes the pixel-wise maximum of several images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1NeighborhoodConnectedImageFilter.html">NeighborhoodConnectedImageFilter</a></td>
+<td>Label pixels that are connected to a seed and lie within a neighborhood.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1NoiseImageFilter.html">NoiseImageFilter</a></td>
+<td>Calculate the local noise in an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1NormalizeImageFilter.html">NormalizeImageFilter</a></td>
+<td>Normalize an image by setting its mean to zero and variance to one.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1NormalizeToConstantImageFilter.html">NormalizeToConstantImageFilter</a></td>
+<td>Scales image pixel intensities to make the sum of all pixels equal a user-defined constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1NormalizedCorrelationImageFilter.html">NormalizedCorrelationImageFilter</a></td>
+<td>Computes the normalized correlation of an image and a template.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1BinaryFunctorImageFilter.html">NotEqualImageFilter</a></td>
+<td>Implements pixel-wise generic operation of two images, or of an image and a constant.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1NotImageFilter.html">NotImageFilter</a></td>
+<td>Implements the NOT logical operator pixel-wise on an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1OpeningByReconstructionImageFilter.html">OpeningByReconstructionImageFilter</a></td>
+<td>Opening by reconstruction of an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1OrImageFilter.html">OrImageFilter</a></td>
+<td>Implements the OR bitwise operator pixel-wise between two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1OtsuMultipleThresholdsImageFilter.html">OtsuMultipleThresholdsImageFilter</a></td>
+<td>Threshold an image using multiple Otsu Thresholds.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1OtsuThresholdImageFilter.html">OtsuThresholdImageFilter</a></td>
+<td>Threshold an image using the Otsu Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1PasteImageFilter.html">PasteImageFilter</a></td>
+<td>Paste an image into another image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1PatchBasedDenoisingImageFilter.html">PatchBasedDenoisingImageFilter</a></td>
+<td>Derived class implementing a specific patch-based denoising algorithm, as detailed below.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1PermuteAxesImageFilter.html">PermuteAxesImageFilter</a></td>
+<td>Permutes the image axes according to a user specified order.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1PhysicalPointImageSource.html">PhysicalPointImageSource</a></td>
+<td>Generate an image of the physical locations of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1PowImageFilter.html">PowImageFilter</a></td>
+<td>Computes the powers of 2 images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ProjectedLandweberDeconvolutionImageFilter.html">ProjectedLandweberDeconvolutionImageFilter</a></td>
+<td>Deconvolve an image using the projected Landweber deconvolution algorithm.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RankImageFilter.html">RankImageFilter</a></td>
+<td>Rank filter of a greyscale image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ComposeImageFilter.html">RealAndImaginaryToComplexImageFilter</a></td>
+<td>ComposeImageFiltercombine several scalar images into a multicomponent image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RealToHalfHermitianForwardFFTImageFilter.html">RealToHalfHermitianForwardFFTImageFilter</a></td>
+<td>Base class for specialized real-to-complex forward Fast Fourier Transform.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ReconstructionByDilationImageFilter.html">ReconstructionByDilationImageFilter</a></td>
+<td>grayscale reconstruction by dilation of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ReconstructionByErosionImageFilter.html">ReconstructionByErosionImageFilter</a></td>
+<td>grayscale reconstruction by erosion of an image</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RecursiveGaussianImageFilter.html">RecursiveGaussianImageFilter</a></td>
+<td>Base class for computing IIR convolution with an approximation of a Gaussian kernel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RegionOfInterestImageFilter.html">RegionOfInterestImageFilter</a></td>
+<td>Extract a region of interest from the input image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RegionalMaximaImageFilter.html">RegionalMaximaImageFilter</a></td>
+<td>Produce a binary image where foreground is the regional maxima of the input image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RegionalMinimaImageFilter.html">RegionalMinimaImageFilter</a></td>
+<td>Produce a binary image where foreground is the regional minima of the input image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RelabelComponentImageFilter.html">RelabelComponentImageFilter</a></td>
+<td>Relabel the components in an image such that consecutive labels are used.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RenyiEntropyThresholdImageFilter.html">RenyiEntropyThresholdImageFilter</a></td>
+<td>Threshold an image using the RenyiEntropy Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ResampleImageFilter.html">ResampleImageFilter</a></td>
+<td>Resample an image via a coordinate transform.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RescaleIntensityImageFilter.html">RescaleIntensityImageFilter</a></td>
+<td>Applies a linear transformation to the intensity levels of the input Image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1RichardsonLucyDeconvolutionImageFilter.html">RichardsonLucyDeconvolutionImageFilter</a></td>
+<td>Deconvolve an image using the Richardson-Lucy deconvolution algorithm.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1STAPLEImageFilter.html">STAPLEImageFilter</a></td>
+<td>Simultaneous Truth and Performance Level Estimation (STAPLE) algorithm for generating one segmentation from a set of segmentations.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ScalarChanAndVeseDenseLevelSetImageFilter.html">ScalarChanAndVeseDenseLevelSetImageFilter</a></td>
+<td>Dense implementation of the Chan and Vese multiphase level set image filter.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ScalarConnectedComponentImageFilter.html">ScalarConnectedComponentImageFilter</a></td>
+<td>A connected components filter that labels connected regions in an arbitrary image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ScalarImageKmeansImageFilter.html">ScalarImageKmeansImageFilter</a></td>
+<td>Classifies the intensity values of a scalar image using the K-Means algorithm.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ScalarToRGBColormapImageFilter.html">ScalarToRGBColormapImageFilter</a></td>
+<td>Implements pixel-wise intensity-&gt;rgb mapping operation on one image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ShanbhagThresholdImageFilter.html">ShanbhagThresholdImageFilter</a></td>
+<td>Threshold an image using the Shanbhag Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ShapeDetectionLevelSetImageFilter.html">ShapeDetectionLevelSetImageFilter</a></td>
+<td>Segments structures in images based on a user supplied edge potential map.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ShiftScaleImageFilter.html">ShiftScaleImageFilter</a></td>
+<td>Shift and scale the pixels in an image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ShrinkImageFilter.html">ShrinkImageFilter</a></td>
+<td>Reduce the size of an image by an integer factor in each dimension.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SigmoidImageFilter.html">SigmoidImageFilter</a></td>
+<td>Computes the sigmoid function pixel-wise.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SignedDanielssonDistanceMapImageFilter.html">SignedDanielssonDistanceMapImageFilter</a></td>
+<td>Computes the signed distance map of the input image as an approximation with pixel accuracy to the Euclidean distance.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SignedMaurerDistanceMapImageFilter.html">SignedMaurerDistanceMapImageFilter</a></td>
+<td>This filter calculates the Euclidean distance transform of a binary image in linear time for arbitrary dimensions.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SimilarityIndexImageFilter.html">SimilarityIndexImageFilter</a></td>
+<td>Measures the similarity between the set of non-zero pixels of two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SimpleContourExtractorImageFilter.html">SimpleContourExtractorImageFilter</a></td>
+<td>Computes an image of contours which will be the contour of the first image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SinImageFilter.html">SinImageFilter</a></td>
+<td>Computes the sine of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SliceImageFilter.html">SliceImageFilter</a></td>
+<td>Slices an image based on a starting index and a stopping index, and a step size.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SmoothingRecursiveGaussianImageFilter.html">SmoothingRecursiveGaussianImageFilter</a></td>
+<td>Computes the smoothing of an image by convolution with the Gaussian kernels implemented as IIR filters.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SobelEdgeDetectionImageFilter.html">SobelEdgeDetectionImageFilter</a></td>
+<td>A 2D or 3D edge detection using the Sobel operator.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SqrtImageFilter.html">SqrtImageFilter</a></td>
+<td>Computes the square root of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SquareImageFilter.html">SquareImageFilter</a></td>
+<td>Computes the square of the intensity values pixel-wise.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SquaredDifferenceImageFilter.html">SquaredDifferenceImageFilter</a></td>
+<td>Implements pixel-wise the computation of squared difference.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1StandardDeviationProjectionImageFilter.html">StandardDeviationProjectionImageFilter</a></td>
+<td>Mean projection.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SubtractImageFilter.html">SubtractImageFilter</a></td>
+<td>Pixel-wise subtraction of two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1SumProjectionImageFilter.html">SumProjectionImageFilter</a></td>
+<td>Sum projection.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1TanImageFilter.html">TanImageFilter</a></td>
+<td>Computes the tangent of each input pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1TernaryAddImageFilter.html">TernaryAddImageFilter</a></td>
+<td>Pixel-wise addition of three images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1TernaryMagnitudeImageFilter.html">TernaryMagnitudeImageFilter</a></td>
+<td>Pixel-wise addition of three images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1TernaryMagnitudeSquaredImageFilter.html">TernaryMagnitudeSquaredImageFilter</a></td>
+<td>Pixel-wise addition of three images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ThresholdImageFilter.html">ThresholdImageFilter</a></td>
+<td>Set image values to a user-specified value if they are below, above, or between simple threshold values.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ThresholdMaximumConnectedComponentsImageFilter.html">ThresholdMaximumConnectedComponentsImageFilter</a></td>
+<td>Finds the threshold value of an image based on maximizing the number of objects in the image that are larger than a given minimal size.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ThresholdSegmentationLevelSetImageFilter.html">ThresholdSegmentationLevelSetImageFilter</a></td>
+<td>Segments structures in images based on intensity values.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1TikhonovDeconvolutionImageFilter.html">TikhonovDeconvolutionImageFilter</a></td>
+<td>An inverse deconvolution filter regularized in the Tikhonov sense.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1TileImageFilter.html">TileImageFilter</a></td>
+<td>Tile multiple input images into a single output image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1TriangleThresholdImageFilter.html">TriangleThresholdImageFilter</a></td>
+<td>Threshold an image using the Triangle Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1UnaryFunctorImageFilter.html">UnaryMinusImageFilter</a></td>
+<td>Computes the negative of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ValuedRegionalMaximaImageFilter.html">ValuedRegionalMaximaImageFilter</a></td>
+<td>Transforms the image so that any pixel that is not a regional maxima is set to the minimum value for the pixel type.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ValuedRegionalMinimaImageFilter.html">ValuedRegionalMinimaImageFilter</a></td>
+<td>Transforms the image so that any pixel that is not a regional minima is set to the maximum value for the pixel type.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1VectorConfidenceConnectedImageFilter.html">VectorConfidenceConnectedImageFilter</a></td>
+<td>Segment pixels with similar statistics using connectivity.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1VectorConnectedComponentImageFilter.html">VectorConnectedComponentImageFilter</a></td>
+<td>A connected components filter that labels the objects in a vector image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1VectorIndexSelectionCastImageFilter.html">VectorIndexSelectionCastImageFilter</a></td>
+<td>Extracts the selected index of the vector that is the input pixel type.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1VectorMagnitudeImageFilter.html">VectorMagnitudeImageFilter</a></td>
+<td>Take an image of vectors as input and produce an image with the magnitude of those vectors.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1VotingBinaryHoleFillingImageFilter.html">VotingBinaryHoleFillingImageFilter</a></td>
+<td>Fills in holes and cavities by applying a voting operation on each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1VotingBinaryImageFilter.html">VotingBinaryImageFilter</a></td>
+<td>Applies a voting operation in a neighborhood of each pixel.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1VotingBinaryIterativeHoleFillingImageFilter.html">VotingBinaryIterativeHoleFillingImageFilter</a></td>
+<td>Fills in holes and cavities by iteratively applying a voting operation.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1WarpImageFilter.html">WarpImageFilter</a></td>
+<td>Warps an image using an input displacement field.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1WhiteTopHatImageFilter.html">WhiteTopHatImageFilter</a></td>
+<td>White top hat extract local maxima that are larger than the structuring element.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1WienerDeconvolutionImageFilter.html">WienerDeconvolutionImageFilter</a></td>
+<td>Restores an image convolved with a blurring kernel while keeping noise enhancement to a minimum.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1WrapPadImageFilter.html">WrapPadImageFilter</a></td>
+<td>Increase the image size by padding with replicants of the input image value.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1XorImageFilter.html">XorImageFilter</a></td>
+<td>Computes the XOR bitwise operator pixel-wise between two images.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1YenThresholdImageFilter.html">YenThresholdImageFilter</a></td>
+<td>Threshold an image using the Yen Threshold.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ZeroCrossingBasedEdgeDetectionImageFilter.html">ZeroCrossingBasedEdgeDetectionImageFilter</a></td>
+<td>This filter implements a zero-crossing based edge detecor.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ZeroCrossingImageFilter.html">ZeroCrossingImageFilter</a></td>
+<td>This filter finds the closest pixel to the zero-crossings (sign changes) in a signed image.</td>
+</tr>
+<tr>
+<td><a href="http://www.itk.org/Doxygen/html/classitk_1_1ZeroFluxNeumannPadImageFilter.html">ZeroFluxNeumannPadImageFilter</a></td>
+<td>Increase the image size by padding according to the zero-flux Neumann boundary condition.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<p>Source code of the module is available at <a class="reference external" href="https://github.com/SimpleITK/SlicerSimpleFilters">https://github.com/SimpleITK/SlicerSimpleFilters</a>.</p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Bradley Lowekamp</p></li>
+<li><p>Steve Pieper</p></li>
+<li><p>Jean-Cristophe Fillion Robin</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is supported by NLM, and the Slicer Community.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_nlm.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_itk.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_kitware.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="imagelabelcombine.html" class="btn btn-neutral float-left" title="Image Label Combine" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="subtractscalarvolumes.html" class="btn btn-neutral float-right" title="Subtract Scalar Volumes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

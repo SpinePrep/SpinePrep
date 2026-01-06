@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Segmentations &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Segment editor" href="segmenteditor.html" />
+    <link rel="prev" title="Self Tests" href="selftests.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/modules/segmentations.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Modules API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selftests.html">Self Tests</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Segmentations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#segmentation-labelmap-file-format-seg-nrrd">Segmentation labelmap file format (.seg.nrrd)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#segmentation-surface-file-format-seg-vtm">Segmentation surface file format (.seg.vtm)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequences.html">Sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumes.html">Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules API</a></li>
+      <li class="breadcrumb-item active">Segmentations</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/modules/segmentations.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="segmentations">
+<h1>Segmentations<a class="headerlink" href="#segmentations" title="Link to this heading"></a></h1>
+<section id="segmentation-labelmap-file-format-seg-nrrd">
+<h2>Segmentation labelmap file format (.seg.nrrd)<a class="headerlink" href="#segmentation-labelmap-file-format-seg-nrrd" title="Link to this heading"></a></h2>
+<p>Segmentation is stored in a standard NRRD image file with custom fields to store additional metadata.</p>
+<p>The <strong><a class="reference external" href="https://pypi.org/project/slicerio/">slicerio</a> Python package</strong> can read .seg.nrrd files and import segments into numpy arrays and dictionary objects. The package can be used in any Python environment (installed using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">slicerio</span></code>) - not just in 3D Slicer.</p>
+<section id="image-data">
+<h3>Image data<a class="headerlink" href="#image-data" title="Link to this heading"></a></h3>
+<p>If segments do not overlap then the file has 3 spatial dimensions. Even if a single-slice image is segmented, the spatial dimension must be still 3 because that is required for specification origin, spacing, and axis directions in 3D space. If segments overlap then the file has one <code class="docutils literal notranslate"><span class="pre">list</span></code> dimension and 3 spatial dimensions. Each 3D volume in the list is referred to as a <code class="docutils literal notranslate"><span class="pre">layer</span></code>.</p>
+<p>If the image contains a single voxel then it has a special meaning: it means that no image data is available and the image geometry (origin, spacing, axis directions, extents) will be ignored. This special case is necessary because it is not possible to create a nrrd image file without any voxel data.
+Therefore, a segmentation without segments or with only empty segments is saved to file (e.g., to be used as a template for new segmentations) then it will be saved with an image data containing a single voxel.</p>
+</section>
+<section id="metadata">
+<h3>Metadata<a class="headerlink" href="#metadata" title="Link to this heading"></a></h3>
+<p>Additional metadata is stored in custom data fields (starting with <code class="docutils literal notranslate"><span class="pre">Segmentation_</span></code> or <code class="docutils literal notranslate"><span class="pre">SegmentN_</span></code> prefixes), which provide hints on how the segments should be displayed or what they contain.</p>
+<section id="common-custom-fields">
+<h4>Common custom fields<a class="headerlink" href="#common-custom-fields" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Segmentation_ContainedRepresentationNames</span></code>: names of segmentation representations (separated by <code class="docutils literal notranslate"><span class="pre">|</span></code> character) that should be displayed. Common representation names include <code class="docutils literal notranslate"><span class="pre">Binary</span> <span class="pre">labelmap</span></code>, <code class="docutils literal notranslate"><span class="pre">Closed</span> <span class="pre">surface</span></code>, <code class="docutils literal notranslate"><span class="pre">Planar</span> <span class="pre">contours</span></code>, <code class="docutils literal notranslate"><span class="pre">Fractional</span> <span class="pre">labelmap</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segmentation_ConversionParameters</span></code>: parameters for algorithms that compute requested representations. Each parameter definition is separated by the <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> character. A parameter definition consists of parameter name, value, and description text, separated by <code class="docutils literal notranslate"><span class="pre">|</span></code> character.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segmentation_SourceRepresentation</span></code>: defines what representation is stored in the file. It is most commonly <code class="docutils literal notranslate"><span class="pre">Binary</span> <span class="pre">labelmap</span></code>, but there are other representations, too, which are stored in an image volume - such as <code class="docutils literal notranslate"><span class="pre">Fractional</span> <span class="pre">labelmap</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segmentation_ReferenceImageExtentOffset</span></code>: This field allows storing an image with arbitrary extent in a NRRD file. NRRD file only stores size of the volume. This field stores voxel coordinates (separated by spaces), therefore the extent can be computed as <code class="docutils literal notranslate"><span class="pre">[ReferenceImageExtentOffsetI,</span> <span class="pre">ReferenceImageExtentOffsetI+sizeI-1,</span> <span class="pre">ReferenceImageExtentOffsetJ,</span> <span class="pre">ReferenceImageExtentOffsetJ+sizeJ-1,</span> <span class="pre">ReferenceImageExtentOffsetK,</span> <span class="pre">ReferenceImageExtentOffsetk+sizeK-1]</span></code>.</p></li>
+</ul>
+</section>
+<section id="segment-custom-fields">
+<h4>Segment custom fields<a class="headerlink" href="#segment-custom-fields" title="Link to this heading"></a></h4>
+<p>These fields specify properties for each segment. <code class="docutils literal notranslate"><span class="pre">N</span></code> refers to the segment index, which is an integer between 0 and <code class="docutils literal notranslate"><span class="pre">NumberOfSegments</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_ID</span></code>: identifier of the segment, it is unique within the segmentation. Can be used for unanmiguously refer to a segment even if the segment’s display name is changed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_Name</span></code>: display name of the segment (the name that is shown to users).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_NameAutoGenerated</span></code>: if value is <code class="docutils literal notranslate"><span class="pre">0</span></code> then it means that <code class="docutils literal notranslate"><span class="pre">SegmentN_Name</span></code> was chosen manually by the user, if value is <code class="docutils literal notranslate"><span class="pre">1</span></code> then it means that the segment’s name is generated automatically (for example, determined from terminology).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_Color</span></code>: recommended segment display color, defined with red, green, blue values (between 0.0 - 1.0) separated by space character.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_ColorAutoGenerated</span></code>: if value is <code class="docutils literal notranslate"><span class="pre">0</span></code> then it means that <code class="docutils literal notranslate"><span class="pre">SegmentN_Color</span></code> was chosen manually by the user, if value is <code class="docutils literal notranslate"><span class="pre">1</span></code> then it means that the segment’s color is generated automatically (for example, color defined based on terminology).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_Extent</span></code>: 6 space-separated values [<code class="docutils literal notranslate"><span class="pre">minI</span></code>, <code class="docutils literal notranslate"><span class="pre">maxI</span></code>, <code class="docutils literal notranslate"><span class="pre">minJ</span></code>, <code class="docutils literal notranslate"><span class="pre">maxJ</span></code>, <code class="docutils literal notranslate"><span class="pre">minZ</span></code>, <code class="docutils literal notranslate"><span class="pre">maxZ</span></code>] defining extent of non-empty region within the segment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_Tags</span></code>: List of key-value pairs for storing additional information about the segment. Key and value is separated by the <code class="docutils literal notranslate"><span class="pre">:</span></code> character,
+pairs are separated from each other by the <code class="docutils literal notranslate"><span class="pre">|</span></code> character.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_Layer</span></code>: Index of the 3D volume that contains the segment. Its value is between 0 and <code class="docutils literal notranslate"><span class="pre">DimensionAlongTheListImageAxis</span> <span class="pre">-</span> <span class="pre">1</span></code>. For segmentations in which the segments do not overlap, the segmentation can be represented as a single 3D volume with 1 layer. Upon saving, segments are typically collapsed to as few layers as possible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SegmentN_LabelValue</span></code>: The scalar value used to represent the segment within its own layer. Segments in separate layers can have the same label value.</p></li>
+</ul>
+<section id="terminologyentry-tag">
+<h5>TerminologyEntry tag<a class="headerlink" href="#terminologyentry-tag" title="Link to this heading"></a></h5>
+<p>A frequently used key is <code class="docutils literal notranslate"><span class="pre">TerminologyEntry</span></code>, which defines what the segment contains using DICOM compliant terminology. Value stores 7 parts: <code class="docutils literal notranslate"><span class="pre">terminology</span> <span class="pre">context</span> <span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">category</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">modifier</span></code>, <code class="docutils literal notranslate"><span class="pre">region</span> <span class="pre">context</span> <span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">region</span></code>, and <code class="docutils literal notranslate"><span class="pre">region</span> <span class="pre">modifier</span></code>. Parts are separated from each other by <code class="docutils literal notranslate"><span class="pre">~</span></code> character. Five of these parts - <code class="docutils literal notranslate"><span class="pre">category</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span></code>, <code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">modifier</span></code>, <code class="docutils literal notranslate"><span class="pre">region</span></code>, and <code class="docutils literal notranslate"><span class="pre">region</span> <span class="pre">modifier</span></code> are defined by a triplet of (<code class="docutils literal notranslate"><span class="pre">coding</span> <span class="pre">scheme</span> <span class="pre">designator</span></code>, <code class="docutils literal notranslate"><span class="pre">code</span> <span class="pre">value</span></code>, and <code class="docutils literal notranslate"><span class="pre">code</span> <span class="pre">meaning</span></code>). Components of the triplet are separated by <code class="docutils literal notranslate"><span class="pre">^</span></code> character.</p>
+<p>Example:</p>
+<p>A mass in the right side of the adrenal gland would be encoded with the following the tag:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TerminologyEntry</span><span class="p">:</span>
+<span class="n">Segmentation</span> <span class="n">category</span> <span class="ow">and</span> <span class="nb">type</span> <span class="o">-</span> <span class="mi">3</span><span class="n">D</span> <span class="n">Slicer</span> <span class="n">General</span> <span class="n">Anatomy</span> <span class="nb">list</span>
+<span class="o">~</span><span class="n">SCT</span><span class="o">^</span><span class="mi">49755003</span><span class="o">^</span><span class="n">Morphologically</span> <span class="n">Altered</span> <span class="n">Structure</span>
+<span class="o">~</span><span class="n">SCT</span><span class="o">^</span><span class="mi">4147007</span><span class="o">^</span><span class="n">Mass</span>
+<span class="o">~^^</span>
+<span class="o">~</span><span class="n">Anatomic</span> <span class="n">codes</span> <span class="o">-</span> <span class="n">DICOM</span> <span class="n">master</span> <span class="nb">list</span>
+<span class="o">~</span><span class="n">SCT</span><span class="o">^</span><span class="mi">23451007</span><span class="o">^</span><span class="n">Adrenal</span> <span class="n">gland</span>
+<span class="o">~</span><span class="n">SCT</span><span class="o">^</span><span class="mi">24028007</span><span class="o">^</span><span class="n">Right</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Interpretation:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">terminology</span> <span class="pre">context</span> <span class="pre">name</span></code>: <code class="docutils literal notranslate"><span class="pre">Segmentation</span> <span class="pre">category</span> <span class="pre">and</span> <span class="pre">type</span> <span class="pre">-</span> <span class="pre">3D</span> <span class="pre">Slicer</span> <span class="pre">General</span> <span class="pre">Anatomy</span> <span class="pre">list</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">category</span></code>: <code class="docutils literal notranslate"><span class="pre">codingScheme</span></code>=<code class="docutils literal notranslate"><span class="pre">SCT</span></code> (Snomed Clinical Terms), <code class="docutils literal notranslate"><span class="pre">codeValue</span></code>=<code class="docutils literal notranslate"><span class="pre">49755003</span></code>, <code class="docutils literal notranslate"><span class="pre">codeMeaning</span></code>=<code class="docutils literal notranslate"><span class="pre">Morphologically</span> <span class="pre">Altered</span> <span class="pre">Structure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: <code class="docutils literal notranslate"><span class="pre">codingScheme</span></code>=<code class="docutils literal notranslate"><span class="pre">SCT</span></code>, <code class="docutils literal notranslate"><span class="pre">codeValue</span></code>=<code class="docutils literal notranslate"><span class="pre">4147007</span></code>, <code class="docutils literal notranslate"><span class="pre">codeMeaning</span></code>=<code class="docutils literal notranslate"><span class="pre">Mass</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">modifier</span></code>: not specified</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">region</span> <span class="pre">context</span> <span class="pre">name</span></code>: <code class="docutils literal notranslate"><span class="pre">Anatomic</span> <span class="pre">codes</span> <span class="pre">-</span> <span class="pre">DICOM</span> <span class="pre">master</span> <span class="pre">list</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">region</span></code>: <code class="docutils literal notranslate"><span class="pre">codingScheme</span></code>=<code class="docutils literal notranslate"><span class="pre">SCT</span></code>, <code class="docutils literal notranslate"><span class="pre">codeValue</span></code>=<code class="docutils literal notranslate"><span class="pre">23451007</span></code>, <code class="docutils literal notranslate"><span class="pre">codeMeaning</span></code>=<code class="docutils literal notranslate"><span class="pre">Adrenal</span> <span class="pre">gland</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">region</span> <span class="pre">modifier</span></code>: <code class="docutils literal notranslate"><span class="pre">codingScheme</span></code>=<code class="docutils literal notranslate"><span class="pre">SCT</span></code>, <code class="docutils literal notranslate"><span class="pre">codeValue</span></code>=<code class="docutils literal notranslate"><span class="pre">24028007</span></code>, <code class="docutils literal notranslate"><span class="pre">codeMeaning</span></code>=<code class="docutils literal notranslate"><span class="pre">Right</span></code></p></li>
+</ul>
+</section>
+</section>
+</section>
+</section>
+<section id="segmentation-surface-file-format-seg-vtm">
+<h2>Segmentation surface file format (.seg.vtm)<a class="headerlink" href="#segmentation-surface-file-format-seg-vtm" title="Link to this heading"></a></h2>
+<p>Segmentation is stored in a standard VTK multiblock data set file format. Multiblock data set consists of an index (.vtm) file that stores the file path of each block. Each block file is a VTK polydata (.vtp) file, typically stored in a subdirectory.</p>
+<section id="id1">
+<h3>Metadata<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Metadata fields are stored in the polydata files (.vtp) as arrays in <code class="docutils literal notranslate"><span class="pre">FieldData</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Segmentation_SourceRepresentation</span></code>: type: <code class="docutils literal notranslate"><span class="pre">String</span></code>, definition: see in “Common custom fields” section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segmentation_ConversionParameters</span></code>: type: <code class="docutils literal notranslate"><span class="pre">String</span></code>, definition: see in “Common custom fields” section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segmentation_ContainedRepresentationNames</span></code>: type: <code class="docutils literal notranslate"><span class="pre">String</span></code>, definition: see in “Common custom fields” section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segment_ID</span></code>: type = <code class="docutils literal notranslate"><span class="pre">String</span></code>, definition: see in “Segment custom fields” section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segment_Name</span></code>: type = <code class="docutils literal notranslate"><span class="pre">String</span></code>, definition: see in “Segment custom fields” section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segment_NameAutoGenerated</span></code>: type = <code class="docutils literal notranslate"><span class="pre">String</span></code>, definition: see in “Segment custom fields” section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segment_Color</span></code>: type = <code class="docutils literal notranslate"><span class="pre">Float64</span></code>, number of components = 3, definition: see in “Segment custom fields” section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segment_ColorAutoGenerated</span></code>: type = <code class="docutils literal notranslate"><span class="pre">String</span></code>, definition: see in “Segment custom fields” section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Segment_Tags</span></code>: type = <code class="docutils literal notranslate"><span class="pre">String</span></code>, definition: see in “Segment custom fields” section above</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="selftests.html" class="btn btn-neutral float-left" title="Self Tests" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="segmenteditor.html" class="btn btn-neutral float-right" title="Segment editor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

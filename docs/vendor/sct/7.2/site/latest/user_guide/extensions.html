@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extensions &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Application settings" href="settings.html" />
+    <link rel="prev" title="Retired Modules" href="modules/retiredmodules.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/extensions.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html">Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extensions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#extensions-manager">Extensions Manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to">How to</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#install-extensions">Install extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#update-extensions">Update extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#uninstall-extensions">Uninstall extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#disable-extensions">Disable extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#install-extensions-without-network-connection">Install extensions without network connection</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#extensions-manager-takes-very-long-time-to-start">Extensions manager takes very long time to start</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extensions-manager-does-not-show-any-extensions">Extensions manager does not show any extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extension-is-not-found-for-current-slicer-version">Extension is not found for current Slicer version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extensions-manager-is-not-visible-in-the-menu">Extensions manager is not visible in the menu</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#extensions-settings">Extensions settings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Extensions</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/extensions.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="extensions">
+<h1>Extensions<a class="headerlink" href="#extensions" title="Link to this heading"></a></h1>
+<p>An extension is a delivery package that bundles one or more Slicer modules. Once installed, the associated modules appear in 3D Slicer just like built-in ones.</p>
+<p>Users can access additional functionality by installing extensions through the Extensions Manager in the 3D Slicer. Alternatively, extension packages can be browsed and downloaded using a web browser from the <a class="reference external" href="https://extensions.slicer.org">Slicer Extensions Catalog</a>.</p>
+<p>Developers can contribute new capabilities to the platform by creating extensions. For more information, see the <a class="reference internal" href="../developer_guide/extensions.html"><span class="std std-doc">Extension Development Guide</span></a>.</p>
+<section id="extensions-manager">
+<h2>Extensions Manager<a class="headerlink" href="#extensions-manager" title="Link to this heading"></a></h2>
+<section id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h3>
+<p>The Extensions Manager is available in the 3D Slicer application. It can be used to find, install, update, and uninstall extensions.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/extensions_manager.png" /></p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/extensions_manager_update.png" /></p>
+</section>
+<section id="how-to">
+<h3>How to<a class="headerlink" href="#how-to" title="Link to this heading"></a></h3>
+<section id="install-extensions">
+<h4>Install extensions<a class="headerlink" href="#install-extensions" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Open Extensions manager using menu: View / Extensions manager. On macOS, Extensions manager requires the <a class="reference internal" href="getting_started.html#mac"><span class="std std-ref">application to be installed</span></a>.</p></li>
+<li><p>To install new extensions:</p>
+<ul>
+<li><p>Go to “Install extensions” tab</p></li>
+<li><p>Click “Install” button for each extension to be installed.</p></li>
+</ul>
+</li>
+<li><p>To restore previously “bookmarked” extensions:</p>
+<ul>
+<li><p>Go to “Manage Extensions” tab</p></li>
+<li><p>Click “Install bookmarked” button to install all bookmarked extensions; or click “Install” button of specific extensions.</p></li>
+</ul>
+</li>
+<li><p>If “Install dependencies” window appears, click “Yes” to install extensions that the selected extension requires. If dependencies are not installed then the chosen extension may not work properly. Automatic installation of dependencies can be enabled by using the “Automatically install dependencies” option in the “Settings” button’s menu.</p></li>
+<li><p>Wait until “Restart” button in the lower-right corner becomes enabled, then click “Restart”.</p></li>
+<li><p>Click “OK” if you are asked to restart Slicer, unless you have valuable changes in the scene. If there are changes in the scene that needs to be saved then choose “Cancel”, save the scene, and restart the application manually.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Extensions can be “bookmarked” so that they can be easily reinstalled later, even in other Slicer versions. Bookmarks can be added or removed by clicking the orange bookmark icon in the extensions list in the “Manage extensions” tab.</p>
+<p>All current bookmarks can be conveniently accessed and multiple bookmarks can be added using “Edit bookmarks…” in the “Settings” button’s menu. This feature is also useful to quickly share the list of bookmarked extensions with others, or easily add multiple bookmarked extensions for easy installation.</p>
+</div>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/extensions_manager_settings.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the extension that you want to install is disabled and has “Not found for this version of the application” message is displayed below its name then follow instructions in <a class="reference internal" href="#extension-is-not-found-for-current-slicer-version">troubleshooting section</a>.</p>
+</div>
+</section>
+<section id="update-extensions">
+<h4>Update extensions<a class="headerlink" href="#update-extensions" title="Link to this heading"></a></h4>
+<section id="update-extensions-for-slicer-stable-releases">
+<h5>Update extensions for Slicer Stable Releases<a class="headerlink" href="#update-extensions-for-slicer-stable-releases" title="Link to this heading"></a></h5>
+<ul class="simple">
+<li><p>Open Extensions manager using menu: View / Extensions manager.</p></li>
+<li><p>Go to “Manage extensions” tab.</p></li>
+<li><p>Click “Check for updates” button for looking for updates for all installed extensions.</p></li>
+<li><p>For each extension that has an available update, “An update is available…” note is displayed.</p></li>
+<li><p>Click “Update all” button to install all available updates or click “Update” button for specific extensions.</p></li>
+<li><p>Click “Restart” button to restart the application.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By enabling “Automatically check for updates” in the “Settings” button’s menu, Slicer will check if extension updates are available at start-up and display a small orange notification marker on the Extensions Manager icon on the toolbar.</p>
+<p>By enabling “Automatically install updates” in the “Settings” button’s menu, Slicer will automatically install updates when an update is found.</p>
+</div>
+<p>Extensions are updated every night for the latest Slicer Stable Release. Extensions are not updated for earlier Slicer Stable Releases.</p>
+</section>
+<section id="update-extensions-for-slicer-preview-releases">
+<h5>Update extensions for Slicer Preview Releases<a class="headerlink" href="#update-extensions-for-slicer-preview-releases" title="Link to this heading"></a></h5>
+<p>Each Slicer Preview Release and all corresponding extensions are built at once, and only once (every night, from the latest version of Slicer).
+To get latest extensions for a Slicer Preview Release, download and install the latest Slicer Preview Release and reinstall the extensions.</p>
+</section>
+</section>
+<section id="uninstall-extensions">
+<h4>Uninstall extensions<a class="headerlink" href="#uninstall-extensions" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Open Extensions manager using menu: View / Extensions manager</p></li>
+<li><p>Go to “Manage extensions” tab.</p></li>
+<li><p>Click “Uninstall” button for each extension to be uninstalled.</p></li>
+<li><p>Click “Restart” button to restart the application.</p></li>
+</ul>
+</section>
+<section id="disable-extensions">
+<h4>Disable extensions<a class="headerlink" href="#disable-extensions" title="Link to this heading"></a></h4>
+<p>Extensions can be temporarily disabled. Disabled extensions are not loaded into the application but still kept on the system. They can be easily re-enabled, without downloading from the extension manager.</p>
+<ul class="simple">
+<li><p>Open Extensions manager using menu: View / Extensions manager</p></li>
+<li><p>Go to “Manage extensions” tab.</p></li>
+<li><p>Click “Disable” button for each extension to be uninstalled.</p></li>
+<li><p>Click “Restart” button to restart the application.</p></li>
+</ul>
+</section>
+<section id="install-extensions-without-network-connection">
+<h4>Install extensions without network connection<a class="headerlink" href="#install-extensions-without-network-connection" title="Link to this heading"></a></h4>
+<p>Extensions can be downloaded from the Extensions Catalog website and can be installed manually, without network connection, in Slicer using the Extensions manager.</p>
+<section id="download-extension-packages">
+<h5>Download extension packages<a class="headerlink" href="#download-extension-packages" title="Link to this heading"></a></h5>
+<ul class="simple">
+<li><p>Opening the Extension Catalog in the default web browser on your system by clicking on “Open Extensions Catalog website” in the “Settings” button’s menu</p></li>
+</ul>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/extensions_manager_open_in_browser.png" /></p>
+<ul class="simple">
+<li><p>Click “Download” button of the selected extension(s) to download the extension package.</p></li>
+</ul>
+</section>
+<section id="install-downloaded-extension-packages">
+<h5>Install downloaded extension packages<a class="headerlink" href="#install-downloaded-extension-packages" title="Link to this heading"></a></h5>
+<ul class="simple">
+<li><p>Open Extensions manager using menu: View / Extensions manager.</p></li>
+<li><p>Click the “Install from file…” button.</p></li>
+<li><p>Select the previously downloaded extension package(s). Multiple extension packages can be selected at once.</p></li>
+<li><p>Wait for the installations to complete.</p></li>
+<li><p>Click “Restart” button to restart the application.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="troubleshooting">
+<h3>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h3>
+<section id="extensions-manager-takes-very-long-time-to-start">
+<h4>Extensions manager takes very long time to start<a class="headerlink" href="#extensions-manager-takes-very-long-time-to-start" title="Link to this heading"></a></h4>
+<p>When starting the extensions manager, the “Extensions manager is starting, please wait…” message is displayed immediately and normally list of extensions should show up within 10-20 seconds. If startup takes longer (several minutes) then most likely the Slicer Extensions Catalog server is temporarily overloaded. Retry in an hour. If the problem persists after 6 hours then report it on the <a class="reference external" href="https://discourse.slicer.org">Slicer forum</a>.</p>
+</section>
+<section id="extensions-manager-does-not-show-any-extensions">
+<h4>Extensions manager does not show any extensions<a class="headerlink" href="#extensions-manager-does-not-show-any-extensions" title="Link to this heading"></a></h4>
+<p>This can be due to several reasons:</p>
+<ul class="simple">
+<li><p>On macOS: Extensions manager displays the message “Extensions can not be installed” if the application is not installed. See <a class="reference internal" href="getting_started.html#mac"><span class="std std-ref">application installation instructions</span></a>.</p></li>
+<li><p>Extensions Catalog server is temporarily overloaded (indicated by extensions manager taking several minutes to start and having dozens of <code class="docutils literal notranslate"><span class="pre">Error</span> <span class="pre">retrieving</span> <span class="pre">extension</span> <span class="pre">metadata</span></code> messages in the application log)</p>
+<ul>
+<li><p>Recommended action: retry installing extensions an hour later.</p></li>
+</ul>
+</li>
+<li><p>Extensions have not yet been built for the installed Slicer Preview Release (extensions are made available for latest Slicer Preview Release each day at around 12pm EST)</p>
+<ul>
+<li><p>Recommended action: wait a few hours until the extension becomes available.</p></li>
+<li><p>Alternative solution A: <a class="reference external" href="https://download.slicer.org/?offset=-1">install Slicer Preview Release created the day before</a> (this is a special link that uses <code class="docutils literal notranslate"><span class="pre">offset=-1</span></code> to request builds from a day before)</p></li>
+<li><p>Alternative solution B: <a class="reference external" href="https://download.slicer.org">install latest Slicer Stable Release</a>.</p></li>
+</ul>
+</li>
+<li><p>Extensions manager does not have network access</p>
+<ul>
+<li><p>Recommended action: Make sure you have internet access. Check your system proxy settings (Slicer uses these system proxy settings by default) and/or set proxy server information in environment variables <code class="docutils literal notranslate"><span class="pre">http_proxy</span></code> and <code class="docutils literal notranslate"><span class="pre">https_proxy</span></code> (<a class="reference external" href="https://doc.qt.io/qt-5/qnetworkproxyfactory.html#systemProxyForQuery">more information</a>). On Windows, it may be necessary to re-apply the proxy settings by disabling and re-enabling “Automatically detect settings”.</p></li>
+<li><p>Alternative solution: download extension package using a web browser (possibly on a different computer) and install the extension manually. See instructions <a class="reference internal" href="#install-extensions-without-network-connection">here</a>.</p></li>
+</ul>
+</li>
+<li><p>On macOS: on some older macbooks, the extension manager window appears very bright, washed out (more information is in <a class="reference external" href="https://github.com/Slicer/Slicer/issues/5118">this issue</a>)</p>
+<ul>
+<li><p>Recommended action: setting the operating system to dark mode fixed the issue for several users.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="extension-is-not-found-for-current-slicer-version">
+<h4>Extension is not found for current Slicer version<a class="headerlink" href="#extension-is-not-found-for-current-slicer-version" title="Link to this heading"></a></h4>
+<p>For Slicer Stable Releases: If certain extensions are available, but a particular extension is not available for your current Slicer version then contact the maintainer of the extension. If the maintainer cannot be reached then ask for help on the <a class="reference external" href="https://discourse.slicer.org">Slicer forum</a>.</p>
+<p>For Slicer Preview Releases, due to the constantly updating nature of the preview release, extensions may be missing at times:</p>
+<ul class="simple">
+<li><p>Extensions for latest Slicer Preview Release are uploaded by about 10am EST each day. If you need complete set of extensions then either wait or install previous releases as described <a class="reference internal" href="#extensions-manager-does-not-show-any-extensions">above</a>.</p></li>
+<li><p>Factory system errors: Occasionally, issues with the factory system will prevent some or all extensions from building. See <a class="reference internal" href="../developer_guide/extensions.html#continuous-integration"><span class="std std-ref">dashboard</span></a> for status information.</p></li>
+<li><p>Extension build errors: The extension may not have been updated to work with your Slicer version or a problem may have been introduced recently. Contact the extension’s maintainer. If the maintainer cannot be reached then ask for help on the <a class="reference external" href="https://discourse.slicer.org">Slicer forum</a>.</p></li>
+</ul>
+</section>
+<section id="extensions-manager-is-not-visible-in-the-menu">
+<h4>Extensions manager is not visible in the menu<a class="headerlink" href="#extensions-manager-is-not-visible-in-the-menu" title="Link to this heading"></a></h4>
+<p>If extension manager is not visible then make sure that “Enable extension manager” option is enabled in Application Settings (menu: Edit / Application Settings / Extensions). If you changed the setting, Slicer has to be restarted for it to become effective.</p>
+</section>
+</section>
+<section id="extensions-settings">
+<h3>Extensions settings<a class="headerlink" href="#extensions-settings" title="Link to this heading"></a></h3>
+<p>Settings of extensions manager can be edited in menu: Edit / Application settings / Extensions.</p>
+<ul class="simple">
+<li><p>Extensions manager: if unchecked then Extensions manager is not shown in the menu.</p></li>
+<li><p>Extensions server URL: address of the server used to download and install extensions.</p></li>
+<li><p>Extensions installation path: directory where extension packages should be extracted and installed.</p></li>
+</ul>
+<p>Modules associated with an extension can also be disabled one by one in menu: Edit / Application settings / Modules.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules/retiredmodules.html" class="btn btn-neutral float-left" title="Retired Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="settings.html" class="btn btn-neutral float-right" title="Application settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

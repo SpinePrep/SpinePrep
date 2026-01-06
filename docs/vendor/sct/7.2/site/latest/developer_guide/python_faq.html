@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python FAQ &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Script repository" href="script_repository.html" />
+    <link rel="prev" title="Extensions" href="extensions.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/python_faq.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Python FAQ</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-the-slicer-python-environment">What is the Slicer Python environment?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-the-pythonslicer-executable">What is the PythonSlicer executable?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-the-python-console">What is the Python Console?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-access-slicer-s-python-api-via-an-external-program-while-slicer-is-running">How to access Slicer’s Python API via an external program while Slicer is running?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-run-a-cli-module-from-python">How to run a CLI module from Python</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#get-list-of-parameter-names">Get list of parameter names</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#passing-markups-point-list-to-clis">Passing markups point list to CLIs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#running-cli-in-the-background">Running CLI in the background</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-use-a-loadable-module-from-python">How to use a loadable module from Python</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#calling-methods-of-a-module-logic">Calling methods of a module logic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adding-reusable-widgets-provided-by-modules">Adding reusable widgets provided by modules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-find-a-python-function-for-any-slicer-features">How to find a Python function for any Slicer features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-connect-gui-widget-events-to-python-code">How to connect GUI widget events to Python code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-run-an-external-python-script-as-a-cli-module">How to run an external Python script as a CLI module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-type-file-paths-in-python">How to type file paths in Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-modify-a-python-scripted-module">How to modify a Python scripted module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-include-python-modules-in-an-extension">How to include Python modules in an extension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-use-any-python-package-in-a-slicer-module">Can I use any Python package in a Slicer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Python FAQ</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/python_faq.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="python-faq">
+<h1>Python FAQ<a class="headerlink" href="#python-faq" title="Link to this heading"></a></h1>
+<p>Frequently asked questions about how to write Python scripts for Slicer.</p>
+<section id="what-is-the-slicer-python-environment">
+<h2>What is the Slicer Python environment?<a class="headerlink" href="#what-is-the-slicer-python-environment" title="Link to this heading"></a></h2>
+<p>You can consider each Slicer installation as a virtual Python environment - the same way
+as you create virtual environments using python or conda.</p>
+</section>
+<section id="what-is-the-pythonslicer-executable">
+<h2>What is the PythonSlicer executable?<a class="headerlink" href="#what-is-the-pythonslicer-executable" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">PythonSlicer</span></code> is an executable provided in the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory of the Slicer installation.
+It is a Python interpreter that allows access to all of the packages installed in Slicer.
+This makes it possible to use the Slicer Python environment from outside the application, such
+as for batch processing, command-line operations, terminal-based interactive session and
+integration with IDEs.</p>
+<p>This means you can use <code class="docutils literal notranslate"><span class="pre">PythonSlicer</span></code> as a replacement for the regular Python interpreter
+(<code class="docutils literal notranslate"><span class="pre">python</span></code> or <code class="docutils literal notranslate"><span class="pre">python3</span></code>) to take advantage of the installed packages in the Slicer environment.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that the running Python context is <strong>not</strong> available when using <code class="docutils literal notranslate"><span class="pre">PythonSlicer</span></code>.
+As a result, many objects, including the application instance, the MRML scene and the loaded
+modules, are not available.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To install additional packages, you can use the <a class="reference internal" href="slicer.html#slicer.util.pip_install" title="slicer.util.pip_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">slicer.util.pip_install()</span></code></a> function.</p>
+</div>
+</section>
+<section id="what-is-the-python-console">
+<h2>What is the Python Console?<a class="headerlink" href="#what-is-the-python-console" title="Link to this heading"></a></h2>
+<p>This describes the <a class="reference internal" href="../user_guide/user_interface.html#python-console"><span class="std std-ref">Python console</span></a> available through
+the <a class="reference internal" href="../user_guide/user_interface.html"><span class="std std-doc">user interface</span></a>.</p>
+<p>It allows to access the running Python context including the application instance,
+the MRML scene and all the loaded modules through these :mod:<code class="docutils literal notranslate"><span class="pre">slicer</span></code> attributes:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="slicer.html#slicer.app" title="slicer.app"><code class="xref py py-attr docutils literal notranslate"><span class="pre">slicer.app</span></code></a></p></li>
+<li><p><a class="reference internal" href="slicer.html#slicer.mrmlScene" title="slicer.mrmlScene"><code class="xref py py-attr docutils literal notranslate"><span class="pre">slicer.mrmlScene</span></code></a></p></li>
+<li><p><a class="reference internal" href="slicer.html#slicer.modules" title="slicer.modules"><code class="xref py py-attr docutils literal notranslate"><span class="pre">slicer.modules</span></code></a></p></li>
+<li><p><a class="reference internal" href="slicer.html#slicer.moduleNames" title="slicer.moduleNames"><code class="xref py py-attr docutils literal notranslate"><span class="pre">slicer.moduleNames</span></code></a></p></li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Running scripts (or code) using the command-line option <code class="docutils literal notranslate"><span class="pre">--python-script</span></code> (or <code class="docutils literal notranslate"><span class="pre">python-code</span></code>)
+is equivalent to running code in the Python Console.</p>
+<p>Combined with the use of <code class="docutils literal notranslate"><span class="pre">--no-main-window</span></code>, this is useful for implementing batch processing
+pipelines leveraging capabilities only available in the context of a running Slicer application.
+For example, this applies to the <a class="reference internal" href="../user_guide/modules/segmenteditor.html#effects"><span class="std std-ref">Segment Editor effects</span></a>.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To install additional packages, you can use the <a class="reference internal" href="slicer.html#slicer.util.pip_install" title="slicer.util.pip_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">slicer.util.pip_install()</span></code></a> function.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 5.2.0: </span>The <code class="docutils literal notranslate"><span class="pre">Python</span> <span class="pre">interactor</span></code> was renamed to <code class="docutils literal notranslate"><span class="pre">Python</span> <span class="pre">Console</span></code>.
+See <a class="reference external" href="https://discourse.slicer.org/t/rename-python-interactor-to-python-console/25897">related discussion</a>.</p>
+</div>
+</section>
+<section id="how-to-access-slicer-s-python-api-via-an-external-program-while-slicer-is-running">
+<h2>How to access Slicer’s Python API via an external program while Slicer is running?<a class="headerlink" href="#how-to-access-slicer-s-python-api-via-an-external-program-while-slicer-is-running" title="Link to this heading"></a></h2>
+<p>There are several ways to access Slicer’s Python API from an external program while Slicer is running:</p>
+<ul>
+<li><p><a class="reference internal" href="../user_guide/modules/webserver.html"><span class="std std-doc">SlicerWeb</span></a>: Exposes Slicer’s Python environment as a web service
+that can respond to http(s) requests with data from the current application state or modify the
+application state. This is well-suited for applications that already use web requests.</p></li>
+<li><p><a class="reference external" href="https://github.com/openigtlink/SlicerOpenIGTLink">SlicerOpenIGTLink</a>: A lightweight socket-based
+protocol for real-time data transfer. This is useful for applications that need to send many
+requests per second (e.g., continuous data streaming) or for clients that only have access to
+sockets and prefer to avoid the complexity of protocols like HTTP. In most cases, it performs well
+for sending requests at a rate of 10 to 100 requests per second.</p>
+<p>A native Python implementation, <a class="reference external" href="https://pypi.org/project/pyigtl/">pyigtl</a>, is available for
+use outside the Slicer application. It can be used to both stream data from Slicer and stream
+data to Slicer.</p>
+</li>
+<li><p><a class="reference external" href="https://github.com/Slicer/SlicerJupyter#readme">SlicerJupyter</a>: A protocol for interacting with
+Slicer using standard Jupyter kernel protocol (simple protocol built on top of ZeroMQ middleware).
+This is useful for applications that want to offer embedded Python console to Slicer and don’t want
+to implement a Slicer-specific protocol.</p></li>
+<li><p><a class="reference internal" href="debugging/python.html"><span class="std std-doc">Python debuggers</span></a>: Python debuggers like PyCharm, Visual Studio Code,
+and Eclipse can be used to visualize and debug Python scripts in Slicer, including setting breakpoints,
+executing code step-by-step, and viewing variables and the stack.</p></li>
+</ul>
+<p>These approaches offer different trade-offs in terms of complexity, performance, and ease of use, so
+it’s important to choose the one that best fits your needs. For more information, see the linked
+documentation for each approach.</p>
+</section>
+<section id="how-to-run-a-cli-module-from-python">
+<h2>How to run a CLI module from Python<a class="headerlink" href="#how-to-run-a-cli-module-from-python" title="Link to this heading"></a></h2>
+<p>Here’s an example to create a model from a volume using the “Grayscale Model Maker” module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">createModelFromVolume</span><span class="p">(</span><span class="n">inputVolumeNode</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;Create surface mesh from volume node using CLI module&quot;&quot;&quot;</span>
+  <span class="c1"># Set parameters</span>
+  <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;InputVolume&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputVolumeNode</span>
+  <span class="n">outputModelNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">AddNewNodeByClass</span><span class="p">(</span><span class="s2">&quot;vtkMRMLModelNode&quot;</span><span class="p">)</span>
+  <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;OutputGeometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputModelNode</span>
+  <span class="c1"># Execute</span>
+  <span class="n">grayMaker</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">grayscalemodelmaker</span>
+  <span class="n">cliNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">runSync</span><span class="p">(</span><span class="n">grayMaker</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+  <span class="c1"># Process results</span>
+  <span class="k">if</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">GetStatus</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">ErrorsMask</span><span class="p">:</span>
+    <span class="c1"># error</span>
+    <span class="n">errorText</span> <span class="o">=</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">GetErrorText</span><span class="p">()</span>
+    <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">RemoveNode</span><span class="p">(</span><span class="n">cliNode</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;CLI execution failed: &quot;</span> <span class="o">+</span> <span class="n">errorText</span><span class="p">)</span>
+  <span class="c1"># success</span>
+  <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">RemoveNode</span><span class="p">(</span><span class="n">cliNode</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">outputModelNode</span>
+</pre></div>
+</div>
+<p>To try this, download the MRHead dataset using “Sample Data” module and paste the code above into the Python console and then run this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">volumeNode</span> <span class="o">=</span> <span class="n">getNode</span><span class="p">(</span><span class="s1">&#39;MRHead&#39;</span><span class="p">)</span>
+<span class="n">modelNode</span> <span class="o">=</span> <span class="n">createModelFromVolume</span><span class="p">(</span><span class="n">volumeNode</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A complete example for running a CLI module from a scripted module is available <a class="reference external" href="https://github.com/fedorov/ChangeTrackerPy/blob/master/ChangeTracker/ChangeTrackerWizard/ChangeTrackerRegistrationStep.py#L56-L67">here</a></p>
+<section id="get-list-of-parameter-names">
+<h3>Get list of parameter names<a class="headerlink" href="#get-list-of-parameter-names" title="Link to this heading"></a></h3>
+<p>The following script prints all the parameter names of a CLI parameter node:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cliModule</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">grayscalemodelmaker</span>
+<span class="n">n</span><span class="o">=</span><span class="n">cliModule</span><span class="o">.</span><span class="n">cliModuleLogic</span><span class="p">()</span><span class="o">.</span><span class="n">CreateNode</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">groupIndex</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">GetNumberOfParameterGroups</span><span class="p">()):</span>
+  <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Group: </span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">GetParameterGroupLabel</span><span class="p">(</span><span class="n">groupIndex</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">parameterIndex</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">GetNumberOfParametersInGroup</span><span class="p">(</span><span class="n">groupIndex</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{0}</span><span class="s1"> [</span><span class="si">{1}</span><span class="s1">]: </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">GetParameterName</span><span class="p">(</span><span class="n">groupIndex</span><span class="p">,</span> <span class="n">parameterIndex</span><span class="p">),</span>
+      <span class="n">n</span><span class="o">.</span><span class="n">GetParameterTag</span><span class="p">(</span><span class="n">groupIndex</span><span class="p">,</span> <span class="n">parameterIndex</span><span class="p">),</span><span class="n">n</span><span class="o">.</span><span class="n">GetParameterLabel</span><span class="p">(</span><span class="n">groupIndex</span><span class="p">,</span> <span class="n">parameterIndex</span><span class="p">)))</span>
+</pre></div>
+</div>
+</section>
+<section id="passing-markups-point-list-to-clis">
+<h3>Passing markups point list to CLIs<a class="headerlink" href="#passing-markups-point-list-to-clis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">SampleData</span>
+<span class="n">sampleDataLogic</span> <span class="o">=</span> <span class="n">SampleData</span><span class="o">.</span><span class="n">SampleDataLogic</span><span class="p">()</span>
+<span class="n">head</span> <span class="o">=</span> <span class="n">sampleDataLogic</span><span class="o">.</span><span class="n">downloadMRHead</span><span class="p">()</span>
+<span class="n">volumesLogic</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">volumes</span><span class="o">.</span><span class="n">logic</span><span class="p">()</span>
+<span class="n">headLabel</span> <span class="o">=</span> <span class="n">volumesLogic</span><span class="o">.</span><span class="n">CreateLabelVolume</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="s1">&#39;head-label&#39;</span><span class="p">)</span>
+
+<span class="n">pointListNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">AddNewNodeByClass</span><span class="p">(</span><span class="s2">&quot;vtkMRMLMarkupsFiducialNode&quot;</span><span class="p">)</span>
+<span class="n">pointListNode</span><span class="o">.</span><span class="n">AddControlPoint</span><span class="p">(</span><span class="n">vtk</span><span class="o">.</span><span class="n">vtkVector3d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">pointListNode</span><span class="o">.</span><span class="n">SetName</span><span class="p">(</span><span class="s1">&#39;Seed Point&#39;</span><span class="p">)</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;inputVolume&#39;</span><span class="p">:</span> <span class="n">head</span><span class="o">.</span><span class="n">GetID</span><span class="p">(),</span> <span class="s1">&#39;outputVolume&#39;</span><span class="p">:</span> <span class="n">headLabel</span><span class="o">.</span><span class="n">GetID</span><span class="p">(),</span> <span class="s1">&#39;seed&#39;</span> <span class="p">:</span> <span class="n">pointListNode</span><span class="o">.</span><span class="n">GetID</span><span class="p">(),</span> <span class="s1">&#39;iterations&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+
+<span class="n">cliNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">runSync</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">simpleregiongrowingsegmentation</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="running-cli-in-the-background">
+<h3>Running CLI in the background<a class="headerlink" href="#running-cli-in-the-background" title="Link to this heading"></a></h3>
+<p>If the CLI module is executed using <code class="docutils literal notranslate"><span class="pre">slicer.cli.run</span></code> method then the CLI module runs in a background thread, so the call to <code class="docutils literal notranslate"><span class="pre">startProcessing</span></code> will return right away and the user interface will not be blocked. The <code class="docutils literal notranslate"><span class="pre">slicer.cli.run</span></code> call returns a cliNode (an instance of <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLCommandLineModuleNode.html#">vtkMRMLCommandLineModuleNode</a>) which can be used to monitor the progress of the module.</p>
+<p>In this example we create a simple callback <code class="docutils literal notranslate"><span class="pre">onProcessingStatusUpdate</span></code> that will be called whenever the cliNode is modified.  The status will tell you if the nodes is Pending, Running, or Completed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">startProcessing</span><span class="p">(</span><span class="n">inputVolumeNode</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&quot;&quot;&quot;Create surface mesh from volume node using CLI module&quot;&quot;&quot;</span>
+  <span class="c1"># Set parameters</span>
+  <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;InputVolume&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputVolumeNode</span>
+  <span class="n">outputModelNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">AddNewNodeByClass</span><span class="p">(</span><span class="s2">&quot;vtkMRMLModelNode&quot;</span><span class="p">)</span>
+  <span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;OutputGeometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputModelNode</span>
+  <span class="c1"># Start execution in the background</span>
+  <span class="n">grayMaker</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">grayscalemodelmaker</span>
+  <span class="n">cliNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">grayMaker</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">cliNode</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">onProcessingStatusUpdate</span><span class="p">(</span><span class="n">cliNode</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Got a </span><span class="si">%s</span><span class="s2"> from a </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">GetClassName</span><span class="p">()))</span>
+  <span class="k">if</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">IsA</span><span class="p">(</span><span class="s1">&#39;vtkMRMLCommandLineModuleNode&#39;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Status is </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">GetStatusString</span><span class="p">())</span>
+  <span class="k">if</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">GetStatus</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">Completed</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">GetStatus</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">ErrorsMask</span><span class="p">:</span>
+      <span class="c1"># error</span>
+      <span class="n">errorText</span> <span class="o">=</span> <span class="n">cliNode</span><span class="o">.</span><span class="n">GetErrorText</span><span class="p">()</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CLI execution failed: &quot;</span> <span class="o">+</span> <span class="n">errorText</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="c1"># success</span>
+      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CLI execution succeeded. Output model node ID: &quot;</span><span class="o">+</span><span class="n">cliNode</span><span class="o">.</span><span class="n">GetParameterAsString</span><span class="p">(</span><span class="s2">&quot;OutputGeometry&quot;</span><span class="p">))</span>
+
+<span class="n">volumeNode</span> <span class="o">=</span> <span class="n">getNode</span><span class="p">(</span><span class="s1">&#39;MRHead&#39;</span><span class="p">)</span>
+<span class="n">cliNode</span> <span class="o">=</span> <span class="n">startProcessing</span><span class="p">(</span><span class="n">volumeNode</span><span class="p">)</span>
+<span class="n">cliNode</span><span class="o">.</span><span class="n">AddObserver</span><span class="p">(</span><span class="s1">&#39;ModifiedEvent&#39;</span><span class="p">,</span> <span class="n">onProcessingStatusUpdate</span><span class="p">)</span>
+
+<span class="c1"># If you need to cancel the CLI, call</span>
+<span class="c1"># cliNode.Cancel()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="how-to-use-a-loadable-module-from-python">
+<h2>How to use a loadable module from Python<a class="headerlink" href="#how-to-use-a-loadable-module-from-python" title="Link to this heading"></a></h2>
+<p>Both Python scripted loadable modules and C++ loadable modules can be used from Python in multiple ways: by modifying MRML nodes, calling methods of the module logic object, and adding reusable GUI widgets provided by the module.</p>
+<p>It may be tempting to use another module via the module’s GUI (for example, by simulating button clicks), since Qt allows access to widgets via public methods, signals, and properties. However, a module GUI is not designed to be manipulated programmatically, and doing so could lead to unexpected behavior. Therefore, it is only recommended to interact with a module GUI object for testing and debugging.</p>
+<section id="calling-methods-of-a-module-logic">
+<h3>Calling methods of a module logic<a class="headerlink" href="#calling-methods-of-a-module-logic" title="Link to this heading"></a></h3>
+<p>Functions that a module offers to other modules are made available via the module’s logic class.</p>
+<p>For most modules, the logic class can be accessed by calling the <code class="docutils literal notranslate"><span class="pre">slicer.util.getModuleLogic('ModuleName')</span></code> convenience function.</p>
+<ul class="simple">
+<li><p>If the type of the returned logic object is a <code class="docutils literal notranslate"><span class="pre">qSlicerBaseQTCLI.vtkSlicerCLIModuleLogic</span></code> then it means that it is a CLI module. Follow the instructions described in the <a class="reference internal" href="#how-to-run-a-cli-module-from-python">How to run a CLI module from Python</a> section.</p></li>
+<li><p>If the method returns an error, it means that the module does not instantiate a publicly accessible module logic object. Some Python scripted loadable modules create a logic just in time when it is needed. In this cases, a module logic can be instantiated by importing the corresponding Python module and instantiating classes - see for example how it is done for <a class="reference internal" href="script_repository.html#load-dicom-files-into-the-scene-from-a-folder"><span class="std std-ref">DICOM module</span></a>.</p></li>
+</ul>
+<p>There are many examples for using a module’s logic class in the <a class="reference internal" href="script_repository.html"><span class="doc std std-doc">Script Repository</span></a>. Note that in the examples a module logic may obtained by using <code class="docutils literal notranslate"><span class="pre">slicer.modules.modulename.logic()</span></code>, which only works for C++ loadable modules, but otherwise it returns the same result as <code class="docutils literal notranslate"><span class="pre">slicer.util.getModuleLogic()</span></code>.</p>
+<p>Module logic methods can be explored by using the <code class="docutils literal notranslate"><span class="pre">help</span></code> Python function (<code class="docutils literal notranslate"><span class="pre">help(slicer.util.getModuleLogic('Markups'))</span></code>) or using auto-complete in the Python console (type <code class="docutils literal notranslate"><span class="pre">slicer.util.getModuleLogic('Markups').Get</span></code> and hit <kbd>Tab</kbd>). Documentation of module logic of C++ classes can be found in the <a class="reference internal" href="api.html#c"><span class="std std-ref">C++ API documentation</span></a>, for Python scripted modules developers currently need to get documentation from the <a class="reference external" href="https://github.com/Slicer/Slicer/tree/master/Modules/Scripted">source code</a>.</p>
+</section>
+<section id="adding-reusable-widgets-provided-by-modules">
+<h3>Adding reusable widgets provided by modules<a class="headerlink" href="#adding-reusable-widgets-provided-by-modules" title="Link to this heading"></a></h3>
+<p>Most Slicer core modules provide a set of reusable, configurable GUI widgets that can help developers in building their module’s user interface.</p>
+<p>For example, Volumes module offers a widget that can display and edit basic properties of volume nodes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">volumeNode</span> <span class="o">=</span> <span class="n">getNode</span><span class="p">(</span><span class="s1">&#39;MRHead&#39;</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">qMRMLVolumeInfoWidget</span><span class="p">()</span>
+<span class="n">w</span><span class="o">.</span><span class="n">setMRMLScene</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="p">)</span>
+<span class="n">w</span><span class="o">.</span><span class="n">setVolumeNode</span><span class="p">(</span><span class="n">volumeNode</span><span class="p">)</span>
+<span class="n">w</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>While these widgets can be instantiated using Python scripting, it is more convenient (and requires less code) to add them to a module’s user interface using Qt designer.</p>
+</section>
+</section>
+<section id="how-to-find-a-python-function-for-any-slicer-features">
+<h2>How to find a Python function for any Slicer features<a class="headerlink" href="#how-to-find-a-python-function-for-any-slicer-features" title="Link to this heading"></a></h2>
+<p>All features of Slicer are available via Python scripts. <a class="reference internal" href="script_repository.html"><span class="std std-doc">Slicer script repository</span></a> contains examples for the most commonly used features.</p>
+<p>To find out what Python commands correspond to a feature that is visible on the graphical user interface, search in Slicer’s source code where that text occurs, find the corresponding widget or action name, then search for that widget or action name in the source code to find out what commands it triggers.</p>
+<p>Complete example: <em>How to emulate selection of <code class="docutils literal notranslate"><span class="pre">FOV,</span> <span class="pre">spacing</span> <span class="pre">match</span> <span class="pre">Volumes</span></code> checkbox in the slice view controller menu?</em></p>
+<ul class="simple">
+<li><p>Go to <a class="reference external" href="https://github.com/Slicer/Slicer/">Slicer project repository on github</a></p></li>
+<li><p>Enter text that you see on the GUI near the function that you want to use. In this case, enter <code class="docutils literal notranslate"><span class="pre">&quot;FOV,</span> <span class="pre">spacing</span> <span class="pre">match</span> <span class="pre">Volumes&quot;</span></code> (adding quotes around the text makes sure it finds that exact text)</p></li>
+<li><p>Usually the text is found in a .ui file, in this case it is in <a class="reference external" href="https://github.com/Slicer/Slicer/blob/dfef9574096a10c4f02337b59c5edfd6810b55db/Libs/MRML/Widgets/Resources/UI/qMRMLSliceControllerWidget.ui">qMRMLSliceControllerWidget.ui</a>, open the file</p></li>
+<li><p>Find the text in the page, and look up what is the name of the widget or action that it is associated with - in this case it is an action named <code class="docutils literal notranslate"><span class="pre">actionSliceModelModeVolumes</span></code></p></li>
+<li><p>Search for that widget or action name in the repository, you should find a source file(s) that use it. In this case it will is <a class="reference external" href="https://github.com/Slicer/Slicer/blob/46345e8a3dba3d591a7f06767aff83a2beefad6a/Libs/MRML/Widgets/qMRMLSliceControllerWidget.cxx">qMRMLSliceControllerWidget.cxx</a></p></li>
+<li><p>Search for the action/widget name, and you’ll find what it does - in this case it calls <code class="docutils literal notranslate"><span class="pre">setSliceModelModeVolumes</span></code> method, which calls <code class="docutils literal notranslate"><span class="pre">this-&gt;setSliceModelMode(vtkMRMLSliceNode::SliceResolutionMatchVolumes)</span></code>, which then calls <code class="docutils literal notranslate"><span class="pre">d-&gt;MRMLSliceNode-&gt;SetSliceResolutionMode(mode)</span></code></p></li>
+<li><p>This means that this action calls <code class="docutils literal notranslate"><span class="pre">someSliceNode-&gt;SetSliceResolutionMode(vtkMRMLSliceNode::SliceResolutionMatchVolumes)</span></code> in Python syntax it is <code class="docutils literal notranslate"><span class="pre">someSliceNode.SetSliceResolutionMode(slicer.vtkMRMLSliceNode.SliceResolutionMatchVolumes)</span></code>. For example, for the red slice node this will be:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sliceNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">GetNodeByID</span><span class="p">(</span><span class="s1">&#39;vtkMRMLSliceNodeRed&#39;</span><span class="p">)</span>
+<span class="n">sliceNode</span><span class="o">.</span><span class="n">SetSliceResolutionMode</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">vtkMRMLSliceNode</span><span class="o">.</span><span class="n">SliceResolutionMatchVolumes</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="how-to-connect-gui-widget-events-to-python-code">
+<h2>How to connect GUI widget events to Python code<a class="headerlink" href="#how-to-connect-gui-widget-events-to-python-code" title="Link to this heading"></a></h2>
+<p>Slicer uses <a class="reference external" href="https://www.qt.io/">Qt</a> toolkit for providing graphical user interface (GUI). Qt is made available in Python via <a class="reference external" href="https://mevislab.github.io/pythonqt/">PythonQt</a>. Using this Python wrapper, a GUI widget event - it is called a <code class="docutils literal notranslate"><span class="pre">signal</span></code> in Qt - can be connected to a Python function using the syntax: <em>someQtWidgetObject</em>.<em>signalName</em>.connect(<em>slotName</em>).</p>
+<p>For example, a QProgressBar will have <a class="reference external" href="https://doc.qt.io/qt-5/qprogressbar.html#signals">these signals</a> such as valueChanged. Therefore a Python function can be connected like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">printMyNewValue</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The progress bar value is now: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">qt</span>
+<span class="n">progress_bar</span> <span class="o">=</span> <span class="n">qt</span><span class="o">.</span><span class="n">QProgressBar</span><span class="p">()</span>
+<span class="n">progress_bar</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">progress_bar</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">printMyNewValue</span><span class="p">)</span>
+<span class="n">progress_bar</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># will then print &quot;The progress bar value is now: 4&quot;</span>
+</pre></div>
+</div>
+<p>Where to get a list of signals for a widget object? You can find the specification of signals in the header files or the generated documentation. Typically, the first hit on Google search for the class name brings up the documentation page or header file of the class.</p>
+<p>Where to get examples? Since Slicer is open-source and there are about 200 extensions to it, mostly developed in Python, hosted on github, there is a very high chance that there are already examples for using the signal you need. You can search in all Python code in entire GitHub for a usage example by typing the name of the class and signal. For example you can <a class="reference external" href="https://github.com/search?l=Python&amp;amp;q=ctkPathLineEdit+currentPathChanged&amp;amp;type=Code">search for <code class="docutils literal notranslate"><span class="pre">ctkPathLineEdit</span> <span class="pre">currentPathChanged</span></code> in Python code</a>.</p>
+</section>
+<section id="how-to-run-an-external-python-script-as-a-cli-module">
+<h2>How to run an external Python script as a CLI module<a class="headerlink" href="#how-to-run-an-external-python-script-as-a-cli-module" title="Link to this heading"></a></h2>
+<p>A standalone Python script (that does not use any Slicer application features) can run from Slicer as a CLI module. Slicer generates a graphical user interface from the parameter definition XML file. See a complete example <a class="reference external" href="https://github.com/lassoan/SlicerPythonCLIExample">here</a>.</p>
+</section>
+<section id="how-to-type-file-paths-in-python">
+<h2>How to type file paths in Python<a class="headerlink" href="#how-to-type-file-paths-in-python" title="Link to this heading"></a></h2>
+<p>New Python users on Windows often surprised when they enter a path that contain backslash character (<code class="docutils literal notranslate"><span class="pre">\</span></code>) and it just does not work. Since backslash (<code class="docutils literal notranslate"><span class="pre">\</span></code>) is an escape character in Python, it requires special attention when used in string literals. For example, this is incorrect:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>somePath = &quot;F:\someFolder\myfile.nrrd&quot;  # incorrect (\s and \m are interpreted as special characters)
+</pre></div>
+</div>
+<p>The easiest method for using a path that contains backslash character is to declare the text as “raw string” by prepending an <code class="docutils literal notranslate"><span class="pre">r</span></code> character. This is correct:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>somePath = r&quot;F:\someFolder\myfile.nrrd&quot;
+</pre></div>
+</div>
+<p>It is possible to keep the text as regular string and typing double-backslash instead of . This is correct:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>somePath = &quot;F:\\someFolder\\myfile.nrrd&quot;
+</pre></div>
+</div>
+<p>In most places, unix-type separators can be used instead of backslash. This is correct:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>somePath = &quot;F:/someFolder/myfile.nrrd&quot;
+</pre></div>
+</div>
+<p>See more information in Python documentation: <a class="reference external" href="https://docs.python.org/3/tutorial/introduction.html?#strings">https://docs.python.org/3/tutorial/introduction.html?#strings</a></p>
+</section>
+<section id="how-to-modify-a-python-scripted-module">
+<h2>How to modify a Python scripted module<a class="headerlink" href="#how-to-modify-a-python-scripted-module" title="Link to this heading"></a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">Developer</span> <span class="pre">mode</span></code> is enabled in the application settings then the <code class="docutils literal notranslate"><span class="pre">Reload</span> <span class="pre">and</span> <span class="pre">Test</span></code> section is displayed at the top of the user interface of Python scripted modules. This section contains buttons for convenient editing of the module source code (<code class="docutils literal notranslate"><span class="pre">.py</span></code> file) and user interface (<code class="docutils literal notranslate"><span class="pre">.ui</span></code> file). By default, clicking on the <code class="docutils literal notranslate"><span class="pre">Edit</span></code> button opens the module source code in the program associated with <code class="docutils literal notranslate"><span class="pre">.py</span></code> files, as defined in the operating system settings. This behavior can be overridden by specifying a text editor (such as VS Code, Sublime Text, …) in the application settings: <code class="docutils literal notranslate"><span class="pre">Editor</span> <span class="pre">for</span> <span class="pre">.py</span> <span class="pre">files</span></code> in the <code class="docutils literal notranslate"><span class="pre">Python</span></code> section.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>On Windows, VS Code text editor is installed by default at:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="p">:</span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">YourUserName</span><span class="o">/</span><span class="n">AppData</span><span class="o">/</span><span class="n">Local</span><span class="o">/</span><span class="n">Programs</span><span class="o">/</span><span class="n">Microsoft</span> <span class="n">VS</span> <span class="n">Code</span><span class="o">/</span><span class="n">Code</span><span class="o">.</span><span class="n">exe</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="how-to-include-python-modules-in-an-extension">
+<h2>How to include Python modules in an extension<a class="headerlink" href="#how-to-include-python-modules-in-an-extension" title="Link to this heading"></a></h2>
+<p>Sometimes a Python scripted module grows big and it becomes inconvenient to have all the source code in a single .py file. Since all the .py files in a folder that is listed among “additional module paths” are expected to be Slicer modules, these additional files cannot be simply placed in the same folder as in the Slicer module. Instead, all additional .py files can be put in a subfolder, as a regular Python module.</p>
+<p>For example, the files associated with a Slicer module could look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>.
+├── CMakeLists.txt
+├── MySlicerModuleLib
+│   ├── __init__.py
+│   ├── cool_maths.py
+│   └── utils.py
+└── MySlicerModule.py
+</pre></div>
+</div>
+<p>So that the following code can run within <code class="docutils literal notranslate"><span class="pre">MySlicerModule.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">MySlicerModuleLib</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">cool_maths</span>
+</pre></div>
+</div>
+<p>By default, only the Slicer module (<code class="docutils literal notranslate"><span class="pre">MySlicerModule.py</span></code>) will be included in the package distributed via the <a class="reference internal" href="../user_guide/extensions.html#extensions-manager"><span class="std std-ref">Extensions Manager</span></a> (see <a class="reference external" href="https://github.com/Slicer/ExtensionsIndex/issues/1749">a related issue on GitHub</a>).
+To make sure all the necessary files are included in the package, the <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> file associated with the Slicer module needs to be modified.
+Initially, the second section of <code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> will look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>set(MODULE_PYTHON_SCRIPTS
+  ${MODULE_NAME}.py
+  )
+</pre></div>
+</div>
+<p>All the necessary files need to be added to the list.
+In our example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>set(MODULE_PYTHON_SCRIPTS
+  ${MODULE_NAME}.py
+  ${MODULE_NAME}Lib/__init__.py
+  ${MODULE_NAME}Lib/cool_maths.py
+  ${MODULE_NAME}Lib/utils.py
+  )
+</pre></div>
+</div>
+</section>
+<section id="can-i-use-any-python-package-in-a-slicer-module">
+<h2>Can I use any Python package in a Slicer module<a class="headerlink" href="#can-i-use-any-python-package-in-a-slicer-module" title="Link to this heading"></a></h2>
+<p>You can install any Python package within Slicer’s built-in Python environment.</p>
+<p>The convenience function <a class="reference internal" href="slicer.html#slicer.util.pip_install" title="slicer.util.pip_install"><code class="xref py py-func docutils literal notranslate"><span class="pre">slicer.util.pip_install()</span></code></a> can be used to install packages into your Slicer module. To understand its usage, examine the <a class="reference internal" href="script_repository.html#install-a-python-package"><span class="std std-ref">Install a Python package</span></a> example within the Script Repository.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Since installing packages can have side effects on other extensions or the main application, here are some best practices to adhere to:</p>
+<p><strong>DO:</strong></p>
+<ul class="simple">
+<li><p>✅ Always include a confirmation dialog that clearly communicates the installation process, mirroring the approach in the linked example.</p></li>
+<li><p>✅ Document the dependencies your module relies upon.</p></li>
+<li><p>✅ Consider specifying version requirements using <code class="docutils literal notranslate"><span class="pre">&gt;=X.Y</span></code> to avoid incompatible versions.</p></li>
+<li><p>✅ Verify that all Python packages are distributed as Python wheels. This is particularly important for dependencies including compiled code, as installing a wheel eliminates the need for users to install a compiler.</p></li>
+</ul>
+<p><strong>DON’T:</strong></p>
+<ul class="simple">
+<li><p>❌ Do not install any packages in the global scope (outside of all classes and functions) or in the module class constructor. This can significantly slow down application startup, and it may even prevent the module from loading.</p></li>
+<li><p>❌ Do not pin to a specific version of the package, as this may generate conflicts with other package versions, leading to unexpected environment modifications. Pinning dependencies should be considered only in the context of custom applications where the deployment environment is tightly controlled.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="extensions.html" class="btn btn-neutral float-left" title="Extensions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="script_repository.html" class="btn btn-neutral float-right" title="Script repository" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

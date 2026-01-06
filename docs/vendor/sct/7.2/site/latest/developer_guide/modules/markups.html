@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markups &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Plots" href="plots.html" />
+    <link rel="prev" title="DICOM (Digital Imaging and Communications in Medicine)" href="dicom.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/modules/markups.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Modules API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Markups</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#markups-json-file-format-mrk-json">Markups json file format (.mrk.json)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#markups-fiducial-point-list-file-format-fcsv">Markups fiducial point list file format (.fcsv)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#markups-control-points-table-file-format-csv-tsv">Markups control points table file format (.csv, .tsv)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selftests.html">Self Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequences.html">Sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumes.html">Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules API</a></li>
+      <li class="breadcrumb-item active">Markups</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/modules/markups.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="markups">
+<h1>Markups<a class="headerlink" href="#markups" title="Link to this heading"></a></h1>
+<section id="markups-json-file-format-mrk-json">
+<h2>Markups json file format (.mrk.json)<a class="headerlink" href="#markups-json-file-format-mrk-json" title="Link to this heading"></a></h2>
+<p>All markups node types (point list, line, angle, curve, etc.) can be saved to and loaded from json files. Detailed specification of all elements of the file is available in the <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Modules/Loadable/Markups/Resources/Schema">JSON schema</a>.</p>
+<p>A simple example that specifies a markups point list with 3 points that can be saved to a <code class="docutils literal notranslate"><span class="pre">myexample.mrk.json</span></code> file and loaded into Slicer:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;@schema&quot;</span><span class="p">:</span> <span class="s2">&quot;https://raw.githubusercontent.com/Slicer/Slicer/main/Modules/Loadable/Markups/Resources/Schema/markups-schema-v1.0.0.json#&quot;</span><span class="p">,</span>
+<span class="s2">&quot;markups&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Fiducial&quot;</span><span class="p">,</span> <span class="s2">&quot;coordinateSystem&quot;</span><span class="p">:</span> <span class="s2">&quot;LPS&quot;</span><span class="p">,</span> <span class="s2">&quot;controlPoints&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;F-1&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">53.388409961685827</span><span class="p">,</span> <span class="o">-</span><span class="mf">73.33572796934868</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;F-2&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">49.8682950191571</span><span class="p">,</span> <span class="o">-</span><span class="mf">88.58955938697324</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;F-3&quot;</span><span class="p">,</span> <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">25.22749042145594</span><span class="p">,</span> <span class="mf">59.255268199233729</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span> <span class="p">}</span>
+<span class="p">]}]}</span>
+</pre></div>
+</div>
+</section>
+<section id="markups-fiducial-point-list-file-format-fcsv">
+<h2>Markups fiducial point list file format (.fcsv)<a class="headerlink" href="#markups-fiducial-point-list-file-format-fcsv" title="Link to this heading"></a></h2>
+<p>vtkMRMLMarkupsFiducialStorageNode uses a comma separated value file with a custom header to store the control points on disk. A simple example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Markups fiducial file version = 4.13</span>
+<span class="c1"># CoordinateSystem = LPS</span>
+<span class="c1"># columns = id,x,y,z,ow,ox,oy,oz,vis,sel,lock,label,desc,associatedNodeID</span>
+<span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mf">19.906699999999987</span><span class="p">,</span><span class="mf">13.9347</span><span class="p">,</span><span class="mf">29.442970822281154</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">F</span><span class="o">-</span><span class="mi">1</span><span class="p">,,</span>
+<span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mf">7.3939</span><span class="p">,</span><span class="o">-</span><span class="mf">76.94990495817181</span><span class="p">,</span><span class="mf">17.552540297898375</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">F</span><span class="o">-</span><span class="mi">2</span><span class="p">,,</span>
+<span class="mi">2</span><span class="p">,</span><span class="mf">81.73332450520303</span><span class="p">,</span><span class="o">-</span><span class="mf">42.9415</span><span class="p">,</span><span class="mf">9.625586614976527</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">F</span><span class="o">-</span><span class="mi">3</span><span class="p">,,</span>
+</pre></div>
+</div>
+<p>File header:</p>
+<ul class="simple">
+<li><p>Line 1: a comment line specifying the Slicer version that created the file</p></li>
+<li><p>Line 2: a comment line specifying the coordinate system (<code class="docutils literal notranslate"><span class="pre">CoordinateSystem</span> <span class="pre">=</span> <span class="pre">LPS</span></code> or <code class="docutils literal notranslate"><span class="pre">CoordinateSystem</span> <span class="pre">=</span> <span class="pre">RAS</span></code>). In earlier versions of Slicer, numeric codes were used: RAS = 0, LPS = 1.</p></li>
+<li><p>Line 3: a comment line explaining the fields in the csv (<code class="docutils literal notranslate"><span class="pre">columns</span> <span class="pre">=</span> <span class="pre">id,x,y,z,ow,ox,oy,oz,vis,sel,lock,label,desc,associatedNodeID</span></code>)</p></li>
+</ul>
+<p>Each line after the header specifies a control point. Meaning of columns:</p>
+<ul class="simple">
+<li><p>id: a string giving a unique id for this control point, usually based on the class name</p></li>
+<li><p>x,y,z: the floating point coordinate of the control point</p></li>
+<li><p>ow,ox,oy,oz: the orientation quaternion of this control point, angle and axis, default 0,0,0,1 (or 0,0,0,0,0,0,1.0)</p></li>
+<li><p>vis: the visibility flag for this control point, 0 or 1, default 1</p></li>
+<li><p>sel: the selected flag for this control point, 0 or 1, default 1</p></li>
+<li><p>lock: the locked flag for this control point, 0 or 1, default 0</p></li>
+<li><p>label: the name for this control point, displayed beside the glyph, with quotes around it if there is a comma in the field</p></li>
+<li><p>desc: a string description for this control point, optional</p></li>
+<li><p>associatedNodeID = an id of a node in the scene with which the control point is associated, for example the volume or model on which the control point was placed, optional</p></li>
+</ul>
+</section>
+<section id="markups-control-points-table-file-format-csv-tsv">
+<h2>Markups control points table file format (.csv, .tsv)<a class="headerlink" href="#markups-control-points-table-file-format-csv-tsv" title="Link to this heading"></a></h2>
+<p>Markups control points can be imported from and exported to a table node that can be written to/read from standard comma (or tab) separated file format. A simple example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">label</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">defined</span><span class="p">,</span><span class="n">selected</span><span class="p">,</span><span class="n">visible</span><span class="p">,</span><span class="n">locked</span><span class="p">,</span><span class="n">description</span>
+<span class="n">F</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mf">19.9067</span><span class="p">,</span><span class="mf">13.9347</span><span class="p">,</span><span class="mf">29.443</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">F</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mf">7.3939</span><span class="p">,</span><span class="o">-</span><span class="mf">76.9499</span><span class="p">,</span><span class="mf">17.5525</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">F</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mf">81.7333</span><span class="p">,</span><span class="o">-</span><span class="mf">42.9415</span><span class="p">,</span><span class="mf">9.62559</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>Definition of columns:</p>
+<ul class="simple">
+<li><p>label: label that is displayed next to each control point</p></li>
+<li><p>l, p, s: coordinate values in LPS coordinate system (in this case, l and a columns should not be used)</p></li>
+<li><p>r, a, s: coordinate values in RAS coordinate system (in this case, r and a columns should not be used)</p></li>
+<li><p>defined: 0 = the position of the point is not defined (coordinate values can be ignored; useful for creating templates); 1: the position is defined</p></li>
+<li><p>selected: 0 = unselected; 1 = selected (the control point appears with different colors an may be used as additional input for analysis)</p></li>
+<li><p>visible: 0 = hidden; 1 = visible</p></li>
+<li><p>locked: 0 = the point can be interactively moved; 1 = the point position is locked</p></li>
+<li><p>description: text providing additional information for the point</p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.slicer.org/wiki/Documentation/Labs/Improving_Markups">History and design considerations</a></p></li>
+</ul>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>Examples for common operations on transform are provided in the <a class="reference internal" href="../script_repository.html#markups"><span class="std std-ref">script repository</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dicom.html" class="btn btn-neutral float-left" title="DICOM (Digital Imaging and Communications in Medicine)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plots.html" class="btn btn-neutral float-right" title="Plots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

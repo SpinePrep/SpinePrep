@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GNU/Linux systems &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Common errors" href="common_errors.html" />
+    <link rel="prev" title="macOS" href="macos.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/build_instructions/linux.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Build Instructions</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="windows.html">Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="macos.html">macOS</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GNU/Linux systems</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#checkout-slicer-source-files">Checkout Slicer source files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configure-and-generate-the-slicer-build-project-files">Configure and generate the Slicer build project files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-slicer">Build Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-slicer">Run Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#test-slicer">Test Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#package-slicer">Package Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#common-errors">Common errors</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="common_errors.html">Common errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_errors.html#other-errors">Other errors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Build Instructions</a></li>
+      <li class="breadcrumb-item active">GNU/Linux systems</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/build_instructions/linux.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="gnu-linux-systems">
+<h1>GNU/Linux systems<a class="headerlink" href="#gnu-linux-systems" title="Link to this heading"></a></h1>
+<p>The instructions to build Slicer for GNU/Linux systems are slightly different
+depending on the Linux distribution and the specific configuration of the
+system. In the following sections, you can find instructions that will work for
+some of the most common Linux distributions in their standard configuration. If
+you are using a different distribution, you can use <a class="reference internal" href="#any-distribution"><span class="std std-ref">these instructions</span></a>
+to adapt the process to your system. You can also ask questions
+related to the building process in the <a class="reference external" href="https://discourse.slicer.org">Slicer forum</a>.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<p>First, you need to install the tools that will be used for fetching the source
+code of Slicer, generating the project files, and building the project.</p>
+<ul class="simple">
+<li><p>Git for fetching the code and version control.</p></li>
+<li><p>GNU Compiler Collection (GCC) for code compilation.</p></li>
+<li><p>CMake for configuration/generation of the project.</p>
+<ul>
+<li><p>(Optional) CMake curses GUI to configure the project from the command line.</p></li>
+<li><p>(Optional) CMake Qt GUI to configure the project through a GUI.</p></li>
+</ul>
+</li>
+<li><p>GNU Make</p></li>
+<li><p>GNU Patch</p></li>
+</ul>
+<p>In addition, Slicer requires a set of support libraries that are not included as
+part of the <em>superbuild</em>:</p>
+<ul class="simple">
+<li><p>Qt5 with the components listed below. Qt version 5.15.2 is recommended; other Qt versions are not tested and may cause build errors or may cause problems when running the application.</p>
+<ul>
+<li><p>Multimedia</p></li>
+<li><p>UiTools</p></li>
+<li><p>XMLPatterns</p></li>
+<li><p>SVG</p></li>
+<li><p>WebEngine</p></li>
+<li><p>Script</p></li>
+<li><p>X11Extras</p></li>
+<li><p>Private</p></li>
+</ul>
+</li>
+<li><p>libXt</p></li>
+</ul>
+<section id="debian-12-bookworm-stable-and-bullseye-11-oldstable">
+<h3>Debian 12 Bookworm (Stable) and Bullseye 11 (OldStable)<a class="headerlink" href="#debian-12-bookworm-stable-and-bullseye-11-oldstable" title="Link to this heading"></a></h3>
+<p>Install the development tools and the support libraries:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt update &amp;&amp; sudo apt install git build-essential cmake cmake-curses-gui cmake-qt-gui \</span>
+<span class="go">  qtmultimedia5-dev qttools5-dev libqt5xmlpatterns5-dev libqt5svg5-dev qtwebengine5-dev qtscript5-dev \</span>
+<span class="go">  qtbase5-private-dev libqt5x11extras5-dev libxt-dev libssl-dev</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The CMake version currently included in Debian 12 Bookworm (Stable) is not compatible with the current development version of Slicer.
+For more details, see the Slicer <a class="reference external" href="https://github.com/Slicer/Slicer/blob/98c092edb8f5a274277d2e486a4f7e584f58605e/CMakeLists.txt#L3-L5">CMakeLists.txt</a> file. On Debian 12 Bookworm (Stable), you will need to upgrade CMake manually by downloading CMake version &gt;= 3.25.3 from the <a class="reference external" href="https://cmake.org/download/">CMake website</a> and following the CMake installation instructions.</p>
+</div>
+</section>
+<section id="ubuntu-25-04-plucky-puffin">
+<h3>Ubuntu 25.04 (Plucky Puffin)<a class="headerlink" href="#ubuntu-25-04-plucky-puffin" title="Link to this heading"></a></h3>
+<p>Install the development tools and the support libraries:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt update &amp;&amp; sudo apt install git git-lfs build-essential \</span>
+<span class="go">  libqt5x11extras5-dev qtmultimedia5-dev libqt5svg5-dev qtwebengine5-dev libqt5xmlpatterns5-dev qttools5-dev qtbase5-private-dev \</span>
+<span class="go">  libxt-dev</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The CMake version currently included in Ubuntu 25.04 is CMake 3.31.6 which is compatible with the current development version of Slicer. <strong>Last time tested: 2025-08-08.</strong></p>
+</div>
+</section>
+<section id="ubuntu-24-04-noble-numbat">
+<h3>Ubuntu 24.04 (Noble Numbat)<a class="headerlink" href="#ubuntu-24-04-noble-numbat" title="Link to this heading"></a></h3>
+<p>Install the development tools and the support libraries:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt update &amp;&amp; sudo apt install git git-lfs build-essential \</span>
+<span class="go">  libqt5x11extras5-dev qtmultimedia5-dev libqt5svg5-dev qtwebengine5-dev libqt5xmlpatterns5-dev qttools5-dev qtbase5-private-dev \</span>
+<span class="go">  libxt-dev</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The CMake version currently included in Ubuntu 24.04 is CMake 3.28.3 which is compatible with the current development version of Slicer. <strong>Last time tested: 2025-05-27.</strong></p>
+</div>
+</section>
+<section id="ubuntu-23-04-lunar-lobster">
+<h3>Ubuntu 23.04 (Lunar Lobster)<a class="headerlink" href="#ubuntu-23-04-lunar-lobster" title="Link to this heading"></a></h3>
+<p>Install the development tools and the support libraries:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt update &amp;&amp; sudo apt install git git-lfs build-essential \</span>
+<span class="go">  libqt5x11extras5-dev qtmultimedia5-dev libqt5svg5-dev qtwebengine5-dev libqt5xmlpatterns5-dev qttools5-dev qtbase5-private-dev \</span>
+<span class="go">  libxt-dev</span>
+</pre></div>
+</div>
+<p>Install CMake manually by downloading CMake &gt;=3.25.3 from the <a class="reference external" href="https://cmake.org/download/">CMake website</a>
+and by following the CMake installation instructions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The CMake version currently included in Ubuntu 23.04 is CMake 3.25.1 (see <a class="reference external" href="https://packages.ubuntu.com/lunar/cmake">here</a>)
+and is not compatible with the current development version of Slicer.
+For more details, see the Slicer <a class="reference external" href="https://github.com/Slicer/Slicer/blob/98c092edb8f5a274277d2e486a4f7e584f58605e/CMakeLists.txt#L3-L5">CMakeLists.txt</a> file.</p>
+</div>
+</section>
+<section id="ubuntu-22-04-jammy-jellyfish">
+<h3>Ubuntu 22.04 (Jammy Jellyfish)<a class="headerlink" href="#ubuntu-22-04-jammy-jellyfish" title="Link to this heading"></a></h3>
+<p>Install the development tools and the support libraries:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt update &amp;&amp; sudo apt install git build-essential \</span>
+<span class="go">  cmake cmake-curses-gui cmake-qt-gui \</span>
+<span class="go">  libqt5x11extras5-dev qtmultimedia5-dev libqt5svg5-dev qtwebengine5-dev libqt5xmlpatterns5-dev qttools5-dev qtbase5-private-dev \</span>
+<span class="go">  qtbase5-dev qt5-qmake</span>
+</pre></div>
+</div>
+</section>
+<section id="ubuntu-21-10-impish-indri">
+<h3>Ubuntu 21.10 (Impish Indri)<a class="headerlink" href="#ubuntu-21-10-impish-indri" title="Link to this heading"></a></h3>
+<p>Install the development tools and the support libraries:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt update &amp;&amp; sudo apt install git build-essential \</span>
+<span class="go">  cmake cmake-curses-gui cmake-qt-gui \</span>
+<span class="go">  libqt5x11extras5-dev qtmultimedia5-dev libqt5svg5-dev qtwebengine5-dev libqt5xmlpatterns5-dev qttools5-dev qtbase5-private-dev \</span>
+<span class="go">  libxt-dev libssl-dev</span>
+</pre></div>
+</div>
+</section>
+<section id="archlinux">
+<h3>ArchLinux<a class="headerlink" href="#archlinux" title="Link to this heading"></a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>ArchLinux uses a rolling-release package distribution approach. This means that the versions of the packages will change over time and the following instructions might not be actual. <strong>Last time tested: 2024-01-01.</strong></p>
+</div>
+<p>You could build Slicer using the <code class="docutils literal notranslate"><span class="pre">PKGBUILD</span></code> from AUR: <a class="reference external" href="https://aur.archlinux.org/packages/3dslicer">3dslicer</a> and <a class="reference external" href="https://aur.archlinux.org/packages/3dslicer-git">3dslicer-git</a>.</p>
+</section>
+<section id="centos-7">
+<h3>CentOS 7<a class="headerlink" href="#centos-7" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Slicer built on CentOS 7 will be available for many Linux distributions and releases</p>
+</div>
+<p>Install Qt and CMake as described in <a class="reference internal" href="#any-distribution"><span class="std std-ref">Any Distribution</span></a> section.</p>
+<p>Since by default CentOS 7 comes with <code class="docutils literal notranslate"><span class="pre">gcc</span> <span class="pre">4.8.5</span></code> only having <a class="reference external" href="https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/C-Dialect-Options.html#C-Dialect-Options">experimental support for C++14</a>, the following allows to install and activate the <code class="docutils literal notranslate"><span class="pre">devtoolset-11</span></code> <a class="reference external" href="https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/11/html/11.0_release_notes/dts11.0_release#Changes_in_DTS">providing</a> <code class="docutils literal notranslate"><span class="pre">gcc</span> <span class="pre">11.2.1</span></code> <a class="reference external" href="https://en.cppreference.com/w/cpp/compiler_support/20">supporting C++20</a>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo yum install centos-release-scl</span>
+<span class="go">sudo yum install devtoolset-11-gcc*</span>
+<span class="go">scl enable devtoolset-11 bash         # activation is needed for every terminal session</span>
+</pre></div>
+</div>
+<p>Install pre-requisites:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo yum install patch mesa-libGL-devel libuuid-devel</span>
+</pre></div>
+</div>
+</section>
+<section id="any-distribution">
+<h3>Any Distribution<a class="headerlink" href="#any-distribution" title="Link to this heading"></a></h3>
+<p>This section describes how to install Qt as distributed by <em>The QT Company</em>, which can be used for any GNU/Linux distribution.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This process requires an account in <a class="reference external" href="https://qt.io">qt.io</a></p>
+</div>
+<p>Download the Qt Linux online installer and make it executable:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go"> curl -LO https://download.qt.io/official_releases/online_installers/qt-online-installer-linux-x64-online.run</span>
+<span class="go"> chmod +x qt-online-installer-linux-x64-online.run</span>
+</pre></div>
+</div>
+<p>You can run the installer and follow the instructions in the GUI. Keep in mind that the components needed by 3D Slicer are: <code class="docutils literal notranslate"><span class="pre">qt.qt5.5152.gcc_64</span></code>, <code class="docutils literal notranslate"><span class="pre">qt.qt5.5152.qtwebengine</span></code> and <code class="docutils literal notranslate"><span class="pre">qt.qt5.5152.qtwebengine.gcc_64</span></code>.</p>
+<p>Alternatively, you can request the installation of the components with the following command (you will be prompted for license agreements and permissions):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export QT_ACCOUNT_LOGIN=&lt;set your qt.io account email here&gt;</span>
+<span class="go">export QT_ACCOUNT_PASSWORD=&lt;set your password here&gt;</span>
+<span class="go">./qt-online-installer-linux-x64-online.run \</span>
+<span class="go">  install \</span>
+<span class="go">    qt.qt5.5152.gcc_64 \</span>
+<span class="go">    qt.qt5.5152.qtwebengine \</span>
+<span class="go">    qt.qt5.5152.qtwebengine.gcc_64 \</span>
+<span class="go">  --root /opt/qt \</span>
+<span class="go">  --email $QT_ACCOUNT_LOGIN \</span>
+<span class="go">  --pw $QT_ACCOUNT_PASSWORD</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>When configuring the Slicer build project, the CMake variable <code class="docutils literal notranslate"><span class="pre">Qt5_DIR</span></code> need to be set using the full path to the Qt5 installation directory ending with <code class="docutils literal notranslate"><span class="pre">5.15.2/gcc_64/lib/cmake/Qt5</span></code>. For example, assuming you installed Qt in <code class="docutils literal notranslate"><span class="pre">/opt/qt</span></code>, you may use <code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">-DCMAKE_BUILD_TYPE:STRING=Release</span> <span class="pre">-DQt5_DIR:PATH=/opt/qt/5.15.2/gcc_64/lib/cmake/Qt5</span> <span class="pre">../Slicer</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="checkout-slicer-source-files">
+<h2>Checkout Slicer source files<a class="headerlink" href="#checkout-slicer-source-files" title="Link to this heading"></a></h2>
+<p>The recommended way to obtain the source code of Slicer is cloning the repository using <code class="docutils literal notranslate"><span class="pre">git</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://github.com/Slicer/Slicer.git</span>
+</pre></div>
+</div>
+<p>This will create a <code class="docutils literal notranslate"><span class="pre">Slicer</span></code> directory containing the source code of Slicer.
+Hereafter we will call this directory the <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">directory</span></code>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is highly recommended to <strong>avoid</strong> the use of the <strong>space</strong> character in the name of the <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">directory</span></code> or any of its parent directories.</p>
+</div>
+<p>After obtaining the source code, we need to set up the development environment:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd Slicer</span>
+<span class="go">./Utilities/SetupForDevelopment.sh</span>
+<span class="go">cd ..</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-and-generate-the-slicer-build-project-files">
+<h2>Configure and generate the Slicer build project files<a class="headerlink" href="#configure-and-generate-the-slicer-build-project-files" title="Link to this heading"></a></h2>
+<p>Slicer is highly configurable and multi-platform. To support this,
+Slicer needs a configuration of the build parameters before the build process
+takes place. In this configuration stage, it is possible to adjust variables
+that change the nature and behavior of its components. For instance, the type
+of build (Debug or Release mode), whether to use system-installed libraries,
+let the build process fetch and compile own libraries, or enable/disable some of
+the software components and functionalities of Slicer.</p>
+<p>The following folders will be used in the instructions below:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Folder</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>source</strong></td>
+<td><code>~/Slicer</code></td>
+</tr>
+<tr>
+<td><strong>build</strong></td>
+<td><code>~/Slicer-SuperBuild-Debug</code></td>
+</tr>
+<tr>
+<td><strong>inner-build</strong></td>
+<td><code>~/Slicer-SuperBuild-Debug/Slicer-build</code></td>
+</tr>
+</tbody>
+</table>
+<p>To obtain a default configuration of the Slicer build project, create the <strong>build</strong> folder and use <code class="docutils literal notranslate"><span class="pre">cmake</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir Slicer-SuperBuild-Debug</span>
+<span class="go">cd Slicer-SuperBuild-Debug</span>
+<span class="go">cmake ../Slicer</span>
+</pre></div>
+</div>
+<p>It is possible to change variables with <code class="docutils literal notranslate"><span class="pre">cmake</span></code>. In the following example we
+change the built type (Debug as default) to Release:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cmake -DCMAKE_BUILD_TYPE:STRING=Release ../Slicer</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>On Debian 12 Bookworm (Stable), the included OpenSSL version (3.0.9) is not compatible with the OpenSSL versions (1.0 - 1.1) used in Slicer, and attempting to run Slicer will emit the following warning, indicating that SSL support is disabled:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>qt.network.ssl: Incompatible version of OpenSSL (built with OpenSSL &gt;= 3.x, runtime version is &lt; 3.x)
+[SSL] SSL support disabled - Failed to load SSL library !
+[SSL] Failed to load Slicer.crt
+QSslSocket::connectToHostEncrypted: TLS initialization failed
+</pre></div>
+</div>
+<p>To enable SSL, one can use the system OpenSSL as follows:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cmake -DSlicer_USE_SYSTEM_OpenSSL=ON ../Slicer</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-tip-interfaces-to-change-3d-slicer-configuration-variables admonition">
+<p class="admonition-title">Tip – Interfaces to change 3D Slicer configuration variables</p>
+<p>Instead of <code class="docutils literal notranslate"><span class="pre">cmake</span></code>, one can use <code class="docutils literal notranslate"><span class="pre">ccmake</span></code>, which provides a text-based interface, or <code class="docutils literal notranslate"><span class="pre">cmake-gui</span></code>, which provides a graphical user interface. These applications will also provide a list of variables that can be changed.</p>
+</div>
+<div class="admonition-tip-speed-up-3d-slicer-build-with-ccache admonition">
+<p class="admonition-title">Tip – Speed up 3D Slicer build with <code class="docutils literal notranslate"><span class="pre">ccache</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ccache</span></code> is a compiler cache that can speed up subsequent builds of 3D Slicer. This can be useful if 3D Slicer is built often and there are no large divergences between subsequent builds. This requires <code class="docutils literal notranslate"><span class="pre">ccache</span></code> installed on the system (e.g., <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">ccache</span></code>).</p>
+<p>The first time <code class="docutils literal notranslate"><span class="pre">ccache</span></code> is used, the compilation time can marginally increase as it includes the first caching. After the first build, subsequent build times will decrease significantly.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ccache</span></code> is not detected as a valid compiler by the 3D Slicer building process. You can generate local symbolic links to disguise the use of <code class="docutils literal notranslate"><span class="pre">ccache</span></code> as valid compilers:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ln -s /usr/bin/ccache ~/.local/bin/c++</span>
+<span class="go">ln -s /usr/bin/ccache ~/.local/bin/cc</span>
+</pre></div>
+</div>
+<p>Then, the Slicer build can be configured to use these compilers:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cmake \</span>
+<span class="go">  -DCMAKE_BUILD_TYPE:STRING=Release \</span>
+<span class="go">  -DCMAKE_CXX_COMPILER:STRING=$HOME/.local/bin/c++ \</span>
+<span class="go">  -DCMAKE_C_COMPILER:STRING=$HOME/.local/bin/cc \</span>
+<span class="go">  ../Slicer</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="build-slicer">
+<h2>Build Slicer<a class="headerlink" href="#build-slicer" title="Link to this heading"></a></h2>
+<p>Once the Slicer build project files have been generated, the Slicer project can
+be built by running this command in the <strong>build</strong> folder</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">make</span>
+</pre></div>
+</div>
+<div class="admonition-tip-parallel-build admonition">
+<p class="admonition-title">Tip – Parallel build</p>
+<p>Building Slicer will generally take a long time, particularly on the first build or upon code/configuration changes. To help speed up the process, one can use <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-j&lt;N&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;N&gt;</span></code> is the number of parallel builds. As a rule of thumb, many use the <code class="docutils literal notranslate"><span class="pre">number</span> <span class="pre">of</span> <span class="pre">CPU</span> <span class="pre">threads</span> <span class="pre">-</span> <span class="pre">1</span></code> as the number of parallel builds.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Increasing the number of parallel builds generally increases the memory required for the build process. In the event that the required memory exceeds the available memory, the process will either fail or start using swap memory, which may make the system freeze.</p>
+</div>
+<div class="admonition-tip-error-detection-during-parallel-build admonition">
+<p class="admonition-title">Tip – Error detection during parallel build</p>
+<p>Using parallel builds makes finding compilation errors difficult due to the fact that all parallel build processes use the same screen output, as opposed to sequential builds, where the compilation process will stop at the error. A common technique to have parallel builds and easily find errors is to launch a parallel build followed by a sequential build. For the parallel build, it is advised to run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">-j&lt;N&gt;</span> <span class="pre">-k</span></code> to have the parallel build keep going as far as possible before doing the sequential build with <code class="docutils literal notranslate"><span class="pre">make</span></code>.</p>
+</div>
+</section>
+<section id="run-slicer">
+<h2>Run Slicer<a class="headerlink" href="#run-slicer" title="Link to this heading"></a></h2>
+<p>After the building process has successfully completed, the executable file to
+run Slicer will be located in the <strong>inner-build</strong> folder.</p>
+<p>The application can be launched by these commands:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd Slicer-build</span>
+<span class="go">./Slicer`</span>
+</pre></div>
+</div>
+</section>
+<section id="test-slicer">
+<h2>Test Slicer<a class="headerlink" href="#test-slicer" title="Link to this heading"></a></h2>
+<p>After building, run the tests in the <strong>inner-build</strong> folder.</p>
+<p>Type the following (you can replace 4 with the number of processor cores in the computer):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ctest -j4</span>
+</pre></div>
+</div>
+</section>
+<section id="package-slicer">
+<h2>Package Slicer<a class="headerlink" href="#package-slicer" title="Link to this heading"></a></h2>
+<p>Start a terminal and type the following in the <strong>inner-build</strong> folder:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">make package</span>
+</pre></div>
+</div>
+</section>
+<section id="common-errors">
+<h2>Common errors<a class="headerlink" href="#common-errors" title="Link to this heading"></a></h2>
+<p>See a list of issues common to all operating systems on the <a class="reference internal" href="common_errors.html"><span class="std std-doc">Common errors</span></a> page.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="macos.html" class="btn btn-neutral float-left" title="macOS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="common_errors.html" class="btn btn-neutral float-right" title="Common errors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

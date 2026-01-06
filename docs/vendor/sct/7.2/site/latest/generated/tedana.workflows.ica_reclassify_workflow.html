@@ -1,0 +1,211 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tedana.workflows.ica_reclassify_workflow &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="../_static/tedana_favicon.png"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=643184eb"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="tedana.workflows.t2smap_workflow" href="tedana.workflows.t2smap_workflow.html" />
+    <link rel="prev" title="tedana.workflows.tedana_workflow" href="tedana.workflows.tedana_workflow.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/generated/tedana.workflows.ica_reclassify_workflow.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-tedana.workflows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code>: Common workflows</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tedana.workflows.tedana_workflow.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code>.tedana_workflow</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code>.ica_reclassify_workflow</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tedana.workflows.ica_reclassify_workflow"><code class="docutils literal notranslate"><span class="pre">ica_reclassify_workflow()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.workflows.t2smap_workflow.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code>.t2smap_workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.decay"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.decay</span></code>: Modeling signal decay across echoes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.combine"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.combine</span></code>: Combining time series across echoes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.decomposition"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.decomposition</span></code>: Data decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.metrics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.metrics</span></code>: Computing TE-dependence metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.selection"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.selection</span></code>: Component selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.gscontrol"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.gscontrol</span></code>: Global signal control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.io</span></code>: Reading and writing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.reporting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.reporting</span></code>: Reporting functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.stats"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.stats</span></code>: Statistical functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.bibtex"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.bibtex</span></code>: Tools for working with BibTeX files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.utils</span></code>: Utility functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code>.ica_reclassify_workflow</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/tedana.workflows.ica_reclassify_workflow.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tedana-workflows-ica-reclassify-workflow">
+<h1><a class="reference internal" href="../api.html#module-tedana.workflows" title="tedana.workflows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code></a>.ica_reclassify_workflow<a class="headerlink" href="#tedana-workflows-ica-reclassify-workflow" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="tedana.workflows.ica_reclassify_workflow">
+<span class="sig-name descname"><span class="pre">ica_reclassify_workflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">registry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accept</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_accept</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_reject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convention</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bids'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_scans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tedort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gscontrol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_reports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">png_cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'coolwarm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reclassify_command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/me-ica/tedana/blob/e093290/tedana/workflows/ica_reclassify.py#L228"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tedana.workflows.ica_reclassify_workflow" title="Link to this definition"></a></dt>
+<dd><p>Run the post-tedana manual classification workflow.</p>
+<p>Please remember to cite <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>registry</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The previously run registry as a JSON file.</p></li>
+<li><p><strong>accept</strong> (:obj: <cite>list</cite>) – A list of integer values of components to accept in this workflow.</p></li>
+<li><p><strong>reject</strong> (:obj: <cite>list</cite>) – A list of integer values of components to reject in this workflow.</p></li>
+<li><p><strong>tag_accept</strong> (:obj: <cite>list</cite>) – A list of classification tags to add to accepted components.
+Will be applied to all listed accepted components, even if they were already accepted.</p></li>
+<li><p><strong>tag_reject</strong> (:obj: <cite>list</cite>) – A list of classification tags to add to rejected components.
+Will be applied to all listed rejected components, even if they were already rejected.</p></li>
+<li><p><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Output directory.</p></li>
+<li><p><strong>dummy_scans</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Number of dummy scans to remove from the beginning of the data. Default is 0.</p></li>
+<li><p><strong>tedort</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Orthogonalize rejected components w.r.t. accepted ones prior to
+denoising. Default is False.</p></li>
+<li><p><strong>gscontrol</strong> ({None, ‘gsr’, ‘mir’} or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Perform additional denoising to remove spatially diffuse noise.
+Default is None.</p></li>
+<li><p><strong>no_reports</strong> (<em>obj:’bool’, optional</em>) – Do not generate .html reports and .png plots. Default is false such
+that reports are generated.</p></li>
+<li><p><strong>png_cmap</strong> (<em>obj:’str’, optional</em>) – Name of a matplotlib colormap to be used when generating figures.
+Cannot be used with –no-png. Default is ‘coolwarm’.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Generate intermediate and additional files. Default is False.</p></li>
+<li><p><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Whether to run in debugging mode or not. Default is False.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Whether to force file overwrites. Default is False.</p></li>
+<li><p><strong>quiet</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – If True, suppresses logging/printing of messages. Default is False.</p></li>
+<li><p><strong>reclassify_command</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The command used to run ica_reclassify. Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>This workflow writes out several files. For a complete list of the files
+generated by this workflow, please visit
+<a class="reference external" href="https://tedana.readthedocs.io/en/latest/outputs.html">https://tedana.readthedocs.io/en/latest/outputs.html</a></p>
+</div>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>DuPre, E. M., Salo, T., Ahmed, Z., Bandettini, P. A., Bottenhorn, K. L.,
+Caballero-Gaudes, C., Dowdle, L. T., Gonzalez-Castillo, J., Heunis, S.,
+Kundu, P., Laird, A. R., Markello, R., Markiewicz, C. J., Moia, S.,
+Staden, I., Teves, J. B., Uruñuela, E., Vaziri-Pashkam, M.,
+Whitaker, K., &amp; Handwerker, D. A. (2021).
+TE-dependent analysis of multi-echo fMRI with tedana.
+Journal of Open Source Software, 6(66), 3669. doi:10.21105/joss.03669.</p>
+</aside>
+</aside>
+</dd></dl>
+
+<div class="clearer"></div></section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tedana.workflows.tedana_workflow.html" class="btn btn-neutral float-left" title="tedana.workflows.tedana_workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tedana.workflows.t2smap_workflow.html" class="btn btn-neutral float-right" title="tedana.workflows.t2smap_workflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

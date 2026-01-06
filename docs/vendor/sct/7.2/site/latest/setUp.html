@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setting Up Eclipse and Visual Studio &mdash; SimpleITK 2.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css" />
+
+  
+    <link rel="shortcut icon" href="_static/yellow_itk_icon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorials and Courses" href="tutorialsAndCourses.html" />
+    <link rel="prev" title="Path Length Issues on Windows" href="windowsPathLength.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpleitk" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/setUp.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SimpleITK
+              <img src="_static/simpleitk_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentalConcepts.html">Fundamental Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registrationOverview.html">Registration Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Common Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IO.html">Reading and Writing for Images and Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">SimpleITK Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">Building SimpleITK</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setting Up Eclipse and Visual Studio</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#java">Java</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#build-install-simpleitk">Build/Install SimpleITK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-eclipse">Set Up Eclipse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gaussianexample">GaussianExample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-simpleitk-to-the-build-path">Add SimpleITK to the Build Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simpleitk-java-conventions">SimpleITK Java Conventions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#c">C#</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-simpleitk">Building SimpleITK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-visual-studio">Set Up Visual Studio</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#select-architecture">Select Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-managed-library">Add Managed Library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-native-library">Add Native Library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-an-example">Building an Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsAndCourses.html">Tutorials and Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrationGuide2.0.html">Migration Guide 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FilterTemplates.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="link_examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimpleITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Setting Up Eclipse and Visual Studio</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/setUp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="setting-up-eclipse-and-visual-studio">
+<h1>Setting Up Eclipse and Visual Studio<a class="headerlink" href="#setting-up-eclipse-and-visual-studio" title="Permalink to this heading"></a></h1>
+<section id="java">
+<span id="setup-java"></span><h2>Java<a class="headerlink" href="#java" title="Permalink to this heading"></a></h2>
+<p>Java and SimpleITK are a natural fit. Like the bindings of other languages wrapped by SimpleITK, SimpleITK’s Java bindings have a language-specific component (traditional Jar file), and a native component (native shared library). This combination requires a little more setup, but is largely transparent to the developer.</p>
+<section id="build-install-simpleitk">
+<h3>Build/Install SimpleITK<a class="headerlink" href="#build-install-simpleitk" title="Permalink to this heading"></a></h3>
+<p>For Windows, you have two options:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="gettingStarted.html#installation-binaries"><span class="std std-ref">Download</span></a> the binary for SimpleITK</p></li>
+<li><p><a class="reference internal" href="buildingWindows.html"><span class="doc">Build</span></a> the binary</p></li>
+</ul>
+</div></blockquote>
+<p>For any other OS, you must build the binaries yourself.</p>
+</section>
+<section id="set-up-eclipse">
+<h3>Set Up Eclipse<a class="headerlink" href="#set-up-eclipse" title="Permalink to this heading"></a></h3>
+<p>Download <a class="reference external" href="http://www.eclipse.org/">Eclipse</a> on your platform of choice. Eclipse is a commonly used integrated development environment (IDE) used for Java because it makes development, debugging and deployment streamlined.</p>
+<p>Then, create a new project in Eclipse. Choose <em>File –&gt; New –&gt; Project…</em>, choosing Java Project in the Eclipse project wizard dialog, and name the project as you like. In this example, our project is called SimpleITK Demo. Create a new class by choosing <em>File –&gt; New –&gt; Class</em>, or simply copy the code below and paste into the project item in the Package Explorer view and Eclipse will automatically create the class and hierarchy for you.</p>
+</section>
+<section id="gaussianexample">
+<h3>GaussianExample<a class="headerlink" href="#gaussianexample" title="Permalink to this heading"></a></h3>
+<p>Here is our first class <em>Code/GaussianExample.java</em>:</p>
+<div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span><span class="w"> </span><span class="nn">org.itk.simple.example</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.itk.simple.Image</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.itk.simple.SimpleITK</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GaussianExample</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="cm">/**</span>
+<span class="cm">         * @param args</span>
+<span class="cm">         */</span>
+<span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Usage: &#39;Gaussian &lt;input&gt; &lt;output&gt;&#39;&quot;</span><span class="p">);</span>
+<span class="w">                        </span><span class="n">System</span><span class="p">.</span><span class="na">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Starting to blur &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">);</span>
+<span class="w">                </span><span class="c1">// Grab a file (there will be an error if the image is not scalar)</span>
+<span class="w">                </span><span class="n">Image</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleITK</span><span class="p">.</span><span class="na">readImage</span><span class="p">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">);</span>
+<span class="w">                </span><span class="n">Image</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleITK</span><span class="p">.</span><span class="na">discreteGaussian</span><span class="p">(</span><span class="n">image</span><span class="p">);</span>
+<span class="w">                </span><span class="n">SimpleITK</span><span class="p">.</span><span class="na">writeImage</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">);</span>
+<span class="w">                </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Finished blurring, writing to &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">args</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">);</span>
+
+<span class="w">        </span><span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If Eclipse is working as expected, you should see errors on lines 16-20. These errors occurs because we have not told Eclipse where to find SimpleITK’s jar file.</p>
+</section>
+<section id="add-simpleitk-to-the-build-path">
+<h3>Add SimpleITK to the Build Path<a class="headerlink" href="#add-simpleitk-to-the-build-path" title="Permalink to this heading"></a></h3>
+<p>Right click on the project in the <em>Package Explorer</em> view and choose <em>Build Path –&gt; Configure Build Path…</em></p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/EclipseConfigureBuildPath.jpg"><img alt="Build Path Option" src="_images/EclipseConfigureBuildPath.jpg" style="width: 359.4px; height: 263.4px;" /></a>
+</figure>
+<p>In the <em>Properties</em> dialog, click on <em>Java Build Path</em> and <em>Add External JARs…</em> then navigate to the SimpleITK jar file. When selected, click the down arrow to expose the options for the jar.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/BuildPathConfiguration.jpg"><img alt="Build Path Configuration" src="_images/BuildPathConfiguration.jpg" style="width: 835.0999999999999px; height: 403.2px;" /></a>
+</figure>
+<p>The three options of interest are: <em>Source attachment</em>, <em>Javadoc location</em> and <em>Native library location</em>. The <em>Source attachment</em> specifies where the source code for the SimpleITK jar file resides. In our case, it is distributed as <em>simpleitk-source.x.x.x.jar</em> where <em>x.x.x</em> is the version number of SimpleITK. The source attachment is useful for debugging the SimpleITK library, if necessary, because it allows the debugger to step through classes provided in the SimpleITK jar file. This setting is optional.</p>
+<p>The <em>Javadoc location</em> is also optional, but extremely helpful in developing with Java. Having Javadoc available provides Eclipse with in-line documentation for each function, if provided. We highly recommend supplying the Javadoc location to Eclipse.</p>
+<p>The last option, <em>Native library location</em> is required. Because SimpleITK is a C++ library, all functionality is provided through the <em>JNI (Java Native Interface)</em> specification. When the SimpleITK classes are loaded, a static block loads the native library to provide all the functionality to Java. This option tells Eclipse where to search for the library; without it a <em>UnsatisfiedLinkError</em> is thrown:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">Exception</span> <span class="ow">in</span> <span class="n">thread</span> <span class="s2">&quot;main&quot;</span> <span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">UnsatisfiedLinkError</span><span class="p">:</span> <span class="n">no</span> <span class="n">SimpleITKJava</span> <span class="ow">in</span> <span class="n">java</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">path</span>
+                <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">ClassLoader</span><span class="o">.</span><span class="n">loadLibrary</span><span class="p">(</span><span class="n">ClassLoader</span><span class="o">.</span><span class="n">java</span><span class="p">:</span><span class="mi">1758</span><span class="p">)</span>
+                <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">Runtime</span><span class="o">.</span><span class="n">loadLibrary0</span><span class="p">(</span><span class="n">Runtime</span><span class="o">.</span><span class="n">java</span><span class="p">:</span><span class="mi">823</span><span class="p">)</span>
+                <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="n">System</span><span class="o">.</span><span class="n">loadLibrary</span><span class="p">(</span><span class="n">System</span><span class="o">.</span><span class="n">java</span><span class="p">:</span><span class="mi">1045</span><span class="p">)</span>
+                <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">simple</span><span class="o">.</span><span class="n">SimpleITKJNI</span><span class="o">.&lt;</span><span class="n">clinit</span><span class="o">&gt;</span><span class="p">(</span><span class="n">SimpleITKJNI</span><span class="o">.</span><span class="n">java</span><span class="p">:</span><span class="mi">62</span><span class="p">)</span>
+                <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">simple</span><span class="o">.</span><span class="n">SimpleITK</span><span class="o">.</span><span class="n">readImage</span><span class="p">(</span><span class="n">SimpleITK</span><span class="o">.</span><span class="n">java</span><span class="p">:</span><span class="mi">33</span><span class="p">)</span>
+                <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="n">itk</span><span class="o">.</span><span class="n">simple</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">GaussianExample</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">GaussianExample</span><span class="o">.</span><span class="n">java</span><span class="p">:</span><span class="mi">19</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the <em>Native library location</em> to the directory containing the platform specific JNI library, i.e. <em>libSimpleITKJava.jnilib</em> on Mac OSX, <em>libSimpleITKJava.so</em> on Linux and <em>SimpleITKJava.dll</em> on Windows. After providing the library location, our example code runs correctly. When running this example from the command line, the native library location needs to be specified to the JVM, e.g. <code class="docutils literal notranslate"><span class="pre">-Djava.library.path=/path/to/SimpleITKRuntime</span></code>.</p>
+</section>
+<section id="simpleitk-java-conventions">
+<h3>SimpleITK Java Conventions<a class="headerlink" href="#simpleitk-java-conventions" title="Permalink to this heading"></a></h3>
+<p>The SimpleITK Java bindings closely follow the C++ conventions, i.e. each class contains the public member functions. However, the functional interface is handled differently in Java. In particular, every static Java function must belong to a class, unlike C++. In SimpleITK, the functional interface is contained in a class called <em>org.itk.simple.SimpleITK</em>. This class contains the functional interfaces as static member functions, i.e. <em>org.itk.simple.SimpleITK.readImage</em> as shown in <a class="reference internal" href="#gaussianexample">GaussianExample</a>. The naming conventions for all SimpleITK classes follows the C++ conventions, but member functions and the function interface follow the Java conventions of using <em>CamelCase</em> with the first letter lowercase. In Java, the C++ function <em>itk::simple::ReadImage</em> becomes <em>org.itk.simple.SimpleITK.readImage</em>.</p>
+</section>
+</section>
+<section id="c">
+<span id="setup-csharp"></span><h2>C#<a class="headerlink" href="#c" title="Permalink to this heading"></a></h2>
+<p>This guide will show how to set up a C# project in Microsoft Visual Studio 2017 using SimpleITK binaries. The same steps should apply for all other versions of Visual Studio.</p>
+<section id="building-simpleitk">
+<h3>Building SimpleITK<a class="headerlink" href="#building-simpleitk" title="Permalink to this heading"></a></h3>
+<p>For Windows, you have two options:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="gettingStarted.html#installation-binaries"><span class="std std-ref">Download</span></a> the binary for SimpleITK in your Documents</p></li>
+<li><p><a class="reference internal" href="building.html"><span class="doc">Build</span></a> the binary</p></li>
+</ul>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/SimpleITKCSharpUnzip.jpg"><img alt="Unzipped SimpleITK package" src="_images/SimpleITKCSharpUnzip.jpg" style="width: 591.3000000000001px; height: 444.6px;" /></a>
+</figure>
+</div></blockquote>
+<p>For any other OS, you must build the binaries yourself.</p>
+</section>
+<section id="set-up-visual-studio">
+<h3>Set Up Visual Studio<a class="headerlink" href="#set-up-visual-studio" title="Permalink to this heading"></a></h3>
+<p>Download <a class="reference external" href="https://visualstudio.microsoft.com/downloads/">Visual Studio</a> if you don’t have it.</p>
+<p>Then, create a new project in Visual Studio. Choose <em>File –&gt; New –&gt; Project…</em>, then select “Visual C#” and “Console App”.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/NewVisualStudioProject.jpg"><img alt="New Visual Studio Project" src="_images/NewVisualStudioProject.jpg" style="width: 639.9px; height: 446.40000000000003px;" /></a>
+</figure>
+</section>
+<section id="select-architecture">
+<h3>Select Architecture<a class="headerlink" href="#select-architecture" title="Permalink to this heading"></a></h3>
+<p>The SimpleITK binary only supports a single architecture platform. Your project should be configured to match that same platform. By default, in the Toolbar “Debug” is selected for the Solution Configuration and “Any CPU” is selected for the Solution Platform, this needs to be changed.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Bring up the “Configuration Manager” dialog from the menu <em>BUILD-&gt;Configuration Manger…</em></p></li>
+<li><p>The architecture of the SimpleITK binary needs to be added, and the “Any CPU” architecture needs to be removed. This needs to be done for both the “Active solution platforms” and the “Platform”.</p></li>
+</ul>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/VisualStudioConfigurationManager.jpg"><img alt="Visual Studio Configuration Manager" src="_images/VisualStudioConfigurationManager.jpg" style="width: 475.2px; height: 300.6px;" /></a>
+</figure>
+</div></blockquote>
+</section>
+<section id="add-managed-library">
+<h3>Add Managed Library<a class="headerlink" href="#add-managed-library" title="Permalink to this heading"></a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>From the menu bar select <em>PROJECT-&gt;Add Reference…</em> to bring up the Reference Manager. Click <em>Browse…</em> and navigate the file system to unzip “SimpleITKCSharpManaged.dll” from the binary download, then click OK to add.</p></li>
+</ul>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/ManagedLibrary.jpg"><img alt="Add Managed Library" src="_images/ManagedLibrary.jpg" style="width: 531.0px; height: 368.1px;" /></a>
+</figure>
+</div></blockquote>
+</section>
+<section id="add-native-library">
+<h3>Add Native Library<a class="headerlink" href="#add-native-library" title="Permalink to this heading"></a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p>From the menu bar select <em>PROJECT-&gt;Add Existing Item…</em> Select “Executable Files” for the extension type. Then navigate the file system to the unzipped “SimpleITKCSharpNative.dll” file from the binary download. <strong>IMPORTANT</strong> in the “Add” button’s pull down menu select “Add As Link”.</p></li>
+<li><p>In the Solution Explorer right click on the “SimpleITKCSharpNative.dll”, and select “Properties”.</p></li>
+<li><p>Then for “Build Action”, choose “Content”, and “Copy to OutputDirectory” choose “Copy always”.</p></li>
+</ul>
+</div></blockquote>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/NativeLibraryProperties.jpg"><img alt="Native Library Properties" src="_images/NativeLibraryProperties.jpg" style="width: 269.0px; height: 291.0px;" /></a>
+</figure>
+</section>
+<section id="building-an-example">
+<h3>Building an Example<a class="headerlink" href="#building-an-example" title="Permalink to this heading"></a></h3>
+<p>Now that we have configured the project, let up copy a basic SimpleITK example to compile and run. The <a class="reference internal" href="link_SimpleGaussian_docs.html"><span class="doc">SimpleGaussian in C#</span></a> is a simple one to test our configuration. This can just be copied and pasted into the code editor.</p>
+<p>Then click <em>Build -&gt; Build Solution</em>. Assuming you have followed all of the steps thus far, you should have an executable you can run from the command line or from Visual Studio by adding command line arguments in <em>Project -&gt; ConsoleApp1 Properties… -&gt; Debug</em>.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/VisualStudioExample.jpg"><img alt="Visual Studio Example Build" src="_images/VisualStudioExample.jpg" style="width: 864.0px; height: 516.0px;" /></a>
+</figure>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="windowsPathLength.html" class="btn btn-neutral float-left" title="Path Length Issues on Windows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorialsAndCourses.html" class="btn btn-neutral float-right" title="Tutorials and Courses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NumFOCUS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

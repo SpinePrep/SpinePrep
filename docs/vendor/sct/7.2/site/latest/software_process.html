@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Making a Pull Request &mdash; NWB Format Specification 2.10.0-alpha documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=0c24fe83" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=9c85597e"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release Notes" href="format_release_notes.html" />
+    <link rel="prev" title="1. Format Overview" href="format.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="nwb-schema" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/software_process.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            NWB Format Specification
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="format_description.html">1. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="format_description.html#comments-and-definitions">2. Comments and Definitions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Format Specification</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="format.html">1. Format Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="format.html#type-specifications">2. Type Specifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="format.html#schema-sources">3. Schema Sources</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">History &amp; Legal</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Making a Pull Request</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#merging-prs-and-making-releases">Merging PRs and Making Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#making-a-release-checklist">Making a Release Checklist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#the-dev-branch-and-releases">The “dev” Branch and Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="format_release_notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html#legal">Legal</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NWB Format Specification</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Making a Pull Request</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/software_process.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="making-a-pull-request">
+<h1>Making a Pull Request<a class="headerlink" href="#making-a-pull-request" title="Link to this heading"></a></h1>
+<p>Actions to take on each PR that modifies the schema and does not prepare the schema for a public release
+(this is also in the <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/blob/dev/.github/PULL_REQUEST_TEMPLATE.md">GitHub PR template</a>):</p>
+<p>If the current schema version on “dev” is a public release, then:</p>
+<ol class="arabic simple">
+<li><p>Update the version string in <code class="docutils literal notranslate"><span class="pre">docs/format/source/conf.py</span></code> and <code class="docutils literal notranslate"><span class="pre">common/namespace.yaml</span></code> to the next version with the
+suffix “-alpha”</p></li>
+<li><p>Add a new section in the release notes for the new version with the date “Upcoming”</p></li>
+</ol>
+<p>Always:</p>
+<ol class="arabic simple">
+<li><p>Add release notes for the PR to <code class="docutils literal notranslate"><span class="pre">docs/format/source/format_release_notes.rst</span></code></p></li>
+</ol>
+<p>Documentation or internal changes to the repo (i.e., changes that do not affect the schema files)
+do not need to be accompanied with a version bump or addition to the release notes.</p>
+</section>
+<section id="merging-prs-and-making-releases">
+<h1>Merging PRs and Making Releases<a class="headerlink" href="#merging-prs-and-making-releases" title="Link to this heading"></a></h1>
+<p><strong>Public release</strong>: a tagged release of the schema. The version string MUST NOT have a suffix indicating a pre-release,
+such as “-alpha”. The current “dev” branch of PyNWB and all PyNWB releases MUST point to a public release of
+nwb-schema. All schema that use nwb-schema as a submodule MUST also point only to public releases.</p>
+<p><strong>Internal release</strong>: a state of the schema “dev” branch where the version string ends with “-alpha”.</p>
+<p>The default branch of nwb-schema is “dev”. <strong>The “dev” branch holds the bleeding edge version of
+the nwb-schema specification.</strong></p>
+<p>PRs should be made to “dev”. Every PR should include an update to <code class="docutils literal notranslate"><span class="pre">docs/format/source/format_release_notes.rst</span></code>.
+If the current version is a public release, then the PR should also update the version of the schema in two places:
+<code class="docutils literal notranslate"><span class="pre">docs/format/source/conf.py</span></code> and <code class="docutils literal notranslate"><span class="pre">core/nwb.namespace.yaml</span></code>. The new version should be the next bugfix/minor/major version
+of the schema with the suffix “-alpha”. For example, if the current schema on “dev” has version “2.2.0”,
+then a PR implementing a bug fix should update the schema version from “2.2.0” to “2.2.1-alpha”. Appending the “-alpha”
+suffix ensures that any person or API accessing the default “dev” branch of the repo containing an internal release
+of the schema receives the schema with a version string that is distinct from public releases of the schema. If the
+current schema on “dev” is already an internal release, then the version string does not need to be updated unless
+the PR requires an upgrade in the version (e.g., from bugfix to minor).</p>
+<p>PyNWB should contain a branch and PR that tracks the “dev” branch of nwb-schema. Before
+a public release of nwb-schema is made, this PyNWB branch should be checked to ensure that when the new release
+is made, the branch can be merged without issue.</p>
+<p>Immediately prior to making a new public release, the version of the schema should be updated to remove the “-alpha”
+suffix and the documentation and release notes should be updated as needed (see next section).</p>
+<p>The current “dev” branch of PyNWB and all PyNWB releases MUST always point to a public release of nwb-schema. If
+a public release contains an internally released version of nwb-schema, e.g., from an untagged commit on the
+“dev” branch, then it will be difficult to find the version (commit) of nwb-schema that was used to create
+an NWB file when the schema is not cached.</p>
+</section>
+<section id="making-a-release-checklist">
+<h1>Making a Release Checklist<a class="headerlink" href="#making-a-release-checklist" title="Link to this heading"></a></h1>
+<p>Before merging:</p>
+<ol class="arabic simple">
+<li><p>Update requirements versions as needed</p></li>
+<li><p>Update legal file dates and information in <code class="docutils literal notranslate"><span class="pre">Legal.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">license.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">README.md</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/format/source/conf.py</span></code>,
+and any other locations as needed</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">README.rst</span></code> as needed</p></li>
+<li><p>Update the version string in <code class="docutils literal notranslate"><span class="pre">docs/format/source/conf.py</span></code>, <code class="docutils literal notranslate"><span class="pre">core/nwb.namespace.yaml</span></code>, and <code class="docutils literal notranslate"><span class="pre">/core/nwb.file.yaml</span></code>
+(remove “-alpha” suffix)</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">docs/format/source/conf.py</span></code> as needed</p></li>
+<li><p>Update release notes (set release date) in <code class="docutils literal notranslate"><span class="pre">docs/format/source/format_release_notes.rst</span></code> and any other docs as needed</p></li>
+<li><p>Test docs locally (<code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">docs/format;</span> <span class="pre">make</span> <span class="pre">fulldoc</span></code>) where the nwb-schema submodule in the local version of PyNWB
+is fully up-to-date with the head of the dev branch.</p></li>
+<li><p>Push changes to a new PR and make sure all PRs to be included in this release have been merged. Add
+<code class="docutils literal notranslate"><span class="pre">?template=release.md</span></code> to the PR URL to auto-populate the PR with this checklist.</p></li>
+<li><p>Check that the readthedocs build for this PR succeeds (build latest to pull the new branch, then activate and
+build docs for new branch): <a class="reference external" href="https://readthedocs.org/projects/nwb-schema/builds/">https://readthedocs.org/projects/nwb-schema/builds/</a></p></li>
+</ol>
+<p>After merging:</p>
+<ol class="arabic simple">
+<li><p>Create a new git tag. Pull the latest dev branch locally, run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">[version]</span> <span class="pre">--sign</span></code>, copy and paste the
+release notes into the tag message, and run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">--tags</span></code>.</p></li>
+<li><p>On the <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/tags">GitHub tags</a> page, click “…” -&gt; “Create release” for the new tag on the right side of the page.
+Copy and paste the release notes into the release message, update the formatting if needed (reST to Markdown),
+and set the title to the version string.</p></li>
+<li><p>Check that the readthedocs “latest” and “stable” builds run and succeed. Delete the readthedocs build for the
+merged PR. <a class="reference external" href="https://readthedocs.org/projects/nwb-schema/builds/">https://readthedocs.org/projects/nwb-schema/builds/</a></p></li>
+<li><p>Update the nwb-schema submodule in the PyNWB branch corresponding to this schema version to point to the tagged commit.</p></li>
+</ol>
+<p>This checklist can also be found in the <a class="reference external" href="https://github.com/NeurodataWithoutBorders/nwb-schema/blob/dev/.github/PULL_REQUEST_TEMPLATE/release.md">GitHub release PR template</a>.</p>
+<p>The time between merging this PR and creating a new public release should be minimized.</p>
+</section>
+<section id="the-dev-branch-and-releases">
+<h1>The “dev” Branch and Releases<a class="headerlink" href="#the-dev-branch-and-releases" title="Link to this heading"></a></h1>
+<p>The default branch is “dev”. The “dev” branch will hold the bleeding edge version of the NWB format specification,
+language specification, and storage specification. PRs should be made to “dev”. Every PR should include an update to
+the corresponding format/language/storage release notes. If the PR involves a change to the NWB format, the PR should
+also update the version of the format in three places: <cite>/docs/format/conf.py</cite>, <cite>/core/nwb.namespace.yaml</cite> and
+<cite>/core/nwb.file.yaml</cite>. The new version string should be the next bugfix/minor/major version of the format with the
+suffix “a” (for “alpha”). For example, if the format is currently in version “2.2.0” and the format is then updated /
+released internally with a bug fix, then the PR for that bug fix should update the format version from “2.2.0” to
+“2.2.1a”. Appending the “a” suffix ensures that any person or API accessing the default dev branch of the repo
+containing an internally released version of the schema receives the schema with a version string that is distinct from
+the full public released versions of the schema.</p>
+<p>Before merging a PR on nwb-schema, developers should take care to test their changes locally with the latest version
+of PyNWB and MatNWB to ensure compatibility. If the APIs require changes to work with the PR, those changes should be
+implemented and tested locally before merging the PR to ensure that the API changes can be implemented and no further
+changes to the schema are required.</p>
+<p>When a new public release is ready, the branches of the APIs, PyNWB and MatNWB, that track nwb-schema should be checked
+to ensure that when the new release is made, the branches in the APIs can be merged without issue.</p>
+<p>Immediately prior to a new public release, the version of the format should be updated to remove the any alphabetic,
+suffixes, e.g., “a”, “b”, and “rc”, and the documentation and release notes should be checked and updated (see release
+process documents).</p>
+<p>It is important that all public releases of nwb-schema contain a publicly released version of hdmf-common-schema. If a
+public release contains an internally released version of hdmf-common-schema, e.g., from an untagged commit on the “dev”
+branch, then tracking the identity of the included hdmf-common-schema becomes difficult and the same version string
+could point to two different versions of the schema.</p>
+<p>For the same reason, it is important that all public releases of the APIs, PyNWB and MatNWB, contain a publicly
+released version of nwb-schema. Starting with nwb-schema version 2.2.0, the dev branch and all public releases of PyNWB
+and MatNWB include only publicly released versions of nwb-schema. For more details, see the
+[PyNWB software process documentation](<a class="reference external" href="https://pynwb.readthedocs.io/en/stable/software_process.html">https://pynwb.readthedocs.io/en/stable/software_process.html</a>).</p>
+<p>The [NWB Extensions Versioning Guidelines](<a class="reference external" href="https://docs.google.com/document/d/19G5LKFsIPS4tiS5uaXKI5EOVVcdO91i5DCTQWLccyWI/edit">https://docs.google.com/document/d/19G5LKFsIPS4tiS5uaXKI5EOVVcdO91i5DCTQWLccyWI/edit</a>)
+are used to guide versioning of the NWB core schema, as well as extensions to NWB.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="format.html" class="btn btn-neutral float-left" title="1. Format Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="format_release_notes.html" class="btn btn-neutral float-right" title="Release Notes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, Neurodata Without Borders.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

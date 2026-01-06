@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caching &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <script src="../../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Modules API" href="../../modules/index.html" />
+    <link rel="prev" title="Custom Classes" href="custom_classes.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/parameter_nodes/advanced/caching.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Parameter Nodes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../supported_types.html">Supported types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../defaults.html">Defaults</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validators.html">Validators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gui_connection.html">GUI Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gui_creation.html">GUI Creation</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Advanced</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="custom_widgets_for_parameter_packs.html">Custom Widgets for Parameter Packs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="custom_classes.html">Custom Classes</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Caching</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Parameter Nodes</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Advanced</a></li>
+      <li class="breadcrumb-item active">Caching</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/parameter_nodes/advanced/caching.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="caching">
+<h1>Caching<a class="headerlink" href="#caching" title="Link to this heading"></a></h1>
+<section id="caching-overview">
+<h2>Caching overview<a class="headerlink" href="#caching-overview" title="Link to this heading"></a></h2>
+<p>With the exception of MRML nodes, all values are stored in the underlying <code class="docutils literal notranslate"><span class="pre">vtkMRMLScriptedModuleNode</span></code> as strings. The constant conversion from string to non-string (e.g. <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">list[int]</span></code>, etc) each time a parameter is read can be very inefficient. To help with this, a caching system was put in place. If a value hasn’t been written through the <em>parameter node wrapper</em> since the last read, then it will use the cached value. Note this means if the underlying <code class="docutils literal notranslate"><span class="pre">vtkMRMLScriptedModuleNode</span></code> parameter node changes outside of the wrapper, the cache will not be updated and the cached value will be wrong.</p>
+<p>This is the chosen behavior for the following reasons:</p>
+<ul class="simple">
+<li><p>Mixed usage of the parameter node wrapper and the <code class="docutils literal notranslate"><span class="pre">vtkMRMLScriptedModuleNode</span></code> parameter node for the same parameter node is not expected.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">vtkMRMLScriptedModuleNode</span></code> parameter node does not offer per parameter VTK event callbacks. Therefore, if a callback was setup off the <code class="docutils literal notranslate"><span class="pre">ModifiedEvent</span></code>, <em>all</em> parameters would be re-read for <em>every</em> write to <em>any</em> parameter in the node.</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">vtkMRMLScriptedModuleNode</span></code> parameter node may be updated in the future to give a <code class="docutils literal notranslate"><span class="pre">ParameterModifiedEvent</span></code> that gives the parameter that was modified. If this happens, the caching behavior may be revisited.</p></li>
+</ul>
+</li>
+</ul>
+<p>The caching system will cache the last written for each parameter that allows it. Determination of whether a value can be cached is done a per type basis, and defaults to no caching for custom types. Most of the built in type support has caching enabled, with the biggest exception being <code class="docutils literal notranslate"><span class="pre">typing.Any</span></code>. The container classes (<code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">parameterPack</span></code>, etc) usually only allow caching if all of their element types allow caching.</p>
+</section>
+<section id="caching-support-for-list-and-dict">
+<h2>Caching support for list and dict<a class="headerlink" href="#caching-support-for-list-and-dict" title="Link to this heading"></a></h2>
+<p>As mentioned above, <code class="docutils literal notranslate"><span class="pre">list</span></code> and <code class="docutils literal notranslate"><span class="pre">dict</span></code> can be cached if their element types (key and value type for <code class="docutils literal notranslate"><span class="pre">dict</span></code>) can all be cached. Because Python does return by reference for complex types, and types like <code class="docutils literal notranslate"><span class="pre">list</span></code> and <code class="docutils literal notranslate"><span class="pre">dict</span></code> are mutable, some extra steps were taken to ensure if the containers were updated, it would propagate down to the underlying <code class="docutils literal notranslate"><span class="pre">vtkMRMLScriptedModuleNode</span></code>.</p>
+<p>This was done by adding <code class="docutils literal notranslate"><span class="pre">ObservedList</span></code> and <code class="docutils literal notranslate"><span class="pre">ObservedDict</span></code> classes that were able to write to the <code class="docutils literal notranslate"><span class="pre">vtkMRMLScriptedModuleNode</span></code> when they are modified. This means that anytime a <code class="docutils literal notranslate"><span class="pre">list</span></code> or <code class="docutils literal notranslate"><span class="pre">dict</span></code> is used in <code class="docutils literal notranslate"><span class="pre">parameterNodeWrapper</span></code>, it is actually an <code class="docutils literal notranslate"><span class="pre">ObservedList</span></code> or an <code class="docutils literal notranslate"><span class="pre">ObservedDict</span></code> that is returned. These classes function very much like their non-observed counterparts. Reading values and iterating over the values will not cause any string to type conversions, but writing will. Modification of the containers is allowed (e.g. <code class="docutils literal notranslate"><span class="pre">ObservedListInstance</span> <span class="pre">+=</span> <span class="pre">[&quot;list&quot;,</span> <span class="pre">&quot;of&quot;,</span> <span class="pre">&quot;items&quot;]</span></code>). Also you can store the container as a variable and update the variable.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">strings</span> <span class="o">=</span> <span class="n">parameterNodeWrapperInstance</span><span class="o">.</span><span class="n">listOfStrings</span>
+<span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+<span class="c1"># the parameter node is automatically updated to add &quot;text&quot; its list</span>
+</pre></div>
+</div>
+</section>
+<section id="caching-custom-classes">
+<h2>Caching custom classes<a class="headerlink" href="#caching-custom-classes" title="Link to this heading"></a></h2>
+<p>Custom classes can also be cached, as long as you can ensure that any changes to the class can automatically propagate to the underlying <code class="docutils literal notranslate"><span class="pre">vtkMRMLScriptedModuleNode</span></code>. Use <code class="docutils literal notranslate"><span class="pre">ListSerializer</span></code> and <code class="docutils literal notranslate"><span class="pre">ObservedList</span></code> as an example. These are in <code class="docutils literal notranslate"><span class="pre">/data/Projects/Slicer/Base/Python/slicer/parameterNodeWrapper/serializers.py</span></code>.</p>
+<p>In your custom <code class="docutils literal notranslate"><span class="pre">Serializer</span></code> that you will write, you will need to override the <code class="docutils literal notranslate"><span class="pre">supportsCaching</span></code> method to return <code class="docutils literal notranslate"><span class="pre">True</span></code>. See the <a class="reference internal" href="custom_classes.html"><span class="std std-doc">Custom Classes</span></a> page for more information on creating a  custom class and making new <code class="docutils literal notranslate"><span class="pre">Serializer</span></code>s.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="custom_classes.html" class="btn btn-neutral float-left" title="Custom Classes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../modules/index.html" class="btn btn-neutral float-right" title="Modules API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

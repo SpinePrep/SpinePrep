@@ -1,0 +1,1470 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://bids-specification.readthedocs.io/en/stable/04-modality-specific-files/05-task-events.html">
+      
+      <link rel="icon" href="../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.7">
+    
+    
+      
+        <title>Task events - Brain Imaging Data Structure v1.8.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.20d9efc8.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      
+    
+      
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  <script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="bids-specification" /><meta name="readthedocs-version-slug" content="v1.8.0" /><meta name="readthedocs-resolver-filename" content="/04-modality-specific-files/05-task-events.html" /><meta name="readthedocs-http-status" content="200" /></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#task-events" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Brain Imaging Data Structure v1.8.0" class="md-header__button md-logo" aria-label="Brain Imaging Data Structure v1.8.0" data-md-component="logo">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Brain Imaging Data Structure v1.8.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Task events
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Brain Imaging Data Structure v1.8.0" class="md-nav__button md-logo" aria-label="Brain Imaging Data Structure v1.8.0" data-md-component="logo">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    Brain Imaging Data Structure v1.8.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          The BIDS Specification
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="The BIDS Specification" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          The BIDS Specification
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-introduction.html" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-common-principles.html" class="md-nav__link">
+        Common principles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-modality-agnostic-files.html" class="md-nav__link">
+        Modality agnostic files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_4" type="checkbox" id="__nav_1_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1_4">
+          Modality specific files
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Modality specific files" data-md-level="2">
+        <label class="md-nav__title" for="__nav_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Modality specific files
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01-magnetic-resonance-imaging-data.html" class="md-nav__link">
+        Magnetic Resonance Imaging
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02-magnetoencephalography.html" class="md-nav__link">
+        Magnetoencephalography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03-electroencephalography.html" class="md-nav__link">
+        Electroencephalography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04-intracranial-electroencephalography.html" class="md-nav__link">
+        Intracranial Electroencephalography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Task events
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="05-task-events.html" class="md-nav__link md-nav__link--active">
+        Task events
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stimuli" class="md-nav__link">
+    Stimuli
+  </a>
+  
+    <nav class="md-nav" aria-label="Stimuli">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stimuli-directory" class="md-nav__link">
+    Stimuli directory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stimuli-databases" class="md-nav__link">
+    Stimuli databases
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stimulus-presentation-details" class="md-nav__link">
+    Stimulus presentation details
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="06-physiological-and-other-continuous-recordings.html" class="md-nav__link">
+        Physiological and other continuous recordings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="07-behavioral-experiments.html" class="md-nav__link">
+        Behavioral experiments (with no neural recordings)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="08-genetic-descriptor.html" class="md-nav__link">
+        Genetic Descriptor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="09-positron-emission-tomography.html" class="md-nav__link">
+        Positron Emission Tomography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="10-microscopy.html" class="md-nav__link">
+        Microscopy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="11-near-infrared-spectroscopy.html" class="md-nav__link">
+        Near-Infrared Spectroscopy
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_5" type="checkbox" id="__nav_1_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1_5">
+          Derivatives
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Derivatives" data-md-level="2">
+        <label class="md-nav__title" for="__nav_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Derivatives
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-derivatives/01-introduction.html" class="md-nav__link">
+        BIDS Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-derivatives/02-common-data-types.html" class="md-nav__link">
+        Common data types and metadata
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-derivatives/03-imaging.html" class="md-nav__link">
+        Imaging data types
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-longitudinal-and-multi-site-studies.html" class="md-nav__link">
+        Longitudinal and multi-site studies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary.html" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-extensions.html" class="md-nav__link">
+        BIDS Extension Proposals
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_9" type="checkbox" id="__nav_1_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1_9">
+          Appendix
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Appendix" data-md-level="2">
+        <label class="md-nav__title" for="__nav_1_9">
+          <span class="md-nav__icon md-icon"></span>
+          Appendix
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/contributors.html" class="md-nav__link">
+        Contributors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/licenses.html" class="md-nav__link">
+        Licenses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/entity-table.html" class="md-nav__link">
+        Entity table
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/entities.html" class="md-nav__link">
+        Entities
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/file-collections.html" class="md-nav__link">
+        File collections
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/units.html" class="md-nav__link">
+        Units
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/hed.html" class="md-nav__link">
+        Hierarchical Event Descriptors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/meg-file-formats.html" class="md-nav__link">
+        MEG file formats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/meg-systems.html" class="md-nav__link">
+        MEG systems
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/coordinate-systems.html" class="md-nav__link">
+        Coordinate systems
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/qmri.html" class="md-nav__link">
+        Quantitative MRI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/arterial-spin-labeling.html" class="md-nav__link">
+        Arterial Spin Labeling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/cross-modality-correspondence.html" class="md-nav__link">
+        Cross modality correspondence
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGES.html" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          The BIDS Starter Kit
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="The BIDS Starter Kit" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          The BIDS Starter Kit
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://bids-standard.github.io/bids-starter-kit" class="md-nav__link">
+        Website
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://bids-standard.github.io/bids-starter-kit/tutorials/tutorials.html" class="md-nav__link">
+        Tutorials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/bids-standard/bids-starter-kit" class="md-nav__link">
+        GitHub repository
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stimuli" class="md-nav__link">
+    Stimuli
+  </a>
+  
+    <nav class="md-nav" aria-label="Stimuli">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stimuli-directory" class="md-nav__link">
+    Stimuli directory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stimuli-databases" class="md-nav__link">
+    Stimuli databases
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stimulus-presentation-details" class="md-nav__link">
+    Stimulus presentation details
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="task-events"><a class="toclink" href="#task-events">Task events</a></h1>
+<p>The purpose of this file is to describe timing and other properties of events
+recorded during a run.
+Events are, for example, stimuli presented to the participant or participant responses
+(see <a href="../02-common-principles.html#definitions">Definitions</a>).
+A single event file MAY include any combination of stimulus, response, and other events.
+Events MAY overlap in time.
+Please mind that this does not imply that only so called "event related" study designs
+are supported (in contrast to "block" designs) - each "block of events" can be
+represented by an individual row in the <code>events.tsv</code> file (with a long
+duration).</p>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;]
+    &lt;data_type&gt;/
+        &lt;matches&gt;_events.tsv
+        &lt;matches&gt;_events.json
+</code></pre></div>
+<p>Where <code>&lt;matches&gt;</code> corresponds to task filename. For example:
+<code>sub-control01_task-nback</code>.</p>
+<p>Each task events file REQUIRES a corresponding task data file.
+It is also possible to have a single <code>events.tsv</code> file describing events
+for all participants and runs (see
+<a href="../02-common-principles.html#the-inheritance-principle">Inheritance Principle</a>).
+As with all other tabular data, <code>events.tsv</code> files MAY be accompanied by a JSON
+file describing the columns in detail (see
+<a href="../02-common-principles.html#tabular-files">Tabular Files</a>).</p>
+<p>The tabular files consists of one row per event and a set of REQUIRED
+and OPTIONAL columns:</p>
+<!-- This block generates a columns table.
+The definitions of these fields can be found in
+  src/schema/rules/tabular_data/*.yaml
+and a guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+<table>
+<thead>
+<tr>
+<th><strong>Column name</strong></th>
+<th><strong>Requirement Level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../glossary.html#objects.columns.onset">onset</a></td>
+<td>REQUIRED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>Onset (in seconds) of the event, measured from the beginning of the acquisition of the first data point stored in the corresponding task data file. Negative onsets are allowed, to account for events that occur prior to the first stored data point. For example, in case there is an in-scanner training phase that begins before the scanning sequence has started events from this sequence should have negative onset time counting down to the beginning of the acquisition of the first volume.<br>If any data points have been discarded before forming the data file (for example, "dummy volumes" in BOLD fMRI), a time of 0 corresponds to the first stored data point and not the first acquired data point.  <br><br>This column must appear <strong>first</strong> in the file.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.columns.duration">duration</a></td>
+<td>REQUIRED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a> or <code>"n/a"</code></td>
+<td>Duration of the event (measured from onset) in seconds. Must always be either zero or positive (or <code>n/a</code> if unavailable). A "duration" value of zero implies that the delta function or event is so short as to be effectively modeled as an impulse.  <br><br>This column must appear <strong>second</strong> in the file.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.columns.sample">sample</a></td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">integer</a></td>
+<td>Onset of the event according to the sampling scheme of the recorded modality (that is, referring to the raw data file that the <code>events.tsv</code> file accompanies). When there are several sampling schemes present in the raw data file (as can be the case for example for <code>.edf</code> files), this column is ambiguous and SHOULD NOT be used.  <br><br>This column may appear anywhere in the file.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.columns.trial_type">trial_type</a></td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Primary categorisation of each trial to identify them as instances of the experimental conditions. For example: for a response inhibition task, it could take on values <code>go</code> and <code>no-go</code> to refer to response initiation and response inhibition experimental conditions.  <br><br>This column may appear anywhere in the file.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.columns.response_time">response_time</a></td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a> or <code>"n/a"</code></td>
+<td>Response time measured in seconds. A negative response time can be used to represent preemptive responses and <code>n/a</code> denotes a missed response.  <br><br>This column may appear anywhere in the file.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.columns.value">value</a></td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a> or <a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Marker value associated with the event (for example, the value of a TTL trigger that was recorded at the onset of the event).  <br><br>This column may appear anywhere in the file.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.columns.HED">HED</a></td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Hierarchical Event Descriptor (HED) Tag. See the <a href="../appendices/hed.html">HED Appendix</a> for details.  <br><br>This column may appear anywhere in the file.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.columns.stim_file">stim_file</a></td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Represents the location of the stimulus file (such as an image, video, or audio file) presented at the given onset time. There are no restrictions on the file formats of the stimuli files, but they should be stored in the <code>/stimuli</code> directory (under the root directory of the dataset; with OPTIONAL subdirectories). The values under the <code>stim_file</code> column correspond to a path relative to <code>/stimuli</code>. For example <code>images/cat03.jpg</code> will be translated to <code>/stimuli/images/cat03.jpg</code>.  <br><br>This column may appear anywhere in the file.</td>
+</tr>
+<tr>
+<td><strong>Additional Columns</strong></td>
+<td>OPTIONAL</td>
+<td><code>n/a</code></td>
+<td>Additional columns are allowed.</td>
+</tr>
+</tbody>
+</table>
+<p>Note for MRI data:
+If any acquired scans have been discarded before forming the imaging data file,
+ensure that an <code>onset</code> of 0 corresponds to the time the first image was stored.
+For example in case there is an in scanner training phase that
+begins before the scanning sequence has started events from this sequence should
+have negative onset time counting down to the beginning of the acquisition of
+the first volume.</p>
+<p>Note regarding the precision of numeric metadata:
+It is RECOMMENDENDED that dataset curators specify numeric metadata like <code>onset</code> and
+<code>duration</code> with as much decimal precision as is reasonable in the context of the experiment.
+For example in an EEG experiment with devices operating at 1000 Hz sampling frequency,
+dataset curators SHOULD specify <strong>at least</strong> 3 figures after the decimal point.</p>
+<p>An arbitrary number of additional columns can be added. Those allow describing
+other properties of events that could be later referenced in modelling and
+hypothesis extensions of BIDS.
+Note that the <code>trial_type</code> and any additional columns in a TSV file
+SHOULD be documented in an accompanying JSON sidecar file.</p>
+<p>Example:</p>
+<!-- This block generates a file tree.
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+
+<div class="highlight"><pre><span></span><code>└─ sub-control01/
+   └─ func/
+      ├─ sub-control01_task-stopsignal_events.tsv 
+      └─ sub-control01_task-stopsignal_events.json 
+</code></pre></div>
+<p>Example of the content of the TSV file:</p>
+<div class="highlight"><pre><span></span><code>onset   duration    trial_type  response_time   stim_file
+1.23    0.65    start   1.435   images/red_square.jpg
+5.65    0.65    stop    1.739   images/blue_square.jpg
+</code></pre></div>
+<p>In the accompanying JSON sidecar, the <code>trial_type</code> column might look as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;trial_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;LongName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Event category&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Indicator of type of action that is expected&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Levels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;start&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A red square is displayed to indicate starting&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;stop&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A blue square is displayed to indicate stopping&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Note that all other columns SHOULD also be described but are omitted for the
+sake of brevity.</p>
+<p>For multi-echo files, the <code>events.tsv</code> file is applicable to all echos of
+a particular run:</p>
+<!-- This block generates a file tree.
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+
+<div class="highlight"><pre><span></span><code>└─ sub-01/
+   └─ func/
+      ├─ sub-01_task-cuedSGT_run-1_events.tsv 
+      ├─ sub-01_task-cuedSGT_run-1_echo-1_bold.nii.gz 
+      ├─ sub-01_task-cuedSGT_run-1_echo-2_bold.nii.gz 
+      └─ sub-01_task-cuedSGT_run-1_echo-3_bold.nii.gz 
+</code></pre></div>
+<p>Note: Events can also be documented in machine-actionable form
+using HED (Hierarchical Event Descriptor) tags.
+This type of documentation is particularly useful for datasets likely to be used
+in event-related analyses.
+See <a href="../appendices/hed.html">Hierarchical Event Descriptors</a>
+for additional information and examples.</p>
+<h2 id="stimuli"><a class="toclink" href="#stimuli">Stimuli</a></h2>
+<p>Additional information about the stimuli can be added in the <code>events.tsv</code>
+and <code>events.json</code> files.</p>
+<p>This can be done by using a <code>/stimuli</code> directory or by reference to a stimuli database.</p>
+<h3 id="stimuli-directory"><a class="toclink" href="#stimuli-directory">Stimuli directory</a></h3>
+<p>The stimulus files can be added in a <code>/stimuli</code> directory
+(under the root directory of the dataset; with optional subdirectories) AND using a
+<code>stim_file</code> column in <code>events.tsv</code> mentioning which stimulus file was used
+for a given event,</p>
+<p>There are no restrictions on the file formats of the stimuli files,
+but they should be stored in the <code>/stimuli</code> directory.</p>
+<h3 id="stimuli-databases"><a class="toclink" href="#stimuli-databases">Stimuli databases</a></h3>
+<p>References to existing databases can also be encoded using additional columns.
+The following example includes references to the
+<a href="https://www.emotionlab.se/resources/kdef">Karolinska Directed Emotional Faces (KDEF) database</a>.</p>
+<p>Example:</p>
+<!-- This block generates a file tree.
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+
+<div class="highlight"><pre><span></span><code>└─ sub-control01/
+   └─ func/
+      ├─ sub-control01_task-emoface_events.tsv 
+      └─ sub-control01_task-emoface_events.json 
+</code></pre></div>
+<p>Example of the content of the TSV file:</p>
+<div class="highlight"><pre><span></span><code>onset duration  trial_type  identifier  database  response_time
+1.2 0.6 afraid  AF01AFAF  kdef  1.435
+5.6 0.6 angry AM01AFAN  kdef  1.739
+5.6 0.6 sad AF01ANSA  kdef  1.739
+</code></pre></div>
+<p>The <code>trial_type</code> and <code>identifier</code> columns from the <code>events.tsv</code> files might be described
+in the accompanying JSON sidecar as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;trial_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;LongName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Emotion image type&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type of emotional face from Karolinska database that is displayed&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Levels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;afraid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A face showing fear is displayed&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;angry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A face showing anger is displayed&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;sad&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A face showing sadness is displayed&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;identifier&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;LongName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Karolinska (KDEF) database identifier&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID from KDEF database used to identify the displayed image&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Note that all other columns SHOULD also be described but are omitted for the
+sake of brevity.</p>
+<h3 id="stimulus-presentation-details"><a class="toclink" href="#stimulus-presentation-details">Stimulus presentation details</a></h3>
+<p>It is RECOMMENDED to include details of the stimulus presentation software,
+when applicable:</p>
+<!-- This block generates a metadata table.
+These tables are defined in
+  src/schema/rules/sidecars
+The definitions of the fields specified in these tables may be found in
+  src/schema/objects/metadata.yaml
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement Level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../glossary.html#objects.metadata.StimulusPresentation">StimulusPresentation</a></td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.json.org/json-en.html">object</a></td>
+<td>Object containing key-value pairs related to the software used to present the stimuli during the experiment, specifically: <code>"OperatingSystem"</code>, <code>"SoftwareName"</code>, <code>"SoftwareRRID"</code>, <code>"SoftwareVersion"</code> and <code>"Code"</code>. See table below for more information.</td>
+</tr>
+</tbody>
+</table>
+<p>The object supplied for <code>StimulusPresentation</code> SHOULD include the following key-value pairs:</p>
+<!-- This block generates a metadata table.
+The definitions of these fields can be found in
+  src/schema/objects/metadata.yaml
+and a guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement Level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../glossary.html#objects.subobject.OperatingSystem">OperatingSystem</a></td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Operating system used to run the stimuli presentation software (for formatting recommendations, see examples below this table).</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.subobject.SoftwareName">SoftwareName</a></td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Name of the software that was used to present the stimuli.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.subobject.SoftwareRRID">SoftwareRRID</a></td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td><a href="https://scicrunch.org/resources">Research Resource Identifier</a> of the software that was used to present the stimuli. Examples: The RRID for Psychtoolbox is 'SCR_002881', and that of PsychoPy is 'SCR_006571'.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.subobject.SoftwareVersion">SoftwareVersion</a></td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Version of the software that was used to present the stimuli.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.subobject.Code">Code</a></td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td><a href="../02-common-principles.html#uniform-resource-indicator">URI</a> of the code used to present the stimuli. Persistent identifiers such as DOIs are preferred. If multiple versions of code may be hosted at the same location, revision-specific URIs are RECOMMENDED.</td>
+</tr>
+</tbody>
+</table>
+<p>The operating system description SHOULD include the following attributes:</p>
+<ul>
+<li>type (for example, Windows, macOS, Linux)</li>
+<li>distribution (if applicable, for example, Ubuntu, Debian, CentOS)</li>
+<li>the version number (for example, 18.04.5)</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li>Windows 10, Version 2004</li>
+<li>macOS 10.15.6</li>
+<li>Linux Ubuntu 18.04.5</li>
+</ul>
+<p>The amount of information supplied for the <code>OperatingSystem</code> SHOULD be sufficient
+to re-run the code under maximally similar conditions.</p>
+<p>The information related to stimulus presentation might be described
+in the accompanying JSON sidecar as follows (based on the example of the previous section):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;trial_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;LongName&quot;</span><span class="p">:</span><span class="w">   </span><span class="s2">&quot;Emotion image type&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type of emotional face from Karolinska database that is displayed&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Levels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;afraid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A face showing fear is displayed&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;angry&quot;</span><span class="p">:</span><span class="w">  </span><span class="s2">&quot;A face showing anger is displayed&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;sad&quot;</span><span class="p">:</span><span class="w">    </span><span class="s2">&quot;A face showing sadness is displayed&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;identifier&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;LongName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Unique identifier from Karolinska (KDEF) database&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ID from KDEF database used to identify the displayed image&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;StimulusPresentation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;OperatingSystem&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Linux Ubuntu 18.04.5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;SoftwareName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Psychtoolbox&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;SoftwareRRID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SCR_002881&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;SoftwareVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.0.14&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;doi:10.5281/zenodo.3361717&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="04-intracranial-electroencephalography.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Intracranial Electroencephalography" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Intracranial Electroencephalography
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="06-physiological-and-other-continuous-recordings.html" class="md-footer__link md-footer__link--next" aria-label="Next: Physiological and other continuous recordings" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Physiological and other continuous recordings
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2018-2022, BIDS Contributors - <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+    </div>
+  
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/BIDSstandard/" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/bids-standard/bids-specification/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://groups.google.com/g/bids-discussion" target="_blank" rel="noopener" title="groups.google.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8492ddcf.min.js"></script>
+      
+        <script src="../js/jquery-3.6.0.min.js"></script>
+      
+        <script src="../readthedocs-data.js"></script>
+      
+        
+      
+        
+      
+    
+  </body>
+</html>

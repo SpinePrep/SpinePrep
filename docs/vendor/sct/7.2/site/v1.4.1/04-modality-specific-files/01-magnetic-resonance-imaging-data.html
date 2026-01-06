@@ -1,0 +1,2150 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.2">
+    
+    
+      
+        <title>Magnetic Resonance Imaging - Brain Imaging Data Structure v1.4.1</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.38780c08.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.3f72e892.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      
+    
+      
+    
+    
+      
+    
+    
+  <script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="bids-specification" /><meta name="readthedocs-version-slug" content="v1.4.1" /><meta name="readthedocs-resolver-filename" content="/04-modality-specific-files/01-magnetic-resonance-imaging-data.html" /><meta name="readthedocs-http-status" content="200" /></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#magnetic-resonance-imaging" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="Brain Imaging Data Structure v1.4.1" class="md-header-nav__button md-logo" aria-label="Brain Imaging Data Structure v1.4.1">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Brain Imaging Data Structure v1.4.1
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Magnetic Resonance Imaging
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Brain Imaging Data Structure v1.4.1" class="md-nav__button md-logo" aria-label="Brain Imaging Data Structure v1.4.1">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    Brain Imaging Data Structure v1.4.1
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
+    
+    <label class="md-nav__link" for="nav-1">
+      The BIDS Specification
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="The BIDS Specification" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        <span class="md-nav__icon md-icon"></span>
+        The BIDS Specification
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../01-introduction.html" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../02-common-principles.html" class="md-nav__link">
+      Common principles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../03-modality-agnostic-files.html" class="md-nav__link">
+      Modality agnostic files
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-4" type="checkbox" id="nav-1-4" checked>
+    
+    <label class="md-nav__link" for="nav-1-4">
+      Modality specific files
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Modality specific files" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-4">
+        <span class="md-nav__icon md-icon"></span>
+        Modality specific files
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Magnetic Resonance Imaging
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="01-magnetic-resonance-imaging-data.html" class="md-nav__link md-nav__link--active">
+      Magnetic Resonance Imaging
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-metadata-fields" class="md-nav__link">
+    Common metadata fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Common metadata fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scanner-hardware" class="md-nav__link">
+    Scanner Hardware
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequence-specifics" class="md-nav__link">
+    Sequence Specifics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-plane-spatial-encoding" class="md-nav__link">
+    In-Plane Spatial Encoding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timing-parameters" class="md-nav__link">
+    Timing Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rf-contrast" class="md-nav__link">
+    RF &amp; Contrast
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slice-acceleration" class="md-nav__link">
+    Slice Acceleration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anatomical-landmarks" class="md-nav__link">
+    Anatomical landmarks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#institution-information" class="md-nav__link">
+    Institution information
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anatomy-imaging-data" class="md-nav__link">
+    Anatomy imaging data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-including-resting-state-imaging-data" class="md-nav__link">
+    Task (including resting state) imaging data
+  </a>
+  
+    <nav class="md-nav" aria-label="Task (including resting state) imaging data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-fields" class="md-nav__link">
+    Required fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-recommended-metadata" class="md-nav__link">
+    Other RECOMMENDED metadata
+  </a>
+  
+    <nav class="md-nav" aria-label="Other RECOMMENDED metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#timing-parameters_1" class="md-nav__link">
+    Timing Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fmri-task-information" class="md-nav__link">
+    fMRI task information
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diffusion-imaging-data" class="md-nav__link">
+    Diffusion imaging data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fieldmap-data" class="md-nav__link">
+    Fieldmap data
+  </a>
+  
+    <nav class="md-nav" aria-label="Fieldmap data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#case-1-phase-difference-image-and-at-least-one-magnitude-image" class="md-nav__link">
+    Case 1: Phase difference image and at least one magnitude image
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#case-2-two-phase-images-and-two-magnitude-images" class="md-nav__link">
+    Case 2: Two phase images and two magnitude images
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#case-3-a-real-fieldmap-image" class="md-nav__link">
+    Case 3: A real fieldmap image
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#case-4-multiple-phase-encoded-directions-pepolar" class="md-nav__link">
+    Case 4: Multiple phase encoded directions ("pepolar")
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="02-magnetoencephalography.html" class="md-nav__link">
+      Magnetoencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="03-electroencephalography.html" class="md-nav__link">
+      Electroencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-intracranial-electroencephalography.html" class="md-nav__link">
+      Intracranial Electroencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="05-task-events.html" class="md-nav__link">
+      Task events
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="06-physiological-and-other-continuous-recordings.html" class="md-nav__link">
+      Physiological and other continuous recordings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="07-behavioral-experiments.html" class="md-nav__link">
+      Behavioral experiments (with no neural recordings)
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="08-genetic-descriptor.html" class="md-nav__link">
+      Genetic Descriptor
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-5" type="checkbox" id="nav-1-5">
+    
+    <label class="md-nav__link" for="nav-1-5">
+      Derivatives
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Derivatives" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-5">
+        <span class="md-nav__icon md-icon"></span>
+        Derivatives
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../05-derivatives/01-introduction.html" class="md-nav__link">
+      BIDS Derivatives
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../05-derivatives/02-common-data-types.html" class="md-nav__link">
+      Common data types and metadata
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../05-derivatives/03-imaging.html" class="md-nav__link">
+      Imaging data types
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../06-longitudinal-and-multi-site-studies.html" class="md-nav__link">
+      Longitudinal and multi-site studies
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../07-extensions.html" class="md-nav__link">
+      BIDS Extension Proposals
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1-8" type="checkbox" id="nav-1-8">
+    
+    <label class="md-nav__link" for="nav-1-8">
+      Appendix
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Appendix" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-8">
+        <span class="md-nav__icon md-icon"></span>
+        Appendix
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/01-contributors.html" class="md-nav__link">
+      Contributors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/02-licenses.html" class="md-nav__link">
+      Licenses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/03-hed.html" class="md-nav__link">
+      Hierarchical Event Descriptors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/04-entity-table.html" class="md-nav__link">
+      Entity table
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/05-units.html" class="md-nav__link">
+      Units
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/06-meg-file-formats.html" class="md-nav__link">
+      MEG file formats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/07-meg-systems.html" class="md-nav__link">
+      MEG systems
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/08-coordinate-systems.html" class="md-nav__link">
+      Coordinate systems
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../99-appendices/09-entities.html" class="md-nav__link">
+      Entities
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CHANGES.html" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      The BIDS Starter Kit
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="The BIDS Starter Kit" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        The BIDS Starter Kit
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/bids-standard/bids-starter-kit" class="md-nav__link">
+      GitHub repository
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/bids-standard/bids-starter-kit/wiki/Tutorials" class="md-nav__link">
+      Tutorials
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/bids-standard/bids-starter-kit/wiki" class="md-nav__link">
+      Wiki
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-metadata-fields" class="md-nav__link">
+    Common metadata fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Common metadata fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scanner-hardware" class="md-nav__link">
+    Scanner Hardware
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequence-specifics" class="md-nav__link">
+    Sequence Specifics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-plane-spatial-encoding" class="md-nav__link">
+    In-Plane Spatial Encoding
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timing-parameters" class="md-nav__link">
+    Timing Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rf-contrast" class="md-nav__link">
+    RF &amp; Contrast
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slice-acceleration" class="md-nav__link">
+    Slice Acceleration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anatomical-landmarks" class="md-nav__link">
+    Anatomical landmarks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#institution-information" class="md-nav__link">
+    Institution information
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anatomy-imaging-data" class="md-nav__link">
+    Anatomy imaging data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-including-resting-state-imaging-data" class="md-nav__link">
+    Task (including resting state) imaging data
+  </a>
+  
+    <nav class="md-nav" aria-label="Task (including resting state) imaging data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-fields" class="md-nav__link">
+    Required fields
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-recommended-metadata" class="md-nav__link">
+    Other RECOMMENDED metadata
+  </a>
+  
+    <nav class="md-nav" aria-label="Other RECOMMENDED metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#timing-parameters_1" class="md-nav__link">
+    Timing Parameters
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fmri-task-information" class="md-nav__link">
+    fMRI task information
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diffusion-imaging-data" class="md-nav__link">
+    Diffusion imaging data
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fieldmap-data" class="md-nav__link">
+    Fieldmap data
+  </a>
+  
+    <nav class="md-nav" aria-label="Fieldmap data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#case-1-phase-difference-image-and-at-least-one-magnitude-image" class="md-nav__link">
+    Case 1: Phase difference image and at least one magnitude image
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#case-2-two-phase-images-and-two-magnitude-images" class="md-nav__link">
+    Case 2: Two phase images and two magnitude images
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#case-3-a-real-fieldmap-image" class="md-nav__link">
+    Case 3: A real fieldmap image
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#case-4-multiple-phase-encoded-directions-pepolar" class="md-nav__link">
+    Case 4: Multiple phase encoded directions ("pepolar")
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="magnetic-resonance-imaging"><a class="toclink" href="#magnetic-resonance-imaging">Magnetic Resonance Imaging</a></h1>
+<h2 id="common-metadata-fields"><a class="toclink" href="#common-metadata-fields">Common metadata fields</a></h2>
+<p>MR Data described in the following sections share the following RECOMMENDED metadata
+fields (stored in sidecar JSON files). MRI acquisition parameters are divided
+into several categories based on
+<a href="https://thewinnower.com/papers/977-a-checklist-for-fmri-acquisition-methods-reporting-in-the-literature">"A checklist for fMRI acquisition methods reporting in the literature"</a>
+by Ben Inglis:</p>
+<h3 id="scanner-hardware"><a class="toclink" href="#scanner-hardware">Scanner Hardware</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manufacturer</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Manufacturer of the equipment that produced the composite instances. Corresponds to DICOM Tag 0008, 0070 <code>Manufacturer</code></td>
+</tr>
+<tr>
+<td>ManufacturersModelName</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Manufacturer's model name of the equipment that produced the composite instances. Corresponds to DICOM Tag 0008, 1090 <code>Manufacturers Model Name</code></td>
+</tr>
+<tr>
+<td>DeviceSerialNumber</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>The serial number of the equipment that produced the composite instances. Corresponds to DICOM Tag 0018, 1000 <code>DeviceSerialNumber</code>. A pseudonym can also be used to prevent the equipment from being identifiable, so long as each pseudonym is unique within the dataset</td>
+</tr>
+<tr>
+<td>StationName</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Institution defined name of the machine that produced the composite instances. Corresponds to DICOM Tag 0008, 1010 <code>Station Name</code></td>
+</tr>
+<tr>
+<td>SoftwareVersions</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Manufacturer's designation of software version of the equipment that produced the composite instances. Corresponds to DICOM Tag 0018, 1020 <code>Software Versions</code></td>
+</tr>
+<tr>
+<td>HardcopyDeviceSoftwareVersion</td>
+<td><a href="../02-common-principles.html#definitions">DEPRECATED</a></td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Manufacturer's designation of the software of the device that created this Hardcopy Image (the printer). Corresponds to DICOM Tag 0018, 101A <code>Hardcopy Device Software Version</code></td>
+</tr>
+<tr>
+<td>MagneticFieldStrength</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>Nominal field strength of MR magnet in Tesla. Corresponds to DICOM Tag 0018,0087 <code>Magnetic Field Strength</code></td>
+</tr>
+<tr>
+<td>ReceiveCoilName</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Information describing the receiver coil. Corresponds to DICOM Tag 0018, 1250 <code>Receive Coil Name</code>, although not all vendors populate that DICOM Tag, in which case this field can be derived from an appropriate private DICOM field</td>
+</tr>
+<tr>
+<td>ReceiveCoilActiveElements</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Information describing the active/selected elements of the receiver coil. This doesn't correspond to a tag in the DICOM ontology. The vendor-defined terminology for active coil elements can go in this field. See an example below the table.</td>
+</tr>
+<tr>
+<td>GradientSetType</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>It should be possible to infer the gradient coil from the scanner model. If not, for example because of a custom upgrade or use of a gradient insert set, then the specifications of the actual gradient coil should be reported independently</td>
+</tr>
+<tr>
+<td>MRTransmitCoilSequence</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>This is a relevant field if a non-standard transmit coil is used. Corresponds to DICOM Tag 0018, 9049 <code>MR Transmit Coil Sequence</code></td>
+</tr>
+<tr>
+<td>MatrixCoilMode</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>(If used) A method for reducing the number of independent channels by combining in analog the signals from multiple coil elements. There are typically different default modes when using un-accelerated or accelerated (for example, GRAPPA, SENSE) imaging</td>
+</tr>
+<tr>
+<td>CoilCombinationMethod</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Almost all fMRI studies using phased-array coils use root-sum-of-squares (rSOS) combination, but other methods exist. The image reconstruction is changed by the coil combination method (as for the matrix coil mode above), so anything non-standard should be reported</td>
+</tr>
+</tbody>
+</table>
+<p>Example for <code>ReceiveCoilActiveElements</code>:</p>
+<p>For Siemens, coil channels are typically not activated/selected individually,
+but rather in pre-defined selectable "groups" of individual channels,
+and the list of the "groups" of elements that are active/selected in any
+given scan populates the <code>Coil String</code> entry in Siemens' private DICOM fields
+(for example, <code>HEA;HEP</code> for the Siemens standard 32 ch coil
+when both the anterior and posterior groups are activated).
+This is a flexible field that can be used as most appropriate for a given
+vendor and coil to define the "active" coil elements.
+Since individual scans can sometimes not have the intended coil elements selected,
+it is preferable for this field to be populated directly from the DICOM
+for each individual scan, so that it can be used as a mechanism for checking
+that a given scan was collected with the intended coil elements selected</p>
+<h3 id="sequence-specifics"><a class="toclink" href="#sequence-specifics">Sequence Specifics</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PulseSequenceType</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>A general description of the pulse sequence used for the scan (for example, MPRAGE, Gradient Echo EPI, Spin Echo EPI, Multiband gradient echo EPI).</td>
+</tr>
+<tr>
+<td>ScanningSequence</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a> or <a href="https://www.w3schools.com/js/js_json_arrays.asp">array</a> of <a href="https://www.w3schools.com/js/js_json_datatypes.asp">strings</a></td>
+<td>Description of the type of data acquired. Corresponds to DICOM Tag 0018, 0020 <code>Scanning Sequence</code>.</td>
+</tr>
+<tr>
+<td>SequenceVariant</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a> or <a href="https://www.w3schools.com/js/js_json_arrays.asp">array</a> of <a href="https://www.w3schools.com/js/js_json_datatypes.asp">strings</a></td>
+<td>Variant of the ScanningSequence. Corresponds to DICOM Tag 0018, 0021 <code>Sequence Variant</code>.</td>
+</tr>
+<tr>
+<td>ScanOptions</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a> or <a href="https://www.w3schools.com/js/js_json_arrays.asp">array</a> of <a href="https://www.w3schools.com/js/js_json_datatypes.asp">strings</a></td>
+<td>Parameters of ScanningSequence. Corresponds to DICOM Tag 0018, 0022 <code>Scan Options</code>.</td>
+</tr>
+<tr>
+<td>SequenceName</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Manufacturer's designation of the sequence name. Corresponds to DICOM Tag 0018, 0024 <code>Sequence Name</code>.</td>
+</tr>
+<tr>
+<td>PulseSequenceDetails</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Information beyond pulse sequence type that identifies the specific pulse sequence used (for example, "Standard Siemens Sequence distributed with the VB17 software," "Siemens WIP ### version #.##," or "Sequence written by X using a version compiled on MM/DD/YYYY").</td>
+</tr>
+<tr>
+<td>NonlinearGradientCorrection</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">boolean</a></td>
+<td>Boolean stating if the image saved has been corrected for gradient nonlinearities by the scanner sequence.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="in-plane-spatial-encoding"><a class="toclink" href="#in-plane-spatial-encoding">In-Plane Spatial Encoding</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NumberShots</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>The number of RF excitations need to reconstruct a slice or volume. Please mind that this is not the same as Echo Train Length which denotes the number of lines of k-space collected after an excitation.</td>
+</tr>
+<tr>
+<td>ParallelReductionFactorInPlane</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>The parallel imaging (e.g, GRAPPA) factor. Use the denominator of the fraction of k-space encoded for each slice. For example, 2 means half of k-space is encoded. Corresponds to DICOM Tag 0018, 9069 <code>Parallel Reduction Factor In-plane</code>.</td>
+</tr>
+<tr>
+<td>ParallelAcquisitionTechnique</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>The type of parallel imaging used (for example GRAPPA, SENSE). Corresponds to DICOM Tag 0018, 9078 <code>Parallel Acquisition Technique</code>.</td>
+</tr>
+<tr>
+<td>PartialFourier</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>The fraction of partial Fourier information collected. Corresponds to DICOM Tag 0018, 9081 <code>Partial Fourier</code>.</td>
+</tr>
+<tr>
+<td>PartialFourierDirection</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>The direction where only partial Fourier information was collected. Corresponds to DICOM Tag 0018, 9036 <code>Partial Fourier Direction</code>.</td>
+</tr>
+<tr>
+<td>PhaseEncodingDirection</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Possible values: <code>i</code>, <code>j</code>, <code>k</code>, <code>i-</code>, <code>j-</code>, <code>k-</code>. The letters <code>i</code>, <code>j</code>, <code>k</code> correspond to the first, second and third axis of the data in the NIFTI file. The polarity of the phase encoding is assumed to go from zero index to maximum index unless <code>-</code> sign is present (then the order is reversed - starting from the highest index instead of zero). <code>PhaseEncodingDirection</code> is defined as the direction along which phase is was modulated which may result in visible distortions. Note that this is not the same as the DICOM term <code>InPlanePhaseEncodingDirection</code> which can have <code>ROW</code> or <code>COL</code> values. This parameter is REQUIRED if corresponding fieldmap data is present or when using multiple runs with different phase encoding directions (which can be later used for field inhomogeneity correction).</td>
+</tr>
+<tr>
+<td>EffectiveEchoSpacing</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>The "effective" sampling interval, specified in seconds, between lines in the phase-encoding direction, defined based on the size of the reconstructed image in the phase direction. It is frequently, but incorrectly, referred to as "dwell time" (see <code>DwellTime</code> parameter below for actual dwell time). It is required for unwarping distortions using field maps. Note that beyond just in-plane acceleration, a variety of other manipulations to the phase encoding need to be accounted for properly, including partial fourier, phase oversampling, phase resolution, phase field-of-view and interpolation.<sup>2</sup> This parameter is REQUIRED if corresponding fieldmap data is present.</td>
+</tr>
+<tr>
+<td>TotalReadoutTime</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>This is actually the "effective" total readout time , defined as the readout duration, specified in seconds, that would have generated data with the given level of distortion. It is NOT the actual, physical duration of the readout train. If <code>EffectiveEchoSpacing</code> has been properly computed, it is just <code>EffectiveEchoSpacing * (ReconMatrixPE - 1)</code>.<sup>3</sup> . This parameter is REQUIRED if corresponding "field/distortion" maps acquired with opposing phase encoding directions are present (see 8.9.4).</td>
+</tr>
+</tbody>
+</table>
+<p><sup>2</sup>Conveniently, for Siemens data, this value is easily obtained as
+<code>1 / (BWPPPE * ReconMatrixPE)</code>, where BWPPPE is the
+"BandwidthPerPixelPhaseEncode" in DICOM tag (0019,1028) and ReconMatrixPE is
+the size of the actual reconstructed data in the phase direction (which is NOT
+reflected in a single DICOM tag for all possible aforementioned scan
+manipulations). See <a href="https://lcni.uoregon.edu/kb-articles/kb-0003">here</a> and
+<a href="https://github.com/neurolabusc/dcm_qa/tree/master/In/TotalReadoutTime">here</a></p>
+<p><sup>3</sup>We use the time between the center of the first "effective" echo
+and the center of the last "effective" echo, sometimes called the "FSL definition".</p>
+<h3 id="timing-parameters"><a class="toclink" href="#timing-parameters">Timing Parameters</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EchoTime</td>
+<td>RECOMMENDED, but REQUIRED if corresponding fieldmap data is present or the data comes from a multi echo sequence</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>The echo time (TE) for the acquisition, specified in seconds. Corresponds to DICOM Tag 0018, 0081 <code>Echo Time</code> (please note that the DICOM term is in milliseconds not seconds).</td>
+</tr>
+<tr>
+<td>InversionTime</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>The inversion time (TI) for the acquisition, specified in seconds. Inversion time is the time after the middle of inverting RF pulse to middle of excitation pulse to detect the amount of longitudinal magnetization. Corresponds to DICOM Tag 0018, 0082 <code>Inversion Time</code> (please note that the DICOM term is in milliseconds not seconds).</td>
+</tr>
+<tr>
+<td>SliceTiming</td>
+<td>RECOMMENDED, but REQUIRED for sparse sequences that do not have the <code>DelayTime</code> field set</td>
+<td><a href="https://www.w3schools.com/js/js_json_arrays.asp">array</a> of <a href="https://www.w3schools.com/js/js_json_datatypes.asp">numbers</a></td>
+<td>The time at which each slice was acquired within each volume (frame) of the acquisition. Slice timing is not slice order -- rather, it is a list of times containing the time (in seconds) of each slice acquisition in relation to the beginning of volume acquisition. The list goes through the slices along the slice axis in the slice encoding dimension (see below). Note that to ensure the proper interpretation of the <code>SliceTiming</code> field, it is important to check if the OPTIONAL <code>SliceEncodingDirection</code> exists. In particular, if <code>SliceEncodingDirection</code> is negative, the entries in <code>SliceTiming</code> are defined in reverse order with respect to the slice axis, such that the final entry in the <code>SliceTiming</code> list is the time of acquisition of slice 0. Without this parameter slice time correction will not be possible.</td>
+</tr>
+<tr>
+<td>SliceEncodingDirection</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Possible values: <code>i</code>, <code>j</code>, <code>k</code>, <code>i-</code>, <code>j-</code>, <code>k-</code> (the axis of the NIfTI data along which slices were acquired, and the direction in which <code>SliceTiming</code> is defined with respect to). <code>i</code>, <code>j</code>, <code>k</code> identifiers correspond to the first, second and third axis of the data in the NIfTI file. A <code>-</code> sign indicates that the contents of <code>SliceTiming</code> are defined in reverse order - that is, the first entry corresponds to the slice with the largest index, and the final entry corresponds to slice index zero. When present, the axis defined by <code>SliceEncodingDirection</code> needs to be consistent with the ‘slice_dim' field in the NIfTI header. When absent, the entries in <code>SliceTiming</code> must be in the order of increasing slice index as defined by the NIfTI header.</td>
+</tr>
+<tr>
+<td>DwellTime</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>Actual dwell time (in seconds) of the receiver per point in the readout direction, including any oversampling. For Siemens, this corresponds to DICOM field (0019,1018) (in ns). This value is necessary for the optional readout distortion correction of anatomicals in the HCP Pipelines. It also usefully provides a handle on the readout bandwidth, which isn't captured in the other metadata tags. Not to be confused with <code>EffectiveEchoSpacing</code>, and the frequent mislabeling of echo spacing (which is spacing in the phase encoding direction) as "dwell time" (which is spacing in the readout direction).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rf-contrast"><a class="toclink" href="#rf-contrast">RF &amp; Contrast</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FlipAngle</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>Flip angle for the acquisition, specified in degrees. Corresponds to: DICOM Tag 0018, 1314 <code>Flip Angle</code>.</td>
+</tr>
+<tr>
+<td>NegativeContrast</td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">boolean</a></td>
+<td><code>true</code> or <code>false</code> value specifying whether increasing voxel intensity (within sample voxels) denotes a decreased value with respect to the contrast suffix. This is commonly the case when Cerebral Blood Volume is estimated via usage of a contrast agent in conjunction with a T2* weighted acquisition protocol.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="slice-acceleration"><a class="toclink" href="#slice-acceleration">Slice Acceleration</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MultibandAccelerationFactor</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>The multiband factor, for multiband acquisitions.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anatomical-landmarks"><a class="toclink" href="#anatomical-landmarks">Anatomical landmarks</a></h3>
+<p>Useful for multimodal co-registration with MEG, (S)EEG, TMS, and so on.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AnatomicalLandmarkCoordinates</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.json.org/json-en.html">object</a> of <a href="https://www.w3schools.com/js/js_json_arrays.asp">arrays</a></td>
+<td>Key:value pairs of any number of additional anatomical landmarks and their coordinates in voxel units (where first voxel has index 0,0,0) relative to the associated anatomical MRI (for example, <code>{"AC": [127,119,149], "PC": [128,93,141], "IH": [131,114,206]}</code>, or <code>{"NAS": [127,213,139], "LPA": [52,113,96], "RPA": [202,113,91]}</code>). Each array MUST contain three numeric values corresponding to x, y, and z axis of the coordinate system in that exact order.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="institution-information"><a class="toclink" href="#institution-information">Institution information</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InstitutionName</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>The name of the institution in charge of the equipment that produced the composite instances. Corresponds to DICOM Tag 0008, 0080 <code>InstitutionName</code>.</td>
+</tr>
+<tr>
+<td>InstitutionAddress</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>The address of the institution in charge of the equipment that produced the composite instances. Corresponds to DICOM Tag 0008, 0081 <code>InstitutionAddress</code>.</td>
+</tr>
+<tr>
+<td>InstitutionalDepartmentName</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>The department in the institution in charge of the equipment that produced the composite instances. Corresponds to DICOM Tag 0008, 1040 <code>Institutional Department Name</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>When adding additional metadata please use the CamelCase version of
+<a href="https://scicrunch.org/scicrunch/interlex/dashboard">DICOM ontology terms</a>
+whenever possible. See also
+<a href="../02-common-principles.html#keyvalue-files-dictionaries">recommendations on JSON files</a>.</p>
+<h2 id="anatomy-imaging-data"><a class="toclink" href="#anatomy-imaging-data">Anatomy imaging data</a></h2>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;/]
+    anat/
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_ce-&lt;label&gt;][_rec-&lt;label&gt;][_run-&lt;index&gt;]_&lt;modality_label&gt;.nii[.gz]
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_ce-&lt;label&gt;][_rec-&lt;label&gt;][_run-&lt;index&gt;][_mod-&lt;label&gt;]_defacemask.nii[.gz]
+</code></pre></div>
+<p>Anatomical (structural) data acquired for that participant. Currently supported
+modalities include:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Name</strong></th>
+<th><code>modality_label</code></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1 weighted</td>
+<td>T1w</td>
+<td></td>
+</tr>
+<tr>
+<td>T2 weighted</td>
+<td>T2w</td>
+<td></td>
+</tr>
+<tr>
+<td>T1 Rho map</td>
+<td>T1rho</td>
+<td>Quantitative T1rho brain imaging <br> <a href="https://www.ncbi.nlm.nih.gov/pubmed/24474423">https://www.ncbi.nlm.nih.gov/pubmed/24474423</a> <br> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4346383/">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4346383/</a></td>
+</tr>
+<tr>
+<td>T1 map</td>
+<td>T1map</td>
+<td>quantitative T1 map</td>
+</tr>
+<tr>
+<td>T2 map</td>
+<td>T2map</td>
+<td>quantitative T2 map</td>
+</tr>
+<tr>
+<td>T2*</td>
+<td>T2star</td>
+<td>High resolution T2* image</td>
+</tr>
+<tr>
+<td>FLAIR</td>
+<td>FLAIR</td>
+<td></td>
+</tr>
+<tr>
+<td>FLASH</td>
+<td>FLASH</td>
+<td></td>
+</tr>
+<tr>
+<td>Proton density</td>
+<td>PD</td>
+<td></td>
+</tr>
+<tr>
+<td>Proton density map</td>
+<td>PDmap</td>
+<td></td>
+</tr>
+<tr>
+<td>Combined PD/T2</td>
+<td>PDT2</td>
+<td></td>
+</tr>
+<tr>
+<td>Inplane T1</td>
+<td>inplaneT1</td>
+<td>T1-weighted anatomical image matched to functional acquisition</td>
+</tr>
+<tr>
+<td>Inplane T2</td>
+<td>inplaneT2</td>
+<td>T2-weighted anatomical image matched to functional acquisition</td>
+</tr>
+<tr>
+<td>Angiography</td>
+<td>angio</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>If the structural images included in the dataset were defaced (to protect
+identity of participants) one MAY provide the binary mask that was used to
+remove facial features in the form of <code>_defacemask</code> files.
+In such cases,  the OPTIONAL <a href="../99-appendices/09-entities.html#mod"><code>mod-&lt;label&gt;</code></a>
+key/value pair corresponds to modality suffix,
+such as T1w or inplaneT1, referenced by the defacemask image.
+For example, <code>sub-01_mod-T1w_defacemask.nii.gz</code>.</p>
+<p>If several scans of the same modality are acquired they MUST be indexed with the
+<a href="../99-appendices/09-entities.html#run"><code>run-&lt;index&gt;</code></a> key-value pair:
+<code>_run-1</code>, <code>_run-2</code>, <code>_run-3</code>, and so on (only nonnegative integers are allowed as
+run labels). When there is only one scan of a given type the run key MAY be
+omitted. Please note that diffusion imaging data is stored elsewhere (see
+below).</p>
+<p>The OPTIONAL <a href="../99-appendices/09-entities.html#acq"><code>acq-&lt;label&gt;</code></a>
+key/value pair corresponds to a custom label the user
+MAY use to distinguish a different set of parameters used for acquiring the same
+modality. For example this should be used when a study includes two T1w images -
+one full brain low resolution and and one restricted field of view but high
+resolution. In such case two files could have the following names:
+<code>sub-01_acq-highres_T1w.nii.gz</code> and <code>sub-01_acq-lowres_T1w.nii.gz</code>, however the
+user is free to choose any other label than <code>highres</code> and <code>lowres</code> as long as
+they are consistent across subjects and sessions. In case different sequences
+are used to record the same modality (for example, RARE and FLASH for T1w) this field
+can also be used to make that distinction. At what level of detail to make the
+distinction (for example, just between RARE and FLASH, or between RARE, FLASH, and
+FLASHsubsampled) remains at the discretion of the researcher.</p>
+<p>Similarly the OPTIONAL <a href="../99-appendices/09-entities.html#ce"><code>ce-&lt;label&gt;</code></a>
+key/value can be used to distinguish
+sequences using different contrast enhanced images. The label is the name of the
+contrast agent. The key <code>ContrastBolusIngredient</code> MAY be also be added in the
+JSON file, with the same label.</p>
+<p>Some meta information about the acquisition MAY be provided in an additional
+JSON file. See <a href="#common-metadata-fields">Common metadata fields</a> for a
+list of terms and their definitions. There are also some OPTIONAL JSON
+fields specific to anatomical scans:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ContrastBolusIngredient</td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Active ingredient of agent. Values MUST be one of: IODINE, GADOLINIUM, CARBON DIOXIDE, BARIUM, XENON Corresponds to DICOM Tag 0018,1048.</td>
+</tr>
+</tbody>
+</table>
+<p>Similarly, the OPTIONAL <a href="../99-appendices/09-entities.html#rec"><code>rec-&lt;label&gt;</code></a>
+key/value can be used to distinguish
+different reconstruction algorithms (for example ones using motion correction).</p>
+<h2 id="task-including-resting-state-imaging-data"><a class="toclink" href="#task-including-resting-state-imaging-data">Task (including resting state) imaging data</a></h2>
+<p>Currently supported image contrasts include:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Name</strong></th>
+<th><code>contrast_label</code></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BOLD</td>
+<td>bold</td>
+<td>Blood-Oxygen-Level Dependent contrast (specialized T2* weighting)</td>
+</tr>
+<tr>
+<td>CBV</td>
+<td>cbv</td>
+<td>Cerebral Blood Volume contrast (specialized T2* weighting or difference between T1 weighted images)</td>
+</tr>
+<tr>
+<td>Phase</td>
+<td>phase</td>
+<td>Phase information associated with magnitude information stored in BOLD contrast</td>
+</tr>
+</tbody>
+</table>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;/]
+    func/
+        sub-&lt;label&gt;[_ses-&lt;label&gt;]_task-&lt;label&gt;[_acq-&lt;label&gt;][_ce-&lt;label&gt;][_dir-&lt;label&gt;][_rec-&lt;label&gt;][_run-&lt;index&gt;][_echo-&lt;index&gt;]_&lt;contrast_label&gt;.nii[.gz]
+        sub-&lt;label&gt;[_ses-&lt;label&gt;]_task-&lt;label&gt;[_acq-&lt;label&gt;][_ce-&lt;label&gt;][_dir-&lt;label&gt;][_rec-&lt;label&gt;][_run-&lt;index&gt;][_echo-&lt;index&gt;]_sbref.nii[.gz]
+</code></pre></div>
+<p>Functional imaging consists of techniques that support rapid temporal repetition.
+This includes but is not limited to task based fMRI
+as well as resting state fMRI, which is treated like any other task. For task
+based fMRI a corresponding task events file (see below) MUST be provided
+(please note that this file is not necessary for resting state scans). For
+multiband acquisitions, one MAY also save the single-band reference image as
+type <code>sbref</code> (for example, <code>sub-control01_task-nback_sbref.nii.gz</code>).</p>
+<p>Each task has a unique label that MUST only consist of letters and/or numbers
+(other characters, including spaces and underscores, are not allowed) with the
+<a href="../99-appendices/09-entities.html#task"><code>task-&lt;label&gt;</code></a> key/value pair.
+Those labels MUST be consistent across subjects and sessions.</p>
+<p>If more than one run of the same task has been acquired the
+<a href="../99-appendices/09-entities.html#run"><code>run-&lt;index&gt;</code></a> key/value pair MUST be used:
+<code>_run-1</code>, <code>_run-2</code>, <code>_run-3</code>, and so on. If only one run was acquired the
+<code>run-&lt;index&gt;</code> can be omitted. In the context of functional imaging a run is
+defined as the same task, but in some cases it can mean different set of stimuli
+(for example randomized order) and participant responses.</p>
+<p>The OPTIONAL <a href="../99-appendices/09-entities.html#acq"><code>acq-&lt;label&gt;</code></a>
+key/value pair corresponds to a custom label one may
+use to distinguish different set of parameters used for acquiring the same task.
+For example this should be used when a study includes two resting state images -
+one single band and one multiband. In such case two files could have the
+following names: <code>sub-01_task-rest_acq-singleband_bold.nii.gz</code> and
+<code>sub-01_task-rest_acq-multiband_bold.nii.gz</code>, however the user is MAY choose any
+other label than <code>singleband</code> and <code>multiband</code> as long as they are consistent
+across subjects and sessions and consist only of the legal label characters.</p>
+<p>Similarly the OPTIONAL <a href="../99-appendices/09-entities.html#ce"><code>ce-&lt;label&gt;</code></a>
+key/value can be used to distinguish
+sequences using different contrast enhanced images. The label is the name of the
+contrast agent. The key ContrastBolusIngredient MAY be also be added in the JSON
+file, with the same label.</p>
+<p>Similarly the OPTIONAL <a href="../99-appendices/09-entities.html#rec"><code>rec-&lt;label&gt;</code></a>
+key/value can be used to distinguish
+different reconstruction algorithms (for example ones using motion correction).</p>
+<p>Similarly the OPTIONAL <a href="../99-appendices/09-entities.html#dir"><code>dir-&lt;label&gt;</code></a>
+and <a href="../99-appendices/09-entities.html#rec"><code>rec-&lt;label&gt;</code></a> key/values
+can be used to distinguish different phase-encoding directions and
+reconstruction algorithms (for example ones using motion correction).
+See <a href="01-magnetic-resonance-imaging-data.html#case-4-multiple-phase-encoded-directions-pepolar"><code>fmap</code> Case 4</a>
+for more information on <code>dir</code> field specification.</p>
+<p>Multi-echo data MUST be split into one file per echo using the
+<a href="../99-appendices/09-entities.html#echo"><code>echo-&lt;index&gt;</code></a> key-value pair. For example:</p>
+<div class="highlight"><pre><span></span><code>sub-01/
+   func/
+      sub-01_task-cuedSGT_run-1_echo-1_bold.nii.gz
+      sub-01_task-cuedSGT_run-1_echo-1_bold.json
+      sub-01_task-cuedSGT_run-1_echo-2_bold.nii.gz
+      sub-01_task-cuedSGT_run-1_echo-2_bold.json
+      sub-01_task-cuedSGT_run-1_echo-3_bold.nii.gz
+      sub-01_task-cuedSGT_run-1_echo-3_bold.json
+</code></pre></div>
+<p>Please note that the <code>&lt;index&gt;</code> denotes the number/index (in the form of a
+nonnegative integer) of the echo not the echo time value which needs to be stored in the
+field EchoTime of the separate JSON file.</p>
+<p>Some meta information about the acquisition MUST be provided in an additional
+JSON file.</p>
+<h3 id="required-fields"><a class="toclink" href="#required-fields">Required fields</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RepetitionTime</td>
+<td>REQUIRED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>The time in seconds between the beginning of an acquisition of one volume and the beginning of acquisition of the volume following it (TR). Please note that this definition includes time between scans (when no data has been acquired) in case of sparse acquisition schemes. This value needs to be consistent with the <code>pixdim[4]</code> field (after accounting for units stored in <code>xyzt_units</code> field) in the NIfTI header. This field is mutually exclusive with <code>VolumeTiming</code> and is derived from DICOM Tag 0018, 0080 and converted to seconds.</td>
+</tr>
+<tr>
+<td>VolumeTiming</td>
+<td>REQUIRED</td>
+<td><a href="https://www.w3schools.com/js/js_json_arrays.asp">array</a> of <a href="https://www.w3schools.com/js/js_json_datatypes.asp">numbers</a></td>
+<td>The time at which each volume was acquired during the acquisition. It is described using a list of times referring to the onset of each volume in the BOLD series. The list must have the same length as the BOLD series, and the values must be non-negative and monotonically increasing. This field is mutually exclusive with <code>RepetitionTime</code> and <code>DelayTime</code>. If defined, this requires acquisition time (TA) be defined via either <code>SliceTiming</code> or <code>AcquisitionDuration</code> be defined.</td>
+</tr>
+<tr>
+<td>TaskName</td>
+<td>REQUIRED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Name of the task. No two tasks should have the same name. The task label included in the file name is derived from this TaskName field by removing all non-alphanumeric (<code>[a-zA-Z0-9]</code>) characters. For example TaskName <code>faces n-back</code> will correspond to task label <code>facesnback</code>. A RECOMMENDED convention is to name resting state task using labels beginning with <code>rest</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>For the fields described above and in the following section, the term "Volume"
+refers to a reconstruction of the object being imaged (for example, brain or part of a
+brain). In case of multiple channels in a coil, the term "Volume" refers to a
+combined image rather than an image from each coil.</p>
+<h3 id="other-recommended-metadata"><a class="toclink" href="#other-recommended-metadata">Other RECOMMENDED metadata</a></h3>
+<h4 id="timing-parameters_1"><a class="toclink" href="#timing-parameters_1">Timing Parameters</a></h4>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NumberOfVolumesDiscardedByScanner</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">integer</a></td>
+<td>Number of volumes ("dummy scans") discarded by the scanner (as opposed to those discarded by the user post hoc) before saving the imaging file. For example, a sequence that automatically discards the first 4 volumes before saving would have this field as 4. A sequence that doesn't discard dummy scans would have this set to 0. Please note that the onsets recorded in the _event.tsv file should always refer to the beginning of the acquisition of the first volume in the corresponding imaging file - independent of the value of <code>NumberOfVolumesDiscardedByScanner</code> field.</td>
+</tr>
+<tr>
+<td>NumberOfVolumesDiscardedByUser</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">integer</a></td>
+<td>Number of volumes ("dummy scans") discarded by the user before including the file in the dataset. If possible, including all of the volumes is strongly recommended. Please note that the onsets recorded in the _event.tsv file should always refer to the beginning of the acquisition of the first volume in the corresponding imaging file - independent of the value of <code>NumberOfVolumesDiscardedByUser</code> field.</td>
+</tr>
+<tr>
+<td>DelayTime</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>User specified time (in seconds) to delay the acquisition of data for the following volume. If the field is not present it is assumed to be set to zero. Corresponds to Siemens CSA header field <code>lDelayTimeInTR</code>. This field is REQUIRED for sparse sequences using the <code>RepetitionTime</code> field that do not have the <code>SliceTiming</code> field set to allowed for accurate calculation of "acquisition time". This field is mutually exclusive with <code>VolumeTiming</code>.</td>
+</tr>
+<tr>
+<td>AcquisitionDuration</td>
+<td>RECOMMENDED, but REQUIRED for sequences that are described with the <code>VolumeTiming</code> field and that do not have the <code>SliceTiming</code> field set to allow for accurate calculation of "acquisition time"</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>Duration (in seconds) of volume acquisition. Corresponds to DICOM Tag 0018,9073 <code>Acquisition Duration</code>. This field is mutually exclusive with <code>RepetitionTime</code>.</td>
+</tr>
+<tr>
+<td>DelayAfterTrigger</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">number</a></td>
+<td>Duration (in seconds) from trigger delivery to scan onset. This delay is commonly caused by adjustments and loading times. This specification is entirely independent of <code>NumberOfVolumesDiscardedByScanner</code> or <code>NumberOfVolumesDiscardedByUser</code>, as the delay precedes the acquisition.</td>
+</tr>
+</tbody>
+</table>
+<p>The following table recapitulates the different ways that specific fields have
+to be populated for functional sequences. Note that all these options can be
+used for non sparse sequences but that only options B, D and E are valid for
+sparse sequences.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="center">RepetitionTime</th>
+<th align="center">SliceTiming</th>
+<th align="center">AcquisitionDuration</th>
+<th align="center">DelayTime</th>
+<th align="center">VolumeTiming</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>option A</td>
+<td align="center">[ X ]</td>
+<td align="center"></td>
+<td align="center">[ ]</td>
+<td align="center"></td>
+<td align="center">[ ]</td>
+</tr>
+<tr>
+<td>option B</td>
+<td align="center">[ ]</td>
+<td align="center">[ X ]</td>
+<td align="center"></td>
+<td align="center">[ ]</td>
+<td align="center">[ X ]</td>
+</tr>
+<tr>
+<td>option C</td>
+<td align="center">[ ]</td>
+<td align="center"></td>
+<td align="center">[ X ]</td>
+<td align="center">[ ]</td>
+<td align="center">[ X ]</td>
+</tr>
+<tr>
+<td>option D</td>
+<td align="center">[ X ]</td>
+<td align="center">[ X ]</td>
+<td align="center">[ ]</td>
+<td align="center"></td>
+<td align="center">[ ]</td>
+</tr>
+<tr>
+<td>option E</td>
+<td align="center">[ X ]</td>
+<td align="center"></td>
+<td align="center">[ ]</td>
+<td align="center">[ X ]</td>
+<td align="center">[ ]</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Legend</strong></p>
+<ul>
+<li>[ X ] --&gt; has to be filled</li>
+<li>[   ] --&gt; has to be left empty</li>
+<li>empty cell --&gt; can be specified but not required</li>
+</ul>
+<h4 id="fmri-task-information"><a class="toclink" href="#fmri-task-information">fMRI task information</a></h4>
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instructions</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Text of the instructions given to participants before the scan. This is especially important in context of resting state fMRI and distinguishing between eyes open and eyes closed paradigms.</td>
+</tr>
+<tr>
+<td>TaskDescription</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Longer description of the task.</td>
+</tr>
+<tr>
+<td>CogAtlasID</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td><a href="../02-common-principles.html#uniform-resource-indicator">URI</a> of the corresponding <a href="https://www.cognitiveatlas.org/">Cognitive Atlas</a> Task term.</td>
+</tr>
+<tr>
+<td>CogPOID</td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td><a href="../02-common-principles.html#uniform-resource-indicator">URI</a> of the corresponding <a href="http://www.cogpo.org/">CogPO</a> term.</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="#common-metadata-fields">Common metadata fields</a> for a list of
+additional terms and their definitions.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>sub-control01/
+    func/
+        sub-control01_task-nback_bold.json
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+   <span class="nt">&quot;TaskName&quot;</span><span class="p">:</span> <span class="s2">&quot;N Back&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;RepetitionTime&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+   <span class="nt">&quot;EchoTime&quot;</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">,</span>
+   <span class="nt">&quot;FlipAngle&quot;</span><span class="p">:</span> <span class="mi">78</span><span class="p">,</span>
+   <span class="nt">&quot;SliceTiming&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span>
+   <span class="nt">&quot;MultibandAccelerationFactor&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+   <span class="nt">&quot;ParallelReductionFactorInPlane&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+   <span class="nt">&quot;PhaseEncodingDirection&quot;</span><span class="p">:</span> <span class="s2">&quot;j&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;InstitutionName&quot;</span><span class="p">:</span> <span class="s2">&quot;Stanford University&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;InstitutionAddress&quot;</span><span class="p">:</span> <span class="s2">&quot;450 Serra Mall, Stanford, CA 94305-2004, USA&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;DeviceSerialNumber&quot;</span><span class="p">:</span> <span class="s2">&quot;11035&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>If this information is the same for all participants, sessions and runs it can
+be provided in <code>task-&lt;label&gt;_bold.json</code> (in the root directory of the
+dataset). However, if the information differs between subjects/runs it can be
+specified in the
+<code>sub-&lt;label&gt;/func/sub-&lt;label&gt;_task-&lt;label&gt;[_acq-&lt;label&gt;][_run-&lt;index&gt;]_bold.json</code> file.
+If both files are specified fields from the file corresponding to a particular
+participant, task and run takes precedence.</p>
+<h2 id="diffusion-imaging-data"><a class="toclink" href="#diffusion-imaging-data">Diffusion imaging data</a></h2>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;/]
+    dwi/
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_dir-&lt;label&gt;][_run-&lt;index&gt;]_dwi.nii[.gz]
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_dir-&lt;label&gt;][_run-&lt;index&gt;]_dwi.bval
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_dir-&lt;label&gt;][_run-&lt;index&gt;]_dwi.bvec
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_dir-&lt;label&gt;][_run-&lt;index&gt;]_dwi.json
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_dir-&lt;label&gt;][_run-&lt;index&gt;]_sbref.nii[.gz]
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_dir-&lt;label&gt;][_run-&lt;index&gt;]_sbref.json
+</code></pre></div>
+<p>Diffusion-weighted imaging data acquired for that participant. The OPTIONAL
+<a href="../99-appendices/09-entities.html#acq"><code>acq-&lt;label&gt;</code></a>
+key/value pair corresponds to a custom label the user may use to
+distinguish different set of parameters. For example this should be used when a
+study includes two diffusion images - one single band and one multiband. In such
+case two files could have the following names:
+<code>sub-01_acq-singleband_dwi.nii.gz</code> and <code>sub-01_acq-multiband_dwi.nii.gz</code>,
+however the user is free to choose any other label than <code>singleband</code> and
+<code>multiband</code> as long as they are consistent across subjects and sessions. For
+multiband acquisitions, one can also save the single-band reference image as
+type <code>sbref</code> (for example, <code>dwi/sub-control01_sbref.nii[.gz]</code>) The bvec and bval files
+are in the <a href="https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FDT/UserGuide#DTIFIT">FSL format</a>:
+The bvec files contain 3 rows with n space-delimited floating-point numbers
+(corresponding to the n volumes in the relevant NIfTI file). The first row
+contains the x elements, the second row contains the y elements and third row
+contains the z elements of a unit vector in the direction of the applied
+diffusion gradient, where the i-th elements in each row correspond together to
+the i-th volume with <code>[0,0,0]</code> for non-diffusion-weighted volumes. Inherent to
+the FSL format for bvec specification is the fact that the coordinate system of
+the bvecs is with respect to the participant, defined by the axes of the
+corresponding <code>dwi.nii</code> file, and not the magnet's coordinate system.
+Thus, any rotations applied to <code>dwi.nii</code> also need to be applied to the
+corresponding bvec file.</p>
+<p>bvec example:</p>
+<div class="highlight"><pre><span></span><code>0 0 0.021828 -0.015425 -0.70918 -0.2465
+0 0 0.80242 0.22098 -0.00063106 0.1043
+0 0 -0.59636 0.97516 -0.70503 -0.96351
+</code></pre></div>
+<p>The bval file contains the b-values (in s/mm<sup>2</sup>) corresponding to the
+volumes in the relevant NIfTI file), with 0 designating non-diffusion-weighted
+volumes, space-delimited.</p>
+<p>bval example:</p>
+<div class="highlight"><pre><span></span><code>0 0 2000 2000 1000 1000
+</code></pre></div>
+<p><code>.bval</code> and <code>.bvec</code> files can be saved on any level of the directory structure
+and thus define those values for all sessions and/or subjects in one place (see
+Inheritance principle).</p>
+<p>See <a href="#common-metadata-fields">Common metadata fields</a> for a list of
+additional terms that can be included in the corresponding JSON file.</p>
+<p>JSON example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="nt">&quot;PhaseEncodingDirection&quot;</span><span class="p">:</span> <span class="s2">&quot;j-&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;TotalReadoutTime&quot;</span><span class="p">:</span> <span class="mf">0.095</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="fieldmap-data"><a class="toclink" href="#fieldmap-data">Fieldmap data</a></h2>
+<p>Data acquired to correct for B0 inhomogeneities can come in different forms. The
+current version of this standard considers four different scenarios. Please note
+that in all cases fieldmap data can be linked to a specific scan(s) it was
+acquired for by filling the IntendedFor field in the corresponding JSON file.
+For example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+   <span class="nt">&quot;IntendedFor&quot;</span><span class="p">:</span> <span class="s2">&quot;func/sub-01_task-motor_bold.nii.gz&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The IntendedFor field may contain one or more filenames with paths relative to
+the subject subfolder. The path needs to use forward slashes instead of backward
+slashes. Here's an example with multiple target scans:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+   <span class="nt">&quot;IntendedFor&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ses-pre/func/sub-01_ses-pre_task-motor_run-1_bold.nii.gz&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;ses-post/func/sub-01_ses-post_task-motor_run-1_bold.nii.gz&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The IntendedFor field is OPTIONAL and in case the fieldmaps do not correspond to
+any particular scans it does not have to be filled.</p>
+<p>Multiple fieldmaps can be stored.
+In such case the <a href="../99-appendices/09-entities.html#run"><code>run-&lt;index&gt;</code></a> key/value pair should be
+used. The OPTIONAL <a href="../99-appendices/09-entities.html#acq"><code>acq-&lt;label&gt;</code></a>
+key/value pair corresponds to a custom label
+the user may use to distinguish different set of parameters.</p>
+<h3 id="case-1-phase-difference-image-and-at-least-one-magnitude-image"><a class="toclink" href="#case-1-phase-difference-image-and-at-least-one-magnitude-image">Case 1: Phase difference image and at least one magnitude image</a></h3>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;/]
+    fmap/
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_phasediff.nii[.gz]
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_phasediff.json
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_magnitude1.nii[.gz]
+</code></pre></div>
+<p>OPTIONAL</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;/]
+    fmap/
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_magnitude2.nii[.gz]
+</code></pre></div>
+<p>This is a common output for build in fieldmap sequence on Siemens scanners. In
+this particular case the sidecar JSON file has to define the Echo Times of the
+two phase images used to create the difference image. <code>EchoTime1</code> corresponds to
+the shorter echo time and <code>EchoTime2</code> to the longer echo time. Similarly
+<code>_magnitude1</code> image corresponds to the shorter echo time and the OPTIONAL
+<code>_magnitude2</code> image to the longer echo time. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+   <span class="nt">&quot;EchoTime1&quot;</span><span class="p">:</span> <span class="mf">0.00600</span><span class="p">,</span>
+   <span class="nt">&quot;EchoTime2&quot;</span><span class="p">:</span> <span class="mf">0.00746</span><span class="p">,</span>
+   <span class="nt">&quot;IntendedFor&quot;</span><span class="p">:</span> <span class="s2">&quot;func/sub-01_task-motor_bold.nii.gz&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="case-2-two-phase-images-and-two-magnitude-images"><a class="toclink" href="#case-2-two-phase-images-and-two-magnitude-images">Case 2: Two phase images and two magnitude images</a></h3>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;/]
+    fmap/
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_phase1.nii[.gz]
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_phase1.json
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_phase2.nii[.gz]
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_phase2.json
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_magnitude1.nii[.gz]
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_magnitude2.nii[.gz]
+</code></pre></div>
+<p>Similar to the case above, but instead of a precomputed phase difference map two
+separate phase images are presented. The two sidecar JSON files need to specify
+corresponding <code>EchoTime</code> values. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+   <span class="nt">&quot;EchoTime&quot;</span><span class="p">:</span> <span class="mf">0.00746</span><span class="p">,</span>
+   <span class="nt">&quot;IntendedFor&quot;</span><span class="p">:</span> <span class="s2">&quot;func/sub-01_task-motor_bold.nii.gz&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="case-3-a-real-fieldmap-image"><a class="toclink" href="#case-3-a-real-fieldmap-image">Case 3: A real fieldmap image</a></h3>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;/]
+    fmap/
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_magnitude.nii[.gz]
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_fieldmap.nii[.gz]
+       sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_run-&lt;index&gt;]_fieldmap.json
+</code></pre></div>
+<p>In some cases (for example GE) the scanner software will output a precomputed
+fieldmap denoting the B0 inhomogeneities along with a magnitude image used for
+coregistration.
+In this case the sidecar JSON file needs to include the units of the fieldmap.
+The possible options are: Hertz (<code>Hz</code>), Radians per second (<code>rad/s</code>), or Tesla
+(<code>T</code>).
+For example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+   <span class="nt">&quot;Units&quot;</span><span class="p">:</span> <span class="s2">&quot;rad/s&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;IntendedFor&quot;</span><span class="p">:</span> <span class="s2">&quot;func/sub-01_task-motor_bold.nii.gz&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="case-4-multiple-phase-encoded-directions-pepolar"><a class="toclink" href="#case-4-multiple-phase-encoded-directions-pepolar">Case 4: Multiple phase encoded directions ("pepolar")</a></h3>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>sub-&lt;label&gt;/[ses-&lt;label&gt;/]
+    fmap/
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_ce-&lt;label&gt;]_dir-&lt;label&gt;[_run-&lt;index&gt;]_epi.nii[.gz]
+        sub-&lt;label&gt;[_ses-&lt;label&gt;][_acq-&lt;label&gt;][_ce-&lt;label&gt;]_dir-&lt;label&gt;[_run-&lt;index&gt;]_epi.json
+</code></pre></div>
+<p>The phase-encoding polarity (PEpolar) technique combines two or more Spin Echo
+EPI scans with different phase encoding directions to estimate the underlying
+inhomogeneity/deformation map. Examples of tools using this kind of images are
+FSL TOPUP, AFNI 3dqwarp and SPM. In such a case, the phase encoding direction is
+specified in the corresponding JSON file as one of: <code>i</code>, <code>j</code>, <code>k</code>, <code>i-</code>, <code>j-</code>,
+<code>k-</code>. For these differentially phase encoded sequences, one also needs to
+specify the Total Readout Time defined as the time (in seconds) from the center
+of the first echo to the center of the last echo (aka "FSL definition" - see
+<a href="https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/topup/Faq#How_do_I_know_what_phase-encode_vectors_to_put_into_my_--datain_text_file.3F">here</a> and
+<a href="https://lcni.uoregon.edu/kb-articles/kb-0003">here</a> how to calculate it). For
+example</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+   <span class="nt">&quot;PhaseEncodingDirection&quot;</span><span class="p">:</span> <span class="s2">&quot;j-&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;TotalReadoutTime&quot;</span><span class="p">:</span> <span class="mf">0.095</span><span class="p">,</span>
+   <span class="nt">&quot;IntendedFor&quot;</span><span class="p">:</span> <span class="s2">&quot;func/sub-01_task-motor_bold.nii.gz&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The <code>label</code> value of the <a href="../99-appendices/09-entities.html#dir"><code>dir-&lt;label&gt;</code></a> key/value pair
+can be set to arbitrary alphanumeric label (<code>[a-zA-Z0-9]+</code> for
+example <code>LR</code> or <code>AP</code>) that can help users to distinguish between different
+files, but should not be used to infer any scanning parameters (such as phase
+encoding directions) of the corresponding sequence. Please rely only on the JSON
+file to obtain scanning parameters. _epi files can be a 3D or 4D - in the
+latter case all timepoints share the same scanning parameters. To indicate which
+run is intended to be used with which functional or diffusion scan the
+IntendedFor field in the JSON file should be used.</p>
+<!-- Link Definitions -->
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        <!--
+  Copyright (c) 2016-2019 Martin Donath <martin.donath@squidfunk.com>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+--><!-- Application footer -->
+<footer class="md-footer">
+
+  <!-- Link to previous and/or next page --><div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+
+        <!-- Link to previous page --><a href="../03-modality-agnostic-files.html"
+              title="Modality agnostic files"
+              class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+              rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back
+                    md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch
+                  md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">Previous</span>Modality agnostic files</span>
+            </div>
+          </a><!-- Link to next page --><a href="02-magnetoencephalography.html"
+              title="Magnetoencephalography"
+              class="md-flex md-footer-nav__link md-footer-nav__link--next"
+              rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch
+                  md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">Next</span>Magnetoencephalography</span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward
+                    md-footer-nav__button"></i>
+            </div>
+          </a></nav>
+    </div><!-- Further information -->
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+
+      <!-- Copyright and theme information -->
+      <div class="md-footer-copyright">See the source code and discussion page on
+        <a href="https://github.com/bids-standard/bids-specification">GitHub</a>
+      </div>
+
+      <!-- Social links --></div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.77e55a48.min.js"></script>
+      <script src="../assets/javascripts/bundle.9554a270.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+        <script src="../js/jquery-3.4.1.min.js"></script>
+      
+        <script src="../readthedocs-data.js"></script>
+      
+        
+      
+        
+      
+    
+  </body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequently Asked Questions &mdash; SimpleITK 2.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css" />
+
+  
+    <link rel="shortcut icon" href="_static/yellow_itk_icon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Migration Guide 2.0" href="migrationGuide2.0.html" />
+    <link rel="prev" title="Tutorials and Courses" href="tutorialsAndCourses.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpleitk" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/faq.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SimpleITK
+              <img src="_static/simpleitk_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentalConcepts.html">Fundamental Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registrationOverview.html">Registration Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Common Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IO.html">Reading and Writing for Images and Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">SimpleITK Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">Building SimpleITK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setUp.html">Setting Up Eclipse and Visual Studio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsAndCourses.html">Tutorials and Courses</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general">General</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#does-simpleitk-offer-all-the-functionality-as-the-c-itk">Does SimpleITK offer all the functionality as the C++ ITK?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-the-toolkit-s-python-version-support-policy">What is the toolkit’s Python version support policy?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-use-the-simpleelastix-framework-in-simpleitk">How do I use the SimpleElastix framework in SimpleITK?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simpleitk-failed-to-read-my-dicom-image-what-can-i-do-to-resolve-this-issue">SimpleITK failed to read my DICOM image, what can I do to resolve this issue?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#i-am-using-the-binary-distribution-of-simpleitk-for-anaconda-why-do-i-get-an-error-about-libpng">I am using the binary distribution of SimpleITK for Anaconda, why do I get an error about libpng?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-am-i-getting-modulenotfounderror-no-module-named-simpleitk-when-importing-simpleitk-on-windows">Why am I getting “ModuleNotFoundError: No module named ‘_SimpleITK’” when importing SimpleITK on Windows?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-am-i-getting-dllnotfoundexception-unable-to-load-dll-simpleitkcsharpnative-when-running-a-csharp-application-on-windows">Why am I getting “DllNotFoundException: Unable to load DLL ‘SimpleITKCSharpNative’” when running a CSharp application on Windows?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-use">How to Use</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-many-threads-should-i-use-when-using-simpleitk-and-performing-multiprocessing">How many threads should I use when using SimpleITK and performing multiprocessing?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-filters-are-currently-available-in-simpleitk">What filters are currently available in SimpleITK?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-image-file-formats-can-simpleitk-read">What image file formats can SimpleITK read?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-read-a-raw-image-into-simpleitk">How do I read a RAW image into SimpleITK?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-does-my-image-appear-to-be-empty-all-black-blank-when-visualized">Why does my image appear to be empty / all black / blank when visualized?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-isn-t-fiji-or-imagej-found-by-the-show-function-runtimeerror-exception-thrown">Why isn’t Fiji or ImageJ found by the Show function (RuntimeError: Exception thrown…)?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-use-another-image-file-viewer-beside-fiji">Can I use another image file viewer beside Fiji?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-can-i-use-3d-slicer-to-view-my-images">How can I use 3D Slicer to view my images?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#wrapping">Wrapping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python">Python</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#why-should-i-use-a-virtual-environment">Why should I use a virtual environment?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#are-the-python-wheels-compatible-with-enthought-canopy-distribution">Are the Python Wheels compatible with Enthought Canopy Distribution?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-i-read-an-image-with-a-special-character-in-the-filename">How do I read an image with a special character in the filename?</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tcl">Tcl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#java">Java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c">C#</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#r">R</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#compilation">Compilation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#is-my-compiler-supported">Is my compiler supported?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#are-32-bits-architectures-supported">Are 32-bits architectures supported?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-does-the-superbuild-fail-compiling-pcre-on-mac-os-x">Why does the Superbuild fail compiling PCRE on Mac OS X?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-configurations-on-windows-are-supported-for-building">What Configurations on Windows are Supported For Building?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#path-length-issues-on-windows">Path Length Issues on Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#where-is-the-test-data">Where is the Test Data?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-is-cmake-unable-to-download-externaldata">Why is CMake unable to download ExternalData?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="migrationGuide2.0.html">Migration Guide 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FilterTemplates.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="link_examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimpleITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Frequently Asked Questions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/faq.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="frequently-asked-questions">
+<span id="faq"></span><h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this heading"></a></h1>
+<p>This page hosts frequently asked questions about SimpleITK, and their
+answers.</p>
+<section id="general">
+<h2>General<a class="headerlink" href="#general" title="Permalink to this heading"></a></h2>
+<section id="does-simpleitk-offer-all-the-functionality-as-the-c-itk">
+<h3>Does SimpleITK offer all the functionality as the C++ ITK?<a class="headerlink" href="#does-simpleitk-offer-all-the-functionality-as-the-c-itk" title="Permalink to this heading"></a></h3>
+<p>SimpleITK supports most ITK image filters (<a class="reference internal" href="filters.html#lbl-filter"><span class="std std-ref">see list</span></a>) and the
+IO and registration frameworks. It exposes fewer settings than ITK, hence the
+Simple in the name. The main ITK
+elements omitted from SimpleITK are the pipeline architecture,
+spatial objects framework, point sets, and the mesh framework.</p>
+</section>
+<section id="what-is-the-toolkit-s-python-version-support-policy">
+<h3>What is the toolkit’s Python version support policy?<a class="headerlink" href="#what-is-the-toolkit-s-python-version-support-policy" title="Permalink to this heading"></a></h3>
+<p>For the Python programming language, SimpleITK stops providing binary packages when
+the Python version has reached end-of-life status. Extensions may be made such as
+when the EOL Python version is included as part of a long-term support
+operating system version. If you need a newer SimpleITK binary than the one available
+for your Python version you can <a class="reference internal" href="building.html#building-simpleitk"><span class="std std-ref">build it on your own</span></a>.</p>
+</section>
+<section id="how-do-i-use-the-simpleelastix-framework-in-simpleitk">
+<h3>How do I use the SimpleElastix framework in SimpleITK?<a class="headerlink" href="#how-do-i-use-the-simpleelastix-framework-in-simpleitk" title="Permalink to this heading"></a></h3>
+<p>SimpleITK binary distributions do not include the SimpleElastix framework. To use
+the version of SimpleElastix included in SimpleITK, you will need to
+<a class="reference internal" href="building.html#building-simpleitk"><span class="std std-ref">build it on your local machine</span></a>
+using the SuperBuild configuration and turn on the SimpleITK_USE_ELASTIX flag in
+addition to the relevant WRAP_LANGUAGE flags for the desired programming languages.</p>
+</section>
+<section id="simpleitk-failed-to-read-my-dicom-image-what-can-i-do-to-resolve-this-issue">
+<h3>SimpleITK failed to read my DICOM image, what can I do to resolve this issue?<a class="headerlink" href="#simpleitk-failed-to-read-my-dicom-image-what-can-i-do-to-resolve-this-issue" title="Permalink to this heading"></a></h3>
+<p>To understand the reason for this failure we recommend using David Clunie’s
+<a class="reference external" href="https://dclunie.com/dicom3tools.html">Dicom3tools</a>. Specifically, the <em>dcidvfy</em> program
+to verify standard compliance and identify issues with the file and <em>dcdump</em> to look at the
+file’s meta-data contents.</p>
+<p>SimpleITK binary distributions include the GDCM library which is used by default to
+read DICOM images. In some cases it fails to read the image. Fortunately, there is an additional
+optional DICOM IO module, DCMTK. To use the DCMTK IO you will need to
+<a class="reference internal" href="building.html#building-simpleitk"><span class="std std-ref">build SimpleITK</span></a> locally using the
+SuperBuild configuration. Set CMake’s <a class="reference internal" href="building.html#advanced-build-options"><span class="std std-ref">advanced options</span></a>
+to include -D Module_ITKIODCMTK:BOOL=ON in addition to turning on the relevant WRAP_LANGUAGE flag
+for your programming language of choice. Then <a class="reference internal" href="building.html#installation-from-build-tree"><span class="std std-ref">install from the build tree</span></a>.</p>
+<p>When you attempt to read the image now, both GDCM and DCMTK
+are available. If you do not specify which one to use, the toolkit will automatically try GDCM and then
+DCMTK. Additional information describing SimpleITK’s image IO mechanism and how to select a specific IO is available
+<a class="reference internal" href="IO.html#image-io"><span class="std std-ref">here</span></a>.</p>
+</section>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<section id="i-am-using-the-binary-distribution-of-simpleitk-for-anaconda-why-do-i-get-an-error-about-libpng">
+<h3>I am using the binary distribution of SimpleITK for Anaconda, why do I get an error about libpng?<a class="headerlink" href="#i-am-using-the-binary-distribution-of-simpleitk-for-anaconda-why-do-i-get-an-error-about-libpng" title="Permalink to this heading"></a></h3>
+<blockquote>
+<div><p>ImportError: dlopen(./_SimpleITK.so, 2): Library not loaded: &#64;rpath/libpng15.15.dylib
+  Referenced from: …/lib/python2.7/site-packages/SimpleITK/_SimpleITK.so
+  Reason: image not found</p>
+</div></blockquote>
+<p>This type of error can occur if a library SimpleITK depends on can
+not be found. It may be that the version of the dependent library has
+changed in the Python environment and is no longer compatible. One
+solution is to create a <cite>environment.yml</cite> file with all the packages
+required for a project, then create a new environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+</pre></div>
+</div>
+</section>
+<section id="why-am-i-getting-modulenotfounderror-no-module-named-simpleitk-when-importing-simpleitk-on-windows">
+<h3>Why am I getting “ModuleNotFoundError: No module named ‘_SimpleITK’” when importing SimpleITK on Windows?<a class="headerlink" href="#why-am-i-getting-modulenotfounderror-no-module-named-simpleitk-when-importing-simpleitk-on-windows" title="Permalink to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>Traceback (most recent call last):</dt><dd><dl class="simple">
+<dt>File “C:Python37libsite-packagesSimpleITKSimpleITK.py”, line 14, in swig_import_helper</dt><dd><p>return importlib.import_module(mname)
+…
+File “&lt;frozen importlib._bootstrap&gt;”, line 219, in _call_with_frames_removed
+ImportError: DLL load failed: The specified module could not be found.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>The above error occurs on Microsoft windows when system libraries SimpleITK depends on are not available on the system.
+This issue can be resolved by installing the appropriate
+<a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=48145">Redistributable for Visual Studio</a> package.</p>
+</section>
+<section id="why-am-i-getting-dllnotfoundexception-unable-to-load-dll-simpleitkcsharpnative-when-running-a-csharp-application-on-windows">
+<h3>Why am I getting “DllNotFoundException: Unable to load DLL ‘SimpleITKCSharpNative’” when running a CSharp application on Windows?<a class="headerlink" href="#why-am-i-getting-dllnotfoundexception-unable-to-load-dll-simpleitkcsharpnative-when-running-a-csharp-application-on-windows" title="Permalink to this heading"></a></h3>
+<p>This error message can be the result of an incomplete installation of SimpleITK
+in the CSharp application.  Below is the complete error message that can result:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>System.TypeInitializationException:<span class="w"> </span><span class="s1">&#39;The type initializer for &#39;</span>itk.simple.SimpleITKPINVOKE<span class="s1">&#39; threw an exception.&#39;</span>
+
+TypeInitializationException:<span class="w"> </span>The<span class="w"> </span><span class="nb">type</span><span class="w"> </span>initializer<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="s1">&#39;SWIGExceptionHelper&#39;</span><span class="w"> </span>threw<span class="w"> </span>an<span class="w"> </span>exception.
+
+DllNotFoundException:<span class="w"> </span>Unable<span class="w"> </span>to<span class="w"> </span>load<span class="w"> </span>DLL<span class="w"> </span><span class="s1">&#39;SimpleITKCSharpNative&#39;</span>:<span class="w"> </span>The<span class="w"> </span>specified<span class="w"> </span>module<span class="w"> </span>could<span class="w"> </span>not<span class="w"> </span>be<span class="w"> </span>found.<span class="w"> </span><span class="o">(</span>Exception<span class="w"> </span>from<span class="w"> </span>HRESULT:<span class="w"> </span>0x8007007E<span class="o">)</span>
+</pre></div>
+</div>
+<p>The application is missing the SimpleITK dynamically loaded library (DLL).  To
+fix this problem, follow the instructions in the
+<a class="reference external" href="https://simpleitk.readthedocs.io/en/main/setUp.html#add-native-library">Add Native Library</a>
+section of the SimpleITK Visual Studio/C# build instructions.</p>
+</section>
+</section>
+<section id="how-to-use">
+<h2>How to Use<a class="headerlink" href="#how-to-use" title="Permalink to this heading"></a></h2>
+<section id="how-many-threads-should-i-use-when-using-simpleitk-and-performing-multiprocessing">
+<h3>How many threads should I use when using SimpleITK and performing multiprocessing?<a class="headerlink" href="#how-many-threads-should-i-use-when-using-simpleitk-and-performing-multiprocessing" title="Permalink to this heading"></a></h3>
+<p>SimpleITK multi-threads most image filters to utilize all virtual cores
+available to the process. By default the number of threads used by these multi-threaded
+filters is equivalent to the number of detected cores. If code is run in a container,
+<a class="reference external" href="https://www.docker.com/">docker</a>, or using a virtual machine this may not match
+the actual number of available cores. When this behavior is combined with
+multi-processing, particularly in Python, it can overwhelm the underlying machine
+as the number of concurrent threads is multiplied by the number of processes.
+Therefore, there are cases where you may want to set the default number of threads in
+SimpleITK to 1 and only use multiprocessing to obtain the benefits of parallel
+processing in a well controlled manner.</p>
+<p>Controlling the number of processes is external to SimpleITK.
+Controlling the number of threads is done via the <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ProcessObject.html">ProcessObject interface</a> which allows for getting and setting a specific filter instance’s number of threads or the
+global default number of threads for all filters. Both options are shown below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">SimpleITK</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sitk</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Global default number of threads: </span><span class="si">{</span><span class="n">sitk</span><span class="o">.</span><span class="n">ProcessObject</span><span class="o">.</span><span class="n">GetGlobalDefaultNumberOfThreads</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">filter</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">DiscreteGaussianImageFilter</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filter number of threads, default: </span><span class="si">{</span><span class="nb">filter</span><span class="o">.</span><span class="n">GetNumberOfThreads</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set the number of threads for a specific filter</span>
+<span class="nb">filter</span><span class="o">.</span><span class="n">SetNumberOfThreads</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filter number of threads, modified: </span><span class="si">{</span><span class="nb">filter</span><span class="o">.</span><span class="n">GetNumberOfThreads</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Set the default number of threads for all filters</span>
+<span class="n">sitk</span><span class="o">.</span><span class="n">ProcessObject</span><span class="o">.</span><span class="n">SetGlobalDefaultNumberOfThreads</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">filter2</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">RecursiveGaussianImageFilter</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Second filter number of threads, default: </span><span class="si">{</span><span class="n">filter2</span><span class="o">.</span><span class="n">GetNumberOfThreads</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="what-filters-are-currently-available-in-simpleitk">
+<h3>What filters are currently available in SimpleITK?<a class="headerlink" href="#what-filters-are-currently-available-in-simpleitk" title="Permalink to this heading"></a></h3>
+<p>There are nearly <strong>300 ITK image filters</strong> wrapped
+in SimpleITK. We have a
+<a class="reference internal" href="filters.html#lbl-filter"><span class="std std-ref">list of filters</span></a> accompanied by a brief
+description. Additionally the
+<a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classes.html">Doxygen</a> can
+be examined to determine the availability of a filter.</p>
+</section>
+<section id="what-image-file-formats-can-simpleitk-read">
+<h3>What image file formats can SimpleITK read?<a class="headerlink" href="#what-image-file-formats-can-simpleitk-read" title="Permalink to this heading"></a></h3>
+<p>See <a class="reference internal" href="IO.html#image-io"><span class="std std-ref">here</span></a>.</p>
+</section>
+<section id="how-do-i-read-a-raw-image-into-simpleitk">
+<h3>How do I read a RAW image into SimpleITK?<a class="headerlink" href="#how-do-i-read-a-raw-image-into-simpleitk" title="Permalink to this heading"></a></h3>
+<p>In general raw image files are missing information. They do not contain
+the necessary header information to describe the basic size and type for
+the data, so this format is intrinsically deficient. The
+<a class="reference external" href="https://www.itk.org/Doxygen/html/classitk_1_1RawImageIO.html">RawImageIO</a>
+class is not available in SimpleITK so there is no direct way to
+programmatically hard code this header information. The suggested way is
+to create a Meta image header file (*.mhd) which references the raw
+data file and describes the size and type of the data. The documentation
+on how to write a Meta image header can be found
+<a class="reference external" href="https://docs.itk.org/en/latest/learn/metaio.html#reading-a-brick-of-bytes-an-n-dimensional-volume-in-a-single-file">here</a>.</p>
+<p>The following is a sample Meta image header file, perhaps of name
+sample.mhd:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">ObjectType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Image
+<span class="nv">NDims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span>
+<span class="nv">DimSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="m">64</span>
+<span class="nv">ElementType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>MET_USHORT
+<span class="nv">ElementDataFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>image.raw<span class="w">    </span><span class="o">(</span>this<span class="w"> </span>tag<span class="w"> </span>must<span class="w"> </span>be<span class="w"> </span>last<span class="w"> </span><span class="k">in</span><span class="w"> </span>a<span class="w"> </span>MetaImageHeader<span class="o">)</span>
+</pre></div>
+</div>
+<p>An example implementing this approach is available here <a class="reference internal" href="link_RawImageReading_docs.html#lbl-raw-image-reading"><span class="std std-ref">here</span></a>.</p>
+</section>
+<section id="why-does-my-image-appear-to-be-empty-all-black-blank-when-visualized">
+<h3>Why does my image appear to be empty / all black / blank when visualized?<a class="headerlink" href="#why-does-my-image-appear-to-be-empty-all-black-blank-when-visualized" title="Permalink to this heading"></a></h3>
+<p>There are two possible reasons for this:</p>
+<ol class="arabic simple">
+<li><p>The image is indeed empty. This is rarely the case, and indicates that there is something incorrect with the code, will require debugging.</p></li>
+<li><p>The image contains very low values (1, 2, 3…). This is very common with segmentation and <a class="reference internal" href="conventions.html#lbl-conventions-mask-image"><span class="std std-ref">binary mask</span></a> images. What you are experiencing is an issue with data visualization, not with the data itself. The code below illustrates the difference, and shows how to quickly visualize such images using the existing SimpleITK functionality.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">SimpleITK</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sitk</span>
+
+<span class="c1"># Create segmentation image</span>
+<span class="n">segmentation_image</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Image</span><span class="p">([</span><span class="mi">128</span><span class="p">,</span><span class="mi">128</span><span class="p">],</span> <span class="n">sitk</span><span class="o">.</span><span class="n">sitkUInt8</span><span class="p">)</span>
+<span class="n">segmentation_image</span><span class="p">[</span><span class="mi">40</span><span class="p">:</span><span class="mi">50</span><span class="p">,</span><span class="mi">20</span><span class="p">:</span><span class="mi">120</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">segmentation_image</span><span class="p">[</span><span class="mi">50</span><span class="p">:</span><span class="mi">60</span><span class="p">,</span><span class="mi">20</span><span class="p">:</span><span class="mi">120</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">segmentation_image</span><span class="p">[</span><span class="mi">60</span><span class="p">:</span><span class="mi">70</span><span class="p">,</span><span class="mi">20</span><span class="p">:</span><span class="mi">120</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># When visualized with Fiji, image looks all black. To see the data</span>
+<span class="c1"># change the display settings Image-&gt;Adjust-&gt;Brightness/Contrast.</span>
+<span class="n">sitk</span><span class="o">.</span><span class="n">Show</span><span class="p">(</span><span class="n">segmentation_image</span><span class="p">)</span>
+
+<span class="c1"># For quick visualization, convert to float and add</span>
+<span class="c1"># 255 so that the data is immediately visible in Fiji.</span>
+<span class="n">sitk</span><span class="o">.</span><span class="n">Show</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">Cast</span><span class="p">(</span><span class="n">segmentation_image</span><span class="p">,</span><span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span> <span class="o">+</span> <span class="mi">255</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="why-isn-t-fiji-or-imagej-found-by-the-show-function-runtimeerror-exception-thrown">
+<span id="lbl-imagej-not-found"></span><h3>Why isn’t Fiji or ImageJ found by the Show function (RuntimeError: Exception thrown…)?<a class="headerlink" href="#why-isn-t-fiji-or-imagej-found-by-the-show-function-runtimeerror-exception-thrown" title="Permalink to this heading"></a></h3>
+<p>The SimpleITK <code class="docutils literal notranslate"><span class="pre">Show</span></code> function expects the Fiji or ImageJ application to be
+installed in specific locations. The recommended installation locations are:</p>
+<ul class="simple">
+<li><p>On Windows: in your user directory (e.g. C:\Users\your_user_name\Fiji.app or C:\Users\your_user_name\Fiji).</p></li>
+<li><p>On Linux: in ~/bin.</p></li>
+<li><p>On Mac: in /Applications or ~/Applications.</p></li>
+</ul>
+<p>To see the locations where the function is searching set Show’s debugOn flag.</p>
+<p>In Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sitk</span><span class="o">.</span><span class="n">Show</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">debugOn</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In R:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">Show</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;file_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Show is a functional interface to the <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ImageViewer.html">ImageViewer class</a>.
+Other viewing applications can be configured using an ImageViewer object, as
+described in the next section.</p>
+</section>
+<section id="can-i-use-another-image-file-viewer-beside-fiji">
+<span id="alt-viewer"></span><h3>Can I use another image file viewer beside Fiji?<a class="headerlink" href="#can-i-use-another-image-file-viewer-beside-fiji" title="Permalink to this heading"></a></h3>
+<p>The
+<a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ImageViewer.html">ImageViewer class</a> allows a user to configure what application
+SimpleITK uses to display images.
+An ImageViewer object displays an image via the Execute method.</p>
+<p>The default display application for all image types is <a class="reference external" href="https://fiji.sc">Fiji</a>.
+To override Fiji with some other application, use the
+<code class="docutils literal notranslate"><span class="pre">ImageViewer::SetCommand</span></code> method.  For example in Python on Linux
+systems, using ImageMagick’s display program would look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">SimpleITK</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sitk</span>
+
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ImageViewer</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">SetFileExtension</span><span class="p">(</span><span class="s1">&#39;.png&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">SetCommand</span><span class="p">(</span><span class="s1">&#39;/usr/bin/display&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default when <code class="docutils literal notranslate"><span class="pre">ImageViewer::Execute</span></code> is called, it writes out a temporary
+image in <a class="reference external" href="https://nifti.nimh.nih.gov">Nifti</a> format then launches Fiji. If
+the viewing application has been changed to one that does not support Nifti,
+the file format of the temporary file can be overridden using the
+<code class="docutils literal notranslate"><span class="pre">ImageViewer::SetFileExtension</span></code> method. In the above example, we use PNG, a
+format ImageMagick does support, unlike Nifti.</p>
+<p>Use of an file extension unsupported by ITK results in an error message. For
+the supported image formats, see the <a class="reference external" href="https://www.itk.org/Doxygen/html/group__IOFilters.html">ITK Image IO
+Filters</a>.</p>
+<p>More details into ImageViewer configuration can be found in the
+<a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ImageViewer.html">ImageViewer class documentation</a>.</p>
+</section>
+<section id="how-can-i-use-3d-slicer-to-view-my-images">
+<h3>How can I use 3D Slicer to view my images?<a class="headerlink" href="#how-can-i-use-3d-slicer-to-view-my-images" title="Permalink to this heading"></a></h3>
+<p><a class="reference external" href="https://slicer.org">3D Slicer</a> is a very powerful and popular
+application for visualization and medical image computing. An
+ImageViewer object can be configured to use
+Slicer instead of SimpleITK’s default viewer, Fiji. The following
+are examples of how to configure an ImageViewer object in Python
+for Mac OS X, Linux and Windows to use Slicer.</p>
+<p>Mac OS X</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">SimpleITK</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sitk</span>
+
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ImageViewer</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">SetCommand</span><span class="p">(</span><span class="s1">&#39;/Applications/Slicer.app/Contents/MacOS/Slicer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Linux</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">SimpleITK</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sitk</span>
+
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ImageViewer</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">SetCommand</span><span class="p">(</span><span class="s1">&#39;Slicer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Windows</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">SimpleITK</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sitk</span>
+
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ImageViewer</span><span class="p">()</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">SetCommand</span><span class="p">(</span> <span class="s1">&#39;c:\Program Files\Slicer 4.10.2\Slicer&#39;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>The call to SetCommand should be modified to point to wherever
+the Slicer executable is installed.</p>
+</section>
+</section>
+<section id="wrapping">
+<h2>Wrapping<a class="headerlink" href="#wrapping" title="Permalink to this heading"></a></h2>
+<section id="python">
+<h3>Python<a class="headerlink" href="#python" title="Permalink to this heading"></a></h3>
+<section id="why-should-i-use-a-virtual-environment">
+<span id="faq-virtualenv"></span><h4>Why should I use a virtual environment?<a class="headerlink" href="#why-should-i-use-a-virtual-environment" title="Permalink to this heading"></a></h4>
+<p>Before installing SimpleITK we highly recommend creating a
+virtual environment into which the package can be installed. Note that
+different Python versions and distributions have different programs for
+creating and managing virtual environments.</p>
+<p>The use of a virtual environment allows a user to elegantly deal with
+package compatibility issues, to quote <a class="reference external" href="https://docs.python-guide.org/en/latest/">The Hitchhiker’s Guide to
+Python!</a>:</p>
+<blockquote>
+<div><p>A Virtual Environment is a tool to keep the dependencies required by
+different projects in separate places, by creating virtual Python
+environments for them. It solves the “Project X depends on version
+1.x but, Project Y needs 4.x” dilemma, and keeps your global
+site-packages directory clean and manageable.</p>
+</div></blockquote>
+<p>Programs for creating virtual environments include <a class="reference external" href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment">venv</a>
+for generic Python distributions,
+<a class="reference external" href="https://conda.pydata.org/docs/using/envs.html">conda</a> for the
+anaconda distribution, and
+<a class="reference external" href="https://docs.enthought.com/canopy/configure/canopy-cli.html">canopy_cli</a>
+for the canopy distribution.</p>
+</section>
+<section id="are-the-python-wheels-compatible-with-enthought-canopy-distribution">
+<h4>Are the Python Wheels compatible with Enthought Canopy Distribution?<a class="headerlink" href="#are-the-python-wheels-compatible-with-enthought-canopy-distribution" title="Permalink to this heading"></a></h4>
+<p>The <a class="reference internal" href="gettingStarted.html#installation-generic-python"><span class="std std-ref">Generic Python Wheels</span></a>
+frequently seem to work with the Enthought Canopy Python
+distribution. However, we recommend compiling SimpleITK
+explicitly against this Python distribution to ensure compatibility.</p>
+</section>
+<section id="how-do-i-read-an-image-with-a-special-character-in-the-filename">
+<h4>How do I read an image with a special character in the filename?<a class="headerlink" href="#how-do-i-read-an-image-with-a-special-character-in-the-filename" title="Permalink to this heading"></a></h4>
+<p>Special characters are non-ANSI characters, which require a non-ASCII encoding for representation. Unicode is the
+modern standard with UTF-8 being the most common. The underlying ITK API calls uses bytes to represent the filename which
+is compatible with UTF-8. This works on modern POSIX and MacOS systems. However, on Windows, the default encoding is
+an alternative 8-bit encoding and wide UTF-16 is used to represent Unicode code points.</p>
+<p>The Windows Operating Systems since about 2020 can be configured to use UTF-8 as the default encoding. This setting
+can be found under “All Settings -&gt; Time &amp; Language -&gt; Language -&gt; “Administrative Language Settings” and the option
+“Beta: Use Unicode UTF-8 for worldwide language support”. However, this may change in the future and may have unintended
+consequences for other languages.</p>
+<p>An alternative, is to set the character locale to UTF-8 in the Python script. This can be done with the following
+command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">locale</span>
+<span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span> <span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span> <span class="s2">&quot;en_US.UTF-8&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>There are related Python Enhancement Proposals (PEP) related to encodings:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0528/">PEP 528</a></p></li>
+<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0529/">PEP 529</a>.</p></li>
+<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0540/">PEP 540</a>.</p></li>
+<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0686/">PEP 686</a>.</p></li>
+</ul>
+</dd>
+</dl>
+<p><a class="reference external" href="https://docs.python.org/3/using/windows.html#utf-8-mode">https://docs.python.org/3/using/windows.html#utf-8-mode</a></p>
+</section>
+</section>
+<section id="tcl">
+<h3>Tcl<a class="headerlink" href="#tcl" title="Permalink to this heading"></a></h3>
+</section>
+<section id="java">
+<h3>Java<a class="headerlink" href="#java" title="Permalink to this heading"></a></h3>
+</section>
+<section id="c">
+<h3>C#<a class="headerlink" href="#c" title="Permalink to this heading"></a></h3>
+</section>
+<section id="r">
+<h3>R<a class="headerlink" href="#r" title="Permalink to this heading"></a></h3>
+</section>
+</section>
+<section id="compilation">
+<h2>Compilation<a class="headerlink" href="#compilation" title="Permalink to this heading"></a></h2>
+<section id="is-my-compiler-supported">
+<span id="faq-compiler-supported"></span><h3>Is my compiler supported?<a class="headerlink" href="#is-my-compiler-supported" title="Permalink to this heading"></a></h3>
+<p>SimpleITK uses modern C++ and template meta-programming to instantiate ITK’s Images
+and Filters. SimpleITK is developed to require the C++17 standard.</p>
+<p>In practice the list of compilers actively supported are those that are used for continuous
+testing and integration. These can be seen on the <a class="reference external" href="https://open.cdash.org/index.php?project=SimpleITK">SimpleITK
+dashboard</a>. We
+welcome user contributions to the nightly dashboard to expand the list
+of these compilers and contributions to fix additional compilation problems.</p>
+</section>
+<section id="are-32-bits-architectures-supported">
+<h3>Are 32-bits architectures supported?<a class="headerlink" href="#are-32-bits-architectures-supported" title="Permalink to this heading"></a></h3>
+<p>While 32-bit binaries are no longer pre-compiled, the intel 32-architecture are still
+tested to help ensure robustness of the toolkit. Contributions and bug reports to support
+additional architectures are welcomed.</p>
+</section>
+<section id="why-does-the-superbuild-fail-compiling-pcre-on-mac-os-x">
+<h3>Why does the Superbuild fail compiling PCRE on Mac OS X?<a class="headerlink" href="#why-does-the-superbuild-fail-compiling-pcre-on-mac-os-x" title="Permalink to this heading"></a></h3>
+<p>If the Xcode command line tools are not properly set up on OS X, PCRE
+could fail to build in the Superbuild process with messages such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>checking whether we are cross compiling... configure: error: in `/your/build/path/SimpleITK/PCRE-prefix/src/PCRE-build&#39;:
+configure: error: cannot run C compiled programs.
+If you meant to cross compile, use `--host&#39;.
+See `config.log&#39; for more details
+[10/13] Performing build step for &#39;PCRE&#39;
+</pre></div>
+</div>
+<p>To install the command line developer tools enter the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xcode-select<span class="w"> </span>--install
+</pre></div>
+</div>
+<p>To reset the default command line tools path:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xcode-select<span class="w"> </span>--reset
+</pre></div>
+</div>
+</section>
+<section id="what-configurations-on-windows-are-supported-for-building">
+<h3>What Configurations on Windows are Supported For Building?<a class="headerlink" href="#what-configurations-on-windows-are-supported-for-building" title="Permalink to this heading"></a></h3>
+<p>We recommend using at least Microsoft Visual Studio 15 (2017) with MSVC v140 toolset.</p>
+</section>
+<section id="path-length-issues-on-windows">
+<h3>Path Length Issues on Windows<a class="headerlink" href="#path-length-issues-on-windows" title="Permalink to this heading"></a></h3>
+<p>The location of the build and source directories on Windows can cause the build
+to fail.  By default, Windows does not allow path lengths longer than 260 characters.</p>
+<p>See <a class="reference external" href="windowsPathLength.html">Windows Path Length</a> for more information.</p>
+</section>
+<section id="where-is-the-test-data">
+<h3>Where is the Test Data?<a class="headerlink" href="#where-is-the-test-data" title="Permalink to this heading"></a></h3>
+<p>The testing data is not stored in the SimpleITK repository or as part of
+the source code. It is mirrored on several data repositories on the web.</p>
+<p>If the source code was obtained from the git repository, the test data should
+be downloaded as part of the build process via the CMake <a class="reference external" href="https://cmake.org/cmake/help/latest/module/ExternalData.html">ExternalData</a> module.</p>
+<p>A tar-ball of the “SimpleITKData” can be downloaded for
+a release from the <a class="reference external" href="https://github.com/SimpleITK/SimpleITK/releases">GitHub Assets</a>, which contains the
+external data. It should populate the .ExternalData subdirectory of the
+SimpleITK source code directory when extracted.</p>
+</section>
+<section id="why-is-cmake-unable-to-download-externaldata">
+<h3>Why is CMake unable to download ExternalData?<a class="headerlink" href="#why-is-cmake-unable-to-download-externaldata" title="Permalink to this heading"></a></h3>
+<p>When compiling SimpleITK an error like the following may occur:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Object MD5=2e115fe26e435e33b0d5c022e4490567 not found at:
+ https://placid.nlm.nih.gov/api/rest?method=midas.bitstream.download&amp;checksum=2e115fe26e435e33b0d5c022e4490567&amp;algorithm=MD5 (&quot;Unsupported protocol&quot;)
+ https://simpleitk.org/SimpleITKExternalData/MD5/2e115fe26e435e33b0d5c022e4490567 (&quot;Unsupported protocol&quot;)
+ https://midas3.kitware.com/midas/api/rest?method=midas.bitstream.download&amp;checksum=2e115fe26e435e33b0d5c022e4490567&amp;algorithm=MD5 (&quot;Unsupported protocol&quot;)
+ https://insightsoftwareconsortium.github.io/ITKTestingData/MD5/2e115fe26e435e33b0d5c022e4490567 (&quot;Unsupported protocol&quot;)
+ https://itk.org/files/ExternalData/MD5/2e115fe26e435e33b0d5c022e4490567 (&quot;Unsupported protocol&quot;)
+</pre></div>
+</div>
+<p>This indicates that CMake was not compiles with SSL support. The
+“Unsupported protocol” message indicate that CMake can not communicate
+via “https”.</p>
+<p>The solution is to use a compiled version of CMake which supports SSL.
+To re-build CMake with OpenSSL support, simply reconfigure CMake with the
+“CMAKE_USE_OPENSSL” option enabled.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorialsAndCourses.html" class="btn btn-neutral float-left" title="Tutorials and Courses" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="migrationGuide2.0.html" class="btn btn-neutral float-right" title="Migration Guide 2.0" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NumFOCUS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

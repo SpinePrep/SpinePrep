@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qMRFlow &mdash; qMRLab 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Available pipelines" href="methods_workflow.html" />
+    <link rel="prev" title="Command Line Interface (CLI)" href="batch_usage.html" /> 
+
+<!-- RTD Extra Head -->
+
+
+
+<script type="application/json" id="READTHEDOCS_DATA">{"ad_free": false, "api_host": "https://readthedocs.org", "builder": "sphinx", "canonical_url": null, "docroot": "/source/", "features": {"docsearch_disabled": false}, "global_analytics_code": "UA-17997319-1", "language": "en", "page": "qmrflow_intro", "programming_language": "other", "project": "qmrlab", "proxied_api_host": "/_", "source_suffix": ".rst", "subprojects": {}, "theme": "sphinx_rtd_theme", "user_analytics_code": "", "version": "master"}</script>
+
+<!--
+Using this variable directly instead of using `JSON.parse` is deprecated.
+The READTHEDOCS_DATA global variable will be removed in the future.
+-->
+<script type="text/javascript">
+READTHEDOCS_DATA = JSON.parse(document.getElementById('READTHEDOCS_DATA').innerHTML);
+</script>
+
+
+
+<!-- end RTD <extrahead> -->
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="qmrlab" /><meta name="readthedocs-version-slug" content="master" /><meta name="readthedocs-resolver-filename" content="/qmrflow_intro.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> qMRLab
+          
+
+          
+            
+            <img src="_static/qMR_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">qmrlab</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Key features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#data-simulator">Data simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#data-fitting-and-visualization">Data fitting and visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methods available</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#underdevelopment">UnderDevelopment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#processing">Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="filter_map_batch.html">filter_map:   Applies spatial filtering (2D or 3D)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#qsm">QSM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qsm_sb_batch.html">qsm_sb: Fast quantitative susceptibility mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#t1-relaxometry">T1_relaxometry</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vfa_t1_batch.html">vfa_t1: Compute a T1 map using Variable Flip Angle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mtv_batch.html">mtv :  Macromolecular Tissue Volume in brain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inversion_recovery_batch.html">inversion_recovery: Compute a T1 map using Inversion Recovery data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mp2rage_batch.html">mp2rage: Compute a T1 map using MP2RAGE</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#fieldmaps">FieldMaps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="b1_afi_batch.html">b1_afi map:  Actual Flip-Angle Imaging for B1+ mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="b1_dam_batch.html">b1_dam map:  Double-Angle Method for B1+ mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="b0_dem_batch.html">b0_dem map :  Dual Echo Method for B0 mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#noise">Noise</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="noise_level_batch.html">noise_level :  Noise histogram fitting within a noise mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="denoising_mppca_batch.html">denoising_mppca :  4d image denoising and noise map estimation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#t2-relaxometry">T2_relaxometry</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mwf_batch.html">mwf :  Myelin Water Fraction from Multi-Exponential T2w data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mono_t2_batch.html">mono_t2: Compute a monoexponential T2 map</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#magnetization-transfer">Magnetization_transfer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmt_bssfp_batch.html">qmt_bssfp : qMT using Balanced Steady State Free Precession acquisition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmt_sirfse_batch.html">qmt_sirfse:  qMT using Inversion Recovery Fast Spin Echo acquisition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mt_sat_batch.html">mt_sat :  Correction of Magnetization transfer for RF inhomogeneities and T1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmt_spgr_batch.html">qmt_spgr:  quantitative Magnetizatoion Transfer (qMT) using Spoiled Gradient Echo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mt_ratio_batch.html">mt_ratio :  Magnetization transfer ratio (MTR)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#diffusion">Diffusion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dti_batch.html">dti: Compute a tensor from diffusion data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="noddi_batch.html">noddi:   Neurite Orientation Dispersion and Density Imaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="charmed_batch.html">charmed: Composite Hindered and Restricted Model for Diffusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Protocols</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#mp2rage">mp2rage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#numberofshots"><code class="docutils literal notranslate"><span class="pre">NumberOfShots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#repetition-times"><code class="docutils literal notranslate"><span class="pre">Repetition</span> <span class="pre">Times</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#inversion-times"><code class="docutils literal notranslate"><span class="pre">Inversion</span> <span class="pre">Times</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#flip-angles"><code class="docutils literal notranslate"><span class="pre">Flip</span> <span class="pre">Angles</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">How to install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#qmrlab-in-matlab">qMRLab in MATLAB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#qmrlab-in-octave">qMRLab in Octave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#qmrlab-in-docker">qMRLab in Docker 🐳</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#how-to-cite">How to cite?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known-issues.html">Known issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known-issues.html#osx">OSX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="known-issues.html#apple-silicon-m1-compatibility">Apple Silicon (M1) compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gui-example.html">Beginner’s example with GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#open-matlab">1. Open matlab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#run-startup">2. Run startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#launch-the-gui">3. Launch the GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#model-selection">4. Model selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#download-example-data">5. Download example data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#view-the-data">6. View the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#set-up-the-protocol">7. Set up the protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#view-the-data-fit-in-1-voxel">8. View the data fit in 1 voxel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#fit-the-whole-dataset">9. Fit the whole dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="batch_example.html">Beginner’s example with CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#open-matlab-and-setup-path">1. Open MATLAB and setup path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#generate-a-batch-example">2. Generate a batch example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#run-the-batch">3. Run the batch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Example datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#download-example-datasets-via-gui">Download example datasets via GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#download-example-datasets-via-cli">Download example datasets via CLI</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">User Interface Guidelines</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage-guidelines.html">Interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gui_usage.html">Graphical User Interface (GUI)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#startup">1. Startup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#layout">2. Layout</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#menu-panel">2.1 Menu Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#main-panel">2.2 Main Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#options-panel">2.3 Options Panel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#data-viewer">3.  Data Viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#data-fitting">4.      Data Fitting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#data-format">4.1     Data format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#fitting-procedure">4.2     Fitting Procedure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#viewing-the-fit-results">4.3     Viewing the fit results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#simulation">5.      Simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id1">5.1.    Single Voxel Curve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id2">5.2.    Sensitivity Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id3">5.3. Multi Voxel Distribution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#id4">6. Options Panel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id5">6.1 Protocol</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id6">6.2.    Fitting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id7">6.3. Options</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#tutorial">7.      Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="batch_usage.html">Command Line Interface (CLI)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#general-structure">General structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#general-commands">General commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#model-structure">Model structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#all-models-have-the-following-properties">All models have the following properties:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#and-functions">And functions:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#most-models-have-these-additional-functions">Most models have these additional functions:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">qMRFlow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#about">About</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#benefits">Benefits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#use-qmrflow-with-docker">Use qMRFlow with Docker 🐳</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#use-qmrflow-locally">Use qMRFlow locally</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods_workflow.html">Available pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods_workflow.html#magnetizationtransfer">MagnetizationTransfer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmrflow_mtsat.html">MTsat: Magnetization transfer saturation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#usage">Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#container-requirements">Container requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#local-installation-requirements">Local installation requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#folder-organization">Folder organization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#optional-arguments">Optional arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#notes">Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qmrflow_mtr.html">MTR: Magnetization transfer ratio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#usage">Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#container-requirements">Container requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#local-installation-requirements">Local installation requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#folder-organization">Folder organization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#optional-arguments">Optional arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#notes">Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#reference">Reference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Open Pulse Sequences</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qmr_pullseq.html">qMRPullseq</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmr_pullseq.html#about">About</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmr_pullseq.html#vfa-t1-mapping">VFA T1 mapping</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contribute</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-doc.html">Developer’s Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qMRLab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>qMRFlow</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/qMRLab/documentation/blob/master/source/qmrflow_intro.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="qmrflow">
+<h1>qMRFlow<a class="headerlink" href="#qmrflow" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="https://github.com/qMRLab/qMRFlow/raw/master/assets/qmrflow_small.png?raw=true"><img alt="https://github.com/qMRLab/qMRFlow/raw/master/assets/qmrflow_small.png?raw=true" src="https://github.com/qMRLab/qMRFlow/raw/master/assets/qmrflow_small.png?raw=true" style="width: 400px;" /></a>
+<p>qMRFlow is a collection of container-mediated, data-driven, transparent and platform-agnostic qMRI workflows written in <a class="reference external" href="https://www.nextflow.io/">Nextflow</a>.</p>
+<a class="reference external image-reference" href="https://github.com/qMRLab/qMRFlow"><img alt="https://img.shields.io/badge/GitHub-qMRFlow-ff0000.svg" src="https://img.shields.io/badge/GitHub-qMRFlow-ff0000.svg" /></a>
+</div>
+<div class="section" id="benefits">
+<h2>Benefits<a class="headerlink" href="#benefits" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>qMRLab implements a myriad of qMRI methods, however does not provide pre-processing solutions such as volume alignment or skull stripping. qMRFlow enables the easy use of virtually any pre-processing software with qMRLab, as the process logic and descriptions are detached from workflow orchestration.</li>
+</ul>
+<a class="reference internal image-reference" href="https://github.com/qMRLab/qMRFlow/blob/master/assets/ismrm_tools_workflow.png?raw=true"><img alt="https://github.com/qMRLab/qMRFlow/blob/master/assets/ismrm_tools_workflow.png?raw=true" src="https://github.com/qMRLab/qMRFlow/blob/master/assets/ismrm_tools_workflow.png?raw=true" style="width: 800px;" /></a>
+<ul class="simple">
+<li>qMRFlow pipelines run on <a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/">BIDS</a> formatted data, highly convenient for multi-subject processing:</li>
+</ul>
+<a class="reference internal image-reference" href="https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2Fsdata.2016.44/MediaObjects/41597_2016_Article_BFsdata201644_Fig1_HTML.jpg"><img alt="https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2Fsdata.2016.44/MediaObjects/41597_2016_Article_BFsdata201644_Fig1_HTML.jpg" src="https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2Fsdata.2016.44/MediaObjects/41597_2016_Article_BFsdata201644_Fig1_HTML.jpg" style="width: 800px;" /></a>
+<p>To see the latest BIDS developments on describing qMRI data, you can visit <a class="reference external" href="https://github.com/orgs/bids-bep001/dashboard">BEP001 GitHub repository</a>.</p>
+<ul class="simple">
+<li>Quantitative maps created by qMRFlow are accompanied by sidecar json files containing provenance metadata about the executed qMRI process:</li>
+</ul>
+<a class="reference internal image-reference" href="https://github.com/qMRLab/qMRFlow/blob/master/assets/output_formatting.png?raw=true"><img alt="https://github.com/qMRLab/qMRFlow/blob/master/assets/output_formatting.png?raw=true" src="https://github.com/qMRLab/qMRFlow/blob/master/assets/output_formatting.png?raw=true" style="width: 800px;" /></a>
+<ul class="simple">
+<li>Nextflow data-driven workflow engine provides comprehensive reports after a pipeline is run:</li>
+</ul>
+<a class="reference internal image-reference" href="https://github.com/qMRLab/qMRFlow/blob/master/assets/workflow_report.png?raw=true"><img alt="https://github.com/qMRLab/qMRFlow/blob/master/assets/workflow_report.png?raw=true" src="https://github.com/qMRLab/qMRFlow/blob/master/assets/workflow_report.png?raw=true" style="width: 800px;" /></a>
+<ul class="simple">
+<li>In case that the workflow is interrupted for any reason, pipeline execution can be resumed from where it left off.</li>
+</ul>
+</div>
+<div class="section" id="use-qmrflow-with-docker">
+<h2>Use qMRFlow with Docker 🐳<a class="headerlink" href="#use-qmrflow-with-docker" title="Permalink to this headline">¶</a></h2>
+<p>If you have Docker installed on your computer, getting started with qMRFlow is
+a few steps away.</p>
+<ol class="arabic">
+<li><p class="first">Install Nextflow as described in <a class="reference external" href="https://www.nextflow.io/">here</a>.</p>
+</li>
+<li><p class="first">Pull Docker images listed by a qMRFlow pipeline. For example, to run MTsat workflow in containers, following images must be pulled:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">qmrlab</span><span class="o">/</span><span class="n">minimal</span><span class="p">:</span><span class="n">v2</span><span class="mf">.3.1</span>
+<span class="n">docker</span> <span class="n">pull</span> <span class="n">qmrlab</span><span class="o">/</span><span class="n">antsfsl</span><span class="p">:</span><span class="n">latest</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Run the pipeline as described in the <cite>Usage</cite> section of the desired qMRFlow pipeline documentation.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="use-qmrflow-locally">
+<h2>Use qMRFlow locally<a class="headerlink" href="#use-qmrflow-locally" title="Permalink to this headline">¶</a></h2>
+<p>We highly suggest using qMRFlow workflows in containers. However, if you don’t
+have Docker installed, you can still use them by installing dependencies locally.</p>
+<ol class="arabic simple">
+<li>Ensure that all the dependencies listed by the <cite>Local installation requirements</cite> section of the desired qMRFlow pipeline documentation are met.</li>
+<li>Install qMRLab</li>
+<li>Run the pipeline as described in the <cite>Usage</cite> section of the desired qMRFlow pipeline documentation.</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="methods_workflow.html" class="btn btn-neutral float-right" title="Available pipelines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="batch_usage.html" class="btn btn-neutral float-left" title="Command Line Interface (CLI)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NeuroPoly
+      
+        <span class="commit">
+          Revision <code>a4cf06e4</code>.
+        </span>
+      
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+   
+
+</body>
+</html>

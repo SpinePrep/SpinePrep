@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ debugging on GNU/Linux systems &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="C++ debugging on macOS" href="macoscpp.html" />
+    <link rel="prev" title="C++ debugging on Windows" href="windowscpp.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/debugging/linuxcpp.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Debugging</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="python.html">Python debugging</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="cpp.html">C++ debugging</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="windowscpp.html">C++ debugging on Windows</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">C++ debugging on GNU/Linux systems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="macoscpp.html">C++ debugging on macOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vscodecpp.html">C++ debugging with Visual Studio Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qtcreatorcpp.html">C++ debugging with Qt Creator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="codelitecpp.html">C++ debugging with CodeLite</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tips.html">Tips and tricks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Debugging</a></li>
+          <li class="breadcrumb-item"><a href="cpp.html">C++ debugging</a></li>
+      <li class="breadcrumb-item active">C++ debugging on GNU/Linux systems</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/debugging/linuxcpp.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="c-debugging-on-gnu-linux-systems">
+<h1>C++ debugging on GNU/Linux systems<a class="headerlink" href="#c-debugging-on-gnu-linux-systems" title="Link to this heading"></a></h1>
+<section id="gdb-debug-by-attaching-to-running-process-recommended">
+<h2>GDB debug by attaching to running process (recommended)<a class="headerlink" href="#gdb-debug-by-attaching-to-running-process-recommended" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Starting with Ubuntu 10.10, ptracing of non-child processes by non-root users as been disabled -ie. only a process which is a parent of another process can ptrace it for normal users. More details <a class="reference external" href="https://askubuntu.com/questions/41629/after-upgrade-gdb-wont-attach-to-process">here</a>.</p>
+<ul>
+<li><p>You can temporarily disable this restriction by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/proc/sys/kernel/yama/ptrace_scope
+</pre></div>
+</div>
+</li>
+<li><p>To permanently allow it to edit <code class="docutils literal notranslate"><span class="pre">/etc/sysctl.d/10-ptrace.conf</span></code> and change the line:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>kernel.yama.ptrace_scope = 1
+</pre></div>
+</div>
+<p>to read:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>kernel.yama.ptrace_scope = 0
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Running Slicer with the following command line argument will allow you to easily obtain the associated PID:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>./Slicer<span class="w"> </span>--attach-process
+</pre></div>
+</div>
+<p>This will bring up a window with the <code class="docutils literal notranslate"><span class="pre">PID</span></code> before loading any modules, which is also helpful for debugging the loading process.</p>
+</li>
+<li><p>Then, you can attach the process to <code class="docutils literal notranslate"><span class="pre">gdb</span></code> using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>gdb<span class="w"> </span>--pid<span class="w"> </span><span class="nv">$PIDABOVE</span>
+</pre></div>
+</div>
+</li>
+<li><p>Finally type the following gdb command</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(gdb) continue
+</pre></div>
+</div>
+<p>If not using the <code class="docutils literal notranslate"><span class="pre">--attach-process</span></code>, the <code class="docutils literal notranslate"><span class="pre">PID</span></code> could be obtain using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ps<span class="w"> </span>-Afww<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>SlicerApp-real
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>How to print QString using GDB?</p>
+<p>See <a class="reference external" href="http://silmor.de/qtstuff.printqstring.php">http://silmor.de/qtstuff.printqstring.php</a>.</p>
+</div>
+</section>
+<section id="gdb-debug-with-launch-arguments">
+<h2>GDB debug with launch arguments<a class="headerlink" href="#gdb-debug-with-launch-arguments" title="Link to this heading"></a></h2>
+<p>The Slicer app launcher provides options to start other programs with the Slicer environment settings.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--launch</span> <span class="pre">&lt;executable&gt;</span> <span class="pre">[&lt;parameters&gt;]</span></code>: executes an arbitrary program. For example, <code class="docutils literal notranslate"><span class="pre">Slicer</span> <span class="pre">--launch</span> <span class="pre">/usr/bin/gnome-terminal</span></code> starts gnome-terminal (then run GDB directly on SlicerApp-real)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--gdb</span></code>: runs GDB then executes SlicerApp-real from within the debugger environment.</p></li>
+</ul>
+</section>
+<section id="gdb-debug-by-following-the-forked-process">
+<h2>GDB debug by following the forked process<a class="headerlink" href="#gdb-debug-by-following-the-forked-process" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gdb<span class="w"> </span>Slicer
+</pre></div>
+</div>
+<p>gdb should warn you that there are no debug symbols for Slicer, which is true because Slicer is the launcher. Now we need to set gdb to follow the forked process SlicerApp-real and run the launcher:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(gdb) set follow-fork-mode child
+(gdb) run
+</pre></div>
+</div>
+<p>gdb will run Slicer and attach itself to the forked process SlicerApp-real</p>
+</section>
+<section id="gdb-debug-by-using-exec-wrapper">
+<h2>GDB debug by using exec-wrapper<a class="headerlink" href="#gdb-debug-by-using-exec-wrapper" title="Link to this heading"></a></h2>
+<p>An alternative approach is to use a wrapper script to emulate the functionality of the app launcher. This will allow you to use gdb or a gdb-controlling program such as an IDE, in order to interactively debug directly from GDB without attaching.</p>
+<p>The general idea of the wrapper is to set all of the appropriate environment variables as they would be set by the app launcher. From SlicerLauncherSettings:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[LibraryPath]</span></code> contents should be in <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[Paths]</span></code> contents should be in <code class="docutils literal notranslate"><span class="pre">PATH</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[EnvironmentVariables]</span></code> should each be set</p></li>
+</ul>
+<p>Now, start gdb and do the following:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(gdb) set exec-wrapper ./WrapSlicer
+(gdb) exec-file ./bin/SlicerQT-real
+(gdb) run
+</pre></div>
+</div>
+<p>Since VTK and ITK include many multithreaded filters, by default you will see lots of messages like the following from gdb during rendering and processing:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[New Thread 0x7fff8378f700 (LWP 20510)]
+[Thread 0x7fff8b0aa700 (LWP 20506) exited]
+</pre></div>
+</div>
+<p>These can be turned off with this command:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>set print thread-events off
+</pre></div>
+</div>
+<section id="example-wrapper-script">
+<h3>Example wrapper script<a class="headerlink" href="#example-wrapper-script" title="Link to this heading"></a></h3>
+<p>To make a wrapper script, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Slicer<span class="w"> </span>--launch<span class="w"> </span><span class="sb">`</span>which<span class="w"> </span>gnome-terminal<span class="sb">`</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Slicer<span class="w"> </span>--gnome-terminal
+</pre></div>
+</div>
+<p>and check the value of <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> (note, it doesn’t seem to be set using xterm). Then check the other environment variables as listed in <code class="docutils literal notranslate"><span class="pre">[EnvironmentVariables]</span></code>.</p>
+<p>See the examples below.</p>
+<p>SlicerLaunchSettings.ini</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[General]</span>
+<span class="na">launcherSplashImagePath</span><span class="o">=</span><span class="s">/cmn/git/Slicer4/Applications/SlicerQT/Resources/Images/SlicerSplashScreen.png</span>
+<span class="na">launcherSplashScreenHideDelayMs</span><span class="o">=</span><span class="s">3000</span>
+<span class="na">additionalLauncherHelpShortArgument</span><span class="o">=</span><span class="s">-h</span>
+<span class="na">additionalLauncherHelpLongArgument</span><span class="o">=</span><span class="s">--help</span>
+<span class="na">additionalLauncherNoSplashArguments</span><span class="o">=</span><span class="s">--no-splash,--help,--version,--home,--program-path,--no-main-window</span>
+
+<span class="k">[Application]</span>
+<span class="na">path</span><span class="o">=</span><span class="s">&lt;APPLAUNCHER_DIR&gt;/bin/./SlicerQT-real</span>
+<span class="na">arguments</span><span class="o">=</span>
+
+<span class="k">[ExtraApplicationToLaunch]</span>
+
+<span class="na">designer/shortArgument</span><span class="o">=</span>
+<span class="na">designer/help</span><span class="o">=</span><span class="s">Start Qt designer using Slicer plugins</span>
+<span class="na">designer/path</span><span class="o">=</span><span class="s">/usr/bin/designer-qt4</span>
+<span class="na">designer/arguments</span><span class="o">=</span>
+
+<span class="na">gnome-terminal/shortArgument</span><span class="o">=</span>
+<span class="na">gnome-terminal/help</span><span class="o">=</span><span class="s">Start gnome-terminal</span>
+<span class="na">gnome-terminal/path</span><span class="o">=</span><span class="s">/usr/bin/gnome-terminal</span>
+<span class="na">gnome-terminal/arguments</span><span class="o">=</span>
+
+<span class="na">xterm/shortArgument</span><span class="o">=</span>
+<span class="na">xterm/help</span><span class="o">=</span><span class="s">Start xterm</span>
+<span class="na">xterm/path</span><span class="o">=</span><span class="s">/usr/bin/xterm</span>
+<span class="na">xterm/arguments</span><span class="o">=</span>
+
+<span class="na">ddd/shortArgument</span><span class="o">=</span>
+<span class="na">ddd/help</span><span class="o">=</span><span class="s">Start ddd</span>
+<span class="na">ddd/path</span><span class="o">=</span><span class="s">/usr/bin/ddd</span>
+<span class="na">ddd/arguments</span><span class="o">=</span>
+
+<span class="na">gdb/shortArgument</span><span class="o">=</span>
+<span class="na">gdb/help</span><span class="o">=</span><span class="s">Start gdb</span>
+<span class="na">gdb/path</span><span class="o">=</span><span class="s">/usr/bin/gdb</span>
+<span class="na">gdb/arguments</span><span class="o">=</span>
+
+
+<span class="k">[LibraryPaths]</span>
+<span class="na">1\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/VTK-build/bin/.</span>
+<span class="na">2\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/CTK-build/CTK-build/bin/.</span>
+<span class="na">3\path</span><span class="o">=</span><span class="s">/usr/lib</span>
+<span class="na">4\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/ITKv3-build/bin/.</span>
+<span class="na">5\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/SlicerExecutionModel-build/ModuleDescriptionParser/bin/.</span>
+<span class="na">6\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/teem-build/bin/.</span>
+<span class="na">7\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/LibArchive-install/lib</span>
+<span class="na">8\path</span><span class="o">=</span><span class="s">&lt;APPLAUNCHER_DIR&gt;/bin/.</span>
+<span class="na">9\path</span><span class="o">=</span><span class="s">../lib/Slicer-4.0/qt-loadable-modules</span>
+<span class="na">10\path</span><span class="o">=</span><span class="s">&lt;APPLAUNCHER_DIR&gt;/lib/Slicer-4.0/cli-modules/.</span>
+<span class="na">11\path</span><span class="o">=</span><span class="s">&lt;APPLAUNCHER_DIR&gt;/lib/Slicer-4.0/qt-loadable-modules/.</span>
+<span class="na">12\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/tcl-build/lib</span>
+<span class="na">13\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/OpenIGTLink-build</span>
+<span class="na">14\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/OpenIGTLink-build/bin/.</span>
+<span class="na">15\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/CTK-build/PythonQt-build/.</span>
+<span class="na">16\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/python-build/lib</span>
+<span class="na">17\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/python-build/lib/python2.6/site-packages/numpy/core</span>
+<span class="na">18\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/python-build/lib/python2.6/site-packages/numpy/lib</span>
+<span class="na">size</span><span class="o">=</span><span class="s">18</span>
+
+<span class="k">[Paths]</span>
+<span class="na">1\path</span><span class="o">=</span><span class="s">&lt;APPLAUNCHER_DIR&gt;/bin/.</span>
+<span class="na">2\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/teem-build/bin/.</span>
+<span class="na">3\path</span><span class="o">=</span><span class="s">/usr/bin</span>
+<span class="na">4\path</span><span class="o">=</span><span class="s">&lt;APPLAUNCHER_DIR&gt;/lib/Slicer-4.0/cli-modules/.</span>
+<span class="na">5\path</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/tcl-build/bin</span>
+<span class="na">size</span><span class="o">=</span><span class="s">5</span>
+
+<span class="k">[EnvironmentVariables]</span>
+<span class="na">QT_PLUGIN_PATH</span><span class="o">=</span><span class="s">&lt;APPLAUNCHER_DIR&gt;/bin&lt;PATHSEP&gt;/cmn/git/Slicer4-sb/CTK-build/CTK-build/bin&lt;PATHSEP&gt;/usr/lib/qt4/plugins</span>
+<span class="na">SLICER_HOME</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/Slicer-build</span>
+<span class="na">PYTHONHOME</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/python-build</span>
+<span class="na">PYTHONPATH</span><span class="o">=</span><span class="s">&lt;APPLAUNCHER_DIR&gt;/bin&lt;PATHSEP&gt;&lt;APPLAUNCHER_DIR&gt;/bin/Python&lt;PATHSEP&gt;/cmn/git/Slicer4-sb/python-build/lib/python2.6/site-packages&lt;PATHSEP&gt;&lt;APPLAUNCHER_DIR&gt;/lib/Slicer-4.0/qt-loadable-modules/.&lt;PATHSEP&gt;&lt;APPLAUNCHER_DIR&gt;/lib/Slicer-4.0/qt-loadable-modules/Python</span>
+<span class="na">TCL_LIBRARY</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/tcl-build/lib/tcl8.4</span>
+<span class="na">TK_LIBRARY</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/tcl-build/lib/tk8.4</span>
+<span class="na">TCLLIBPATH</span><span class="o">=</span><span class="s">/cmn/git/Slicer4-sb/tcl-build/lib/itcl3.2 /cmn/git/Slicer4-sb/tcl-build/lib/itk3.2</span>
+</pre></div>
+</div>
+<p>It’s easier to just check <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> using <code class="docutils literal notranslate"><span class="pre">--launch</span></code>. If this is somehow not available, the above settings translate directly to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/bin/bash
+BASE_DIR=/cmn/git/Slicer4-sb/
+APPLAUNCHER_DIR=$BASE_DIR/Slicer-build
+
+LD_PATHS=&quot;
+/cmn/git/Slicer4-sb/VTK-build/bin/.
+/cmn/git/Slicer4-sb/CTK-build/CTK-build/bin/.
+/usr/lib
+/cmn/git/Slicer4-sb/ITKv3-build/bin/.
+/cmn/git/Slicer4-sb/SlicerExecutionModel-build/ModuleDescriptionParser/bin/.
+/cmn/git/Slicer4-sb/teem-build/bin/.
+/cmn/git/Slicer4-sb/LibArchive-install/lib
+$APPLAUNCHER_DIR/bin/.
+../lib/Slicer-4.0/qt-loadable-modules
+$APPLAUNCHER_DIR/lib/Slicer-4.0/cli-modules/.
+$APPLAUNCHER_DIR/lib/Slicer-4.0/qt-loadable-modules/.
+/cmn/git/Slicer4-sb/tcl-build/lib
+/cmn/git/Slicer4-sb/OpenIGTLink-build
+/cmn/git/Slicer4-sb/OpenIGTLink-build/bin/.
+/cmn/git/Slicer4-sb/CTK-build/PythonQt-build/.
+/cmn/git/Slicer4-sb/python-build/lib
+/cmn/git/Slicer4-sb/python-build/lib/python2.6/site-packages/numpy/core
+/cmn/git/Slicer4-sb/python-build/lib/python2.6/site-packages/numpy/lib
+&quot;
+for STR in $LD_PATHS; do LD_LIBRARY_PATH=&quot;${STR}:${LD_LIBRARY_PATH}&quot;; done
+
+QT_PLUGIN_PATH=$APPLAUNCHER_DIR/bin:/cmn/git/Slicer4-sb/CTK-build/CTK-build/bin:/usr/lib/qt4/plugins
+SLICER_HOME=/cmn/git/Slicer4-sb/Slicer-build
+PYTHONHOME=/cmn/git/Slicer4-sb/python-build
+PYTHONPATH=$APPLAUNCHER_DIR:/bin:$APPLAUNCHER_DIR:/bin/Python:/cmn/git/Slicer4-sb/python-build/lib/python2.6/site-packages:$APPLAUNCHER_DIR/lib/Slicer-4.0/qt-loadable-modules/.:$APPLAUNCHER_DIR/lib/Slicer-4.0/qt-loadable-modules/Python
+TCL_LIBRARY=/cmn/git/Slicer4-sb/tcl-build/lib/tcl8.4
+TK_LIBRARY=/cmn/git/Slicer4-sb/tcl-build/lib/tk8.4
+TCLLIBPATH=/cmn/git/Slicer4-sb/tcl-build/lib/itcl3.2:/cmn/git/Slicer4-sb/tcl-build/lib/itk3.2
+
+export QTPLUGIN_PATH=$QT_PLUGIN_PATH
+export SLICER_HOME=$SLICER_HOME
+export PYTHONHOME=$PYTHONHOME
+export PYTHONPATH=$PYTHONPATH
+export TCL_LIBRARY=$TCL_LIBRARY
+export TK_LIBRARY=$TK_LIBRARY
+export TCLLIBPATH=$TCLLIBPATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+
+exec &quot;$@&quot;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="analyze-a-segmentation-fault">
+<h2>Analyze a segmentation fault<a class="headerlink" href="#analyze-a-segmentation-fault" title="Link to this heading"></a></h2>
+<p>In the build tree:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">ulimit</span><span class="w"> </span>-c<span class="w"> </span>unlimited
+$<span class="w"> </span>./Slicer
+...<span class="w"> </span>make<span class="w"> </span>it<span class="w"> </span>crash
+$<span class="w"> </span>./Slicer<span class="w"> </span>--gdb<span class="w"> </span>./bin/SlicerApp-real
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>core<span class="w"> </span>core
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>backtrace
+...
+</pre></div>
+</div>
+<p>For an installed Slicer:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">ulimit</span><span class="w"> </span>-c<span class="w"> </span>unlimited
+$<span class="w"> </span>./Slicer
+...<span class="w"> </span>make<span class="w"> </span>it<span class="w"> </span>crash
+$<span class="w"> </span>./Slicer<span class="w"> </span>--launch<span class="w"> </span>bash
+$<span class="w"> </span>gdb<span class="w"> </span>./bin/SlicerApp-real
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>core<span class="w"> </span>core
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>backtrace
+...
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GDB requires Python. However, Python that is linked into GDB is not the same as Slicer’s Python, which may cause issues. If GDB does not start because <code class="docutils literal notranslate"><span class="pre">_sysconfigdata__linux_x86_64-linux-gnu.py</span></code> file is missing then Slicer’s sysconfigdata file must be copied to the expected filename. For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>~/Slicer-4.13.0-2021-09-10-linux-amd64/lib/Python/lib/python3.6
+cp<span class="w"> </span>_sysconfigdata_m_linux2_.py<span class="w"> </span>_sysconfigdata__linux_x86_64-linux-gnu.py
+</pre></div>
+</div>
+</div>
+<section id="with-systemd">
+<h3>With systemd<a class="headerlink" href="#with-systemd" title="Link to this heading"></a></h3>
+<p>In linux distros with systemd, coredumps are managed by the systemd daemon.
+And stored, in a compressed format (.lz4), in</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/var/lib/systemd/coredump/core.SlicerApp-real.xxxx.lz4
+</pre></div>
+</div>
+<p>It can happen that even with ulimit -c unlimited, the coredump files are still truncated.
+You can check latest coredumps, and the corresponding PID with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>coredumpctl<span class="w"> </span>list
+Thu<span class="w"> </span><span class="m">2018</span>-05-24<span class="w"> </span><span class="m">16</span>:37:46<span class="w"> </span>EDT<span class="w">   </span><span class="m">22544</span><span class="w">  </span><span class="m">1000</span><span class="w">  </span><span class="m">1000</span><span class="w">  </span><span class="m">11</span><span class="w"> </span>missing<span class="w">   </span>/usr/lib/firefox/firefox
+Fri<span class="w"> </span><span class="m">2018</span>-05-25<span class="w"> </span><span class="m">15</span>:50:52<span class="w"> </span>EDT<span class="w">   </span><span class="m">14721</span><span class="w">  </span><span class="m">1000</span><span class="w">  </span><span class="m">1000</span><span class="w">   </span><span class="m">6</span><span class="w"> </span>truncated<span class="w"> </span>/path/Slicer-build/bin/SlicerApp-real
+Mon<span class="w"> </span><span class="m">2018</span>-05-28<span class="w"> </span><span class="m">11</span>:35:43<span class="w"> </span>EDT<span class="w">   </span><span class="m">17249</span><span class="w">  </span><span class="m">1000</span><span class="w">  </span><span class="m">1000</span><span class="w">   </span><span class="m">6</span><span class="w"> </span>present<span class="w">   </span>/path/Slicer-build/bin/SlicerApp-real
+</pre></div>
+</div>
+<p>You can modify systemd coredump to increase the default max file size in <code class="docutils literal notranslate"><span class="pre">/etc/systemd/coredump.conf</span></code>:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Coredump]</span>
+<span class="c1">#Storage=external</span>
+<span class="c1">#Compress=yes</span>
+<span class="na">ProcessSizeMax</span><span class="o">=</span><span class="s">8G</span>
+<span class="na">ExternalSizeMax</span><span class="o">=</span><span class="s">8G</span>
+<span class="na">JournalSizeMax</span><span class="o">=</span><span class="s">6G</span>
+<span class="c1">#MaxUse=</span>
+<span class="c1">#KeepFree=</span>
+</pre></div>
+</div>
+<p>After that change, make Slicer crash again, and the core file will be present, instead of truncated.</p>
+<p>You can launch gdb with a coredump file with the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>coredumpctl<span class="w"> </span>gdb<span class="w"> </span><span class="nv">$PID</span>
+</pre></div>
+</div>
+<p>If no $PID is provided, the latest coredump is used. PID can be retrieved using <code class="docutils literal notranslate"><span class="pre">coredumpctl</span> <span class="pre">list</span></code>.</p>
+<p>To decompress the coredump file to use with other IDE or ddd, change the coredump.conf Compress option, or use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>coredumpctl<span class="w"> </span>dump<span class="w"> </span><span class="nv">$PID</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/corefile
+</pre></div>
+</div>
+</section>
+</section>
+<section id="debugging-using-cross-platform-ides">
+<h2>Debugging using cross-platform IDEs<a class="headerlink" href="#debugging-using-cross-platform-ides" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="codelitecpp.html"><span class="std std-doc">Debugging using CodeLite</span></a></p></li>
+<li><p><a class="reference internal" href="qtcreatorcpp.html"><span class="std std-doc">Debugging using Qt Creator</span></a></p></li>
+<li><p><a class="reference internal" href="vscodecpp.html"><span class="std std-doc">Debugging using Visual Studio Code</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="windowscpp.html" class="btn btn-neutral float-left" title="C++ debugging on Windows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="macoscpp.html" class="btn btn-neutral float-right" title="C++ debugging on macOS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

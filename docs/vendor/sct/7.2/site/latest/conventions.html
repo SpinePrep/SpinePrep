@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Common Conventions &mdash; SimpleITK 2.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css" />
+
+  
+    <link rel="shortcut icon" href="_static/yellow_itk_icon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reading and Writing for Images and Transforms" href="IO.html" />
+    <link rel="prev" title="Registration Overview" href="registrationOverview.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpleitk" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/conventions.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SimpleITK
+              <img src="_static/simpleitk_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentalConcepts.html">Fundamental Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registrationOverview.html">Registration Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Common Conventions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#naming">Naming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dimensional-vectors">Dimensional Vectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#image-access">Image Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mask-image-types-and-default-values">Mask Image Types and Default Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#order-of-procedural-parameters">Order of Procedural Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#matrices-as-parameters">Matrices as Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#image-regions-as-index-and-size">Image Regions as Index and Size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#images-as-parameters">Images As Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="IO.html">Reading and Writing for Images and Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">SimpleITK Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">Building SimpleITK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setUp.html">Setting Up Eclipse and Visual Studio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsAndCourses.html">Tutorials and Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrationGuide2.0.html">Migration Guide 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FilterTemplates.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="link_examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimpleITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Common Conventions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/conventions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="common-conventions">
+<h1>Common Conventions<a class="headerlink" href="#common-conventions" title="Permalink to this heading"></a></h1>
+<p>This document contains common conventions that SimpleITK filters, and objects follow. It is intended to describe the interfaces that users should use and developers should implement. If a method or class does not specify different behavior or default values then those described here, it should be assumed that it follows the following conventions.</p>
+<section id="naming">
+<h2>Naming<a class="headerlink" href="#naming" title="Permalink to this heading"></a></h2>
+<p>The object oriented interface of process objects are named based on the specific operation they perform on their input image(s)
+with a suffix of <strong>ImageFilter</strong>, the ITK convention. For example, <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1AbsImageFilter.html">AbsImageFilter</a>, <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1BinaryMinMaxCurvatureFlowImageFilter.html">BinaryMinMaxCurvatureFlowImageFilter</a> etc. For almost all process objects there is also a procedural interface. This interface provides one or more functions which
+allow setting parameter values and invoking the operation in one call. This results in concise code and is useful if the filter is only applied once.
+These functions use the same naming as the object oriented interface only without the suffix. That is,
+the corresponding procedural methods to the object oriented interface examples above are <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#a54161a47394e60c5758193cd0ab6930e">Abs</a> and <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#ab0cd996e578cd566b0e7318978bd0420">BinaryMinMaxCurvatureFlow</a>.</p>
+<p>Note that the complete/detailed documentation appears in the doxygen of the object oriented interface.</p>
+</section>
+<section id="dimensional-vectors">
+<h2>Dimensional Vectors<a class="headerlink" href="#dimensional-vectors" title="Permalink to this heading"></a></h2>
+<p>Dimensional Vectors must contain at least the number of elements as the dimensions of the image, elements beyond the image’s dimension will be truncated.</p>
+<p>The SimpleITK image class can contain 2 or 3 dimensional images. In ITK proper, certain types such as indexes, points, and sizes are templated over the image dimensions. In SimpleITK we utilize the variable length <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> for these types, so that non-templated calls can wrap ITK’s templated image class. These types are called Dimensional Vectors. If a dimensional vector’s length is less that the dimension of the image, an exception will be generated when converted to the ITK type. If there are extra elements in the dimensional vector these values will be ignored.</p>
+</section>
+<section id="image-access">
+<h2>Image Access<a class="headerlink" href="#image-access" title="Permalink to this heading"></a></h2>
+<p><a class="reference external" href="http://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1Image.html">Image</a> access is in x,y,z order, <code class="docutils literal notranslate"><span class="pre">GetPixel(x,y,z)</span></code> or <code class="docutils literal notranslate"><span class="pre">image[x,y,z]</span></code>, with zero based indexing.</p>
+</section>
+<section id="mask-image-types-and-default-values">
+<span id="lbl-conventions-mask-image"></span><h2>Mask Image Types and Default Values<a class="headerlink" href="#mask-image-types-and-default-values" title="Permalink to this heading"></a></h2>
+<p>The default mask image type is a scalar image of <code class="docutils literal notranslate"><span class="pre">sitkUInt8</span></code> or <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> pixels. The default values are 0 and 1, with 1s representing the mask.</p>
+<p>These defaults are for filter which create masks such as thresholding, and certain other segmentation filters. Additionally, these are the defaults for the binary morphology filters, so that they can easily be applied after segmentation. This choice makes many mask manipulations easier. For example, “masking” an image (scalar or vector) is simply a matter of multiplying by a mask an image. Additionally, the set of {0, 1} pixels is closed under the logical Boolean operators.</p>
+</section>
+<section id="order-of-procedural-parameters">
+<h2>Order of Procedural Parameters<a class="headerlink" href="#order-of-procedural-parameters" title="Permalink to this heading"></a></h2>
+<p>The order of the procedural parameters should be with the most frequently modified parameters at the beginning of the parameter list. While the last parameter, may be ones that the user does not need to set or are infrequently used.</p>
+</section>
+<section id="matrices-as-parameters">
+<h2>Matrices as Parameters<a class="headerlink" href="#matrices-as-parameters" title="Permalink to this heading"></a></h2>
+<p>Matrices are represented as a single dimensional vector with the entries in row major order. The vector <span class="math notranslate nohighlight">\([1, 2, 3, 4, 5, 6]\)</span> represents the matrix</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{bmatrix} 1 &amp; 2 &amp; 3 \\
+        4 &amp; 5 &amp; 6
+\end{bmatrix}\end{split}\]</div>
+</section>
+<section id="image-regions-as-index-and-size">
+<h2>Image Regions as Index and Size<a class="headerlink" href="#image-regions-as-index-and-size" title="Permalink to this heading"></a></h2>
+<p>The <a class="reference external" href="https://docs.itk.org/projects/doxygen/en/stable/classitk_1_1ImageRegion.html">itk::ImageRegion</a> is a frequently used class in ITK to define a sub-image area. It is defined by <a class="reference external" href="https://docs.itk.org/projects/doxygen/en/stable/structitk_1_1Index.html">itk::Index</a> and <a class="reference external" href="https://docs.itk.org/projects/doxygen/en/stable/structitk_1_1Size.html">itk::Size</a> of signed and unsigned integer types respectfully. In SimpleITK, the index and size elements are usually separated into two arguments with separate Set and Get methods.</p>
+<p>When specified as a single argument value, it is a 1 dimensional array with the index values followed by the size values i.e. <span class="math notranslate nohighlight">\([idx_x, idx_y, idx_z, size_x, size_y, size_z]\)</span>.</p>
+</section>
+<section id="images-as-parameters">
+<h2>Images As Parameters<a class="headerlink" href="#images-as-parameters" title="Permalink to this heading"></a></h2>
+<p>The dimensionality (2D or 3D) and pixel type (<code class="docutils literal notranslate"><span class="pre">sitkUInt8</span></code>, <code class="docutils literal notranslate"><span class="pre">sitkFloat64</span></code>…) of images is required to be the same for most methods that receive multiple images as input.</p>
+<p>The <a class="reference external" href="http://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ImageRegistrationMethod.html">ImageRegistrationMethod</a> only supports images with <code class="docutils literal notranslate"><span class="pre">sitkFloat32</span></code> and <code class="docutils literal notranslate"><span class="pre">sitkFloat64</span></code> pixel types.</p>
+<p>Casting an image’s pixel type into another is done with the SimpleITK <a class="reference external" href="http://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#af8c9d7cc96a299a05890e9c3db911885">Cast()</a> function.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="registrationOverview.html" class="btn btn-neutral float-left" title="Registration Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="IO.html" class="btn btn-neutral float-right" title="Reading and Writing for Images and Transforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NumFOCUS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

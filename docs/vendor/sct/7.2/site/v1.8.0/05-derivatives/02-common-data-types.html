@@ -1,0 +1,1425 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://bids-specification.readthedocs.io/en/stable/05-derivatives/02-common-data-types.html">
+      
+      <link rel="icon" href="../images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.7">
+    
+    
+      
+        <title>Common data types and metadata - Brain Imaging Data Structure v1.8.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.20d9efc8.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      
+    
+      
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  <script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="bids-specification" /><meta name="readthedocs-version-slug" content="v1.8.0" /><meta name="readthedocs-resolver-filename" content="/05-derivatives/02-common-data-types.html" /><meta name="readthedocs-http-status" content="200" /></head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#common-data-types-and-metadata" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Brain Imaging Data Structure v1.8.0" class="md-header__button md-logo" aria-label="Brain Imaging Data Structure v1.8.0" data-md-component="logo">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Brain Imaging Data Structure v1.8.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Common data types and metadata
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Brain Imaging Data Structure v1.8.0" class="md-nav__button md-logo" aria-label="Brain Imaging Data Structure v1.8.0" data-md-component="logo">
+      
+  <img src="../images/logo.png" alt="logo">
+
+    </a>
+    Brain Imaging Data Structure v1.8.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          The BIDS Specification
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="The BIDS Specification" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          The BIDS Specification
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-introduction.html" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-common-principles.html" class="md-nav__link">
+        Common principles
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-modality-agnostic-files.html" class="md-nav__link">
+        Modality agnostic files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_4" type="checkbox" id="__nav_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1_4">
+          Modality specific files
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Modality specific files" data-md-level="2">
+        <label class="md-nav__title" for="__nav_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Modality specific files
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/01-magnetic-resonance-imaging-data.html" class="md-nav__link">
+        Magnetic Resonance Imaging
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/02-magnetoencephalography.html" class="md-nav__link">
+        Magnetoencephalography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/03-electroencephalography.html" class="md-nav__link">
+        Electroencephalography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/04-intracranial-electroencephalography.html" class="md-nav__link">
+        Intracranial Electroencephalography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/05-task-events.html" class="md-nav__link">
+        Task events
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/06-physiological-and-other-continuous-recordings.html" class="md-nav__link">
+        Physiological and other continuous recordings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/07-behavioral-experiments.html" class="md-nav__link">
+        Behavioral experiments (with no neural recordings)
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/08-genetic-descriptor.html" class="md-nav__link">
+        Genetic Descriptor
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/09-positron-emission-tomography.html" class="md-nav__link">
+        Positron Emission Tomography
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/10-microscopy.html" class="md-nav__link">
+        Microscopy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-modality-specific-files/11-near-infrared-spectroscopy.html" class="md-nav__link">
+        Near-Infrared Spectroscopy
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_5" type="checkbox" id="__nav_1_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1_5">
+          Derivatives
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Derivatives" data-md-level="2">
+        <label class="md-nav__title" for="__nav_1_5">
+          <span class="md-nav__icon md-icon"></span>
+          Derivatives
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01-introduction.html" class="md-nav__link">
+        BIDS Derivatives
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Common data types and metadata
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="02-common-data-types.html" class="md-nav__link md-nav__link--active">
+        Common data types and metadata
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-file-level-metadata-fields" class="md-nav__link">
+    Common file level metadata fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Common file level metadata fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-references" class="md-nav__link">
+    Spatial references
+  </a>
+  
+    <nav class="md-nav" aria-label="Spatial references">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spatialreference-key-allowed-values" class="md-nav__link">
+    SpatialReference key allowed values
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_1" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessed-or-cleaned-data" class="md-nav__link">
+    Preprocessed or cleaned data
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03-imaging.html" class="md-nav__link">
+        Imaging data types
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-longitudinal-and-multi-site-studies.html" class="md-nav__link">
+        Longitudinal and multi-site studies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary.html" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-extensions.html" class="md-nav__link">
+        BIDS Extension Proposals
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_9" type="checkbox" id="__nav_1_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1_9">
+          Appendix
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Appendix" data-md-level="2">
+        <label class="md-nav__title" for="__nav_1_9">
+          <span class="md-nav__icon md-icon"></span>
+          Appendix
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/contributors.html" class="md-nav__link">
+        Contributors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/licenses.html" class="md-nav__link">
+        Licenses
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/entity-table.html" class="md-nav__link">
+        Entity table
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/entities.html" class="md-nav__link">
+        Entities
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/file-collections.html" class="md-nav__link">
+        File collections
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/units.html" class="md-nav__link">
+        Units
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/hed.html" class="md-nav__link">
+        Hierarchical Event Descriptors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/meg-file-formats.html" class="md-nav__link">
+        MEG file formats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/meg-systems.html" class="md-nav__link">
+        MEG systems
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/coordinate-systems.html" class="md-nav__link">
+        Coordinate systems
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/qmri.html" class="md-nav__link">
+        Quantitative MRI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/arterial-spin-labeling.html" class="md-nav__link">
+        Arterial Spin Labeling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/cross-modality-correspondence.html" class="md-nav__link">
+        Cross modality correspondence
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGES.html" class="md-nav__link">
+        Changelog
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          The BIDS Starter Kit
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="The BIDS Starter Kit" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          The BIDS Starter Kit
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://bids-standard.github.io/bids-starter-kit" class="md-nav__link">
+        Website
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://bids-standard.github.io/bids-starter-kit/tutorials/tutorials.html" class="md-nav__link">
+        Tutorials
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/bids-standard/bids-starter-kit" class="md-nav__link">
+        GitHub repository
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-file-level-metadata-fields" class="md-nav__link">
+    Common file level metadata fields
+  </a>
+  
+    <nav class="md-nav" aria-label="Common file level metadata fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spatial-references" class="md-nav__link">
+    Spatial references
+  </a>
+  
+    <nav class="md-nav" aria-label="Spatial references">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spatialreference-key-allowed-values" class="md-nav__link">
+    SpatialReference key allowed values
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_1" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preprocessed-or-cleaned-data" class="md-nav__link">
+    Preprocessed or cleaned data
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="common-data-types-and-metadata"><a class="toclink" href="#common-data-types-and-metadata">Common data types and metadata</a></h1>
+<h2 id="common-file-level-metadata-fields"><a class="toclink" href="#common-file-level-metadata-fields">Common file level metadata fields</a></h2>
+<p>Each derivative data file SHOULD be described by a JSON file provided as a sidecar
+or higher up in the hierarchy of the derived dataset (according to the
+<a href="../02-common-principles.html#the-inheritance-principle">Inheritance Principle</a>)
+unless a particular derivative includes REQUIRED metadata fields, in which case a
+JSON file is also REQUIRED.
+Each derivative type defines their own set of fields, but all of them
+share the following (non-required) ones:</p>
+<!-- This block generates a metadata table.
+These tables are defined in
+  src/schema/rules/sidecars
+The definitions of the fields specified in these tables may be found in
+  src/schema/objects/metadata.yaml
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement Level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../glossary.html#objects.metadata.Description">Description</a></td>
+<td>RECOMMENDED</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a></td>
+<td>Free-form natural language description.  This describes the nature of the file.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.metadata.Sources">Sources</a></td>
+<td>OPTIONAL</td>
+<td><a href="https://www.w3schools.com/js/js_json_arrays.asp">array</a> of <a href="https://www.w3schools.com/js/js_json_datatypes.asp">strings</a></td>
+<td>A list of files with the paths specified using <a href="../02-common-principles.html#bids-uri">BIDS URIs</a>; these files were directly used in the creation of this derivative data file. For example, if a derivative A is used in the creation of another derivative B, which is in turn used to generate C in a chain of A-&gt;B-&gt;C, C should only list B in <code>"Sources"</code>, and B should only list A in <code>"Sources"</code>. However, in case both X and Y are directly used in the creation of Z, then Z should list X and Y in <code>"Sources"</code>, regardless of whether X was used to generate Y. Using paths specified relative to the dataset root is <a href="../02-common-principles.html#definitions">DEPRECATED</a>.</td>
+</tr>
+<tr>
+<td><a href="../glossary.html#objects.metadata.RawSources">RawSources</a></td>
+<td><a href="../02-common-principles.html#definitions">DEPRECATED</a></td>
+<td><a href="https://www.w3schools.com/js/js_json_arrays.asp">array</a> of <a href="https://www.w3schools.com/js/js_json_datatypes.asp">strings</a></td>
+<td>A list of paths relative to dataset root pointing to the BIDS-Raw file(s) that were used in the creation of this derivative. This field is DEPRECATED, and this metadata SHOULD be recorded in the <code>Sources</code> field using <a href="../02-common-principles.html#bids-uri">BIDS URIs</a> to distinguish sources from different datasets.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="examples"><a class="toclink" href="#examples">Examples</a></h3>
+<p>Preprocessed <code>bold</code> NIfTI file in the original coordinate space of the original run.
+The location of the file in the original datasets is encoded in the <code>Sources</code> metadata,
+and <a href="../appendices/entities.html#desc"><code>_desc-&lt;label&gt;</code></a>
+is used to prevent clashing with the original filename.</p>
+<!-- This block generates a file tree.
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+
+<div class="highlight"><pre><span></span><code>└─ sub-01/
+   └─ func/
+      ├─ sub-01_task-rest_desc-preproc_bold.nii.gz 
+      └─ sub-01_task-rest_desc-preproc_bold.json 
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;Sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;bids:raw:sub-01/func/sub-01_task-rest_bold.nii.gz&quot;</span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Note that <code>"raw"</code> must appear in the <code>DatasetLinks</code> metadata in
+<code>dataset_description.json</code>.
+For example, in the case that the given derivatives dataset is nested within the
+"derivatives" directory of a raw dataset, the entry in <code>DatasetLinks</code> may say:
+<code>"raw": "../.."</code>.</p>
+<p>If this file was generated with prior knowledge from additional sources,
+such as the same subject's <code>T1w</code>,
+then both files MAY be included in <code>Sources</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;Sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="s2">&quot;bids:raw:sub-01/func/sub-01_task-rest_bold.nii.gz&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s2">&quot;bids:raw:sub-01/anat/sub-01_T1w.nii.gz&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>On the other hand, if a preprocessed version of the T1w image was used, and it also
+occurs in the derivatives, <code>Sources</code> may include both the local, derivative file,
+and the raw original file.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;Sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="s2">&quot;bids::sub-01/anat/sub-01_desc-preproc_T1w.nii.gz&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="s2">&quot;bids:raw:sub-01/func/sub-01_task-rest_bold.nii.gz&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">],</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<h2 id="spatial-references"><a class="toclink" href="#spatial-references">Spatial references</a></h2>
+<p>Derivatives are often aligned to a common spatial reference to allow for the
+comparison of acquired data across runs, sessions, subjects or datasets.
+A file may indicate the spatial reference to which it has been aligned using the
+<a href="../appendices/entities.html#space"><code>space</code> entity</a> and/or the <code>SpatialReference</code> metadata.</p>
+<p>The <a href="../appendices/entities.html#space"><code>space</code> entity</a> may take any value in
+<a href="../appendices/coordinate-systems.html#image-based-coordinate-systems">Image-Based Coordinate Systems</a>.</p>
+<p>If the <a href="../appendices/entities.html#space"><code>space</code> entity</a> is omitted,
+or the space is not in the <a href="../appendices/coordinate-systems.html#standard-template-identifiers">Standard template identifiers</a> table,
+then the <code>SpatialReference</code> metadata is REQUIRED.</p>
+<!-- This block generates a metadata table.
+These tables are defined in
+  src/schema/rules/sidecars
+The definitions of the fields specified in these tables may be found in
+  src/schema/objects/metadata.yaml
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+<table>
+<thead>
+<tr>
+<th><strong>Key name</strong></th>
+<th><strong>Requirement Level</strong></th>
+<th><strong>Data type</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../glossary.html#objects.metadata.SpatialReference">SpatialReference</a></td>
+<td>RECOMMENDED if the derivative is aligned to a standard template listed in <a href="../appendices/coordinate-systems.html#standard-template-identifiers">Standard template identifiers</a>. REQUIRED otherwise.</td>
+<td><a href="https://www.w3schools.com/js/js_json_datatypes.asp">string</a> or <a href="https://www.json.org/json-en.html">object</a></td>
+<td>For images with a single reference, the value MUST be a single string. For images with multiple references, such as surface and volume references, a JSON object MUST be used.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spatialreference-key-allowed-values"><a class="toclink" href="#spatialreference-key-allowed-values">SpatialReference key allowed values</a></h3>
+<table>
+<thead>
+<tr>
+<th><strong>Value</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"orig"</code></td>
+<td>A (potentially unique) per-image space. Useful for describing the source of transforms from an input image to a target space.</td>
+</tr>
+<tr>
+<td><a href="../02-common-principles.html#uniform-resource-indicator">URI</a></td>
+<td>This can be used to point to a specific file. Paths written relative to the root of the derivative dataset are <a href="../02-common-principles.html#definitions">DEPRECATED</a> in favor of <a href="../02-common-principles.html#bids-uri">BIDS URIs</a>.</td>
+</tr>
+</tbody>
+</table>
+<p>In the case of images with multiple references, an <a href="https://www.json.org/json-en.html">object</a> must link the relevant structures to reference files.
+If a single volumetric reference is used for multiple structures, the <code>VolumeReference</code> key MAY be used to reduce duplication.
+For CIFTI-2 images, the relevant structures are BrainStructure values defined in the BrainModel elements found in the CIFTI-2 header.</p>
+<h3 id="examples_1"><a class="toclink" href="#examples_1">Examples</a></h3>
+<p>Preprocessed <code>bold</code> NIfTI file in <code>individual</code> coordinate space. Please mind
+that in this case <code>SpatialReference</code> key is REQUIRED.</p>
+<!-- This block generates a file tree.
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+
+<div class="highlight"><pre><span></span><code>└─ sub-01/
+   └─ func/
+      ├─ sub-01_task-rest_space-individual_bold.nii.gz 
+      └─ sub-01_task-rest_space-individual_bold.json 
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;SpatialReference&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bids::sub-01/anat/sub-01_desc-combined_T1w.nii.gz&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p>Preprocessed <code>bold</code> CIFTI-2 files that have been sampled to the fsLR surface
+meshes defined in the Conte69 atlas along with the MNI152NLin6Asym template.
+In this example, because all volumetric structures are sampled to the same
+reference, the <code>VolumeReference</code> key is used as a default, and only the
+surface references need to be specified by BrainStructure names.
+Here referred to via "https" <a href="../02-common-principles.html#uniform-resource-indicator">URIs</a>.</p>
+<!-- This block generates a file tree.
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+
+<div class="highlight"><pre><span></span><code>└─ sub-01/
+   └─ func/
+      ├─ sub-01_task-rest_space-fsLR_den-91k_bold.dtseries.nii 
+      └─ sub-01_task-rest_space-fsLR_den-91k_bold.json 
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;SpatialReference&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;VolumeReference&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym_res-02_T1w.nii.gz&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;CIFTI_STRUCTURE_CORTEX_LEFT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://github.com/mgxd/brainplot/raw/master/brainplot/Conte69_Atlas/Conte69.L.midthickness.32k_fs_LR.surf.gii&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;CIFTI_STRUCTURE_CORTEX_RIGHT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://github.com/mgxd/brainplot/raw/master/brainplot/Conte69_Atlas/Conte69.R.midthickness.32k_fs_LR.surf.gii&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<h2 id="preprocessed-or-cleaned-data"><a class="toclink" href="#preprocessed-or-cleaned-data">Preprocessed or cleaned data</a></h2>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>&lt;pipeline_name&gt;/
+    sub-&lt;label&gt;/
+        &lt;datatype&gt;/
+            &lt;source_entities&gt;[_space-&lt;space&gt;][_desc-&lt;label&gt;]_&lt;suffix&gt;.&lt;ext&gt;
+</code></pre></div>
+<p>Data is considered to be <em>preprocessed</em> or <em>cleaned</em> if the data type of the input,
+as expressed by the BIDS <code>suffix</code>, is unchanged.
+By contrast, processing steps that change the number of dimensions are likely to disrupt
+the propagation of the input's <code>suffix</code> and generally, the outcomes of such transformation
+cannot be considered preprocessed or cleaned data.</p>
+<p>Examples of preprocessing:</p>
+<ul>
+<li>Motion-corrected, temporally denoised, and transformed to MNI space BOLD series</li>
+<li>Inhomogeneity corrected and skull stripped T1w files</li>
+<li>Motion-corrected DWI files</li>
+<li>Time-domain filtered EEG data</li>
+<li>MaxFilter (for example, SSS) cleaned MEG data</li>
+</ul>
+<p>The <a href="../appendices/entities.html#space"><code>space</code> entity</a>
+is recommended to distinguish files with different underlying
+coordinate systems or registered to different reference maps.
+See <a href="#spatial-references">Spatial references</a> for details.
+The <a href="../appendices/entities.html#desc"><code>desc</code> entity</a> ("description")
+is a general purpose field with freeform values,
+which SHOULD be used to distinguish between multiple different versions of
+processing for the same input data.</p>
+<p>Examples of preprocessed data:</p>
+<!-- This block generates a file tree.
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+
+<div class="highlight"><pre><span></span><code>└─ pipeline1/
+   └─ sub-001/
+      ├─ anat/
+      │  ├─ sub-001_space-MNI305_T1w.nii.gz 
+      │  └─ sub-001_space-MNI305_T1w.json 
+      └─ func/
+         ├─ sub-001_task-rest_run-1_space-MNI305_desc-preproc_bold.nii.gz 
+         └─ sub-001_task-rest_run-1_space-MNI305_desc-preproc_bold.json 
+</code></pre></div>
+<!-- This block generates a file tree.
+A guide for using macros can be found at
+ https://github.com/bids-standard/bids-specification/blob/master/macros_doc.md
+-->
+
+<div class="highlight"><pre><span></span><code>└─ pipeline2/
+   └─ sub-001/
+      └─ eeg/
+         ├─ sub-001_task-listening_run-1_desc-autoannotation_events.tsv 
+         ├─ sub-001_task-listening_run-1_desc-autoannotation_events.json 
+         ├─ sub-001_task-listening_run-1_desc-filtered_eeg.edf 
+         └─ sub-001_task-listening_run-1_desc-filtered_eeg.json 
+</code></pre></div>
+<p>All REQUIRED metadata fields coming from a derivative file’s source file(s) MUST
+be propagated to the JSON description of the derivative unless the processing
+makes them invalid (for example, if a source 4D image is averaged to create a single
+static volume, a <code>RepetitionTime</code> property would no longer be relevant).</p>
+<!-- Link Definitions -->
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="01-introduction.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: BIDS Derivatives" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              BIDS Derivatives
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="03-imaging.html" class="md-footer__link md-footer__link--next" aria-label="Next: Imaging data types" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Imaging data types
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2018-2022, BIDS Contributors - <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+    </div>
+  
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/BIDSstandard/" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/bids-standard/bids-specification/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://groups.google.com/g/bids-discussion" target="_blank" rel="noopener" title="groups.google.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections"], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8492ddcf.min.js"></script>
+      
+        <script src="../js/jquery-3.6.0.min.js"></script>
+      
+        <script src="../readthedocs-data.js"></script>
+      
+        
+      
+        
+      
+    
+  </body>
+</html>

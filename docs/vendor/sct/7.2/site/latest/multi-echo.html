@@ -1,0 +1,707 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About multi-echo fMRI &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="_static/tedana_favicon.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=643184eb"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using tedana from the command line" href="usage.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/multi-echo.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">About multi-echo fMRI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-multi-echo-fmri">What is multi-echo fMRI?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-physics-of-multi-echo-fmri">The physics of multi-echo fMRI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-use-multi-echo">Why use multi-echo?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#considerations-for-me-fmri">Considerations for ME-fMRI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#costs-and-benefits-of-multi-echo-fmri">Costs and benefits of multi-echo fMRI</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#possible-increase-in-tr">Possible increase in TR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#weighted-averaging-may-lead-to-an-increase-in-snr">Weighted averaging may lead to an increase in SNR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#consider-the-life-of-the-dataset">Consider the life of the dataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#you-may-recover-signal-in-areas-affected-by-dropout">You may recover signal in areas affected by dropout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#consider-the-cost-of-added-quality-control">Consider the cost of added quality control</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#acquiring-multi-echo-data">Acquiring multi-echo data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#available-multi-echo-fmri-sequences">Available multi-echo fMRI sequences</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#siemens">Siemens</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ge">GE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#philips">Philips</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#other-available-multi-echo-mri-sequences">Other available multi-echo MRI sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acquisition-parameter-recommendations">Acquisition parameter recommendations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#me-fmri-parameters">ME-fMRI parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#processing-multi-echo-fmri">Processing multi-echo fMRI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#estimate-motion-correction-parameters-from-one-echo-and-apply-those-parameters-to-all-echoes">1. Estimate motion correction parameters from one echo and apply those parameters to all echoes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#perform-slice-timing-correction-and-motion-correction-before-multi-echo-denoising">2. Perform slice timing correction and motion correction <strong>before</strong> multi-echo denoising</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apply-spatial-normalization-and-susceptibility-distortion-correction-consistently-across-echoes">3. Apply spatial normalization and susceptibility distortion correction consistently across echoes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#perform-smoothing-and-any-rescaling-or-filtering-after-denoising">4. Perform smoothing, and any rescaling or filtering <strong>after</strong> denoising</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#general-resources">General Resources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#journal-articles-describing-multi-echo-methods">Journal articles describing multi-echo methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#videos">Videos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-echo-preprocessing-software">Multi-echo preprocessing software</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-software-that-uses-multi-echo-fmri">Other software that uses multi-echo fMRI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#datasets">Datasets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#publications-using-multi-echo-fmri">Publications using multi-echo fMRI</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#interactive-visualizations-of-publications-and-parameters">Interactive visualizations of publications and parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">About multi-echo fMRI</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/multi-echo.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="about-multi-echo-fmri">
+<h1>About multi-echo fMRI<a class="headerlink" href="#about-multi-echo-fmri" title="Link to this heading"></a></h1>
+<section id="what-is-multi-echo-fmri">
+<h2>What is multi-echo fMRI?<a class="headerlink" href="#what-is-multi-echo-fmri" title="Link to this heading"></a></h2>
+<p>Most echo-planar image (EPI) sequences collect a single brain image following
+a radio frequency (RF) pulse, at a rate known as the repetition time (TR).
+This typical approach is known as single-echo fMRI.
+In contrast, multi-echo (ME) fMRI refers to collecting data at multiple echo times,
+resulting in multiple volumes with varying levels of contrast acquired per RF pulse.</p>
+<section id="the-physics-of-multi-echo-fmri">
+<span id="multi-echo-physics"></span><h3>The physics of multi-echo fMRI<a class="headerlink" href="#the-physics-of-multi-echo-fmri" title="Link to this heading"></a></h3>
+<p>Multi-echo fMRI data is obtained by acquiring multiple echo times (commonly called
+<a class="reference external" href="http://mriquestions.com/tr-and-te.html">TEs</a>) for each MRI volume during data collection.
+While fMRI signal contains important neural information (termed the blood
+oxygen-level dependent, or <a class="reference external" href="http://www.fil.ion.ucl.ac.uk/spm/course/slides10-zurich/Kerstin_BOLD.pdf">BOLD signal</a>,
+it also contains “noise” (termed non-BOLD signal) caused by things like
+participant motion and changes in breathing.
+Because the BOLD signal is known to decay at a set rate, collecting multiple
+echos allows us to assess non-BOLD.</p>
+<p>The image below shows the basic relationship between echo times and the image acquired at
+3T (top, A) and 7T (bottom, B). Note that the earliest echo time is the brightest, as the
+signal has only had a limited amount of time to decay.
+In addition, the latter echo times show areas in which is the signal has decayed completely (‘drop out’)
+due to inhomogeneity in the magnetic field.
+By using the information across multiple echoes these images can be combined in
+an optimal manner to take advantage of the signal
+in the earlier echoes (see <a class="reference internal" href="approach.html#optimal-combination"><span class="std std-ref">Optimal combination</span></a>).</p>
+<img alt="_images/physics_kundu_2017_multiple_echoes.jpg" src="_images/physics_kundu_2017_multiple_echoes.jpg" />
+<p>Adapted from  <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1053811917302410?via%3Dihub">Kundu et al. (2017)</a>.</p>
+<p>In order to classify the relationship between the signal and the echo time we can consider a
+single voxel at two timepoints (x and y) and the measured signal measured at three different echo times - <img class="math" src="_images/math/b8b2f4b45ce4f64c8e8a89e1cd080dbcbc082302.png" alt="S(TE_n)"/>.</p>
+<img alt="_images/physics_kundu_2017_TE_dependence.jpg" src="_images/physics_kundu_2017_TE_dependence.jpg" />
+<p>Adapted from  <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1053811917302410?via%3Dihub">Kundu et al. (2017)</a>.</p>
+<p>For the left column, we are observing a change that we term <img class="math" src="_images/math/72fb39ea215c4148491f9494a70b9cb27d0b806f.png" alt="{\Delta}{S_0}"/> - that is a change
+in the intercept or raw signal intensity.
+A common example of this is participant movement, in which the voxel (which is at a static
+location within the scanner) now contains different tissue or even an area outside of the brain.</p>
+<p>As we have collected three separate echoes, we can compare the change in signal at each echo time, <img class="math" src="_images/math/e8148a72cc4a88303b845d856028a998a6f71e73.png" alt="{\Delta}{S(TE_n)}"/>.
+For  <img class="math" src="_images/math/72fb39ea215c4148491f9494a70b9cb27d0b806f.png" alt="{\Delta}{S_0}"/> we see that this produces a decaying curve.
+If we compare this to the original signal, as in <img class="math" src="_images/math/57be4ff0915716f77254adfbc92abed1120e2fbe.png" alt="\frac{{\Delta}{S(TE_n)}}{S(TE_n)}"/>
+we see that there is no echo time dependence, as the final plot is a flat line.</p>
+<p>In the right column, we consider changes that are related to brain activity.
+For example, imagine that the two brain states here (x and y) are a baseline and task activated state respectively.
+This effect is a change in in <img class="math" src="_images/math/53c8ef555e3bc8ea55cfac7cff809c096eb2ad18.png" alt="{\Delta}{R_2^*}"/> which is equivalent
+to the inverse of <img class="math" src="_images/math/cfedbbf8b41e63871b3803274bd6721a4ccb3d6b.png" alt="{T_2^*}"/>.
+We typically observe this change in signal amplitude occurring over volumes with
+the hemodynamic response, while here we are examining the change in signal over echo times.
+Again we can plot the difference in the signal between these two states as a function of echo time,
+finding that the signal rises and falls.
+If we compare this curve to the original signal we find
+that the magnitude of the changes is dependent on the echo time.</p>
+<p>For a more comprehensive review of these topics and others, see <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1053811917302410?via%3Dihub">Kundu et al. (2017)</a>.</p>
+</section>
+<section id="why-use-multi-echo">
+<h3>Why use multi-echo?<a class="headerlink" href="#why-use-multi-echo" title="Link to this heading"></a></h3>
+<p>There are many potential reasons an investigator would be interested in using multi-echo EPI (ME-EPI).
+Among these are the different levels of analysis ME-EPI enables.
+Specifically, by collecting multi-echo data, researchers are able to:</p>
+<p><strong>Compare results across different echoes</strong>: currently, field standards are largely set using single-echo EPI.
+Because multi-echo is composed of multiple single-echo time series, each of these can be analyzed separately
+and compared to one another.</p>
+<p><strong>Combine the results by weighted averaging</strong>: Rather than analyzing single-echo time series separately,
+we can combine them into an “optimally combined time series”.
+For more information on this combination, see <a class="reference internal" href="approach.html#optimal-combination"><span class="std std-ref">Optimal combination</span></a>.
+Optimally combined data exhibits higher SNR and improves statistical power of analyses in regions
+traditionally affected by drop-out.</p>
+<p><strong>Denoise the data based on information contained in the echoes</strong>: Collecting multi-echo data allows
+access to unique denoising methods.
+ICA-based denoising methods like ICA-AROMA (<a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1053811915001822">Pruim et al. (2015)</a>)
+have been shown to significantly improve the quality of cleaned signal.
+These methods, however, have comparably limited information, as they are designed to work with single-echo EPI.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tedana</span></code> is an ICA-based denoising pipeline built especially for
+multi-echo data. Collecting multi-echo EPI allows us to leverage all of the information available for single-echo datasets,
+as well as additional information only available when looking at signal decay across multiple TEs.
+We can use this information to denoise the optimally combined time series.</p>
+</section>
+<section id="considerations-for-me-fmri">
+<h3>Considerations for ME-fMRI<a class="headerlink" href="#considerations-for-me-fmri" title="Link to this heading"></a></h3>
+<p>Multi-echo fMRI acquisition sequences and analysis methods are rapidly maturing.
+Someone who has access to a multi-echo fMRI sequence should seriously consider using it.</p>
+</section>
+<section id="costs-and-benefits-of-multi-echo-fmri">
+<h3>Costs and benefits of multi-echo fMRI<a class="headerlink" href="#costs-and-benefits-of-multi-echo-fmri" title="Link to this heading"></a></h3>
+<p>The following are a few points to consider when deciding whether or not to collect multi-echo data.</p>
+<section id="possible-increase-in-tr">
+<h4>Possible increase in TR<a class="headerlink" href="#possible-increase-in-tr" title="Link to this heading"></a></h4>
+<p>The one difference with multi-echo is a slight time cost.
+For multi-echo fMRI, the shortest echo time (TE) is essentially free since it is collected in the
+gap between the RF pulse and the single-echo acquisition.
+The second echo tends to roughly match the single-echo TE.
+Additional echoes require more time.
+For example, on a 3T MRI, if the T2* weighted TE is 30ms for single echo fMRI,
+a multi-echo sequence may have TEs of 15.4, 29.7, and 44.0ms.
+In this example, the extra 14ms of acquisition time per RF pulse is the cost of multi-echo fMRI.</p>
+<p>One way to think about this cost is in comparison to single-echo fMRI.
+If a multi-echo sequence has identical spatial resolution and acceleration as a single-echo sequence,
+then a rough rule of thumb is that the multi-echo sequence will have 10% fewer slices or 10% longer TR.
+Instead of compromising on slice coverage or TR, one can increase acceleration.
+If one increases acceleration, it is worth doing an empirical comparison to make sure there
+isn’t a non-trivial loss in SNR or an increase of artifacts.</p>
+</section>
+<section id="weighted-averaging-may-lead-to-an-increase-in-snr">
+<h4>Weighted averaging may lead to an increase in SNR<a class="headerlink" href="#weighted-averaging-may-lead-to-an-increase-in-snr" title="Link to this heading"></a></h4>
+<p>Multiple studies have shown that a weighted average of the echoes to optimize
+T2* weighting, sometimes called “optimally combined,” gives a reliable, modest
+boost in data quality.
+The optimal combination of echoes can currently be calculated in several
+software packages including AFNI, fMRIPrep, and tedana.
+In tedana, the weighted average can be calculated with
+<a class="reference internal" href="generated/tedana.workflows.t2smap_workflow.html#tedana.workflows.t2smap_workflow" title="tedana.workflows.t2smap_workflow"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.workflows.t2smap_workflow()</span></code></a>.
+If no other acquisition compromises are necessary to acquire multi-echo data,
+this boost is worthwhile.</p>
+</section>
+<section id="consider-the-life-of-the-dataset">
+<h4>Consider the life of the dataset<a class="headerlink" href="#consider-the-life-of-the-dataset" title="Link to this heading"></a></h4>
+<p>If other compromises are necessary, consider the life of the data set.
+If data is being acquired for a discrete study that will be acquired, analyzed,
+and published in a year or two, it might not be worth making compromises to
+acquire multi-echo data.
+If a data set is expected to be used for future analyses in later years, it is
+likely that more powerful approaches to multi-echo denoising will sufficiently
+mature and add even more value to a data set.</p>
+<p>Other multi-echo denoising methods, such as MEICA, the predecessor to tedana,
+have shown the potential for much greater data quality improvements, as well as
+the ability to more accurately separate visually similar signal vs noise, such
+as scanner based drifts vs slow changes in BOLD signal.
+More powerful methods and associated algorithms are
+still being actively developed.
+Users need to have the time and knowledge to look at the denoising output from
+every run to make sure denoising worked as intended.</p>
+</section>
+<section id="you-may-recover-signal-in-areas-affected-by-dropout">
+<h4>You may recover signal in areas affected by dropout<a class="headerlink" href="#you-may-recover-signal-in-areas-affected-by-dropout" title="Link to this heading"></a></h4>
+<p>Typical single echo fMRI uses an echo time that is appropriate for signal
+across most of the brain.
+While this is effective, it also leads to drop out in regions with low
+<img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> values.
+This can lead to low or even no signal at all in some areas.
+If your research question could benefit from having improved signal
+characteristics in regions such as the orbitofrontal cortex, ventral temporal
+cortex or the ventral striatum then multi-echo fMRI may be beneficial.</p>
+</section>
+<section id="consider-the-cost-of-added-quality-control">
+<h4>Consider the cost of added quality control<a class="headerlink" href="#consider-the-cost-of-added-quality-control" title="Link to this heading"></a></h4>
+<p>The developers of <code class="docutils literal notranslate"><span class="pre">tedana</span></code> strongly support always examining data for quality
+concerns, whether or not multi-echo fMRI is used.
+Multi-echo data and denoising are no exception.
+For this purpose, <code class="docutils literal notranslate"><span class="pre">tedana</span></code> currently produces basic diagnostic images by
+default, which can be inspected in order to determine the quality of denoising.
+See <a class="reference internal" href="outputs.html#outputs"><span class="std std-ref">Outputs of tedana</span></a> for more information on these outputs.</p>
+</section>
+</section>
+</section>
+<section id="acquiring-multi-echo-data">
+<h2>Acquiring multi-echo data<a class="headerlink" href="#acquiring-multi-echo-data" title="Link to this heading"></a></h2>
+<section id="available-multi-echo-fmri-sequences">
+<h3>Available multi-echo fMRI sequences<a class="headerlink" href="#available-multi-echo-fmri-sequences" title="Link to this heading"></a></h3>
+<p>We have attempted to compile some basic multi-echo fMRI protocols in an <a class="reference external" href="https://osf.io/ebkrp/">OSF project</a>.
+The parameter choices in these protocols run and seem reasonable, but they have
+not been optimized for a specific situation.
+They are a good starting point for someone designing a study, but should not be
+considered canonical.
+If you would like to use one of them, please customize it for your own purposes
+and make sure to run pilot scans to test your choices.</p>
+<section id="siemens">
+<h4>Siemens<a class="headerlink" href="#siemens" title="Link to this heading"></a></h4>
+<p><strong>For Siemens users</strong>, there are two options for Works In Progress (WIPs) Sequences.</p>
+<ul>
+<li><div class="line-block">
+<div class="line">The Center for Magnetic Resonance Research at the University of Minnesota</div>
+<div class="line">provides a custom MR sequence that allows users to collect multiple echoes</div>
+<div class="line">(termed <strong>Contrasts</strong>). The sequence and documentation can be <a class="reference external" href="https://www.cmrr.umn.edu/multiband/">found here</a>.</div>
+<div class="line">For details on obtaining a license follow <a class="reference external" href="http://license.umn.edu/technologies/cmrr_center-for-magnetic-resonance-research-software-for-siemens-mri-scanners">this link</a>.</div>
+<div class="line">By default the number of contrasts is 1, yielding a single-echo sequence.</div>
+<div class="line">In order to collect multiple echoes, increase number of Contrasts on the</div>
+<div class="line"><strong>Sequence Tab, Part 1</strong> on the MR console.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">The Martinos Center at Harvard also has a MR sequence available, with the</div>
+<div class="line">details <a class="reference external" href="https://www.nmr.mgh.harvard.edu/software/c2p/sms">available here</a>. The number of echoes can be specified on the</div>
+<div class="line"><strong>Sequence, Special</strong> tab in this sequence.</div>
+</div>
+</li>
+</ul>
+</section>
+<section id="ge">
+<h4>GE<a class="headerlink" href="#ge" title="Link to this heading"></a></h4>
+<p><strong>For GE users</strong>, there are currently two sharable pulse sequences:</p>
+<ul>
+<li><p>Multi-echo EPI (MEPI) – Software releases: DV24, MP24 and DV25 (with offline recon)</p></li>
+<li><div class="line-block">
+<div class="line">Hyperband Multi-echo EPI (HyperMEPI) - Software releases: DV26, MP26, DV27, RX27</div>
+<div class="line">(here hyperband can be deactivated to do simple Multi-echo EPI – online recon)</div>
+</div>
+</li>
+</ul>
+<p>Please reach out to the GE Research Operation team or each pulse sequence’s
+author to begin the process of obtaining this software.
+More information can be found on the <a class="reference external" href="https://collaborate.mr.gehealthcare.com">GE Collaboration Portal</a></p>
+<p>Once logged in, go to Groups &gt; GE Works-in-Progress you can find the description
+of the current ATSM (i.e. prototypes).</p>
+</section>
+<section id="philips">
+<h4>Philips<a class="headerlink" href="#philips" title="Link to this heading"></a></h4>
+<p><strong>For Philips users</strong>, sequences can be defined using product software.</p>
+<p>Multi-echo EPI (ME-EPI) can be acquired using the product software and can be combined with
+SENSE parallel imaging and MultiBand.
+The combination with MultiBand requires a SW release &gt;R5.1 and MultiBand functionality to be present.
+No default ME-EPI are provided, but existing single-echo EPI sequences from the BOLD fMRI folder can be
+modified into multi-echo sequences by increasing the number of echoes.
+As a starting point to develop a 3 echo EPI protocol start by opening the default fMRI protocol and
+modify the following: increase number of echoes to 3 on the Contrast tab, set SENSE = 3, MB-SENSE = 3,
+set to 3mm isotropic voxels and adjust TEs to your preference.</p>
+</section>
+</section>
+<section id="other-available-multi-echo-mri-sequences">
+<h3>Other available multi-echo MRI sequences<a class="headerlink" href="#other-available-multi-echo-mri-sequences" title="Link to this heading"></a></h3>
+<p>In addition to ME-fMRI, other MR sequences benefit from acquiring multiple
+echoes, including T1-weighted imaging (MEMPRAGE) and susceptibility weighted imaging.
+While most of these kinds of sequences fall outside the purview of this documentation,
+quantitative T2* mapping is relevant since a baseline T2* map is used in several
+processing steps including <a class="reference internal" href="approach.html#optimal-combination"><span class="std std-ref">Optimal combination</span></a>.
+While the T2* map estimated directly from fMRI time series is noisy, no current
+study quantifies the benefit to optimal combination or tedana denoising if a
+higher quality T2* map is used.
+Some benefit is likely, so, if a T2* map is independently calculated, it can be
+used as an input to many functions in the tedana workflow.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>While tedana allows the input of a T2* map from any source, and a more
+accurate T2* map should lead to better results, this hasn’t been
+systematically evaluated yet.</p>
+</div>
+<p>There are many ways to calculate T2* maps, with some using multi-echo acquisitions.
+We are not presenting an expansive review of this literature here,
+but <a class="reference external" href="https://doi.org/10.1016/j.neuroimage.2012.01.053">Cohen-Adad et al. (2012)</a> and <a class="reference external" href="https://doi.org/10.1016/j.ejro.2018.12.006">Ruuth et al. (2019)</a> are good places to start
+learning more about this topic.</p>
+</section>
+<section id="acquisition-parameter-recommendations">
+<h3>Acquisition parameter recommendations<a class="headerlink" href="#acquisition-parameter-recommendations" title="Link to this heading"></a></h3>
+<p>There is no empirically tested best parameter set for multi-echo fMRI acquisition.
+The guidelines for optimizing parameters are similar to single-echo fMRI.
+For multi-echo fMRI, the same factors that may guide priorities for single echo
+fMRI sequences are also relevant.
+Choose sequence parameters that meet the priorities of a study with regards to spatial resolution,
+spatial coverage, sample rate, signal-to-noise ratio, signal drop-out, distortion, and artifacts.</p>
+<p>A minimum of 3 echoes is required for running the current implementation fo TE-dependent denoising in
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code>.
+It may be useful to have at least one echo that is earlier and one echo that is later than the
+TE one would use for single-echo T2* weighted fMRI.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is in contrast to the <strong>dual echo</strong> denoising method which uses a very early (~5ms)
+first echo in order to clean data. For more information on this method, see <a class="reference external" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518782/">Bright and Murphy (2013)</a>.</p>
+</div>
+<p>More than 3 echoes may be useful, because that would allow for more accurate
+estimates of BOLD and non-BOLD weighted fluctuations, but more echoes have an
+additional time cost, which would result in either less spatiotemporal coverage
+or more acceleration.
+Where the benefits of more echoes balance out the additional costs is an open research question.</p>
+<p>We are not recommending specific parameter options at this time.
+There are multiple ways to balance the slight time cost from the added echoes that have
+resulted in research publications.
+We suggest new multi-echo fMRI users examine the <a class="reference internal" href="#spreadsheet-of-publications"><span class="std std-ref">Publications using multi-echo fMRI</span></a> that use
+multi-echo fMRI to identify studies with similar acquisition priorities,
+and use the parameters from those studies as a starting point.
+More complete recommendations
+and guidelines are discussed in the <a class="reference external" href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0173289">appendix of Dipasquale et al. (2017)</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In order to increase the number of contrasts (“echoes”) you may need to first increase the TR, shorten the
+first TE and/or enable in-plane acceleration.
+For typically used parameters see the <strong>ME-fMRI parameters</strong> section below.</p>
+</div>
+</section>
+<section id="me-fmri-parameters">
+<span id="common-multi-echo-parameters"></span><h3>ME-fMRI parameters<a class="headerlink" href="#me-fmri-parameters" title="Link to this heading"></a></h3>
+<p>The following section highlights a selection of parameters collected from published papers that have
+used multi-echo fMRI.
+You can see the spreadsheet of publications at <a class="reference internal" href="#spreadsheet-of-publications"><span class="std std-ref">Publications using multi-echo fMRI</span></a>.</p>
+<p>The following plots reflect the average values for studies conducted at 3 Tesla.</p>
+<p>(<a class="reference download internal" download="" href="_downloads/6bb85110acd2e8900109c6f28606cc43/multi-echo-1.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>)</p>
+</section>
+</section>
+<section id="processing-multi-echo-fmri">
+<span id="constructing-me-epi-pipelines"></span><h2>Processing multi-echo fMRI<a class="headerlink" href="#processing-multi-echo-fmri" title="Link to this heading"></a></h2>
+<p>Most multi-echo denoising methods, including <code class="docutils literal notranslate"><span class="pre">tedana</span></code>,
+must be called in the context of a larger ME-EPI preprocessing pipeline.
+Two common pipelines which support ME-EPI processing include <a class="reference external" href="https://fmriprep.readthedocs.io">fMRIPrep</a> and <a class="reference external" href="https://afni.nimh.nih.gov/pub/dist/doc/program_help/afni_proc.py.html">afni_proc.py</a>.</p>
+<p>Users can also construct their own preprocessing pipeline for ME-EPI data from which to call the
+multi-echo denoising method of their choice.
+There are several general principles to keep in mind when constructing ME-EPI processing pipelines.</p>
+<p>In general, we recommend the following:</p>
+<section id="estimate-motion-correction-parameters-from-one-echo-and-apply-those-parameters-to-all-echoes">
+<h3>1. Estimate motion correction parameters from one echo and apply those parameters to all echoes<a class="headerlink" href="#estimate-motion-correction-parameters-from-one-echo-and-apply-those-parameters-to-all-echoes" title="Link to this heading"></a></h3>
+<p>When preparing ME-EPI data for multi-echo denoising with a tool like <code class="docutils literal notranslate"><span class="pre">tedana</span></code>,
+it is important not to do anything that mean shifts the data or otherwise separately
+scales the voxelwise values at each echo.</p>
+<p>For example, head-motion correction parameters should <em>not</em> be calculated and applied at an
+individual echo level (see above).
+Instead, we recommend that researchers apply the same transforms to all echoes in an ME-EPI series.
+That is, that they calculate head motion correction parameters from one echo
+and apply the resulting transformation to all echoes.
+Based on <a class="reference external" href="https://doi.org/10.1162/imag_a_00151">Mao et. al. Imaging Neuroscience 2024</a>, we recommend using the earliest echo.</p>
+</section>
+<section id="perform-slice-timing-correction-and-motion-correction-before-multi-echo-denoising">
+<h3>2. Perform slice timing correction and motion correction <strong>before</strong> multi-echo denoising<a class="headerlink" href="#perform-slice-timing-correction-and-motion-correction-before-multi-echo-denoising" title="Link to this heading"></a></h3>
+<p>Similarly to single-echo EPI data, slice time correction allows us to assume that voxels across
+slices represent roughly simultaneous events.
+If the TR is slow enough to necessitate slice-timing (i.e., TR &gt;= 1 sec., as a rule of thumb), then
+slice-timing correction should be done before <code class="docutils literal notranslate"><span class="pre">tedana</span></code>.
+This is because slice timing differences may impact echo-dependent estimates.</p>
+<p>The slice time is generally defined as the excitation pulse time for each slice.
+For single-echo EPI data, that excitation time would be the same regardless of the echo time,
+and the same is true when one is collecting multiple echoes after a single excitation pulse.
+Therefore, we suggest using the same slice timing for all echoes in an ME-EPI series.</p>
+</section>
+<section id="apply-spatial-normalization-and-susceptibility-distortion-correction-consistently-across-echoes">
+<h3>3. Apply spatial normalization and susceptibility distortion correction consistently across echoes<a class="headerlink" href="#apply-spatial-normalization-and-susceptibility-distortion-correction-consistently-across-echoes" title="Link to this heading"></a></h3>
+<p>One key feature of susceptibility distortion is that it is primarily a factor of readout pattern and
+total readout time, rather than echo time. This means that, for most multi-echo sequences, even though
+dropout will increase with echo time, distortion will not (at least not to a noticeable/meaningful extent).</p>
+<p>For this reason, if you are applying TOPUP-style (blip-up/blip-down) “field maps”,
+we recommend using your first echo time, as this will exhibit the least dropout.
+If your first echo time is very short, and exhibits poor gray/white contrast, then a later echo time may
+be preferable. In any case, you should calculate the spatial transform from just one of your echoes and
+apply it across all of them.</p>
+<p>Similarly, if spatial normalization to a template is done, the spatial transform should be calculated
+once and the same transformation (ideally one transformation for motion correction, distortion correction,
+and spatial normalization) should be applied to all echoes.</p>
+</section>
+<section id="perform-smoothing-and-any-rescaling-or-filtering-after-denoising">
+<h3>4. Perform smoothing, and any rescaling or filtering <strong>after</strong> denoising<a class="headerlink" href="#perform-smoothing-and-any-rescaling-or-filtering-after-denoising" title="Link to this heading"></a></h3>
+<p>Any step that will alter the relationship of signal magnitudes between echoes should occur after denoising and combining
+of the echoes. For example, if echo is separately scaled by its mean signal over time, then resulting intensity gradients
+and the subsequent calculation of voxelwise T2* values will be distorted or incorrect. See the description of
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code>’s <a class="reference internal" href="approach.html"><span class="doc">approach</span></a> for more details on how T2* values are calculated. An agressive temporal filter
+(i.e. a 0.1Hz low pass filter) or spatial smoothing could similarly distort the relationship between the echoes at each
+time point.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Spatial normalization and distortion correction, particularly non-linear normalization methods
+with higher order interpolation functions to regrid voxels in a new space, may distort the relationship between
+echoes more than bilinear interpolation. This has the potential to distort the relationship between echoes and
+there have been anecdotal cases where this might be an issue. Still, since serial spatial transforms spatially
+smooth the data and most modern pipeline combine all spatial transforms into a single step, we recommend doing
+these steps before running denoising. Particularly for data with high intensity heterogeneity between the surface
+and center of the brain, we recommend checking if distortion correction and normalization adversely affect the
+relationship between echoes.</p>
+</div>
+</section>
+</section>
+<section id="general-resources">
+<h2>General Resources<a class="headerlink" href="#general-resources" title="Link to this heading"></a></h2>
+<section id="journal-articles-describing-multi-echo-methods">
+<h3>Journal articles describing multi-echo methods<a class="headerlink" href="#journal-articles-describing-multi-echo-methods" title="Link to this heading"></a></h3>
+<ul>
+<li><div class="line-block">
+<div class="line"><a class="reference internal" href="#spreadsheet-of-publications"><span class="std std-ref">Publications using multi-echo fMRI</span></a> catalogues papers using multi-echo fMRI,</div>
+<div class="line">with information about acquisition parameters.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://www.ncbi.nlm.nih.gov/pubmed/22056458">Multi-echo acquisition</a></div>
+<div class="line">Posse, NeuroImage 2012</div>
+<div class="line">Includes an historical overview of multi-echo acquisition and research</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://www.ncbi.nlm.nih.gov/pubmed/28363836">Multi-Echo fMRI A Review of Applications in fMRI Denoising and Analysis of BOLD Signals</a></div>
+<div class="line">Kundu et al, NeuroImage 2017</div>
+<div class="line">A review of multi-echo denoising with a focus on the MEICA algorithm</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://www.ncbi.nlm.nih.gov/pubmed/25743045">Enhanced identification of BOLD-like components with MESMS and MEICA</a></div>
+<div class="line">Olafsson et al, NeuroImage 2015</div>
+<div class="line">The appendix includes a good explanation of the math underlying MEICA denoising</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://www.ncbi.nlm.nih.gov/pubmed/28323821">Comparing resting state fMRI de-noising approaches using multi- and single-echo acquisitions</a></div>
+<div class="line">Dipasquale et al, PLoS One 2017</div>
+<div class="line">The appendix includes some recommendations for multi-echo acquisition</div>
+</div>
+</li>
+</ul>
+</section>
+<section id="videos">
+<h3>Videos<a class="headerlink" href="#videos" title="Link to this heading"></a></h3>
+<ul>
+<li><div class="line-block">
+<div class="line">Multi-echo fMRI lecture from the <a class="reference external" href="https://youtu.be/Uc-1DcgNQzk?feature=shared">2024 NIH FMRI Summer Course</a> by Dan Handwerker</div>
+<div class="line"><a class="reference external" href="https://fmrif.nimh.nih.gov/images/3/3a/12_MultiEcho_Summer_Handwerker2024.pdf">Slides from 2024 NIH FMRI Summer Course</a></div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">MRI Together 2022 Conference Presentations by Eneko Uruñuela</div>
+<div class="line">Tedana: Analysis of echo-time dependent fMRI data (<a class="reference external" href="https://youtu.be/4wsEodepyI8?t=96">recording</a>, <a class="reference external" href="https://eurunuela.github.io/tedana_MRITogether_2022">slides</a>)</div>
+<div class="line">A tour of tedana (<a class="reference external" href="https://youtu.be/P4cV-sGeltk?t=10">tour recording</a>, <a class="reference external" href="https://eurunuela.github.io/tedana_tutorial_MRITogether_2022/">tour slides</a>)</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">NIMH Center for Multimodal Neuroimaging <a class="reference external" href="https://youtu.be/G1Ftd2IwF14">Advantages of multi-echo fMRI</a> (2019) by Dan Handwerker, Javier Gonzalez-Castillo, and Vinai Roopchansingh</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Multi-echo fMRI lecture from the <a class="reference external" href="https://www.youtube.com/watch?v=83bavs4rlUg">2018 NIH FMRI Summer Course</a> by Javier Gonzalez-Castillo</div>
+<div class="line"><a class="reference external" href="https://fmrif.nimh.nih.gov/images/1/12/14_Javier_20180713.pdf">Slides from 2018 NIH FMRI Summer Course</a></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="multi-echo-preprocessing-software">
+<h3>Multi-echo preprocessing software<a class="headerlink" href="#multi-echo-preprocessing-software" title="Link to this heading"></a></h3>
+<p>tedana requires data that has already been preprocessed for head motion, alignment, etc.</p>
+<p>AFNI can process multi-echo data natively as well as apply tedana denoising through the use of
+<strong>afni_proc.py</strong>. To see various implementations, start with Example 12 in the <a class="reference external" href="https://afni.nimh.nih.gov/pub/dist/doc/program_help/afni_proc.py.html">afni_proc.py help</a></p>
+<p><cite>fmriprep</cite> can also process multi-echo data, but is currently limited to using the optimally combined
+timeseries.
+For more details, see the <a class="reference external" href="https://fmriprep.readthedocs.io/en/stable/workflows.html">fmriprep workflows page</a> and <a class="reference internal" href="faq.html#collecting-fmriprepped-data"><span class="std std-ref">[tedana] How do I use tedana with fMRIPrepped data?</span></a>.</p>
+<p><a class="reference external" href="https://fmrwhy.readthedocs.io">fmrwhy</a> runs BIDS-compatible fMRI analysis with SPM12 and supports multi-echo data,
+but it is no longer being actively maintained.</p>
+<p>Currently SPM and FSL do not natively support multi-echo fmri data processing.</p>
+</section>
+<section id="other-software-that-uses-multi-echo-fmri">
+<h3>Other software that uses multi-echo fMRI<a class="headerlink" href="#other-software-that-uses-multi-echo-fmri" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">tedana</span></code> represents only one approach to processing multi-echo data.
+Currently there are a number of methods that can take advantage of or use the
+information contained in multi-echo data.
+These include:</p>
+<ul>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dMEPFM.html">3dMEPFM</a>: A multi-echo implementation of ‘paradigm free mapping’, that is</div>
+<div class="line">detection of neural events in the absence of a prespecified model. By</div>
+<div class="line">leveraging the information present in multi-echo data, changes in relaxation</div>
+<div class="line">time can be directly estimated and more events can be detected.</div>
+<div class="line">For more information, see the <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S105381191930669X">following paper</a>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://ww5.aievolution.com/hbm1901/index.cfm?do=abs.viewAbs&amp;abs=5026">Bayesian approach to denoising</a>: An alternative approach to separating out</div>
+<div class="line">BOLD and non-BOLD signals within a Bayesian framework is currently under</div>
+<div class="line">development.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://ww5.aievolution.com/hbm1901/index.cfm?do=abs.viewAbs&amp;abs=1286">Multi-echo Group ICA</a>: Current approaches to ICA just use a single run of</div>
+<div class="line">data in order to perform denoising. An alternative approach is to use</div>
+<div class="line">information from multiple subjects or multiple runs from a single subject</div>
+<div class="line">in order to improve the classification of BOLD and non-BOLD components.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3518782/">Dual Echo Denoising</a>: If the first echo can be collected early enough,</div>
+<div class="line">there are currently methods that take advantage of the very limited BOLD</div>
+<div class="line">weighting at these early echo times.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line"><a class="reference external" href="https://github.com/qMRLab/qMRLab">qMRLab</a>: This is a MATLAB software package for quantitative magnetic</div>
+<div class="line">resonance imaging. While it does not support ME-fMRI, it does include methods</div>
+<div class="line">for estimating T2*/S0 from high-resolution, complex-valued multi-echo GRE</div>
+<div class="line">data with correction for background field gradients.</div>
+</div>
+</li>
+</ul>
+</section>
+<section id="datasets">
+<h3>Datasets<a class="headerlink" href="#datasets" title="Link to this heading"></a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We have attempted to compile a list of open multi-echo fMRI datasets in
+<a class="reference external" href="https://me-ica.github.io/open-multi-echo-data">open-multi-echo-data</a>.
+We try to keep that list up to date, but it may not be complete.</p>
+<p>The list of datasets on that site is limited to (1) human data,
+(2) data that are accessible without a data usage agreement or registration,
+and (3) data with at least three echoes.</p>
+</div>
+<p>A number of multi-echo datasets have been made public so far.
+This list is not necessarily up to date, so please check out OpenNeuro to potentially find more.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds000210/">Multi-echo fMRI replication sample of autobiographical memory, prospection and theory of mind reasoning tasks</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds000258">Multi-echo Cambridge</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds000216">Multiband multi-echo imaging of simultaneous oxygenation and flow timeseries for resting state connectivity</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds000254">Multiband multi-echo simultaneous ASL/BOLD for task-induced functional MRI</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds001491">Valence processing differs across stimulus modalities</a></p></li>
+<li><p><a class="reference external" href="https://camcan-archive.mrc-cbu.cam.ac.uk/dataaccess/">Cambridge Centre for Ageing Neuroscience (Cam-CAN)</a></p></li>
+<li><p><a class="reference external" href="https://doi.org/10.34894/R1TNL8">rt-me-fMRI - A task and resting state dataset for real-time, multi-echo fMRI methods development and validation</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds003192">EuskalIBUR</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds003643">Le Petit Prince</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds003511">Evidence supporting a time-limited hippocampal role in retrieving autobiographical memories</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds003592">Neurocognitive aging data release with behavioral, structural, and multi-echo functional MRI measures</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds003823/versions/1.2.3">Heart rate variability biofeedback training and emotion regulation</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds002155">A mesial-to-lateral dissociation for orthographic processing in the visual cortex (dual-echo)</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds001725">Psilocybin exerts distinct effects on resting state networks associated with serotonin and dopamine in mice</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds002154">Psilocybin exerts distinct effects on resting state networks associated with serotonin and dopamine in mice (pilot data)</a></p></li>
+<li><p><a class="reference external" href="https://osf.io/mhq3f/">MICA-PNI</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds005264">SoCal Kinesia and Incentivization for Parkinson’s Disease (SKIP)</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds005250">Single-echo/multi-echo comparison pilot</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds005123">Social Reward and Aging: A Preliminary Multi-echo fMRI and Diffusion Dataset</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds002278">Dense Investigation of Variability of Affect (DIVA)</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds004935">Multivariate Assessment of Inhibitory Control in Youth: Links with Psychopathology and Brain Function Dataset</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds004499">Multi-echo simultaneous multislice fMRI dataset: Effect of acquisition parameters on fMRI data</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds005085">Sequence pilot: multiecho and multiband fMRI</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds005118">Weill Cornell Medicine Multi-echo (WCM-ME) Dataset</a></p></li>
+<li><p><a class="reference external" href="https://openneuro.org/datasets/ds004627">Characterization and Treatment of Adolescent Depression (CAT-D)</a></p></li>
+</ul>
+</section>
+<section id="publications-using-multi-echo-fmri">
+<span id="spreadsheet-of-publications"></span><h3>Publications using multi-echo fMRI<a class="headerlink" href="#publications-using-multi-echo-fmri" title="Link to this heading"></a></h3>
+<p>The sheet at the bottom of this page contains an extensive list of multi-echo
+fMRI publications. You can view and suggest additions to this spreadsheet <a class="reference external" href="https://docs.google.com/spreadsheets/d/1WERojJyxFoqcg_tndUm5Kj0H1UfUc9Ban0jFGGfPaBk/edit#gid=0">here</a>.
+This is a volunteer-led effort so, if you know of a excluded publication,
+whether or not it is yours, please add it.</p>
+<section id="interactive-visualizations-of-publications-and-parameters">
+<h4>Interactive visualizations of publications and parameters<a class="headerlink" href="#interactive-visualizations-of-publications-and-parameters" title="Link to this heading"></a></h4>
+<p>You can explore interactive and accessible information about multi-echo
+studies from the list of publications below, their study design parameters,
+and MRI sequence parameter options using <a class="reference external" href="https://me-fmri-overview.herokuapp.com/">this web application</a>. If you’d
+like to add more studies, parameters or visualization options to the
+application, feel free to create an issue or send a pull request on the
+application’s <a class="reference external" href="https://github.com/jsheunis/me-fmri-overview">GitHub repository</a>.</p>
+<hr class="docutils" />
+<iframe style="position: absolute; height: 60%; width: 60%; border: none" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vS0nEVp27NpwdzPunvMLflyKzcZbCo4k2qPk5zxEiaoJTD_IY1OGbWICizogAEZlTyL7d_7aDA92uwf/pubhtml?widget=true&amp;headers=false"></iframe></section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Using tedana from the command line" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,818 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.2">
+    
+    
+      
+        <title>Introduction - Brain Imaging Data Structure v1.2.2</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/application.adb8469c.css">
+      
+      
+    
+    
+      <script src="assets/javascripts/modernizr.86422ebf.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    
+    
+      
+    
+      
+    
+    
+      
+    
+    
+  <script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="bids-specification" /><meta name="readthedocs-version-slug" content="v1.2.2" /><meta name="readthedocs-resolver-filename" content="/01-introduction.html" /><meta name="readthedocs-http-status" content="200" /></head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#introduction" tabindex="0" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="." title="Brain Imaging Data Structure v1.2.2" aria-label="Brain Imaging Data Structure v1.2.2" class="md-header-nav__button md-logo">
+          
+            <img alt="logo" src="images/logo.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Brain Imaging Data Structure v1.2.2
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Introduction
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="." title="Brain Imaging Data Structure v1.2.2" class="md-nav__button md-logo">
+      
+        <img alt="logo" src="images/logo.png" width="48" height="48">
+      
+    </a>
+    Brain Imaging Data Structure v1.2.2
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
+    
+    <label class="md-nav__link" for="nav-1">
+      The BIDS Specification
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        The BIDS Specification
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Introduction
+      </label>
+    
+    <a href="01-introduction.html" title="Introduction" class="md-nav__link md-nav__link--active">
+      Introduction
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    Motivation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citing-bids" class="md-nav__link">
+    Citing BIDS
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="02-common-principles.html" title="Common principles" class="md-nav__link">
+      Common principles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="03-modality-agnostic-files.html" title="Modality agnostic files" class="md-nav__link">
+      Modality agnostic files
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1-4" type="checkbox" id="nav-1-4">
+    
+    <label class="md-nav__link" for="nav-1-4">
+      Modality specific files
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-4">
+        Modality specific files
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html" title="Magnetic Resonance Imaging" class="md-nav__link">
+      Magnetic Resonance Imaging
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/02-magnetoencephalography.html" title="Magnetoencephalography" class="md-nav__link">
+      Magnetoencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/03-electroencephalography.html" title="Electroencephalography" class="md-nav__link">
+      Electroencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/04-intracranial-electroencephalography.html" title="intracranial Electroencephalography" class="md-nav__link">
+      intracranial Electroencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/05-task-events.html" title="Task events" class="md-nav__link">
+      Task events
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/06-physiological-and-other-continuous-recordings.html" title="Physiological and other continuous recordings" class="md-nav__link">
+      Physiological and other continuous recordings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/07-behavioral-experiments.html" title="Behavioral experiments (with no MRI)" class="md-nav__link">
+      Behavioral experiments (with no MRI)
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="05-longitudinal-and-multi-site-studies.html" title="Longitudinal and multi-site studies" class="md-nav__link">
+      Longitudinal and multi-site studies
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="06-extensions.html" title="Extending the BIDS specification" class="md-nav__link">
+      Extending the BIDS specification
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1-7" type="checkbox" id="nav-1-7">
+    
+    <label class="md-nav__link" for="nav-1-7">
+      Appendix
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-7">
+        Appendix
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/01-contributors.html" title="Contributors" class="md-nav__link">
+      Contributors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/02-licenses.html" title="Licenses" class="md-nav__link">
+      Licenses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/03-hed.html" title="HED" class="md-nav__link">
+      HED
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/04-entity-table.html" title="Entity-table" class="md-nav__link">
+      Entity-table
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/05-units.html" title="Units" class="md-nav__link">
+      Units
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/06-meg-file-formats.html" title="MEG file formats" class="md-nav__link">
+      MEG file formats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/07-meg-systems.html" title="MEG systems" class="md-nav__link">
+      MEG systems
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/08-coordinate-systems.html" title="Coordinate-systems" class="md-nav__link">
+      Coordinate-systems
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="CHANGES.html" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      The BIDS Starter Kit
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        The BIDS Starter Kit
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/bids-standard/bids-starter-kit" title="GitHub repository" class="md-nav__link">
+      GitHub repository
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/bids-standard/bids-starter-kit/wiki/Tutorials" title="Tutorials" class="md-nav__link">
+      Tutorials
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/bids-standard/bids-starter-kit/wiki" title="Wiki" class="md-nav__link">
+      Wiki
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    Motivation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensions" class="md-nav__link">
+    Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citing-bids" class="md-nav__link">
+    Citing BIDS
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="introduction"><a class="toclink" href="#introduction">Introduction</a></h1>
+<h2 id="motivation"><a class="toclink" href="#motivation">Motivation</a></h2>
+<p>Neuroimaging experiments result in complicated data that can be arranged in many
+different ways. So far there is no consensus how to organize and share data
+obtained in neuroimaging experiments. Even two researchers working in the same
+lab can opt to arrange their data in a different way. Lack of consensus (or a
+standard) leads to misunderstandings and time wasted on rearranging data or
+rewriting scripts expecting certain structure. Here we describe a simple and
+easy-to-adopt way of organising neuroimaging and behavioral data. By using this
+standard you will benefit in the following ways:</p>
+<ul>
+<li>
+<p>It will be easy for another researcher to work on your data. To understand
+    the organisation of the files and their format you will only need to refer
+    them to this document. This is especially important if you are running your
+    own lab and anticipate more than one person working on the same data over
+    time. By using BIDS you will save time trying to understand and reuse data
+    acquired by a graduate student or postdoc that has already left the lab.</p>
+</li>
+<li>
+<p>There are a growing number of data analysis software packages that can
+    understand data organised according to BIDS (see
+    <a href="http://bids.neuroimaging.io">http://bids.neuroimaging.io</a> for the most up
+    to date list).</p>
+</li>
+<li>
+<p>Databases such as OpenNeuro.org accept datasets organised according to BIDS.
+    If you ever plan to share your data publicly (nowadays some journals require
+    this) you can minimize the additional time and energy spent on publication,
+    and speed up the curation process by using BIDS to structure and describe
+    your data right after acquisition.</p>
+</li>
+<li>
+<p>There are <a href="https://github.com/Squishymedia/BIDS-Validator">validation tools</a>
+    that can check your dataset integrity and let you easily spot missing
+    values.</p>
+</li>
+</ul>
+<p>BIDS is heavily inspired by the format used internally by OpenfMRI.org and has
+been supported by the International Neuroinformatics Coordinating Facility and
+the Neuroimaging Data Sharing Task Force. While working on BIDS we consulted
+many neuroscientists to make sure it covers most common experiments, but at the
+same time is intuitive and easy to adopt. The specification is intentionally
+based on simple file formats and folder structures to reflect current lab
+practices and make it accessible to a wide range of scientists coming from
+different backgrounds.</p>
+<h2 id="extensions"><a class="toclink" href="#extensions">Extensions</a></h2>
+<p>The BIDS specification can be extended in a backwards compatible way and will
+evolve over time. This is accomplished through community-driven BIDS Extension
+Proposals (BEPs). For more information about the BEP process, see
+<a href="06-extensions.html">Extending the BIDS specification</a>.</p>
+<h2 id="citing-bids"><a class="toclink" href="#citing-bids">Citing BIDS</a></h2>
+<p>When referring to BIDS in context of academic literature please cite:</p>
+<blockquote>
+<p>Gorgolewski, K.J., Auer, T., Calhoun, V.D., Craddock, R.C., Das, S., Duff,
+E.P., Flandin, G., Ghosh, S.S., Glatard, T., Halchenko, Y.O., Handwerker,
+D.A., Hanke, M., Keator, D., Li, X., Michael, Z., Maumet, C., Nichols, B.N.,
+Nichols, T.E., Pellman, J., Poline, J.-B., Rokem, A., Schaefer, G., Sochat,
+V., Triplett, W., Turner, J.A., Varoquaux, G., Poldrack, R.A., 2016.
+<a href="https://www.nature.com/articles/sdata201644">The brain imaging data structure, a format for organizing and describing outputs of neuroimaging experiments</a>.
+Sci Data 3, 160044.</p>
+</blockquote>
+<p>as well as other papers describing specific BIDS extensions (see below).</p>
+<p>BIDS has also a
+<a href="https://www.force11.org/group/resource-identification-initiative">Research Resource Identifier (RRID)</a>
+- <code>RRID:SCR_016124</code> - which you can also include in your manuscript in addition
+to citing the paper.</p>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        <!--
+  Copyright (c) 2016-2019 Martin Donath <martin.donath@squidfunk.com>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+--><!-- Application footer -->
+<footer class="md-footer">
+
+  <!-- Link to previous and/or next page --><div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+
+        <!-- Link to previous page --><!-- Link to next page --><a href="02-common-principles.html"
+              title="Common principles"
+              class="md-flex md-footer-nav__link md-footer-nav__link--next"
+              rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch
+                  md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">Next</span>Common principles</span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward
+                    md-footer-nav__button"></i>
+            </div>
+          </a></nav>
+    </div><!-- Further information -->
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+
+      <!-- Copyright and theme information -->
+      <div class="md-footer-copyright">See the source code and discussion page on
+        <a href="https://github.com/bids-standard/bids-specification">GitHub</a>
+      </div>
+
+      <!-- Social links --></div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/application.c33a9706.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      
+        <script src="js/jquery-3.4.1.min.js"></script>
+      
+        <script src="readthedocs-data.js"></script>
+      
+        
+      
+        
+      
+    
+  </body>
+</html>

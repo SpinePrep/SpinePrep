@@ -1,0 +1,848 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Guide &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Slicer API" href="api.html" />
+    <link rel="prev" title="Application settings" href="../user_guide/settings.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/index.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Developer Guide</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/index.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="developer-guide">
+<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Slicer API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#tutorials">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#c">C++</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#python">Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#native-python-documentation">Native Python documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#doxygen-style-documentation">Doxygen-style documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mrml_overview.html">MRML Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html#mrml-scene">MRML Scene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html#mrml-nodes">MRML nodes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#basic-mrml-node-types">Basic MRML node types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#mrml-node-attributes">MRML node attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#mrml-node-references">MRML Node References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#mrml-events-and-observers">MRML Events and Observers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html#advanced-topics">Advanced topics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#parameter-nodes">Parameter Nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#scene-undo-redo">Scene undo/redo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#creating-custom-mrml-node-classes">Creating Custom MRML Node Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#slice-view-pipeline">Slice view pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mrml_overview.html#layout">Layout</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_overview.html">Module Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html#command-line-interface-cli">Command Line Interface (CLI)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html#loadable-modules">Loadable Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html#scripted-modules">Scripted Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html#module-factory">Module Factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html#association-of-mrml-nodes-to-modules">Association of MRML nodes to modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html#remote-module">Remote Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="module_overview.html#purpose-of-remote-modules">Purpose of Remote Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module_overview.html#policy-for-adding-remote-modules">Policy for Adding Remote Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module_overview.html#procedure-for-adding-a-remote-module">Procedure for Adding a Remote Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="module_overview.html#procedure-for-updating-a-remote-module">Procedure for Updating a Remote Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/overview.html">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/overview.html#parameter-node-wrapper">Parameter Node Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/supported_types.html">Supported types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/supported_types.html#built-in-types">Built-in types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/supported_types.html#mrml-nodes">MRML nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/supported_types.html#enum">Enum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/supported_types.html#parameter-packs">Parameter Packs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/defaults.html">Defaults</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/defaults.html#default-values">Default values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/defaults.html#unspecified-defaults">Unspecified defaults</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/defaults.html#default-generators">Default generators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/validators.html">Validators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/validators.html#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/validators.html#built-in-validators">Built-in validators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/validators.html#custom-validators">Custom Validators</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/gui_connection.html">GUI Connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/gui_connection.html#data-binding">Data binding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/gui_connection.html#connecting-widgets-from-a-ui-file">Connecting widgets from a .ui file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/gui_connection.html#manual-connection">Manual connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/gui_connection.html#available-connectors">Available connectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/gui_connection.html#extra-annotatations">Extra annotatations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/gui_connection.html#custom-connectors-and-reusable-widgets">Custom connectors and reusable widgets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/gui_creation.html">GUI Creation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/gui_creation.html#auto-generating-widgets">Auto-generating widgets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/gui_creation.html#created-widget-types">Created widget types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/advanced/index.html">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/advanced/custom_widgets_for_parameter_packs.html">Custom Widgets for Parameter Packs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/advanced/custom_classes.html">Custom Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="parameter_nodes/advanced/caching.html">Caching</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html">Modules API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/colors.html">Colors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/colors.html#color-table-csv-file-format-csv">Color table CSV file format (.csv)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/colors.html#color-table-text-file-format-txt-ctbl">Color table text file format (.txt, .ctbl)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/colors.html#debugging">Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/dicom.html#customize-table-columns-in-dicom-browser">Customize table columns in DICOM browser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dicom.html#customize-dicom-browser-table-content">Customize DICOM browser table content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dicom.html#plugin-architecture">Plugin architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dicom.html#dicom-networking-development">DICOM Networking Development</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dicom.html#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dicom.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/markups.html">Markups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/markups.html#markups-json-file-format-mrk-json">Markups json file format (.mrk.json)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/markups.html#markups-fiducial-point-list-file-format-fcsv">Markups fiducial point list file format (.fcsv)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/markups.html#markups-control-points-table-file-format-csv-tsv">Markups control points table file format (.csv, .tsv)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/markups.html#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/markups.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/plots.html">Plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/plots.html#design">Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/plots.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/selftests.html">Self Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/selftests.html#faq">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/segmentations.html">Segmentations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/segmentations.html#segmentation-labelmap-file-format-seg-nrrd">Segmentation labelmap file format (.seg.nrrd)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/segmentations.html#segmentation-surface-file-format-seg-vtm">Segmentation surface file format (.seg.vtm)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/segmenteditor.html">Segment editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/segmenteditor.html#effect-parameters">Effect parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/segmenteditor.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sequences.html">Sequences</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/sequences.html#volume-sequence-file-format-seq-nrrd">Volume sequence file format (.seq.nrrd)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/transforms.html">Transforms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/transforms.html#related-mrml-nodes">Related MRML nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/transforms.html#transform-files">Transform files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/transforms.html#displacement-field-files">Displacement field files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/transforms.html#events">Events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/transforms.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/volumerendering.html">Volume rendering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/volumerendering.html#key-classes">Key classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/volumerendering.html#format-of-vp-json-volume-property-json">Format of .vp.json (volume property JSON)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/volumerendering.html#format-of-volume-property-vp-file">Format of Volume Property (.vp) file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/volumerendering.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/volumerendering.html#volume-rendering-presets">Volume rendering presets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/volumes.html">Volumes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/volumes.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extensions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#create-an-extension">Create an extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#build-an-extension">Build an extension</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#linux-and-macos">Linux and macOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#windows">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#test-an-extension">Test an extension</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#run-slicer-with-your-custom-modules">Run Slicer with your custom modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#run-automatic-tests">Run automatic tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#continuous-integration">Continuous integration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#create-an-extension-package">Create an extension package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#id3">Linux and macOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#id4">Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#write-documentation-for-an-extension">Write documentation for an extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#distribute-an-extension">Distribute an extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#application-settings">Application settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#extension-catalog-entry-file">Extension catalog entry file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#extension-description-file">Extension description file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#syntax">Syntax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#supported-metadata-fields">Supported metadata fields</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#extensions-server">Extensions server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#extensions-index">Extensions Index</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#extensions-build-system">Extensions build system</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#build-list-of-extensions-manually">Build list of extensions manually</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#build-complete-extensions-index-with-dashboard-submission">Build complete Extensions Index with dashboard submission</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html#frequently-asked-questions">Frequently asked questions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#can-an-extension-contain-different-types-of-modules">Can an extension contain different types of modules?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#should-the-name-of-the-source-repository-match-the-name-of-the-extension">Should the name of the source repository match the name of the extension?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#where-can-i-find-the-extension-templates">Where can I find the extension templates?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-are-superbuild-extension-packaged">How are Superbuild extension packaged?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-to-build-a-custom-slicer-package-with-additional-extensions-bundled">How to build a custom Slicer package with additional extensions bundled?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#can-an-extension-depend-on-other-extensions">Can an extension depend on other extensions?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-dependent-extensions-are-configured-and-built">How dependent extensions are configured and built?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#what-are-the-extension-specific-targets-install-package-packageupload">What are the extension specific targets: INSTALL, PACKAGE, packageupload, …?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#is-launch-flag-available-for-a-macosx-installed-slicer-app">Is –launch flag available for a MacOSX installed Slicer.app?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-to-check-if-an-extension-is-built-by-slicer-extensions-build-system">How to check if an extension is built by Slicer Extensions build system?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-often-extensions-are-uploaded-on-the-extensions-server">How often extensions are uploaded on the extensions server?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#will-an-extension-be-uploaded-if-associated-tests-are-failing">Will an extension be uploaded if associated tests are failing?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-do-i-associate-a-remote-with-my-local-extension-git-source-directory">How do I associate a remote with my local extension git source directory?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#which-remote-name-is-expected-for-extension-git-checkout">Which remote name is expected for extension git checkout?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#why-extensionwizard-failed-to-describe-extension-script-does-not-set-extension-homepage">Why ExtensionWizard failed to describe extension: “script does not set ‘EXTENSION_HOMEPAGE’”?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#is-project-statement-allowed-in-extension-cmakelists-txt">Is project() statement allowed in extension CMakeLists.txt?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#is-call-to-if-not-slicer-source-dir-required-to-protect-find-package-slicer-in-extension-cmakelists-txt">Is call to “if(NOT Slicer_SOURCE_DIR)” required to protect “find_package(Slicer)” in extension CMakeLists.txt?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#why-is-the-contribute-option-is-not-available-with-the-extensionwizard">Why is the –contribute option is not available with the ExtensionWizard?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-to-package-third-party-libraries">How to package third party libraries?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#can-i-use-c-14-17-20-language-features">Can I use C++14/17/20 language features?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-do-i-publish-a-paper-about-my-extension">How do I publish a paper about my extension?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-to-force-slicer-to-download-extensions-corresponding-to-a-different-slicer-revision">How to force Slicer to download extensions corresponding to a different Slicer revision?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensions.html#how-to-address-itk-test-driver-caught-an-itk-exception-could-not-create-io-object-for-reading-file">How to address ITK test driver caught an ITK exception “Could not create IO object for reading file”?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python_faq.html">Python FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#what-is-the-slicer-python-environment">What is the Slicer Python environment?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#what-is-the-pythonslicer-executable">What is the PythonSlicer executable?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#what-is-the-python-console">What is the Python Console?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-access-slicer-s-python-api-via-an-external-program-while-slicer-is-running">How to access Slicer’s Python API via an external program while Slicer is running?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-run-a-cli-module-from-python">How to run a CLI module from Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python_faq.html#get-list-of-parameter-names">Get list of parameter names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python_faq.html#passing-markups-point-list-to-clis">Passing markups point list to CLIs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python_faq.html#running-cli-in-the-background">Running CLI in the background</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-use-a-loadable-module-from-python">How to use a loadable module from Python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python_faq.html#calling-methods-of-a-module-logic">Calling methods of a module logic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python_faq.html#adding-reusable-widgets-provided-by-modules">Adding reusable widgets provided by modules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-find-a-python-function-for-any-slicer-features">How to find a Python function for any Slicer features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-connect-gui-widget-events-to-python-code">How to connect GUI widget events to Python code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-run-an-external-python-script-as-a-cli-module">How to run an external Python script as a CLI module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-type-file-paths-in-python">How to type file paths in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-modify-a-python-scripted-module">How to modify a Python scripted module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#how-to-include-python-modules-in-an-extension">How to include Python modules in an extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html#can-i-use-any-python-package-in-a-slicer-module">Can I use any Python package in a Slicer module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="script_repository.html">Script repository</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#install-slicer">Install Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#launch-slicer">Launch Slicer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#open-a-file-with-slicer-at-the-command-line">Open a file with Slicer at the command line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#open-an-mrb-file-with-slicer-at-the-command-line">Open an .mrb file with Slicer at the command line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#run-python-commands-in-the-slicer-environment">Run Python commands in the Slicer environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#run-a-python-script-file-in-the-slicer-environment">Run a Python script file in the Slicer environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#launch-slicer-directly-from-a-web-browser">Launch Slicer directly from a web browser</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#mrml-scene">MRML scene</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-mrml-node-from-the-scene">Get MRML node from the scene</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#clone-a-node">Clone a node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#save-a-node-to-file">Save a node to file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#save-the-scene-into-a-single-mrb-file">Save the scene into a single MRB file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#save-the-scene-into-a-new-directory">Save the scene into a new directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#override-default-scene-save-dialog">Override default scene save dialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#override-application-close-behavior">Override application close behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-default-output-file-type-for-new-nodes">Change default output file type for new nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-file-type-for-saving-for-existing-nodes">Change file type for saving for existing nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#module-selection">Module selection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#switch-to-a-different-module">Switch to a different module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#set-a-new-default-module-at-startup">Set a new default module at startup</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#views">Views</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#display-text-in-a-3d-view-or-slice-view">Display text in a 3D view or slice view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#activate-hanging-protocol-by-keyboard-shortcut">Activate hanging protocol by keyboard shortcut</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-orientation-marker-in-all-views">Show orientation marker in all views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-view-axis-labels">Change view axis labels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#hide-view-controller-bars">Hide view controller bars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#hide-slicer-logo-from-main-window">Hide Slicer logo from main window</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#customize-widgets-in-view-controller-bars">Customize widgets in view controller bars</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#display-a-node-in-only-some-views">Display a node in only some views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-current-mouse-coordinates-in-a-slice-view">Get current mouse coordinates in a slice view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#display-crosshair-at-a-3d-position">Display crosshair at a 3D position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-the-crosshair-color">Change the crosshair color</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#display-mouse-pointer-coordinates-in-alternative-coordinate-system">Display mouse pointer coordinates in alternative coordinate system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-3d-coordinates-from-2d-display-coordinates">Get 3D coordinates from 2D display coordinates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-dataprobe-text">Get DataProbe text</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-custom-color-table">Create custom color table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-color-legend-for-a-volume-node">Show color legend for a volume node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-custom-color-map-and-display-color-legend">Create custom color map and display color legend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#customize-view-layout">Customize view layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#turn-on-slice-intersections">Turn on slice intersections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#hide-slice-view-annotations">Hide slice view annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-slice-offset">Change slice offset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-slice-orientation">Change slice orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#measure-angle-between-two-slice-planes">Measure angle between two slice planes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#set-slice-position-and-orientation-from-a-normal-vector-and-position">Set slice position and orientation from a normal vector and position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-slice-views-in-3d-window">Show slice views in 3D window</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-default-slice-view-orientation">Change default slice view orientation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#set-all-slice-views-linked-by-default">Set all slice views linked by default</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#set-crosshair-jump-mode-to-centered-by-default">Set crosshair jump mode to centered by default</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#set-up-custom-units-in-slice-view-ruler">Set up custom units in slice view ruler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#center-the-3d-view-on-the-scene">Center the 3D view on the scene</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#rotate-the-3d-view">Rotate the 3D View</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-3d-view-background-color">Change 3D view background color</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-box-color-in-3d-view">Change box color in 3D view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-a-slice-view-outside-the-view-layout">Show a slice view outside the view layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-a-3d-view-outside-the-view-layout">Show a 3D view outside the view layout</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#access-vtk-rendering-classes">Access VTK rendering classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-vtk-views-renderers-and-cameras">Access VTK views, renderers, and cameras</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-displayable-manager-of-a-certain-type-for-a-certain-view">Get displayable manager of a certain type for a certain view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-vtk-actor-properties">Access VTK actor properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#keyboard-shortcuts-and-mouse-gestures">Keyboard shortcuts and mouse gestures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#customize-keyboard-shortcuts">Customize keyboard shortcuts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#customize-keyboard-mouse-gestures-in-viewers">Customize keyboard/mouse gestures in viewers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#disable-certain-user-interactions-in-slice-views">Disable certain user interactions in slice views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#add-keyboard-shortcut-to-jump-to-center-or-world-coordinate-system">Add keyboard shortcut to jump to center or world coordinate system</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#launch-external-applications">Launch external applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#launch-external-process-in-startup-environment">Launch external process in startup environment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#manage-extensions">Manage extensions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#download-and-install-extension">Download and install extension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#install-a-module-directly-from-a-git-repository">Install a module directly from a git repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#install-a-python-package">Install a Python package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#dicom">DICOM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#load-dicom-files-into-the-scene-from-a-folder">Load DICOM files into the scene from a folder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#import-dicom-files-into-the-application-s-dicom-database">Import DICOM files into the application’s DICOM database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#import-dicom-files-using-dicomweb">Import DICOM files using DICOMweb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-top-level-tags-of-dicom-images-imported-into-slicer">Access top level tags of DICOM images imported into Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-dicom-tags-nested-in-a-sequence">Access DICOM tags nested in a sequence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-tag-of-a-scalar-volume-loaded-from-dicom">Access tag of a scalar volume loaded from DICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-tag-of-an-item-in-the-subject-hierarchy-tree">Access tag of an item in the Subject Hierarchy tree</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-path-and-filename-of-a-scalar-volume-node-loaded-from-dicom">Get path and filename of a scalar volume node loaded from DICOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#convert-dicom-to-nrrd-on-the-command-line">Convert DICOM to NRRD on the command line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-a-volume-to-dicom-file-format">Export a volume to DICOM file format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-a-segmentation-to-dicom-segmentation-object">Export a segmentation to DICOM segmentation object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-dicom-series-from-the-database-to-research-file-format">Export DICOM series from the database to research file format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#customize-table-columns-in-dicom-browser">Customize table columns in DICOM browser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#query-and-retrieve-data-from-a-pacs-using-classic-dimse-dicom-networking">Query and retrieve data from a PACS using classic DIMSE DICOM networking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#query-and-retrieve-data-from-a-pacs-using-classic-dimse-dicom-networking-with-the-experimental-ctkdicomvisualbrowser">Query and retrieve data from a PACS using classic DIMSE DICOM networking with the (experimental) ctkDICOMVisualBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#query-and-retrieve-data-from-a-pacs-using-classic-dimse-dicom-networking-with-the-experimental-ctkdicomscheduler-no-ui-needed">Query and retrieve data from a PACS using classic DIMSE DICOM networking with the (experimental) ctkDICOMScheduler (no UI needed)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#send-data-to-a-pacs-using-classic-dimse-dicom-networking">Send data to a PACS using classic DIMSE DICOM networking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#send-data-to-a-pacs-using-dicomweb-networking">Send data to a PACS using DICOMweb networking</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#convert-rt-structure-set-to-labelmap-nrrd-files">Convert RT structure set to labelmap NRRD files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#run-a-dcmtk-command-line-tool">Run a DCMTK Command Line Tool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#additional-notes">Additional Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#markups">Markups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#save-markups-to-file">Save markups to file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#load-markups-from-file">Load markups from file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#load-markups-point-list-from-file">Load markups point list from file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#adding-control-points-programmatically">Adding control points Programmatically</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#how-to-draw-a-curve-using-control-points-stored-in-a-numpy-array">How to draw a curve using control points stored in a numpy array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#add-a-button-to-module-gui-to-activate-control-point-placement">Add a button to module GUI to activate control point placement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#adding-control-points-via-mouse-clicks">Adding control points via mouse clicks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-to-markups-point-list-properties">Access to markups point list Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#define-edit-a-circular-region-of-interest-in-a-slice-viewer">Define/edit a circular region of interest in a slice viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#specify-a-sphere-by-multiple-control-points">Specify a sphere by multiple control points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#fit-markups-roi-to-volume">Fit markups ROI to volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#fit-markups-plane-to-model">Fit markups plane to model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#measure-angle-between-two-markup-planes">Measure angle between two markup planes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#measure-angle-between-two-markup-lines">Measure angle between two markup lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#project-a-line-to-a-plane">Project a line to a plane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#measure-distances-of-points-from-a-plane">Measure distances of points from a plane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#measure-distances-of-points-from-a-line">Measure distances of points from a line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#set-slice-position-and-orientation-from-3-markups-control-points">Set slice position and orientation from 3 markups control points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#switching-to-markups-control-point-placement-mode">Switching to markups control point placement mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-markup-point-list-display-properties">Change markup point list display properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-a-notification-if-a-markup-control-point-position-is-modified">Get a notification if a markup control point position is modified</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#write-markup-control-point-positions-to-json-file">Write markup control point positions to JSON file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#write-markup-roi-to-json-file">Write markup ROI to JSON file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-markup-plane-json-file-outside-slicer">Create markup plane JSON file - outside Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#fit-slice-plane-to-markup-control-points">Fit slice plane to markup control points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-color-of-a-markups-node">Change color of a markups node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#display-list-of-control-points-in-my-module-s-gui">Display list of control points in my module’s GUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#pre-populate-the-scene-with-measurements">Pre-populate the scene with measurements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#copy-all-measurements-in-the-scene-to-excel">Copy all measurements in the scene to Excel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#use-markups-json-files-in-python-outside-slicer">Use markups json files in Python - outside Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#assign-custom-actions-to-markups">Assign custom actions to markups</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-a-simple-surface-mesh-as-a-model-node">Show a simple surface mesh as a model node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#measure-distance-of-points-from-surface">Measure distance of points from surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#add-a-texture-mapped-plane-to-the-scene-as-a-model">Add a texture mapped plane to the scene as a model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-scalar-values-at-surface-of-a-model">Get scalar values at surface of a model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#apply-vtk-filter-on-a-model-node">Apply VTK filter on a model node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#select-cells-of-a-model-using-markups-point-list">Select cells of a model using markups point list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-entire-scene-as-gltf">Export entire scene as glTF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-entire-scene-as-vrml">Export entire scene as VRML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-model-to-blender-including-color-by-scalar">Export model to Blender, including color by scalar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-comparison-view-of-all-model-files-a-folder">Show comparison view of all model files a folder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#rasterize-a-model-and-save-it-to-a-series-of-image-files">Rasterize a model and save it to a series of image files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#plots">Plots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#slicer-plots-displayed-in-view-layout">Slicer plots displayed in view layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#using-slicer-util-plot-utility-function">Using <code class="xref py py-func docutils literal notranslate"><span class="pre">slicer.util.plot()</span></code> utility function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#save-a-plot-as-vector-graphics-svg">Save a plot as vector graphics (.svg)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#using-matplotlib">Using matplotlib</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#screen-capture">Screen Capture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#capture-the-full-slicer-screen-and-save-it-into-a-file">Capture the full Slicer screen and save it into a file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#capture-all-the-views-save-it-into-a-file">Capture all the views save it into a file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#capture-a-single-view">Capture a single view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#capture-a-slice-view-sweep-into-a-series-of-png-files">Capture a slice view sweep into a series of PNG files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#capture-3d-view-into-png-file-with-transparent-background">Capture 3D view into PNG file with transparent background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#capture-slice-view-into-png-file-with-white-background">Capture slice view into PNG file with white background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#save-a-series-of-images-from-a-slice-view">Save a series of images from a slice view</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#segmentations">Segmentations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#load-a-3d-image-or-model-file-as-segmentation">Load a 3D image or model file as segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-a-segmentation-from-a-labelmap-volume-and-display-in-3d">Create a segmentation from a labelmap volume and display in 3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-segmentation-from-a-model-node">Create segmentation from a model node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-labelmap-node-from-segmentation-node">Export labelmap node from segmentation node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#import-export-labelmap-node-using-custom-label-value-mapping">Import/export labelmap node using custom label value mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-model-nodes-from-segmentation-node">Export model nodes from segmentation node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-a-hollow-model-from-boundary-of-solid-segment">Create a hollow model from boundary of solid segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-a-segmentation-in-3d">Show a segmentation in 3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#modify-segmentation-display-options">Modify segmentation display options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-a-representation-of-a-segment">Get a representation of a segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#convert-all-segments-using-default-path-and-conversion-parameters">Convert all segments using default path and conversion parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#convert-all-segments-using-custom-path-or-conversion-parameters">Convert all segments using custom path or conversion parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#re-convert-using-a-modified-conversion-parameter">Re-convert using a modified conversion parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-keyboard-shortcut-for-toggling-sphere-brush-for-paint-and-erase-effects">Create keyboard shortcut for toggling sphere brush for paint and erase effects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-keyboard-shortcut-for-toggling-visibility-of-a-set-of-segments">Create keyboard shortcut for toggling visibility of a set of segments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#customize-list-of-displayed-segment-editor-effects">Customize list of displayed Segment editor effects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#center-all-views-on-a-segment">Center all views on a segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#read-and-write-a-segment-as-a-numpy-array">Read and write a segment as a numpy array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-centroid-of-a-segment-in-world-ras-coordinates">Get centroid of a segment in world (RAS) coordinates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-histogram-of-a-segmented-region">Get histogram of a segmented region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-segments-visible-at-a-selected-position">Get segments visible at a selected position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#set-default-segmentation-options">Set default segmentation options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#how-to-run-segment-editor-effects-from-a-script">How to run segment editor effects from a script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#process-segment-using-a-vtk-filter">Process segment using a VTK filter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#use-segmentation-files-in-python-outside-slicer">Use segmentation files in Python - outside Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#clone-a-segment">Clone a segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#resample-segmentation-to-higher-resolution">Resample segmentation to higher resolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#quantifying-segments">Quantifying segments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#registration">Registration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#register-two-images-with-brainsfit">Register two images with BRAINSFit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#sequences">Sequences</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-voxels-of-a-4d-volume-as-numpy-array">Access voxels of a 4D volume as numpy array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-voxels-of-a-4d-volume-as-a-single-numpy-array">Access voxels of a 4D volume as a single numpy array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-index-value">Get index value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#browse-a-sequence-and-access-currently-displayed-nodes">Browse a sequence and access currently displayed nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#concatenate-all-sequences-in-the-scene-into-a-new-sequence">Concatenate all sequences in the scene into a new sequence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#plot-segments-average-intensity-over-time">Plot segments average intensity over time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-nodes-warped-by-transform-sequence">Export nodes warped by transform sequence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-a-4d-volume-in-python-outside-slicer">Create a 4D volume in Python - outside Slicer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#subject-hierarchy">Subject hierarchy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-the-pseudo-singleton-subject-hierarchy-node">Get the pseudo-singleton subject hierarchy node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-subject-hierarchy-item">Create subject hierarchy item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-subject-hierarchy-item">Get subject hierarchy item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#traverse-children-of-a-subject-hierarchy-item">Traverse children of a subject hierarchy item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#manipulate-subject-hierarchy-item">Manipulate subject hierarchy item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#filter-items-in-treeview-or-combobox">Filter items in TreeView or ComboBox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#listen-to-subject-hierarchy-item-events">Listen to subject hierarchy item events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#subject-hierarchy-plugin-offering-view-context-menu-action">Subject hierarchy plugin offering view context menu action</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#use-allowlist-to-customize-view-menu">Use allowlist to customize view menu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#save-files-to-directory-structure-matching-subject-hierarchy-folders">Save files to directory structure matching subject hierarchy folders</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#tractography">Tractography</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-a-tract-fiberbundle-to-blender-including-color">Export a tract (FiberBundle) to Blender, including color</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#iterate-over-tract-fiberbundle-streamline-points">Iterate over tract (FiberBundle) streamline points</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#transforms">Transforms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-a-notification-if-a-transform-is-modified">Get a notification if a transform is modified</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#rotate-a-node-around-a-specified-point">Rotate a node around a specified point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#rotate-a-node-around-a-specified-line">Rotate a node around a specified line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#convert-between-itk-and-slicer-linear-transforms">Convert between ITK and Slicer linear transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#apply-a-transform-to-a-transformable-node">Apply a transform to a transformable node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#set-a-transformation-matrix-from-a-numpy-array">Set a transformation matrix from a numpy array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#example-of-moving-a-volume-along-a-trajectory-using-a-transform">Example of moving a volume along a trajectory using a transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#combine-multiple-transforms">Combine multiple transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#convert-the-transform-to-a-grid-transform">Convert the transform to a grid transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#export-the-displacement-magnitude-of-the-transform-as-a-volume">Export the displacement magnitude of the transform as a volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#visualize-the-displacement-magnitude-as-a-color-volume">Visualize the displacement magnitude as a color volume</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#volumes">Volumes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#load-volume-from-file">Load volume from file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#save-volume-to-file">Save volume to file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#load-volume-from-vti-file">Load volume from .vti file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#load-volume-from-a-remote-server">Load volume from a remote server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-volume-rendering-automatically-when-a-volume-is-loaded">Show volume rendering automatically when a volume is loaded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-volume-rendering-using-maximum-intensity-projection">Show volume rendering using maximum intensity projection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-volume-rendering-making-soft-tissues-transparent">Show volume rendering making soft tissues transparent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#automatically-load-volumes-that-are-copied-into-a-folder">Automatically load volumes that are copied into a folder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#extract-slice-from-volume">Extract slice from volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#extract-randomly-oriented-slabs-of-given-shape-from-a-volume">Extract randomly oriented slabs of given shape from a volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#clone-a-volume">Clone a volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-a-new-volume">Create a new volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-a-new-volume-from-roi">Create a new volume from ROI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-value-of-a-volume-at-specific-voxel-coordinates">Get value of a volume at specific voxel coordinates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#modify-voxels-in-a-volume">Modify voxels in a volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-volume-voxel-coordinates-from-markup-control-point-ras-coordinates">Get volume voxel coordinates from markup control point RAS coordinates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-markup-control-point-ras-coordinates-from-volume-voxel-coordinates">Get markup control point RAS coordinates from volume voxel coordinates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-the-values-of-all-voxels-for-a-label-value">Get the values of all voxels for a label value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#access-values-in-a-dti-tensor-volume">Access values in a DTI tensor volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-window-level-brightness-contrast-or-colormap-of-a-volume">Change window/level (brightness/contrast) or colormap of a volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#make-mouse-left-click-and-drag-on-the-image-adjust-window-level">Make mouse left-click and drag on the image adjust window/level</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#reset-field-of-view-to-show-background-volume-maximized">Reset field of view to show background volume maximized</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#rotate-slice-views-to-volume-plane">Rotate slice views to volume plane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#iterate-over-current-visible-slice-views-and-set-foreground-and-background-images">Iterate over current visible slice views, and set foreground and background images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#show-a-volume-in-slice-views">Show a volume in slice views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#change-opacity-of-foreground-volume-in-slice-views">Change opacity of foreground volume in slice views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#turning-off-interpolation">Turning off interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#running-an-itk-filter-in-python-using-simpleitk">Running an ITK filter in Python using SimpleITK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-axial-slice-as-numpy-array">Get axial slice as numpy array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#get-reformatted-image-from-a-slice-viewer-as-numpy-array">Get reformatted image from a slice viewer as numpy array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#combine-multiple-volumes-into-one">Combine multiple volumes into one</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#add-noise-to-image">Add noise to image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#mask-volume-using-segmentation">Mask volume using segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#apply-random-deformations-to-image">Apply random deformations to image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#thick-slab-reconstruction-and-maximum-minimum-intensity-volume-projections">Thick slab reconstruction and maximum/minimum intensity volume projections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#display-volume-using-volume-rendering">Display volume using volume rendering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#apply-a-custom-volume-rendering-color-opacity-transfer-function">Apply a custom volume rendering color/opacity transfer function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#limit-volume-rendering-to-a-specific-region-of-the-volume">Limit volume rendering to a specific region of the volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#register-a-new-volume-rendering-mapper">Register a new Volume Rendering mapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#register-custom-volume-rendering-presets">Register custom volume rendering presets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#batch-processing">Batch processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#iterate-through-dicom-series">Iterate through dicom series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#extracting-volume-patches-around-segments">Extracting volume patches around segments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html#webserver">WebServer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-a-custom-web-server-instance-to-serve-static-content">Create a custom web server instance to serve static content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="script_repository.html#create-a-custom-web-server-to-handle-request-endpoints">Create a custom web server to handle request endpoints</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/overview.html">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/overview.html#extensions-for-developer-builds-of-slicer">Extensions for developer builds of Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/overview.html#custom-builds">Custom builds</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/windows.html">Windows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/windows.html#install-prerequisites">Install prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/windows.html#set-up-source-and-build-folders">Set up source and build folders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/windows.html#configure-and-build-slicer">Configure and build Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/windows.html#run-slicer">Run Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/windows.html#test-slicer">Test Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/windows.html#package-slicer-create-installer-package">Package Slicer (create installer package)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/windows.html#debug-slicer">Debug Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/windows.html#common-errors">Common errors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/macos.html">macOS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#checkout-slicer-source-files">Checkout Slicer source files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#configure-and-generate-slicer-solution-files">Configure and generate Slicer solution files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#build-slicer">Build Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#run-slicer">Run Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#test-slicer">Test Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#package-slicer">Package Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#update-homebrew-packages">Update Homebrew packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/macos.html#common-errors">Common errors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/linux.html">GNU/Linux systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/linux.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/linux.html#checkout-slicer-source-files">Checkout Slicer source files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/linux.html#configure-and-generate-the-slicer-build-project-files">Configure and generate the Slicer build project files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/linux.html#build-slicer">Build Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/linux.html#run-slicer">Run Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/linux.html#test-slicer">Test Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/linux.html#package-slicer">Package Slicer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/linux.html#common-errors">Common errors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/common_errors.html">Common errors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/common_errors.html#firewall-is-blocking-git-protocol">Firewall is blocking git protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/common_errors.html#cmake-complains-during-configuration">CMake complains during configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="build_instructions/common_errors.html#qsslsocket-is-not-a-class-or-namespace-name">‘QSslSocket’ : is not a class or namespace name</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/common_errors.html#other-errors">Other errors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="debugging/index.html">Debugging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="debugging/python.html">Python debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="debugging/python.html#profiling">Profiling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/cpp.html">C++ debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="debugging/windowscpp.html">C++ debugging on Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/linuxcpp.html">C++ debugging on GNU/Linux systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/macoscpp.html">C++ debugging on macOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/vscodecpp.html">C++ debugging with Visual Studio Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/qtcreatorcpp.html">C++ debugging with Qt Creator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/codelitecpp.html">C++ debugging with CodeLite</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/tips.html">Tips and tricks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="debugging/tips.html#debugging-tests">Debugging tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/tips.html#debugging-memory-leaks">Debugging memory leaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/tips.html#why-is-my-vtk-actor-widget-not-visible">Why is my VTK actor/widget not visible?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/tips.html#debugging-slicer-application-startup-issues">Debugging Slicer application startup issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/tips.html#disabling-features">Disabling features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="debugging/tips.html#console-output-on-windows">Console output on Windows</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Slicer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#submitting-a-pull-request">Submitting a Pull Request</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#how-to-submit-a-pr">How to submit a PR ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#how-to-efficiently-contribute">How to efficiently contribute ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#how-to-write-commit-messages">How to write commit messages ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#how-to-integrate-a-pr">How to integrate a PR ?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#automatic-testing-of-pull-requests">Automatic testing of pull requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contributing.html#nightly-tests">Nightly tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="style_guide.html">Style Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#general">General</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#toolkits-and-libraries">Toolkits and libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#languages">Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#naming-conventions">Naming conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#comments">Comments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#functions">Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#don-t-mix-different-levels-of-abstraction">Don’t mix different levels of abstraction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#file-layout">File layout</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#includes">Includes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#library-dependencies">Library Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#development-practices">Development Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#coordinate-systems">Coordinate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#string-encoding-utf-8-everywhere">String encoding: UTF-8 everywhere</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#error-and-warning-messages">Error and warning messages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#in-qt-based-classes">In Qt-based classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#in-vtk-based-classes">In VTK-based classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#commits">Commits</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#commit-message-prefix">Commit message prefix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#message-content">Message content</a></li>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#importing-changes-from-external-project-repository">Importing changes from external project/repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="style_guide.html#resources">Resources</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#ui-design-guidelines">UI Design Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html#logging">Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html#memory-management">Memory Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#pointers-to-vtk-object">Pointers to VTK object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#factory-methods">Factory methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html#working-directory">Working directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html#view-layout-definition">View layout definition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#example-simple-4-up-view-layout">Example: Simple 4-up view layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#example-layout-containing-two-viewports">Example: Layout containing two viewports</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html#event-broker">Event broker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#problem">Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#solution">Solution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#how-to-work-with-the-vtkobservermanager">How to work with the vtkObserverManager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced_topics.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../user_guide/settings.html" class="btn btn-neutral float-left" title="Application settings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="Slicer API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
