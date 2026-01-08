@@ -64,6 +64,7 @@ def main() -> int:
                 ("discovery_seg", "discovery_seg_path"),
                 ("roi_mask", "roi_mask_path"),
                 ("func_ref_fast_crop", "func_ref_fast_crop_path"),
+                ("figure", "figure_path"),
             ]
 
             all_exist = True

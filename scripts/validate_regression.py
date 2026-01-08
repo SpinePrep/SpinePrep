@@ -13,6 +13,11 @@ from pathlib import Path
 
 import yaml
 
+# Add src to path for workfolder utilities
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
+from spineprep.workfolder import get_next_workfolder
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = PROJECT_ROOT / "policy" / "datasets.yaml"
 LOCAL_MAP = PROJECT_ROOT / "config" / "datasets_local.yaml"
@@ -33,10 +38,19 @@ def main() -> int:
     """Run validation on regression datasets."""
     parser = argparse.ArgumentParser(description="Validate step on regression datasets")
     parser.add_argument("--step", required=True, help="Step code (e.g., S3_func_init_and_crop)")
-    parser.add_argument("--out", default="work/validation", help="Output directory")
+    parser.add_argument(
+        "--out",
+        default=None,
+        help="Output directory (default: auto-increment wf_reg_XXX)",
+    )
     parser.add_argument("--only-missing", action="store_true", help="Only process missing outputs")
 
     args = parser.parse_args()
+    
+    # Use canonical workfolder naming if --out not specified
+    if args.out is None:
+        work_root = PROJECT_ROOT / "work"
+        args.out = str(get_next_workfolder("reg", work_root))
 
     if not LOCAL_MAP.exists():
         print(f"ERROR: Missing datasets_local mapping: {LOCAL_MAP}", file=sys.stderr)

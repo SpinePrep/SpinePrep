@@ -75,6 +75,10 @@ def run_S1_input_verify(
         command_line=command_line,
     )
 
+    # Generate dashboard (non-blocking)
+    from spineprep.qc_dashboard import generate_dashboard_safe
+    generate_dashboard_safe(Path(out))
+
     return StepResult(
         status=status,
         failure_message=failure_message,

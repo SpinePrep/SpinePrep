@@ -12,6 +12,11 @@ import json
 import sys
 from pathlib import Path
 
+# Add src to path for workfolder utilities
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
+from spineprep.workfolder import get_next_workfolder
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -90,9 +95,18 @@ def main() -> int:
         default="reg_openneuro_ds004386_rest_subset",
         help="Dataset key for testing",
     )
-    parser.add_argument("--out", default="work/acceptance", help="Output directory")
+    parser.add_argument(
+        "--out",
+        default=None,
+        help="Output directory (default: auto-increment wf_full_XXX)",
+    )
 
     args = parser.parse_args()
+    
+    # Use canonical workfolder naming if --out not specified
+    if args.out is None:
+        work_root = PROJECT_ROOT / "work"
+        args.out = str(get_next_workfolder("full", work_root))
 
     # Extract step from ticket if not provided
     if not args.step:

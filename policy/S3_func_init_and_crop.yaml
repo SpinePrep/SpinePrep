@@ -1,0 +1,97 @@
+version: 1
+
+# Dummy volume drop: remove initial unstable frames before computing reference
+dummy:
+  # Number of dummy volumes to drop from the start of each BOLD run
+  drop_count: 4
+
+# Coarse reference: fast initial reference before outlier gating
+coarse_reference:
+  # Aggregation method: median (robust) or mean (faster, less robust)
+  method: median
+
+# Func cord localization (S2 exact spec, mandatory)
+func_localization:
+  enabled: true  # Mandatory (no optional flag)
+  method: deepseg
+  task: spinalcord
+  discover:
+    min_z_slices: 20  # Match S2 default
+    drift_gate:
+      enabled: true
+      superior_slices_check: 5
+      area_spike_threshold: 4.0
+      absolute_area_cap_mm2: 200.0
+  crop:
+    mask_diameter_mm: 60  # Configurable, default match S2
+    min_z_slices: 20
+
+# T2-to-func registration: bring cord mask from anatomy to func space
+registration:
+  # Registration type: rigid (translation+rotation) or affine (includes scaling/shearing)
+  type: rigid
+  # Metric: MI (mutual information) is robust for cross-modality
+  metric: MI
+  # Search radius (mm) - increased to explore larger alignment space and avoid poor local minima
+  search_radius_mm: 12.0
+  # Minimum acceptable correlation/MI after registration (hard FAIL below this)
+  min_metric_threshold: 0.3
+  # Interpolation for mask propagation: nn (nearest neighbor) preserves binary labels
+  mask_interpolation: nn
+  # ROI mask for destination image: constrains registration search region
+  # Created using sct_create_mask with center-based approach
+  roi_mask_diameter_mm: 40.0  # Cylindrical mask diameter in mm
+  # Two-pass registration: Pass 1 (rough) then Pass 2 (refined with propagated mask ROI)
+  two_pass_enabled: true  # Enable two-pass registration for better alignment
+  pass1_use_large_mask: true  # Use large center-based mask for Pass 1 (more inclusive)
+  # Segmentation-based registration (SCT best practice for cross-modality)
+  use_segmentation_based: true  # Enable type=seg registration (recommended)
+  seg_binarize_threshold: 0.5  # Threshold for converting ROI mask to binary seg
+
+# Outlier gating: identify motion-corrupted frames using cord-centric metrics
+outlier_gating:
+  # IQR multiplier for upper boxplot cutoff (P75 + multiplier*IQR)
+  iqr_multiplier: 1.5
+  # Metrics to use for outlier detection
+  metrics:
+    - dvars   # RMS of frame-to-frame intensity difference within mask
+    - refrms  # RMS of frame-to-reference intensity difference within mask
+  # Fraction thresholds for QC status
+  outlier_fraction_warn: 0.30  # WARN if outlier_fraction > this
+  outlier_fraction_fail: 0.50  # FAIL if outlier_fraction > this
+  # Minimum good frames required to compute robust reference
+  min_good_frames: 10
+
+# Robust reference: final reference from non-outlier frames
+robust_reference:
+  # Aggregation method: median (recommended) or mean
+  method: median
+
+# Cord-focused crop: reduce FOV to cord region
+crop:
+  # Crop mask diameter (mm) around cord centerline
+  mask_diameter_mm: 40
+  # Dilation of crop box in voxels (x, y, z) for safety margin
+  dilate_xyz: [2, 2, 0]
+  # Minimum z-slices required in cropped output (fail if fewer)
+  min_z_slices: 10
+
+# QC and reportlets
+qc:
+  # T2-to-func overlay: contour line width
+  overlay_contour_width: 2
+  # Frame metrics plot: figure size (inches)
+  frame_metrics_figsize: [10, 4]
+  # Funcref montage: number of axial slices to show
+  montage_slices: 9
+  # Crop box sagittal: show crop ROI on funcref
+
+# Cost controls: prevent accidental expensive runs
+cost_controls:
+  # Skip runs that already have PASS status with the same code_hash
+  skip_existing_pass: true
+  # Track code_hash in each run for skip decisions
+  check_code_hash: true
+  # Runtime estimation (minutes per run, assuming 48 workers)
+  estimate_per_run_minutes: 1.0
+

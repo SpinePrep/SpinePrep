@@ -9,7 +9,9 @@ standardize:
   orientation: RPI
 
 discover:
-  method: sct_propseg
+  method: deepseg
+  task: spinalcord
+  # Legacy propseg settings (kept for backward compat but ignored when method=deepseg)
   contrast_map:
     T2w: t2
     T1w: t1
@@ -19,7 +21,7 @@ crop:
   # Deprecated: size_vox, z_full (kept for backward compat but ignored)
   size_vox: [96, 96]
   z_full: true
-  mask_diameter_mm: 30
+  mask_diameter_mm: 60
   dilate_xyz: [0, 0, 0]
   min_z_slices: 20
 

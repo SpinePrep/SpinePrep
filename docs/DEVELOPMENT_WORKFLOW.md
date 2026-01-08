@@ -57,7 +57,7 @@ python3 scripts/smoke_s{N}.py
 
 ### 4. Validate
 ```bash
-# Run on regression datasets
+# Run on regression datasets (auto-creates wf_reg_XXX)
 python3 scripts/validate_regression.py --step S{N}_func_init_and_crop
 
 # Check QC outputs
@@ -66,13 +66,14 @@ poetry run spineprep check S{N}_func_init_and_crop --dataset-key <key> --out <ou
 
 **Validation Process:**
 - Runs step on all regression dataset keys
+- Automatically uses canonical workfolder naming (`wf_reg_XXX`)
 - Verifies QC outputs are generated
 - Checks QC JSON structure and required fields
 - Reports any failures
 
 ### 5. Accept
 ```bash
-# Run acceptance tests
+# Run acceptance tests (auto-creates wf_full_XXX)
 python3 scripts/acceptance_test.py --ticket BUILD-S{N}-T{i}
 
 # Verify acceptance criteria met
@@ -84,6 +85,7 @@ python3 scripts/acceptance_test.py --ticket BUILD-S{N}-T{i} --step S{N}_func_ini
 - QC JSON is valid and contains required fields
 - All acceptance commands exit with code 0
 - QC status is PASS or WARN (not FAIL)
+- Automatically uses canonical workfolder naming (`wf_full_XXX`)
 
 ## Quick Reference
 
@@ -156,6 +158,22 @@ Every step must produce:
 - **QC JSON**: Machine-readable status (`{OUT}/logs/{STEP}/{DATASET_KEY}/qc_status.json`)
 - **Reportlets**: Human-readable figures (PNG files in `derivatives/spineprep/.../figures/`)
 - **Artifacts**: Required outputs as specified in ROADMAP
+
+## Work Directory Naming
+
+Work directories follow a canonical naming convention:
+- **`wf_smoke_XXX`**: Smoke tests (quick validation on minimal test data)
+- **`wf_reg_XXX`**: Regression validation (runs on regression dataset keys)
+- **`wf_full_XXX`**: Full runs (v1 validation datasets, acceptance tests)
+
+Scripts automatically use the next available number (e.g., `wf_full_001`, `wf_full_002`, etc.).
+You can override with `--out` if needed.
+
+To migrate existing directories to the new naming:
+```bash
+python3 scripts/migrate_workfolders.py --dry-run  # Preview changes
+python3 scripts/migrate_workfolders.py            # Apply migration
+```
 
 ## Regression Datasets
 

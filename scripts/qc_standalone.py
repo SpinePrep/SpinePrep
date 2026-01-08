@@ -32,11 +32,19 @@ def main() -> int:
     out_root = work_root / "qc_standalone"
     out_root.mkdir(parents=True, exist_ok=True)
 
-    # Look for datasets in both *_acceptance/* and s2_regression/* patterns
-    dataset_dirs = sorted(
-        list(work_root.glob("*_acceptance/*")) + list(work_root.glob("s2_regression/*"))
-    )
-    dataset_dirs = [p for p in dataset_dirs if p.is_dir()]
+    # Look for datasets in canonical workfolder patterns: wf_full_*/* and wf_reg_*/*
+    # Also support legacy patterns for backward compatibility
+    dataset_dirs = []
+    
+    # Canonical patterns
+    for pattern in ["wf_full_*/*", "wf_reg_*/*"]:
+        dataset_dirs.extend(work_root.glob(pattern))
+    
+    # Legacy patterns (backward compatibility)
+    for pattern in ["*_acceptance/*", "s2_regression/*"]:
+        dataset_dirs.extend(work_root.glob(pattern))
+    
+    dataset_dirs = sorted([p for p in dataset_dirs if p.is_dir()])
     datasets = []
     for dataset_dir in dataset_dirs:
         logs_dir = dataset_dir / "logs"
@@ -104,7 +112,7 @@ def build_index(datasets: list[dict], out_root: Path) -> None:
         "</head>",
         "<body>",
         "<h1>SpinePrep QC</h1>",
-        "<p class=\"muted\">Generated from work/*_acceptance and work/s2_regression outputs.</p>",
+        "<p class=\"muted\">Generated from work/wf_full_* and work/wf_reg_* outputs.</p>",
     ]
     if not datasets:
         lines.append("<p>No QC data found.</p>")

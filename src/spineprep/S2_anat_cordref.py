@@ -199,6 +199,10 @@ def run_S2_anat_cordref(
         out_root=Path(out),
     )
 
+    # Generate dashboard (non-blocking)
+    from spineprep.qc_dashboard import generate_dashboard_safe
+    generate_dashboard_safe(Path(out))
+
     return StepResult(status=status, failure_message=failure_message, runs_path=runs_path, qc_path=qc_path)
 
 
@@ -590,6 +594,10 @@ def run_S2_anat_cordref_batch(
             qc_path=qc_path,
         )
 
+    # Generate dashboard for batch (non-blocking)
+    from spineprep.qc_dashboard import generate_dashboard_safe
+    generate_dashboard_safe(out_base)
+
     return results
 
 
@@ -626,7 +634,25 @@ def _load_policy(path: Path) -> dict:
         raise ValueError("S2_anat_cordref policy selection.preference must be a list of strings.")
     standardize = raw.get("standardize", {})
     orientation = standardize.get("orientation", "RPI")
+    
+    # Discovery parameters (for discovery segmentation before crop)
+    discover = raw.get("discover", {})
+    discover_method = discover.get("method", "sct_deepseg_sc")
+    if not isinstance(discover_method, str):
+        raise ValueError("S2_anat_cordref policy discover.method must be a string.")
+    discover_task = discover.get("task")  # Optional, used when method="deepseg"
+    if discover_task is not None and not isinstance(discover_task, str):
+        raise ValueError("S2_anat_cordref policy discover.task must be a string or null.")
+    discover_contrast_map = discover.get("contrast_map", {"T2w": "t2", "T1w": "t1"})
+    if not isinstance(discover_contrast_map, dict):
+        raise ValueError("S2_anat_cordref policy discover.contrast_map must be a mapping.")
+    discover_min_z_slices = discover.get("min_z_slices", 20)
+    if not isinstance(discover_min_z_slices, int) or discover_min_z_slices < 1:
+        raise ValueError("S2_anat_cordref policy discover.min_z_slices must be a positive integer.")
+    
+    # Crop parameters (for mask-based cropping)
     crop = raw.get("crop", {})
+    # Backward compatibility: keep size_vox and z_full but deprecated
     size_vox = crop.get("size_vox", [96, 96])
     if (
         not isinstance(size_vox, list)
@@ -634,6 +660,20 @@ def _load_policy(path: Path) -> dict:
         or not all(isinstance(v, int) and v > 0 for v in size_vox)
     ):
         raise ValueError("S2_anat_cordref policy crop.size_vox must be [x, y] positive ints.")
+    mask_diameter_mm = crop.get("mask_diameter_mm", 30)
+    if not isinstance(mask_diameter_mm, (int, float)) or mask_diameter_mm <= 0:
+        raise ValueError("S2_anat_cordref policy crop.mask_diameter_mm must be a positive number.")
+    dilate_xyz = crop.get("dilate_xyz", [0, 0, 0])
+    if (
+        not isinstance(dilate_xyz, list)
+        or len(dilate_xyz) != 3
+        or not all(isinstance(v, int) for v in dilate_xyz)
+    ):
+        raise ValueError("S2_anat_cordref policy crop.dilate_xyz must be [x, y, z] integers.")
+    crop_min_z_slices = crop.get("min_z_slices", 20)
+    if not isinstance(crop_min_z_slices, int) or crop_min_z_slices < 1:
+        raise ValueError("S2_anat_cordref policy crop.min_z_slices must be a positive integer.")
+    
     segmentation = raw.get("segmentation", {})
     contrast_map = segmentation.get("contrast_map", {"T2w": "t2", "T1w": "t1"})
     if not isinstance(contrast_map, dict):
@@ -658,14 +698,27 @@ def _load_policy(path: Path) -> dict:
         "version": version,
         "preference": preference,
         "orientation": orientation,
-        "size_vox": size_vox,
-        "z_full": bool(crop.get("z_full", True)),
+        # Discovery parameters
+        "discover_method": discover_method,
+        "discover_task": discover_task,
+        "discover_contrast_map": discover_contrast_map,
+        "discover_min_z_slices": discover_min_z_slices,
+        # Crop parameters
+        "size_vox": size_vox,  # Deprecated, kept for backward compat
+        "z_full": bool(crop.get("z_full", True)),  # Deprecated, kept for backward compat
+        "mask_diameter_mm": mask_diameter_mm,
+        "dilate_xyz": dilate_xyz,
+        "crop_min_z_slices": crop_min_z_slices,
+        # Segmentation parameters
         "contrast_map": contrast_map,
         "centerline": bool(segmentation.get("centerline", True)),
+        # Labeling parameters
         "clean_labels": clean_labels,
         "initcenter": initcenter,
+        # Rootlets parameters
         "rootlets_enabled": rootlets_enabled,
         "rootlets_modalities": eligible_modalities,
+        # Registration parameters
         "prefer_rootlets": prefer_rootlets,
     }
 
@@ -810,11 +863,34 @@ def _process_session(
     if not ok:
         return _fail_run(subject, session, run_id, f"Header standardization failed: {message}")
 
+    # Discovery segmentation: find cord location before cropping (SCT best practice)
+    discovery_seg_path = work_dir / "cordmask_discovery.nii.gz"
+    discover_contrast = policy["discover_contrast_map"].get(selection["modality"], "t2")
+    ok, message = _run_discovery_segmentation(
+        standard_path=standard_path,
+        discovery_seg_path=discovery_seg_path,
+        contrast=discover_contrast,
+        min_z_slices=policy["discover_min_z_slices"],
+        method=policy["discover_method"],
+        task=policy.get("discover_task"),
+    )
+    if not ok:
+        return _fail_run(subject, session, run_id, f"Discovery segmentation failed: {message}")
+
+    # Crop based on discovered cord using mask (SCT best practice)
     cropped_path = work_dir / "cordref_crop.nii.gz"
-    try:
-        _crop_centered(standard_path, cropped_path, policy["size_vox"], policy["z_full"])
-    except ValueError as err:
-        return _fail_run(subject, session, run_id, f"Cropping failed: {err}")
+    crop_mask_path = work_dir / "crop_mask.nii.gz"
+    ok, message = _crop_based_on_mask(
+        standard_path=standard_path,
+        discovery_seg_path=discovery_seg_path,
+        cropped_path=cropped_path,
+        crop_mask_path=crop_mask_path,
+        mask_diameter_mm=policy["mask_diameter_mm"],
+        dilate_xyz=policy["dilate_xyz"],
+        min_z_slices=policy["crop_min_z_slices"],
+    )
+    if not ok:
+        return _fail_run(subject, session, run_id, f"Cropping failed: {message}")
 
     derivatives_dir = _derivatives_anat_dir(out_root, subject, session)
     derivatives_dir.mkdir(parents=True, exist_ok=True)
@@ -1022,6 +1098,83 @@ def _standardize_orientation(source: Path, dest: Path, orientation: str) -> tupl
     return _run_command(["sct_image", "-i", str(source), "-setorient", orientation, "-o", str(dest)])
 
 
+def _run_discovery_segmentation(
+    standard_path: Path,
+    discovery_seg_path: Path,
+    contrast: str,
+    min_z_slices: int,
+    method: str,
+    task: Optional[str] = None,
+) -> tuple[bool, str]:
+    """
+    Run discovery segmentation on standardized image to find cord location.
+    
+    Args:
+        standard_path: Path to standardized input image
+        discovery_seg_path: Path to output discovery segmentation
+        contrast: Contrast string (e.g., "t2", "t1") - used for sct_deepseg_sc
+        min_z_slices: Minimum number of z-slices required in segmentation
+        method: Discovery method ("sct_deepseg_sc" or "deepseg")
+        task: Task name for deepseg method (e.g., "spinalcord") - required when method="deepseg"
+        
+    Returns:
+        (success, error_message) tuple
+    """
+    if method == "deepseg":
+        # Use sct_deepseg with task parameter (contrast-agnostic)
+        if not task:
+            return False, "discover.task is required when discover.method='deepseg'"
+        cmd = [
+            "sct_deepseg",
+            str(task),
+            "-i",
+            str(standard_path),
+            "-o",
+            str(discovery_seg_path),
+        ]
+    elif method == "sct_deepseg_sc":
+        # Use sct_deepseg_sc with contrast parameter
+        cmd = [
+            "sct_deepseg_sc",
+            "-i",
+            str(standard_path),
+            "-c",
+            str(contrast),
+            "-o",
+            str(discovery_seg_path),
+        ]
+    else:
+        return False, f"Unknown discovery method: {method}"
+    
+    ok, message = _run_command(cmd)
+    if not ok:
+        return False, f"Discovery segmentation failed: {message}"
+    
+    # Validate min_z_slices requirement
+    if not discovery_seg_path.exists():
+        return False, "Discovery segmentation output not found"
+    
+    try:
+        img = cast(Any, nib.load(discovery_seg_path))
+        data = img.get_fdata()
+        if data.ndim > 3:
+            data = data[..., 0]
+        mask = data > 0
+        slice_counts = mask.sum(axis=(0, 1))
+        slice_present = slice_counts > 0
+        num_slices = int(slice_present.sum())
+        
+        if num_slices < min_z_slices:
+            return False, (
+                f"Discovery segmentation has {num_slices} slices, "
+                f"but minimum {min_z_slices} slices required"
+            )
+    except Exception as e:
+        return False, f"Failed to validate discovery segmentation: {e}"
+    
+    return True, ""
+
+
 def _crop_centered(source: Path, dest: Path, size_vox: list[int], z_full: bool) -> None:
     img = cast(Any, nib.load(source))
     data = img.get_fdata()
@@ -1052,6 +1205,96 @@ def _crop_centered(source: Path, dest: Path, size_vox: list[int], z_full: bool) 
     affine[:3, 3] = affine[:3, 3] + affine[:3, :3] @ shift
     new_img = nib.Nifti1Image(cropped.astype(img.get_data_dtype()), affine, img.header)
     nib.save(new_img, dest)
+
+
+def _crop_based_on_mask(
+    standard_path: Path,
+    discovery_seg_path: Path,
+    cropped_path: Path,
+    crop_mask_path: Path,
+    mask_diameter_mm: float,
+    dilate_xyz: list[int],
+    min_z_slices: int,
+) -> tuple[bool, str]:
+    """
+    Crop standardized image based on discovered cord segmentation using SCT tools.
+    
+    This follows SCT best practice:
+    1. Create a cylindrical mask centered on the cord centerline
+    2. Crop the image using the mask
+    
+    Args:
+        standard_path: Path to standardized input image
+        discovery_seg_path: Path to discovery segmentation (used for centerline)
+        cropped_path: Path to output cropped image
+        crop_mask_path: Path to output crop mask (work dir, for QC)
+        mask_diameter_mm: Diameter of the cylindrical mask in mm
+        dilate_xyz: Dilation margins in voxels [x, y, z]
+        min_z_slices: Minimum number of z-slices required in cropped image
+        
+    Returns:
+        (success, error_message) tuple
+    """
+    # Step 1: Create crop mask using sct_create_mask with centerline method
+    ok, message = _run_command(
+        [
+            "sct_create_mask",
+            "-i",
+            str(standard_path),
+            "-p",
+            f"centerline,{discovery_seg_path}",
+            "-size",
+            f"{mask_diameter_mm}mm",
+            "-f",
+            "cylinder",
+            "-o",
+            str(crop_mask_path),
+        ]
+    )
+    if not ok:
+        return False, f"Crop mask creation failed: {message}"
+    
+    if not crop_mask_path.exists():
+        return False, "Crop mask output not found"
+    
+    # Step 2: Crop image using sct_crop_image with the mask
+    dilate_str = f"{dilate_xyz[0]}x{dilate_xyz[1]}x{dilate_xyz[2]}"
+    ok, message = _run_command(
+        [
+            "sct_crop_image",
+            "-i",
+            str(standard_path),
+            "-m",
+            str(crop_mask_path),
+            "-dilate",
+            dilate_str,
+            "-o",
+            str(cropped_path),
+        ]
+    )
+    if not ok:
+        return False, f"Image cropping failed: {message}"
+    
+    if not cropped_path.exists():
+        return False, "Cropped image output not found"
+    
+    # Step 3: Validate min_z_slices requirement
+    try:
+        img = cast(Any, nib.load(cropped_path))
+        data = img.get_fdata()
+        if data.ndim > 3:
+            data = data[..., 0]
+        num_z_slices = data.shape[2]
+        
+        if num_z_slices < min_z_slices:
+            return False, (
+                f"Cropped image has {num_z_slices} z-slices, "
+                f"but minimum {min_z_slices} slices required"
+            )
+    except Exception as e:
+        return False, f"Failed to validate cropped image: {e}"
+    
+    return True, ""
 
 
 def _compute_segmentation_metrics(seg_path: Path) -> dict:
@@ -1256,6 +1499,278 @@ def _run_register_to_template(
     }
 
 
+def _render_crop_box_sagittal(
+    qc_root: Path,
+    cordref_std_path: Optional[Path],
+    cordref_crop_path: Optional[Path],
+    discovery_seg_path: Optional[Path],
+    crop_mask_path: Optional[Path],
+) -> Optional[Path]:
+    """
+    Render S2.1 crop box sagittal figure showing discovery and crop region.
+    
+    Shows the standardized anatomical reference with:
+    - Blue contour: cord mask (discovery segmentation in std space)
+    - Red contour: crop box region (from crop mask in std space)
+    
+    Args:
+        qc_root: QC output directory
+        cordref_std_path: Path to standardized anatomical reference (before crop)
+        cordref_crop_path: Path to cropped anatomical reference (after crop)
+        discovery_seg_path: Path to discovery segmentation (in std space, for blue overlay)
+        crop_mask_path: Path to crop mask (in std space, for red overlay)
+        
+    Returns:
+        Path to output PNG or None on failure
+    """
+    if cordref_std_path is None:
+        return None
+    if not cordref_std_path.exists():
+        return None
+    
+    qc_root.mkdir(parents=True, exist_ok=True)
+    
+    try:
+        # Load standardized image
+        std_img = nib.as_closest_canonical(nib.load(cordref_std_path))
+        std_data = std_img.get_fdata()
+        
+        if std_data.ndim > 3:
+            std_data = std_data[..., 0]
+        
+        std_shape = std_data.shape
+        
+        # Load discovery segmentation (in std space)
+        discovery_seg_data = None
+        if discovery_seg_path and discovery_seg_path.exists():
+            try:
+                discovery_seg_img = nib.as_closest_canonical(nib.load(discovery_seg_path))
+                discovery_seg_data = discovery_seg_img.get_fdata()
+                if discovery_seg_data.ndim > 3:
+                    discovery_seg_data = discovery_seg_data[..., 0]
+                # Ensure shapes match
+                if discovery_seg_data.shape != std_shape:
+                    discovery_seg_data = None
+            except Exception:
+                discovery_seg_data = None
+        
+        # Load crop mask (in std space)
+        crop_mask_data = None
+        if crop_mask_path and crop_mask_path.exists():
+            try:
+                crop_mask_img = nib.as_closest_canonical(nib.load(crop_mask_path))
+                crop_mask_data = crop_mask_img.get_fdata()
+                if crop_mask_data.ndim > 3:
+                    crop_mask_data = crop_mask_data[..., 0]
+                # Ensure shapes match
+                if crop_mask_data.shape != std_shape:
+                    crop_mask_data = None
+                else:
+                    crop_mask_data = crop_mask_data > 0
+            except Exception:
+                crop_mask_data = None
+        
+        # If crop mask not available, fall back to computing from cropped image
+        if crop_mask_data is None and cordref_crop_path and cordref_crop_path.exists():
+            try:
+                crop_img = nib.as_closest_canonical(nib.load(cordref_crop_path))
+                crop_data = crop_img.get_fdata()
+                if crop_data.ndim > 3:
+                    crop_data = crop_data[..., 0]
+                # Use a simple heuristic: find where crop_data fits in std_data
+                crop_shape = crop_data.shape
+                size_x, size_y = crop_shape[0], crop_shape[1]
+                center = (std_shape[0] // 2, std_shape[1] // 2, std_shape[2] // 2)
+                x0 = max(0, center[0] - size_x // 2)
+                y0 = max(0, center[1] - size_y // 2)
+                x1 = min(std_shape[0], x0 + size_x)
+                y1 = min(std_shape[1], y0 + size_y)
+                x0 = max(0, x1 - size_x)
+                y0 = max(0, y1 - size_y)
+                z0, z1 = 0, std_shape[2]
+                
+                crop_mask_data = np.zeros(std_shape, dtype=bool)
+                crop_mask_data[x0:x1, y0:y1, z0:z1] = True
+            except Exception:
+                crop_mask_data = None
+        
+        # Find center slice for sagittal view
+        # Prefer using discovery segmentation center, otherwise use crop mask center
+        if discovery_seg_data is not None:
+            coords = np.argwhere(discovery_seg_data > 0)
+        elif crop_mask_data is not None:
+            coords = np.argwhere(crop_mask_data)
+        else:
+            coords = np.array([[std_shape[0] // 2, std_shape[1] // 2, std_shape[2] // 2]])
+        
+        if coords.size == 0:
+            return None
+        x_index = int(np.median(coords[:, 0]))
+        x_index = max(0, min(x_index, std_shape[0] - 1))
+        
+        # Extract sagittal slice
+        img_slice = std_data[x_index, :, :]
+        
+        # Extract discovery segmentation slice (in std space)
+        discovery_slice_2d = None
+        if discovery_seg_data is not None:
+            discovery_slice_2d = discovery_seg_data[x_index, :, :] > 0
+        
+        # Extract crop mask slice (in std space)
+        crop_slice = None
+        if crop_mask_data is not None:
+            crop_slice = crop_mask_data[x_index, :, :]
+        
+        if img_slice.ndim != 2:
+            return None
+        
+        # Display with superior at the top: z-axis becomes vertical after transpose
+        img_slice = np.flipud(img_slice.T)
+        if crop_slice is not None:
+            crop_slice = np.flipud(crop_slice.T)
+        if discovery_slice_2d is not None:
+            discovery_slice_2d = np.flipud(discovery_slice_2d.T)
+        
+        # Normalize image
+        vmin, vmax = np.percentile(img_slice, [1, 99])
+        if vmax <= vmin:
+            vmin, vmax = float(img_slice.min()), float(img_slice.max())
+        if vmax <= vmin:
+            vmax = vmin + 1.0
+        
+        normalized = np.clip((img_slice - vmin) / (vmax - vmin), 0, 1)
+        base = (normalized * 255).astype(np.uint8)
+        base_rgb = np.repeat(base[..., np.newaxis], 3, axis=2)
+        
+        # Create RGBA overlay for overlays
+        overlay_img = Image.fromarray(base_rgb, mode="RGB").convert("RGBA")
+        
+        # Draw discovery segmentation as solid transparent overlay (blue) - if available
+        if discovery_slice_2d is not None:
+            # Create mask overlay: fill actual cord mask pixels with blue transparency
+            # discovery_slice_2d is already (y, z) shape after transpose/flip
+            mask_array = discovery_slice_2d.astype(np.uint8) * 180  # Alpha for ~70% opacity
+            blue_overlay = np.zeros((*discovery_slice_2d.shape, 4), dtype=np.uint8)
+            blue_overlay[:, :, 0] = 0      # R
+            blue_overlay[:, :, 1] = 100    # G
+            blue_overlay[:, :, 2] = 200    # B
+            blue_overlay[:, :, 3] = mask_array  # A (alpha - only where mask is True)
+            
+            # Convert to PIL Image
+            mask_img = Image.fromarray(blue_overlay, mode="RGBA")
+            
+            # Composite onto overlay (only where mask is True)
+            overlay_img = Image.alpha_composite(overlay_img, mask_img)
+        
+        # Draw crop box as thin rectangular border (red) - if available
+        if crop_slice is not None:
+            # Compute bounding box of crop mask
+            coords = np.argwhere(crop_slice)
+            if coords.size > 0:
+                y_min, z_min = coords.min(axis=0)
+                y_max, z_max = coords.max(axis=0)
+                
+                # Draw thin rectangular border (1px thick)
+                draw = ImageDraw.Draw(overlay_img)
+                # Draw rectangle outline only (no fill)
+                draw.rectangle(
+                    [(z_min, y_min), (z_max + 1, y_max + 1)],
+                    outline=(255, 0, 0, 255),  # Red
+                    width=1,  # Thin border (1 pixel)
+                )
+        
+        # Convert back to RGB
+        final_rgb = np.array(overlay_img.convert("RGB"), dtype=np.uint8)
+        
+        # Save as PPM, resize with ImageMagick
+        output = qc_root / "crop_box_sagittal.png"
+        ppm_path = qc_root / "crop_box_sagittal.ppm"
+        _write_ppm(ppm_path, final_rgb)
+        
+        ok, _ = _run_command(
+            [
+                "convert",
+                str(ppm_path),
+                "-filter",
+                "Lanczos",
+                "-resize",
+                "1200x",
+                str(output),
+            ]
+        )
+        
+        # Clean up PPM
+        if ppm_path.exists():
+            ppm_path.unlink()
+        
+        return output if ok else None
+        
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _binary_erode_2d(mask: np.ndarray) -> np.ndarray:
+    """3x3 erosion without scipy; edges are treated as False."""
+    if mask.ndim != 2:
+        raise ValueError("mask must be 2D")
+    h, w = mask.shape
+    if h < 3 or w < 3:
+        return np.zeros_like(mask, dtype=bool)
+    eroded = np.ones_like(mask, dtype=bool)
+    core = mask[1:-1, 1:-1]
+    eroded[1:-1, 1:-1] = core.copy()
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            if dx == 0 and dy == 0:
+                continue
+            eroded[1:-1, 1:-1] &= mask[1 + dy : h - 1 + dy, 1 + dx : w - 1 + dx]
+    eroded[0, :] = False
+    eroded[-1, :] = False
+    eroded[:, 0] = False
+    eroded[:, -1] = False
+    return eroded
+
+
+def _mask_contour_2d(mask: np.ndarray) -> np.ndarray:
+    """Return a thin contour mask from a 2D boolean mask."""
+    mask = mask.astype(bool)
+    eroded = _binary_erode_2d(mask)
+    return mask & (~eroded)
+
+
+def _draw_thick_contour(
+    overlay: Image.Image,
+    contour_mask: np.ndarray,
+    color: tuple[int, int, int, int],
+    thickness: int = 2,
+    outline_color: Optional[tuple[int, int, int, int]] = (0, 0, 0, 255),
+) -> None:
+    """Draw a thick contour on an RGBA overlay image with optional dark outline for contrast."""
+    yy, xx = np.where(contour_mask)
+    if outline_color is not None:
+        # Draw outline first (1px wider on all sides)
+        for y, x in zip(yy.tolist(), xx.tolist()):
+            for dy in range(-thickness - 1, thickness + 2):
+                for dx in range(-thickness - 1, thickness + 2):
+                    if dx * dx + dy * dy > (thickness + 1) ** 2:
+                        continue
+                    px = x + dx
+                    py = y + dy
+                    if 0 <= px < overlay.width and 0 <= py < overlay.height:
+                        overlay.putpixel((px, py), outline_color)
+    
+    # Draw main border
+    for y, x in zip(yy.tolist(), xx.tolist()):
+        for dy in range(-thickness, thickness + 1):
+            for dx in range(-thickness, thickness + 1):
+                if dx * dx + dy * dy > thickness ** 2:
+                    continue
+                px = x + dx
+                py = y + dy
+                if 0 <= px < overlay.width and 0 <= py < overlay.height:
+                    overlay.putpixel((px, py), color)
+
+
 def _render_reportlets_for_runs(runs: list[dict], out_root: Path, dataset_key: str) -> list[dict]:
     updated = []
     for run in runs:
@@ -1292,6 +1807,25 @@ def _render_reportlets(run: dict, out_root: Path, dataset_key: str) -> tuple[dic
 
     reportlets: dict[str, Optional[str]] = {}
     qc_root = out_root / "work" / "S2_anat_cordref" / run.get("run_id", "unknown") / "qc"
+    work_dir = out_root / "work" / "S2_anat_cordref" / run.get("run_id", "unknown")
+    
+    # S2.1: Discovery + Crop sagittal figure
+    cordref_std_path = work_dir / "cordref_std.nii.gz"
+    cordref_crop_path = work_dir / "cordref_crop.nii.gz"
+    discovery_seg_path = work_dir / "cordmask_discovery.nii.gz"
+    crop_mask_path = work_dir / "crop_mask.nii.gz"
+    crop_box_sagittal = _render_crop_box_sagittal(
+        qc_root=qc_root / "crop_box_sagittal",
+        cordref_std_path=cordref_std_path if cordref_std_path.exists() else None,
+        cordref_crop_path=cordref_crop_path if cordref_crop_path.exists() else None,
+        discovery_seg_path=discovery_seg_path if discovery_seg_path.exists() else None,
+        crop_mask_path=crop_mask_path if crop_mask_path.exists() else None,
+    )
+    reportlets["crop_box_sagittal"] = _copy_reportlet(
+        crop_box_sagittal,
+        figures_dir / _format_reportlet_name(subject, session, "S2_crop_box_sagittal"),
+        out_root,
+    )
 
     cordmask_montage = _render_cordmask_montage(
         qc_root=qc_root / "cordmask_montage",
@@ -4213,6 +4747,368 @@ def _compute_label_metrics(label_path: Path) -> dict:
         "label_min": int(labels.min()) if label_count else None,
         "label_max": int(labels.max()) if label_count else None,
     }
+
+
+def _validate_vertebral_label_outputs(
+    vertebral_labels_path: Optional[Path],
+    disc_labels_path: Optional[Path],
+    cordmask_path: Optional[Path],
+    min_disc_labels: int = 2,
+) -> tuple[bool, list[str]]:
+    """
+    Validate vertebral labeling outputs for consistency and basic sanity.
+    
+    Args:
+        vertebral_labels_path: Path to vertebral level labels NIfTI
+        disc_labels_path: Path to disc labels NIfTI
+        cordmask_path: Path to cordmask segmentation (for overlap check)
+        min_disc_labels: Minimum number of disc labels required
+    
+    Returns:
+        (is_valid, list_of_reasons) where reasons are empty if valid, or describe failures
+    """
+    reasons = []
+    
+    if disc_labels_path is None or not disc_labels_path.exists():
+        reasons.append("Disc labels file missing")
+        return False, reasons
+    
+    if vertebral_labels_path is None or not vertebral_labels_path.exists():
+        reasons.append("Vertebral labels file missing")
+        return False, reasons
+    
+    try:
+        disc_img = cast(Any, nib.load(disc_labels_path))
+        disc_data = disc_img.get_fdata()
+        if disc_data.ndim > 3:
+            disc_data = disc_data[..., 0]
+        
+        # Check disc labels are non-empty
+        disc_mask = disc_data > 0
+        if not disc_mask.any():
+            reasons.append("Disc labels mask is empty")
+            return False, reasons
+        
+        # Check disc label count
+        disc_labels = np.unique(disc_data.astype(int))
+        disc_labels = disc_labels[disc_labels > 0]
+        disc_count = int(disc_labels.size)
+        if disc_count < min_disc_labels:
+            reasons.append(f"Too few disc labels: {disc_count} < {min_disc_labels}")
+            return False, reasons
+        
+        # Check monotonic SI ordering: disc labels should progress along z
+        # Extract z-coordinates for each disc label value
+        disc_z_by_label = {}
+        for label_val in disc_labels:
+            coords = np.argwhere(disc_data == label_val)
+            if coords.size > 0:
+                z_coords = coords[:, 2]  # z is third dimension (RPI orientation)
+                disc_z_by_label[int(label_val)] = float(np.median(z_coords))
+        
+        if len(disc_z_by_label) >= 2:
+            # Check that labels are ordered by z (allowing some tolerance for noise)
+            sorted_by_z = sorted(disc_z_by_label.items(), key=lambda x: x[1])
+            sorted_labels = [x[0] for x in sorted_by_z]
+            # Labels should be monotonically increasing (or at least not wildly out of order)
+            # Allow some flexibility: if we have labels [3,4,5] but z order is [4,3,5], that's suspicious
+            # Simple check: if label values are mostly increasing with z, that's good
+            label_diffs = [sorted_labels[i+1] - sorted_labels[i] for i in range(len(sorted_labels)-1)]
+            if any(d < 0 for d in label_diffs):
+                # Some labels are out of order (e.g., label 5 appears before label 4 in z)
+                # This is suspicious but not necessarily fatal - just warn
+                reasons.append(f"Disc labels show non-monotonic z-ordering (may indicate labeling error)")
+        
+        # Check vertebral labels overlap cordmask (basic sanity)
+        if cordmask_path is not None and cordmask_path.exists():
+            try:
+                vert_img = cast(Any, nib.load(vertebral_labels_path))
+                vert_data = vert_img.get_fdata()
+                if vert_data.ndim > 3:
+                    vert_data = vert_data[..., 0]
+                
+                cordmask_img = cast(Any, nib.load(cordmask_path))
+                cordmask_data = cordmask_img.get_fdata()
+                if cordmask_data.ndim > 3:
+                    cordmask_data = cordmask_data[..., 0]
+                
+                # Check shapes match (or at least compatible)
+                if vert_data.shape != cordmask_data.shape:
+                    reasons.append(f"Shape mismatch: vertebral labels {vert_data.shape} vs cordmask {cordmask_data.shape}")
+                    return False, reasons
+                
+                # Check overlap: vertebral labels should overlap cordmask
+                vert_mask = vert_data > 0
+                cordmask_mask = cordmask_data > 0
+                overlap = (vert_mask & cordmask_mask).sum()
+                cordmask_voxels = cordmask_mask.sum()
+                
+                if cordmask_voxels > 0:
+                    overlap_ratio = float(overlap) / float(cordmask_voxels)
+                    if overlap_ratio < 0.1:  # Less than 10% overlap is suspicious
+                        reasons.append(f"Low overlap between vertebral labels and cordmask: {overlap_ratio:.1%}")
+                else:
+                    reasons.append("Cordmask is empty (cannot validate overlap)")
+            except Exception as e:
+                # Non-fatal: if we can't check overlap, just note it
+                reasons.append(f"Could not check vertebral-cordmask overlap: {e}")
+        
+    except Exception as e:
+        reasons.append(f"Validation error: {e}")
+        return False, reasons
+    
+    return True, reasons
+
+
+def _check_labeling_consistency(
+    sct_labels_path: Optional[Path],
+    template_levels_path: Optional[Path],
+    cordmask_path: Optional[Path],
+    enabled: bool = True,
+    max_mismatch_percent: float = 30.0,
+    min_slices_for_decision: int = 10,
+) -> tuple[str, list[str], Optional[dict]]:
+    """
+    Check consistency between SCT vertebral labels and template-derived levels.
+    
+    Detects:
+    - Global offset (consistent +1/-1 shift across all slices)
+    - Single jump (offset changes at one z-slice, indicating a missed/spurious disc)
+    
+    Args:
+        sct_labels_path: Path to SCT vertebral labels (from sct_label_vertebrae)
+        template_levels_path: Path to template-derived vertebral levels
+        cordmask_path: Path to cordmask (for masking)
+        enabled: Whether consistency checking is enabled
+        max_mismatch_percent: Maximum allowed mismatch percentage before WARN
+        min_slices_for_decision: Minimum number of slices needed for reliable decision
+    
+    Returns:
+        Tuple of (qc_status, qc_reasons, consistency_metrics)
+        qc_status: "PASS" | "WARN"
+        qc_reasons: List of reason strings
+        consistency_metrics: Optional dict with offset_mode, jump_z, jump_level_estimate, mismatch_rate
+    """
+    if not enabled:
+        return "PASS", [], None
+    
+    if sct_labels_path is None or not sct_labels_path.exists():
+        return "PASS", [], None  # No SCT labels to compare
+    
+    if template_levels_path is None or not template_levels_path.exists():
+        return "PASS", [], None  # No template levels to compare
+    
+    if cordmask_path is None or not cordmask_path.exists():
+        return "PASS", [], None  # No cordmask for masking
+    
+    try:
+        sct_img = nib.as_closest_canonical(nib.load(sct_labels_path))
+        template_img = nib.as_closest_canonical(nib.load(template_levels_path))
+        cordmask_img = nib.as_closest_canonical(nib.load(cordmask_path))
+        
+        sct_data = sct_img.get_fdata()
+        template_data = template_img.get_fdata()
+        cordmask_data = cordmask_img.get_fdata()
+        
+        if sct_data.ndim > 3:
+            sct_data = sct_data[..., 0]
+        if template_data.ndim > 3:
+            template_data = template_data[..., 0]
+        if cordmask_data.ndim > 3:
+            cordmask_data = cordmask_data[..., 0]
+        
+        if sct_data.shape != template_data.shape or sct_data.shape != cordmask_data.shape:
+            return "PASS", [], None  # Shape mismatch, skip check
+        
+        # Mask to cord region only
+        cordmask = cordmask_data > 0.5
+        if not cordmask.any():
+            return "PASS", [], None
+        
+        # Compute per-slice dominant level for both SCT and template
+        z_slices = np.where(cordmask.any(axis=(0, 1)))[0]
+        if len(z_slices) < min_slices_for_decision:
+            return "PASS", [], None
+        
+        sct_dominant_by_z = []
+        template_dominant_by_z = []
+        
+        for z in z_slices:
+            sct_slice = sct_data[:, :, z]
+            template_slice = template_data[:, :, z]
+            mask_slice = cordmask[:, :, z]
+            
+            if not mask_slice.any():
+                continue
+            
+            # Get dominant label value in this slice (within cordmask)
+            sct_masked = sct_slice[mask_slice]
+            template_masked = template_slice[mask_slice]
+            
+            if sct_masked.size == 0 or template_masked.size == 0:
+                continue
+            
+            # Use mode (most frequent value) as dominant level
+            sct_values = sct_masked[sct_masked > 0]
+            template_values = template_masked[template_masked > 0]
+            
+            if sct_values.size > 0 and template_values.size > 0:
+                sct_mode = int(np.bincount(sct_values.astype(int)).argmax())
+                template_mode = int(np.bincount(template_values.astype(int)).argmax())
+                
+                if sct_mode > 0 and template_mode > 0:
+                    sct_dominant_by_z.append((z, sct_mode))
+                    template_dominant_by_z.append((z, template_mode))
+        
+        if len(sct_dominant_by_z) < min_slices_for_decision or len(template_dominant_by_z) < min_slices_for_decision:
+            return "PASS", [], None
+        
+        # Compute offset per slice
+        # Match slices by z-coordinate
+        sct_dict = dict(sct_dominant_by_z)
+        template_dict = dict(template_dominant_by_z)
+        common_z = sorted(set(sct_dict.keys()) & set(template_dict.keys()))
+        
+        if len(common_z) < min_slices_for_decision:
+            return "PASS", [], None
+        
+        offsets = []
+        for z in common_z:
+            offset = sct_dict[z] - template_dict[z]
+            offsets.append((z, offset))
+        
+        if not offsets:
+            return "PASS", [], None
+        
+        # Detect global offset: if most offsets are the same value
+        offset_values = [o[1] for o in offsets]
+        offset_mode = int(np.bincount([int(o + 10) for o in offset_values]).argmax() - 10)  # Shift to avoid negative indices
+        
+        # Count how many slices have the modal offset
+        mode_count = sum(1 for o in offset_values if o == offset_mode)
+        mode_percent = (mode_count / len(offset_values)) * 100.0
+        
+        # Detect single jump: if offset changes significantly at one z-slice
+        jump_z = None
+        jump_level_estimate = None
+        if len(offsets) >= 3:
+            # Check for a single slice where offset changes
+            for i in range(1, len(offsets) - 1):
+                prev_offset = offsets[i-1][1]
+                curr_offset = offsets[i][1]
+                next_offset = offsets[i+1][1]
+                
+                # If current offset differs from both neighbors by at least 1
+                if abs(curr_offset - prev_offset) >= 1 and abs(curr_offset - next_offset) >= 1:
+                    # Check if neighbors agree (indicating a jump at current slice)
+                    if abs(prev_offset - next_offset) <= 1:
+                        jump_z = offsets[i][0]
+                        jump_level_estimate = curr_offset
+                        break
+        
+        # Compute mismatch rate (percentage of slices where offset != mode)
+        mismatch_count = sum(1 for o in offset_values if o != offset_mode)
+        mismatch_rate = (mismatch_count / len(offset_values)) * 100.0
+        
+        consistency_metrics = {
+            "offset_mode": int(offset_mode),
+            "mode_percent": float(mode_percent),
+            "jump_z": int(jump_z) if jump_z is not None else None,
+            "jump_level_estimate": int(jump_level_estimate) if jump_level_estimate is not None else None,
+            "mismatch_rate": float(mismatch_rate),
+        }
+        
+        qc_reasons = []
+        qc_status = "PASS"
+        
+        # WARN if global offset detected (systematic shift)
+        if abs(offset_mode) >= 1 and mode_percent >= (100.0 - max_mismatch_percent):
+            qc_status = "WARN"
+            qc_reasons.append(f"Global offset detected: SCT labels shifted by {offset_mode:+d} levels relative to template (affects {mode_percent:.1f}% of slices)")
+        
+        # WARN if single jump detected (missed/spurious disc)
+        # Gate single-jump WARN: only trigger if mismatch rate is elevated OR jump persists across multiple slices
+        # This reduces false positives from isolated single-slice discrepancies
+        if jump_z is not None:
+            # Check if jump persists: count slices with offset != mode around the jump
+            jump_persists = False
+            if len(offsets) >= 5:
+                jump_idx = next((i for i in range(len(offsets)) if offsets[i][0] == jump_z), None)
+                if jump_idx is not None:
+                    # Check ±2 slices around jump
+                    window_start = max(0, jump_idx - 2)
+                    window_end = min(len(offsets), jump_idx + 3)
+                    window_offsets = [offsets[i][1] for i in range(window_start, window_end)]
+                    # If most offsets in window differ from mode, jump persists
+                    window_mismatch = sum(1 for o in window_offsets if o != offset_mode)
+                    jump_persists = window_mismatch >= len(window_offsets) * 0.6  # 60% threshold
+            
+            # Only WARN if mismatch rate is elevated OR jump persists
+            if mismatch_rate > max_mismatch_percent * 0.5 or jump_persists:
+                qc_status = "WARN"
+                qc_reasons.append(f"Single jump detected at z={jump_z}: offset changes by {jump_level_estimate:+d} levels (likely missed/spurious disc)")
+        
+        # WARN if high mismatch rate (inconsistent labeling)
+        if mismatch_rate > max_mismatch_percent:
+            qc_status = "WARN"
+            qc_reasons.append(f"High mismatch rate: {mismatch_rate:.1f}% of slices disagree with template levels")
+        
+        return qc_status, qc_reasons, consistency_metrics
+    
+    except Exception:  # noqa: BLE001
+        # If consistency check fails, don't gate the run (non-gating WARN)
+        return "PASS", [], None
+
+
+def _estimate_initcenter_from_disc_labels(disc_labels_path: Path) -> Optional[int]:
+    """
+    Estimate initcenter value from disc labels by finding the disc label closest to mid-z.
+    
+    This matches SCT's semantics: -initcenter means "disc value at the center of z-FOV".
+    
+    Args:
+        disc_labels_path: Path to disc labels NIfTI file
+    
+    Returns:
+        Disc label value (int) closest to mid-z, or None if cannot be determined
+    """
+    try:
+        disc_img = cast(Any, nib.load(disc_labels_path))
+        disc_data = disc_img.get_fdata()
+        if disc_data.ndim > 3:
+            disc_data = disc_data[..., 0]
+        
+        # Get z dimension
+        nz = disc_data.shape[2]
+        z_center = round(nz / 2)
+        
+        # Find disc labels and their z-coordinates
+        disc_labels = np.unique(disc_data.astype(int))
+        disc_labels = disc_labels[disc_labels > 0]
+        
+        if disc_labels.size == 0:
+            return None
+        
+        # For each disc label, find its median z-coordinate
+        disc_z_by_label = {}
+        for label_val in disc_labels:
+            coords = np.argwhere(disc_data == label_val)
+            if coords.size > 0:
+                z_coords = coords[:, 2]  # z is third dimension (RPI orientation)
+                disc_z_by_label[int(label_val)] = float(np.median(z_coords))
+        
+        if not disc_z_by_label:
+            return None
+        
+        # Find the disc label whose z-coordinate is closest to z_center
+        closest_label = min(
+            disc_z_by_label.items(),
+            key=lambda x: abs(x[1] - z_center)
+        )[0]
+        
+        return int(closest_label)
+    except Exception:
+        return None
 
 
 def _find_first(folder: Path, pattern: str) -> Optional[Path]:

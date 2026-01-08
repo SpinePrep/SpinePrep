@@ -1,0 +1,23 @@
+[Unit]
+Description=SpinePrep QC Dashboard Server (latest wf)
+After=network-online.target tailscaled.service
+Wants=network-online.target tailscaled.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/spineprep-dashboard.env
+ExecStart=/usr/bin/python3 /opt/spineprep/spineprep_dashboard_server.py
+Restart=always
+RestartSec=2
+TimeoutStartSec=10
+
+# Optional hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+

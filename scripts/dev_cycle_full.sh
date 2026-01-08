@@ -5,7 +5,7 @@
 set -e
 
 STEP=""
-OUT="work/dev_cycle"
+OUT=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -27,6 +27,16 @@ done
 if [ -z "$STEP" ]; then
     echo "ERROR: --step required"
     exit 1
+fi
+
+# Use canonical workfolder naming if --out not specified
+if [ -z "$OUT" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    OUT=$(python3 "$SCRIPT_DIR/get_next_workfolder.py" full)
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Failed to get next workfolder" >&2
+        exit 1
+    fi
 fi
 
 echo "=========================================="

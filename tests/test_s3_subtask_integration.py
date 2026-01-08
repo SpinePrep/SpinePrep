@@ -41,12 +41,25 @@ def test_s3_1_subtask_execution(tmp_path):
         test_img = nib.Nifti1Image(test_data, test_affine)
         nib.save(test_img, test_bold_path)
 
+        # Create S2.1 cordref_std output (required for S3.1 layered figure)
+        out_root = tmp_path / "work"
+        s2_work_dir = out_root / "S2_anat_cordref" / "sub-test_ses-none"
+        s2_work_dir.mkdir(parents=True, exist_ok=True)
+        cordref_std_path = s2_work_dir / "cordref_std.nii.gz"
+        # Create a simple 3D anatomical reference matching func dimensions
+        cordref_data = np.random.rand(64, 64, 24).astype(np.float32)
+        cordref_img = nib.Nifti1Image(cordref_data, test_affine)
+        nib.save(cordref_img, cordref_std_path)
+
         policy = {
             "dummy_volumes": {"count": 4},
             "func_localization": {
                 "enabled": True,
                 "method": "deepseg",
                 "task": "spinalcord",
+            },
+            "qc": {
+                "overlay_contour_width": 2,
             },
         }
 
@@ -56,12 +69,15 @@ def test_s3_1_subtask_execution(tmp_path):
         )
 
         # Verify S3.1 outputs exist
-        assert result["localization_status"] == "PASS"
+        assert result["localization_status"] == "PASS", f"Status: {result.get('localization_status')}, Message: {result.get('failure_message')}"
         assert result["func_ref_fast_path"].exists()
         assert result["func_ref0_path"].exists()
         assert result["discovery_seg_path"].exists()
         assert result["roi_mask_path"].exists()
         assert result["func_ref_fast_crop_path"].exists()
+        # Verify figure was created (if rendering succeeded)
+        if result.get("figure_path"):
+            assert result["figure_path"].exists()
 
         # Verify that we should exit after S3.1
         assert should_exit_after_subtask("S3.1") is True

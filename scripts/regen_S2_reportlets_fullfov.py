@@ -32,12 +32,32 @@ def main() -> int:
     only = {"cordmask_montage", "centerline_montage"}
     failures = 0
     total = 0
+    work_root = Path("work")
 
     for key in dataset_keys:
-        out_root = Path("work") / "s2_acceptance" / key
-        qc_path = out_root / "logs" / "S2_anat_cordref_qc.json"
-        if not qc_path.exists():
-            print(f"[SKIP] missing QC JSON: {qc_path}")
+        # Search for dataset in wf_full_* directories (canonical naming)
+        out_root = None
+        qc_path = None
+        
+        # First try new canonical naming: wf_full_*/<key>
+        for wf_dir in sorted(work_root.glob("wf_full_*"), reverse=True):
+            candidate = wf_dir / key
+            candidate_qc = candidate / "logs" / "S2_anat_cordref_qc.json"
+            if candidate_qc.exists():
+                out_root = candidate
+                qc_path = candidate_qc
+                break
+        
+        # Fallback to old naming for backward compatibility
+        if out_root is None:
+            old_path = work_root / "s2_acceptance" / key
+            old_qc = old_path / "logs" / "S2_anat_cordref_qc.json"
+            if old_qc.exists():
+                out_root = old_path
+                qc_path = old_qc
+        
+        if out_root is None or qc_path is None or not qc_path.exists():
+            print(f"[SKIP] missing QC JSON for {key}")
             continue
 
         qc = json.loads(qc_path.read_text(encoding="utf-8"))

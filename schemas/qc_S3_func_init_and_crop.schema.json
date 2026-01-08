@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "qc_S3_func_init_and_crop.schema.json",
+  "title": "S3_func_init_and_crop QC Status",
+  "description": "QC status schema for S3_func_init_and_crop step (per dataset key)",
+  "type": "object",
+  "required": [
+    "status",
+    "failure_class",
+    "failure_reason",
+    "primary_evidence",
+    "suspected_root_causes",
+    "next_actions",
+    "blocking"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"],
+      "description": "Overall QC status for this dataset key"
+    },
+    "failure_class": {
+      "type": ["string", "null"],
+      "enum": ["INPUT", "TOOL", "QUALITY", "INFRA", "UNKNOWN", null],
+      "description": "Classification of failure type (null if PASS)"
+    },
+    "failure_reason": {
+      "type": ["string", "null"],
+      "description": "Short description of failure reason (null if PASS)"
+    },
+    "primary_evidence": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Relative paths to QC artifacts that support the status"
+    },
+    "suspected_root_causes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Ordered list of suspected root causes"
+    },
+    "next_actions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Ordered list of recommended next actions"
+    },
+    "blocking": {
+      "type": "boolean",
+      "description": "Whether this failure blocks downstream processing"
+    },
+    "dummy_volumes_dropped": {
+      "type": "integer",
+      "description": "Number of dummy volumes dropped from BOLD runs"
+    },
+    "total_runs": {
+      "type": "integer",
+      "description": "Total number of BOLD runs processed"
+    },
+    "passed_runs": {
+      "type": "integer",
+      "description": "Number of runs with PASS status"
+    },
+    "warn_runs": {
+      "type": "integer",
+      "description": "Number of runs with WARN status"
+    },
+    "failed_runs": {
+      "type": "integer",
+      "description": "Number of runs with FAIL status"
+    },
+    "outlier_fraction_mean": {
+      "type": ["number", "null"],
+      "description": "Mean outlier fraction across runs"
+    },
+    "outlier_fraction_max": {
+      "type": ["number", "null"],
+      "description": "Maximum outlier fraction across runs"
+    },
+    "dvars_threshold_mean": {
+      "type": ["number", "null"],
+      "description": "Mean DVARS threshold across runs"
+    },
+    "refrms_threshold_mean": {
+      "type": ["number", "null"],
+      "description": "Mean ref-RMS threshold across runs"
+    },
+    "t2_to_func_metric_mean": {
+      "type": ["number", "null"],
+      "description": "Mean T2-to-func registration metric across runs"
+    },
+    "crop_diameter_mm": {
+      "type": ["number", "null"],
+      "description": "Crop mask diameter in mm"
+    },
+    "qc_pngs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of QC PNG paths for this dataset key"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when QC was generated"
+    }
+  }
+}
+
+
+
+
