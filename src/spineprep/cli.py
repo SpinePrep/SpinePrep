@@ -36,7 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _add_S0_arguments(subparser: argparse.ArgumentParser) -> None:
     subparser.add_argument(
         "step",
-        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref"],
+        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop"],
         help="Pipeline step code",
     )
     subparser.add_argument(
@@ -113,6 +113,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _run_S1(args)
         elif step == "S2_anat_cordref":
             result = _run_S2(args)
+        elif step == "S3_func_init_and_crop":
+            result = _run_S3(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -126,6 +128,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _check_S1(args)
         elif step == "S2_anat_cordref":
             result = _check_S2(args)
+        elif step == "S3_func_init_and_crop":
+            result = _check_S3(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -222,6 +226,27 @@ def _check_S2(args):
         dataset_key=args.dataset_key,
         datasets_local=args.datasets_local,
         bids_root=args.bids_root,
+        out=args.out,
+    )
+
+
+def _run_S3(args):
+    from spineprep.S3_func_init_and_crop import run_S3_func_init_and_crop
+
+    return run_S3_func_init_and_crop(
+        dataset_key=args.dataset_key,
+        datasets_local=args.datasets_local,
+        out=args.out,
+        batch_workers=args.batch_workers,
+    )
+
+
+def _check_S3(args):
+    from spineprep.S3_func_init_and_crop import check_S3_func_init_and_crop
+
+    return check_S3_func_init_and_crop(
+        dataset_key=args.dataset_key,
+        datasets_local=args.datasets_local,
         out=args.out,
     )
 

@@ -29,7 +29,9 @@ def test_s3_1_subtask_execution(tmp_path):
 
     try:
         # Create test BOLD file
-        work_dir = tmp_path / "work" / "runs" / "S3_func_init_and_crop" / "sub-test" / "ses-none" / "func" / "test_bold.nii"
+        # Use proper layout: {out_root}/runs/S3...
+        out_root = tmp_path
+        work_dir = out_root / "runs" / "S3_func_init_and_crop" / "sub-test" / "ses-none" / "func" / "test_bold.nii"
         work_dir.mkdir(parents=True, exist_ok=True)
 
         import nibabel as nib
@@ -42,8 +44,7 @@ def test_s3_1_subtask_execution(tmp_path):
         nib.save(test_img, test_bold_path)
 
         # Create S2.1 cordref_std output (required for S3.1 layered figure)
-        out_root = tmp_path / "work"
-        s2_work_dir = out_root / "S2_anat_cordref" / "sub-test_ses-none"
+        s2_work_dir = out_root / "work" / "S2_anat_cordref" / "sub-test_ses-none"
         s2_work_dir.mkdir(parents=True, exist_ok=True)
         cordref_std_path = s2_work_dir / "cordref_std.nii.gz"
         # Create a simple 3D anatomical reference matching func dimensions
@@ -98,16 +99,20 @@ def test_s3_1_only_via_run_function(tmp_path):
     )
 
     # Verify result
-    assert result["status"] == "PASS"
-    assert result["subtask"] == "S3.1"
-    assert len(result["results"]) == 1
-    assert result["results"][0][0] == "S3.1"
+    # Verify result
+    assert result.status == "PASS"
+    
+    # Check outputs for S3.1
+    # StepResult doesn't return the detailed dict now. We check files.
+    # But wait, run_S3... in subtask mode might still return the dict?
+    # No, USER changed it to return StepResult always.
+    # We must check files.
+    
+    run_work_dir = out_dir / "runs" / "S3_func_init_and_crop" / "sub-test" / "ses-none" / "func" / "test_bold.nii"
+    assert (run_work_dir / "init" / "func_ref0.nii.gz").exists()
+    assert (run_work_dir / "init" / "localize" / "func_ref_fast_seg.nii.gz").exists()
 
-    # Verify S3.1 outputs exist
-    s3_1_result = result["results"][0][1]
-    assert s3_1_result["localization_status"] == "PASS"
-    assert s3_1_result["func_ref_fast_path"].exists()
-    assert s3_1_result["func_ref0_path"].exists()
+
 
 
 def test_s3_1_skips_later_subtasks(tmp_path):
@@ -174,13 +179,14 @@ def test_s3_all_subtasks_without_target(tmp_path):
         )
 
         # Verify all subtasks executed
-        assert result["status"] == "PASS"
-        assert result["subtask"] == "all"
-        assert len(result["results"]) == 4
-        assert result["results"][0][0] == "S3.1"
-        assert result["results"][1][0] == "S3.2"
-        assert result["results"][2][0] == "S3.3"
-        assert result["results"][3][0] == "S3.4"
+        assert result.status == "PASS"
+        # StepResult does not expose subtask breakdown. 
+        # Check byproducts.
+        run_work_dir = out_dir / "runs" / "S3_func_init_and_crop" / "sub-test" / "ses-none" / "func" / "test_bold.nii"
+        assert (run_work_dir / "init" / "func_ref0.nii.gz").exists() # S3.1
+        assert (run_work_dir / "init" / "t2_to_func_warp.nii.gz").exists() # S3.2
+        assert (run_work_dir / "metrics" / "frame_metrics.tsv").exists() # S3.3
+        assert (run_work_dir / "funccrop_bold.nii.gz").exists() # S3.4
 
     finally:
         set_execution_context(None)
