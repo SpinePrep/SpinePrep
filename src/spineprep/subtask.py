@@ -76,7 +76,7 @@ class ExecutionContext:
             target_step, target_subtask_num = self.target_subtask.split(".")
             if step_num == target_step:
                 # Same step, only execute if subtask number is <= target
-                # This allows running S3.1 when target is S3.2 (dependency)
+                # This allows running S3.1 when target is S3.3 (dependency)
                 return int(subtask_num) <= int(target_subtask_num)
             else:
                 # Different step, don't execute
@@ -167,8 +167,8 @@ def subtask_context(subtask_id: str):
         subtask_id: The subtask ID (e.g., "S3.1")
 
     Example:
-        with subtask_context("S3.2"):
-            # S3.2 registration logic
+        with subtask_context("S3.3"):
+            # S3.3 crop logic
             ...
     """
     context = get_execution_context()

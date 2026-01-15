@@ -3,14 +3,14 @@ S3: Functional initialization and cropping.
 
 This step handles:
 - S3.1: Dummy-volume drop + fast median reference + func cord localization + func_ref0
-- S3.2: T2-to-func registration + mask propagation
-- S3.3: Mask-aware outlier gating + robust reference
-- S3.4: Cord-focused crop + QC reportlets
+- S3.2: Mask-aware outlier gating + robust reference
+- S3.3: Cord-focused crop + QC reportlets
 """
 
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 from typing import Any, Optional, cast
@@ -36,6 +36,27 @@ from spineprep.S2_anat_cordref import StepResult
 # ============================================================================
 # Helper functions for S2 output access
 # ============================================================================
+
+
+def _create_dummy_discovery(data: np.ndarray, affine: np.ndarray, seg_path: Path, roi_path: Path) -> None:
+    """Fallback: Center-of-image dummy discovery."""
+    discovery_seg_data = np.zeros_like(data)
+    center_x = data.shape[0] // 2
+    center_y = data.shape[1] // 2
+    center_z = data.shape[2] // 2
+    
+    # Create a central box detection (approx 20x20x10 voxels)
+    # This prevents the "horizontal bar" (full slice slab) appearance
+    x_r, y_r, z_r = 10, 10, 5
+    
+    x_min, x_max = max(0, center_x - x_r), min(data.shape[0], center_x + x_r)
+    y_min, y_max = max(0, center_y - y_r), min(data.shape[1], center_y + y_r)
+    z_min, z_max = max(0, center_z - z_r), min(data.shape[2], center_z + z_r)
+    
+    discovery_seg_data[x_min:x_max, y_min:y_max, z_min:z_max] = 1
+    
+    nib.save(nib.Nifti1Image(discovery_seg_data, affine), seg_path)
+    nib.save(nib.Nifti1Image(discovery_seg_data, affine), roi_path)
 
 
 def _extract_subject_session_from_work_dir(work_dir: Path) -> tuple[Optional[str], Optional[str], Optional[Path]]:
@@ -280,7 +301,12 @@ def _write_ppm(path: Path, rgb: np.ndarray) -> None:
 def _run_command(cmd: list[str]) -> tuple[bool, str]:
     """Run shell command and return (success, output)."""
     try:
-        result = subprocess.run(cmd, text=True, capture_output=True, check=True)
+        # Enforce single-threaded execution for libraries to avoid subscription in parallel batches
+        env = os.environ.copy()
+        env["OMP_NUM_THREADS"] = "1"
+        env["NUMEXPR_MAX_THREADS"] = "1"
+        env["MKL_NUM_THREADS"] = "1"
+        result = subprocess.run(cmd, text=True, capture_output=True, check=True, env=env)
     except FileNotFoundError:
         return False, f"Command not found: {cmd[0]}"
     except subprocess.CalledProcessError as err:
@@ -293,6 +319,184 @@ def _run_command(cmd: list[str]) -> tuple[bool, str]:
 # ============================================================================
 # S3.1 Layered Figure Rendering
 # ============================================================================
+
+
+def _render_s3_1_simple_func_with_mask(
+    func_path: Path,
+    mask_path: Path,
+    output_path: Path,
+    policy: dict[str, Any],
+    crop_box: Optional[list[int]] = None,
+) -> Optional[Path]:
+    """
+    Render simple S3.1 figure: functional image with cord mask (BLUE) and crop box (RED).
+    
+    Args:
+        func_path: Path to functional reference image
+        mask_path: Path to cord mask in functional space
+        output_path: Output PNG path
+        policy: Policy dict
+        crop_box: Optional crop box coordinates [r_min, r_max, c_min, c_max, s_min, s_max]
+        
+    Returns:
+        Path to output PNG or None on failure
+    """
+    try:
+        # Load images
+        func_img = nib.as_closest_canonical(nib.load(func_path))
+        mask_img = nib.as_closest_canonical(nib.load(mask_path))
+        
+        func_data = func_img.get_fdata()
+        mask_data = mask_img.get_fdata()
+        
+        # Handle 4D
+        if func_data.ndim > 3:
+            func_data = func_data[..., 0]
+        if mask_data.ndim > 3:
+            mask_data = mask_data[..., 0]
+        
+        # Find center sagittal slice from mask  
+        mask_binary = mask_data > 0
+        coords = np.argwhere(mask_binary)
+        if coords.size == 0:
+            # Fallback to center
+            x_index = func_data.shape[0] // 2
+        else:
+            x_index = int(np.median(coords[:, 0]))
+        
+        # Clip x_index to valid range for both volumes
+        x_index = max(0, min(x_index, func_data.shape[0] - 1, mask_data.shape[0] - 1))
+        
+        # Extract sagittal slices
+        func_slice = func_data[x_index, :, :]
+        # Check alignment logic skipped for simplicity/speed (assume same space)
+        
+        # Rotate func for display (superior at top)
+        func_slice = np.flipud(func_slice.T)
+        
+        # Determine mask placement in func slice using affines
+        inv_func_affine = np.linalg.inv(func_img.affine)
+        
+        # Create mask overlay array matching func_slice shape
+        aligned_mask = np.zeros_like(func_slice, dtype=bool)
+        
+        # Physical coordinates of all mask voxels
+        mask_voxels = np.argwhere(mask_data > 0)
+        if mask_voxels.size > 0:
+            # Physical coords
+            phys_coords = nib.affines.apply_affine(mask_img.affine, mask_voxels)
+            # Func voxel coords
+            func_voxels = nib.affines.apply_affine(inv_func_affine, phys_coords)
+            func_voxels = np.round(func_voxels).astype(int)
+            
+            # Filter voxels in the current sagittal slice (x_index)
+            in_slice = func_voxels[func_voxels[:, 0] == x_index]
+            
+            for vox in in_slice:
+                # vox is (x, y, z) in RAS functional space
+                _, c, s = vox
+                # After flipud(T) on (P-A, I-S) slice:
+                # height = S-I, width = P-A
+                row = func_data.shape[2] - 1 - s
+                col = c
+                if 0 <= row < func_slice.shape[0] and 0 <= col < func_slice.shape[1]:
+                    aligned_mask[row, col] = True
+        
+        # Normalize func
+        vmin, vmax = np.percentile(func_slice, [1, 99])
+        if vmax <= vmin:
+            vmax = vmin + 1.0
+        func_norm = np.clip((func_slice - vmin) / (vmax - vmin), 0, 1)
+        func_uint8 = (func_norm * 255).astype(np.uint8)
+        
+        # Create RGB background
+        background_rgb = np.repeat(func_uint8[..., np.newaxis], 3, axis=2)
+        
+        # Convert to RGBA for transparency
+        img = Image.fromarray(background_rgb, mode="RGB").convert("RGBA")
+        
+        # Create transparent BLUE overlay for mask (S2.1 match)
+        if aligned_mask.any():
+            mask_overlay = np.zeros((*aligned_mask.shape, 4), dtype=np.uint8)
+            # Blue: R=0, G=100, B=200, A=180
+            mask_overlay[:, :, 0] = 0
+            mask_overlay[:, :, 1] = 100
+            mask_overlay[:, :, 2] = 200
+            mask_overlay[:, :, 3] = (aligned_mask.astype(np.uint8) * 180) 
+            mask_img = Image.fromarray(mask_overlay, mode="RGBA")
+            img = Image.alpha_composite(img, mask_img)
+            
+        # Draw Red Crop Box if provided (S2.1 match)
+        if crop_box:
+             # crop_box = [r_min, r_max, c_min, c_max, s_min, s_max]
+             # sagittal view corresponds to c (cols/y) and s (slices/z)
+             c_min, c_max = crop_box[2], crop_box[3]
+             s_min, s_max = crop_box[4], crop_box[5]
+             
+             # Map to display coordinates (flipud T)
+             # T -> axis 0 is now s (z), axis 1 is c (y)
+             # flipud -> axis 0 is flipped (height)
+             height = func_slice.shape[0]
+             
+             # Y-axis (vertical in display) maps to S-axis (Z) inverted
+             # y = height - 1 - s
+             # range s_min to s_max corresponds to:
+             y_min_disp = height - s_max
+             y_max_disp = height - s_min
+             
+             # X-axis (horizontal in display) maps to C-axis (Y)
+             x_min_disp = c_min
+             x_max_disp = c_max
+             
+             draw = ImageDraw.Draw(img)
+             draw.rectangle(
+                 [(x_min_disp, y_min_disp), (x_max_disp, y_max_disp)],
+                 outline=(255, 0, 0, 255),
+                 width=1
+             )
+        
+        # Convert back to RGB for saving
+        img = img.convert("RGB")
+        
+        # Save
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Aspect Ratio Correction
+        # Slices are often thick (e.g. 4mm) vs in-plane (1.5mm).
+        # We need to stretch height to match physical proportions.
+        try:
+           zooms = func_img.header.get_zooms()
+           dy, dz = zooms[1], zooms[2] # Sagittal view: y (width), z (height)
+           if dy > 0:
+               ratio = dz / dy
+               if abs(ratio - 1.0) > 0.1: # Only correct if significantly anisotropic
+                   w, h = img.size
+                   new_h = int(h * ratio)
+                   img = img.resize((w, new_h), resample=Image.Resampling.LANCZOS)
+        except Exception as e:
+            print(f"Aspect ratio correction skipped: {e}")
+        
+        # Use ImageMagick for resize
+        ppm_path = output_path.with_suffix(".ppm")
+        _write_ppm(ppm_path, np.array(img))
+        
+        ok, _ = _run_command([
+            "convert", str(ppm_path),
+            "-filter", "Lanczos",
+            "-resize", "1200x",
+            str(output_path)
+        ])
+        
+        if ppm_path.exists():
+            ppm_path.unlink()
+        
+        if ok and output_path.exists():
+            return output_path
+        return None
+        
+    except Exception as e:
+        print(f"S3.1 figure render error: {e}")
+        return None
 
 
 def _render_s3_1_crop_box_sagittal_layered(
@@ -390,20 +594,21 @@ def _render_s3_1_crop_box_sagittal_layered(
             if vmax <= vmin:
                 vmax = vmin + 1.0
             normalized = np.clip((slice2d - vmin) / (vmax - vmin), 0, 1)
-            return (normalized * 255).astype(np.uint8)
-        
-        cordref_norm = normalize_slice(cordref_slice)
-        func_norm = normalize_slice(func_slice)
+            return normalized
+
+        cordref_norm = (normalize_slice(cordref_slice) * 255).astype(np.uint8)
+        func_norm_float = normalize_slice(func_slice)
         
         # Create background from cordref (RGB)
         background_rgb = np.repeat(cordref_norm[..., np.newaxis], 3, axis=2)
         
         # Resize func to match cordref background if needed
-        if func_norm.shape != cordref_norm.shape:
+        if func_norm_float.shape != cordref_norm.shape:
             # Resize func to match cordref
-            func_img_pil = Image.fromarray(func_norm, mode="L")
+            func_img_pil = Image.fromarray((func_norm_float * 255).astype(np.uint8), mode="L")
             func_img_pil = func_img_pil.resize((cordref_norm.shape[1], cordref_norm.shape[0]), resample=Image.Resampling.BILINEAR)
-            func_norm = np.array(func_img_pil, dtype=np.uint8)
+            func_norm_float = np.array(func_img_pil, dtype=np.float32) / 255.0
+            
             # Also resize masks
             discovery_img_pil = Image.fromarray((discovery_slice.astype(np.uint8) * 255), mode="L")
             discovery_img_pil = discovery_img_pil.resize((cordref_norm.shape[1], cordref_norm.shape[0]), resample=Image.Resampling.NEAREST)
@@ -412,19 +617,22 @@ def _render_s3_1_crop_box_sagittal_layered(
             crop_img_pil = crop_img_pil.resize((cordref_norm.shape[1], cordref_norm.shape[0]), resample=Image.Resampling.NEAREST)
             crop_slice = (np.array(crop_img_pil, dtype=np.uint8) > 0)
         
-        # Layer 2: Overlay func_ref_fast (pure func, no blend)
-        func_rgb = np.repeat(func_norm[..., np.newaxis], 3, axis=2)
+        # Layer 2: Overlay func_ref_fast (using magma colormap)
+        # Apply colormap to normalized float data [0, 1]
+        func_rgba_mapped = plt.cm.magma(func_norm_float) # Returns RGBA [0, 1]
+        func_rgb = (func_rgba_mapped[:, :, :3] * 255).astype(np.uint8)
         
-        # Start with background, then composite func on top
-        overlay_img = Image.fromarray(background_rgb, mode="RGB").convert("RGBA")
+        # Start with background
+        overlay_img_array = background_rgb.astype(np.float32)
         
-        # Composite func as overlay (semi-transparent for visibility)
-        # Using same approach as S2.1 uses for transparency
-        func_rgba = np.zeros((func_rgb.shape[0], func_rgb.shape[1], 4), dtype=np.uint8)
-        func_rgba[:, :, :3] = func_rgb
-        func_rgba[:, :, 3] = 180  # Alpha for ~70% opacity (matching S2.1 style)
-        func_img = Image.fromarray(func_rgba, mode="RGBA")
-        overlay_img = Image.alpha_composite(overlay_img, func_img)
+        # Additive blend of colormap overlay (scaled for visibility)
+        # This ensures func overlay is always visible regardless of intensity match
+        blend_weight = 0.5  # 50% blend
+        overlay_img_array = (1.0 - blend_weight) * overlay_img_array + blend_weight * func_rgb.astype(np.float32)
+        overlay_img_array = np.clip(overlay_img_array, 0, 255).astype(np.uint8)
+        
+        # Convert to PIL for drawing overlays
+        overlay_img = Image.fromarray(overlay_img_array, mode="RGB").convert("RGBA")
         
         # Layer 3: Draw discovery segmentation as solid transparent overlay (blue) - exactly like S2.1
         if discovery_slice is not None and discovery_slice.any():
@@ -448,13 +656,14 @@ def _render_s3_1_crop_box_sagittal_layered(
                 y_min, z_min = coords.min(axis=0)
                 y_max, z_max = coords.max(axis=0)
                 
-                # Draw thin rectangular border (1px thick) - exactly like S2.1
+                # Draw thick rectangular border (2px thick)
                 draw = ImageDraw.Draw(overlay_img)
-                # Draw rectangle outline only (no fill)
+                # PIL rectangle expects [x0, y0, x1, y1] or [(x0, y0), (x1, y1)]
+                # Our indexing is (row, col) = (y, z) in sagittal
                 draw.rectangle(
-                    [(z_min, y_min), (z_max + 1, y_max + 1)],
+                    [(z_min, y_min), (z_max, y_max)],
                     outline=(255, 0, 0, 255),  # Red
-                    width=1,  # Thin border (1 pixel)
+                    width=2,
                 )
         
         # Convert back to RGB for PPM
@@ -503,6 +712,8 @@ def _process_s3_1_dummy_drop_and_localization(
     subject: Optional[str] = None,
     session: Optional[str] = None,
     out_root: Optional[Path] = None,
+    cordref_std_path: Optional[Path] = None,
+    cordmask_dseg_path: Optional[Path] = None,
 ) -> dict[str, Any]:
     """
     S3.1: Dummy-volume drop + fast median reference + func cord localization + func_ref0.
@@ -551,33 +762,81 @@ def _process_s3_1_dummy_drop_and_localization(
     localize_dir = init_dir / "localize"
     localize_dir.mkdir(parents=True, exist_ok=True)
 
-    # Create a simple discovery segmentation (for testing)
-    discovery_seg_data = np.zeros_like(func_ref_fast_data)
-    # Create a simple mask in the center
-    center_z = func_ref_fast_data.shape[2] // 2
-    discovery_seg_data[:, :, center_z - 5 : center_z + 5] = 1
-
+    # Real Localization: Register T2 CordRef onto FuncRefFast
+    # This provides a robust "discovery" of the cord location in functional space.
     discovery_seg_path = localize_dir / "func_ref_fast_seg.nii.gz"
-    discovery_seg_img = nib.Nifti1Image(discovery_seg_data, bold_affine)
-    nib.save(discovery_seg_img, discovery_seg_path)
-
-    # Create ROI mask (for testing)
-    roi_mask_data = discovery_seg_data.copy()
     roi_mask_path = localize_dir / "func_ref_fast_roi_mask.nii.gz"
-    roi_mask_img = nib.Nifti1Image(roi_mask_data, bold_affine)
-    nib.save(roi_mask_img, roi_mask_path)
+    
+    # Real Localization: Contrast-agnostic model (SCT 7.x syntax)
+    # Use sct_deepseg spinalcord for robust cord detection with -largest 1 to remove brain artifacts
+    cmd_seg = [
+        "sct_deepseg", "spinalcord",
+        "-i", str(func_ref_fast_path),
+        "-o", str(discovery_seg_path),
+        "-largest", "1",
+        "-qc", str(work_dir / "qc"),
+        "-v", "0",
+    ]
+    ok, out = _run_command(cmd_seg)
+    
+    if ok and discovery_seg_path.exists():
+         roi_mask_path = discovery_seg_path
+    else:
+         return {
+             "func_ref_fast_path": func_ref_fast_path,
+             "func_ref0_path": init_dir / "func_ref0.nii.gz",
+             "discovery_seg_path": discovery_seg_path,
+             "roi_mask_path": roi_mask_path,
+             "func_ref_fast_crop_path": localize_dir / "func_ref_fast_crop.nii.gz",
+             "localization_status": "FAIL",
+             "failure_message": f"sct_deepseg seg_sc_contrast_agnostic failed: {out}",
+             "figure_path": None,
+             "crop_bbox": None,
+         }
 
-    # Crop the fast reference (for testing - simple crop)
-    crop_bbox = [10, func_ref_fast_data.shape[0] - 10, 10, func_ref_fast_data.shape[1] - 10, 5, func_ref_fast_data.shape[2] - 5]
+    # Calculate crop_bbox from discovery segmentation
+    try:
+        disc_img = nib.load(discovery_seg_path)
+        disc_data = disc_img.get_fdata()
+        coords = np.argwhere(disc_data > 0)
+        if coords.size > 0:
+            # ROI = bbox of cord pixels + padding
+            pad = 20 # 20 voxels padding around cord
+            r_min, c_min, s_min = coords.min(axis=0) - pad
+            r_max, c_max, s_max = coords.max(axis=0) + pad
+            
+            # Clip to image bounds
+            r_min, r_max = max(0, r_min), min(func_ref_fast_data.shape[0], r_max)
+            c_min, c_max = max(0, c_min), min(func_ref_fast_data.shape[1], c_max)
+            s_min, s_max = max(0, s_min), min(func_ref_fast_data.shape[2], s_max)
+            
+            crop_bbox = [int(r_min), int(r_max), int(c_min), int(c_max), int(s_min), int(s_max)]
+        else:
+             crop_bbox = [0, func_ref_fast_data.shape[0], 0, func_ref_fast_data.shape[1], 0, func_ref_fast_data.shape[2]]
+    except Exception:
+         crop_bbox = [0, func_ref_fast_data.shape[0], 0, func_ref_fast_data.shape[1], 0, func_ref_fast_data.shape[2]]
+
+    # Crop the fast reference for func_ref_fast_crop_path
     func_ref_fast_crop_data = func_ref_fast_data[
         crop_bbox[0] : crop_bbox[1],
         crop_bbox[2] : crop_bbox[3],
         crop_bbox[4] : crop_bbox[5],
     ]
-
     func_ref_fast_crop_path = localize_dir / "func_ref_fast_crop.nii.gz"
-    func_ref_fast_crop_img = nib.Nifti1Image(func_ref_fast_crop_data, bold_affine)
+    crop_affine = bold_affine.copy()
+    crop_affine[:3, 3] = nib.affines.apply_affine(bold_affine, [crop_bbox[0], crop_bbox[2], crop_bbox[4]])
+    func_ref_fast_crop_img = nib.Nifti1Image(func_ref_fast_crop_data, crop_affine)
     nib.save(func_ref_fast_crop_img, func_ref_fast_crop_path)
+
+
+    # Save CROPPED discovery seg (EXACT match for crop_bbox)
+    discovery_seg_crop_data = disc_data[
+        crop_bbox[0] : crop_bbox[1],
+        crop_bbox[2] : crop_bbox[3],
+        crop_bbox[4] : crop_bbox[5],
+    ]
+    discovery_seg_crop_path = localize_dir / "func_ref_fast_seg_crop.nii.gz"
+    nib.save(nib.Nifti1Image(discovery_seg_crop_data, crop_affine), discovery_seg_crop_path)
 
     # Compute func_ref0 from cropped region of 4D BOLD
     if bold_data_dropped.ndim == 4:
@@ -591,37 +850,16 @@ def _process_s3_1_dummy_drop_and_localization(
         
         # Save coarse cropped BOLD (input for S3.3/S3.4)
         func_bold_coarse_path = init_dir / "func_bold_coarse.nii.gz"
-        nib.save(nib.Nifti1Image(bold_cropped, bold_affine), func_bold_coarse_path) # Affine is potentially wrong?
-        # Note: bold_affine is original affine. Cropping changes translation.
-        # We must adjust affine for the crop.
-        # However, S3.1 existing logic for func_ref_fast_crop_img used bold_affine? 
-        # Checking lines 551: nib.Nifti1Image(func_ref_fast_crop_data, bold_affine)
-        # This is strictly incorrect if crop_bbox starts > 0.
-        # I should fix the affine for all cropped outputs.
-        # OR: sct_crop_image handles it. But here we do numpy slicing.
-        # If I rely on sct_crop_image in S3.1 instead of numpy, it handles headers.
-        # The existing code uses numpy slicing for testing/fast logic?
-        # "Implement func cord localization using exact S2 spec ... sct_crop_image".
-        # The code I'm editing is the placeholder/test logic or the real one?
-        # It says "For testing: create a simple localization result".
-        # Ah, the REAL implementation is supposed to use sct_crop_image.
-        # The code I see acts as a mock mostly?
-        # No, it's inside `_process_s3_1_...`.
-        # It looks like the S3.1 implementation provided was PARTIAL/MOCK.
-        # "In real implementation, this would call S2 exact spec localization" (Line 522).
-        # So I am building on top of a mock.
-        # To make verification valid, I should at least propagate the crop correctly.
-        # For now, I'll save the numpy crop. Assuming affine is ignored for the moment or I should fix it.
-        # Fixing affine: new_origin = old_origin + affine[:3,:3] @ crop_start
+        # Fix affine for crop
         new_affine = bold_affine.copy()
-        new_affine[:3, 3] += np.dot(bold_affine[:3, :3], np.array([crop_bbox[0], crop_bbox[2], crop_bbox[4]]))
+        new_affine[:3, 3] = nib.affines.apply_affine(bold_affine, [crop_bbox[0], crop_bbox[2], crop_bbox[4]])
         nib.save(nib.Nifti1Image(bold_cropped, new_affine), func_bold_coarse_path)
     else:
         func_ref0_data = func_ref_fast_crop_data
         func_bold_coarse_path = init_dir / "func_bold_coarse.nii.gz"
         # Handle 3D case
         new_affine = bold_affine.copy()
-        new_affine[:3, 3] += np.dot(bold_affine[:3, :3], np.array([crop_bbox[0], crop_bbox[2], crop_bbox[4]]))
+        new_affine[:3, 3] = nib.affines.apply_affine(bold_affine, [crop_bbox[0], crop_bbox[2], crop_bbox[4]])
         nib.save(nib.Nifti1Image(func_ref_fast_crop_data, new_affine), func_bold_coarse_path)
 
     # Save func_ref0
@@ -639,82 +877,6 @@ def _process_s3_1_dummy_drop_and_localization(
         if not out_root:
             out_root = extracted_root
     
-    # Debug: log extraction results (disabled for production)
-    # import sys
-    # if not (subject and out_root):
-    #     print(f"DEBUG: Extraction failed - subject={subject}, session={session}, out_root={out_root}", file=sys.stderr)
-    #     print(f"DEBUG: work_dir={work_dir}", file=sys.stderr)
-    
-    # If extraction failed, try to determine out_root from work_dir structure
-    # work_dir is typically: {out_root}/runs/S3_func_init_and_crop/... or {out_root}/work/runs/S3_func_init_and_crop/...
-    if not (subject and out_root):
-        current = work_dir.resolve()
-        while current.parent != current:
-            if current.name == "runs":
-                # out_root is the parent of "runs"
-                # But if parent is "work", then out_root is the parent of "work"
-                if current.parent.name == "work":
-                    out_root = current.parent.parent
-                else:
-                    out_root = current.parent
-                # Try to extract subject from path
-                # Look for sub-* directory that comes right after S3_func_init_and_crop
-                path_parts = list(work_dir.parts)
-                
-                # Find S3_func_init_and_crop index, then get the subject from the next part
-                for i, part in enumerate(path_parts):
-                    if part == "S3_func_init_and_crop" and i + 1 < len(path_parts):
-                        # The subject directory should be the next part after S3_func_init_and_crop
-                        subj_part = path_parts[i + 1]
-                        if subj_part.startswith("sub-"):
-                            subj_name = subj_part.replace("sub-", "")
-                            # Handle both formats: "XX_ses-YY" or "XX" with separate "ses-YY"
-                            if "_ses-" in subj_name or subj_name.endswith("_ses-none"):
-                                if "_ses-none" in subj_name:
-                                    subject = subj_name.replace("_ses-none", "")
-                                    session = None
-                                elif "_ses-" in subj_name:
-                                    parts = subj_name.split("_ses-", 1)
-                                    subject = parts[0]
-                                    session_str = parts[1] if len(parts) > 1 else ""
-                                    session = session_str if session_str and session_str != "none" else None
-                            else:
-                                subject = subj_name
-                                # Check for ses- in next part
-                                if i + 2 < len(path_parts) and path_parts[i + 2].startswith("ses-"):
-                                    ses_str = path_parts[i + 2].replace("ses-", "")
-                                    session = ses_str if ses_str != "none" else None
-                                else:
-                                    session = None
-                            break
-                break
-            current = current.parent
-    
-    # Find S2.1 cordref_std (REQUIRED - Q8A: FAIL if missing)
-    cordref_std_path = None
-    if subject and out_root:
-        # Debug: log S2 lookup (disabled for production)
-        # import sys
-        # print(f"DEBUG: Looking for S2 - subject={subject}, session={session}, out_root={out_root}", file=sys.stderr)
-        cordref_std_path = _find_s2_cordref_std(out_root, subject, session)
-        # print(f"DEBUG: S2 path result: {cordref_std_path}", file=sys.stderr)
-        # if cordref_std_path:
-        #     print(f"DEBUG: S2 path exists: {cordref_std_path.exists()}", file=sys.stderr)
-    
-    if cordref_std_path is None:
-        # FAIL if S2.1 anat is missing (Q8A)
-        return {
-            "func_ref_fast_path": func_ref_fast_path,
-            "func_ref0_path": func_ref0_path,
-            "discovery_seg_path": discovery_seg_path,
-            "roi_mask_path": roi_mask_path,
-            "func_ref_fast_crop_path": func_ref_fast_crop_path,
-            "localization_status": "FAIL",
-            "failure_message": "Missing S2.1 cordref_std.nii.gz - S2 must run before S3.1",
-            "figure_path": None,
-            "crop_bbox": crop_bbox,
-        }
-    
     # Determine figures directory (matching S2 structure)
     if subject and out_root:
         if session:
@@ -731,18 +893,19 @@ def _process_s3_1_dummy_drop_and_localization(
     figures_dir.mkdir(parents=True, exist_ok=True)
     figure_path = figures_dir / figure_name
     
-    # Render layered figure
-    rendered_path = _render_s3_1_crop_box_sagittal_layered(
-        cordref_std_path=cordref_std_path,
-        func_ref_fast_path=func_ref_fast_path,
-        discovery_seg_path=discovery_seg_path,
-        crop_mask_path=roi_mask_path,  # Use roi_mask as crop_mask
-        output_path=figure_path,
-        policy=policy,
+    # Generate S3.1 Figure immediately
+    # Overlay: discovery_seg (red transparent) on func_ref_fast (full FOV)
+    # Using the updated affine-aware renderer
+    rendered_path = _render_s3_1_simple_func_with_mask(
+        func_ref_fast_path,
+        discovery_seg_path,
+        figure_path,
+        policy,
+        crop_box=crop_bbox,
     )
     
     if rendered_path is None:
-        # Rendering failed
+        # Warn but don't fail pipeline? 
         return {
             "func_ref_fast_path": func_ref_fast_path,
             "func_ref0_path": func_ref0_path,
@@ -750,16 +913,18 @@ def _process_s3_1_dummy_drop_and_localization(
             "roi_mask_path": roi_mask_path,
             "func_ref_fast_crop_path": func_ref_fast_crop_path,
             "localization_status": "FAIL",
-            "failure_message": "Failed to render S3.1 layered figure",
+            "failure_message": "Failed to render S3.1 figure",
             "figure_path": None,
             "crop_bbox": crop_bbox,
         }
+
 
     result = {
         "func_ref_fast_path": func_ref_fast_path,
         "func_ref0_path": func_ref0_path,
         "discovery_seg_path": discovery_seg_path,
         "roi_mask_path": roi_mask_path,
+        "discovery_seg_crop_path": discovery_seg_crop_path,  # Cropped mask for S3.2/S3.3
         "func_ref_fast_crop_path": func_ref_fast_crop_path,
         "func_bold_coarse_path": func_bold_coarse_path,
         "localization_status": "PASS",
@@ -774,207 +939,11 @@ def _process_s3_1_dummy_drop_and_localization(
     return result
 
 
+
+
+
 @subtask("S3.2")
-def _process_s3_2_registration(
-    func_ref0_path: Path,
-    cordref_crop_path: Path,
-    work_dir: Path,
-    policy: dict[str, Any],
-    t2_cord_mask_path: Optional[Path] = None,
-) -> dict[str, Any]:
-    """
-    S3.2: T2-to-func registration + mask propagation.
-
-    This function:
-    1. Registers cordref_crop to func_ref0
-       - Uses segmentation-based init (dseg -> dseg)
-    2. Applies transform to cord mask
-    3. Renders S3.2 figure
-
-    Returns:
-        Dictionary with registration results.
-    """
-    init_dir = work_dir / "init"
-    init_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Derived paths
-    localize_dir = init_dir / "localize"
-    discovery_seg_path = localize_dir / "func_ref_fast_seg.nii.gz"
-    
-    t2_to_func_warp_path = init_dir / "t2_to_func_warp.nii.gz"
-    t2_to_func_inv_warp_path = init_dir / "func_to_t2_warp.nii.gz"
-    cordmask_func_path = init_dir / "cordmask_space_func.nii.gz"
-    
-    # Locate S2 cordmask (full, dseg) if not provided
-    if not t2_cord_mask_path:
-        subject, session, out_root = _extract_subject_session_from_work_dir(work_dir)
-        cordmask_dseg_path = None
-        if subject and out_root:
-            cordmask_dseg_path = _find_s2_cordmask_dseg(out_root, subject, session)
-        t2_cord_mask_path = cordmask_dseg_path
-    
-    # Fallback for testing/missing
-    if not t2_cord_mask_path or not t2_cord_mask_path.exists():
-        # If we can't find the full mask, we can try to assume cordref_crop has enough contrast
-        # to stand in, OR we might fail.
-        # But for robustness, let's create a dummy mask if this is a test run, or warn.
-        # For now, let's try to generate one from cordref_crop if missing (fallback).
-        cordmask_crop_path = init_dir / "cordmask_crop.nii.gz"
-        # sct_deepseg TASK -i ...
-        ok, out = _run_command([
-            "sct_deepseg", "spinalcord", "-i", str(cordref_crop_path), "-o", str(cordmask_crop_path)
-        ])
-        if not ok:
-             return {"registration_status": "FAIL", "failure_message": f"Failed to generate fallback mask: {out}"}
-    else:
-        # Crop the full mask to match cordref_crop space
-        # We use sct_crop_image with -ref to match FOV
-        cordmask_crop_path = init_dir / "cordmask_crop.nii.gz"
-        # sct_crop_image -i input -ref reference -o output
-        # Note: sct_crop_image -ref argument takes a reference image for bounding box
-        ok, out = _run_command([
-            "sct_crop_image",
-            "-i", str(t2_cord_mask_path),
-            "-ref", str(cordref_crop_path),
-            "-o", str(cordmask_crop_path)
-        ])
-        if not ok:
-            return {"registration_status": "FAIL", "failure_message": f"Failed to crop cordmask: {out}"}
-
-    # Verify discovery seg exists
-    if not discovery_seg_path.exists():
-        return {"registration_status": "FAIL", "failure_message": f"Missing discovery seg: {discovery_seg_path}"}
-
-    # Registration Parameters (from policy or default best-practice)
-    # Step 1: Segmentation-based (slicereg)
-    # Step 2: Intensity-based (rigid)
-    # We use param string for sct_register_multimodal
-    params = (
-        "step=1,type=seg,algo=slicereg,metric=MeanSquares,smooth=0:"
-        "step=2,type=im,algo=rigid,metric=MI,iter=5,gradStep=0.5"
-    )
-    
-    # Run Registration
-    # sct_register_multimodal -i src -d dest -dseg dest_seg -iseg src_seg -param ...
-    # src = cordref_crop
-    # dest = func_ref0
-    # iseg = cordmask_crop
-    # dseg = discovery_seg
-    cmd_reg = [
-        "sct_register_multimodal",
-        "-i", str(cordref_crop_path),
-        "-d", str(func_ref0_path),
-        "-iseg", str(cordmask_crop_path),
-        "-dseg", str(discovery_seg_path),
-        "-param", params,
-        "-owarp", str(t2_to_func_warp_path),
-        "-owarpinv", str(t2_to_func_inv_warp_path),
-        "-x", "nn",  # final interpolation for warped src (but we care about mask mainly)
-    ]
-    
-    ok, out = _run_command(cmd_reg)
-    if not ok:
-         return {"registration_status": "FAIL", "failure_message": f"Registration failed: {out}"}
-         
-    # Apply transform to Mask (nn interpolation)
-    cmd_apply = [
-        "sct_apply_transfo",
-        "-i", str(cordmask_crop_path),
-        "-d", str(func_ref0_path),
-        "-w", str(t2_to_func_warp_path),
-        "-o", str(cordmask_func_path),
-        "-x", "nn"
-    ]
-    
-    ok, out = _run_command(cmd_apply)
-    if not ok:
-        return {"registration_status": "FAIL", "failure_message": f"Failed to apply warp to mask: {out}"}
-
-    # Render Overlay: FuncRef0 + Contour of CordMask (Func Space)
-    # Look for figures dir
-    if subject and out_root:
-        if session:
-            figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
-            fig_name = f"sub-{subject}_ses-{session}_desc-S3_t2_to_func_overlay.png"
-        else:
-            figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
-            fig_name = f"sub-{subject}_desc-S3_t2_to_func_overlay.png"
-    else:
-        figures_dir = work_dir.parent.parent / "derivatives" / "spineprep" / "sub-test" / "ses-none" / "figures"
-        fig_name = "test_desc-S3_t2_to_func_overlay.png"
-        
-    figures_dir.mkdir(parents=True, exist_ok=True)
-    figure_path = figures_dir / fig_name
-    
-    # Simple overlay render (func background, mask contour)
-    # We can reuse _draw_thick_contour approach but we need to load data
-    # Or implement a dedicated renderer. 
-    # Let's implement a simple inline render or helper since we have helpers.
-    try:
-        # Load func ref
-        func_img = nib.as_closest_canonical(nib.load(func_ref0_path))
-        func_data = func_img.get_fdata()
-        if func_data.ndim > 3: func_data = func_data[..., 0]
-        
-        # Load mask
-        mask_img = nib.as_closest_canonical(nib.load(cordmask_func_path))
-        mask_data = mask_img.get_fdata()
-        if mask_data.ndim > 3: mask_data = mask_data[..., 0]
-        
-        # Check shapes
-        if func_data.shape == mask_data.shape:
-            # Pick center slice of mask
-            yy, xx, zz = np.where(mask_data > 0)
-            if len(zz) > 0:
-                z_center = int(np.median(zz))
-            else:
-                z_center = func_data.shape[2] // 2
-                
-            # Slice axial? or Sagittal? 
-            # Usually axial is good for cord contour verification
-            # But S3.1 did sagittal. Let's do AXIAL for registration check (contour alignment)
-            # as cord shape is best seen axially.
-            
-            # Slice
-            func_slice = np.rot90(func_data[:, :, z_center])
-            mask_slice = np.rot90(mask_data[:, :, z_center] > 0)
-            
-            # Normalize func
-            vmin, vmax = np.percentile(func_slice, [1, 99])
-            if vmax > vmin:
-                func_norm = np.clip((func_slice - vmin) / (vmax - vmin), 0, 1)
-            else:
-                func_norm = func_slice
-                
-            # Create RGB
-            img_rgb = np.repeat((func_norm * 255).astype(np.uint8)[..., np.newaxis], 3, axis=2)
-            img_pil = Image.fromarray(img_rgb)
-            
-            # Draw contour
-            contour = _mask_contour_2d(mask_slice)
-            _draw_thick_contour(img_pil, contour, color=(255, 255, 0, 255), thickness=1) # Yellow
-            
-            img_pil.save(figure_path)
-    except Exception as e:
-        # Don't fail the pipeline for figure
-        print(f"Figure render warning: {e}")
-
-    result = {
-        "t2_to_func_xfm_path": t2_to_func_warp_path,
-        "cordmask_func_path": cordmask_func_path,
-        "registration_status": "PASS",
-        "figure_path": figure_path
-    }
-
-    # Check if we should exit after S3.2
-    if should_exit_after_subtask("S3.2"):
-        return result
-
-    return result
-
-
-@subtask("S3.3")
-def _process_s3_3_outlier_gating(
+def _process_s3_2_outlier_gating(
     bold_data_path: Path,
     func_ref0_path: Path,
     cordmask_func_path: Path,
@@ -982,13 +951,13 @@ def _process_s3_3_outlier_gating(
     policy: dict[str, Any],
 ) -> dict[str, Any]:
     """
-    S3.3: Mask-aware outlier gating + robust reference.
+    S3.2: Mask-aware outlier gating + robust reference.
 
     This function:
     1. Computes DVARS and ref-RMS per frame (within cord mask)
     2. Flags outliers using boxplot cutoff
     3. Computes robust func_ref from good frames
-    4. Renders S3.3 figure
+    4. Renders S3.2 figure
         
     Returns:
         Dictionary with outlier gating results.
@@ -1193,28 +1162,31 @@ def _process_s3_3_outlier_gating(
         "figure_path": figure_path
     }
 
-    # Check if we should exit after S3.3
-    if should_exit_after_subtask("S3.3"):
+    # Check if we should exit after S3.2
+    if should_exit_after_subtask("S3.2"):
         return result
 
     return result
 
 
-@subtask("S3.4")
-def _process_s3_4_crop_and_qc(
+@subtask("S3.3")
+def _process_s3_3_crop_and_qc(
     bold_data_path: Path,
-    cordmask_func_path: Path,
-    functional_ref_path: Path,  # Added this arg for QC context
+    cordmask_func_path: Path,      # Cord mask (mask-propagated or s3.1 seg if reg removed)
+    functional_ref_path: Path,     # S3.2 Robust Ref (Coarse Crop)
+    func_ref_fast_path: Path,      # S3.1 Full FOV Ref (Background)
+    discovery_seg_path: Path,      # S3.1 Discovery Seg (Blue Overlay)
     work_dir: Path,
     policy: dict[str, Any],
+    coarse_crop_bbox: list[int] | None = None, # Offset for coordinate mapping back to full FOV
 ) -> dict[str, Any]:
     """
-    S3.4: Cord-focused crop + QC reportlets.
+    S3.3: Cord-focused crop + QC reportlets.
 
     This function:
     1. Creates cylindrical crop mask
     2. Crops 4D BOLD (and drops dummies from cropped)
-    3. Renders S3.4 figures
+    3. Renders S3.3 figures
     4. Generates QC artifacts
         
     Returns:
@@ -1296,50 +1268,86 @@ def _process_s3_4_crop_and_qc(
     figures_dir.mkdir(parents=True, exist_ok=True)
     
     # Figure 1: Crop Box Sagittal
-    # func_ref + crop_mask box
-    # Reuse S3.1 logic or simple render
-    fig1_path = figures_dir / f"{prefix}_desc-S3_crop_box_sagittal.png"
-    # We can use _render_s3_1_crop_box_sagittal_layered... but it expects cordref_std.
-    # Here we might just want to show it on func_ref.
-    # Let's do a simple sagittal slice of func_ref with crop box.
+    # Match S3.1 style: Full FOV func_ref + Blue Mask + Red Crop Box
+    # 
+    # S3.1 uses _render_s3_1_simple_func_with_mask(func_path, mask_path, output_path, policy, crop_box)
+    
+    # We need to calculate crop_box in index coordinates relative to func_ref
     try:
-        # Load ref
-        ref_img = nib.as_closest_canonical(nib.load(functional_ref_path))
-        ref_data = ref_img.get_fdata()
-        mask_data = nib.as_closest_canonical(nib.load(crop_mask_path)).get_fdata() > 0
-        
-        # Sagittal slice (middle of mask)
-        coords = np.argwhere(mask_data)
-        if coords.size > 0:
-            x_center = int(np.median(coords[:, 0]))
-        else:
-            x_center = ref_data.shape[0] // 2
-            
-        ref_slice = np.rot90(ref_data[x_center, :, :])
-        mask_slice = np.rot90(mask_data[x_center, :, :])
-        
-        # Normalize
-        vmin, vmax = np.percentile(ref_slice, [1, 99])
-        if vmax > vmin:
-            ref_norm = np.clip((ref_slice - vmin) / (vmax - vmin), 0, 1)
-        else:
-            ref_norm = ref_slice
-            
-        rgb = np.repeat((ref_norm * 255).astype(np.uint8)[..., np.newaxis], 3, axis=2)
-        pil_img = Image.fromarray(rgb)
-        
-        # Draw box
-        # Mask slice is boolean. Find bbox
-        yy, xx = np.where(mask_slice)
-        if len(yy) > 0:
-            y_min, x_min = yy.min(), xx.min()
-            y_max, x_max = yy.max(), xx.max()
-            draw = ImageDraw.Draw(pil_img)
-            draw.rectangle([x_min, y_min, x_max, y_max], outline=(255, 0, 0), width=1)
-            
-        pil_img.save(fig1_path)
+         # Load crop mask to find bbox
+         mask_img = nib.as_closest_canonical(nib.load(crop_mask_path))
+         mask_data = mask_img.get_fdata() > 0
+         
+         # BBox: r_min, r_max, c_min, c_max, s_min, s_max
+         coords = np.argwhere(mask_data)
+         if coords.size > 0:
+             r_min, c_min, s_min = coords.min(axis=0)
+             r_max, c_max, s_max = coords.max(axis=0)
+             
+             # Apply padding logic similar to S3.1 if we want the "Red Box" to represent 
+             # the final crop region. The crop mask IS the region, so bbox of crop mask is 
+             # likely the exact crop. S3.1 padded around discovery mask. 
+             # But here we already have the explicit cylindrical mask.
+             # So the red box should enclose the cylindrical mask.
+             
+             # HOWEVER: The actual crop logic in step 2 uses sct_crop_image -m crop_mask.
+             # sct_crop_image generally uses the bounding box of the mask.
+             # So bbox of crop_mask_path IS the correct crop box.
+             
+             crop_bbox = [int(r_min), int(r_max), int(c_min), int(c_max), int(s_min), int(s_max)]
+
+             # CORRECTION: The crop_mask is in S3.2 Coarse Crop Space. The background is S3.1 Full FOV Space.
+             # We must shift the crop_bbox by the offset between Coarse Crop and Full FOV.
+             # Offset = (Origin_Coarse - Origin_Full) / VoxelSize
+             # Assuming same orientation (RPI) and resolution.
+             
+             full_img = nib.load(func_ref_fast_path)
+             coarse_img = nib.load(functional_ref_path) # or using mask_img directly if it's in coarse space
+             
+             # Calculate offset in voxels
+             aff_full = full_img.affine
+             aff_coarse = coarse_img.affine
+             
+             # Inverse full affine maps world -> full_voxels
+             inv_aff_full = np.linalg.inv(aff_full)
+             
+             # Transform coarse origin (0,0,0) to full voxel space
+             # This gives the top-left corner of the coarse image in full image coordinates
+             origin_coarse_world = aff_coarse @ [0, 0, 0, 1]
+             origin_coarse_in_full = inv_aff_full @ origin_coarse_world
+             
+             off_r = int(round(origin_coarse_in_full[0]))
+             off_c = int(round(origin_coarse_in_full[1]))
+             off_s = int(round(origin_coarse_in_full[2]))
+             
+             # Apply offset
+             crop_bbox = [
+                 crop_bbox[0] + off_r, crop_bbox[1] + off_r,
+                 crop_bbox[2] + off_c, crop_bbox[3] + off_c,
+                 crop_bbox[4] + off_s, crop_bbox[5] + off_s
+             ]
+         else:
+             crop_bbox = None
+             
+         fig1_path = figures_dir / f"{prefix}_desc-S3_crop_box_sagittal.png"
+         
+         # Render using S3.1 logic
+         # Use matching S3.1 style: Blue mask (cylindrical here) + Red box
+         # Render using S3.1 logic
+         # Use matching S3.1 style: 
+         # Background: Full FOV func_ref_fast
+         # Overlay: Discovery Seg (Blue)
+         # Box: Final Crop Box (Red)
+         _render_s3_1_simple_func_with_mask(
+             func_path=func_ref_fast_path,  # Full FOV background
+             mask_path=discovery_seg_path,  # Blue overlay (S3.1 discovery)
+             output_path=fig1_path,
+             policy=policy,
+             crop_box=crop_bbox             # Red overlay (S3.3 fine crop)
+         )
+         
     except Exception as e:
-        print(f"Fig1 render fail: {e}")
+         print(f"Fig1 (S3.3) render fail: {e}")
 
     # Figure 2: Funcref Montage (Axial)
     fig2_path = figures_dir / f"{prefix}_desc-S3_funcref_montage.png"
@@ -1457,26 +1465,18 @@ def _summarise_s3_runs(inventory: dict, policy: dict, runs: list[dict], out_path
         s3_1 = get_res("S3.1")
         s3_2 = get_res("S3.2")
         s3_3 = get_res("S3.3")
-        s3_4 = get_res("S3.4")
         
         # Map to dashboard keys
-        # "t2_to_func_overlay" (S3.2)
+        # "frame_metrics" (S3.2)
         if s3_2.get("figure_path"):
-            reportlets["t2_to_func_overlay"] = s3_2["figure_path"]
-            
-        # "frame_metrics" (S3.3)
-        if s3_3.get("figure_path"):
-             reportlets["frame_metrics"] = s3_3["figure_path"]
+             reportlets["frame_metrics"] = s3_2["figure_path"]
              
-        # "crop_box_sagittal" (S3.4 or S3.1)
-        # S3.4 has "figures" list? let's check S3.4 output structure
-        # In _process_s3_4, it puts paths in "figures" list?
-        # Re-check _process_s3_4 return.
-        # But wait, logic below says S3.1 also produces crop box.
-        # Let's prefer S3.4 crop box if available (final), else S3.1 (init)
+        # "crop_box_sagittal" (S3.3 or S3.1)
+        # S3.3 has "figures" list
+        # Let's prefer S3.3 crop box if available (final), else S3.1 (init)
         
-        s3_4_figs = s3_4.get("figures", [])
-        crop_box_fig = next((f for f in s3_4_figs if "crop_box" in str(f)), None)
+        s3_3_figs = s3_3.get("figures", [])
+        crop_box_fig = next((f for f in s3_3_figs if "crop_box" in str(f)), None)
         
         # S3.1 figure (always func_localization_crop)
         if s3_1.get("figure_path"):
@@ -1485,8 +1485,8 @@ def _summarise_s3_runs(inventory: dict, policy: dict, runs: list[dict], out_path
         if crop_box_fig:
             reportlets["crop_box_sagittal"] = crop_box_fig
             
-        # "funcref_montage" (S3.4)
-        funcref_fig = next((f for f in s3_4_figs if "funcref_montage" in str(f)), None)
+        # "funcref_montage" (S3.3)
+        funcref_fig = next((f for f in s3_3_figs if "funcref_montage" in str(f)), None)
         if funcref_fig:
             reportlets["funcref_montage"] = funcref_fig
             
@@ -1542,7 +1542,6 @@ def _process_session_s3(
     
     # Locate S2 outputs (common for session)
     cordref_std_path = _find_s2_cordref_std(out_root, subject, session)
-    # cordmask_dseg is required for S3.2 registration (mask propagation)
     cordmask_dseg_path = _find_s2_cordmask_dseg(out_root, subject, session)
     
     if not cordref_std_path:
@@ -1591,11 +1590,13 @@ def _process_session_s3(
                 subject=subject,
                 session=session,
                 out_root=out_root,
+                cordref_std_path=cordref_std_path,
+                cordmask_dseg_path=cordmask_dseg_path,
             )
             run_result["results"].append(("S3.1", s3_1_res))
             
-            # Layered figure for S3.1 is now generated AFTER S3.2 to use registration warp
-            # See post-S3.2 block below
+            # S3.1 figure (localization + crop) generated here
+            # ...
             
             if should_exit_after_subtask("S3.1"):
                 run_result["status"] = "PASS"
@@ -1603,144 +1604,42 @@ def _process_session_s3(
                 continue
 
             # S3.2
-            if s3_1_res["localization_status"] != "PASS":
-                 run_result["status"] = "FAIL"
-                 run_result["failure_message"] = f"S3.1 Localization failed: {s3_1_res.get('failure_message')}"
-                 session_runs.append(run_result)
-                 continue
-                 
-            s3_2_res = _process_s3_2_registration(
+            s3_2_res = _process_s3_2_outlier_gating(
+                s3_1_res["func_bold_coarse_path"], 
                 s3_1_res["func_ref0_path"],
-                cordref_std_path, # Use S2 output as cordref_crop
+                s3_1_res["discovery_seg_crop_path"], # Use CROPPED S3.1 mask
                 work_dir,
-                policy,
-                t2_cord_mask_path=cordmask_dseg_path
+                policy
             )
             run_result["results"].append(("S3.2", s3_2_res))
             if should_exit_after_subtask("S3.2"):
                 run_result["status"] = "PASS"
                 session_runs.append(run_result)
                 continue
-
-            if s3_2_res.get("registration_status") != "PASS":
+            
+            if s3_2_res.get("outlier_status") == "FAIL":
                  run_result["status"] = "FAIL"
-                 run_result["failure_message"] = f"S3.2 Registration failed: {s3_2_res.get('failure_message')}"
+                 run_result["failure_message"] = f"S3.2 Outlier gating failed: {s3_2_res.get('failure_message')}"
                  session_runs.append(run_result)
                  continue
 
-            # S3.3 (Prepare inputs by inserting S3.1 figure logic here)
-            
-            # Post-S3.2: Render S3.1 Figure (Warped)
-            # Now we have t2_to_func_xfm_path. We need func_to_t2 (inverse) to warp FUNC -> T2.
-            # S3.2 generates both: -owarp t2_to_func, -owarpinv func_to_t2
-            if s3_2_res.get("registration_status") == "PASS":
-                # Define inverse warp path (assumed from S3.2 logic)
-                # In S3.2 we defined t2_to_func_inv_warp_path = init_dir / "func_to_t2_warp.nii.gz"
-                # We can access it via s3_2_res or reconstruct path if needed.
-                # Ideally S3.2 should return it. Let's check S3.2 return.
-                # It returns t2_to_func_xfm_path. 
-                # Let's assume standard naming or derive from that.
-                
-                # Better: Re-derive paths using same logic as S3.2 or check if file exists.
-                init_dir = work_dir / "init"
-                func_to_t2_warp_path = init_dir / "func_to_t2_warp.nii.gz"
-                
-                if func_to_t2_warp_path.exists() and s3_1_res.get("localization_status") == "PASS":
-                     prefix = run_id
-                     fig_path = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures" / f"{prefix}_desc-S3_func_localization_crop_box_sagittal.png"
-                     fig_path.parent.mkdir(parents=True, exist_ok=True)
-                     
-                     # Warp Func Fast -> T2
-                     func_ref_fast_path = s3_1_res["func_ref_fast_path"]
-                     warped_func_path = init_dir / "func_ref_fast_in_t2.nii.gz"
-                     
-                     cmd_warp_func = [
-                         "sct_apply_transfo",
-                         "-i", str(func_ref_fast_path),
-                         "-d", str(cordref_std_path),
-                         "-w", str(func_to_t2_warp_path),
-                         "-o", str(warped_func_path),
-                         "-x", "linear" # Linear for image
-                     ]
-                     _run_command(cmd_warp_func)
-                     
-                     # Warp ROI Mask -> T2
-                     roi_mask_path = s3_1_res["roi_mask_path"]
-                     warped_mask_path = init_dir / "roi_mask_in_t2.nii.gz"
-                     
-                     cmd_warp_mask = [
-                         "sct_apply_transfo",
-                         "-i", str(roi_mask_path),
-                         "-d", str(cordref_std_path),
-                         "-w", str(func_to_t2_warp_path),
-                         "-o", str(warped_mask_path),
-                         "-x", "nn" # NN for mask
-                     ]
-                     _run_command(cmd_warp_mask)
-                     
-                     # Warp Discovery Seg -> T2 (optional for vis)
-                     discovery_seg_path = s3_1_res["discovery_seg_path"]
-                     warped_discovery_path = init_dir / "discovery_seg_in_t2.nii.gz"
-                     cmd_warp_disc = [
-                         "sct_apply_transfo",
-                         "-i", str(discovery_seg_path),
-                         "-d", str(cordref_std_path),
-                         "-w", str(func_to_t2_warp_path),
-                         "-o", str(warped_discovery_path),
-                         "-x", "nn" 
-                     ]
-                     _run_command(cmd_warp_disc)
-
-                     # Render in T2 space
-                     # Background: cordref_std_path
-                     # Overlay: warped_func
-                     # Seg: warped_discovery
-                     # Box: warped_mask
-                     if warped_func_path.exists() and warped_mask_path.exists():
-                         _render_s3_1_crop_box_sagittal_layered(
-                             cordref_std_path,
-                             warped_func_path,
-                             warped_discovery_path if warped_discovery_path.exists() else None,
-                             warped_mask_path,
-                             fig_path,
-                             policy
-                         )
-                         # Update S3.1 result with figure path (it was missing from initial s3_1_res)
-                         s3_1_res["figure_path"] = fig_path
-            s3_3_res = _process_s3_3_outlier_gating(
-                s3_1_res["func_bold_coarse_path"], 
-                s3_1_res["func_ref0_path"],
-                s3_2_res["cordmask_func_path"],
+            # S3.3
+            s3_3_res = _process_s3_3_crop_and_qc(
+                s3_1_res["func_bold_coarse_path"],
+                s3_1_res["discovery_seg_crop_path"], # Use CROPPED S3.1 mask
+                s3_2_res["func_ref_path"],
+                s3_1_res["func_ref_fast_path"],
+                s3_1_res["discovery_seg_path"],
                 work_dir,
                 policy
             )
             run_result["results"].append(("S3.3", s3_3_res))
-            if should_exit_after_subtask("S3.3"):
-                run_result["status"] = "PASS"
-                session_runs.append(run_result)
-                continue
-            
-            if s3_3_res.get("outlier_status") == "FAIL":
-                 run_result["status"] = "FAIL"
-                 run_result["failure_message"] = f"S3.3 Outlier gating failed: {s3_3_res.get('failure_message')}"
-                 session_runs.append(run_result)
-                 continue
-
-            # S3.4
-            s3_4_res = _process_s3_4_crop_and_qc(
-                s3_1_res["func_bold_coarse_path"],
-                s3_2_res["cordmask_func_path"],
-                s3_3_res["func_ref_path"],
-                work_dir,
-                policy
-            )
-            run_result["results"].append(("S3.4", s3_4_res))
             
             # Copy final figures to derivatives/figures
-            if s3_4_res.get("figures"):
+            if s3_3_res.get("figures"):
                 figs_out = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
                 figs_out.mkdir(parents=True, exist_ok=True)
-                for fig_p in s3_4_res["figures"]:
+                for fig_p in s3_3_res["figures"]:
                      if fig_p.exists():
                          name = fig_p.name.replace("test_", f"{run_id}_") # Fix potential prefix issue
                          if not name.startswith(run_id):
@@ -1803,29 +1702,31 @@ def _run_s3_test_harness(out: Optional[str]) -> StepResult:
         "dummy_volumes": {"count": 4},
         "func_localization": {"enabled": True, "method": "deepseg", "task": "spinalcord"},
         "crop": {"mask_diameter_mm": 40},
-        "registration": {"type": "rigid"}
     }
     
     # S3.1
     s3_1 = _process_s3_1_dummy_drop_and_localization(test_bold_path, work_dir, policy)
     if should_exit_after_subtask("S3.1"): return StepResult("PASS", None)
     
+    # S3.2 REMOVED (Lean S3)
+    
     # S3.2
-    s3_2 = _process_s3_2_registration(s3_1["func_ref0_path"], cordref_std_path, work_dir, policy)
+    s3_2 = _process_s3_2_outlier_gating(s3_1["func_bold_coarse_path"], s3_1["func_ref0_path"], s3_1["discovery_seg_crop_path"], work_dir, policy)
     if should_exit_after_subtask("S3.2"): return StepResult("PASS", None)
     
-    if s3_2["registration_status"] != "PASS":
+    if s3_2["outlier_status"] == "FAIL":
         return StepResult("FAIL", s3_2.get("failure_message"))
-
-    # S3.3
-    s3_3 = _process_s3_3_outlier_gating(s3_1["func_bold_coarse_path"], s3_1["func_ref0_path"], s3_2["cordmask_func_path"], work_dir, policy)
-    if should_exit_after_subtask("S3.3"): return StepResult("PASS", None)
-    
-    if s3_3["outlier_status"] == "FAIL":
-        return StepResult("FAIL", s3_3.get("failure_message"))
         
-    # S3.4
-    s3_4 = _process_s3_4_crop_and_qc(s3_1["func_bold_coarse_path"], s3_2["cordmask_func_path"], s3_3["func_ref_path"], work_dir, policy)
+    # S3.3
+    s3_3 = _process_s3_3_crop_and_qc(
+        bold_data_path=s3_1["func_bold_coarse_path"], 
+        cordmask_func_path=s3_1["discovery_seg_crop_path"], 
+        functional_ref_path=s3_2["func_ref_path"], 
+        func_ref_fast_path=s3_1["func_ref_fast_path"],
+        discovery_seg_path=s3_1["discovery_seg_path"],
+        work_dir=work_dir, 
+        policy=policy
+    )
     
     if out:
         from spineprep.qc_dashboard import generate_dashboard_safe
@@ -1950,7 +1851,7 @@ def check_S3_func_init_and_crop(
     Verifies existence of:
     - func_ref (Robust)
     - funccrop_bold
-    - QC figures (Registration, Metrics, Crop)
+    - QC figures (Metrics, Crop)
     - json logs
     """
     # Simple check for now

@@ -1,0 +1,10 @@
+{
+    "GeneratedBy": [
+        {
+            "Name": "spinalcordtoolbox: sct_deepseg spinalcord -i func_ref_fast.nii.gz -o temp_seg.nii.gz -largest 1 -v 1",
+            "Version": "7.1",
+            "CodeURL": "https://github.com/spinalcordtoolbox/spinalcordtoolbox/blob/unknown/spinalcordtoolbox/scripts/sct_deepseg.py",
+            "ModelURL": "https://github.com/sct-pipeline/contrast-agnostic-softseg-spinalcord/releases/download/v3.0/model_contrast_agnostic_20250123.zip"
+        }
+    ]
+}

@@ -26,28 +26,6 @@ func_localization:
     mask_diameter_mm: 60  # Configurable, default match S2
     min_z_slices: 20
 
-# T2-to-func registration: bring cord mask from anatomy to func space
-registration:
-  # Registration type: rigid (translation+rotation) or affine (includes scaling/shearing)
-  type: rigid
-  # Metric: MI (mutual information) is robust for cross-modality
-  metric: MI
-  # Search radius (mm) - increased to explore larger alignment space and avoid poor local minima
-  search_radius_mm: 12.0
-  # Minimum acceptable correlation/MI after registration (hard FAIL below this)
-  min_metric_threshold: 0.3
-  # Interpolation for mask propagation: nn (nearest neighbor) preserves binary labels
-  mask_interpolation: nn
-  # ROI mask for destination image: constrains registration search region
-  # Created using sct_create_mask with center-based approach
-  roi_mask_diameter_mm: 40.0  # Cylindrical mask diameter in mm
-  # Two-pass registration: Pass 1 (rough) then Pass 2 (refined with propagated mask ROI)
-  two_pass_enabled: true  # Enable two-pass registration for better alignment
-  pass1_use_large_mask: true  # Use large center-based mask for Pass 1 (more inclusive)
-  # Segmentation-based registration (SCT best practice for cross-modality)
-  use_segmentation_based: true  # Enable type=seg registration (recommended)
-  seg_binarize_threshold: 0.5  # Threshold for converting ROI mask to binary seg
-
 # Outlier gating: identify motion-corrupted frames using cord-centric metrics
 outlier_gating:
   # IQR multiplier for upper boxplot cutoff (P75 + multiplier*IQR)

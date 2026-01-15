@@ -25,10 +25,9 @@ REPORTLET_ORDER: dict[str, list[str]] = {
     ],
     "S3_func_init_and_crop": [
         "func_localization_crop",   # S3.1 - Discovery + Crop
-        "t2_to_func_overlay",       # S3.2 - T2-to-func registration
-        "frame_metrics",            # S3.3 - Outlier gating
-        "crop_box_sagittal",        # S3.4 - Cord-focused crop
-        "funcref_montage",          # S3.4 - Robust funcref
+        "frame_metrics",            # S3.2 - Outlier gating
+        "crop_box_sagittal",        # S3.3 - Cord-focused crop
+        "funcref_montage",          # S3.3 - Robust funcref
     ],
 }
 
@@ -44,10 +43,9 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
     },
     "S3_func_init_and_crop": {
         "func_localization_crop": "S3.1 - Discovery + Crop",
-        "t2_to_func_overlay": "S3.2 - T2-to-func Registration",
-        "frame_metrics": "S3.3 - Frame Metrics (Outlier Gating)",
-        "crop_box_sagittal": "S3.4 - Cord-focused Crop",
-        "funcref_montage": "S3.4 - Robust Functional Reference",
+        "frame_metrics": "S3.2 - Frame Metrics (Outlier Gating)",
+        "crop_box_sagittal": "S3.3 - Cord-focused Crop",
+        "funcref_montage": "S3.3 - Robust Functional Reference",
     },
 }
 
@@ -310,7 +308,7 @@ def generate_dashboard(out_dir: Path) -> DashboardResult:
                 if qc_path.exists():
                     step_code = step_dir.name
                     dataset_key = dataset_dir.name
-                    qc_files.append((qc_path, step_code, dataset_key))
+                    qc_files.append((qc_path, step_code, dataset_key, item))
         
         # Legacy structure: {dataset_key}/logs/<STEP>_qc.json
         for qc_file in sub_logs_dir.glob("*_qc.json"):
@@ -542,7 +540,13 @@ def _generate_reportlet_gallery_html(
         label_str = f"{dataset} / {subject}{session_str}"
         
         lines.append("<div class=\"card\">")
-        lines.append(f"<img src=\"{reportlet_rel}\" alt=\"{label_str}\" />")
+        # Get mtime for cache busting
+        try:
+             mtime = int(path_abs.stat().st_mtime)
+        except OSError:
+             mtime = 0
+             
+        lines.append(f"<img src=\"{reportlet_rel}?v={mtime}\" alt=\"{label_str}\" />")
         lines.append("<div class=\"card-info\">")
         lines.append(f"<span class=\"status-badge status-{status}\">{status}</span>")
         lines.append(f"<span>{label_str}</span><br/>")

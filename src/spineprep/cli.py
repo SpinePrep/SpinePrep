@@ -6,6 +6,7 @@ Implements S0_SETUP run/check for bootstrap policy validation.
 
 from __future__ import annotations
 
+
 import argparse
 import json
 import sys
