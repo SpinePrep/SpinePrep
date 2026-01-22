@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tips and tricks &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contributing to Slicer" href="../contributing.html" />
+    <link rel="prev" title="C++ debugging with CodeLite" href="codelitecpp.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/debugging/tips.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Debugging</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="python.html">Python debugging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpp.html">C++ debugging</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Tips and tricks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#debugging-tests">Debugging tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#debugging-memory-leaks">Debugging memory leaks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-is-my-vtk-actor-widget-not-visible">Why is my VTK actor/widget not visible?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#debugging-slicer-application-startup-issues">Debugging Slicer application startup issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#disabling-features">Disabling features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#console-output-on-windows">Console output on Windows</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Debugging</a></li>
+      <li class="breadcrumb-item active">Tips and tricks</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/debugging/tips.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="tips-and-tricks">
+<h1>Tips and tricks<a class="headerlink" href="#tips-and-tricks" title="Link to this heading"></a></h1>
+<section id="debugging-tests">
+<h2>Debugging tests<a class="headerlink" href="#debugging-tests" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>To debug a test, find the test executable:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Libs/MRML/Core</span></code> tests are in the <code class="docutils literal notranslate"><span class="pre">MRMLCoreCxxTests</span></code> project</p></li>
+<li><p>CLI module tests are in <code class="docutils literal notranslate"><span class="pre">&lt;MODULE_NAME&gt;Test</span></code> project (e.g. <code class="docutils literal notranslate"><span class="pre">ThresholdScalarVolumeTest</span></code>)</p></li>
+<li><p>Loadable module tests are in <code class="docutils literal notranslate"><span class="pre">qSlicer&lt;MODULE_NAME&gt;CxxTests</span></code> project (e.g. <code class="docutils literal notranslate"><span class="pre">qSlicerVolumeRenderingCxxTests</span></code>)</p></li>
+<li><p>Module logic tests are in <code class="docutils literal notranslate"><span class="pre">&lt;MODULE_NAME&gt;LogicCxxTests</span></code> project (e.g. <code class="docutils literal notranslate"><span class="pre">VolumeRenderingLogicCxxTests</span></code>)</p></li>
+<li><p>Module widgets tests are in <code class="docutils literal notranslate"><span class="pre">&lt;MODULE_NAME&gt;WidgetsCxxTests</span></code> project (e.g. <code class="docutils literal notranslate"><span class="pre">VolumesWidgetsCxxTests</span></code>)</p></li>
+</ul>
+</li>
+<li><p>Make the project the startup project (right-click -&gt; Set As Startup Project)</p></li>
+<li><p>Specify test name and additional input arguments:</p>
+<ul>
+<li><p>Go to the project debugging properties (right click -&gt; Properties, then Configuration Properties/Debugging)</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">Arguments</span></code>, type the name of the test (e.g. <code class="docutils literal notranslate"><span class="pre">vtkMRMLSceneImportTest</span></code> for project <code class="docutils literal notranslate"><span class="pre">MRMLCoreCxxTests</span></code>)</p></li>
+<li><p>If the test takes argument(s), enter the argument(s) after the test name in <code class="docutils literal notranslate"><span class="pre">Command</span> <span class="pre">Arguments</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">vtkMRMLSceneImportTest</span> <span class="pre">C:\Path\To\Slicer4\Libs\MRML\Core\Testing\vol_and_cube.mrml</span></code>)</p>
+<ul>
+<li><p>You can see what arguments are passed by the dashboards by looking at the test details in CDash.</p></li>
+<li><p>Most VTK and Qt tests support the <code class="docutils literal notranslate"><span class="pre">-I</span></code> argument, it allows the test to be run in “interactive” mode. It doesn’t exit at the end of the test.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Start Debugging (F5)</p></li>
+</ul>
+</section>
+<section id="debugging-memory-leaks">
+<h2>Debugging memory leaks<a class="headerlink" href="#debugging-memory-leaks" title="Link to this heading"></a></h2>
+<p>See some background information in <a class="reference external" href="https://www.slicer.org/wiki/Slicer3:VTK_Leak_Debugging">VTK leak debugging in Slicer3</a> and <a class="reference external" href="https://www.slicer.org/wiki/Strategies_for_Writing_and_Debugging_Code_in_Slicer_3">Strategies for Writing and Debugging Code in Slicer3</a> pages.</p>
+<ol class="arabic simple">
+<li><p>If you build the application from source, make sure VTK_DEBUG_LEAKS CMake flag is set to ON. Slicer Preview Releases are built with this flag is ON, while in Slicer Stable Releases the flag is OFF.</p></li>
+<li><p>Reproduce the memory leak. When the application exits, it logs a message like this:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>vtkDebugLeaks has detected LEAKS!
+Class &quot;vtkCommand or subclass&quot; has 1 instance still around.
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Add the listed classes to the <code class="docutils literal notranslate"><span class="pre">VTK_DEBUG_LEAKS_TRACE_CLASSES</span></code> environment variable (separated by commas, if there are multiple). For example:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">VTK_DEBUG_LEAKS_TRACE_CLASSES</span><span class="o">=</span><span class="n">vtkCommand</span>
+</pre></div>
+</div>
+<p>In Visual Studio, environment variable can be added to <code class="docutils literal notranslate"><span class="pre">SlicerApp</span></code> project properties -&gt; Debugging -&gt; Environment.</p>
+<ol class="arabic simple" start="4">
+<li><p>Reproduce the memory leak. It will print the stack trace of the call that allocated the object, which should be enough information to determine which object instance in the code it was. For example:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>vtkDebugLeaks has detected LEAKS!
+Class &quot;vtkCommand or subclass&quot; has 1 instance still around.
+
+Remaining instance of object &#39;vtkCallbackCommand&#39; was allocated at:
+ at vtkCommand::vtkCommand in C:\D\S4D\VTK\Common\Core\vtkCommand.cxx line 28
+ at vtkCallbackCommand::vtkCallbackCommand in C:\D\S4D\VTK\Common\Core\vtkCallbackCommand.cxx line 20
+ at vtkCallbackCommand::New in C:\D\S4D\VTK\Common\Core\vtkCallbackCommand.h line 49
+ at vtkNew&lt;vtkCallbackCommand&gt;::vtkNew&lt;vtkCallbackCommand&gt; in C:\D\S4D\VTK\Common\Core\vtkNew.h line 89
+ at qSlicerCoreApplicationPrivate::init in C:\D\S4\Base\QTCore\qSlicerCoreApplication.cxx line 325
+ at qSlicerApplicationPrivate::init in C:\D\S4\Base\QTGUI\qSlicerApplication.cxx line 232
+ at qSlicerApplication::qSlicerApplication in C:\D\S4\Base\QTGUI\qSlicerApplication.cxx line 393
+ at `anonymous namespace&#39;::SlicerAppMain in C:\D\S4\Applications\SlicerApp\Main.cxx line 40
+ at main in C:\D\S4\Base\QTApp\qSlicerApplicationMainWrapper.cxx line 57
+ at invoke_main in D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl line 79
+ at __scrt_common_main_seh in D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl line 288
+ at __scrt_common_main in D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl line 331
+ at mainCRTStartup in D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_main.cpp line 17
+ at BaseThreadInitThunk
+ at RtlUserThreadStart
+</pre></div>
+</div>
+</section>
+<section id="why-is-my-vtk-actor-widget-not-visible">
+<h2>Why is my VTK actor/widget not visible?<a class="headerlink" href="#why-is-my-vtk-actor-widget-not-visible" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add a breakpoint in RenderOpaqueGeometry() check if it is called. If not, then:</p>
+<ul>
+<li><p>Check its vtkProp::Visibility value.</p>
+<ul>
+<li><p>For vtkWidgets, it is the visibility of the representation.</p></li>
+</ul>
+</li>
+<li><p>Check its GetBounds() method. If they are outside the camera frustum, the object won’t be rendered.</p>
+<ul>
+<li><p>For vtkWidgets, it is the bounds of the representation.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="debugging-slicer-application-startup-issues">
+<h2>Debugging Slicer application startup issues<a class="headerlink" href="#debugging-slicer-application-startup-issues" title="Link to this heading"></a></h2>
+<p>See instructions <a class="reference internal" href="../../user_guide/get_help.html#slicer-application-does-not-start"><span class="std std-ref">here</span></a> for debugging application startup issues.</p>
+</section>
+<section id="disabling-features">
+<h2>Disabling features<a class="headerlink" href="#disabling-features" title="Link to this heading"></a></h2>
+<p>It may help pinpointing issues if Slicer is started with as few features as possible:</p>
+<ul>
+<li><p>Disable Slicer options via the command line</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./Slicer<span class="w"> </span>--no-splash<span class="w"> </span>--ignore-slicerrc<span class="w"> </span>--disable-cli-module<span class="w"> </span>--disable-loadable-module<span class="w"> </span>--disable-scriptedmodule
+</pre></div>
+</div>
+<ul>
+<li><p>Look at all the possible options
+On Linux and macOS:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./Slicer<span class="w"> </span>--help
+</pre></div>
+</div>
+<p>On Windows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Slicer.exe<span class="w"> </span>--help<span class="w"> </span><span class="p">|</span><span class="w"> </span>more
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>Disable ITK plugins</p>
+<ul class="simple">
+<li><p>CLI modules silently load the ITK plugins in lib/Slicer-4-13/ITKFactories. These plugins are used to share the volumes between Slicer and the ITK filter without having to copy them on disk.</p></li>
+<li><p>rename lib/Slicer-4.13/ITKFactories into lib/Slicer-4.13/ITKFactories-disabled</p></li>
+</ul>
+</li>
+<li><p>Disable Qt plugins</p>
+<ul class="simple">
+<li><p>rename lib/Slicer-4.13/iconengine into lib/Slicer-4.13/iconengine-disabled</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="console-output-on-windows">
+<h2>Console output on Windows<a class="headerlink" href="#console-output-on-windows" title="Link to this heading"></a></h2>
+<p>On Windows, by default the application launcher is built as a Windows GUI application (as opposed to a console application) to avoid opening a console window when starting the application.</p>
+<p>If the launcher is a Windows GUI application, it is still possible to show the console output by using one of these options:</p>
+<p>Option A. Run the application with capturing and displaying the output using the <code class="docutils literal notranslate"><span class="pre">more</span></code> command (this captures the output of both the launcher and the launched application):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Slicer.exe<span class="w"> </span>--help<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>more
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">2&gt;&amp;1</span></code> argument redirects the error output to the standard output, making error messages visible on the console, too.</p>
+<p>Option B. Instead of <code class="docutils literal notranslate"><span class="pre">more</span></code> command (that requires pressing space key after the console window is full), <code class="docutils literal notranslate"><span class="pre">tee</span></code> command can be used (that continuously displays the output on screen and also writes it to a file). Unfortunately, <code class="docutils literal notranslate"><span class="pre">tee</span></code> is not a standard command on Windows, therefore either a third-party implementation can be used (such as <a class="reference external" href="https://github.com/gvalkov/wtee/releases/tag/v1.0.1"><code class="docutils literal notranslate"><span class="pre">wtee</span></code></a>) or the built-in <code class="docutils literal notranslate"><span class="pre">tee</span></code> command in Windows powershell:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>powershell<span class="w"> </span><span class="s2">&quot;.\Slicer.exe 2&gt;&amp;1 | tee out.txt&quot;</span>
+</pre></div>
+</div>
+<p>Option C. Run the application with a new console (the launcher sets up the environment, creates a new console, and starts the SlicerApp-real executable directly, which can access this console):</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Slicer.exe<span class="w"> </span>--launch<span class="w"> </span>%comspec%<span class="w"> </span>/c<span class="w"> </span>start<span class="w"> </span>SlicerApp-real.exe
+</pre></div>
+</div>
+<p>To add console output permanently, the application launcher can be switched to a console application by setting <code class="docutils literal notranslate"><span class="pre">Slicer_BUILD_WIN32_CONSOLE_LAUNCHER</span></code> CMake variable to ON when configuring the application build.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="codelitecpp.html" class="btn btn-neutral float-left" title="C++ debugging with CodeLite" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../contributing.html" class="btn btn-neutral float-right" title="Contributing to Slicer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

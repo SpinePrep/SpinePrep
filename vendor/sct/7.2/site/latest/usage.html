@@ -1,0 +1,525 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Using tedana from the command line &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="_static/tedana_favicon.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=643184eb"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="tedana’s denoising approach" href="approach.html" />
+    <link rel="prev" title="About multi-echo fMRI" href="multi-echo.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/usage.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using tedana from the command line</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-tedana-workflow">Running the tedana workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tedana.workflows.tedana-_get_parser-required-arguments">Required Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tedana.workflows.tedana-_get_parser-named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-ica-reclassify-workflow">Running the ica_reclassify workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tedana.workflows.ica_reclassify-_get_parser-required-arguments">Required Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tedana.workflows.ica_reclassify-_get_parser-named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-t2smap-workflow">Running the t2smap workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tedana.workflows.t2smap-_get_parser-required-arguments">Required Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tedana.workflows.t2smap-_get_parser-named-arguments">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Using tedana from the command line</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="using-tedana-from-the-command-line">
+<h1>Using tedana from the command line<a class="headerlink" href="#using-tedana-from-the-command-line" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">tedana</span></code> minimally requires:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Acquired echo times (in milliseconds)</p></li>
+<li><p>Functional datasets equal to the number of acquired echoes</p></li>
+</ol>
+</div></blockquote>
+<p>But you can supply many other options, viewable with <code class="docutils literal notranslate"><span class="pre">tedana</span> <span class="pre">-h</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ica_reclassify</span> <span class="pre">-h</span></code>, or <code class="docutils literal notranslate"><span class="pre">t2smap</span> <span class="pre">-h</span></code>.</p>
+<p>For most use cases, we recommend that users call tedana from within existing
+fMRI preprocessing pipelines such as <a class="reference external" href="https://fmriprep.readthedocs.io">fMRIPrep</a> or <a class="reference external" href="https://afni.nimh.nih.gov/pub/dist/doc/program_help/afni_proc.py.html">afni_proc.py</a>.
+fMRIPrep currently supports <a class="reference internal" href="approach.html#optimal-combination"><span class="std std-ref">Optimal combination</span></a> through <code class="docutils literal notranslate"><span class="pre">tedana</span></code>, but
+not the full multi-echo denoising pipeline, although there are plans underway
+to integrate it.
+In the meantime, if you plan to use fMRIPrep and tedana together, please see
+<a class="reference internal" href="faq.html#collecting-fmriprepped-data"><span class="std std-ref">[tedana] How do I use tedana with fMRIPrepped data?</span></a>.</p>
+<p>Users can also construct their own preprocessing pipelines from which to call
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code>; for recommendations on doing so, see our general guidelines for
+<a class="reference internal" href="multi-echo.html#constructing-me-epi-pipelines"><span class="std std-ref">Processing multi-echo fMRI</span></a>.</p>
+<section id="running-the-tedana-workflow">
+<span id="tedana-cli"></span><h2>Running the tedana workflow<a class="headerlink" href="#running-the-tedana-workflow" title="Link to this heading"></a></h2>
+<p>This is the full tedana workflow, which runs multi-echo ICA and outputs
+multi-echo denoised data along with many other derivatives.
+To see which files are generated by this workflow, check out the outputs page:
+<a class="reference external" href="https://tedana.readthedocs.io/en/latest/outputs.html">https://tedana.readthedocs.io/en/latest/outputs.html</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">tedana</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">-</span><span class="n">d</span> <span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]</span> <span class="o">-</span><span class="n">e</span> <span class="n">TE</span> <span class="p">[</span><span class="n">TE</span> <span class="o">...</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">out</span><span class="o">-</span><span class="nb">dir</span> <span class="n">PATH</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">mask</span> <span class="n">FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefix</span> <span class="n">PREFIX</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">convention</span> <span class="p">{</span><span class="n">orig</span><span class="p">,</span><span class="n">bids</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">dummy</span><span class="o">-</span><span class="n">scans</span> <span class="n">DUMMY_SCANS</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">masktype</span> <span class="p">{</span><span class="n">dropout</span><span class="p">,</span><span class="n">decay</span><span class="p">,</span><span class="n">none</span><span class="p">}</span> <span class="p">[{</span><span class="n">dropout</span><span class="p">,</span><span class="n">decay</span><span class="p">,</span><span class="n">none</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">fittype</span> <span class="p">{</span><span class="n">loglin</span><span class="p">,</span><span class="n">curvefit</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">combmode</span> <span class="p">{</span><span class="n">t2s</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">tedpca</span> <span class="n">TEDPCA</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tree</span> <span class="n">TREE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span> <span class="n">EXTERNAL_REGRESSORS</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">ica</span><span class="o">-</span><span class="n">method</span> <span class="p">{</span><span class="n">robustica</span><span class="p">,</span><span class="n">fastica</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">seed</span> <span class="n">INT</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">robust</span><span class="o">-</span><span class="n">runs</span> <span class="p">[</span><span class="mi">5</span><span class="o">-</span><span class="mi">500</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">maxit</span> <span class="n">INT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">maxrestart</span> <span class="n">INT</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">tedort</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">gscontrol</span> <span class="p">{</span><span class="n">mir</span><span class="p">,</span><span class="n">gsr</span><span class="p">}</span> <span class="p">[{</span><span class="n">mir</span><span class="p">,</span><span class="n">gsr</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reports</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">png</span><span class="o">-</span><span class="n">cmap</span> <span class="n">PNG_CMAP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">lowmem</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">threads</span> <span class="n">N_THREADS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">t2smap</span> <span class="n">FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mix</span> <span class="n">FILE</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">overwrite</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">independent</span><span class="o">-</span><span class="n">echos</span> <span class="n">INT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="tedana.workflows.tedana-_get_parser-required-arguments">
+<h3>Required Arguments<a class="headerlink" href="#tedana.workflows.tedana-_get_parser-required-arguments" title="Link to this heading"></a></h3>
+<dl class="option-list">
+<dt><kbd>-d</kbd></dt>
+<dd><p>Multi-echo dataset for analysis. May be a single file with spatially concatenated data or a set of echo-specific files, in the same order as the TEs are listed in the -e argument.</p>
+</dd>
+<dt><kbd>-e</kbd></dt>
+<dd><p>Echo times (in ms). E.g., 15.0 39.0 63.0</p>
+</dd>
+</dl>
+</section>
+<section id="tedana.workflows.tedana-_get_parser-named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#tedana.workflows.tedana-_get_parser-named-arguments" title="Link to this heading"></a></h3>
+<dl class="option-list">
+<dt><kbd>--out-dir</kbd></dt>
+<dd><p>Output directory.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'.'</span></code></p>
+</dd>
+<dt><kbd>--mask</kbd></dt>
+<dd><p>Binary mask of voxels to include in TE Dependent ANAlysis. Must be in the same space as <cite>data</cite>. If an explicit mask is not provided, then Nilearn’s compute_epi_mask function will be used to derive a mask from the first echo’s data. Providing a mask is recommended.</p>
+</dd>
+<dt><kbd>--prefix</kbd></dt>
+<dd><p>Prefix for filenames generated.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">''</span></code></p>
+</dd>
+<dt><kbd>--convention</kbd></dt>
+<dd><p>Possible choices: orig, bids</p>
+<p>Filenaming convention. bids will use the latest BIDS derivatives version.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'bids'</span></code></p>
+</dd>
+<dt><kbd>--dummy-scans</kbd></dt>
+<dd><p>Number of dummy scans to remove from the beginning of the data.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt><kbd>--masktype</kbd></dt>
+<dd><p>Possible choices: dropout, decay, none</p>
+<p>Method(s) by which to define the adaptive mask.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">['dropout']</span></code></p>
+</dd>
+<dt><kbd>--fittype</kbd></dt>
+<dd><p>Possible choices: loglin, curvefit</p>
+<p>Desired T2*/S0 fitting method. “loglin” means that a linear model is fit to the log of the data. “curvefit” means that a more computationally demanding monoexponential model is fit to the raw data.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'loglin'</span></code></p>
+</dd>
+<dt><kbd>--combmode</kbd></dt>
+<dd><p>Possible choices: t2s</p>
+<p>Combination scheme for TEs: t2s (Posse 1999)</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'t2s'</span></code></p>
+</dd>
+<dt><kbd>--tedpca</kbd></dt>
+<dd><p>Method by which to select number of components in TEDPCA. This can be one of the following: String (‘mdl’, ‘kic’, ‘aic’, ‘kundu’, or ‘kundu-stabilize’); floating-point value in the range (0.0, 1.0); positive integer value. PCA decomposition with the mdl, kic and aic options are based on a Moving Average (stationary Gaussian) process, and are ordered from most to least aggressive. ‘kundu’ or ‘kundu-stabilize’ are legacy selection methods that were distributed with MEICA. Floating-point inputs select components based on the cumulative variance explained. Integer inputs select the specificed number of components. Default: ‘aic’.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">aic</span></code></p>
+</dd>
+<dt><kbd>--tree</kbd></dt>
+<dd><p>Decision tree to use. You may use a packaged tree (tedana_orig, meica, minimal) or supply a JSON file which matches the decision tree file specification. Minimal still being tested with more details in docs</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'tedana_orig'</span></code></p>
+</dd>
+<dt><kbd>--external</kbd></dt>
+<dd><p>File containing external regressors to compare to ICA component be used in the decision tree. For example, to identify components fit head motion time series. The file must be a TSV file with the same number of rows as the number of volumes in the input data. Column labels and statistical tests are defined with external_labels.</p>
+</dd>
+<dt><kbd>--ica-method, --ica_method</kbd></dt>
+<dd><p>Possible choices: robustica, fastica</p>
+<p>The applied ICA method. fastica runs FastICA from sklearn once with the seed value. robustica will run FastICA n_robust_runs times and uses clustering methods to overcome the randomness of the FastICA algorithm. robustica will be slower.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">fastica</span></code></p>
+</dd>
+<dt><kbd>--seed</kbd></dt>
+<dd><p>Value used for random initialization of ICA algorithm. Set to an integer value for reproducible ICA results. Set to -1 for varying results across ICA calls. This applies to both fastica and robustica methods.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">42</span></code></p>
+</dd>
+<dt><kbd>--n-robust-runs, --n_robust_runs</kbd></dt>
+<dd><p>The number of times robustica will run. This is only effective when ica_method is set to robustica.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">30</span></code></p>
+</dd>
+<dt><kbd>--maxit</kbd></dt>
+<dd><p>Maximum number of iterations for ICA.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">500</span></code></p>
+</dd>
+<dt><kbd>--maxrestart</kbd></dt>
+<dd><p>Maximum number of attempts for ICA. If ICA fails to converge, the fixed seed will be updated and ICA will be run again. If convergence is achieved before maxrestart attempts, ICA will finish early.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code></p>
+</dd>
+<dt><kbd>--tedort</kbd></dt>
+<dd><p>Orthogonalize rejected components w.r.t. accepted components prior to denoising.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--gscontrol</kbd></dt>
+<dd><p>Possible choices: mir, gsr</p>
+<p>Perform additional denoising to remove spatially diffuse noise. This argument can be single value or a space delimited list.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">''</span></code></p>
+</dd>
+<dt><kbd>--no-reports</kbd></dt>
+<dd><p>Creates a figures folder with static component maps, timecourse plots and other diagnostic images and displays these in an interactive reporting framework</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--png-cmap</kbd></dt>
+<dd><p>Colormap for figures</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'coolwarm'</span></code></p>
+</dd>
+<dt><kbd>--verbose</kbd></dt>
+<dd><p>Generate intermediate and additional files.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--lowmem</kbd></dt>
+<dd><p>Enables low-memory processing, including the use of IncrementalPCA. May increase workflow duration.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--n-threads</kbd></dt>
+<dd><p>Number of threads to use. Used by threadpoolctl to set the parameter outside of the workflow function. Higher numbers of threads tend to slow down performance on typical datasets.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+</dd>
+<dt><kbd>--debug</kbd></dt>
+<dd><p>Logs in the terminal will have increased verbosity, and will also be written into a .tsv file in the output directory.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--t2smap</kbd></dt>
+<dd><p>Precalculated T2* map in the same space as the input data.</p>
+</dd>
+<dt><kbd>--mix</kbd></dt>
+<dd><p>File containing mixing matrix. If not provided, ME-PCA &amp; ME-ICA is done.</p>
+</dd>
+<dt><kbd>--overwrite, -f</kbd></dt>
+<dd><p>Force overwriting of files.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--n-independent-echos</kbd></dt>
+<dd><p>Number of independent echoes to use in goodness of fit metrics (fstat).Primarily used for EPTI acquisitions.If not provided, number of echoes will be used.</p>
+</dd>
+<dt><kbd>-v, --version</kbd></dt>
+<dd><p>show program’s version number and exit</p>
+</dd>
+</dl>
+</section>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--mask</span></code> argument is not intended for use with very conservative region-of-interest
+analyses.
+One of the ways by which components are assessed as BOLD or non-BOLD is their
+spatial pattern, so overly conservative masks will invalidate several steps in the tedana
+workflow.
+To examine regions-of-interest with multi-echo data, apply masks after TE
+Dependent ANAlysis.</p>
+</div>
+</section>
+<section id="running-the-ica-reclassify-workflow">
+<span id="ica-reclassify-cli"></span><h2>Running the ica_reclassify workflow<a class="headerlink" href="#running-the-ica-reclassify-workflow" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ica_reclassify</span></code> takes the output of <code class="docutils literal notranslate"><span class="pre">tedana</span></code> and can be used to manually
+reclassify components, re-save denoised classifications following the new
+classifications, and log the changes in all relevant output files. The
+output files are the same as for <code class="docutils literal notranslate"><span class="pre">tedana</span></code>:
+<a class="reference external" href="https://tedana.readthedocs.io/en/latest/outputs.html">https://tedana.readthedocs.io/en/latest/outputs.html</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">ica_reclassify</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">manacc</span> <span class="n">MANUAL_ACCEPT</span> <span class="p">[</span><span class="n">MANUAL_ACCEPT</span> <span class="o">...</span><span class="p">]]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">manrej</span> <span class="n">MANUAL_REJECT</span> <span class="p">[</span><span class="n">MANUAL_REJECT</span> <span class="o">...</span><span class="p">]]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">tagacc</span> <span class="n">TAG_ACCEPT</span> <span class="p">[</span><span class="n">TAG_ACCEPT</span> <span class="o">...</span><span class="p">]]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">tagrej</span> <span class="n">TAG_REJECT</span> <span class="p">[</span><span class="n">TAG_REJECT</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">out</span><span class="o">-</span><span class="nb">dir</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefix</span> <span class="n">PREFIX</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">convention</span> <span class="p">{</span><span class="n">orig</span><span class="p">,</span><span class="n">bids</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">dummy</span><span class="o">-</span><span class="n">scans</span> <span class="n">DUMMY_SCANS</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">tedort</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">gscontrol</span> <span class="p">{</span><span class="n">gsr</span><span class="p">,</span><span class="n">mir</span><span class="p">}</span> <span class="p">[{</span><span class="n">gsr</span><span class="p">,</span><span class="n">mir</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">reports</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">png</span><span class="o">-</span><span class="n">cmap</span> <span class="n">PNG_CMAP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">overwrite</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span>
+                      <span class="n">registry</span>
+</pre></div>
+</div>
+<section id="tedana.workflows.ica_reclassify-_get_parser-required-arguments">
+<h3>Required Arguments<a class="headerlink" href="#tedana.workflows.ica_reclassify-_get_parser-required-arguments" title="Link to this heading"></a></h3>
+<dl class="option-list">
+<dt><kbd>registry</kbd></dt>
+<dd><p>File registry from a previous tedana run</p>
+</dd>
+</dl>
+</section>
+<section id="tedana.workflows.ica_reclassify-_get_parser-named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#tedana.workflows.ica_reclassify-_get_parser-named-arguments" title="Link to this heading"></a></h3>
+<dl class="option-list">
+<dt><kbd>--manacc</kbd></dt>
+<dd><p>Component indices to accept (zero-indexed).Supply as a comma-delimited list with no spaces, as a csv file, or as a text file with an allowed delimiter (’t’, ‘n’, ‘ ‘, ‘,’).</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</dd>
+<dt><kbd>--manrej</kbd></dt>
+<dd><p>Component indices to reject (zero-indexed).Supply as a comma-delimited list with no spaces, as a csv file, or as a text file with an allowed delimiter (’t’, ‘n’, ‘ ‘, ‘,’).</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</dd>
+<dt><kbd>--tagacc</kbd></dt>
+<dd><p>Classification tag(s) to add to accepted components.Will be applied to all listed accepted components, even if they were already accepted.Supply a single tag or a comma-delimited list.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</dd>
+<dt><kbd>--tagrej</kbd></dt>
+<dd><p>Classification tag(s) to add to rejected components.Will be applied to all listed rejected components, even if they were already rejected.Supply a single tag or a comma-delimited list.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+</dd>
+<dt><kbd>--config</kbd></dt>
+<dd><p>File naming configuration.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code></p>
+</dd>
+<dt><kbd>--out-dir</kbd></dt>
+<dd><p>Output directory.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'.'</span></code></p>
+</dd>
+<dt><kbd>--prefix</kbd></dt>
+<dd><p>Prefix for filenames generated.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">''</span></code></p>
+</dd>
+<dt><kbd>--convention</kbd></dt>
+<dd><p>Possible choices: orig, bids</p>
+<p>Filenaming convention. bids will use the latest BIDS derivatives version.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'bids'</span></code></p>
+</dd>
+<dt><kbd>--dummy-scans</kbd></dt>
+<dd><p>Number of dummy scans to remove from the beginning of the data.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt><kbd>--tedort</kbd></dt>
+<dd><p>Orthogonalize rejected components w.r.t. accepted components prior to denoising.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--gscontrol</kbd></dt>
+<dd><p>Possible choices: gsr, mir</p>
+<p>Perform additional denoising to remove spatially diffuse noise. This argument can be single value or a space delimited list. ‘gsr’ will only work if the previous tedana run used –gscontrol gsr.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">''</span></code></p>
+</dd>
+<dt><kbd>--no-reports</kbd></dt>
+<dd><p>Creates a figures folder with static component maps, timecourse plots and other diagnostic images and displays these in an interactive reporting framework</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--png-cmap</kbd></dt>
+<dd><p>Colormap for figures</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'coolwarm'</span></code></p>
+</dd>
+<dt><kbd>--verbose</kbd></dt>
+<dd><p>Generate intermediate and additional files.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--debug</kbd></dt>
+<dd><p>Logs in the terminal will have increased verbosity, and will also be written into a .tsv file in the output directory.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--overwrite, -f</kbd></dt>
+<dd><p>Force overwriting of files.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>-v, --version</kbd></dt>
+<dd><p>show program’s version number and exit</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="running-the-t2smap-workflow">
+<span id="t2smap-cli"></span><h2>Running the t2smap workflow<a class="headerlink" href="#running-the-t2smap-workflow" title="Link to this heading"></a></h2>
+<p>This workflow uses multi-echo data to optimally combine data across echoes and
+to estimate T2* and S0 maps or time series.
+To see which files are generated by this workflow, check out the workflow
+documentation: <a class="reference internal" href="generated/tedana.workflows.t2smap_workflow.html#tedana.workflows.t2smap_workflow" title="tedana.workflows.t2smap_workflow"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.workflows.t2smap_workflow()</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">t2smap</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">-</span><span class="n">d</span> <span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]</span> <span class="o">-</span><span class="n">e</span> <span class="n">TE</span> <span class="p">[</span><span class="n">TE</span> <span class="o">...</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">out</span><span class="o">-</span><span class="nb">dir</span> <span class="n">PATH</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">mask</span> <span class="n">FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefix</span> <span class="n">PREFIX</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">convention</span> <span class="p">{</span><span class="n">orig</span><span class="p">,</span><span class="n">bids</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">dummy</span><span class="o">-</span><span class="n">scans</span> <span class="n">DUMMY_SCANS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">exclude</span> <span class="n">EXCLUDE</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">masktype</span> <span class="p">{</span><span class="n">dropout</span><span class="p">,</span><span class="n">decay</span><span class="p">,</span><span class="n">none</span><span class="p">}</span> <span class="p">[{</span><span class="n">dropout</span><span class="p">,</span><span class="n">decay</span><span class="p">,</span><span class="n">none</span><span class="p">}</span> <span class="o">...</span><span class="p">]]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">fittype</span> <span class="p">{</span><span class="n">loglin</span><span class="p">,</span><span class="n">curvefit</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">fitmode</span> <span class="p">{</span><span class="nb">all</span><span class="p">,</span><span class="n">ts</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">combmode</span> <span class="p">{</span><span class="n">t2s</span><span class="p">,</span><span class="n">paid</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">independent</span><span class="o">-</span><span class="n">echos</span> <span class="n">INT</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">n</span><span class="o">-</span><span class="n">threads</span> <span class="n">N_THREADS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">overwrite</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="tedana.workflows.t2smap-_get_parser-required-arguments">
+<h3>Required Arguments<a class="headerlink" href="#tedana.workflows.t2smap-_get_parser-required-arguments" title="Link to this heading"></a></h3>
+<dl class="option-list">
+<dt><kbd>-d</kbd></dt>
+<dd><p>Multi-echo dataset for analysis. May be a single file with spatially concatenated data or a set of echo-specific files, in the same order as the TEs are listed in the -e argument.</p>
+</dd>
+<dt><kbd>-e</kbd></dt>
+<dd><p>Echo times (in ms). E.g., 15.0 39.0 63.0</p>
+</dd>
+</dl>
+</section>
+<section id="tedana.workflows.t2smap-_get_parser-named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#tedana.workflows.t2smap-_get_parser-named-arguments" title="Link to this heading"></a></h3>
+<dl class="option-list">
+<dt><kbd>--out-dir</kbd></dt>
+<dd><p>Output directory.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'.'</span></code></p>
+</dd>
+<dt><kbd>--mask</kbd></dt>
+<dd><p>Binary mask of voxels to include in TE Dependent ANAlysis. Must be in the same space as <cite>data</cite>.</p>
+</dd>
+<dt><kbd>--prefix</kbd></dt>
+<dd><p>Prefix for filenames generated.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">''</span></code></p>
+</dd>
+<dt><kbd>--convention</kbd></dt>
+<dd><p>Possible choices: orig, bids</p>
+<p>Filenaming convention. bids will use the latest BIDS derivatives version.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'bids'</span></code></p>
+</dd>
+<dt><kbd>--dummy-scans</kbd></dt>
+<dd><p>Number of dummy scans to remove from the beginning of the data.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+<dt><kbd>--exclude</kbd></dt>
+<dd><p>Volume indices to exclude from adaptive mask generation and T2* and S0 estimation, but which will be retained in the optimally combined data. Can be individual indices (e.g., ‘0,5,10’), ranges (e.g., ‘5:10’), or a mix of the two (e.g., ‘0,5:10,15’). Indices are 0-based. As in Python lists, ranges are start-inclusive and end-exclusive (for example, ‘0:5’ includes the first [0] through fifth [4] timepoints). Default is to not exclude any volumes.</p>
+</dd>
+<dt><kbd>--masktype</kbd></dt>
+<dd><p>Possible choices: dropout, decay, none</p>
+<p>Method(s) by which to define the adaptive mask.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">['dropout']</span></code></p>
+</dd>
+<dt><kbd>--fittype</kbd></dt>
+<dd><p>Possible choices: loglin, curvefit</p>
+<p>Desired T2*/S0 fitting method. “loglin” means that a linear model is fit to the log of the data. “curvefit” means that a more computationally demanding monoexponential model is fit to the raw data.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'loglin'</span></code></p>
+</dd>
+<dt><kbd>--fitmode</kbd></dt>
+<dd><p>Possible choices: all, ts</p>
+<p>Monoexponential model fitting scheme. “all” means that the model is fit, per voxel, across all timepoints. “ts” means that the model is fit, per voxel and per timepoint.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'all'</span></code></p>
+</dd>
+<dt><kbd>--combmode</kbd></dt>
+<dd><p>Possible choices: t2s, paid</p>
+<p>Combination scheme for TEs: t2s (Posse 1999), paid (Poser)</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'t2s'</span></code></p>
+</dd>
+<dt><kbd>--n-independent-echos</kbd></dt>
+<dd><p>Number of independent echoes to use in goodness of fit metrics (fstat).Primarily used for EPTI acquisitions.If not provided, number of echoes will be used.</p>
+</dd>
+<dt><kbd>--n-threads</kbd></dt>
+<dd><p>Number of threads to use. Used by threadpoolctl to set the parameter outside of the workflow function. Higher numbers of threads tend to slow down performance on typical datasets.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
+</dd>
+<dt><kbd>--verbose</kbd></dt>
+<dd><p>Generate intermediate and additional files.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--overwrite, -f</kbd></dt>
+<dd><p>Force overwriting of files.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="multi-echo.html" class="btn btn-neutral float-left" title="About multi-echo fMRI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="approach.html" class="btn btn-neutral float-right" title="tedana’s denoising approach" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tedana’s denoising approach &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="_static/tedana_favicon.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=643184eb"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Outputs of tedana" href="outputs.html" />
+    <link rel="prev" title="Using tedana from the command line" href="usage.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/approach.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">tedana’s denoising approach</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#multi-echo-data">Multi-echo data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adaptive-mask-generation">Adaptive mask generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#monoexponential-decay-model-fit">Monoexponential decay model fit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimal-combination">Optimal combination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#denoising">Denoising</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tedpca">TEDPCA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tedica">TEDICA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#manual-classification-with-rica">Manual classification with RICA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#removal-of-spatially-diffuse-noise-optional">Removal of spatially diffuse noise (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">tedana’s denoising approach</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/approach.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tedana-s-denoising-approach">
+<h1>tedana’s denoising approach<a class="headerlink" href="#tedana-s-denoising-approach" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">tedana</span></code> works by decomposing multi-echo BOLD data via principal component analysis (PCA)
+and independent component analysis (ICA).
+The resulting components are then analyzed to determine whether they are
+TE-dependent or -independent.
+TE-dependent components are classified as BOLD,
+while TE-independent components are classified as non-BOLD,
+and are discarded as part of data cleaning.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">tedana</span></code>, we take the time series from all the collected TEs, combine them,
+and decompose the resulting data into components that can be classified as BOLD
+or non-BOLD.
+This is performed in a series of steps, including:</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#multi-echo-data" id="id10">Multi-echo data</a></p></li>
+<li><p><a class="reference internal" href="#adaptive-mask-generation" id="id11">Adaptive mask generation</a></p></li>
+<li><p><a class="reference internal" href="#monoexponential-decay-model-fit" id="id12">Monoexponential decay model fit</a></p></li>
+<li><p><a class="reference internal" href="#optimal-combination" id="id13">Optimal combination</a></p></li>
+<li><p><a class="reference internal" href="#denoising" id="id14">Denoising</a></p></li>
+<li><p><a class="reference internal" href="#tedpca" id="id15">TEDPCA</a></p></li>
+<li><p><a class="reference internal" href="#tedica" id="id16">TEDICA</a></p></li>
+<li><p><a class="reference internal" href="#manual-classification-with-rica" id="id17">Manual classification with RICA</a></p></li>
+<li><p><a class="reference internal" href="#removal-of-spatially-diffuse-noise-optional" id="id18">Removal of spatially diffuse noise (optional)</a></p></li>
+<li><p><a class="reference internal" href="#references" id="id19">References</a></p></li>
+</ul>
+</nav>
+<img alt="_images/tedana-workflow.png" class="align-center" src="_images/tedana-workflow.png" />
+<p>We provide more detail on each step below.
+The figures shown in this walkthrough are generated in the
+<a class="reference external" href="https://github.com/ME-ICA/tedana/tree/main/docs/notebooks">provided notebooks</a>.</p>
+<section id="multi-echo-data">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Multi-echo data</a><a class="headerlink" href="#multi-echo-data" title="Link to this heading"></a></h2>
+<p>Here are the echo-specific time series for a single voxel in an example
+resting-state scan with 8 echoes.
+This voxel was selected because it is fairly correlated with the checkerboard task,
+but you can see that the signal changes substantially across echoes.
+With a 9.58ms echo time, little <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/>  has developed,
+and the response to the task has a lower magnitude.</p>
+<img alt="_images/a01_echo_timeseries.png" src="_images/a01_echo_timeseries.png" />
+<p>The values across volumes for this voxel scale with echo time in a predictable
+manner.</p>
+<img alt="_images/a02_echo_value_distributions.png" src="_images/a02_echo_value_distributions.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this example, the non-steady state volumes at the beginning of the run are excluded.
+Some pulse sequences save these initial volumes and some do not.
+If they are saved, then the first few volumes in a run will have much larger relative magnitudes.
+These initial volumes should be removed before running <code class="docutils literal notranslate"><span class="pre">tedana</span></code>.</p>
+</div>
+</section>
+<section id="adaptive-mask-generation">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Adaptive mask generation</a><a class="headerlink" href="#adaptive-mask-generation" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="generated/tedana.utils.make_adaptive_mask.html#tedana.utils.make_adaptive_mask" title="tedana.utils.make_adaptive_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.utils.make_adaptive_mask()</span></code></a></p>
+<p>Longer echo times are more susceptible to signal dropout,
+which means that certain brain regions
+(e.g., orbitofrontal cortex, temporal poles)
+may only have good signal for some echoes.</p>
+<p>In order to avoid using bad signal from affected echoes in calculating
+<img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/01cf3b4380c45ecb9441c218a188a888cace0303.png" alt="S_{0}"/> for a given voxel,
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code> generates an adaptive mask,
+where the value for each voxel indicates how many of the echoes
+(starting with the first echo) have “good” signal.
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code> has multiple methods for generating this mask,
+and we recommend looking at the description of <a class="reference internal" href="generated/tedana.utils.make_adaptive_mask.html#tedana.utils.make_adaptive_mask" title="tedana.utils.make_adaptive_mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_adaptive_mask()</span></code></a> for more information.</p>
+<p>When <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/01cf3b4380c45ecb9441c218a188a888cace0303.png" alt="S_{0}"/> are calculated below,
+each voxel’s values are only calculated from the first <img class="math" src="_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/> echoes,
+where <img class="math" src="_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/> is the value for that voxel in the adaptive mask.
+By default, the optimally combined and denoised time series will include voxels
+where there is at least one good echo,
+but ICA and the fit maps require at least three good echoes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">tedana</span></code> allows users to provide their own mask.
+The adaptive mask will be computed on this explicit mask, and may reduce
+it further based on the data.
+If a mask is not provided, <code class="docutils literal notranslate"><span class="pre">tedana</span></code> runs <a class="reference external" href="https://nilearn.github.io/stable/modules/generated/nilearn.masking.compute_epi_mask.html#nilearn.masking.compute_epi_mask" title="(in Nilearn)"><code class="xref py py-func docutils literal notranslate"><span class="pre">nilearn.masking.compute_epi_mask()</span></code></a>
+on the first echo’s data to derive a mask prior to adaptive masking.
+Some brain masking is required because the percentile-based thresholding
+in the adaptive mask will be flawed if it includes all out-of-brain voxels.</p>
+</div>
+<p>In this eight-echo dataset,
+we can see that the adaptive mask flags later echoes as “bad” in areas we expect
+to suffer most from dropout,
+including the orbitofrontal cortex and temporal poles.</p>
+<a class="reference internal image-reference" href="_images/a03_adaptive_mask.png"><img alt="_images/a03_adaptive_mask.png" class="align-center" src="_images/a03_adaptive_mask.png" style="width: 600px;" />
+</a>
+</section>
+<section id="monoexponential-decay-model-fit">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Monoexponential decay model fit</a><a class="headerlink" href="#monoexponential-decay-model-fit" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="generated/tedana.decay.fit_decay.html#tedana.decay.fit_decay" title="tedana.decay.fit_decay"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.decay.fit_decay()</span></code></a></p>
+<p>The next step is to fit a monoexponential decay model to the data in order to
+estimate voxel-wise <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>.
+<img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> corresponds to the total signal in each voxel before decay and can reflect coil sensivity.
+<img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> corresponds to the rate at which a voxel decays over time,
+which is related to signal dropout and BOLD sensitivity.
+Estimates of the parameters are saved as <strong>T2starmap.nii.gz</strong> and <strong>S0map.nii.gz</strong>.</p>
+<p>While <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> in fact fluctuate over time,
+estimating them on a volume-by-volume basis with only a small number of echoes is not feasible
+(i.e., the estimates would be extremely noisy).
+As such, we estimate average <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> maps and use those
+throughout the workflow.
+However, it is important to note that promising work has been done using
+volume-wise <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> estimates <a class="footnote-reference brackets" href="#footcite-heunis2021effects" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>,
+which can be estimated with <code class="docutils literal notranslate"><span class="pre">--fitmode</span> <span class="pre">ts</span></code> in <a class="reference internal" href="generated/tedana.workflows.t2smap_workflow.html#tedana.workflows.t2smap_workflow" title="tedana.workflows.t2smap_workflow"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.workflows.t2smap_workflow()</span></code></a>.</p>
+<p>In order to make it easier to fit the decay model to the data,
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code> transforms the data by default.
+The BOLD data are transformed as <img class="math" src="_images/math/d1be4173866c039f68a3ac03f78de586a286e9fe.png" alt="log(|S|+1)"/>, where <img class="math" src="_images/math/b988975be41fd13b4d091c10202ba19374643586.png" alt="S"/> is the BOLD signal.
+The echo times are also multiplied by -1.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is now possible to do a nonlinear monoexponential fit to the original,
+untransformed data values by specifiying <code class="docutils literal notranslate"><span class="pre">--fittype</span> <span class="pre">curvefit</span></code>.
+This method is slightly more computationally demanding but may obtain more
+accurate fits.</p>
+</div>
+<img alt="_images/a04_echo_log_value_distributions.png" src="_images/a04_echo_log_value_distributions.png" />
+<p>A simple line can then be fit to the transformed data with linear regression.
+For the sake of this introduction,
+we can assume that the example voxel has good signal in all eight echoes
+(i.e., the adaptive mask has a value of 8 at this voxel),
+so the line is fit to all available data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">tedana</span></code> actually performs and uses two sets of <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/>/<img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> model fits.
+In one case, <code class="docutils literal notranslate"><span class="pre">tedana</span></code> estimates <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> for voxels with good signal in at
+least two echoes.
+In the other case, <code class="docutils literal notranslate"><span class="pre">tedana</span></code> estimates <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> for voxels
+with good data in only one echo as well, but uses the first two echoes for those voxels.
+The resulting “full” <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> maps are used throughout the rest of the pipeline.</p>
+</div>
+<img alt="_images/a05_loglinear_regression.png" src="_images/a05_loglinear_regression.png" />
+<p>The values of interest for the decay model, <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> and <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/>,
+are then simple transformations of the line’s intercept (<img class="math" src="_images/math/c75792b901d941f84d61c8e49701743aaf34b563.png" alt="B_{0}"/>) and
+slope (<img class="math" src="_images/math/bff747ae7239c790e4ada5abcb633d074d510d7a.png" alt="B_{1}"/>), respectively:</p>
+<div class="math">
+<p><img src="_images/math/050af38ae95c29c67d3866b8a862b57fb8a7d154.png" alt="S_{0} = e^{B_{0}}"/></p>
+</div><div class="math">
+<p><img src="_images/math/05f581f1b7e25c345b7a9154afa2d099c777e8c0.png" alt="T_{2}^{*} = \frac{1}{B_{1}}"/></p>
+</div><p>The resulting values can be used to show the fitted monoexponential decay model
+on the original data.</p>
+<img alt="_images/a06_monoexponential_decay_model.png" src="_images/a06_monoexponential_decay_model.png" />
+<p>We can also see where <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> lands on this curve.</p>
+<img alt="_images/a07_monoexponential_decay_model_with_t2.png" src="_images/a07_monoexponential_decay_model_with_t2.png" />
+</section>
+<section id="optimal-combination">
+<span id="id2"></span><h2><a class="toc-backref" href="#id13" role="doc-backlink">Optimal combination</a><a class="headerlink" href="#optimal-combination" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="generated/tedana.combine.make_optcom.html#tedana.combine.make_optcom" title="tedana.combine.make_optcom"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.combine.make_optcom()</span></code></a></p>
+<p>Using the <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> estimates,
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code> combines signal across echoes using a weighted average.
+The echoes are weighted according to the formula:</p>
+<div class="math">
+<p><img src="_images/math/1b48b7fc0bab3df9d9aa090002c48a5112426bba.png" alt="w_{TE} = TE * e^{\frac{-TE}{T_{2}^*}}"/></p>
+</div><p>The weights are then normalized across echoes.
+For the example voxel, the resulting weights are:</p>
+<a class="reference internal image-reference" href="_images/a08_optimal_combination_echo_weights.png"><img alt="_images/a08_optimal_combination_echo_weights.png" class="align-center" src="_images/a08_optimal_combination_echo_weights.png" style="width: 400px;" />
+</a>
+<p>These normalized weights are then used to compute a weighted average that takes advantage
+of the higher signal in earlier echoes and the higher sensitivity at later echoes.
+The distribution of values for the optimally combined data lands somewhere
+between the distributions for other echoes.</p>
+<img alt="_images/a09_optimal_combination_value_distributions.png" src="_images/a09_optimal_combination_value_distributions.png" />
+<p>The time series for the optimally combined data also looks like a combination
+of the other echoes (which it is).
+This optimally combined data is written out as <strong>desc-optcom_bold.nii.gz</strong></p>
+<img alt="_images/a10_optimal_combination_timeseries.png" src="_images/a10_optimal_combination_timeseries.png" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>An alternative method for optimal combination that
+does not use <img class="math" src="_images/math/8a49f74c9ca87e997cada75d38eb8aa1fef24f6b.png" alt="T_{2}^*"/> is the parallel-acquired inhomogeneity
+desensitized (PAID) ME-fMRI combination method <a class="footnote-reference brackets" href="#footcite-poser2006bold" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.
+This method specifically assumes that noise in the acquired echoes is
+“isotopic and homogeneous throughout the image,”
+meaning it should be used on smoothed data.
+As we do not recommend performing tedana denoising on smoothed data,
+we discourage using PAID within the tedana workflow.
+We do, however, make it accessible as an alternative combination method
+in <a class="reference internal" href="generated/tedana.workflows.t2smap_workflow.html#tedana.workflows.t2smap_workflow" title="tedana.workflows.t2smap_workflow"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.workflows.t2smap_workflow()</span></code></a>.</p>
+</div>
+</section>
+<section id="denoising">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Denoising</a><a class="headerlink" href="#denoising" title="Link to this heading"></a></h2>
+<p>The next step is an attempt to remove noise from the data.
+This process can be broadly separated into three steps:
+<strong>decomposition</strong>, <strong>metric calculation</strong> and <strong>component selection</strong>.
+Decomposition reduces the dimensionality of the optimally combined data using
+<a class="reference external" href="https://en.wikipedia.org/wiki/Principal_component_analysis">principal component analysis (PCA)</a> and then an <a class="reference external" href="https://en.wikipedia.org/wiki/Independent_component_analysis">independent component analysis (ICA)</a>.
+Metrics that evaluate TE-dependence or -independence are derived from these components.
+Component selection uses these metrics in order to identify components that
+should be kept in the data or discarded.
+Unwanted components are then removed from the optimally combined data
+to produce the denoised data output.</p>
+</section>
+<section id="tedpca">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">TEDPCA</a><a class="headerlink" href="#tedpca" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="generated/tedana.decomposition.tedpca.html#tedana.decomposition.tedpca" title="tedana.decomposition.tedpca"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.decomposition.tedpca()</span></code></a></p>
+<p>The next step is to dimensionally reduce the data with TE-dependent principal
+component analysis (PCA).
+The goal of this step is to make it easier for the later ICA decomposition to converge.
+Dimensionality reduction is a common step prior to ICA.
+TEDPCA applies PCA to the optimally combined data in order to decompose it into component maps and
+time series (saved as <strong>desc-PCA_mixing.tsv</strong>).
+Here we can see time series for some example components (we don’t really care about the maps):</p>
+<img alt="_images/a11_pca_component_timeseries.png" src="_images/a11_pca_component_timeseries.png" />
+<p>These components are subjected to component selection, the specifics of which
+vary according to algorithm.
+Specifically, <code class="docutils literal notranslate"><span class="pre">tedana</span></code> offers three different approaches that perform this step.</p>
+<p>The recommended approach
+(the default <code class="docutils literal notranslate"><span class="pre">aic</span></code> option, along with the <code class="docutils literal notranslate"><span class="pre">kic</span></code> and <code class="docutils literal notranslate"><span class="pre">mdl</span></code> options, for <code class="docutils literal notranslate"><span class="pre">--tedpca</span></code>)
+is based on a moving average (stationary Gaussian) process
+proposed by Li <em>et al.</em><a class="footnote-reference brackets" href="#footcite-li2007estimating" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> and used primarily in the Group ICA of fMRI Toolbox (GIFT).
+A moving average process is the output of a linear system
+(which, in this case, is a smoothing filter)
+that has an independent and identically distributed Gaussian process as the input.
+Simply put, this process more optimally selects the number of components for
+fMRI data following a subsampling scheme described in Li <em>et al.</em><a class="footnote-reference brackets" href="#footcite-li2007estimating" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+<p>The number of selected principal components depends on the selection criteria.
+For this PCA method in particular, <code class="docutils literal notranslate"><span class="pre">--tedpca</span></code> provides three different options
+to select the PCA components based on three widely-used model selection criteria:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mdl</span></code>: the Minimum Description Length (<a class="reference external" href="https://en.wikipedia.org/wiki/Minimum_description_length">MDL</a>), which is the most aggressive option;
+i.e. returns the least number of components.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kic</span></code>: the Kullback-Leibler Information Criterion (<a class="reference external" href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">KIC</a>), which stands in the
+middle in terms of aggressiveness. You can see how KIC is related to AIC <a class="reference external" href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence#Relationship_between_models_and_reality">here</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aic</span></code>: the Akaike Information Criterion (<a class="reference external" href="https://en.wikipedia.org/wiki/Akaike_information_criterion">AIC</a>), which is the least aggressive option;
+i.e., returns the largest number of components.
+We have chosen AIC as the default PCA criterion because it tends to result in fewer components than the Kundu methods,
+which increases the likelihood that the ICA step will successfully converge,
+but also, in our experience,
+retains enough components for meaningful interpretation later on.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please, bear in mind that this is a data-driven dimensionality reduction approach.
+The default option <code class="docutils literal notranslate"><span class="pre">aic</span></code> might not yield perfect results on your data.
+Consider <code class="docutils literal notranslate"><span class="pre">kic</span></code> and <code class="docutils literal notranslate"><span class="pre">mdl</span></code> options if running <code class="docutils literal notranslate"><span class="pre">tedana</span></code> with <code class="docutils literal notranslate"><span class="pre">aic</span></code> returns more components than expected.
+There is no definitively right number of components, but, for typical fMRI datasets, if the PCA
+explains more than 98% of the variance or if the number of components is more than half the number
+of time points, then it may be worth considering more aggressive thresholds.</p>
+</div>
+<p>The simplest approach uses a user-supplied threshold applied to the cumulative variance explained
+by the PCA.
+In this approach, the user provides a value to <code class="docutils literal notranslate"><span class="pre">--tedpca</span></code> between 0 and 1.
+That value corresponds to the percent of variance that must be explained by the components.
+For example, if a value of 0.9 is provided, then PCA components
+(ordered by decreasing variance explained)
+cumulatively explaining up to 90% of the variance will be retained.
+Components explaining more than that threshold
+(except for the component that crosses the threshold)
+will be excluded.</p>
+<p>In addition to the moving average process-based options and the variance explained threshold
+described above,
+we also support a decision tree-based selection method
+(similar to the one in the <a class="reference internal" href="#tedica"><span class="std std-ref">TEDICA</span></a> section below).
+This method involves applying a decision tree to identify and discard PCA components which,
+in addition to not explaining much variance,
+are also not significantly TE-dependent (i.e., have low Kappa) or TE-independent (i.e., have low Rho).
+These approaches can be accessed using either the <code class="docutils literal notranslate"><span class="pre">kundu</span></code> or <code class="docutils literal notranslate"><span class="pre">kundu_stabilize</span></code>
+options for the <code class="docutils literal notranslate"><span class="pre">--tedpca</span></code> flag.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For more information on how TE-dependence and TE-independence models are
+estimated in <code class="docutils literal notranslate"><span class="pre">tedana</span></code>, see <a class="reference internal" href="dependence_metrics.html#dependence-models"><span class="std std-ref">TE (In)Dependence Models</span></a>.
+For a more thorough explanation of this approach, consider the supplemental information
+in Kundu <em>et al.</em><a class="footnote-reference brackets" href="#footcite-kundu2013integrated" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.</p>
+</div>
+<p>After component selection is performed,
+the retained components and their associated betas are used to reconstruct the optimally combined data,
+resulting in a dimensionally reduced version of the dataset which is then used in the
+<a class="reference internal" href="#tedica"><span class="std std-ref">TEDICA</span></a> step.</p>
+<img alt="_images/a12_pca_reduced_data.png" src="_images/a12_pca_reduced_data.png" />
+</section>
+<section id="tedica">
+<span id="id7"></span><h2><a class="toc-backref" href="#id16" role="doc-backlink">TEDICA</a><a class="headerlink" href="#tedica" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="generated/tedana.decomposition.tedica.html#tedana.decomposition.tedica" title="tedana.decomposition.tedica"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.decomposition.tedica()</span></code></a></p>
+<p>Next, <code class="docutils literal notranslate"><span class="pre">tedana</span></code> applies TE-dependent independent component analysis (ICA) in
+order to identify and remove TE-independent (i.e., non-BOLD noise) components.
+The dimensionally reduced optimally combined data are first subjected to ICA in
+order to fit a mixing matrix to the whitened data.
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code> can use a single interation of FastICA or multiple interations of robustICA,
+with an explanation of those approaches <a class="reference external" href="faq.html#tedana-what-is-the-right-number-of-ica-components-what-options-let-me-get-it">in our FAQ</a>.
+This generates a number of independent timeseries (saved as <strong>desc-ICA_mixing.tsv</strong>),
+as well as parameter estimate maps which show the spatial loading of these components on the
+brain (<strong>desc-ICA_components.nii.gz</strong>).</p>
+<img alt="_images/a13_ica_component_timeseries.png" src="_images/a13_ica_component_timeseries.png" />
+<p>Linear regression is used to fit the component time series to each voxel in each
+of the original, echo-specific data.
+This results in echo- and voxel-specific betas for each of the components.
+The beta values from the linear regression can be used to determine how the
+fluctuations (in each component timeseries) change across the echo times.</p>
+<p>TE-dependence (<img class="math" src="_images/math/f59def0e720f7de8ca2abe4eb16528d1e9b9f3bf.png" alt="R_2"/> or <img class="math" src="_images/math/1e93a03b637eb6e3469b1ec8852778c7b39f34a6.png" alt="1/T_{2}^*"/>) and TE-independence (<img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>) models can then
+be fit to these betas.
+These models allow calculation of F-statistics for the <img class="math" src="_images/math/f59def0e720f7de8ca2abe4eb16528d1e9b9f3bf.png" alt="R_2"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> models
+(referred to as <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> and <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/>, respectively).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For more information on how TE-dependence and TE-independence models are
+estimated, see <a class="reference internal" href="dependence_metrics.html#dependence-models"><span class="std std-ref">TE (In)Dependence Models</span></a>.</p>
+</div>
+<p>The grey lines below shows how beta values (a.k.a. parameter estimates)
+change with echo time, for one voxel and one component.
+The blue and red lines show the predicted values for the <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> and
+<img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> models, respectively, for the same voxel and component.</p>
+<img alt="_images/a14_te_dependence_models_component_0.png" src="_images/a14_te_dependence_models_component_0.png" />
+<img alt="_images/a14_te_dependence_models_component_1.png" src="_images/a14_te_dependence_models_component_1.png" />
+<img alt="_images/a14_te_dependence_models_component_2.png" src="_images/a14_te_dependence_models_component_2.png" />
+<p>A decision tree is applied to <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/>, <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/>, and other metrics in order to
+classify ICA components as TE-dependent (BOLD signal),
+TE-independent (non-BOLD noise), or neither (to be ignored).
+These classifications are saved in <strong>desc-tedana_metrics.tsv</strong>.
+The actual decision tree is dependent on the component selection algorithm employed.
+<code class="docutils literal notranslate"><span class="pre">tedana</span></code> includes three options <cite>tedana_orig</cite>, <cite>meica</cite> and <cite>minimal</cite>
+(which uses hardcoded thresholds applied to each of the metrics).
+These decision trees are detailed in <a class="reference internal" href="included_decision_trees.html"><span class="doc">Included Decision Trees</span></a>.</p>
+<p>Components that are classified as noise are projected out of the optimally combined data,
+yielding a denoised timeseries, which is saved as <strong>desc-denoised_bold.nii.gz</strong>.</p>
+<img alt="_images/a15_denoised_data_timeseries.png" src="_images/a15_denoised_data_timeseries.png" />
+</section>
+<section id="manual-classification-with-rica">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Manual classification with RICA</a><a class="headerlink" href="#manual-classification-with-rica" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">RICA</span></code> is a tool for manual ICA classification.
+Once the .tsv file containing the result of manual component classification is obtained,
+it is necessary to re-run the tedana workflow
+(see <a class="reference internal" href="usage.html#running-the-ica-reclassify-workflow"><span class="std std-ref">Running the ica_reclassify workflow</span></a>)
+passing the <code class="docutils literal notranslate"><span class="pre">manual_classification.tsv</span></code> file with the <code class="docutils literal notranslate"><span class="pre">--ctab</span></code> option.
+To save the output correctly,
+make sure that the output directory does not coincide with the input directory.
+See <a class="reference external" href="https://www.youtube.com/live/P4cV-sGeltk?feature=share&amp;t=1347">this example</a> presented at MRITogether 2022 for a hands-on tutorial.</p>
+</section>
+<section id="removal-of-spatially-diffuse-noise-optional">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Removal of spatially diffuse noise (optional)</a><a class="headerlink" href="#removal-of-spatially-diffuse-noise-optional" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="generated/tedana.gscontrol.gscontrol_raw.html#tedana.gscontrol.gscontrol_raw" title="tedana.gscontrol.gscontrol_raw"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.gscontrol.gscontrol_raw()</span></code></a>, <a class="reference internal" href="generated/tedana.gscontrol.minimum_image_regression.html#tedana.gscontrol.minimum_image_regression" title="tedana.gscontrol.minimum_image_regression"><code class="xref py py-func docutils literal notranslate"><span class="pre">tedana.gscontrol.minimum_image_regression()</span></code></a></p>
+<p>Due to the constraints of spatial ICA,
+TEDICA is able to identify and remove spatially localized noise components,
+but it cannot identify components that are spread out throughout the whole brain.
+See Power <em>et al.</em><a class="footnote-reference brackets" href="#footcite-power2018ridding" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> for more information about this issue.
+One of several post-processing strategies may be applied to the denoised data
+in order to remove spatially diffuse (ostensibly respiration-related) noise.
+Methods which have been employed in the past include
+global signal regression (GSR), minimum image regression (MIR), anatomical CompCor,
+Go Decomposition (GODEC), and robust PCA.
+Currently, <code class="docutils literal notranslate"><span class="pre">tedana</span></code> implements GSR and MIR.</p>
+<img alt="_images/a16_t1c_denoised_data_timeseries.png" src="_images/a16_t1c_denoised_data_timeseries.png" />
+</section>
+<section id="references">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div class="docutils container" id="id9">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-heunis2021effects" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Stephan Heunis, Marcel Breeuwer, César Caballero-Gaudes, Lydia Hellrung, Willem Huijbers, Jacobus FA Jansen, Rolf Lamerichs, Svitlana Zinger, and Albert P Aldenkamp. The effects of multi-echo fmri combination and rapid t2*-mapping on offline and real-time bold sensitivity. <em>Neuroimage</em>, 238:118244, 2021.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-poser2006bold" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>Benedikt A Poser, Maarten J Versluis, Johannes M Hoogduin, and David G Norris. Bold contrast sensitivity enhancement and artifact reduction with multiecho epi: parallel-acquired inhomogeneity-desensitized fmri. <em>Magnetic Resonance in Medicine: An Official Journal of the International Society for Magnetic Resonance in Medicine</em>, 55(6):1227–1235, 2006. URL: <a class="reference external" href="https://doi.org/10.1002/mrm.20900">https://doi.org/10.1002/mrm.20900</a>, <a class="reference external" href="https://doi.org/10.1002/mrm.20900">doi:10.1002/mrm.20900</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-li2007estimating" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Yi-Ou Li, Tülay Adalı, and Vince D Calhoun. Estimating the number of independent components for functional magnetic resonance imaging data. <em>Human brain mapping</em>, 28(11):1251–1266, 2007. URL: <a class="reference external" href="https://doi.org/10.1002/hbm.20359">https://doi.org/10.1002/hbm.20359</a>, <a class="reference external" href="https://doi.org/10.1002/hbm.20359">doi:10.1002/hbm.20359</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-kundu2013integrated" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">4</a><span class="fn-bracket">]</span></span>
+<p>Prantik Kundu, Noah D Brenowitz, Valerie Voon, Yulia Worbe, Petra E Vértes, Souheil J Inati, Ziad S Saad, Peter A Bandettini, and Edward T Bullmore. Integrated strategy for improving functional connectivity mapping using multiecho fmri. <em>Proceedings of the National Academy of Sciences</em>, 110(40):16187–16192, 2013. URL: <a class="reference external" href="https://doi.org/10.1073/pnas.1301725110">https://doi.org/10.1073/pnas.1301725110</a>, <a class="reference external" href="https://doi.org/10.1073/pnas.1301725110">doi:10.1073/pnas.1301725110</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-power2018ridding" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">5</a><span class="fn-bracket">]</span></span>
+<p>Jonathan D Power, Mark Plitt, Stephen J Gotts, Prantik Kundu, Valerie Voon, Peter A Bandettini, and Alex Martin. Ridding fmri data of motion-related influences: removal of signals with distinct spatial and physical bases in multiecho data. <em>Proceedings of the National Academy of Sciences</em>, 115(9):E2105–E2114, 2018.</p>
+</aside>
+</aside>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Using tedana from the command line" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="outputs.html" class="btn btn-neutral float-right" title="Outputs of tedana" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OAuth 2 Workflow &mdash; Requests-OAuthlib 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples/examples.html" />
+    <link rel="prev" title="OAuth 1 Workflow" href="oauth1_workflow.html" /> 
+
+<!-- RTD Extra Head -->
+
+
+
+<script type="application/json" id="READTHEDOCS_DATA">{"ad_free": false, "api_host": "https://readthedocs.org", "builder": "sphinx", "canonical_url": null, "docroot": "/docs/", "features": {"docsearch_disabled": false}, "global_analytics_code": null, "language": "en", "page": "oauth2_workflow", "programming_language": "py", "project": "requests-oauthlib", "proxied_api_host": "/_", "source_suffix": ".rst", "subprojects": {}, "theme": "sphinx_rtd_theme", "user_analytics_code": "", "version": "latest"}</script>
+
+<!--
+Using this variable directly instead of using `JSON.parse` is deprecated.
+The READTHEDOCS_DATA global variable will be removed in the future.
+-->
+<script type="text/javascript">
+READTHEDOCS_DATA = JSON.parse(document.getElementById('READTHEDOCS_DATA').innerHTML);
+</script>
+
+
+
+<!-- end RTD <extrahead> -->
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="requests-oauthlib" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/oauth2_workflow.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Requests-OAuthlib
+          </a>
+              <div class="version">
+                latest
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="oauth1_workflow.html">OAuth 1 Workflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OAuth 2 Workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#available-workflows">Available Workflows</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#web-application-flow">Web Application Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mobile-application-flow">Mobile Application Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#legacy-application-flow">Legacy Application Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend-application-flow">Backend Application Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#refreshing-tokens">Refreshing tokens</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#all-define-the-token-token-saver-and-needed-credentials">(ALL) Define the token, token saver and needed credentials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#first-define-try-catch-tokenexpirederror-on-each-request">(First) Define Try-Catch TokenExpiredError on each request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#second-define-automatic-token-refresh-automatic-but-update-manually">(Second) Define automatic token refresh automatic but update manually</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#third-recommended-define-automatic-token-refresh-and-update">(Third, Recommended) Define automatic token refresh and update</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tls-client-authentication">TLS Client Authentication</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples/examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Developer Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing_examples.html">Documentation examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Requests-OAuthlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">OAuth 2 Workflow</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/requests/requests-oauthlib/blob/master/docs/oauth2_workflow.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="oauth-2-workflow">
+<h1>OAuth 2 Workflow<a class="headerlink" href="#oauth-2-workflow" title="Permalink to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="id5">Introduction</a></p>
+<ul>
+<li><p><a class="reference internal" href="#available-workflows" id="id6">Available Workflows</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#web-application-flow" id="id7">Web Application Flow</a></p></li>
+<li><p><a class="reference internal" href="#mobile-application-flow" id="id8">Mobile Application Flow</a></p></li>
+<li><p><a class="reference internal" href="#legacy-application-flow" id="id9">Legacy Application Flow</a></p></li>
+<li><p><a class="reference internal" href="#backend-application-flow" id="id10">Backend Application Flow</a></p></li>
+<li><p><a class="reference internal" href="#refreshing-tokens" id="id11">Refreshing tokens</a></p>
+<ul>
+<li><p><a class="reference internal" href="#all-define-the-token-token-saver-and-needed-credentials" id="id12">(ALL) Define the token, token saver and needed credentials</a></p></li>
+<li><p><a class="reference internal" href="#first-define-try-catch-tokenexpirederror-on-each-request" id="id13">(First) Define Try-Catch TokenExpiredError on each request</a></p></li>
+<li><p><a class="reference internal" href="#second-define-automatic-token-refresh-automatic-but-update-manually" id="id14">(Second) Define automatic token refresh automatic but update manually</a></p></li>
+<li><p><a class="reference internal" href="#third-recommended-define-automatic-token-refresh-and-update" id="id15">(Third, Recommended) Define automatic token refresh and update</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#tls-client-authentication" id="id16">TLS Client Authentication</a></p></li>
+</ul>
+</nav>
+<section id="introduction">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
+<p>The following sections provide some example code that demonstrates some of the
+possible OAuth2 flows you can use with requests-oauthlib. We provide four
+examples: one for each of the grant types defined by the OAuth2 RFC. These
+grant types (or workflows) are the Authorization Code Grant (or Web Application
+Flow), the Implicit Grant (or Mobile Application Flow), the Resource Owner
+Password Credentials Grant (or, more succinctly, the Legacy Application Flow),
+and the Client Credentials Grant (or Backend Application Flow).</p>
+<section id="available-workflows">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Available Workflows</a><a class="headerlink" href="#available-workflows" title="Permalink to this heading"></a></h3>
+<p>There are four core work flows:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#web-application-flow"><span class="std std-ref">Authorization Code Grant</span></a> (Web Application
+Flow).</p></li>
+<li><p><a class="reference internal" href="#mobile-application-flow"><span class="std std-ref">Implicit Grant</span></a> (Mobile Application flow).</p></li>
+<li><p><a class="reference internal" href="#legacy-application-flow"><span class="std std-ref">Resource Owner Password Credentials Grant</span></a>
+(Legacy Application flow).</p></li>
+<li><p><a class="reference internal" href="#backend-application-flow"><span class="std std-ref">Client Credentials Grant</span></a> (Backend
+Application flow).</p></li>
+</ol>
+</section>
+</section>
+<section id="web-application-flow">
+<span id="id1"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Web Application Flow</a><a class="headerlink" href="#web-application-flow" title="Permalink to this heading"></a></h2>
+<p>The steps below outline how to use the default Authorization Grant Type flow to
+obtain an access token and fetch a protected resource. In this example
+the provider is Google and the protected resource is the user’s profile.</p>
+<ol class="arabic simple" start="0">
+<li><p>Obtain credentials from your OAuth provider manually. At minimum you will
+need a <code class="docutils literal notranslate"><span class="pre">client_id</span></code> but likely also a <code class="docutils literal notranslate"><span class="pre">client_secret</span></code>. During this
+process you might also be required to register a default redirect URI to be
+used by your application. Save these things in your Python script:</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client_id</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;your_client_id&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client_secret</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;your_client_secret&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">redirect_uri</span> <span class="o">=</span> <span class="s1">&#39;https://your.callback/uri&#39;</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>User authorization through redirection. First we will create an
+authorization url from the base URL given by the provider and
+the credentials previously obtained. In addition most providers will
+request that you ask for access to a certain scope. In this example
+we will ask Google for access to the email address of the user and the
+users profile.</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="go"># Note that these are Google specific scopes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scope</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;https://www.googleapis.com/auth/userinfo.email&#39;</span><span class="p">,</span>
+<span class="go">             &#39;https://www.googleapis.com/auth/userinfo.profile&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">redirect_uri</span><span class="o">=</span><span class="n">redirect_uri</span><span class="p">,</span>
+<span class="go">                          scope=scope)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">authorization_url</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">authorization_url</span><span class="p">(</span>
+<span class="go">        &#39;https://accounts.google.com/o/oauth2/auth&#39;,</span>
+<span class="go">        # access_type and prompt are Google specific extra</span>
+<span class="go">        # parameters.</span>
+<span class="go">        access_type=&quot;offline&quot;, prompt=&quot;select_account&quot;)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Please go to </span><span class="si">{</span><span class="n">authorization_url</span><span class="si">}</span><span class="s1"> and authorize access.&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">authorization_response</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;Enter the full callback URL&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Fetch an access token from the provider using the authorization code
+obtained during user authorization.</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span>
+<span class="go">        &#39;https://accounts.google.com/o/oauth2/token&#39;,</span>
+<span class="go">        authorization_response=authorization_response,</span>
+<span class="go">        # Google specific extra parameter used for client</span>
+<span class="go">        # authentication</span>
+<span class="go">        client_secret=client_secret)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Access protected resources using the access token you just obtained.
+For example, get the users profile info.</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://www.googleapis.com/oauth2/v1/userinfo&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Enjoy =)</span>
+</pre></div>
+</div>
+</section>
+<section id="mobile-application-flow">
+<span id="id2"></span><h2><a class="toc-backref" href="#id8" role="doc-backlink">Mobile Application Flow</a><a class="headerlink" href="#mobile-application-flow" title="Permalink to this heading"></a></h2>
+<p>The steps below outline how to use the Implicit Code Grant Type flow to obtain an access token.</p>
+<ol class="arabic simple" start="0">
+<li><p>You will need the following settings.</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client_id</span> <span class="o">=</span> <span class="s1">&#39;your_client_id&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scopes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;scope_1&#39;</span><span class="p">,</span> <span class="s1">&#39;scope_2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">auth_url</span> <span class="o">=</span> <span class="s1">&#39;https://your.oauth2/auth&#39;</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Get the authorization_url</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">oauthlib.oauth2</span> <span class="kn">import</span> <span class="n">MobileApplicationClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">requests_oauthlib</span> <span class="kn">import</span> <span class="n">OAuth2Session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">MobileApplicationClient</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">client_id</span><span class="p">),</span> <span class="n">scope</span><span class="o">=</span><span class="n">scopes</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">authorization_url</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">authorization_url</span><span class="p">(</span><span class="n">auth_url</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Fetch an access token from the provider.</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">response</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">authorization_url</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span><span class="o">.</span><span class="n">token_from_fragment</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="legacy-application-flow">
+<span id="id3"></span><h2><a class="toc-backref" href="#id9" role="doc-backlink">Legacy Application Flow</a><a class="headerlink" href="#legacy-application-flow" title="Permalink to this heading"></a></h2>
+<p>The steps below outline how to use the Resource Owner Password Credentials Grant Type flow to obtain an access token.</p>
+<ol class="arabic simple" start="0">
+<li><p>You will need the following settings. <code class="docutils literal notranslate"><span class="pre">client_secret</span></code> is optional depending on the provider.</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client_id</span> <span class="o">=</span> <span class="s1">&#39;your_client_id&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client_secret</span> <span class="o">=</span> <span class="s1">&#39;your_client_secret&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">username</span> <span class="o">=</span> <span class="s1">&#39;your_username&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;your_password&#39;</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Fetch an access token from the provider.</p></li>
+</ol>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">oauthlib.oauth2</span> <span class="kn">import</span> <span class="n">LegacyApplicationClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">requests_oauthlib</span> <span class="kn">import</span> <span class="n">OAuth2Session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">LegacyApplicationClient</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">client_id</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span><span class="n">token_url</span><span class="o">=</span><span class="s1">&#39;https://somesite.com/oauth2/token&#39;</span><span class="p">,</span>
+<span class="go">        username=username, password=password, client_id=client_id,</span>
+<span class="go">        client_secret=client_secret)</span>
+</pre></div>
+</div>
+</section>
+<section id="backend-application-flow">
+<span id="id4"></span><h2><a class="toc-backref" href="#id10" role="doc-backlink">Backend Application Flow</a><a class="headerlink" href="#backend-application-flow" title="Permalink to this heading"></a></h2>
+<p>The steps below outline how to use the Resource Owner Client Credentials Grant Type flow to obtain an access token.</p>
+<ol class="arabic" start="0">
+<li><p>Obtain credentials from your OAuth provider. At minimum you will
+need a <code class="docutils literal notranslate"><span class="pre">client_id</span></code> and <code class="docutils literal notranslate"><span class="pre">client_secret</span></code>.</p>
+<blockquote>
+<div><div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client_id</span> <span class="o">=</span> <span class="s1">&#39;your_client_id&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client_secret</span> <span class="o">=</span> <span class="s1">&#39;your_client_secret&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Fetch an access token from the provider.</p>
+<blockquote>
+<div><div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">oauthlib.oauth2</span> <span class="kn">import</span> <span class="n">BackendApplicationClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">requests_oauthlib</span> <span class="kn">import</span> <span class="n">OAuth2Session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">BackendApplicationClient</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">client_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span><span class="n">token_url</span><span class="o">=</span><span class="s1">&#39;https://provider.com/oauth2/token&#39;</span><span class="p">,</span> <span class="n">client_id</span><span class="o">=</span><span class="n">client_id</span><span class="p">,</span>
+<span class="go">        client_secret=client_secret)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>If your provider requires that you pass auth credentials in a Basic Auth header, you can do this instead:</p>
+<blockquote>
+<div><div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">oauthlib.oauth2</span> <span class="kn">import</span> <span class="n">BackendApplicationClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">requests_oauthlib</span> <span class="kn">import</span> <span class="n">OAuth2Session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">requests.auth</span> <span class="kn">import</span> <span class="n">HTTPBasicAuth</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">auth</span> <span class="o">=</span> <span class="n">HTTPBasicAuth</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">client_secret</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">BackendApplicationClient</span><span class="p">(</span><span class="n">client_id</span><span class="o">=</span><span class="n">client_id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span><span class="n">token_url</span><span class="o">=</span><span class="s1">&#39;https://provider.com/oauth2/token&#39;</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">auth</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="refreshing-tokens">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Refreshing tokens</a><a class="headerlink" href="#refreshing-tokens" title="Permalink to this heading"></a></h2>
+<p>Certain providers will give you a <code class="docutils literal notranslate"><span class="pre">refresh_token</span></code> along with the
+<code class="docutils literal notranslate"><span class="pre">access_token</span></code>. These can be used to directly fetch new access tokens without
+going through the normal OAuth workflow. <code class="docutils literal notranslate"><span class="pre">requests-oauthlib</span></code> provides three
+methods of obtaining refresh tokens. All of these are dependent on you
+specifying an accurate <code class="docutils literal notranslate"><span class="pre">expires_in</span></code> in the token.</p>
+<p><code class="docutils literal notranslate"><span class="pre">expires_in</span></code> is a credential given with the access and refresh token
+indicating in how many seconds from now the access token expires. Commonly,
+access tokens expire after an hour and the <code class="docutils literal notranslate"><span class="pre">expires_in</span></code> would be <code class="docutils literal notranslate"><span class="pre">3600</span></code>.
+Without this it is impossible for <code class="docutils literal notranslate"><span class="pre">requests-oauthlib</span></code> to know when a token
+is expired as the status code of a request failing due to token expiration is
+not defined.</p>
+<p>If you are not interested in token refreshing, always pass in a positive value
+for <code class="docutils literal notranslate"><span class="pre">expires_in</span></code> or omit it entirely.</p>
+<section id="all-define-the-token-token-saver-and-needed-credentials">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">(ALL) Define the token, token saver and needed credentials</a><a class="headerlink" href="#all-define-the-token-token-saver-and-needed-credentials" title="Permalink to this heading"></a></h3>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;access_token&#39;</span><span class="p">:</span> <span class="s1">&#39;eswfld123kjhn1v5423&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;refresh_token&#39;</span><span class="p">:</span> <span class="s1">&#39;asdfkljh23490sdf&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;token_type&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;expires_in&#39;</span><span class="p">:</span> <span class="s1">&#39;-30&#39;</span><span class="p">,</span>     <span class="c1"># initially 3600, need to be updated by you</span>
+<span class="gp">... </span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client_id</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;foo&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">refresh_url</span> <span class="o">=</span> <span class="s1">&#39;https://provider.com/token&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">protected_url</span> <span class="o">=</span> <span class="s1">&#39;https://provider.com/secret&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># most providers will ask you for extra credentials to be passed along</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># when refreshing tokens, usually for authentication purposes.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">extra</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;client_id&#39;</span><span class="p">:</span> <span class="n">client_id</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;client_secret&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;potato&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">}</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># After updating the token you will most likely want to save it.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">token_saver</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="c1"># save token in database / session</span>
+</pre></div>
+</div>
+</section>
+<section id="first-define-try-catch-tokenexpirederror-on-each-request">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">(First) Define Try-Catch TokenExpiredError on each request</a><a class="headerlink" href="#first-define-try-catch-tokenexpirederror-on-each-request" title="Permalink to this heading"></a></h3>
+<p>This is the most basic version in which an error is raised when refresh
+is necessary but refreshing is done manually.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">requests_oauthlib</span> <span class="kn">import</span> <span class="n">OAuth2Session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">oauthlib.oauth2</span> <span class="kn">import</span> <span class="n">TokenExpiredError</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">r</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">protected_url</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">except</span> <span class="n">TokenExpiredError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">token</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">(</span><span class="n">refresh_url</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">token_saver</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">protected_url</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="second-define-automatic-token-refresh-automatic-but-update-manually">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">(Second) Define automatic token refresh automatic but update manually</a><a class="headerlink" href="#second-define-automatic-token-refresh-automatic-but-update-manually" title="Permalink to this heading"></a></h3>
+<p>This is the, arguably awkward, middle between the basic and convenient refresh
+methods in which a token is automatically refreshed, but saving the new token
+is done manually.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">requests_oauthlib</span> <span class="kn">import</span> <span class="n">OAuth2Session</span><span class="p">,</span> <span class="n">TokenUpdated</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span>
+<span class="gp">... </span>            <span class="n">auto_refresh_kwargs</span><span class="o">=</span><span class="n">extra</span><span class="p">,</span> <span class="n">auto_refresh_url</span><span class="o">=</span><span class="n">refresh_url</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">r</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">protected_url</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">except</span> <span class="n">TokenUpdated</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">token_saver</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="third-recommended-define-automatic-token-refresh-and-update">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">(Third, Recommended) Define automatic token refresh and update</a><a class="headerlink" href="#third-recommended-define-automatic-token-refresh-and-update" title="Permalink to this heading"></a></h3>
+<p>The third and recommended method will automatically fetch refresh tokens and
+save them. It requires no exception catching and results in clean code. Remember
+however that you still need to update <code class="docutils literal notranslate"><span class="pre">expires_in</span></code> to trigger the refresh.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">requests_oauthlib</span> <span class="kn">import</span> <span class="n">OAuth2Session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Session</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">auto_refresh_url</span><span class="o">=</span><span class="n">refresh_url</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">auto_refresh_kwargs</span><span class="o">=</span><span class="n">extra</span><span class="p">,</span> <span class="n">token_updater</span><span class="o">=</span><span class="n">token_saver</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">oauth</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">protected_url</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="tls-client-authentication">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">TLS Client Authentication</a><a class="headerlink" href="#tls-client-authentication" title="Permalink to this heading"></a></h2>
+<p>To use TLS Client Authentication (draft-ietf-oauth-mtls) via a
+self-signed or CA-issued certificate, pass the certificate in the
+token request and ensure that the client id is sent in the request:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">oauth</span><span class="o">.</span><span class="n">fetch_token</span><span class="p">(</span><span class="n">token_url</span><span class="o">=</span><span class="s1">&#39;https://somesite.com/oauth2/token&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">include_client_id</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cert</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;test-client.pem&#39;</span><span class="p">,</span> <span class="s1">&#39;test-client-key.pem&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oauth1_workflow.html" class="btn btn-neutral float-left" title="OAuth 1 Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples/examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2014, Kenneth Reitz.
+      <span class="commit">Revision <code>77905a47</code>.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

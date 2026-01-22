@@ -1,0 +1,782 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebServer &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Performance Tests" href="performancetests.html" />
+    <link rel="prev" title="Extension Wizard" href="extensionwizard.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/webserver.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="cameras.html">Cameras</a></li>
+<li class="toctree-l3"><a class="reference internal" href="eventbroker.html">Event Broker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="executionmodeltour.html">Execution Model Tour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extensionwizard.html">Extension Wizard</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">WebServer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#static-endpoints">Static endpoints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dicomweb-endpoints">DICOMweb endpoints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#slicer-endpoints">Slicer endpoints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#slicer-rest-api">Slicer REST API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#future-work">Future work</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#history">History</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">WebServer</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/webserver.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="webserver">
+<h1>WebServer<a class="headerlink" href="#webserver" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Creates a fairly simple but powerful web server that can respond to http(s) requests with data from the current application state or modify the application state.</p>
+<p>This module is meant to be the basis for implementing web applications that use Slicer as a remote render / computation engine or for controlling your Slicer instance for interaction with other system code like shell scripts or other applications.</p>
+<p>There are three types of endpoints:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Path</th>
+<th>Handler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#static-endpoints">Static</a></td>
+<td>Hosts files out of the module's <code>docroot</code> like any standard http server.</td>
+<td><code>/</code></td>
+<td>[StaticPagesRequestHandler][StaticPagesRequestHandler]</td>
+</tr>
+<tr>
+<td><a href="#dicom-endpoints">DICOMweb</a></td>
+<td>Exposes the Slicer dicom database as a DICOMweb services</td>
+<td><code>/dicom</code></td>
+<td>[DICOMRequestHandler][DICOMRequestHandler]</td>
+</tr>
+<tr>
+<td><a href="#slicer-endpoints">Slicer</a></td>
+<td>Give read/write access to features in Slicer's MRML scene and GUI.</br>This interface also exposes the Python interpreter so that arbitrary python code may be executed in the Slicer application.</td>
+<td><code>/slicer</code></td>
+<td>[SlicerRequestHandler][SlicerRequestHandler]</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The web server is integrated with the Qt event loop so it can be used together with the interactive session.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This module should be considered somewhat experimental and a likely security risk. Do not expose web server endpoints on the public internet without careful consideration.</p>
+<p>Because the web server uses standard http, there are many off-the-shelf security options, such as firewalls, ssh-tunneling, and authenticating proxies, that can be used to improve security of installations.</p>
+</div>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Start server: Launches web server listening on port <code class="docutils literal notranslate"><span class="pre">2016</span></code>. If the default port is in use, other ports are checked sequentially until an open port is found, allowing more than one Slicer web server to run concurrently.</p></li>
+<li><p>Stop server: Stop web server.</p></li>
+<li><p>Open static page in external browser: Display <code class="docutils literal notranslate"><span class="pre">docroot</span></code> using default operating system web browser found using <code class="docutils literal notranslate"><span class="pre">qt.QDesktopServices</span></code>.</p></li>
+<li><p>Open static page in internal browser: Display <code class="docutils literal notranslate"><span class="pre">docroot</span></code> using Slicer built-in web browser instantiated using <code class="docutils literal notranslate"><span class="pre">slicer.qSlicerWebWidget()</span></code>.</p></li>
+<li><p>Log output: If <code class="docutils literal notranslate"><span class="pre">Log</span> <span class="pre">to</span> <span class="pre">GUI</span></code> is enabled, access log and execution results are logged. Logs are cleared periodically.</p></li>
+<li><p>Clear Log: Clear log output displayed in the module panel.</p></li>
+<li><p>Advanced:</p>
+<ul>
+<li><p>CORS: Enable/disable <a class="reference external" href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">Cross-Origin Resource Sharing</a>.</p></li>
+<li><p>Slicer API: Enable/disable use of <a class="reference internal" href="#slicer-endpoints">Slicer endpoints</a> associated with the <code class="docutils literal notranslate"><span class="pre">/slicer</span></code> path.</p></li>
+<li><p>Slicer API exec: Enable/disable remote execution of python code through <code class="docutils literal notranslate"><span class="pre">/slicer/exec</span></code> endpoint. See [Remote Control][#remote-control].</p></li>
+<li><p>DICOMweb API: Enable/disable support of <a class="reference internal" href="#dicomweb-endpoints">DICOMWeb endpoints</a> associated with the <code class="docutils literal notranslate"><span class="pre">/dicom</span></code> path.</p></li>
+<li><p>Static pages: Enable/disable serving of static files found in the <code class="docutils literal notranslate"><span class="pre">docroot</span></code>  associated with the <code class="docutils literal notranslate"><span class="pre">/</span></code> path.</p></li>
+<li><p>Log to Console: Enable/disable the logging of messages in the console.</p></li>
+<li><p>Log to GUI: Enable/disable the logging of messages in the module panel.</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Logging to the console and/or the GUI is useful for learning about the software and for debugging, but slows down request handling and should be disabled for routine use.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Slicer</span> <span class="pre">API</span> <span class="pre">exec</span></code> option exposes the full python interface of Slicer running with the same permissions as the Slicer app itself.  This means that users of that API can install arbitrary code on the system and execute it with the user’s rights.  In practice this means that the user of the API can perform actions such as deleting files, sending emails, or installing system software.  Exposing these capabilities is intentional and aligned with the design of the module, but users should be aware that enabling this feature is effectively the same as giving the user of the API the password to whatever account is running Slicer.</p>
+<p>Note also that even with the <code class="docutils literal notranslate"><span class="pre">Slicer</span> <span class="pre">API</span> <span class="pre">exec</span></code> disabled, it is possible that other endpoints expose vulnerabilities such as buffer overruns that could lead to server exploits.  It is suggested that only trusted users be granted access to any of the API endpoints.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Cross-Origin Resource Sharing allows browser-based code
+hosted from any origin to access the Slicer API.  That is,
+any javascript in a site opened in a browser on the machine
+running the server would have access to the API.  While this
+feature is useful for some development or specific scenarios
+it should be used with caution.  Note that CORS is enforced
+by the user’s web browser, so even with CORS turned off it’s possible
+for other software running with access to the port to access
+the API even if CORS is turned off.</p>
+</div>
+</section>
+<section id="static-endpoints">
+<h2>Static endpoints<a class="headerlink" href="#static-endpoints" title="Link to this heading"></a></h2>
+<p>Hosts files out of the module’s <code class="docutils literal notranslate"><span class="pre">docroot</span></code> like any standard http server.</p>
+<p>Currently this is used just for examples, but note that this server can be used to host <a class="reference external" href="https://en.wikipedia.org/wiki/Single-page_application">web applications</a> of significant complexity with the option of interacting with the Slicer API.</p>
+<p>OHIF DICOM viewer is included as an example (available at <a class="reference external" href="http://localhost:2016/browse">http://localhost:2016/browse</a>). If the DICOMweb endpoint is enabled then this viewer can be used to quickly share content of the Slicer DICOM database with other computers on the same network. All users that can access the computer are assumed to be trusted - if the server is accessible to non-trusted people then it is recommended to restrict access by setting up a firewall or proxy server.</p>
+</section>
+<section id="dicomweb-endpoints">
+<h2>DICOMweb endpoints<a class="headerlink" href="#dicomweb-endpoints" title="Link to this heading"></a></h2>
+<p>Exposes the Slicer dicom database as a <a class="reference external" href="https://www.dicomstandard.org/using/dicomweb">DICOMweb endpoint</a>.</p>
+<p>This version implements a subset of the <code class="docutils literal notranslate"><span class="pre">QIDO-RS</span></code> and <code class="docutils literal notranslate"><span class="pre">WADO-RS</span></code> specifications allowing to host a web app such as the <a class="reference external" href="https://ohif.org/">OHIF Viewer</a>.</p>
+<p>Supported QIDO requests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/dicom/studies</span></code>: get list of studies as json, optional query parameters: <code class="docutils literal notranslate"><span class="pre">offset</span></code>, <code class="docutils literal notranslate"><span class="pre">limit</span></code>, <code class="docutils literal notranslate"><span class="pre">PatientID</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/dicom/studies/&lt;studyuid&gt;/metadata</span></code>: get DICOM tags of the specified study as json</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/dicom/studies/&lt;studyuid&gt;/series</span></code>: get list of series for a study as json</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/dicom/studies/&lt;studyuid&gt;/series/&lt;seriesuid&gt;/metadata</span></code>: get DICOM tags of the specified series as json</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/dicom/studies/&lt;studyuid&gt;/series/&lt;seriesuid&gt;/instances</span></code>: get list of instances for a series as json</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/dicom/studies/&lt;studyuid&gt;/series/&lt;seriesuid&gt;/instances/&lt;sopinstanceuid&gt;</span></code>: download the instance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/dicom/studies/&lt;studyuid&gt;/series/&lt;seriesuid&gt;/instances/&lt;sopinstanceuid&gt;/metadata</span></code>: get DICOM tags of the specified instance as json</p></li>
+</ul>
+<p>Supported WADO requests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/dicom?object=&lt;sopinstanceuid&gt;</span></code>: downloads the specified instance</p></li>
+</ul>
+<p>For OHIF version 2, change the <code class="docutils literal notranslate"><span class="pre">platform/viewer/public/config/default.js</span></code>, set the <code class="docutils literal notranslate"><span class="pre">servers</span></code> configuration key as follows.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">servers</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">dicomWeb</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="n">name</span><span class="p">:</span> <span class="s1">&#39;DCM4CHEE&#39;</span><span class="p">,</span>
+        <span class="n">wadoUriRoot</span><span class="p">:</span> <span class="s1">&#39;http://localhost:2016/dicom&#39;</span><span class="p">,</span>
+        <span class="n">qidoRoot</span><span class="p">:</span> <span class="s1">&#39;http://localhost:2016/dicom&#39;</span><span class="p">,</span>
+        <span class="n">wadoRoot</span><span class="p">:</span> <span class="s1">&#39;http://localhost:2016/dicom&#39;</span><span class="p">,</span>
+        <span class="n">qidoSupportsIncludeField</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="n">imageRendering</span><span class="p">:</span> <span class="s1">&#39;wadouri&#39;</span><span class="p">,</span>
+        <span class="n">thumbnailRendering</span><span class="p">:</span> <span class="s1">&#39;wadouri&#39;</span><span class="p">,</span>
+        <span class="n">enableStudyLazyLoad</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+        <span class="n">supportsFuzzyMatching</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="p">},</span>
+    <span class="p">],</span>
+  <span class="p">},</span>
+</pre></div>
+</div>
+</section>
+<section id="slicer-endpoints">
+<h2>Slicer endpoints<a class="headerlink" href="#slicer-endpoints" title="Link to this heading"></a></h2>
+<p>Full specification of the Slicer API is available at the bottom of this page. The API is subject to change.</p>
+<section id="remote-control">
+<h3>Remote Control<a class="headerlink" href="#remote-control" title="Link to this heading"></a></h3>
+<p>The web server can also be accessed via other commands such as <code class="docutils literal notranslate"><span class="pre">curl</span></code>. A <code class="docutils literal notranslate"><span class="pre">dict</span></code> can be returned as a json object by setting it in the <code class="docutils literal notranslate"><span class="pre">__execResult</span></code> variable and enabling the <code class="docutils literal notranslate"><span class="pre">Slicer</span> <span class="pre">API</span> <span class="pre">exec</span></code> feature in the <code class="docutils literal notranslate"><span class="pre">Advanced</span></code> section.</p>
+<p>For example, these commands may be used to download the MRHead sample data, change the screen layout and return a dictionary including the ID of the loaded volume:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">X</span> <span class="n">POST</span> <span class="n">localhost</span><span class="p">:</span><span class="mi">2016</span><span class="o">/</span><span class="n">slicer</span><span class="o">/</span><span class="n">exec</span> <span class="o">--</span><span class="n">data</span> <span class="s2">&quot;import SampleData; volumeNode = SampleData.SampleDataLogic().downloadMRHead(); slicer.app.layoutManager().setLayout(slicer.vtkMRMLLayoutNode.SlicerLayoutOneUpRedSliceView); __execResult = {&#39;volumeNodeID&#39;: volumeNode.GetID()}&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See the <a class="reference internal" href="../../developer_guide/script_repository.html"><span class="std std-doc">Script Repository</span></a> for other examples of python code you could remotely execute.</p>
+</div>
+</section>
+<section id="remote-rendering">
+<h3>Remote Rendering<a class="headerlink" href="#remote-rendering" title="Link to this heading"></a></h3>
+<p>There are several endpoints to get png images from slice views and 3D views. These endpoints allow control of slice offset or 3D camera view (see method doc strings in the source code for options since there is currently no auto-generated api documentation).  These endpoints can be used as the <code class="docutils literal notranslate"><span class="pre">src</span></code> or <code class="docutils literal notranslate"><span class="pre">href</span></code> for html <code class="docutils literal notranslate"><span class="pre">img</span></code> or <code class="docutils literal notranslate"><span class="pre">a</span></code> tags or as WebGL textures as shown in the demo scripts.</p>
+</section>
+<section id="data-access">
+<h3>Data Access<a class="headerlink" href="#data-access" title="Link to this heading"></a></h3>
+<p>Give read/write access to features in Slicer’s MRML scene and GUI.</p>
+<p><code class="docutils literal notranslate"><span class="pre">http</span></code> <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> operations can be used to query, load, save, delete data in the scene.</p>
+<section id="usage-via-slicerio-python-package">
+<h4>Usage via slicerio Python package<a class="headerlink" href="#usage-via-slicerio-python-package" title="Link to this heading"></a></h4>
+<p>The API can be conveniently used via the <a class="reference external" href="https://pypi.org/project/slicerio/">slicerio Python package</a> <strong>in any Python environment</strong>. For example, to open an image file and a segmentation file in a single Slicer instance (without restarting a new instance for each file), run this code snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">slicerio.server</span>
+<span class="n">slicerio</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">file_load</span><span class="p">(</span><span class="s2">&quot;c:/tmp/MRHead.nrrd&quot;</span><span class="p">)</span>
+<span class="n">slicerio</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">file_load</span><span class="p">(</span><span class="s2">&quot;c:/tmp/Segmentation.nrrd&quot;</span><span class="p">,</span> <span class="s2">&quot;SegmentationFile&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>note: If Slicer application is not running (or the server API is disabled) then <code class="docutils literal notranslate"><span class="pre">slicerio.server.file_load</span></code> will start a new Slicer instance by launching the Slicer executable specified either in the <code class="docutils literal notranslate"><span class="pre">slicer_executable</span></code> function argument or in the <code class="docutils literal notranslate"><span class="pre">SLICER_EXECUTABLE</span></code> environment variable.</p>
+<p>Data nodes can be retrieved from Slicer by saving into local file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">slicerio</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">file_save</span><span class="p">(</span><span class="s2">&quot;c:/tmp/MRHeadOutput.nrrd&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MRHead&quot;</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;useCompression&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Properties of nodes can be queried using <code class="docutils literal notranslate"><span class="pre">slicerio.server.node_properties</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">properties</span> <span class="o">=</span> <span class="n">slicerio</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">node_properties</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Segmentation&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">segments</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;Segmentation&quot;</span><span class="p">][</span><span class="s2">&quot;Segments&quot;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">segmentId</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
+    <span class="n">segment</span> <span class="o">=</span> <span class="n">segments</span><span class="p">[</span><span class="n">segmentId</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">segment</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> color: </span><span class="si">{</span><span class="n">segment</span><span class="p">[</span><span class="s1">&#39;Color&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Full specification and more examples are available in the <code class="docutils literal notranslate"><span class="pre">slicerio</span></code> package documentation.</p>
+</section>
+<section id="usage-via-curl">
+<h4>Usage via curl<a class="headerlink" href="#usage-via-curl" title="Link to this heading"></a></h4>
+<p>For example, to save a nrrd version of a volume in Slicer, you can use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">v</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">2016</span><span class="o">/</span><span class="n">slicer</span><span class="o">/</span><span class="n">volume</span>\<span class="o">&amp;</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;MRHead&#39;</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">local</span><span class="o">.</span><span class="n">nrrd</span>
+</pre></div>
+</div>
+<p>Currently only limited forms are supported (scalar volumes and grid transforms).</p>
+<p>Other endpoints allow get/set of transforms and fiducials.</p>
+</section>
+</section>
+</section>
+<section id="slicer-rest-api">
+<h2>Slicer REST API<a class="headerlink" href="#slicer-rest-api" title="Link to this heading"></a></h2>
+<section id="remote-control-exec">
+<h3>Remote control (exec)<a class="headerlink" href="#remote-control-exec" title="Link to this heading"></a></h3>
+<section id="get-exec">
+<h4>GET /exec<a class="headerlink" href="#get-exec" title="Link to this heading"></a></h4>
+<p>Run script in Slicer’s Python interpreter, as if it was run in the application’s Python console.
+It can be used to implement a Read Eval Print Loop (REPL).</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code>: Python code to run</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): Result of code running as json string. The result must be set in a <code class="docutils literal notranslate"><span class="pre">__execResult</span></code> variable (<code class="docutils literal notranslate"><span class="pre">dict</span></code> object)</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>curl -X POST localhost:2016/slicer/exec --data &quot;slicer.app.layoutManager().setLayout(slicer.vtkMRMLLayoutNode.SlicerLayoutOneUpRedSliceView)&quot;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mrml-data-access">
+<h3>MRML data access<a class="headerlink" href="#mrml-data-access" title="Link to this heading"></a></h3>
+<p>Get information on MRML nodes in the scene or load/save nodes.</p>
+<p>Common parameters for data selection for all methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: select node that has this id.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code>: select nodes of this class (select nodes of this class (e.g., vtkMRMLVolumeNode, vtkMRMLSegmentationNode)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: select nodes of this name</p></li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">id</span></code> is specified then <code class="docutils literal notranslate"><span class="pre">class</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code> parameters are ignored.
+If both <code class="docutils literal notranslate"><span class="pre">class</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code> are specified then those nodes will be selected that have fulfill both selection criteria.</p>
+<section id="get-mrml-and-get-mrml-names">
+<h4>GET /mrml and GET /mrml/names<a class="headerlink" href="#get-mrml-and-get-mrml-names" title="Link to this heading"></a></h4>
+<p>Get names of the selected nodes.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: as described above</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): list of node names.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-mrml-ids">
+<h4>GET /mrml/ids<a class="headerlink" href="#get-mrml-ids" title="Link to this heading"></a></h4>
+<p>Get ids of the selected nodes.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: as described above</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): list of node ids.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-mrml-properties">
+<h4>GET /mrml/properties<a class="headerlink" href="#get-mrml-properties" title="Link to this heading"></a></h4>
+<p>Get properties of the selected nodes as a json object.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: as described above</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): dictionary object, key is the node id, value is the node properties object.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-mrml-file">
+<h4>GET /mrml/file<a class="headerlink" href="#get-mrml-file" title="Link to this heading"></a></h4>
+<p>Save node to local file. Query parameters must be specified so that only a single node is selected.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">localfile</span></code>: filename to save the node to</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">useCompression</span></code>: specifies if the file should be saved using compression (<code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>)</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): JSON object, with <code class="docutils literal notranslate"><span class="pre">success</span></code> property set to true.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="post-mrml-file">
+<h4>POST /mrml/file<a class="headerlink" href="#post-mrml-file" title="Link to this heading"></a></h4>
+<p>Load node from URL or local file into a node.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">localfile</span></code>: Local filename to load the node from. If specified then <code class="docutils literal notranslate"><span class="pre">url</span></code> is ignored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">url</span></code>: Local or remote URL to load the file from.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filetype</span></code>: Specifies how to interpret the selected file. For example <code class="docutils literal notranslate"><span class="pre">VolumeFile</span></code>, <code class="docutils literal notranslate"><span class="pre">SegmentationFile</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelFile</span></code>, <code class="docutils literal notranslate"><span class="pre">MarkupsFile</span></code>, <code class="docutils literal notranslate"><span class="pre">TransformFile</span></code>, <code class="docutils literal notranslate"><span class="pre">SceneFile</span></code>.</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): JSON object, “success” property is set true and <code class="docutils literal notranslate"><span class="pre">loadedNodeIDs</span></code> property contains a list of loaded node ids.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="delete-mrml-file">
+<h4>DELETE /mrml/file<a class="headerlink" href="#delete-mrml-file" title="Link to this heading"></a></h4>
+<p>Remove nodes from the scene. If no query parameters are specified then the whole scene is cleared.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">localfile</span></code>: filename to save the node to</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">useCompression</span></code>: specifies if the file should be saved using compression (<code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>)</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): JSON object, with <code class="docutils literal notranslate"><span class="pre">success</span></code> property set to true.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="put-mrml">
+<h4>PUT /mrml<a class="headerlink" href="#put-mrml" title="Link to this heading"></a></h4>
+<p>Reload node that was originally loaded from a file, from the same file.
+This is useful if the input file is changed since it was last loaded into Slicer.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code>: as described above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: as described above</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): JSON object, “success” property is set true and <code class="docutils literal notranslate"><span class="pre">reloadedNodeIDs</span></code> property contains a list of reloaded node ids.
+“success” property is set to false if it was not possible to reload any nodes.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+</section>
+<section id="user-interface">
+<h3>User interface<a class="headerlink" href="#user-interface" title="Link to this heading"></a></h3>
+<section id="put-gui">
+<h4>PUT /gui<a class="headerlink" href="#put-gui" title="Link to this heading"></a></h4>
+<p>Shutdown the application.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">contents</span></code>: show full application GUI (<code class="docutils literal notranslate"><span class="pre">full</span></code>) or viewers only (<code class="docutils literal notranslate"><span class="pre">viewers</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">viewersLayout</span></code>: set view layout, such as <code class="docutils literal notranslate"><span class="pre">fourup</span></code>, <code class="docutils literal notranslate"><span class="pre">oneup3d</span></code> (names derived from slicer.vtkMRMLLayoutNode constants - SlicerLayout…View)</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): JSON object, with <code class="docutils literal notranslate"><span class="pre">success</span></code> property set to true.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-screenshot">
+<h4>GET /screenshot<a class="headerlink" href="#get-screenshot" title="Link to this heading"></a></h4>
+<p>Get screenshot of the application main window.</p>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (image/png): screenshot image</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-slice">
+<h4>GET /slice<a class="headerlink" href="#get-slice" title="Link to this heading"></a></h4>
+<p>Get screenshot of a slice view after applying parameters.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">view</span></code>: <code class="docutils literal notranslate"><span class="pre">red</span></code>, <code class="docutils literal notranslate"><span class="pre">yellow</span></code>, or <code class="docutils literal notranslate"><span class="pre">green</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scrollTo</span></code>: 0 to 1 for slice position within volume</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset</span></code>: mm offset relative to slice origin (position of slice slider)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">size</span></code>: pixel size of output png</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copySliceGeometryFrom</span></code>: view name of other slice to copy from</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">orientation</span></code>: <code class="docutils literal notranslate"><span class="pre">axial</span></code>, <code class="docutils literal notranslate"><span class="pre">sagittal</span></code>, <code class="docutils literal notranslate"><span class="pre">coronal</span></code></p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (image/png): screenshot image</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-threed">
+<h4>GET /threeD<a class="headerlink" href="#get-threed" title="Link to this heading"></a></h4>
+<p>Get screenshot of the first 3D view after applying parameters.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lookFromAxis</span></code>: <code class="docutils literal notranslate"><span class="pre">L</span></code>, <code class="docutils literal notranslate"><span class="pre">R</span></code>, <code class="docutils literal notranslate"><span class="pre">A</span></code>, <code class="docutils literal notranslate"><span class="pre">P</span></code>, <code class="docutils literal notranslate"><span class="pre">I</span></code>, <code class="docutils literal notranslate"><span class="pre">S</span></code></p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (image/png): screenshot image</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-timeimage">
+<h4>GET /timeimage<a class="headerlink" href="#get-timeimage" title="Link to this heading"></a></h4>
+<p>For timing and debugging - return an image with the current time rendered as text down to the hundredth of a second.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">color</span></code>: hex encoded RGB of dashed border (default 333 for dark gray)</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (image/png): rendered image</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+</section>
+<section id="other-functions">
+<h3>Other functions<a class="headerlink" href="#other-functions" title="Link to this heading"></a></h3>
+<section id="get-system-version">
+<h4>GET /system/version<a class="headerlink" href="#get-system-version" title="Link to this heading"></a></h4>
+<p>Get application version information as a json object.</p>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): version information object.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="delete-system">
+<h4>DELETE /system<a class="headerlink" href="#delete-system" title="Link to this heading"></a></h4>
+<p>Shutdown the application.</p>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): JSON object, with <code class="docutils literal notranslate"><span class="pre">success</span></code> property set to true.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-tracking">
+<h4>GET /tracking<a class="headerlink" href="#get-tracking" title="Link to this heading"></a></h4>
+<p>Display/update position of a cursor (position marker cube) in the 3D view.
+This can be used to display position of a tracked object.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">m</span></code>: 4x4 transformation matrix in column major order (position is last row).
+Matrix is overwritten if position or quaternion are provided</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">q</span></code>: quaternion in WXYZ order</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p</span></code>: position (last column of transform)</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (text/plain): plain text message for the user</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-sampledata">
+<h4>GET /sampledata<a class="headerlink" href="#get-sampledata" title="Link to this heading"></a></h4>
+<p>Load a sample data set into the scene.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: name of the sample data set (such as <code class="docutils literal notranslate"><span class="pre">MRHead</span></code>)</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (text/plain): plain text message for the user</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-volumeselection">
+<h4>GET /volumeSelection<a class="headerlink" href="#get-volumeselection" title="Link to this heading"></a></h4>
+<p>Cycles through loaded volumes in the scene.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cmd</span></code>: either <code class="docutils literal notranslate"><span class="pre">next</span></code> or <code class="docutils literal notranslate"><span class="pre">previous</span></code> to indicate direction</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (text/plain): plain text message for the user</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-volumes-get-gridtransforms">
+<h4>GET /volumes, GET /gridtransforms<a class="headerlink" href="#get-volumes-get-gridtransforms" title="Link to this heading"></a></h4>
+<p>Get a list of mrml volume or grid transform node names and ids.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cmd</span></code>: either <code class="docutils literal notranslate"><span class="pre">next</span></code> or <code class="docutils literal notranslate"><span class="pre">previous</span></code> to indicate direction</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): list of json objects, with <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">id</span></code> attributes.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+<p>Example of successful output:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[
+    {&quot;name&quot;: &quot;Volume1&quot;, &quot;id&quot;: &quot;vtkMRMLScalarVolumeNode1&quot;},
+    {&quot;name&quot;: &quot;Volume2&quot;, &quot;id&quot;: &quot;vtkMRMLScalarVolumeNode2&quot;},
+]
+</pre></div>
+</div>
+</section>
+<section id="get-volume-get-griddtransform">
+<h4>GET /volume, GET /griddtransform<a class="headerlink" href="#get-volume-get-griddtransform" title="Link to this heading"></a></h4>
+<p>Retrieve the specified volume or grid transform as a .nrrd file.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: id of the node to get</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/octet-stream): data stream of a nrrd file</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="post-volume">
+<h4>POST /volume<a class="headerlink" href="#post-volume" title="Link to this heading"></a></h4>
+<p>Create or update a volume from a .nrrd file.
+Only uncompressed 3D volumes are accepted, in LPS coordinate system, with little endian short pixel type.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: id of the volume to create or update.</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): data stream of a nrrd file</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="get-fiducials">
+<h4>GET /fiducials<a class="headerlink" href="#get-fiducials" title="Link to this heading"></a></h4>
+<p>Retrieve basic information about all markup point lists (formerly called fiducial lists) in the scene.</p>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): Basic information about all markup point lists.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+<p>Example of successful output:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
+    &quot;vtkMRMLMarkupsFiducialNode1&quot;: {
+        &quot;name&quot;: &quot;F&quot;,
+        &quot;color&quot;: [1.0, 0.5000076295109483, 0.5000076295109483],
+        &quot;scale&quot;: 3.0,
+        &quot;markups&quot;: [
+            {&quot;label&quot;: &quot;F-1&quot;, &quot;position&quot;: [-35.422643698898014, 13.121414583492907, -10.214302062988281]},
+            {&quot;label&quot;: &quot;F-2&quot;, &quot;position&quot;: [43.217879176918984, 41.565859027937364, -10.214302062988281]},
+            {&quot;label&quot;: &quot;F-3&quot;, &quot;position&quot;: [39.8714739481608, -32.05505600474238, -10.214302062988281]}]},
+    &quot;vtkMRMLMarkupsFiducialNode2&quot;: {
+        &quot;name&quot;: &quot;F_1&quot;,
+        &quot;color&quot;: [1.0, 0.5000076295109483, 0.5000076295109483],
+        &quot;scale&quot;: 3.0,
+        &quot;markups&quot;: [
+            {&quot;label&quot;: &quot;F_1-1&quot;, &quot;position&quot;: [82.53814061482748, 13.121414583492907, -23.599922978020956]},
+            {&quot;label&quot;: &quot;F_1-2&quot;, &quot;position&quot;: [-4.468395332884938, 13.121414583492907, 65.07981558407056]}]}
+}
+</pre></div>
+</div>
+</section>
+<section id="put-fiducial">
+<h4>PUT /fiducial<a class="headerlink" href="#put-fiducial" title="Link to this heading"></a></h4>
+<p>Set the location of a control point in a markups point list (formerly called fiducial list).</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code>: id of the node to update.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r</span></code>: Right coordinate</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: Anterior coordinate</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">s</span></code>: Superior coordinate</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): JSON object, with <code class="docutils literal notranslate"><span class="pre">success</span></code> property set to true.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+<section id="post-accessdicomwebstudy">
+<h4>POST /accessDICOMwebStudy<a class="headerlink" href="#post-accessdicomwebstudy" title="Link to this heading"></a></h4>
+<p>Access DICOMweb server to download requested study, add it to Slicer’s dicom database, and load it into the scene.</p>
+<p>Request body: json string with the following properties</p>
+<ul class="simple">
+<li><p>‘dicomWEBPrefix’: is the start of the url</p></li>
+<li><p>‘dicomWEBStore’: is the middle of the url</p></li>
+<li><p>‘studyUID’: is the end of the url</p></li>
+<li><p>‘accessToken’: is the authorization bearer token for the DICOMweb server</p></li>
+</ul>
+<p>Return:</p>
+<ul class="simple">
+<li><p>200 (application/json): JSON object, with <code class="docutils literal notranslate"><span class="pre">success</span></code> property set to true.</p></li>
+<li><p>500 (application/json): In case of unexpected error. <code class="docutils literal notranslate"><span class="pre">message</span></code> attribute contains error message.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="related-modules">
+<h2>Related modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The <a class="reference external" href="https://github.com/openigtlink/SlicerOpenIGTLink">OpenIGTLink</a> Extension has some similar functionality customized for image guided therapy applications. It should be preferred for integration with imaging devices and use in a clinical setting or setting up continuous high-throughput image and transform streams.</p></li>
+</ul>
+</section>
+<section id="future-work">
+<h2>Future work<a class="headerlink" href="#future-work" title="Link to this heading"></a></h2>
+<p>Features have been added to this server based on the needs of demos and proof of concept prototypes.  A more comprehensive mapping of the Slicer API to a web accessible API has not yet been performed.  Similarly, the DICOMweb implementation is bare-bones and has only been implemented to the extent required to support a simple viewer scenario without performance optimizations.  The existing framework could also be improved through the implementation of newer HTTP features and code refactoring.</p>
+</section>
+<section id="history">
+<h2>History<a class="headerlink" href="#history" title="Link to this heading"></a></h2>
+<p>The development of the first implementation was started by Steve Pieper in 2012 and has been developed over the years to include additional experiments. See <a class="reference external" href="https://github.com/pieper/SlicerWeb">https://github.com/pieper/SlicerWeb</a></p>
+<p>Then, in November 2021, a stripped down version of the module addressing the most common expected use cases was proposed in pull request <a class="reference external" href="https://github.com/Slicer/Slicer/pull/5999">#5999</a>.</p>
+<p>In May 2022, the module was integrated into Slicer.</p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Steve Pieper, original author (Isomics)</p></li>
+<li><p>Andras Lasso, refactoring and Slicer integration (Queens)</p></li>
+<li><p>Jean-Christophe Fillion-Robin (Kitware)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work was partially funded by NIH grant 3P41RR013218.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_isomics.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="extensionwizard.html" class="btn btn-neutral float-left" title="Extension Wizard" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="performancetests.html" class="btn btn-neutral float-right" title="Performance Tests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,2999 @@
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An implementation of chunked, compressed, N-dimensional arrays for Python.">
+      
+      
+        <meta name="author" content="Alistair Miles">
+      
+      
+        <link rel="canonical" href="https://zarr.readthedocs.io/en/stable/release-notes/">
+      
+      
+        <link rel="prev" href="../api/zarr/deprecated/creation/">
+      
+      
+        <link rel="next" href="../contributing/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Release notes - zarr-python</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_markdown_exec_pyodide.css">
+    
+      <link rel="stylesheet" href="../assets/_markdown_exec_ansi.css">
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../overrides/stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="zarr" /><meta name="readthedocs-version-slug" content="stable" /><meta name="readthedocs-resolver-filename" content="/release-notes/" /><meta name="readthedocs-http-status" content="200" /></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#release-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="zarr-python" class="md-header__button md-logo" aria-label="zarr-python" data-md-component="logo">
+      
+  <img src="../_static/logo_bw.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            zarr-python
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Release notes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/zarr-developers/zarr-python" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zarr-developers/zarr-python
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="zarr-python" class="md-nav__button md-logo" aria-label="zarr-python" data-md-component="logo">
+      
+  <img src="../_static/logo_bw.png" alt="logo">
+
+    </a>
+    zarr-python
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/zarr-developers/zarr-python" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    zarr-developers/zarr-python
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr-Python
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../user-guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/arrays/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Working with arrays
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/groups/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Working with groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/attributes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Working with attributes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Storage guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-line interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/v3_migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3.0 Migration Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/data_types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array data types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimizing performance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/extending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending Zarr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/gpu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Using GPUs with Zarr
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/consolidated_metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Consolidated metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/experimental/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experimental features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/examples/custom_dtype/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Data Type Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../api/zarr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/array/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/group/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Group
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    create
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/dtype/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    dtype
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/load/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    load
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/open/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    open
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/save/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    save
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/codecs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    codecs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/codecs/numcodecs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    numcodecs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/convenience/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    convenience
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    errors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/registry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../api/zarr/abc/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ABC
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_17" id="__nav_5_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ABC
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/abc/buffer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    buffer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/abc/codec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    codec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/abc/numcodec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    numcodec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/abc/metadata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    metadata
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/abc/store/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    store
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_18" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../api/zarr/api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_18" id="__nav_5_18_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/api/asynchronous/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    asynchronous
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/api/synchronous/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    synchronous
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_19" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../api/zarr/buffer/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Buffer
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_19" id="__nav_5_19_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Buffer
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/buffer/cpu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cpu
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/buffer/gpu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gpu
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_20" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../api/zarr/testing/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_20" id="__nav_5_20_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_20_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_20">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/testing/buffer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Buffer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/testing/conftest/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conftest
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/testing/stateful/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stateful
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/testing/store/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Store
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/testing/strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/testing/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_21" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_21" id="__nav_5_21_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    deprecated
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_21_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_21">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    deprecated
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/deprecated/convenience/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Convenience sub-module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/zarr/deprecated/creation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Creation sub-module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="release-notes">Release notes<a class="headerlink" href="#release-notes" title="Permanent link">&para;</a></h1>
+<!-- towncrier release notes start -->
+
+<h1 id="zarr-315-2025-11-21">zarr 3.1.5 (2025-11-21)<a class="headerlink" href="#zarr-315-2025-11-21" title="Permanent link">&para;</a></h1>
+<h2 id="bugfixes">Bugfixes<a class="headerlink" href="#bugfixes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fix formatting errors in the release notes section of the docs. (<a href="https://github.com/zarr-developers/zarr-python/issues/3594">#3594</a>)</li>
+</ul>
+<h2 id="314-2025-11-20">3.1.4 (2025-11-20)<a class="headerlink" href="#314-2025-11-20" title="Permanent link">&para;</a></h2>
+<h3 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The <code>Array</code> class can now also be parametrized in the same manner as the <code>AsyncArray</code> class, allowing Zarr format v2 and v3 <code>Array</code>s to be distinguished.
+  New types have been added to <code>zarr.types</code> to help with this. (<a href="https://github.com/zarr-developers/zarr-python/issues/3304">#3304</a>)</li>
+<li>Adds <code>zarr.experimental.cache_store.CacheStore</code>, a <code>Store</code> that implements caching by combining two other <code>Store</code> instances. See the <a href="https://zarr.readthedocs.io/en/latest/user-guide/experimental#cachestore">docs page</a> for more information about this feature. (<a href="https://github.com/zarr-developers/zarr-python/issues/3366">#3366</a>)</li>
+<li>Adds a <code>zarr.experimental</code> module for unstable user-facing features. (<a href="https://github.com/zarr-developers/zarr-python/issues/3490">#3490</a>)</li>
+<li>Add a <code>array.target_shard_size_bytes</code> to <a class="autorefs autorefs-internal" title="zarr.config
+
+
+  
+      module-attribute
+  " href="../api/zarr/config/#zarr.config"><code>zarr.config</code></a> to allow users to set a maximum number of bytes per-shard when <code>shards="auto"</code> in, for example, <a class="autorefs autorefs-internal" title="zarr.create_array" href="../api/zarr/create/#zarr.create_array"><code>zarr.create_array</code></a>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3547">#3547</a>)</li>
+<li>Make <code>async_array</code> on the <a class="autorefs autorefs-internal" title="zarr.Array
+
+
+  
+      dataclass
+  " href="../api/zarr/array/#zarr.Array"><code>zarr.Array</code></a> class public (<code>_async_array</code> will remain untouched, but its stability is not guaranteed). (<a href="https://github.com/zarr-developers/zarr-python/issues/3556">#3556</a>)</li>
+</ul>
+<h3 id="bugfixes_1">Bugfixes<a class="headerlink" href="#bugfixes_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix a bug that prevented <code>PCodec</code> from being properly resolved when loading arrays using that compressor. (<a href="https://github.com/zarr-developers/zarr-python/issues/3483">#3483</a>)</li>
+<li>Fixed a bug that prevented Zarr Python from opening Zarr V3 array metadata documents that contained
+   extra keys with permissible values (dicts with a <code>"must_understand"</code> key set to <code>"false"</code>). (<a href="https://github.com/zarr-developers/zarr-python/issues/3530">#3530</a>)</li>
+<li>Fixed a bug where the <code>"consolidated_metadata"</code> key was written to metadata documents even when
+  consolidated metadata was not used, resulting in invalid metadata documents. (<a href="https://github.com/zarr-developers/zarr-python/issues/3535">#3535</a>)</li>
+<li>Improve write performance to large shards by up to 10x. (<a href="https://github.com/zarr-developers/zarr-python/issues/3560">#3560</a>)</li>
+</ul>
+<h3 id="improved-documentation">Improved Documentation<a class="headerlink" href="#improved-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use mkdocs-material for Zarr-Python documentation (<a href="https://github.com/zarr-developers/zarr-python/issues/3118">#3118</a>)</li>
+<li>Document different values of StoreLike with examples in the user guide. (<a href="https://github.com/zarr-developers/zarr-python/issues/3303">#3303</a>)</li>
+<li>Reorganize the top-level <code>examples</code> directory to give each example its own sub-directory. Adds content to the docs for each example. (<a href="https://github.com/zarr-developers/zarr-python/issues/3502">#3502</a>)</li>
+<li>Updated 3.0 Migration Guide to include function signature change to zarr.Array.resize function. (<a href="https://github.com/zarr-developers/zarr-python/issues/3536">#3536</a>)</li>
+</ul>
+<h3 id="misc">Misc<a class="headerlink" href="#misc" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/zarr-developers/zarr-python/issues/3515">#3515</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3532">#3532</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3533">#3533</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3553">#3553</a></li>
+</ul>
+<h2 id="zarr-313-2025-09-18">zarr 3.1.3 (2025-09-18)<a class="headerlink" href="#zarr-313-2025-09-18" title="Permanent link">&para;</a></h2>
+<h3 id="features_1">Features<a class="headerlink" href="#features_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add a command-line interface to migrate v2 Zarr metadata to v3. Corresponding functions are also provided under zarr.metadata. (<a href="https://github.com/zarr-developers/zarr-python/issues/1798">#1798</a>)</li>
+<li>Add obstore implementation of delete_dir. (<a href="https://github.com/zarr-developers/zarr-python/issues/3310">#3310</a>)</li>
+<li>Adds a registry for chunk key encodings for extensibility. This allows users to implement a custom <code>ChunkKeyEncoding</code>, which can be registered via <code>register_chunk_key_encoding</code> or as an entry point under <code>zarr.chunk_key_encoding</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3436">#3436</a>)</li>
+<li>Trying to open a group at a path where an array already exists now raises a helpful error. (<a href="https://github.com/zarr-developers/zarr-python/issues/3444">#3444</a>)</li>
+</ul>
+<h3 id="bugfixes_2">Bugfixes<a class="headerlink" href="#bugfixes_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Prevents creation of groups (.create_group) or arrays (.create_array) as children of an existing array. (<a href="https://github.com/zarr-developers/zarr-python/issues/2582">#2582</a>)</li>
+<li>Fix a bug preventing <code>ones_like</code>, <code>full_like</code>, <code>empty_like</code>, <code>zeros_like</code> and <code>open_like</code> functions from accepting an explicit specification of array attributes like shape, dtype, chunks etc. The functions <code>full_like</code>, <code>empty_like</code>, and <code>open_like</code> now also more consistently infer a <code>fill_value</code> parameter from the provided array. (<a href="https://github.com/zarr-developers/zarr-python/issues/2992">#2992</a>)</li>
+<li>LocalStore now uses atomic writes, which should prevent some cases of corrupted data. (<a href="https://github.com/zarr-developers/zarr-python/issues/3411">#3411</a>)</li>
+<li>Fix a potential race condition when using <code>zarr.create_array</code> with the <code>data</code> parameter set to a NumPy array. Previously Zarr was iterating over the newly created array with a granularity that was too low. Now Zarr chooses a granularity that matches the size of the stored objects for that array. (<a href="https://github.com/zarr-developers/zarr-python/issues/3422">#3422</a>)</li>
+<li>Fix ChunkGrid definition (broken in 3.1.2) (<a href="https://github.com/zarr-developers/zarr-python/issues/3425">#3425</a>)</li>
+<li>Ensure syntax like <code>root['/subgroup']</code> works equivalently to <code>root['subgroup']</code> when using consolidated metadata. (<a href="https://github.com/zarr-developers/zarr-python/issues/3428">#3428</a>)</li>
+<li>Creating a new group with <code>zarr.group</code> no longer errors. This fixes a regression introduced in version 3.1.2. (<a href="https://github.com/zarr-developers/zarr-python/issues/3431">#3431</a>)</li>
+<li>Setting <code>fill_value</code> to a float like <code>0.0</code> when the data type of the array is an integer is a common mistake. This change lets Zarr Python read arrays with this erroneous metadata, although Zarr Python will not create such arrays. (<a href="https://github.com/zarr-developers/zarr-python/issues/3448">#3448</a>)</li>
+</ul>
+<h3 id="deprecations-and-removals">Deprecations and Removals<a class="headerlink" href="#deprecations-and-removals" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The <code>Store.set_partial_writes</code> method, which was not used by Zarr-Python, has been removed. <code>store.supports_partial_writes</code> is now always <code>False</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2859">#2859</a>)</li>
+</ul>
+<h3 id="misc_1">Misc<a class="headerlink" href="#misc_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/zarr-developers/zarr-python/issues/3376">#3376</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3390">#3390</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3403">#3403</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3449">#3449</a></li>
+</ul>
+<h2 id="312-2025-08-25">3.1.2 (2025-08-25)<a class="headerlink" href="#312-2025-08-25" title="Permanent link">&para;</a></h2>
+<h3 id="features_2">Features<a class="headerlink" href="#features_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added support for async vectorized and orthogonal indexing. (<a href="https://github.com/zarr-developers/zarr-python/issues/3083">#3083</a>)</li>
+<li>Make config param optional in init_array (<a href="https://github.com/zarr-developers/zarr-python/issues/3391">#3391</a>)</li>
+</ul>
+<h3 id="bugfixes_3">Bugfixes<a class="headerlink" href="#bugfixes_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Ensure that -0.0 is not considered equal to 0.0 when checking if all the values in a chunk are equal to an array's fill value. (<a href="https://github.com/zarr-developers/zarr-python/issues/3144">#3144</a>)</li>
+<li>Fix a bug in <code>create_array</code> caused by iterating over chunk-aligned regions instead of shard-aligned regions when writing data. Additionally, the behavior of <code>nchunks_initialized</code> has been adjusted. This function consistently reports the number of chunks present in stored objects, even when the array uses the sharding codec. (<a href="https://github.com/zarr-developers/zarr-python/issues/3299">#3299</a>)</li>
+<li>Opening an array or group with <code>mode="r+"</code> will no longer create new arrays or groups. (<a href="https://github.com/zarr-developers/zarr-python/issues/3307">#3307</a>)</li>
+<li>Added <code>zarr.errors.ArrayNotFoundError</code>, which is raised when attempting to open a zarr array that does not exist, and <code>zarr.errors.NodeNotFoundError</code>, which is raised when failing to open an array or a group in a context where either an array or a group was expected. (<a href="https://github.com/zarr-developers/zarr-python/issues/3367">#3367</a>)</li>
+<li>Ensure passing <code>config</code> is handled properly when <code>open</code>ing an existing array. (<a href="https://github.com/zarr-developers/zarr-python/issues/3378">#3378</a>)</li>
+<li>Raise a Zarr-specific error class when a codec can't be found by name when deserializing the given codecs. This avoids hiding this error behind a "not part of a zarr hierarchy" warning. (<a href="https://github.com/zarr-developers/zarr-python/issues/3395">#3395</a>)</li>
+</ul>
+<h3 id="misc_2">Misc<a class="headerlink" href="#misc_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/zarr-developers/zarr-python/issues/3098">#3098</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3288">#3288</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3318">#3318</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3368">#3368</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3371">#3371</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3372">#3372</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3374">#3374</a></li>
+</ul>
+<h2 id="311-2025-07-28">3.1.1 (2025-07-28)<a class="headerlink" href="#311-2025-07-28" title="Permanent link">&para;</a></h2>
+<h3 id="features_3">Features<a class="headerlink" href="#features_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add lightweight implementations of <code>.getsize()</code> and <code>.getsize_prefix()</code> for ObjectStore. (<a href="https://github.com/zarr-developers/zarr-python/issues/3227">#3227</a>)</li>
+</ul>
+<h3 id="bugfixes_4">Bugfixes<a class="headerlink" href="#bugfixes_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Creating a Zarr format 2 array with the <code>order</code> keyword argument no longer raises a warning. (<a href="https://github.com/zarr-developers/zarr-python/issues/3112">#3112</a>)</li>
+<li>Fixed the error message when passing both <code>config</code> and <code>write_empty_chunks</code> arguments to reflect the current behaviour (<code>write_empty_chunks</code> takes precedence). (<a href="https://github.com/zarr-developers/zarr-python/issues/3112">#3112</a>)</li>
+<li>Creating a Zarr format 3 array with the <code>order</code> argument now consistently ignores this argument and raises a warning. (<a href="https://github.com/zarr-developers/zarr-python/issues/3112">#3112</a>)</li>
+<li>When using <a class="autorefs autorefs-internal" title="from_array
+
+
+  
+      async
+  " href="../api/zarr/api/asynchronous/#zarr.api.asynchronous.from_array"><code>from_array</code></a> to copy a Zarr format 2 array to a Zarr format 3 array, if the memory order of the input array is <code>"F"</code> a warning is raised and the order ignored. This is because Zarr format 3 arrays are always stored in "C" order. (<a href="https://github.com/zarr-developers/zarr-python/issues/3112">#3112</a>)</li>
+<li>The <code>config</code> argument to <a class="autorefs autorefs-internal" title="zarr.create" href="../api/zarr/create/#zarr.create"><code>zarr.create</code></a> (and functions that create arrays) is now used - previously it had no effect. (<a href="https://github.com/zarr-developers/zarr-python/issues/3112">#3112</a>)</li>
+<li>Ensure that all abstract methods of <a class="autorefs autorefs-internal" title="ZDType
+
+
+  
+      dataclass
+  " href="../api/zarr/dtype/#zarr.dtype.ZDType"><code>ZDType</code></a> raise a <code>NotImplementedError</code> when invoked. (<a href="https://github.com/zarr-developers/zarr-python/issues/3251">#3251</a>)</li>
+<li>Register 'gpu' marker with pytest for downstream StoreTests. (<a href="https://github.com/zarr-developers/zarr-python/issues/3258">#3258</a>)</li>
+<li>Expand the range of types accepted by <code>parse_data_type</code> to include strings and Sequences.</li>
+<li>Move the functionality of <code>zarr.core.dtype.parse_data_type</code> to a new function called <code>zarr.dtype.parse_dtype</code>. This change ensures that nomenclature is consistent across the codebase. <code>zarr.core.dtype.parse_data_type</code> remains, so this change is not breaking. (<a href="https://github.com/zarr-developers/zarr-python/issues/3264">#3264</a>)</li>
+<li>Fix a regression introduced in 3.1.0 that prevented <code>inf</code>, <code>-inf</code>, and <code>nan</code> values from being stored in <code>attributes</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3280">#3280</a>)</li>
+<li>Fixes <a class="autorefs autorefs-internal" title="nmembers" href="../api/zarr/group/#zarr.Group.nmembers"><code>Group.nmembers()</code></a> ignoring depth when using consolidated metadata. (<a href="https://github.com/zarr-developers/zarr-python/issues/3287">#3287</a>)</li>
+</ul>
+<h3 id="improved-documentation_1">Improved Documentation<a class="headerlink" href="#improved-documentation_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Expand the data type docs to include a demonstration of the <code>parse_data_type</code> function. Expand the docstring for the <code>parse_data_type</code> function. (<a href="https://github.com/zarr-developers/zarr-python/issues/3249">#3249</a>)</li>
+<li>Add a section on codecs to the migration guide. (<a href="https://github.com/zarr-developers/zarr-python/issues/3273">#3273</a>)</li>
+</ul>
+<h3 id="misc_3">Misc<a class="headerlink" href="#misc_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Remove warnings about vlen-utf8 and vlen-bytes codecs (<a href="https://github.com/zarr-developers/zarr-python/issues/3268">#3268</a>)</li>
+</ul>
+<h2 id="310-2025-07-14">3.1.0 (2025-07-14)<a class="headerlink" href="#310-2025-07-14" title="Permanent link">&para;</a></h2>
+<h3 id="features_4">Features<a class="headerlink" href="#features_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Ensure that invocations of <code>create_array</code> use consistent keyword arguments, with consistent defaults.</li>
+</ul>
+<p><a class="autorefs autorefs-internal" title="create_array" href="../api/zarr/api/synchronous/#zarr.api.synchronous.create_array"><code>zarr.api.synchronous.create_array</code></a> now takes a <code>write_data</code> keyword argument
+  The <code>Group.create_array</code> method takes <code>data</code> and <code>write_data</code> keyword arguments.
+  The functions <a class="autorefs autorefs-internal" title="create
+
+
+  
+      async
+  " href="../api/zarr/api/asynchronous/#zarr.api.asynchronous.create"><code>zarr.api.asynchronous.create</code></a>, [<code>zarr.api.asynchronous.create_array</code>]
+  and the methods <code>Group.create_array</code>, <code>Group.array</code>, had the default
+  <code>fill_value</code> changed from <code>0</code> to the <code>DEFAULT_FILL_VALUE</code> value, which instructs Zarr to
+  use the default scalar value associated with the array's data type as the fill value. These are
+  all functions or methods for array creation that mirror, wrap or are wrapped by, another function
+  that already has a default <code>fill_value</code> set to <code>DEFAULT_FILL_VALUE</code>. This change is necessary
+  to make these functions consistent across the entire codebase, but as this changes default values,
+  new data might have a different fill value than expected after this change.</p>
+<p>For data types where 0 is meaningful, like integers or floats, the default scalar is 0, so this
+  change should not be noticeable. For data types where 0 is ambiguous, like fixed-length unicode
+  strings, the default fill value might be different after this change. Users who were relying on how
+  Zarr interpreted <code>0</code> as a non-numeric scalar value should set their desired fill value explicitly
+  after this change.</p>
+<ul>
+<li>Added public API for Buffer ABCs and implementations.</li>
+</ul>
+<p>Use <code>zarr.buffer</code> to access buffer implementations, and
+  <code>zarr.abc.buffer</code> for the interface to implement new buffer types.</p>
+<p>Users previously importing buffer from <code>zarr.core.buffer</code> should update their
+  imports to use <code>zarr.buffer</code>. As a reminder, all of <code>zarr.core</code> is
+  considered a private API that's not covered by zarr-python's versioning policy. (<a href="https://github.com/zarr-developers/zarr-python/issues/2871">#2871</a>)</p>
+<ul>
+<li>Adds zarr-specific data type classes.</li>
+</ul>
+<p>This change adds a <code>ZDType</code> base class for Zarr V2 and Zarr V3 data types. Child classes are
+  defined for each NumPy data type. Each child class defines routines for <code>JSON</code> serialization.
+  New data types can be created and registered dynamically.</p>
+<p>Prior to this change, Zarr Python had two streams for handling data types. For Zarr V2 arrays,
+  we used NumPy data type identifiers. For Zarr V3 arrays, we used a fixed set of string enums. Both
+  of these systems proved hard to extend.</p>
+<p>This change is largely internal, but it does change the type of the <code>dtype</code> and <code>data_type</code>
+  fields on the <code>ArrayV2Metadata</code> and <code>ArrayV3Metadata</code> classes. Previously, <code>ArrayV2Metadata.dtype</code>
+  was a NumPy <code>dtype</code> object, and <code>ArrayV3Metadata.data_type</code> was an internally-defined <code>enum</code>.
+  After this change, both <code>ArrayV2Metadata.dtype</code> and <code>ArrayV3Metadata.data_type</code> are instances of
+  <code>ZDType</code>. A NumPy data type can be generated from a <code>ZDType</code> via the <code>ZDType.to_native_dtype()</code>
+  method. The internally-defined Zarr V3 <code>enum</code> class is gone entirely, but the <code>ZDType.to_json(zarr_format=3)</code>
+  method can be used to generate either a string, or dictionary that has a string <code>name</code> field, that
+  represents the string value previously associated with that <code>enum</code>.</p>
+<p>For more on this new feature, see the <a href="../user-guide/data_types/">documentation</a> (<a href="https://github.com/zarr-developers/zarr-python/issues/2874">#2874</a>)</p>
+<ul>
+<li>
+<p>Added <code>NDBuffer.empty</code> method for faster ndbuffer initialization. (<a href="https://github.com/zarr-developers/zarr-python/issues/3191">#3191</a>)</p>
+</li>
+<li>
+<p>The minimum version of NumPy has increased to 1.26. (<a href="https://github.com/zarr-developers/zarr-python/issues/3226">#3226</a>)</p>
+</li>
+<li>
+<p>Add an alternate <code>from_array_metadata_and_store</code> constructor to <code>CodecPipeline</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3233">#3233</a>)</p>
+</li>
+</ul>
+<h3 id="bugfixes_5">Bugfixes<a class="headerlink" href="#bugfixes_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Fixes a variety of issues related to string data types.</p>
+</li>
+<li>
+<p>Brings the <code>VariableLengthUTF8</code> data type Zarr V3 identifier in alignment with Zarr Python 3.0.8</p>
+</li>
+<li>Disallows creation of 0-length fixed-length data types</li>
+<li>Adds a regression test for the <code>VariableLengthUTF8</code> data type that checks against version 3.0.8</li>
+<li>
+<p>Allows users to request the <code>VariableLengthUTF8</code> data type with <code>str</code>, <code>"str"</code>, or <code>"string"</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3170">#3170</a>)</p>
+</li>
+<li>
+<p>Add human readable size for No. bytes stored to <code>info_complete</code> (<a href="https://github.com/zarr-developers/zarr-python/issues/3190">#3190</a>)</p>
+</li>
+<li>
+<p>Restores the ability to create a Zarr V2 array with a <code>null</code> fill value by introducing a new
+  class <code>DefaultFillValue</code>, and setting the default value of the <code>fill_value</code> parameter in array
+  creation routines to an instance of <code>DefaultFillValue</code>. For Zarr V3 arrays, <code>None</code> will act as an
+  alias for a <code>DefaultFillValue</code> instance, thus preserving compatibility with existing code. (<a href="https://github.com/zarr-developers/zarr-python/issues/3198">#3198</a>)</p>
+</li>
+<li>
+<p>Fix the type of <code>ArrayV2Metadata.codec</code> to constrain it to <code>numcodecs.abc.Codec | None</code>.
+  Previously the type was more permissive, allowing objects that can be parsed into Codecs (e.g., the codec name).
+  The constructor of <code>ArrayV2Metadata</code> still allows the permissive input when creating new objects. (<a href="https://github.com/zarr-developers/zarr-python/issues/3232">#3232</a>)</p>
+</li>
+</ul>
+<h3 id="improved-documentation_2">Improved Documentation<a class="headerlink" href="#improved-documentation_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Add a self-contained example of data type extension to the <code>examples</code> directory, and expanded
+  the documentation for data types. (<a href="https://github.com/zarr-developers/zarr-python/issues/3157">#3157</a>)</p>
+</li>
+<li>
+<p>Add a description on how to create a RemoteStore of a specific filesystem to the <code>Remote Store</code> section in <code>docs/user-guide/storage.md</code>.
+  State in the docstring of <code>FsspecStore.from_url</code> that the filesystem type is inferred from the URL scheme.</p>
+</li>
+</ul>
+<p>It should help a user handling the case when the type of FsspecStore doesn't match the URL scheme. (<a href="https://github.com/zarr-developers/zarr-python/issues/3212">#3212</a>)</p>
+<h3 id="deprecations-and-removals_1">Deprecations and Removals<a class="headerlink" href="#deprecations-and-removals_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removes default chunk encoding settings (filters, serializer, compressors) from the global
+  configuration object.</li>
+</ul>
+<p>This removal is justified on the basis that storing chunk encoding settings in the config required
+  a brittle, confusing, and inaccurate categorization of array data types, which was particularly
+  unsuitable after the recent addition of new data types that didn't fit naturally into the
+  pre-existing categories.</p>
+<p>The default chunk encoding is the same (Zstandard compression, and the required object codecs for
+  variable length data types), but the chunk encoding is now generated by functions that cannot be
+  reconfigured at runtime. Users who relied on setting the default chunk encoding via the global configuration object should
+  instead specify the desired chunk encoding explicitly when creating an array.</p>
+<p>This change also adds an extra validation step to the creation of Zarr V2 arrays, which ensures that
+  arrays with a <code>VariableLengthUTF8</code> or <code>VariableLengthBytes</code> data type cannot be created without the
+  correct "object codec". (<a href="https://github.com/zarr-developers/zarr-python/issues/3228">#3228</a>)</p>
+<ul>
+<li>Removes support for passing keyword-only arguments positionally to the following functions and methods:
+  <code>save_array</code>, <code>open</code>, <code>group</code>, <code>open_group</code>, <code>create</code>, <code>get_basic_selection</code>, <code>set_basic_selection</code>,
+  <code>get_orthogonal_selection</code>,  <code>set_orthogonal_selection</code>, <code>get_mask_selection</code>, <code>set_mask_selection</code>,
+  <code>get_coordinate_selection</code>, <code>set_coordinate_selection</code>, <code>get_block_selection</code>, <code>set_block_selection</code>,
+  <code>Group.create_array</code>, <code>Group.empty</code>, <code>Group.zeroes</code>, <code>Group.ones</code>, <code>Group.empty_like</code>, <code>Group.full</code>,
+  <code>Group.zeros_like</code>, <code>Group.ones_like</code>, <code>Group.full_like</code>, <code>Group.array</code>. Prior to this change,
+  passing a keyword-only argument positionally to one of these functions or methods would raise a
+  deprecation warning. That warning is now gone. Passing keyword-only arguments to these functions
+  and methods positionally is now an error.</li>
+</ul>
+<h2 id="3010-2025-07-03">3.0.10 (2025-07-03)<a class="headerlink" href="#3010-2025-07-03" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_6">Bugfixes<a class="headerlink" href="#bugfixes_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Removed an unnecessary check from <code>_fsspec._make_async</code> that would raise an exception when
+  creating a read-only store backed by a local file system with <code>auto_mkdir</code> set  to <code>False</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3193">#3193</a>)</p>
+</li>
+<li>
+<p>Add missing import for AsyncFileSystemWrapper for _make_async in _fsspec.py (<a href="https://github.com/zarr-developers/zarr-python/issues/3195">#3195</a>)</p>
+</li>
+</ul>
+<h2 id="309-2025-06-30">3.0.9 (2025-06-30)<a class="headerlink" href="#309-2025-06-30" title="Permanent link">&para;</a></h2>
+<h3 id="features_5">Features<a class="headerlink" href="#features_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Add <code>zarr.storage.FsspecStore.from_mapper()</code> so that <code>zarr.open()</code> supports stores of type <code>fsspec.mapping.FSMap</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2774">#2774</a>)</p>
+</li>
+<li>
+<p>Implemented <code>move</code> for <code>LocalStore</code> and <code>ZipStore</code>. This allows users to move the store to a different root path. (<a href="https://github.com/zarr-developers/zarr-python/issues/3021">#3021</a>)</p>
+</li>
+<li>
+<p>Added <code>zarr.errors.GroupNotFoundError</code>, which is raised when attempting to open a group that does not exist. (<a href="https://github.com/zarr-developers/zarr-python/issues/3066">#3066</a>)</p>
+</li>
+<li>
+<p>Adds <code>fill_value</code> to the list of attributes displayed in the output of the <code>AsyncArray.info()</code> method. (<a href="https://github.com/zarr-developers/zarr-python/issues/3081">#3081</a>)</p>
+</li>
+<li>
+<p>Use <code>numpy.zeros</code> instead of <code>np.full</code> for a performance speedup when creating a <code>zarr.core.buffer.NDBuffer</code> with <code>fill_value=0</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3082">#3082</a>)</p>
+</li>
+<li>
+<p>Port more stateful testing actions from <a href="https://icechunk.io">Icechunk</a>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3130">#3130</a>)</p>
+</li>
+<li>
+<p>Adds a <code>with_read_only</code> convenience method to the <code>Store</code> abstract base class (raises <code>NotImplementedError</code>) and implementations to the <code>MemoryStore</code>, <code>ObjectStore</code>, <code>LocalStore</code>, and <code>FsspecStore</code> classes. (<a href="https://github.com/zarr-developers/zarr-python/issues/3138">#3138</a>)</p>
+</li>
+</ul>
+<h3 id="bugfixes_7">Bugfixes<a class="headerlink" href="#bugfixes_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>Ignore stale child metadata when reconsolidating metadata. (<a href="https://github.com/zarr-developers/zarr-python/issues/2921">#2921</a>)</p>
+</li>
+<li>
+<p>For Zarr format 2, allow fixed-length string arrays to be created without automatically inserting a
+  <code>Vlen-UT8</code> codec in the array of filters. Fixed-length string arrays do not need this codec. This
+  change fixes a regression where fixed-length string arrays created with Zarr Python 3 could not be read with Zarr Python 2.18. (<a href="https://github.com/zarr-developers/zarr-python/issues/3100">#3100</a>)</p>
+</li>
+<li>
+<p>When creating arrays without explicitly specifying a chunk size using <code>zarr.create</code> and other
+  array creation routines, the chunk size will now set automatically instead of defaulting to the data shape.
+  For large arrays this will result in smaller default chunk sizes.
+  To retain previous behaviour, explicitly set the chunk shape to the data shape.</p>
+</li>
+</ul>
+<p>This fix matches the existing chunking behaviour of
+  <code>zarr.save_array</code> and <code>zarr.api.asynchronous.AsyncArray.create</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3103">#3103</a>)</p>
+<ul>
+<li>
+<p>When <code>zarr.save</code> has an argument <code>path=some/path/</code> and multiple arrays in <code>args</code>, the path resulted in <code>some/path/some/path</code> due to using the <code>path</code>
+  argument twice while building the array path. This is now fixed. (<a href="https://github.com/zarr-developers/zarr-python/issues/3127">#3127</a>)</p>
+</li>
+<li>
+<p>Fix <code>zarr.open</code> default for argument <code>mode</code> when <code>store</code> is <code>read_only</code> (<a href="https://github.com/zarr-developers/zarr-python/issues/3128">#3128</a>)</p>
+</li>
+<li>
+<p>Suppress <code>FileNotFoundError</code> when deleting non-existent keys in the <code>obstore</code> adapter.</p>
+</li>
+</ul>
+<p>When writing empty chunks (i.e. chunks where all values are equal to the array's fill value) to a zarr array, zarr
+  will delete those chunks from the underlying store. For zarr arrays backed by the <code>obstore</code> adapter, this will potentially
+  raise a <code>FileNotFoundError</code> if the chunk doesn't already exist.
+  Since whether or not a delete of a non-existing object raises an error depends on the behavior of the underlying store,
+  suppressing the error in all cases results in consistent behavior across stores, and is also what <code>zarr</code> seems to expect
+  from the store. (<a href="https://github.com/zarr-developers/zarr-python/issues/3140">#3140</a>)</p>
+<ul>
+<li>Trying to open a StorePath/Array with <code>mode='r'</code> when the store is not read-only creates a read-only copy of the store. (<a href="https://github.com/zarr-developers/zarr-python/issues/3156">#3156</a>)</li>
+</ul>
+<h2 id="308-2025-05-19">3.0.8 (2025-05-19)<a class="headerlink" href="#308-2025-05-19" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In versions 3.0.0 to 3.0.7 opening arrays or groups with <code>mode='a'</code> (the default for many builtin functions) would cause any existing paths in the store to be deleted. This is fixed in 3.0.8, and we recommend all users upgrade to avoid this bug that could cause unintentional data loss.</p>
+</div>
+<h3 id="features_6">Features<a class="headerlink" href="#features_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added a <code>print_debug_info</code> function for bug reports. (<a href="https://github.com/zarr-developers/zarr-python/issues/2913">#2913</a>)</li>
+</ul>
+<h3 id="bugfixes_8">Bugfixes<a class="headerlink" href="#bugfixes_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fix a bug that prevented the number of initialized chunks being counted properly. (<a href="https://github.com/zarr-developers/zarr-python/issues/2862">#2862</a>)</li>
+<li>Fixed sharding with GPU buffers. (<a href="https://github.com/zarr-developers/zarr-python/issues/2978">#2978</a>)</li>
+<li>Fix structured <code>dtype</code> fill value serialization for consolidated metadata (<a href="https://github.com/zarr-developers/zarr-python/issues/2998">#2998</a>)</li>
+<li>It is now possible to specify no compressor when creating a zarr format 2 array.
+  This can be done by passing <code>compressor=None</code> to the various array creation routines.</li>
+</ul>
+<p>The default behaviour of automatically choosing a suitable default compressor remains if the compressor argument is not given.
+  To reproduce the behaviour in previous zarr-python versions when <code>compressor=None</code> was passed, pass <code>compressor='auto'</code> instead. (<a href="https://github.com/zarr-developers/zarr-python/issues/3039">#3039</a>)
+- Fixed the typing of <code>dimension_names</code> arguments throughout so that it now accepts iterables that contain <code>None</code> alongside <code>str</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/3045">#3045</a>)
+- Using various functions to open data with <code>mode='a'</code> no longer deletes existing data in the store. (<a href="https://github.com/zarr-developers/zarr-python/issues/3062">#3062</a>)
+- Internally use <code>typesize</code> constructor parameter for <code>numcodecs.blosc.Blosc</code> to improve compression ratios back to the v2-package levels. (<a href="https://github.com/zarr-developers/zarr-python/issues/2962">#2962</a>)
+- Specifying the memory order of Zarr format 2 arrays using the <code>order</code> keyword argument has been fixed. (<a href="https://github.com/zarr-developers/zarr-python/issues/2950">#2950</a>)</p>
+<h3 id="misc_4">Misc<a class="headerlink" href="#misc_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/zarr-developers/zarr-python/issues/2972">#2972</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3027">#3027</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/3049">#3049</a></li>
+</ul>
+<h2 id="307-2025-04-22">3.0.7 (2025-04-22)<a class="headerlink" href="#307-2025-04-22" title="Permanent link">&para;</a></h2>
+<h3 id="features_7">Features<a class="headerlink" href="#features_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add experimental ObjectStore storage class based on obstore. (<a href="https://github.com/zarr-developers/zarr-python/issues/1661">#1661</a>)</li>
+<li>Add <code>zarr.from_array</code> using concurrent streaming of source data (<a href="https://github.com/zarr-developers/zarr-python/issues/2622">#2622</a>)</li>
+</ul>
+<h3 id="bugfixes_9">Bugfixes<a class="headerlink" href="#bugfixes_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>0-dimensional arrays are now returning a scalar. Therefore, the return type of <code>__getitem__</code> changed
+  to NDArrayLikeOrScalar. This change is to make the behavior of 0-dimensional arrays consistent with
+  <code>numpy</code> scalars. (<a href="https://github.com/zarr-developers/zarr-python/issues/2718">#2718</a>)</li>
+<li>Fix <code>fill_value</code> serialization for <code>NaN</code> in <code>ArrayV2Metadata</code> and add property-based testing of round-trip serialization (<a href="https://github.com/zarr-developers/zarr-python/issues/2802">#2802</a>)</li>
+<li>Fixes <code>ConsolidatedMetadata</code> serialization of <code>nan</code>, <code>inf</code>, and <code>-inf</code> to be
+  consistent with the behavior of <code>ArrayMetadata</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2996">#2996</a>)</li>
+</ul>
+<h3 id="improved-documentation_3">Improved Documentation<a class="headerlink" href="#improved-documentation_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Updated the 3.0 migration guide to include the removal of "." syntax for getting group members. (<a href="https://github.com/zarr-developers/zarr-python/issues/2991">#2991</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/2997">#2997</a>)</li>
+</ul>
+<h3 id="misc_5">Misc<a class="headerlink" href="#misc_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Define a new versioning policy based on Effective Effort Versioning. This replaces the old Semantic
+  Versioning-based policy. (<a href="https://github.com/zarr-developers/zarr-python/issues/2924">#2924</a>, <a href="https://github.com/zarr-developers/zarr-python/issues/2910">#2910</a>)</li>
+<li>Make warning filters in the tests more specific, so warnings emitted by tests added in the future
+  are more likely to be caught instead of ignored. (<a href="https://github.com/zarr-developers/zarr-python/issues/2714">#2714</a>)</li>
+<li>Avoid an unnecessary memory copy when writing Zarr to a local file (<a href="https://github.com/zarr-developers/zarr-python/issues/2944">#2944</a>)</li>
+</ul>
+<h2 id="306-2025-03-20">3.0.6 (2025-03-20)<a class="headerlink" href="#306-2025-03-20" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_10">Bugfixes<a class="headerlink" href="#bugfixes_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Restore functionality of <code>del z.attrs['key']</code> to actually delete the key. (<a href="https://github.com/zarr-developers/zarr-python/issues/2908">#2908</a>)</li>
+</ul>
+<h2 id="305-2025-03-07">3.0.5 (2025-03-07)<a class="headerlink" href="#305-2025-03-07" title="Permanent link">&para;</a></h2>
+<h3 id="bugfixes_11">Bugfixes<a class="headerlink" href="#bugfixes_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed a bug where <code>StorePath</code> creation would not apply standard path normalization to the <code>path</code> parameter,
+  which led to the creation of arrays and groups with invalid keys. (<a href="https://github.com/zarr-developers/zarr-python/issues/2850">#2850</a>)</li>
+<li>Prevent update_attributes calls from deleting old attributes (<a href="https://github.com/zarr-developers/zarr-python/issues/2870">#2870</a>)</li>
+</ul>
+<h3 id="misc_6">Misc<a class="headerlink" href="#misc_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/zarr-developers/zarr-python/issues/2796">#2796</a></li>
+</ul>
+<h2 id="304-2025-02-23">3.0.4 (2025-02-23)<a class="headerlink" href="#304-2025-02-23" title="Permanent link">&para;</a></h2>
+<h3 id="features_8">Features<a class="headerlink" href="#features_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Adds functions for concurrently creating multiple arrays and groups. (<a href="https://github.com/zarr-developers/zarr-python/issues/2665">#2665</a>)</li>
+</ul>
+<h3 id="bugfixes_12">Bugfixes<a class="headerlink" href="#bugfixes_12" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed a bug where <code>ArrayV2Metadata</code> could save <code>filters</code> as an empty array. (<a href="https://github.com/zarr-developers/zarr-python/issues/2847">#2847</a>)</li>
+<li>Fix a bug when setting values of a smaller last chunk. (<a href="https://github.com/zarr-developers/zarr-python/issues/2851">#2851</a>)</li>
+</ul>
+<h3 id="misc_7">Misc<a class="headerlink" href="#misc_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://github.com/zarr-developers/zarr-python/issues/2828">#2828</a></li>
+</ul>
+<h2 id="303-2025-02-14">3.0.3 (2025-02-14)<a class="headerlink" href="#303-2025-02-14" title="Permanent link">&para;</a></h2>
+<h3 id="features_9">Features<a class="headerlink" href="#features_9" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Improves performance of FsspecStore.delete_dir for remote filesystems supporting concurrent/batched deletes, e.g., s3fs. (<a href="https://github.com/zarr-developers/zarr-python/issues/2661">#2661</a>)</li>
+<li>Added <code>zarr.config.enable_gpu</code> to update Zarr's configuration to use GPUs. (<a href="https://github.com/zarr-developers/zarr-python/issues/2751">#2751</a>)</li>
+<li>Avoid reading chunks during writes where possible. <a href="https://github.com/zarr-developers/zarr-python/issues/757">#757</a> (<a href="https://github.com/zarr-developers/zarr-python/issues/2784">#2784</a>)</li>
+<li><code>LocalStore</code> learned to <code>delete_dir</code>. This makes array and group deletes more efficient. (<a href="https://github.com/zarr-developers/zarr-python/issues/2804">#2804</a>)</li>
+<li>Add <code>zarr.testing.strategies.array_metadata</code> to generate ArrayV2Metadata and ArrayV3Metadata instances. (<a href="https://github.com/zarr-developers/zarr-python/issues/2813">#2813</a>)</li>
+<li>Add arbitrary <code>shards</code> to Hypothesis strategy for generating arrays. (<a href="https://github.com/zarr-developers/zarr-python/issues/2822">#2822</a>)</li>
+</ul>
+<h3 id="bugfixes_13">Bugfixes<a class="headerlink" href="#bugfixes_13" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed bug with Zarr using device memory, instead of host memory, for storing metadata when using GPUs. (<a href="https://github.com/zarr-developers/zarr-python/issues/2751">#2751</a>)</li>
+<li>The array returned by <code>zarr.empty</code> and an empty <code>zarr.core.buffer.cpu.NDBuffer</code> will now be filled with the
+  specified fill value, or with zeros if no fill value is provided.
+  This fixes a bug where Zarr format 2 data with no fill value was written with un-predictable chunk sizes. (<a href="https://github.com/zarr-developers/zarr-python/issues/2755">#2755</a>)</li>
+<li>Fix zip-store path checking for stores with directories listed as files. (<a href="https://github.com/zarr-developers/zarr-python/issues/2758">#2758</a>)</li>
+<li>Use removeprefix rather than replace when removing filename prefixes in <code>FsspecStore.list</code> (<a href="https://github.com/zarr-developers/zarr-python/issues/2778">#2778</a>)</li>
+<li>Enable automatic removal of <code>needs release notes</code> with labeler action (<a href="https://github.com/zarr-developers/zarr-python/issues/2781">#2781</a>)</li>
+<li>Use the proper label config (<a href="https://github.com/zarr-developers/zarr-python/issues/2785">#2785</a>)</li>
+<li>Alters the behavior of <code>create_array</code> to ensure that any groups implied by the array's name are created if they do not already exist. Also simplifies the type signature for any function that takes an ArrayConfig-like object. (<a href="https://github.com/zarr-developers/zarr-python/issues/2795">#2795</a>)</li>
+<li>Enitialise empty chunks to the default fill value during writing and add default fill values for datetime, timedelta, structured, and other (void* fixed size) data types (<a href="https://github.com/zarr-developers/zarr-python/issues/2799">#2799</a>)</li>
+<li>Ensure utf8 compliant strings are used to construct numpy arrays in property-based tests (<a href="https://github.com/zarr-developers/zarr-python/issues/2801">#2801</a>)</li>
+<li>Fix pickling for ZipStore (<a href="https://github.com/zarr-developers/zarr-python/issues/2807">#2807</a>)</li>
+<li>Update numcodecs to not overwrite codec configuration ever. Closes <a href="https://github.com/zarr-developers/zarr-python/issues/2800">#2800</a>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2811">#2811</a>)</li>
+<li>Fix fancy indexing (e.g. arr[5, [0, 1]]) with the sharding codec (<a href="https://github.com/zarr-developers/zarr-python/issues/2817">#2817</a>)</li>
+</ul>
+<h3 id="improved-documentation_4">Improved Documentation<a class="headerlink" href="#improved-documentation_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added new user guide on GPU. (<a href="https://github.com/zarr-developers/zarr-python/issues/2751">#2751</a>)</li>
+</ul>
+<h2 id="302-2025-01-31">3.0.2 (2025-01-31)<a class="headerlink" href="#302-2025-01-31" title="Permanent link">&para;</a></h2>
+<h3 id="features_10">Features<a class="headerlink" href="#features_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Test <code>getsize()</code> and <code>getsize_prefix()</code> in <code>StoreTests</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Test that a <code>ValueError</code> is raised for invalid byte range syntax in <code>StoreTests</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Separate instantiating and opening a store in <code>StoreTests</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Add a test for using Stores as a context managers in <code>StoreTests</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Implemented <code>LogingStore.open()</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li><code>LoggingStore</code> is now a generic class. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Change StoreTest's <code>test_store_repr</code>, <code>test_store_supports_writes</code>,
+  <code>test_store_supports_partial_writes</code>, and <code>test_store_supports_listing</code>
+  to to be implemented using <code>@abstractmethod</code>, rather raising <code>NotImplementedError</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Test the error raised for invalid buffer arguments in <code>StoreTests</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Test that data can be written to a store that's not yet open using the store.set method in <code>StoreTests</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Adds a new function <code>init_array</code> for initializing an array in storage, and refactors <code>create_array</code>
+  to use <code>init_array</code>. <code>create_array</code> takes two new parameters: <code>data</code>, an optional array-like object, and <code>write_data</code>, a bool which defaults to <code>True</code>.
+  If <code>data</code> is given to <code>create_array</code>, then the <code>dtype</code> and <code>shape</code> attributes of <code>data</code> are used to define the
+  corresponding attributes of the resulting Zarr array. Additionally, if <code>data</code> given and <code>write_data</code> is <code>True</code>,
+  then the values in <code>data</code> will be written to the newly created array. (<a href="https://github.com/zarr-developers/zarr-python/issues/2761">#2761</a>)</li>
+</ul>
+<h3 id="bugfixes_14">Bugfixes<a class="headerlink" href="#bugfixes_14" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Wrap sync fsspec filesystems with <code>AsyncFileSystemWrapper</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2533">#2533</a>)</li>
+<li>Added backwards compatibility for Zarr format 2 structured arrays. (<a href="https://github.com/zarr-developers/zarr-python/issues/2681">#2681</a>)</li>
+<li>Update equality for <code>LoggingStore</code> and <code>WrapperStore</code> such that 'other' must also be a <code>LoggingStore</code> or <code>WrapperStore</code> respectively, rather than only checking the types of the stores they wrap. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Ensure that <code>ZipStore</code> is open before getting or setting any values. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Use stdout rather than stderr as the default stream for <code>LoggingStore</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Match the errors raised by read only stores in <code>StoreTests</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2693">#2693</a>)</li>
+<li>Fixed <code>ZipStore</code> to make sure the correct attributes are saved when instances are pickled.
+  This fixes a previous bug that prevent using <code>ZipStore</code> with a <code>ProcessPoolExecutor</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2762">#2762</a>)</li>
+<li>Updated the optional test dependencies to include <code>botocore</code> and <code>fsspec</code>. (<a href="https://github.com/zarr-developers/zarr-python/issues/2768">#2768</a>)</li>
+<li>Fixed the fsspec tests to skip if <code>botocore</code> is not installed.
+  Previously they would have failed with an import error. (<a href="https://github.com/zarr-developers/zarr-python/issues/2768">#2768</a>)</li>
+<li>Optimize full chunk writes. (<a href="https://github.com/zarr-developers/zarr-python/issues/2782">#2782</a>)</li>
+</ul>
+<h3 id="improved-documentation_5">Improved Documentation<a class="headerlink" href="#improved-documentation_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Changed the machinery for creating changelog entries.
+  Now individual entries should be added as files to the <code>changes</code> directory in the <code>zarr-python</code> repository, instead of directly to the changelog file. (<a href="https://github.com/zarr-developers/zarr-python/issues/2736">#2736</a>)</li>
+</ul>
+<h3 id="other">Other<a class="headerlink" href="#other" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Created a type alias <code>ChunkKeyEncodingLike</code> to model the union of <code>ChunkKeyEncoding</code> instances and the dict form of the
+  parameters of those instances. <code>ChunkKeyEncodingLike</code> should be used by high-level functions to provide a convenient
+  way for creating <code>ChunkKeyEncoding</code> objects. (<a href="https://github.com/zarr-developers/zarr-python/issues/2763">#2763</a>)</li>
+</ul>
+<h2 id="301-jan-17-2025">3.0.1 (Jan. 17, 2025)<a class="headerlink" href="#301-jan-17-2025" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Implement <code>zarr.from_array</code> using concurrent streaming (<a href="https://github.com/zarr-developers/zarr-python/issues/2622">#2622</a>).</li>
+</ul>
+<h3 id="bug-fixes">Bug fixes<a class="headerlink" href="#bug-fixes" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixes <code>order</code> argument for Zarr format 2 arrays (<a href="https://github.com/zarr-developers/zarr-python/issues/2679">#2679</a>).</li>
+<li>Fixes a bug that prevented reading Zarr format 2 data with consolidated
+  metadata written using <code>zarr-python</code> version 2 (<a href="https://github.com/zarr-developers/zarr-python/issues/2694">#2694</a>).</li>
+<li>Ensure that compressor=None results in no compression when writing Zarr
+  format 2 data (<a href="https://github.com/zarr-developers/zarr-python/issues/2708">#2708</a>).</li>
+<li>Fix for empty consolidated metadata dataset: backwards compatibility with
+  Zarr-Python 2 (<a href="https://github.com/zarr-developers/zarr-python/issues/2695">#2695</a>).</li>
+</ul>
+<h3 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add v3.0.0 release announcement banner (<a href="https://github.com/zarr-developers/zarr-python/issues/2677">#2677</a>).</li>
+<li>Quickstart guide alignment with V3 API (<a href="https://github.com/zarr-developers/zarr-python/issues/2697">#2697</a>).</li>
+<li>Fix doctest failures related to numcodecs 0.15 (<a href="https://github.com/zarr-developers/zarr-python/issues/2727">#2727</a>).</li>
+</ul>
+<h3 id="other_1">Other<a class="headerlink" href="#other_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed some unnecessary files from the source distribution
+  to reduce its size. (<a href="https://github.com/zarr-developers/zarr-python/issues/2686">#2686</a>).</li>
+<li>Enable codecov in GitHub actions (<a href="https://github.com/zarr-developers/zarr-python/issues/2682">#2682</a>).</li>
+<li>Speed up hypothesis tests (<a href="https://github.com/zarr-developers/zarr-python/issues/2650">#2650</a>).</li>
+<li>Remove multiple imports for an import name (<a href="https://github.com/zarr-developers/zarr-python/issues/2723">#2723</a>).</li>
+</ul>
+<h2 id="300-jan-9-2025">3.0.0 (Jan. 9, 2025)<a class="headerlink" href="#300-jan-9-2025" title="Permanent link">&para;</a></h2>
+<p>3.0.0 is a new major release of Zarr-Python, with many breaking changes.
+See the <a href="../user-guide/v3_migration/">v3 migration guide</a> for a listing of what's changed.</p>
+<p>Normal release note service will resume with further releases in the 3.0.0
+series.</p>
+<p>Release notes for the zarr-python 2.x and 1.x releases can be found here:
+<a href="https://zarr.readthedocs.io/en/support-v2/release.html">zarr.readthedocs.io/en/support-v2/release.html</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://fosstodon.org/@zarr" target="_blank" rel="noopener me" title="fosstodon.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/zarr.dev" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.annotate", "content.code.copy", "navigation.indexes", "navigation.instant", "navigation.tracking", "search.suggest", "search.share"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../assets/_markdown_exec_pyodide.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Models &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Scene Views" href="sceneviews.html" />
+    <link rel="prev" title="Markups" href="markups.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/models.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-cases">Use cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#visualize-hierarchy-of-models">Visualize hierarchy of models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#edit-models">Edit models</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#surface-models">Surface Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dynamicmodeler.html">Dynamic Modeler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grayscalemodelmaker.html">Grayscale Model Maker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labelmapsmoothing.html">Label Map Smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mergemodels.html">Merge Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modelmaker.html">Model Maker</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-cases">Use cases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="modeltolabelmap.html">Model To LabelMap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="probevolumewithmodel.html">Probe Volume With Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="surfacetoolbox.html">Surface Toolbox</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Models</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/models.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This module is used for changing the appearance of and organizing 3d surface models.</p>
+</section>
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<section id="visualize-hierarchy-of-models">
+<h3>Visualize hierarchy of models<a class="headerlink" href="#visualize-hierarchy-of-models" title="Link to this heading"></a></h3>
+<p>Models can be organized into folders and display properties (visibility, color, opacity) can be overridden for an entire branch.</p>
+<p>Folder nodes can be created by right-clicking on a folder and choosing “Create child folder”.</p>
+</section>
+<section id="edit-models">
+<h3>Edit models<a class="headerlink" href="#edit-models" title="Link to this heading"></a></h3>
+<p>Models can be edited using Surface toolbox or Dynamic modeler module, or by converting to segmentation and <a class="reference internal" href="segmentations.html#editing-a-segmentation-imported-from-model-surface-mesh-file"><span class="std std-ref">editing with Segment Editor module</span></a>.</p>
+</section>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Model tree</strong>:</p>
+<ul>
+<li><p><strong>Filter by name…</strong>: Enter a model name to filter the model hierarchy tree to items that have matching name.</p></li>
+<li><p><strong>Hide All Models</strong>: Turn off the visibility flag on all models in the scene. If any hierarchies have the “Force color to children” checkbox selected, the hierarchy node visibility will override model visibility settings.</p></li>
+<li><p><strong>Show All Models</strong>: Turn on the visibility flag on all models in the scene. If any hierarchies have the “Force color to children” checkbox selected, the hierarchy node visibility will override model visibility settings.</p></li>
+<li><p><strong>Scene tree view</strong>: The tree view of all models and model hierarchies in the current MRML scene.</p>
+<ul>
+<li><p>Show/hide models by clicking the eye icon.</p></li>
+<li><p>Change selected display properties by right-clicking on the eye icon.</p></li>
+<li><p>Change color by double-clicking on the color square.</p></li>
+<li><p>Organize models into a hierarchy: Create child folders by right-clicking on a folder item and drag-and-drop models into them. Visibility and opacity specified for a folder is applied to all children. Color specified for a folder is applied to all children if “Apply color to all children” option is enabled (in the right-click menu of the eye icon).</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Information Panel</strong>:</p>
+<ul>
+<li><p><strong>Information</strong>: Information about this surface model</p></li>
+<li><p><strong>Surface Area</strong>: The calculated surface area of the model, in square millimeters</p></li>
+<li><p><strong>Volume</strong>: The volume inside the surface model, in cubic millimeters</p></li>
+<li><p><strong>Number of Points</strong>: Number of vertices in the surface model</p></li>
+<li><p><strong>Number of Cells</strong>: Number of cells in the surface model</p></li>
+<li><p><strong>Number of Point Scalars</strong>: Shows how many arrays of scalars are associated with the points of the surface model.</p></li>
+<li><p><strong>Number of Cell Scalars</strong>: Shows how many arrays of scalars are associated with the cells of the surface model.</p></li>
+<li><p><strong>Filename</strong>: Path to the file from which this surface model was loaded and/or where it will be saved by default.</p></li>
+</ul>
+</li>
+<li><p><strong>Display</strong>: Control the display properties of the currently selected model in the Scene.</p>
+<ul>
+<li><p><strong>Visibility</strong>: Control the visibility of the model.</p>
+<ul>
+<li><p><strong>Visibility</strong>: The model is visible in views if this is checked.</p></li>
+<li><p><strong>Opacity</strong>: Control the opacity of the model. 1.0 is totally opaque and 0.0 is completely transparent. 1.0 by default.</p></li>
+<li><p><strong>View</strong>: Specifies which views this modelis visible in. If none are checked, the model is visible in all 2D and 3D views.</p></li>
+<li><p><strong>Color</strong>: Control the color of the model. Note that the lighting can alter the color. Gray by default.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>3D Display</strong>:</p>
+<ul>
+<li><p><strong>Representation</strong>: Control the surface geometry representation (points, wireframe, surface, or surface with edges).</p></li>
+<li><p><strong>Visible sides</strong>: This option can be used to only show front-facing elements, which may make rendering slightly faster, but the inside of the model will be no longer visible (when the viewpoint is inside the model or when the model is clipped). when it is clipped). Showing of backface elements only allows seeing inside the model.</p></li>
+<li><p><strong>Clipping</strong>: Enable clipped display of the model. Slice planes are used as clipping planes, according to options defined in the “Clipping planes” section at the bottom.</p></li>
+<li><p><strong>Advanced</strong></p>
+<ul>
+<li><p><strong>Point Size</strong>: Set the diameter of the model points (if the model is a point cloud or if the representation is “Points”.) The size is expressed in screen units. 1.0 by default.</p></li>
+<li><p><strong>Line Width</strong>: Set the width of the model lines (if the model is a polyline or representation is “Wireframe”). The width is expressed in screen units. 1.0 by default.</p></li>
+<li><p><strong>Backface Color Offset</strong>: Control the color of the inside of the model (which is visible when the model is open or the viewpoint is inside the model). The values correspond to hue, saturation, and lightness offset compared to the base color.</p></li>
+</ul>
+</li>
+<li><p><strong>Edge Color</strong>: Control the color of the model edges (if Edge Visibility is enabled). Black by default.</p></li>
+<li><p><strong>Lighting</strong>: Control whether the model representation is impacted by the frontfacing light. If enabled, Ambient, Diffuse and Specular parameters are used to compute the lighting effect. Enabled by default.</p></li>
+<li><p><strong>Interpolation</strong>: Control the shading interpolation method (Flat, Gouraud, Phong) for the model. Gouraud by default. Gouraud and Phong shading requires surface normals. If surface normals are missing then the model will be displayed with flat shading (faceted appearance). Surface Toolbox module can compute normals for a model.</p></li>
+<li><p>Material Properties: Material properties of the currently selected model</p>
+<ul>
+<li><p><strong>Ambient</strong>: Control the constant brightness of the model.</p></li>
+<li><p><strong>Diffuse</strong>: Control the amount of light that is scattered back from the model. This is direction-dependent: regions that are orthogonal to the view direction appear brighter.</p></li>
+<li><p><strong>Specular</strong>: Control specular reflection (“shininess”) of the model surface.</p></li>
+<li><p><strong>Power</strong>: The specular power.</p></li>
+<li><p><strong>Preview</strong>: A rendering of a sphere using the current material properties.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Slice Display</strong>:</p>
+<ul>
+<li><p><strong>Visibility</strong>: Control visibility of the model in slice views.</p></li>
+<li><p><strong>Opacity</strong>: Opacity of the model in slice views.</p></li>
+<li><p><strong>Mode</strong>: Intersection shows intersection lines of the model with the slice plane. Projection projects the entire model into the slice plane. Distance encoded projection makes the projected model colored based on the distance from the slice plane.</p></li>
+<li><p><strong>Line width</strong>: Width in pixels of the intersection lines of the model with the slice planes.</p></li>
+<li><p><strong>Color table</strong>: Specifies colors for “Distance encoded projection” mode.</p></li>
+<li><p><strong>Scalars</strong>: Scalar overlay properties</p>
+<ul>
+<li><p><strong>Visible</strong>: Color the model using the active scalar.</p></li>
+<li><p><strong>Active Scalar</strong>: A drop down menu listing the current scalar overlays associated with this model and shows which one is currently active. Most models will have normals, Freesurfer surface models can have multiple scalar overlay files associated with them (e.g., lh.sulc, lh.curv).</p></li>
+<li><p><strong>Color Table</strong>: Select a color look up table used to map the scalar overlay’s values  (usually in the range of 0.0 to 1.0) to colors. There are built in color maps that can be browsed in the Colors module. The most commonly used color map for FreeSurfer scalar overlays is the GreenRed one. Legacy color maps from Slicer2 include Grey, Iron, Rainbow, etc. Those color maps with “labels” in their names are usually discrete and don’t work well for the continuous scalar overlay ranges.</p></li>
+<li><p><strong>Scalar Range Type</strong>: Select which scalar range to use:</p>
+<ul>
+<li><p>Manual: range is set manually</p></li>
+<li><p>Data scalar range: range is set to the value range of the active scalar</p></li>
+<li><p>Color table: use range specified in the color table. Useful for showing several nodes using the same color mapping.</p></li>
+<li><p>Data type: range is set to the possible range of the active scalar’s data type. This is only useful mostly for 8-bit scalars.</p></li>
+<li><p>Direct color mapping: if active scalar has 3 or 4 components then those are interpreted as RGB or RGBA values.</p></li>
+</ul>
+</li>
+<li><p><strong>Displayed Range</strong>: currently used scalar range.</p></li>
+<li><p><strong>Threshold</strong>: if enabled, then regions of the model that are outside the specified range will be hidden.</p></li>
+</ul>
+</li>
+<li><p><strong>Clipping Planes</strong>:</p>
+<ul>
+<li><p><strong>Clip selected model</strong>: enable clipping for the selected model.</p></li>
+<li><p><strong>Clipping Type</strong>: When more than one slice plane is used, this option controls if it’s the union or intersection of the positive and/or negative spaces that is used to clip the model. The parts of the model inside the selected space is kept, parts outside of the selection are clipped away.</p></li>
+<li><p><strong>Red/Yellow/Green Slice Clipping</strong>: Use the positive or negative space defined by the Red/Yellow/Green slice plane to clip the model. Positive side is toward the Superior/Right/Anterior direction. Keeps the part of the model in the selected space, clips away the rest.</p></li>
+</ul>
+</li>
+<li><p><strong>Clip only whole cells when clipping</strong>: choose between straight cut (cuts over cells) or crinkle cut (clips the model along cell boundaries).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Julien Finet (Kitware), Alex Yarmarkovich (Isomics), Nicole Aucoin (SPL, BWH)</p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is part of the National Alliance for Medical Image Computing (NAMIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149. This work is partially supported by the Air Force Research Laboratories (AFRL).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="markups.html" class="btn btn-neutral float-left" title="Markups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sceneviews.html" class="btn btn-neutral float-right" title="Scene Views" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

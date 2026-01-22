@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Loading and Saving &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Image Segmentation" href="image_segmentation.html" />
+    <link rel="prev" title="Coordinate systems" href="coordinate_systems.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/data_loading_and_saving.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Loading and Saving</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dicom-data">DICOM data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#non-dicom-data">Non-DICOM data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#load-data">Load data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#save-data">Save data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#export-data">Export data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#supported-data-formats">Supported Data Formats</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#images">Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#segmentations">Segmentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transforms">Transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#markups">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scenes">Scenes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other">Other</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-if-your-data-is-not-supported">What if your data is not supported?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Data Loading and Saving</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/data_loading_and_saving.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="data-loading-and-saving">
+<h1>Data Loading and Saving<a class="headerlink" href="#data-loading-and-saving" title="Link to this heading"></a></h1>
+<p>There are two major types of data that can be loaded to Slicer: DICOM and non-DICOM.</p>
+<section id="dicom-data">
+<h2>DICOM data<a class="headerlink" href="#dicom-data" title="Link to this heading"></a></h2>
+<p>DICOM is a widely used and sophisticated set of standards for digital radiology.</p>
+<p>Data can be loaded from DICOM files into the scene in two steps:</p>
+<ol class="arabic simple">
+<li><p>Import: add files into the application’s DICOM database, by switching to DICOM module and drag-and-dropping files to the application window</p></li>
+<li><p>Load: get data objects into the scene, by double-clicking on items in the DICOM browser. The DICOM browser is accessible from the toolbar using the DICOM button <img alt="" src="../_images/SlicerLoadDICOM.png" />.</p></li>
+</ol>
+<p>Data in the scene can be saved to DICOM files in two steps:</p>
+<ol class="arabic simple">
+<li><p>Export to database: save data from the scene into the application’s DICOM database</p></li>
+<li><p>Export to file system: copy DICOM files from the database to a chosen folder in the file system</p></li>
+</ol>
+<p>More details are provided in the <a class="reference internal" href="modules/dicom.html"><span class="std std-doc">DICOM module documentation</span></a>.</p>
+</section>
+<section id="non-dicom-data">
+<h2>Non-DICOM data<a class="headerlink" href="#non-dicom-data" title="Link to this heading"></a></h2>
+<p>Non-DICOM data, covering all types of data ranging from images (nrrd, nii.gz, …) and models (stl, ply, obj, …) to tables (csv, txt), point lists (json), etc.</p>
+<section id="load-data">
+<h3>Load data<a class="headerlink" href="#load-data" title="Link to this heading"></a></h3>
+<p>To load data:</p>
+<ul class="simple">
+<li><p>drag&amp;drop file on the application window, or</p></li>
+<li><p>in application menu: <code class="docutils literal notranslate"><span class="pre">File</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Data</span></code> (or <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Data</span></code> toolbar button) <img alt="" src="../_images/SlicerLoadData.png" /></p></li>
+</ul>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/data_loading_and_saving_load_dialog.png" /></p>
+</section>
+<section id="save-data">
+<h3>Save data<a class="headerlink" href="#save-data" title="Link to this heading"></a></h3>
+<p>To save the entire scene (all data, visualization and processing settings, etc.):</p>
+<ul class="simple">
+<li><p>in application menu <code class="docutils literal notranslate"><span class="pre">File</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Data</span></code>, or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Data</span></code> toolbar button <img alt="" src="../_images/SlicerSave.png" /></p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The entire workspace, including all data and settings can be saved into a single, independent, self-contained <code class="docutils literal notranslate"><span class="pre">.mrb</span></code> file by clicking on the small package icon at the top-left corner. A new copy of all files is written and zipped into a single file, therefore saving takes longer time than an incremental saving of only the modified files.</p>
+</div>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/data_loading_and_saving_save_dialog.png" /></p>
+</section>
+<section id="export-data">
+<h3>Export data<a class="headerlink" href="#export-data" title="Link to this heading"></a></h3>
+<p>To export selected data sets - for sharing with others or for loading into other applications: go to <code class="docutils literal notranslate"><span class="pre">Data</span></code> module, right-click on an item, and choose <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">to</span> <span class="pre">file...</span></code>. Settings used for exporting (file format, filename, options) do not modify settings used for saving.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/data_loading_and_saving_export_dialog.png" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Multiple nodes can be exported at once by placing them into a folder and then by exporting the folder. When exporting an entire folder hierarchy the <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">folder</span> <span class="pre">structure</span></code> option can be enabled to have the directory structure in the output directory match the subject hierarchy folder structure.</p>
+</div>
+</section>
+</section>
+<section id="supported-data-formats">
+<h2>Supported Data Formats<a class="headerlink" href="#supported-data-formats" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p class="rubric" id="on-use-of-lps-ras-coordinate-systems">On use of LPS/RAS coordinate systems</p>
+<p>DICOM and medical imaging software use the LPS (Left, Posterior, Superior)
+coordinate system, while Slicer’s internal representation employs RAS
+(Right, Anterior, Superior). For file compatibility, Slicer assumes data in
+files are in LPS coordinates and may flip the first two axes during read or
+write operations.</p>
+<p>To learn more, see the <a class="reference internal" href="coordinate_systems.html"><span class="std std-doc">Coordinate systems</span></a>
+documentation, and the <a class="reference internal" href="coordinate_systems.html#coordinate-system-convention-in-slicer"><span class="std std-ref">Coordinate system convention in Slicer</span></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p class="rubric" id="be-careful-with-uncommon-encoding-options">Be careful with uncommon encoding options</p>
+<p>Research data formats like NRRD and NIfTI, and even widely used clinical formats like DICOM,
+support many encoding options that are technically valid but are so rarely seen that support
+libraries and other code in Slicer may not interpret them correctly.</p>
+<p>If you are performing data interchange between Slicer and other software, prefer widely used
+conventions (such as LPS or RAS for coordinate systems) and double-check data integrity if you
+deviate from them.</p>
+</div>
+<section id="images">
+<h3>Images<a class="headerlink" href="#images" title="Link to this heading"></a></h3>
+<p>Readers may support 2D, 3D, and 4D images of various types, such as scalar, vector, DWI or DTI, containing images, dose maps, displacement fields, etc.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.dicomstandard.org/"><strong>DICOM</strong></a> (.dcm, or any other): Slicer core supports reading and writing of some data types, while extensions add support for additional ones. Coordinate system: LPS (as defined by DICOM standard).</p>
+<ul>
+<li><p>Supported DICOM information objects:</p>
+<ul>
+<li><p>Slicer core: CT, MRI, PET, X-ray, some ultrasound images; secondary capture with Slicer scene (MRB) in private tag</p></li>
+<li><p><a class="reference external" href="https://qiicr.gitbooks.io/quantitativereporting-guide">Quantitative Reporting extension</a>: DICOM Segmentation objects (SEG modality), Parametric Maps, Encapsulated STL (M3D modality), certain flavors of Structured Reports that follow <a class="reference external" href="https://dicom.nema.org/medical/dicom/current/output/chtml/part16/chapter_A.html#sect_TID_1500">TID 1500 Measurement report</a> template</p></li>
+<li><p><a class="reference external" href="https://www.slicerrt.org/">SlicerRT extension</a>: DICOM RT Structure Set, RT Dose, RT Plan, RT Image</p></li>
+<li><p><a class="reference external" href="https://github.com/SlicerHeart/SlicerHeart">SlicerHeart extension</a>: 2D/3D/4D ultrasound (GE, Philips, Eigen Artemis, and other)</p></li>
+<li><p><a class="reference external" href="https://dmri.slicer.org">SlicerDMRI</a> tractography storage</p></li>
+<li><p><a class="reference external" href="https://github.com/SlicerDMRI/SlicerDcm2nii">SlicerDcm2nii</a> diffusion weighted MR</p></li>
+</ul>
+</li>
+<li><p>Notes:</p>
+<ul>
+<li><p>For a number of dMRI formats we recommend use of the <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Modules/DicomToNrrdConverter">DICOM to NRRD converter</a> before loading the data into Slicer.</p></li>
+<li><p>Image volumes, RT structure sets, dose volumes, etc. can be exported using DICOM module’s export feature.</p></li>
+<li><p>Limited support for writing image volumes in DICOM format is provided by the Create DICOM Series module.</p></li>
+<li><p>Support of writing DICOM Segmentation Objects is provided by the Reporting extension</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.itk.org/Wiki/MetaIO/Documentation"><strong>NRRD</strong></a> (.nrrd, .nhdr): General-purpose 2D/3D/4D file format. Coordinate system: as defined in the file header (usually LPS).</p>
+<ul>
+<li><p><strong>NRRD sequence</strong> (.seq.nrrd): 4D volume</p></li>
+<li><p>To load an image file as segmentation (also known as label image, mask, region of interest) see <a class="reference internal" href="modules/segmentations.html#import-an-existing-segmentation-from-volume-file"><span class="std std-ref">Segmentations module documentation</span></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.itk.org/Wiki/MetaIO/Documentation"><strong>MetaImage</strong></a> (.mha, .mhd): Coordinate system: LPS (AnatomicalOrientation in the file header is ignored).</p></li>
+<li><p><a class="reference external" href="https://www.vtk.org/VTK/img/file-formats.pdf"><strong>VTK</strong></a> (.vtk): Coordinate system: LPS. Important limitation: image axis directions cannot be stored in this file format.</p></li>
+<li><p><a class="reference external" href="https://web.archive.org/web/20220312005651/www.grahamwideman.com/gw/brain/analyze/formatdoc.htm"><strong>Analyze</strong></a> (.hdr, .img, .img.gz): Image orientation is specified ambiguously in this format, therefore its use is strongle discouraged. For brain imaging, use Nifti format instead.</p></li>
+<li><p><a class="reference external" href="https://nifti.nimh.nih.gov/nifti-1/"><strong>Nifti</strong></a> (.nii, .nii.gz): File format for brain MRI. Not well suited as a general-purpose 3D image file format (use NRRD format instead).</p>
+<ul>
+<li><p>To load an image file as segmentation (also known as label image, mask, region of interest) see <a class="reference internal" href="modules/segmentations.html#import-an-existing-segmentation-from-volume-file"><span class="std std-ref">Segmentations module documentation</span></a></p></li>
+</ul>
+</li>
+<li><p><strong>Tagged image file format</strong> (.tif, .tiff): can read/write single/series of frames</p></li>
+<li><p><strong>PNG</strong> (.png): can read single/series of frames, can write a single frame</p></li>
+<li><p><strong>JPEG</strong> (.jpg, .jpeg): can read single/series of frames, can write a single frame</p></li>
+<li><p><strong>Windows bitmap</strong> (.bmp): can read single/series of frames</p></li>
+<li><p><strong>BioRad</strong> (.pic)</p></li>
+<li><p><strong>Brains2</strong> (.mask)</p></li>
+<li><p><strong>GIPL</strong> (.gipl, .gipl.gz)</p></li>
+<li><p><strong>LSM</strong> (.lsm)</p></li>
+<li><p><strong>Scanco</strong> (.isq)</p></li>
+<li><p><strong>Stimulate</strong> (.spr)</p></li>
+<li><p><strong>MGH-NMR</strong> (.mgz)</p></li>
+<li><p><strong>MRC Electron Density</strong> (.mrc)</p></li>
+<li><p><a class="reference external" href="https://www.slicerrt.org/">SlicerRT extension</a></p>
+<ul>
+<li><p><strong>Vista cone beam optical scanner volume</strong> (.vff)</p></li>
+<li><p><strong>DOSXYZnrc 3D dose</strong> (.3ddose)</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://github.com/SlicerHeart/SlicerHeart">SlicerHeart extension</a>: 2D/3D/4D ultrasound (GE, Philips, Eigen Artemis, and other; reading only)</p>
+<ul>
+<li><p><strong>Philips 4D ultrasound</strong>: from Cartesian DICOM exported from QLab</p></li>
+<li><p><strong>GE Kretz 3D ultrasound</strong> (.vol, .v01)</p></li>
+<li><p><strong>Eigen Artemis 3D ultrasound</strong></p></li>
+<li><p>Any 3D/4D ultrasound image and ECG signal: if the user obtains <a class="reference external" href="https://github.com/SlicerHeart/SlicerHeart#open-image3d-api">Image3dAPI</a> plugin from the vendor (GE Voluson, Philips, Siemens, etc.)</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://github.com/acetylsalicyl/SlicerRawImageGuess">RawImageGuess extension</a></p>
+<ul>
+<li><p><strong>RAW volume</strong> (.raw): requires manual setting of header parameters</p></li>
+<li><p><strong>Samsung 3D ultrasound</strong> (.mvl): requires manual setting of header parameters</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://github.com/IGSIO/SlicerIGSIO">SlicerIGSIO extension</a>:</p>
+<ul>
+<li><p><strong>Compressed video</strong> (.mkv, .webm)</p></li>
+<li><p><strong>IGSIO sequence metafile</strong> (.igs.mha, .igs.mhd, .igs.nrrd, .seq.mha, .seq.mhd, .mha, .mhd, .mkv, .webm): image sequence with metadata, for example for storing surgical navigation and position-tracked ultrasound data</p></li>
+</ul>
+</li>
+<li><p>OpenIGTLink extension:</p>
+<ul>
+<li><p><strong>PLUS toolkit configuration file</strong> (.plus.xml): configuration file for real-time data acquisition from imaging and tracking devices and various sensors</p></li>
+</ul>
+</li>
+<li><p>Sandbox extension:</p>
+<ul>
+<li><p><strong>Topcon OCT image file</strong> (.fda, reading only)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="models">
+<h3>Models<a class="headerlink" href="#models" title="Link to this heading"></a></h3>
+<p>Surface or volumetric meshes.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf"><strong>VTK Polygonal Data</strong></a> (.vtk, .vtp): Default coordinate system: LPS. Coordinate system (LPS/RAS) can be specified in header. Full color (RGB or RGBA) meshes can be read and written (color must be assigned as point scalar data of <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code> type and 3 or 4 components). Texture image can be applied using “Texture model” module (in SlicerIGT extension).</p></li>
+<li><p><a class="reference external" href="https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf"><strong>VTK Unstructured Grid Data</strong></a> (.vtk, .vtu): Volumetric mesh. Default coordinate system: LPS. Coordinate system (LPS/RAS) can be specified in header.</p></li>
+<li><p><strong>STereoLithography</strong> (.stl): Format most commonly used for 3D printing. Default coordinate system: LPS. Coordinate system (LPS/RAS) can be specified in header.</p></li>
+<li><p><strong>Wavefront OBJ</strong> (.obj): Default coordinate system: LPS. Coordinate system (LPS/RAS) can be specified in header. Texture image can be applied using “Texture model” module (in SlicerIGT extension). The non-standard <a class="reference external" href="https://web.archive.org/web/20220508010504/www.paulbourke.net/dataformats/obj/colour.html">technique of saving vertex color as additional values after coordinates</a> is not supported - if vertex coloring is needed then convert to PLY, VTK, or VTP format using another software.</p></li>
+<li><p><strong>Stanford Triangle Format</strong> (.ply): Default coordinate system: LPS. Coordinate system (LPS/RAS) can be specified in header. Full color (RGB or RGBA) meshes can be read and written (color must be assigned to vertex data in <code class="docutils literal notranslate"><span class="pre">uchar</span></code> type properties named <code class="docutils literal notranslate"><span class="pre">red</span></code>, <code class="docutils literal notranslate"><span class="pre">green</span></code>, <code class="docutils literal notranslate"><span class="pre">blue</span></code>, and optional <code class="docutils literal notranslate"><span class="pre">alpha</span></code>). Texture image can be applied using “Texture model” module (in SlicerIGT extension).</p></li>
+<li><p><strong>BYU</strong> (.byu, .g; reading only): Coordinate system: LPS.</p></li>
+<li><p><strong>UCD</strong> (.ucd; reading only): Coordinate system: LPS.</p></li>
+<li><p><strong>ITK meta</strong> (.meta; reading only): Coordinate system: LPS.</p></li>
+<li><p><a class="reference external" href="https://github.com/PerkLab/SlicerFreeSurfer">FreeSurfer extension</a>:</p>
+<ul>
+<li><p><strong>Freesurfer surfaces</strong> (.orig, .inflated, .sphere, .white, .smoothwm, .pial; reading only)</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://github.com/SlicerHeart/SlicerHeart">SlicerHeart extension</a>:</p>
+<ul>
+<li><p><strong>CARTO surface model</strong> (.vtk; writing only): special .vtk polydata file format variant, which contains patient name and ID to allow import into CARTO cardiac electrophysiology mapping systems</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="segmentations">
+<h3>Segmentations<a class="headerlink" href="#segmentations" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Segmentation labelmap representation</strong> (.seg.nrrd, .nrrd, .seg.nhdr, .nhdr, .nii, .nii.gz, .hdr): 3D volume (4D volume if there are overlapping segments) with <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSegmentationStorageNode.html">custom fields</a> specifying segment names, terminology, colors, etc.</p></li>
+<li><p><strong>Segmentation closed surface representation</strong> (.vtm): saved as VTK multiblock data set, contains <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLSegmentationStorageNode.html">custom fields</a> specifying segment names, terminology, colors, etc.</p></li>
+<li><p><strong>Labelmap volume</strong> (.nrrd, .nhdr, .nii, .nii.gz, .hdr): segment names can be defined by using a color table. To write segmentation in NIFTI formats, use Export to file feature or export the segmentation node to labelmap volume.</p></li>
+<li><p><strong>Closed surface</strong> (.stl, .obj): Single segment can be read from each file. Segmentation module’s <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">to</span> <span class="pre">files</span></code> feature can be used to export directly to these formats.</p></li>
+<li><p>SlicerOpenAnatomy extension:</p>
+<ul>
+<li><p><strong>GL Transmission Format</strong> (.glTF, writing only)</p></li>
+</ul>
+</li>
+<li><p>Sandbox extension:</p>
+<ul>
+<li><p><strong>Osirix ROI file</strong> (.json, reading only)</p></li>
+<li><p><strong>sliceOmatic tag file</strong> (.tag, reading only)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="transforms">
+<h3>Transforms<a class="headerlink" href="#transforms" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.itk.org/ItkSoftwareGuide.pdf"><strong>ITK HDF transform</strong></a> (.h5): For linear, b-spline, grid (displacement field), thin-plate spline, and composite transforms. Coordinate system: LPS.</p></li>
+<li><p><a class="reference external" href="https://www.itk.org/ItkSoftwareGuide.pdf"><strong>ITK TXT transform</strong></a> (.tfm, .txt): For linear, b-spline, and thin-plate spline, and composite transforms. Coordinate system: LPS.</p></li>
+<li><p><a class="reference external" href="https://www.itk.org/ItkSoftwareGuide.pdf"><strong>Matlab MAT file</strong></a> (.mat): For linear and b-spline transforms. Coordinate system: LPS.</p></li>
+<li><p><strong>Displacement field</strong>: For storing grid transform as a vector image, each voxel containing displacement vector. Voxel values are in physical space (not in voxels).</p>
+<ul>
+<li><p>NRRD (.nrrd, .nhdr): Coordinate system: LPS. Metadata: <code class="docutils literal notranslate"><span class="pre">dimension:</span> <span class="pre">4</span></code>, <code class="docutils literal notranslate"><span class="pre">sizes:</span> <span class="pre">3</span> <span class="pre">I</span> <span class="pre">J</span> <span class="pre">K</span></code>, <code class="docutils literal notranslate"><span class="pre">space</span> <span class="pre">directions:</span> <span class="pre">none</span> <span class="pre">(ix,</span> <span class="pre">iy,</span> <span class="pre">iz)</span> <span class="pre">(jx,</span> <span class="pre">jy,</span> <span class="pre">jz)</span> <span class="pre">(kx,</span> <span class="pre">ky,</span> <span class="pre">kz)</span></code>, <code class="docutils literal notranslate"><span class="pre">kinds:</span> <span class="pre">vector</span> <span class="pre">domain</span> <span class="pre">domain</span> <span class="pre">domain</span></code></p></li>
+<li><p>MetaImage (.mha, .mhd): Coordinate system: LPS. Metadata: <code class="docutils literal notranslate"><span class="pre">NDims</span> <span class="pre">=</span> <span class="pre">3</span></code>, <code class="docutils literal notranslate"><span class="pre">DimSize</span> <span class="pre">=</span> <span class="pre">I</span> <span class="pre">J</span> <span class="pre">K</span></code>, <code class="docutils literal notranslate"><span class="pre">ElementNumberOfChannels</span> <span class="pre">=</span> <span class="pre">3</span></code></p></li>
+<li><p>NIFTI (.nii, .nii.gz). Coordinate system: RAS. Metadata: Number of dimensions: 5. Dimensions: <code class="docutils literal notranslate"><span class="pre">[I,</span> <span class="pre">J,</span> <span class="pre">K,</span> <span class="pre">1,</span> <span class="pre">3]</span></code>. Intent code: <code class="docutils literal notranslate"><span class="pre">NIFTI_INTENT_DISPVECT</span> <span class="pre">(1006)</span></code>.</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.slicerrt.org/">SlicerRT extension</a></p>
+<ul>
+<li><p><strong>Pinnacle DVF</strong> (.dvf)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="markups">
+<h3>Markups<a class="headerlink" href="#markups" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Markups JSON</strong> (.mkp.json): point list, line, curve, closed curve, plane, etc. Default coordinate system: LPS. Coordinate system (LPS/RAS) can be specified in image header. JSON schema is available <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Modules/Loadable/Markups/Resources/Schema">here</a>.</p></li>
+<li><p><strong>Markups CSV</strong> (.fcsv): legacy file format for storing point list. Default coordinate system: LPS. Coordinate system (LPS/RAS) can be specified in image header.</p></li>
+<li><p><strong>Annotation CSV</strong> (.acsv): legacy file format for storing markups line, ROI.</p></li>
+</ul>
+</section>
+<section id="scenes">
+<h3>Scenes<a class="headerlink" href="#scenes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>MRML (Medical Reality Markup Language File)</strong> (.mrml): MRML file is a xml-formatted text file with scene metadata and pointers to externally stored data files. See <a class="reference internal" href="../developer_guide/mrml_overview.html"><span class="std std-doc">MRML overview</span></a>. Coordinate system: RAS.</p></li>
+<li><p><strong>MRB (Medical Reality Bundle)</strong> (.mrb, .zip): MRB is a binary format encapsulating all scene data (bulk data and metadata). Internally it uses zip format. Any .zip file that contains a self-contained data tree including a .mrml file can be opened. Coordinate system: RAS. Note: only .mrb file extension can be chosen for writing, but after that the file can be manually renamed to .zip if you need access to internal data.</p></li>
+<li><p><strong>Data collections in XNAT Catalog format</strong> (.xcat; reading only)</p></li>
+<li><p><strong>Data collections in XNAT Archive format</strong> (.xar; reading only)</p></li>
+</ul>
+</section>
+<section id="other">
+<h3>Other<a class="headerlink" href="#other" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Text</strong> (.txt, .xml., json)</p></li>
+<li><p><strong>Table</strong> (.csv, .tsv)</p></li>
+<li><p>Color tables:</p>
+<ul>
+<li><p><a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Modules/Colors#File_format"><strong>Slicer color table</strong></a> (.ctbl, .txt)</p></li>
+<li><p>ITK-Snap label description file (.txt, .label) (reading only) This can be used for loading segmentations that were created in ITK-Snap. The color table must be loaded in the scene first. Then, when the label image file is loaded then in <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Data</span></code> window select <code class="docutils literal notranslate"><span class="pre">Segmentation</span></code> in the <code class="docutils literal notranslate"><span class="pre">Description</span></code> column and select the loaded color table in the <code class="docutils literal notranslate"><span class="pre">Color</span> <span class="pre">node</span></code> column.</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../developer_guide/modules/volumerendering.html"><span class="std std-doc"><strong>Volume rendering properties</strong></span></a> (.vp)</p></li>
+<li><p><a class="reference internal" href="../developer_guide/modules/volumerendering.html"><span class="std std-doc"><strong>Volume rendering shader properties</strong></span></a> (.sp)</p></li>
+<li><p><strong>Terminology</strong> (.term.json, .json): dictionary of standard DICOM or other terms</p></li>
+<li><p><strong>Node sequence</strong> (.seq.mrb): sequence of any MRML node (for storage of 4D data)</p></li>
+</ul>
+</section>
+<section id="what-if-your-data-is-not-supported">
+<h3>What if your data is not supported?<a class="headerlink" href="#what-if-your-data-is-not-supported" title="Link to this heading"></a></h3>
+<p>If any of the above listed file formats cannot be loaded then report the issue on the <a class="reference external" href="https://discourse.slicer.org/">Slicer forum</a>.</p>
+<p>If you have a file of binary data and you know the data is uncompressed and you know the way it is laid out in memory, then one way to load it in Slicer is to create a .nhdr file that points to the binary file. <a class="reference external" href="https://github.com/acetylsalicyl/SlicerRawImageGuess">RawImageGuess extension</a> can be used to explore an unknown data set, determining unknown loading parameters, and generate header file.</p>
+<p>You can also ask about support for a particular file format on the <a class="reference external" href="https://discourse.slicer.org/">Slicer forum</a>. There may be extensions or scripts that can read or write additional formats (any Python package can be installed and used for data import/export).</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="coordinate_systems.html" class="btn btn-neutral float-left" title="Coordinate systems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="image_segmentation.html" class="btn btn-neutral float-right" title="Image Segmentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crop Volume &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Orient Scalar Volume" href="orientscalarvolume.html" />
+    <link rel="prev" title="Create a DICOM Series" href="createdicomseries.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/cropvolume.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#converters">Converters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="createdicomseries.html">Create a DICOM Series</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Crop Volume</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-cases">Use Cases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="orientscalarvolume.html">Orient Scalar Volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vectortoscalarvolume.html">Vector to Scalar Volume</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Crop Volume</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/cropvolume.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="crop-volume">
+<h1>Crop Volume<a class="headerlink" href="#crop-volume" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This module is used to crop (i.e. remove unwanted regions) from scalar volumes. The removal process takes place with the help of a region of interest (ROI).</p>
+<p>This region of interest can be manipulated either from the 3D View (possibly, with the help of volume rendering or 3D surface models) or from any of the Slice views (2D). In addition, the module includes advance functionality to fill the region outside the original volume, and control the spacing and the interpolation scheme used inside the cropped region.</p>
+<p>You can use this module to crop a DTI or DWI volume.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Input image and ROI</th>
+<th>Cropped subvolume</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_cropvolume_before.png" /></td>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_cropvolume_after.png" /></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="use-cases">
+<h2>Use Cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<p>Most frequently used for these scenarios:</p>
+<ul class="simple">
+<li><p><strong>Segmentation of an object that occupies small portion of the image</strong>. Cropping the ROI with that object can simplify your segmentation task and reduce both the memory requirements and processing time.</p></li>
+<li><p><strong>Segmentation of an image that has very different resolution along different axes</strong> (for example, 0.2mm with in an image slice, 1.0mm between slices). Isotropic spacing option ensures that the output volume has equal spacing on all axes. Doing this as part of cropping is useful, because forcing the same (high) resolution in all axes would increase the total number of voxels (and therefore memory need, processing times, etc.), but removing irrelevant parts of the volume can compensate for this increase in size.</p></li>
+<li><p><strong>Registration of two objects that occupy smaller portions of the image</strong>. In this scenario, cropping will allow you to focus the processing at the region of interest, and simplify registration initialization.</p></li>
+<li><p><strong>Fix orientation of the volume</strong>: If the orientation of the input volume is not correct (i.e., does not correspond to the anatomical axes) then the “Reorient volume” section can be used for adjusting the orientation by clicking on <code class="docutils literal notranslate"><span class="pre">Initialize</span></code>, use the rotation handles in views to fix the orientation, then click <code class="docutils literal notranslate"><span class="pre">Apply</span></code>. After that it is recommended to change the ROI fitting mode (dropdown menu of <code class="docutils literal notranslate"><span class="pre">Fit</span> <span class="pre">to</span> <span class="pre">Volume</span></code> button) to <code class="docutils literal notranslate"><span class="pre">Align</span> <span class="pre">to</span> <span class="pre">world</span> <span class="pre">axes</span> <span class="pre">+</span> <span class="pre">Resize</span></code> so that the cropped volume’s axes are aligned to anatomical directions.</p></li>
+<li><p><strong>Definition of new axis directions</strong> for your image: <a class="reference internal" href="#interpolated-cropping-options">Interpolated cropping options</a> allows the output volume to have different axis directions than the original volume. The output volume’s axis directions will be aligned with the ROI widget’s axes. ROI widget axes can be rotated using the <a class="reference internal" href="transforms.html"><span class="std std-doc">Transforms</span></a> module.</p></li>
+<li><p><strong>Cropping of oblique sub-volumes</strong>: This can be done by placing either or both of input volume and ROI under transform(s). These transforms will be taken into account while preparing the output.</p></li>
+</ul>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Crop Volume<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Parameter set:</strong> Save/retrieve cropping presets.</p></li>
+</ul>
+</section>
+<section id="io">
+<h3>IO<a class="headerlink" href="#io" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Input volume:</strong> The scalar volume to crop.</p>
+<ul>
+<li><p><strong>Reorient volume:</strong> Useful for correcting orientation of the volume before cropping. Click on <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> to show rotation handles, adjust the orientation, then click <code class="docutils literal notranslate"><span class="pre">Apply</span></code> to permanently change the volume orientation and hide the rotation handles.</p></li>
+</ul>
+</li>
+<li><p><strong>Input ROI:</strong> The region of interest driving the cropping process. ROIs have a box-like shape in which the interior of the box is the region to preserve and the exterior is the region to exclude. This combobox widget will allow the user to select an already existing ROI or create a new one (in addition, this widget will provide additional options such as rename or edit an existing ROI).</p>
+<ul>
+<li><p><strong>Display ROI:</strong> Turn on/off the display of the ROI representation. If this is on, a representation of the ROI will be visible in the Slice views (2D) or in the 3D view. The resulting ROI can be manipulated interactively in any of the Slice views (2D) or the 3D view.</p></li>
+<li><p><strong>Fit to Volume:</strong> This will resize the ROI to fit the extent of the Input volume specified. The button has a dropdown menu to tune its behavior, with the following options:</p>
+<ul>
+<li><p><strong>Align to volume axes + Resize:</strong> rotate the ROI axes to align the ROI box orientation (and thus the cropped volume axes) to match the input volume axes directions. This is useful if the goal is to minimize changes compared to the input volume.</p></li>
+<li><p><strong>Align to world axes + Resize:</strong> rotate the ROI axes to align the ROI box orientation (and thus the cropped volume axes) to the world coordinate system. This is useful to make the cropped volume axes to be anatomically aligned.</p></li>
+<li><p><strong>Resize only:</strong> only resize the ROI and keep its current orientation. This is useful if the ROI orientation is already set to the desired value and only the size of the ROI needs to be adjusted to fully enclose the input volume.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Output volume:</strong> The output volume that represents the result of the cropping operation. This widget allows for the selection of an already existing volume (e.g., the input volume itself) or the creation of a new output volume node to store the results. By default, if no node is selected, output volume is created automatically.</p></li>
+</ul>
+<p>After setting these parameters the user can click the Apply button to perform the operation.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The user should be careful when selecting the input and output volumes: selecting the same output volume as the input may render the input volume unusable for other operations.</p>
+</div>
+</section>
+<section id="advanced">
+<h3>Advanced<a class="headerlink" href="#advanced" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Fill value:</strong> The value to fill the voxels of the ROI that fall outside the input volume. If the ROI remains inside the input volume, this parameter has no effect.</p></li>
+<li><p><strong>Interpolated cropping:</strong> This enables/disables the selection of the <a class="reference internal" href="#interpolated-cropping-options">Interpolated cropping options</a> for the cropped output volume. If disabled, then only the extent of the volume is changed with spacing and axes directions remaining exactly the same. These parameters are controlled by the following widgets:</p></li>
+</ul>
+</section>
+<section id="interpolated-cropping-options">
+<h3>Interpolated cropping options<a class="headerlink" href="#interpolated-cropping-options" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Spacing scale:</strong> voxel spacing for the resulting cropped output volume. This parameter is a scale factor. The output spacing is defined by multiplying the input spacing in each dimension by the user-specified coefficient. If the value is greater than 1.0, then the cropped volume will have lower resolution than the input volume; if the value is smaller than 1.0, then the cropped volume will have higher resolution than the input volume. For example, if the input spacing is 1x1x1.4, and the scaling coefficient is 0.5, the output volume will have spacing 0.5x0.5x0.7, effectively doubling the resolution of the output image.</p></li>
+<li><p><strong>Isotropic spacing:</strong> Enable/disable isotropic spacing. When this is enabled, the voxel spacing of the output volume will be set to the lowest spacing in any of the axes present in the input volume.</p></li>
+<li><p><strong>Interpolator:</strong> Type of interpolation used: <code class="docutils literal notranslate"><span class="pre">Nearest</span> <span class="pre">neighbor</span></code>, <code class="docutils literal notranslate"><span class="pre">Linear</span></code>, <code class="docutils literal notranslate"><span class="pre">Windowed</span> <span class="pre">Sinc</span></code>, <code class="docutils literal notranslate"><span class="pre">B-spline</span></code>  (see <a class="reference internal" href="resamplescalarvectordwivolume.html"><span class="std std-doc">Resample Scalar/Vector/DWI Volume</span></a> module for details). For subvolumes being extracted from a label volume, you should use <code class="docutils literal notranslate"><span class="pre">Nearest</span> <span class="pre">Neighbor</span></code> interpolator. Otherwise <code class="docutils literal notranslate"><span class="pre">B-spline</span></code> is the preferred choice. <code class="docutils literal notranslate"><span class="pre">Linear</span></code> interpolator requires less computation, which may be important for very large ROIs.</p></li>
+</ul>
+</section>
+<section id="volume-information">
+<h3>Volume Information<a class="headerlink" href="#volume-information" title="Link to this heading"></a></h3>
+<p>This section shows preview of spacing and dimensions of the cropped <strong>output volume</strong> and, for comparison, the <strong>input volume</strong>. Average dimensions of a volume is about 200-300 voxels along each axis. If the resolution is increased using <strong>Spacing scale</strong> and <strong>Isotropic spacing</strong> then it is recommended to reduce the region of interest so that the dimensions are not increased significantly.</p>
+</section>
+</section>
+<section id="related-modules">
+<h2>Related modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The cropping functionality of this module is enabled by <a class="reference internal" href="resamplescalarvectordwivolume.html"><span class="std std-doc">Resample Scalar/Vector/DWI Volume</span></a> module, which is called internally.</p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Andrey Fedorov (BWH, SPL)</p></li>
+<li><p>Ron Kikinis (BWH, SPL).</p></li>
+</ul>
+</section>
+<section id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading"></a></h2>
+<p>This work was supported by NIH grants R01CA111288 and U01CA151261, NA-MIC, NAC and the Slicer Community.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_ncigt.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_spl.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="createdicomseries.html" class="btn btn-neutral float-left" title="Create a DICOM Series" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="orientscalarvolume.html" class="btn btn-neutral float-right" title="Orient Scalar Volume" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sequences &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Transforms" href="transforms.html" />
+    <link rel="prev" title="Segment editor" href="segmenteditor.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/modules/sequences.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Modules API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selftests.html">Self Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Sequences</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#volume-sequence-file-format-seq-nrrd">Volume sequence file format (.seq.nrrd)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumes.html">Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules API</a></li>
+      <li class="breadcrumb-item active">Sequences</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/modules/sequences.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="sequences">
+<h1>Sequences<a class="headerlink" href="#sequences" title="Link to this heading"></a></h1>
+<section id="volume-sequence-file-format-seq-nrrd">
+<h2>Volume sequence file format (.seq.nrrd)<a class="headerlink" href="#volume-sequence-file-format-seq-nrrd" title="Link to this heading"></a></h2>
+<p>Whenever it is possible (when origin, spacing, axis directions, and extents are the same in all sequence items), a sequence of volumes is stored in a standard NRRD image file with custom fields to store additional metadata.</p>
+<section id="image-data">
+<h3>Image data<a class="headerlink" href="#image-data" title="Link to this heading"></a></h3>
+<p>The image is always stored in 3 spatial dimensions. Even if an image consists of a single slice, the spatial dimension must be still 3 because that is required for specification origin, spacing, and axis directions in 3D space. The file has an additional <code class="docutils literal notranslate"><span class="pre">list</span></code> dimension.</p>
+</section>
+<section id="metadata">
+<h3>Metadata<a class="headerlink" href="#metadata" title="Link to this heading"></a></h3>
+<section id="standard-fields">
+<h4>Standard fields<a class="headerlink" href="#standard-fields" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dimension</span></code>: <code class="docutils literal notranslate"><span class="pre">4</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sizes</span></code>: image size (I, J, K) followed by the number of time points</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">space</span> <span class="pre">directions</span></code>: I, J, K axis directions in physical space followed by <code class="docutils literal notranslate"><span class="pre">none</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kinds</span></code>: <code class="docutils literal notranslate"><span class="pre">domain</span> <span class="pre">domain</span> <span class="pre">domain</span> <span class="pre">list</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">labels</span></code>: <code class="docutils literal notranslate"> <span class="pre">&quot;&quot;</span> <span class="pre">&quot;&quot;</span> <span class="pre">&quot;&quot;</span></code> followed by name of the sequence index (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;time&quot;</span></code>)</p></li>
+<li><p>other standard fields (<code class="docutils literal notranslate"><span class="pre">type</span></code>, <code class="docutils literal notranslate"><span class="pre">space</span></code>, <code class="docutils literal notranslate"><span class="pre">endian</span></code>, <code class="docutils literal notranslate"><span class="pre">encoding</span></code>, <code class="docutils literal notranslate"><span class="pre">space</span> <span class="pre">origin</span></code>, etc.) can have any value</p></li>
+</ul>
+</section>
+<section id="custom-fields">
+<h4>Custom fields<a class="headerlink" href="#custom-fields" title="Link to this heading"></a></h4>
+<p>The sequence-specific metadata is stored in NRRD key–value pairs that follow this pattern:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">index</span> <span class="pre">type:=&lt;IndexType&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">index</span> <span class="pre">values:=&lt;v0&gt;</span> <span class="pre">&lt;v1&gt;</span> <span class="pre">...</span> <span class="pre">&lt;vN-1&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">item</span> <span class="pre">&lt;I&gt;</span> <span class="pre">&lt;AttrName&gt;:=&lt;AttrValue&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataNodeClassName:=&lt;MRMLNodeClass&gt;</span></code></p></li>
+</ul>
+<p>Where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;A&gt;</span></code> is the <strong>list axis index</strong>. In Slicer-generated <code class="docutils literal notranslate"><span class="pre">.seq.nrrd</span></code> files the list axis is <strong>3</strong>, because sizes are ordered as <code class="docutils literal notranslate"><span class="pre">I,</span> <span class="pre">J,</span> <span class="pre">K,</span> <span class="pre">list</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;IndexType&gt;</span></code> is either <code class="docutils literal notranslate"><span class="pre">numeric</span></code> or <code class="docutils literal notranslate"><span class="pre">text</span></code> and determines how index values are interpreted (e.g., numeric vs. lexicographic sorting).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;v0&gt;</span> <span class="pre">...</span> <span class="pre">&lt;vN-1&gt;</span></code> are the <strong>per-item index values</strong> along the list axis (must have as many values as there are list items). These are stored here rather than using standard NRRD spacing because sequence indices may be <strong>non-uniform</strong> or <strong>non-numeric</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;I&gt;</span></code> is the <strong>0-based item index</strong> along the list axis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;AttrName&gt;</span></code> / <code class="docutils literal notranslate"><span class="pre">&lt;AttrValue&gt;</span></code> store <strong>per-item node attributes</strong> for the data nodes in the sequence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;MRMLNodeClass&gt;</span></code> is the MRML class name of the proxy node to instantiate when reading the sequence (e.g., <code class="docutils literal notranslate"><span class="pre">vtkMRMLScalarVolumeNode</span></code>; for labelmaps use <code class="docutils literal notranslate"><span class="pre">vtkMRMLLabelMapVolumeNode</span></code>).</p></li>
+</ul>
+</section>
+<section id="field-definitions">
+<h4>Field definitions<a class="headerlink" href="#field-definitions" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">index</span> <span class="pre">type:=numeric|text</span></code>
+Declares the index value type for the list axis (affects sorting and parsing).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">index</span> <span class="pre">values:=&lt;v0&gt;</span> <span class="pre">&lt;v1&gt;</span> <span class="pre">...</span> <span class="pre">&lt;vN-1&gt;</span></code>
+Provides the explicit index value for each sequence item, separated by spaces. Values can be arbitrary strings, stored using URL encoding.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis</span> <span class="pre">&lt;A&gt;</span> <span class="pre">item</span> <span class="pre">&lt;I&gt;</span> <span class="pre">&lt;AttrName&gt;:=&lt;AttrValue&gt;</span></code>
+Stores arbitrary per-item attributes from the sequence’s proxy nodes (e.g., acquisition time, frame UID).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DataNodeClassName:=&lt;MRMLNodeClass&gt;</span></code>
+Specifies the MRML node class to create for items in this sequence. Common values include:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScalarVolumeNode</span></code> (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLLabelMapVolumeNode</span></code> (labelmaps)</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Slicer writes the list axis as <strong>axis 3</strong> and sets <code class="docutils literal notranslate"><span class="pre">kinds:</span> <span class="pre">domain</span> <span class="pre">domain</span> <span class="pre">domain</span> <span class="pre">list</span></code>.</p></li>
+<li><p>The count of <code class="docutils literal notranslate"><span class="pre">index</span> <span class="pre">values</span></code> <strong>must match</strong> the size of the list axis (<code class="docutils literal notranslate"><span class="pre">sizes[3]</span></code> in Slicer files).</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">numeric</span></code> when index values are intended to be ordered by numeric value (e.g., frame number, time in seconds). Use <code class="docutils literal notranslate"><span class="pre">text</span></code> for non-numeric or mixed tokens (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;pre&quot;</span> <span class="pre">&quot;post&quot;</span> <span class="pre">&quot;followup1&quot;</span></code>).</p></li>
+</ul>
+</div>
+</section>
+<section id="example">
+<h4>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h4>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>NRRD0004
+# Complete NRRD file format specification at:
+# http://teem.sourceforge.net/nrrd/format.html
+type: short
+dimension: 4
+space: left-posterior-superior
+sizes: 128 104 72 10
+space directions: (1.1499999999999999,0,0) (0,1.1499999999999999,0) (0,0,2) none
+kinds: domain domain domain list
+labels: &quot;&quot; &quot;&quot; &quot;&quot; &quot;frame&quot;
+endian: little
+encoding: gzip
+space origin: (-62.20000000000001,-68,1692.0989989999998)
+DataNodeClassName:=vtkMRMLScalarVolumeNode
+axis 3 index type:=numeric
+axis 3 index values:=0 1 2 3 4 5 6 7 8 9
+# Example per-item attribute (item 5)
+axis 3 item 5 AcquisitionTime:=2024-06-21T10:32:45.120Z
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="segmenteditor.html" class="btn btn-neutral float-left" title="Segment editor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transforms.html" class="btn btn-neutral float-right" title="Transforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

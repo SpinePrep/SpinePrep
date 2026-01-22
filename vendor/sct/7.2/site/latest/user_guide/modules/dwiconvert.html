@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diffusion-weighted DICOM Import (DWIConvert) &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="DWI Cleanup (BRAINS)" href="brainsdwicleanup.html" />
+    <link rel="prev" title="MultiVolumeExplorer" href="multivolumeexplorer.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/dwiconvert.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#diffusion">Diffusion</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Diffusion-weighted DICOM Import (DWIConvert)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-cases">Use cases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#similar-modules">Similar modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for Developers</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="brainsdwicleanup.html">DWI Cleanup (BRAINS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="resampledtivolume.html">Resample DTI Volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="resamplescalarvectordwivolume.html">Resample Scalar/Vector/DWI Volume</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Diffusion-weighted DICOM Import (DWIConvert)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/dwiconvert.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="diffusion-weighted-dicom-import-dwiconvert">
+<h1>Diffusion-weighted DICOM Import (DWIConvert)<a class="headerlink" href="#diffusion-weighted-dicom-import-dwiconvert" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Converts diffusion weighted MR images in DICOM series into NRRD format for analysis in Slicer. This program has been tested on only a limited subset of DTI DICOM formats available from Siemens, GE, and Philips scanners. Work in progress to support DICOM multi-frame data. The program parses DICOM header to extract necessary information about measurement frame, diffusion weighting directions, b-values, etc, and write out a NRRD image. For non-diffusion weighted DICOM images, it loads in an entire DICOM series and writes out a single dicom volume in a .nhdr/.raw pair.</p>
+</section>
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Loading DICOM diffusion MRI data into Slicer.</p></li>
+<li><p>Conversion of diffusion weighted images (DWIs) from DICOM format to nrrd or nifti formats.</p></li>
+</ul>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Tutorials: <a class="reference external" href="https://dmri.slicer.org/docs/">https://dmri.slicer.org/docs/</a></p></li>
+</ul>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<section id="conversion-options-options-that-are-used-for-all-conversion-modes">
+<h3>Conversion Options: Options that are used for all conversion modes<a class="headerlink" href="#conversion-options-options-that-are-used-for-all-conversion-modes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Input DWI Volume file</strong> (<em>inputVolume</em>): Input DWI volume – not used for DicomToNrrd mode.</p></li>
+<li><p><strong>Output DWI Volume file</strong> (<em>outputVolume</em>): Output filename (.nhdr or .nrrd)</p></li>
+</ul>
+</section>
+<section id="dicom-to-nrrd-conversion-parameters-parameters-for-dicom-to-nrrd-conversion">
+<h3>Dicom To Nrrd Conversion Parameters: Parameters for Dicom to NRRD Conversion<a class="headerlink" href="#dicom-to-nrrd-conversion-parameters-parameters-for-dicom-to-nrrd-conversion" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Input Dicom Data Directory</strong> (<em>inputDicomDirectory</em>): Directory holding Dicom series</p></li>
+</ul>
+</section>
+<section id="niftifsl-to-nrrd-conversion-parameters-niftifsl-to-nrrd-conversion-parameters">
+<h3>NiftiFSL To Nrrd Conversion Parameters: NiftiFSL To Nrrd Conversion Parameters<a class="headerlink" href="#niftifsl-to-nrrd-conversion-parameters-niftifsl-to-nrrd-conversion-parameters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>FSL NIfTI File</strong> (<em>fslNIFTIFile</em>): 4D NIfTI file containing gradient volumes</p></li>
+<li><p><strong>Input bval file</strong> (<em>inputBValues</em>): The B Values are stored in FSL .bval text file format</p></li>
+<li><p><strong>Input bvec file</strong> (<em>inputBVectors</em>): The Gradient Vectors are stored in FSL .bvec text file format</p></li>
+</ul>
+</section>
+<section id="nrrd-to-niftifsl-conversion-parameters-nrrd-to-niftifsl-nrrdtofsl-conversion-parameters">
+<h3>Nrrd To NiftiFSL Conversion Parameters: Nrrd To NiftiFSL (NrrdToFSL) Conversion Parameters<a class="headerlink" href="#nrrd-to-niftifsl-conversion-parameters-nrrd-to-niftifsl-nrrdtofsl-conversion-parameters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Output nii file</strong> (<em>outputNiftiFile</em>): Nifti output filename (for Slicer GUI use).</p></li>
+<li><p><strong>Output bval file</strong> (<em>outputBValues</em>): The B Values are stored in FSL .bval text file format (defaults to <outputVolume>.bval)</p></li>
+<li><p><strong>Output bvec file</strong> (<em>outputBVectors</em>): The Gradient Vectors are stored in FSL .bvec text file format (defaults to <outputVolume>.bvec)</p></li>
+</ul>
+</section>
+<section id="advanced-conversion-parameters-options-to-control-the-output">
+<h3>Advanced Conversion Parameters: Options to control the output.<a class="headerlink" href="#advanced-conversion-parameters-options-to-control-the-output" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Write Protocol Gradients File</strong> (<em>writeProtocolGradientsFile</em>): Write the protocol gradients to a file suffixed by “.txt” as they were specified in the procol by multiplying each diffusion gradient direction by the measurement frame.  This file is for debugging purposes only, the format is not fixed, and will likely change as debugging of new dicom formats is necessary.</p></li>
+<li><p><strong>Use Identity Measurement Frame</strong> (<em>useIdentityMeaseurementFrame</em>): Adjust all the gradients so that the measurement frame is an identity matrix.</p></li>
+<li><p><strong>Use BMatrix Gradient Directions</strong> (<em>useBMatrixGradientDirections</em>): Fill the nhdr header with the gradient directions and bvalues computed out of the BMatrix. Only changes behavior for Siemens data.  In some cases the standard public gradients are not properly computed.  The gradients can be empirically computed from the private BMatrix fields.  In some cases the private BMatrix is consistent with the public grandients, but not in all cases, when it exists BMatrix is usually most robust.</p></li>
+<li><p><strong>Output Directory</strong> (<em>outputDirectory</em>): Directory holding the output NRRD file</p></li>
+<li><p><strong>Small Gradient Threshold</strong> (<em>smallGradientThreshold</em>): If a gradient magnitude is greater than 0 and less than smallGradientThreshold, then DWIConvert will display an error message and quit, unless the useBMatrixGradientDirections option is set.</p></li>
+<li><p><strong>Transpose Input BVectors</strong> (<em>transpose</em>): FSL input BVectors are expected to be encoded in the input file as one vector per line. If it is not the case, use this option to transpose the file as it is read</p></li>
+<li><p><strong>Allow lossy image conversion</strong> (<em>allowLossyConversion</em>): The only supported output type is ‘short’. Conversion from images of a different type may cause data loss due to rounding or truncation. Use with caution!</p></li>
+</ul>
+</section>
+<section id="deprecated-these-do-not-work">
+<h3>DEPRECATED THESE DO NOT WORK:<a class="headerlink" href="#deprecated-these-do-not-work" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Gradient Vector File</strong> (<em>gradientVectorFile</em>): DEPRECATED:  Use –inputBVector –inputBValue files Text file giving gradient vectors</p></li>
+<li><p><strong>Output fMRI file</strong> (<em>fMRIOutput</em>): DEPRECATED:  No support or testing.  Output a NRRD file, but without gradients</p></li>
+</ul>
+</section>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Hans Johnson (UIowa), Vince Magnotta (UIowa) Joy Matsui (UIowa), Kent Williams (UIowa), Mark Scully (Uiowa), Xiaodong Tao (GE)</p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is part of the National Alliance for Medical Image Computing (NAMIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149.  Additional support for DTI data produced on Philips scanners was contributed by Vincent Magnotta and Hans Johnson at the University of Iowa.</p>
+</section>
+<section id="similar-modules">
+<h2>Similar modules<a class="headerlink" href="#similar-modules" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://slicerdmri.github.io/">SlicerDMRI extension</a></p>
+</section>
+<section id="information-for-developers">
+<h2>Information for Developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://wiki.na-mic.org/Wiki/index.php/NAMIC_Wiki:DTI:DICOM_for_DWI_and_DTI">DICOM for DWI and DTI</a></p></li>
+<li><p><a class="reference external" href="https://github.com/BRAINSia/BRAINSTools">Source code on github</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="multivolumeexplorer.html" class="btn btn-neutral float-left" title="MultiVolumeExplorer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="brainsdwicleanup.html" class="btn btn-neutral float-right" title="DWI Cleanup (BRAINS)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

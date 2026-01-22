@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>General Registration (BRAINS) &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Resample Image (BRAINS)" href="brainsresample.html" />
+    <link rel="prev" title="DataProbe" href="dataprobe.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/brainsfit.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#registration">Registration</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">General Registration (BRAINS)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-cases">Use cases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="brainsresample.html">Resample Image (BRAINS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="brainsresize.html">Resize Image (BRAINS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fiducialregistration.html">Fiducial Registration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="landmarkregistration.html">Landmark Registration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="performmetrictest.html">Registration Metric Test (BRAINS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reformat.html">Reformat</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">General Registration (BRAINS)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/brainsfit.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="general-registration-brains">
+<h1>General Registration (BRAINS)<a class="headerlink" href="#general-registration-brains" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Register a three-dimensional volume to a reference volume (Mattes Mutual Information by default). Method described in BRAINSFit: Mutual Information Registrations of Whole-Brain 3D Images, Using the Insight Toolkit, Johnson H.J., Harris G., Williams K., The Insight Journal, 2007. <a class="reference external" href="https://hdl.handle.net/1926/1291">https://hdl.handle.net/1926/1291</a></p>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<section id="input-images">
+<h3>Input Images:<a class="headerlink" href="#input-images" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Fixed Image Volume</strong> (<em>fixedVolume</em>): Input fixed image (the moving image will be transformed into this image space).</p></li>
+<li><p><strong>Moving Image Volume</strong> (<em>movingVolume</em>): Input moving image (this image will be transformed into the fixed image space).</p></li>
+<li><p><strong>Percentage Of Samples</strong> (<em>samplingPercentage</em>): Fraction of voxels of the fixed image that will be used for registration. The number has to be larger than zero and less or equal to one. Higher values increase the computation time but may give more accurate results. You can also limit the sampling focus with ROI masks and ROIAUTO mask generation. The default is 0.002 (use approximately 0.2% of voxels, resulting in 100000 samples in a 512x512x192 volume) to provide a very fast registration in most cases. Typical values range from 0.01 (1%) for low detail images to 0.2 (20%) for high detail images.</p></li>
+<li><p><strong>B-Spline Grid Size</strong> (<em>splineGridSize</em>): Number of BSpline grid subdivisions along each axis of the fixed image, centered on the image space. Values must be 3 or higher for the BSpline to be correctly computed.</p></li>
+</ul>
+</section>
+<section id="output-settings-at-least-one-output-must-be-specified">
+<h3>Output Settings (At least one output must be specified):<a class="headerlink" href="#output-settings-at-least-one-output-must-be-specified" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Slicer Linear Transform</strong> (<em>linearTransform</em>): (optional) Output estimated transform - in case the computed transform is not BSpline. NOTE: You must set at least one output object (transform and/or output volume).</p></li>
+<li><p><strong>Slicer BSpline Transform</strong> (<em>bsplineTransform</em>): (optional) Output estimated transform - in case the computed transform is BSpline. NOTE: You must set at least one output object (transform and/or output volume).</p></li>
+<li><p><strong>Output Image Volume</strong> (<em>outputVolume</em>): (optional) Output image: the moving image warped to the fixed image space. NOTE: You must set at least one output object (transform and/or output volume).</p></li>
+</ul>
+</section>
+<section id="transform-initialization-settings-options-for-initializing-transform-parameters">
+<h3>Transform Initialization Settings: Options for initializing transform parameters.<a class="headerlink" href="#transform-initialization-settings-options-for-initializing-transform-parameters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Initialization transform</strong> (<em>initialTransform</em>): Transform to be applied to the moving image to initialize the registration.  This can only be used if Initialize Transform Mode is Off.</p></li>
+<li><p><strong>Initialize Transform Mode</strong> (<em>initializeTransformMode</em>): Determine how to initialize the transform center.  useMomentsAlign assumes that the center of mass of the images represent similar structures.  useCenterOfHeadAlign attempts to use the top of head and shape of neck to drive a center of mass estimate. useGeometryAlign on assumes that the center of the voxel lattice of the images represent similar structures.  Off assumes that the physical space of the images are close.  This flag is mutually exclusive with the Initialization transform.</p></li>
+</ul>
+</section>
+<section id="registration-phases-check-one-or-more-executed-in-order-listed-each-of-the-registration-phases-will-be-used-to-initialize-the-next-phase">
+<h3>Registration Phases (Check one or more, executed in order listed): Each of the registration phases will be used to initialize the next phase<a class="headerlink" href="#registration-phases-check-one-or-more-executed-in-order-listed-each-of-the-registration-phases-will-be-used-to-initialize-the-next-phase" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Rigid (6 DOF)</strong> (<em>useRigid</em>): Perform a rigid registration as part of the sequential registration steps.  This family of options overrides the use of transformType if any of them are set.</p></li>
+<li><p><strong>Rigid+Scale(7 DOF)</strong> (<em>useScaleVersor3D</em>): Perform a ScaleVersor3D registration as part of the sequential registration steps.  This family of options overrides the use of transformType if any of them are set.</p></li>
+<li><p><strong>Rigid+Scale+Skew(10 DOF)</strong> (<em>useScaleSkewVersor3D</em>): Perform a ScaleSkewVersor3D registration as part of the sequential registration steps.  This family of options overrides the use of transformType if any of them are set.</p></li>
+<li><p><strong>Affine(12 DOF)</strong> (<em>useAffine</em>): Perform an Affine registration as part of the sequential registration steps.  This family of options overrides the use of transformType if any of them are set.</p></li>
+<li><p><strong>BSpline (&gt;27 DOF)</strong> (<em>useBSpline</em>): Perform a BSpline registration as part of the sequential registration steps.  This family of options overrides the use of transformType if any of them are set.</p></li>
+<li><p><strong>SyN</strong> (<em>useSyN</em>): Perform a SyN registration as part of the sequential registration steps.  This family of options overrides the use of transformType if any of them are set.</p></li>
+<li><p><strong>Composite (many DOF)</strong> (<em>useComposite</em>): Perform a Composite registration as part of the sequential registration steps.  This family of options overrides the use of transformType if any of them are set.</p></li>
+</ul>
+</section>
+<section id="image-mask-and-pre-processing">
+<h3>Image Mask and Pre-Processing:<a class="headerlink" href="#image-mask-and-pre-processing" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Masking Option</strong> (<em>maskProcessingMode</em>): Specifies a mask to only consider a certain image region for the registration.  If ROIAUTO is chosen, then the mask is computed using Otsu thresholding and hole filling. If ROI is chosen then the mask has to be specified as in input.</p></li>
+<li><p><strong>(ROI) Masking input fixed</strong> (<em>fixedBinaryVolume</em>): Fixed Image binary mask volume, required if Masking Option is ROI. Image areas where the mask volume has zero value are ignored during the registration.</p></li>
+<li><p><strong>(ROI) Masking input moving</strong> (<em>movingBinaryVolume</em>): Moving Image binary mask volume, required if Masking Option is ROI. Image areas where the mask volume has zero value are ignored during the registration.</p></li>
+<li><p><strong>(ROIAUTO) Output fixed mask</strong> (<em>outputFixedVolumeROI</em>): ROI that is automatically computed from the fixed image. Only available if Masking Option is ROIAUTO. Image areas where the mask volume has zero value are ignored during the registration.</p></li>
+<li><p><strong>(ROIAUTO) Output moving mask</strong> (<em>outputMovingVolumeROI</em>): ROI that is automatically computed from the moving image. Only available if Masking Option is ROIAUTO. Image areas where the mask volume has zero value are ignored during the registration.</p></li>
+<li><p><strong>Define BSpline grid over the ROI bounding box</strong> (<em>useROIBSpline</em>): If enabled then the bounding box of the input ROIs defines the BSpline grid support region. Otherwise the BSpline grid support region is the whole fixed image.</p></li>
+<li><p><strong>Histogram Match</strong> (<em>histogramMatch</em>): Apply histogram matching operation for the input images to make them more similar.  This is suitable for images of the same modality that may have different brightness or contrast, but the same overall intensity profile. Do NOT use if registering images from different modalities.</p></li>
+<li><p><strong>Median Filter Size</strong> (<em>medianFilterSize</em>): Apply median filtering to reduce noise in the input volumes. The 3 values specify the radius for the optional MedianImageFilter preprocessing in all 3 directions (in voxels).</p></li>
+<li><p><strong>Remove Intensity Outliers value at one tail</strong> (<em>removeIntensityOutliers</em>): Remove very high and very low intensity voxels from the input volumes. The parameter specifies the half percentage to decide outliers of image intensities. The default value is zero, which means no outlier removal. If the value of 0.005 is given, the 0.005% of both tails will be thrown away, so 0.01% of intensities in total would be ignored in the statistic calculation.</p></li>
+</ul>
+</section>
+<section id="advanced-output-settings">
+<h3>Advanced Output Settings:<a class="headerlink" href="#advanced-output-settings" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Fixed Image Volume 2</strong> (<em>fixedVolume2</em>): Input fixed image that will be used for multimodal registration. (the moving image will be transformed into this image space).</p></li>
+<li><p><strong>Moving Image Volume2</strong> (<em>movingVolume2</em>): Input moving image that will be used for multimodal registration(this image will be transformed into the fixed image space).</p></li>
+<li><p><strong>Output Image Pixel Type</strong> (<em>outputVolumePixelType</em>): Data type for representing a voxel of the Output Volume.</p></li>
+<li><p><strong>Background Fill Value</strong> (<em>backgroundFillValue</em>): This value will be used for filling those areas of the output image that have no corresponding voxels in the input moving image.</p></li>
+<li><p><strong>Scale Output Values</strong> (<em>scaleOutputValues</em>): If true, and the voxel values do not fit within the minimum and maximum values of the desired outputVolumePixelType, then linearly scale the min/max output image voxel values to fit within the min/max range of the outputVolumePixelType.</p></li>
+<li><p><strong>Interpolation Mode</strong> (<em>interpolationMode</em>): Type of interpolation to be used when applying transform to moving volume.  Options are Linear, NearestNeighbor, BSpline, WindowedSinc, Hamming, Cosine, Welch, Lanczos, or ResampleInPlace.  The ResampleInPlace option will create an image with the same discrete voxel values and will adjust the origin and direction of the physical space interpretation.</p></li>
+</ul>
+</section>
+<section id="advanced-optimization-settings">
+<h3>Advanced Optimization Settings:<a class="headerlink" href="#advanced-optimization-settings" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Max Iterations</strong> (<em>numberOfIterations</em>): The maximum number of iterations to try before stopping the optimization. When using a lower value (500-1000) then the registration is forced to terminate earlier but there is a higher risk of stopping before an optimal solution is reached.</p></li>
+<li><p><strong>Maximum Step Length</strong> (<em>maximumStepLength</em>): Starting step length of the optimizer. In general, higher values allow for recovering larger initial misalignments but there is an increased chance that the registration will not converge.</p></li>
+<li><p><strong>Minimum Step Length</strong> (<em>minimumStepLength</em>): Each step in the optimization takes steps at least this big.  When none are possible, registration is complete. Smaller values allows the optimizer to make smaller adjustments, but the registration time may increase.</p></li>
+<li><p><strong>Relaxation Factor</strong> (<em>relaxationFactor</em>): Specifies how quickly the optimization step length is decreased during registration. The value must be larger than 0 and smaller than 1. Larger values result in slower step size decrease, which allow for recovering larger initial misalignments but it increases the registration time and the chance that the registration will not converge.</p></li>
+<li><p><strong>Transform Scale</strong> (<em>translationScale</em>): How much to scale up changes in position (in mm) compared to unit rotational changes (in radians) – decrease this to allow for more rotation in the search pattern.</p></li>
+<li><p><strong>Reproportion Scale</strong> (<em>reproportionScale</em>): ScaleVersor3D ‘Scale’ compensation factor.  Increase this to allow for more rescaling in a ScaleVersor3D or ScaleSkewVersor3D search pattern.  1.0 works well with a translationScale of 1000.0</p></li>
+<li><p><strong>Skew Scale</strong> (<em>skewScale</em>): ScaleSkewVersor3D Skew compensation factor.  Increase this to allow for more skew in a ScaleSkewVersor3D search pattern.  1.0 works well with a translationScale of 1000.0</p></li>
+<li><p><strong>Maximum B-Spline Displacement</strong> (<em>maxBSplineDisplacement</em>): Maximum allowed displacements in image physical coordinates (mm) for BSpline control grid along each axis.  A value of 0.0 indicates that the problem should be unbounded.  NOTE:  This only constrains the BSpline portion, and does not limit the displacement from the associated bulk transform.  This can lead to a substantial reduction in computation time in the BSpline optimizer.</p></li>
+</ul>
+</section>
+<section id="expert-only-parameters">
+<h3>Expert-only Parameters:<a class="headerlink" href="#expert-only-parameters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Fixed Image Time Index</strong> (<em>fixedVolumeTimeIndex</em>): The index in the time series for the 3D fixed image to fit. Only allowed if the fixed input volume is 4-dimensional.</p></li>
+<li><p><strong>Moving Image Time Index</strong> (<em>movingVolumeTimeIndex</em>): The index in the time series for the 3D moving image to fit. Only allowed if the moving input volume is 4-dimensional</p></li>
+<li><p><strong>Histogram bin count</strong> (<em>numberOfHistogramBins</em>): The number of histogram levels used for mutual information metric estimation.</p></li>
+<li><p><strong>Histogram match point count</strong> (<em>numberOfMatchPoints</em>): Number of histogram match points used for mutual information metric estimation.</p></li>
+<li><p><strong>Cost Metric</strong> (<em>costMetric</em>): The cost metric to be used during fitting. Defaults to MMI. Options are MMI (Mattes Mutual Information), MSE (Mean Square Error), NC (Normalized Correlation), MC (Match Cardinality for binary images)</p></li>
+<li><p><strong>Inferior Cut Off From Center</strong> (<em>maskInferiorCutOffFromCenter</em>): If Initialize Transform Mode is set to useCenterOfHeadAlign or Masking Option is ROIAUTO then this value defines the how much is cut of from the inferior part of the image. The cut-off distance is specified in millimeters, relative to the image center. If the value is 1000 or larger then no cut-off performed.</p></li>
+<li><p><strong>ROIAuto Dilate Size</strong> (<em>ROIAutoDilateSize</em>): This flag is only relevant when using ROIAUTO mode for initializing masks.  It defines the final dilation size to capture a bit of background outside the tissue region.  A setting of 10mm has been shown to help regularize a BSpline registration type so that there is some background constraints to match the edges of the head better.</p></li>
+<li><p><strong>ROIAuto Closing Size</strong> (<em>ROIAutoClosingSize</em>): This flag is only relevant when using ROIAUTO mode for initializing masks.  It defines the hole closing size in mm.  It is rounded up to the nearest whole pixel size in each direction. The default is to use a closing size of 9mm.  For mouse data this value may need to be reset to 0.9 or smaller.</p></li>
+<li><p><strong>Number Of Samples</strong> (<em>numberOfSamples</em>): The number of voxels sampled for mutual information computation.  Increase this for higher accuracy, at the cost of longer computation time.\nNOTE that it is suggested to use samplingPercentage instead of this option. However, if set to non-zero, numberOfSamples overwrites the samplingPercentage option.</p></li>
+<li><p><strong>Stripped Output Transform</strong> (<em>strippedOutputTransform</em>): Rigid component of the estimated affine transform. Can be used to rigidly register the moving image to the fixed image. NOTE:  This value is overridden if either bsplineTransform or linearTransform is set.</p></li>
+<li><p><strong>Transform Type</strong> (<em>transformType</em>): Specifies a list of registration types to be used.  The valid types are, Rigid, ScaleVersor3D, ScaleSkewVersor3D, Affine, BSpline and SyN.  Specifying more than one in a comma separated list will initialize the next stage with the previous results. If registrationClass flag is used, it overrides this parameter setting.</p></li>
+<li><p><strong>Output Transform</strong> (<em>outputTransform</em>): (optional) Filename to which save the (optional) estimated transform. NOTE: You must select either the outputTransform or the outputVolume option.</p></li>
+<li><p><strong>Pass warped moving image to BSpline registration filter</strong> (<em>initializeRegistrationByCurrentGenericTransform</em>): If this flag is ON, the current generic composite transform, resulted from the linear registration stages, is set to initialize the follow nonlinear registration process. However, by the default behavior, the moving image is first warped based on the existent transform before it is passed to the BSpline registration filter. It is done to speed up the BSpline registration by reducing the computations of composite transform Jacobian.</p></li>
+<li><p><strong>writes the output registration transforms in single precision</strong> (<em>writeOutputTransformInFloat</em>): By default, the output registration transforms (either the output composite transform or each transform component) are written to the disk in double precision. If this flag is ON, the output transforms will be written in single (float) precision. It is especially important if the output transform is a displacement field transform, or it is a composite transform that includes several displacement fields.</p></li>
+</ul>
+</section>
+<section id="debugging-parameters">
+<h3>Debugging Parameters:<a class="headerlink" href="#debugging-parameters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Failure Exit Code</strong> (<em>failureExitCode</em>): If the fit fails, exit with this status code.  (It can be used to force a successfult exit status of (0) if the registration fails due to reaching the maximum number of iterations.</p></li>
+<li><p><strong>Write Transform On Failure</strong> (<em>writeTransformOnFailure</em>): Flag to save the final transform even if the numberOfIterations are reached without convergence. (Intended for use when –failureExitCode 0 )</p></li>
+<li><p><strong>Number Of Threads</strong> (<em>numberOfThreads</em>): Explicitly specify the maximum number of threads to use. (default is auto-detected)</p></li>
+<li><p><strong>Debug option</strong> (<em>debugLevel</em>): Display debug messages, and produce debug intermediate results.  0=OFF, 1=Minimal, 10=Maximum debugging.</p></li>
+<li><p><strong>Set Sampling Strategy</strong> (<em>metricSamplingStrategy</em>): It defines the method that registration filter uses to sample the input fixed image. Only Random is supported for now.</p></li>
+<li><p><strong>Log File Report</strong> (<em>logFileReport</em>): A file to write out final information report in CSV file: MetricName,MetricValue,FixedImageName,FixedMaskName,MovingImageName,MovingMaskName</p></li>
+</ul>
+</section>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Hans J. Johnson (hans-johnson -at- <a class="reference external" href="http://uiowa.edu">uiowa.edu</a>, <a class="reference external" href="https://www.psychiatry.uiowa.edu">https://www.psychiatry.uiowa.edu</a>), Ali Ghayoor</p>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>Hans Johnson(1,3,4); Kent Williams(1); Gregory Harris(1), Vincent Magnotta(1,2,3);  Andriy Fedorov(5); Ali Ghayoor(4) 1=University of Iowa Department of Psychiatry, 2=University of Iowa Department of Radiology, 3=University of Iowa Department of Biomedical Engineering, 4=University of Iowa Department of Electrical and Computer Engineering, 5=Surgical Planning Lab, Harvard</p>
+</section>
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<p>Most frequently used for these scenarios and recommended registration settings.</p>
+<section id="same-subject-longitudinal">
+<h3>Same Subject: Longitudinal<a class="headerlink" href="#same-subject-longitudinal" title="Link to this heading"></a></h3>
+<p>For this case we’re registering a baseline T1 scan with a follow-up T1 scan on the same subject a year later.</p>
+<p>First, set the fixed and moving volumes:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--fixedVolume test.nii.gz \
+--movingVolume test2.nii.gz \
+</pre></div>
+</div>
+<p>Next, set the output transform and volume:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--outputVolume testT1LongRegFixed.nii.gz \
+--outputTransform longToBase.xform \
+</pre></div>
+</div>
+<p>Since the input scans are of the same subject we can assume very little has changed in the last year, so we’ll use a Rigid registration.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--transformType Rigid \
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the registration is poor or there are reasons to expect anatomical changes (tumor growth, rapid disease progression, etc.) additional transforms may be needed.  In that case they can be added in a comma separated list, such as “Rigid,ScaleVersor3D,ScaleSkewVersor3D,Affine,BSpline”. Available methods are:</p>
+<ul class="simple">
+<li><p>Rigid</p></li>
+<li><p>ScaleVersor3D</p></li>
+<li><p>ScaleSkewVersor3D</p></li>
+<li><p>Affine</p></li>
+<li><p>BSpline</p></li>
+</ul>
+</div>
+<p>Example: multiple registration methods</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--transformType Rigid,ScaleVersor3D,ScaleSkewVersor3D,Affine,BSpline \
+</pre></div>
+</div>
+<p>The scans are the same modality so we’ll use –histogramMatch to match the intensity profiles as this tends to help the registration.  If there are lesions or tumors that vary between images this may not be a good idea, since it will make it harder to detect differences between the images.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--histogramMatch \
+</pre></div>
+</div>
+<p>To start with the best possible initial alignment we use –initializeTransformMode. The available transform modes are:</p>
+<ul class="simple">
+<li><p>useCenterOfHeadAlign</p></li>
+<li><p>useCenterOfROIAlign</p></li>
+<li><p>useMomentsAlign</p></li>
+<li><p>useGeometryAlign</p></li>
+</ul>
+<p>We’re working with human heads so we pick useCenterOfHeadAlign, which detects the center of head even with varying amounts of neck or shoulders present.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--initializeTransformMode useCenterOfHeadAlign \
+</pre></div>
+</div>
+<p>ROI masks normally improve registration but we haven’t generated any so we turn on –maskProcessingMode ROIAUTO (other options are NOMASK and ROI).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--maskProcessingMode ROIAUTO \
+</pre></div>
+</div>
+<p>The registration generally performs better if we include some background in the mask to make the tissue boundary very clear.  The parameter that expands the mask outside the brain is ROIAutoDilateSize (under “Registration Debugging Parameters” if using the GUI).  These values are in millimeters and a good starting value is 3.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--ROIAutoDilateSize 3 \
+</pre></div>
+</div>
+<p>Lastly, we set the interpolation mode to be Linear, which is a decent tradeoff between quality and speed.  If the best possible interpolation is needed regardless of processing time, select WindowedSync instead.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--interpolationMode Linear
+</pre></div>
+</div>
+<p>The full command is:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">BRAINSFit --fixedVolume test.nii.gz \</span>
+<span class="go">    --movingVolume test2.nii.gz \</span>
+<span class="go">    --outputVolume testT1LongRegFixed.nii.gz \</span>
+<span class="go">    --outputTransform longToBase.xform \</span>
+<span class="go">    --transformType Rigid \</span>
+<span class="go">    --histogramMatch \</span>
+<span class="go">    --initializeTransformMode useCenterOfHeadAlign \</span>
+<span class="go">    --maskProcessingMode ROIAUTO \</span>
+<span class="go">    --ROIAutoDilateSize 3 \</span>
+<span class="go">    --interpolationMode Linear</span>
+</pre></div>
+</div>
+</section>
+<section id="same-subject-multimodal">
+<h3>Same Subject: MultiModal<a class="headerlink" href="#same-subject-multimodal" title="Link to this heading"></a></h3>
+<p>For this use case we’re registering a T1 scan with a T2 scan collected in the same session.  The two images are again available on the <a class="reference external" href="http://midas.kitware.com/item/view/483">Midas site</a> as test.nii.gz and standard.nii.gz</p>
+<p>First we set the fixed and moving volumes as well as the output transform and output volume names.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--fixedVolume test.nii.gz \
+--movingVolume standard.nii.gz \
+--outputVolume testT2RegT1.nii.gz \
+--outputTransform T2ToT1.xform \
+</pre></div>
+</div>
+<p>Since these are the same subject, same session we’ll use a Rigid registration.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--transformType Rigid \
+</pre></div>
+</div>
+<p>The scans are different modalities so we absolutely DO NOT want to use –histogramMatch to match the intensity profiles! This would try to map T2 intensities into T1 intensities resulting in an image that is neither, and hence useless.</p>
+<p>To start with the best possible initial alignment we use –initializeTransformMode. We’re working with human heads so we pick useCenterOfHeadAlign, which detects the center of head even with varying amounts of neck or shoulders present.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--initializeTransformMode useCenterOfHeadAlign \
+</pre></div>
+</div>
+<p>ROI masks normally improve registration but we haven’t generated any so we turn on –maskProcessingMode ROIAUTO (other options are NOMASK and ROI).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--maskProcessingMode ROIAUTO \
+</pre></div>
+</div>
+<p>The registration generally performs better if we include some background in the mask to make the tissue boundary very clear.  The parameter that expands the mask outside the brain is ROIAutoDilateSize (under “Registration Debugging Parameters” if using the GUI).  These values are in millimeters and a good starting value is 3.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--ROIAutoDilateSize 3 \
+</pre></div>
+</div>
+<p>Lastly, we set the interpolation mode to be Linear, which is a decent tradeoff between quality and speed.  If the best possible interpolation is needed regardless of processing time, select WindowedSync instead.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--interpolationMode Linear
+</pre></div>
+</div>
+<p>The full command is:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">BRAINSFit --fixedVolume test.nii.gz \</span>
+<span class="go">    --movingVolume standard.nii.gz \</span>
+<span class="go">    --outputVolume testT2RegT1.nii.gz \</span>
+<span class="go">    --outputTransform T2ToT1.xform \</span>
+<span class="go">    --transformType Rigid \</span>
+<span class="go">    --initializeTransformMode useCenterOfHeadAlign \</span>
+<span class="go">    --maskProcessingMode ROIAUTO \</span>
+<span class="go">    --ROIAutoDilateSize 3 \</span>
+<span class="go">    --interpolationMode Linear</span>
+</pre></div>
+</div>
+</section>
+<section id="mouse-registration">
+<h3>Mouse Registration<a class="headerlink" href="#mouse-registration" title="Link to this heading"></a></h3>
+<p>Here we’ll register brains from two different mice together.  The fixed and moving mouse brains used in this example are available on the <a class="reference external" href="http://midas.kitware.com/item/view/483">Midas site</a> as mouseFixed.nii.gz and mouseMoving.nii.gz.</p>
+<p>First we set the fixed and moving volumes as well as the output transform and output volume names.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--fixedVolume mouseFixed.nii.gz \
+--movingVolume mouseMoving.nii.gz \
+--outputVolume movingRegFixed.nii.gz \
+--outputTransform movingToFixed.xform \
+</pre></div>
+</div>
+<p>Since the subjects are different we are going to use transforms all the way through BSpline.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Building up transforms one type at a time can’t hurt and might help, so we’re including all transforms from Rigid through BSpline in the transformType parameter.</p>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--transformType Rigid,ScaleVersor3D,ScaleSkewVersor3D,Affine,BSpline \
+</pre></div>
+</div>
+<p>The scans are the same modality so we’ll use –histogramMatch.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--histogramMatch \
+</pre></div>
+</div>
+<p>To start with the best possible initial alignment we use –initializeTransformMode but we aren’t working with human heads this time, so we can’t pick useCenterOfHeadAlign! Instead we pick useMomentsAlign which does a reasonable job of selecting the centers of mass.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--initializeTransformMode useMomentsAlign \
+</pre></div>
+</div>
+<p>ROI masks normally improve registration but we haven’t generated any so we turn on –maskProcessingMode ROIAUTO.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--maskProcessingMode ROIAUTO \
+</pre></div>
+</div>
+<p>Since the mouse brains are much smaller than human brains there are a few advanced parameters we’ll need to tweak, ROIAutoClosingSize and ROIAutoDilateSize (both under Registration Debugging Parameters if using the GUI).  These values are in millimeters and a good starting value for mice is 0.9.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--ROIAutoClosingSize 0.9 \
+--ROIAutoDilateSize 0.9 \
+</pre></div>
+</div>
+<p>Lastly, we set the interpolation mode to be Linear, which is a decent tradeoff between quality and speed.  If the best possible interpolation is needed regardless of processing time, select WindowedSync instead.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>--interpolationMode Linear
+</pre></div>
+</div>
+<p>The full command is:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">BRAINSFit --fixedVolume mouseFixed.nii.gz \</span>
+<span class="go">    --movingVolume mouseMoving.nii.gz \</span>
+<span class="go">    --outputVolume movingRegFixed.nii.gz \</span>
+<span class="go">    --outputTransform movingToFixed.xform \</span>
+<span class="go">    --transformType Rigid,ScaleVersor3D,ScaleSkewVersor3D,Affine,BSpline \</span>
+<span class="go">    --histogramMatch \</span>
+<span class="go">    --initializeTransformMode useMomentsAlign \</span>
+<span class="go">    --maskProcessingMode ROIAUTO \</span>
+<span class="go">    --ROIAutoClosingSize 0.9 \</span>
+<span class="go">    --ROIAutoDilateSize 0.9 \</span>
+<span class="go">    --interpolationMode Linear</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://hdl.handle.net/1926/1291">BRAINSFit: Mutual Information Registrations of Whole-Brain 3D Images</a>, Using the Insight Toolkit, Johnson H.J., Harris G., Williams K., The Insight Journal, 2007.</p></li>
+<li><p><a class="reference external" href="https://github.com/BRAINSia/BRAINSTools/tree/main/BRAINSFit">Source code on github</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dataprobe.html" class="btn btn-neutral float-left" title="DataProbe" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="brainsresample.html" class="btn btn-neutral float-right" title="Resample Image (BRAINS)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

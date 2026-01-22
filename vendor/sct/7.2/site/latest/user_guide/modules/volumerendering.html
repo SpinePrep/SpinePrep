@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volume rendering &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Volumes" href="volumes.html" />
+    <link rel="prev" title="View Controllers" href="viewcontrollers.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/volumerendering.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Volume rendering</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-cases">Use cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#display-a-ct-or-mri-volume">Display a CT or MRI volume</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#render-different-volumes-in-two-views">Render different volumes in two views</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hide-certain-regions-of-the-volume">Hide certain regions of the volume</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Volume rendering</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/volumerendering.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="volume-rendering">
+<h1>Volume rendering<a class="headerlink" href="#volume-rendering" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Volume rendering (also known as volume ray casting) is a visualization technique for displaying image volumes as 3D objects directly - without requiring segmentation.</p>
+<p>This is accomplished by specifying color and opacity for each voxel, based on its image intensity. Several presets are available for this mapping, for displaying bones, soft tissues, air, fat, etc. on CT and MR images. Users can fine-tune these presets for each image.</p>
+</section>
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<section id="display-a-ct-or-mri-volume">
+<h3>Display a CT or MRI volume<a class="headerlink" href="#display-a-ct-or-mri-volume" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Load a data set (for example, use <code class="docutils literal notranslate"><span class="pre">Sample</span> <span class="pre">Data</span></code> module to load “CTChest” data set)</p></li>
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Data</span></code> module</p></li>
+<li><p>Show volume rendering:</p>
+<ul>
+<li><p>Option A: drag-and-drop the volume in the subject hierarchy tree into a 3D view</p></li>
+<li><p>Option B: right-click on the eye icon, and choose “Show in 3D views as volume rendering”</p></li>
+</ul>
+</li>
+</ul>
+<p>To adjust volume rendering settings:</p>
+<ul class="simple">
+<li><p>Option A: Switch to “Adjust window/level” mouse mode using the toolbar. Click on a displayed volume and click-and-drag to adjust the rendering settings.</p>
+<ul>
+<li><p>Moving the mouse vertically: shifts the opacity and color transfer functions, which changes what range of voxel values are visible in the image (similar to intensity “level” adjustment).</p></li>
+<li><p>Moving the mouse horizontally: shrinks or stretches the transfer functions (similar to intensity “window” adjustment).</p></li>
+<li><p>Holding down <kbd>Ctrl</kbd> key while starting the click-and drag and then moving the mouse vertically: adjusts the opacity of the volume.</p></li>
+</ul>
+</li>
+<li><p>Option B:</p>
+<ul>
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Volume</span> <span class="pre">rendering</span></code> module and select the volume to be adjusted. This can be achieved by right-click on the eye icon in the <code class="docutils literal notranslate"><span class="pre">Data</span></code> module and choose “Volume rendering settings”.</p></li>
+<li><p>Choose a different preset in Display section.</p></li>
+<li><p>Adjust “Offset” slider to change what image intensity range is visible.</p></li>
+</ul>
+</li>
+</ul>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_volumerendering_basic.png" /></p>
+<p>Note that if the volume is under a non-linear warping transformation then internally the entire volume is resampled at its native resolution. To better control image quality and computation time, <code class="docutils literal notranslate"><span class="pre">Crop</span> <span class="pre">volume</span></code> module can be used to resample at a different resolution or resample only a certain part of the volume.</p>
+</section>
+<section id="render-different-volumes-in-two-views">
+<h3>Render different volumes in two views<a class="headerlink" href="#render-different-volumes-in-two-views" title="Link to this heading"></a></h3>
+<p>Switch to a layout with multiple 3D views (for example “Dual 3D”) using the toolbar and then use one of the two options below.</p>
+<p>Option A:</p>
+<ul class="simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Data</span></code> module and drag-and-drop each volume into the 3D view</p></li>
+</ul>
+<p>Option B:</p>
+<ul class="simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Volume</span> <span class="pre">Rendering</span></code> module</p></li>
+<li><p>Open the “Inputs” section</p></li>
+<li><p>Select the first volume</p></li>
+<li><p>Click View list and uncheck “View2” (only “View1” should be checked)</p></li>
+<li><p>Click the eye icon for the volume to show up in “View1”</p></li>
+<li><p>Select the second volume</p></li>
+<li><p>Click View list and uncheck “View1” (only “View2” should be checked)</p></li>
+<li><p>Click the eye icon for the volume to show up in “View2”</p></li>
+</ul>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_volumerendering_multiview.png" /></p>
+</section>
+<section id="hide-certain-regions-of-the-volume">
+<h3>Hide certain regions of the volume<a class="headerlink" href="#hide-certain-regions-of-the-volume" title="Link to this heading"></a></h3>
+<p>It may be necessary to hide certain regions of a volume, for example remove patient table, or remove ribs that would occlude the view of the heart or lungs. If the regions cannot be hidden by adjusting the cropping box (ROI) then an arbitrarily shaped regions can be blanked out from the volume by following these steps:</p>
+<ul class="simple">
+<li><p>Go to the Segment Editor module</p></li>
+<li><p>Use Paint or Scissors effect to specify the region that will be blanked out</p></li>
+<li><p>Use Mask volume effect to fill the region with “empty” values. In CT volume, intensity value is typically set to -1000 (corresponding to HU of air).</p></li>
+<li><p>Hide the volume rendering of the original volume and set up volume rendering for the masked volume</p></li>
+<li><p>If adjusting the rendered region is needed, go back to Segment Editor module, modify the segmentation using Paint, Scissors, or other effects; and update the masked volume using Mask volume effect</p></li>
+</ul>
+<p>See <a class="reference external" href="https://youtu.be/xZwyW6SaoM4?t=12">video demo/tutorial of these steps</a> for details. It is created on an older Slicer version, so some details may be different but the high-level workflow main workflow is still very similar.</p>
+</section>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Inputs:</strong> Contains the list of nodes required for VolumeRendering. It is unlikely that you need to interact with controllers.</p>
+<ul>
+<li><p>Volume: Select the current volume to render. Note that only one volume can be rendered at a time.</p></li>
+<li><p>Display: Select the current volume rendering display properties. Volume rendering display nodes contains all the information relative to volume rendering. They contain pointers to the ROI, volume property and view nodes. A new display node is automatically created if none exist for the current volume.</p></li>
+<li><p>ROI: Select the current ROI to optionally crop with 6 planes the volume rendering.</p></li>
+<li><p>Property: Select the current Volume Property. Volume properties contain the opacity, color and gradient transfer functions for each component.</p></li>
+<li><p>View: Select the 3D views where the volume rendering must be displayed into. If no view is selected, the volume rendering is visible in all views</p></li>
+</ul>
+</li>
+<li><p><strong>Display:</strong> Main properties for the volume rendering.</p>
+<ul>
+<li><p>Preset: Apply a pre-defined set of functions for the opacity, color and gradient transfer functions. The generic presets have been tuned for a combination of modalities and organs. They may need some manual tuning to fit your data.</p></li>
+<li><p>Shift: Move all the inner points (first and last excluded) of the current transfer functions to the right/left (lower/higher). It can be useful when a preset defines a ramp from 0 to 200 but your data requires a ramp from 1000 to 1200.</p></li>
+<li><p>Crop: Simple controls for the cropping box (ROI). More controls are available in the “Advanced…” section. Enable/Disable cropping of the volume. Show/Hide the cropping box. Reset the box ROI to the volume’s bounds.</p></li>
+<li><p>Rendering: Select a volume rendering method. A default method can be set in the application settings Volume Rendering panel.</p>
+<ul>
+<li><p>VTK CPU Ray Casting: Available on all computers, regardless of capabilities of graphics hardware. The volume rendering is entirely realized on the CPU, therefore it is slower than other options.</p></li>
+<li><p>VTK GPU Ray Casting (default): Uses graphics hardware for rendering, typically much faster than CPU volume rendering. This is the recommended method for computers that have sufficient graphics capabilities. It supports surface smoothing to remove staircase artifacts.</p></li>
+<li><p>VTK Multi-Volume: Uses graphics hardware for rendering. Can render multiple overlapping volumes but it has several limitations (see details in <a class="reference internal" href="#limitations">limitations</a> section at the bottom of this page.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Advanced: More controls to control the volume rendering. Contains 3 tabs: “Techniques”, “Volume Properties” and “ROI”</p>
+<ul>
+<li><p>Techniques: Advanced properties of the current volume rendering method.</p>
+<ul>
+<li><p>Quality:</p>
+<ul>
+<li><p>Adaptive: quality is reduced while interacting with the view (rotating, changing volume rendering settings, etc.). This mechanism relies on measuring the current rendering time and adjusting quality (number of casted rays, sampling distances, etc.) for the next rendering request to achieve the requested frame rate. This works very well for CPUs because the computation time is very predictable, but for GPU volume rendering fixed quality (“Normal” setting) may be more suitable.</p>
+<ul>
+<li><p>Interactive speed: Ensure the given frame per second (FPS) is enforced in the views during interaction. The higher the FPS, the lower the resolution of the volume rendering.</p></li>
+</ul>
+</li>
+<li><p>Normal (default): fixed rendering quality, should work well for volumes that the renderer can handle without difficulties.</p></li>
+<li><p>Maximum: oversamples the image to achieve higher image quality, at the cost of slowing down the rendering.</p></li>
+</ul>
+</li>
+<li><p>Auto-release resources: When a volume is shown using volume rendering then graphics resources are allocated (GPU memory, precomputed gradient and space leaping volumes, etc.). This flag controls if these resources are automatically released when the volume is hidden. Releasing the resources reduces memory usage, but it increases the time required to show the volume again. Default value can be set in application settings Volume Rendering panel.</p></li>
+<li><p>Technique:</p>
+<ul>
+<li><p>Composite with shading (default): display as a shaded surface</p></li>
+<li><p>Maximum intensity projection: display brightest voxel value encountered in each projection line</p></li>
+<li><p>Minimum intensity projection: display darkest voxel value encountered in each projection line</p></li>
+</ul>
+</li>
+<li><p>Surface smoothing: check this checkbox to reduce staircase artifacts by adding a random noise pattern (jitter) to the raycasting lines</p></li>
+</ul>
+</li>
+<li><p>Volume Properties: Advanced views of the transfer functions.</p>
+<ul>
+<li><p>Synchronize with Volumes module: show volume rendering with the same color mapping that is used in slice views</p>
+<ul>
+<li><p>Click: Apply once the properties (window/level, threshold, lut) of the Volumes module to the Volume Rendering module.</p></li>
+<li><p>Checkbox: By clicking on the checkbox, you can toggle the button. When toggled, any modification occurring in the Volumes module is continuously applied to the volume rendering</p></li>
+</ul>
+</li>
+<li><p>Control point properties: X = scalar value, O = opacity, M = mid-point, S = sharpness</p></li>
+<li><p>Keyboard/mouse shortcuts:</p>
+<ul>
+<li><p>Left button click: Set current point or create a new point if no point is under the mouse.</p></li>
+<li><p>Left button move: Move the current or selected points if any.</p></li>
+<li><p>Right button click: Select/unselect point. Selected points can be moved at once</p></li>
+<li><p>Right button move: Define an area to select points:</p></li>
+<li><p>Middle button click : Delete point under the mouse cursor.</p></li>
+<li><p>Right/Left arrow keys: Change of current point</p></li>
+<li><p>Delete key: Delete the current point and set the next point as current</p></li>
+<li><p>Backspace key : Delete the current point and set the previous point as current</p></li>
+<li><p>ESC key: Unselect all points.</p></li>
+</ul>
+</li>
+<li><p>Scalar Opacity Mapping: Opacity transfer function. Threshold mode: enabling threshold controls the transfer function using range sliders in addition to control points.</p></li>
+<li><p>Scalar Color Mapping: Color transfer function. This section is not displayed for color (RGB or RGBA) volumes, as no scalar to color mapping is performed in this case (but each voxel’s color is used directly).</p></li>
+<li><p>Gradient Opacity: Gradient opacity transfer function. This controls the opacity according to how large a density gradient next to the voxel is.</p></li>
+<li><p>Advanced:</p>
+<ul>
+<li><p>Interpolation: Linear (default for scalar volumes) or nearest neighbor (default for labelmaps) interpolation.</p></li>
+<li><p>Shade: Enable/Disable shading. Shading uses light and material properties. Disable it to display X-ray-like projection.</p></li>
+<li><p>Material: Material properties of the volume to compute shading effect.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>ROI: More controls for the cropping box.</p>
+<ul>
+<li><p>Display Clipping box: Show hide the bounds of the ROI box.</p></li>
+<li><p>Interactive mode: Control whether the cropping box is instantaneously updated when dragging the sliders or only when the mouse button is released.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
+<ul>
+<li><p>To render multiple overlapping volumes, select “VTK Multi-Volume” rendering in “Display” section. This renderer is still experimental and has limitations such as:</p>
+<ul class="simple">
+<li><p>Cropping is not supported (cropping ROI is ignored)</p></li>
+<li><p>RGB volume rendering is not supported (volume does not appear)</p></li>
+<li><p>Only “Composite with shading” rendering technique is supported (volume does not appear if “Maximum Intensity Projection” or “Minimum Intensity Projection” technique is selected)</p></li>
+</ul>
+</li>
+<li><p>To reduce staircase artifacts during rendering, choose enable “Surface smoothing” in Advanced/Techniques/Advanced rendering properties section, or choose “Normal” or “Maximum” as quality.</p></li>
+<li><p>If the application crashes when rotating or zooming a volume: This indicates that you get a TDR error, i.e., the operating system shuts down applications that keep the graphics card busy for too long. This happens because the size of the volume is too large for your GPU to comfortably handle. There are several ways to work around this:</p>
+<ul>
+<li><p>Option A: Run the code snippet in the Python console (<kbd>Ctrl</kbd>-<kbd>3</kbd>) to split the volume to smaller chunks (that way you have a better chance that the graphics card will not be unresponsive for too long).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">slicer</span><span class="o">.</span><span class="n">vtkMRMLVolumeRenderingDisplayableManager</span><span class="o">.</span><span class="n">SetMaximum3DTextureSize</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">vrDisplayNode</span> <span class="ow">in</span> <span class="n">getNodesByClass</span><span class="p">(</span><span class="s1">&#39;vtkMRMLVolumeRenderingDisplayNode&#39;</span><span class="p">):</span>
+    <span class="n">slicer</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">arrayFromVolumeModified</span><span class="p">(</span><span class="n">vrDisplayNode</span><span class="o">.</span><span class="n">GetVolumeNode</span><span class="p">())</span>
+</pre></div>
+</div>
+</li>
+<li><p>Option B: Crop and downsample your volume using Crop volume and volume render this smaller volume.</p></li>
+<li><p>Option C: Increase TDR delay value in registry (see details <a class="reference external" href="https://docs.microsoft.com/en-us/windows-hardware/drivers/display/tdr-registry-keys">here</a>)</p></li>
+<li><p>Option D: Use CPU volume rendering.</p></li>
+<li><p>Option E: Upgrade your computer with a stronger graphics card.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<p>See examples and other developer information in <a class="reference internal" href="../../developer_guide/modules/volumerendering.html"><span class="doc std std-doc">Developer guide</span></a> and <a class="reference internal" href="../../developer_guide/script_repository.html#volumes"><span class="std std-ref">Script repository</span></a>.</p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Julien Finet (Kitware)</p></li>
+<li><p>Alex Yarmarkovich (Isomics)</p></li>
+<li><p>Csaba Pinter (PerkLab, Queen’s University)</p></li>
+<li><p>Andras Lasso (PerkLab, Queen’s University)</p></li>
+<li><p>Yanling Liu (SAIC-Frederick, NCI-Frederick)</p></li>
+<li><p>Andreas Freudling (SPL, BWH)</p></li>
+<li><p>Ron Kikinis (SPL, BWH)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is part of the National Alliance for Medical Image Computing (NAMIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149. Some of the transfer functions were contributed by Kitware Inc. (VolView)</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_kitware.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_isomics.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_spl.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="viewcontrollers.html" class="btn btn-neutral float-left" title="View Controllers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="volumes.html" class="btn btn-neutral float-right" title="Volumes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

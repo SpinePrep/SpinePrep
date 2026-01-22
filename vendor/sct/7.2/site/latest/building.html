@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building SimpleITK &mdash; SimpleITK 2.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css" />
+
+  
+    <link rel="shortcut icon" href="_static/yellow_itk_icon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Building SimpleITK on Windows" href="buildingWindows.html" />
+    <link rel="prev" title="SimpleITK Filters" href="filters.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpleitk" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/building.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SimpleITK
+              <img src="_static/simpleitk_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentalConcepts.html">Fundamental Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registrationOverview.html">Registration Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Common Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IO.html">Reading and Writing for Images and Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">SimpleITK Filters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Building SimpleITK</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#recipes-formulas-short-cuts">Recipes / Formulas / Short cuts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#source-code">Source code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-using-superbuild">Building using SuperBuild</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="buildingWindows.html">Building SimpleITK on Windows</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#building-manually">Building Manually</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#additional-prerequisites">Additional Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-and-building">Configuration and Building</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-build-options">Advanced Build Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installation-from-build-tree">Installation from Build Tree</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#python-installation">Python Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#r-installation">R Installation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#building-simpleitk-sphinx-based-documentation">Building SimpleITK Sphinx based documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-sphinx-python-virtual-environment">Set up Sphinx Python virtual environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#build-documentation">Build documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setUp.html">Setting Up Eclipse and Visual Studio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsAndCourses.html">Tutorials and Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrationGuide2.0.html">Migration Guide 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FilterTemplates.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="link_examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimpleITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Building SimpleITK</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/building.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="building-simpleitk">
+<span id="id1"></span><h1>Building SimpleITK<a class="headerlink" href="#building-simpleitk" title="Permalink to this heading"></a></h1>
+<p>Pre-built binaries (see <a class="reference internal" href="gettingStarted.html#installation-binaries"><span class="std std-ref">Downloading the binaries</span></a>) are available in many cases so
+users do not need to build SimpleITK. However, there are
+several reasons to <strong>build SimpleITK from source code</strong>:</p>
+<ul class="simple">
+<li><p>The binary files for a preferred programming language may not
+(yet) be distributed.</p></li>
+<li><p>To use the latest-and-greatest version of SimpleITK from the development branch.</p></li>
+<li><p>To wrap custom filters using the SimpleITK infrastructure.</p></li>
+<li><p>To contribute to the development of SimpleITK.</p></li>
+<li><p>To use the SimpleITK C++ interface and/or use ITK directly.</p></li>
+</ul>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
+<p>To build SimpleITK you need:</p>
+<ul class="simple">
+<li><p>A recent version of <a class="reference external" href="http://www.cmake.org/">CMake</a> &gt;= 3.16.3 with SSL
+support for https.</p></li>
+<li><p>A supported <a class="reference internal" href="faq.html#faq-compiler-supported"><span class="std std-ref">compiler</span></a>.</p></li>
+<li><p>To use the latest developmental version, source code can be
+downloaded with <a class="reference external" href="http://git-scm.com/">git</a> &gt;= 1.65</p>
+<ul>
+<li><p>Git is required if building SimpleITK using <a class="reference internal" href="#building-superbuild"><span class="std std-ref">SuperBuild</span></a>
+to automatically download the matching version of ITK,
+SWIG, etc…</p></li>
+<li><p>Windows users may prefer <a class="reference external" href="https://gitforwindows.org/">Git For Windows</a></p></li>
+</ul>
+</li>
+<li><p>If you are wrapping SimpleITK for a language, that language’s development libraries are
+also required.</p></li>
+</ul>
+</section>
+<section id="system-requirements">
+<h2>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this heading"></a></h2>
+<p>Building SimpleITK requires a significant amount of compute power, and a reasonably
+powerful, modern computer is recommended.  We suggest at least 4
+gigabytes (GB) of RAM plus an additional 2 GB per job process when building with
+multiple jobs.  A system with at least 4 cores for multi-job compilation is suggested.</p>
+<p>Building a SuperBuild of SimpleITK’s C++ core including all the testing and
+example code requires approximately 10 GB of disk space.  Enabling the
+wrapping of Python or R can add 2 GB per language, and enabling the
+wrapping of all the languages SimpleITK supports, can bring the entire
+build folder to 16 GB.</p>
+</section>
+<section id="recipes-formulas-short-cuts">
+<h2>Recipes / Formulas / Short cuts<a class="headerlink" href="#recipes-formulas-short-cuts" title="Permalink to this heading"></a></h2>
+<p>Before you start please make sure you have the required <a class="reference internal" href="#prerequisites">Prerequisites</a> installed.</p>
+<p>For some environments we have short cuts, scripts, for automated
+building of SimpleITK (see their repository for more details):</p>
+<ul class="simple">
+<li><p>For <strong>Python</strong>: The
+<a class="reference external" href="https://github.com/scikit-build/scikit-build">scikit-build</a> based
+distutils based <a class="reference external" href="https://github.com/SimpleITK/SimpleITKPythonPackage">setup.py
+frontend</a> can be
+used to build, install, and package SimpleITK for Python.</p></li>
+<li><p>For the <strong>R language</strong> (version 3.3 or greater): A remotes installer and instructions are
+available from <a class="reference external" href="https://github.com/SimpleITK/SimpleITKRInstaller">this GitHub
+repository</a>.</p></li>
+</ul>
+</section>
+<section id="source-code">
+<span id="id2"></span><h2>Source code<a class="headerlink" href="#source-code" title="Permalink to this heading"></a></h2>
+<p>If one of the above language specific front-ends are not used then
+SimpleITK must be built directly.</p>
+<p>Before you start please make sure you have the required <a class="reference internal" href="#prerequisites">Prerequisites</a> installed.</p>
+<p>All of the instructions assume you are working on the command line.</p>
+<p>Words of caution for building on the Windows operating system:</p>
+<ul class="simple">
+<li><p>Windows has issues with long directory paths. We recommend cloning the
+source code near the root (e.g. C:\src).</p></li>
+<li><p>To avoid potential issues do not clone the source into a path which has spaces
+in the directory name (e.g. C:\Users\SimpleITK Source).</p></li>
+</ul>
+<p>First obtain the SimpleITK source code:</p>
+<ol class="arabic simple">
+<li><p>Download the latest development version using git</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/SimpleITK/SimpleITK.git
+</pre></div>
+</div>
+</section>
+<section id="building-using-superbuild">
+<span id="building-superbuild"></span><h2>Building using SuperBuild<a class="headerlink" href="#building-using-superbuild" title="Permalink to this heading"></a></h2>
+<p>After downloading SimpleITK’s source code we <strong>STRONGLY</strong> recommend
+running cmake on the SuperBuild subdirectory of SimpleITK. Execute the
+following commands in the parent of the SimpleITK source directory to
+configure the SuperBuild:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>SimpleITK-build
+<span class="nb">cd</span><span class="w"> </span>SimpleITK-build
+cmake<span class="w"> </span>../SimpleITK/SuperBuild
+</pre></div>
+</div>
+<p>The SuperBuild will automatically download and build the matching
+versions of ITK, SWIG, and GTest (if testing is enabled) and will use
+<a class="reference external" href="https://docs.astral.sh/uv/">‘uv’</a> to download Python then create a virtual
+environment with required packages needed to build SimpleITK.</p>
+<p>If you get an error message saying that ITK_DIR is not set then, you
+did not correctly point cmake to the SuperBuild sub-directory. Please
+erase your binary directory, and point cmake to the SimpleITK/SuperBuild
+sub-directory.</p>
+<p>The CMake configuration process should automatically find supported
+languages and enable SimpleITK wrapping for them. To manually enable a
+language toggle the appropriate WRAP_LANGUAGE cmake variable to ON.
+Verify and correct the advanced cmake variables for the language
+specific executable, libraries and include directories. For example if
+you have multiple Python installations ensure that all related Python
+variables refer to the same versions.</p>
+<p>Then use your make utility or your cmake chosen build utility to build
+SimpleITK. As the SimpleITK build process may take a while, it is
+important to use the appropriate flags to enable multi-process
+compilation i.e. “-j” for make, “/MP” for Visual Studio, or use the
+CMake <a class="reference external" href="https://ninja-build.org">Ninja</a> generator.</p>
+<p>For <strong>building SimpleITK on Windows</strong> using the CMake GUI see:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="buildingWindows.html">Building SimpleITK on Windows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="windowsPathLength.html">Path Length Issues on Windows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="windowsPathLength.html#building-simpleitk-with-long-path-names">Building SimpleITK with long path names</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="windowsPathLength.html#enabling-long-paths-in-windows">Enabling Long Paths in Windows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="windowsPathLength.html#setting-itk-skip-path-length-checks">Setting ITK_SKIP_PATH_LENGTH_CHECKS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="buildingWindows.html#cmake-gui-on-windows">CMake GUI on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="buildingWindows.html#configuring-and-generating-the-build">Configuring and Generating the Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="buildingWindows.html#building-simpleitk-in-visual-studio">Building SimpleITK in Visual Studio</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="building-manually">
+<h2>Building Manually<a class="headerlink" href="#building-manually" title="Permalink to this heading"></a></h2>
+<p>By not using the superbuild, you must manually specify all dependencies
+used during the building of SimpleITK instead of using the known
+working versions provided by the superbuild as external projects. This
+may be useful if you are providing a system package of SimpleITK or tightly
+integrating it into another build system. The versions of external
+projects used and tested by SimpleITK can be found by examining the
+External CMake files in the Superbuild sub-directory.</p>
+<section id="additional-prerequisites">
+<h3>Additional Prerequisites<a class="headerlink" href="#additional-prerequisites" title="Permalink to this heading"></a></h3>
+<p>These additional dependencies are required when not using the SuperBuild:</p>
+<ol class="arabic simple">
+<li><p>Setup the prerequisites as described above (i.e. CMake and supported
+compiler)</p></li>
+<li><p><a class="reference external" href="https://itk.org/">Insight Toolkit (ITK)</a> the version specified in
+the External_ITK.cmake file is the version of ITK used for the binary
+release. This can be seen as the minimum version of ITK to be used
+with SimpleITK, as future ITK versions are generally backwards
+compatible.</p></li>
+<li><p><a class="reference external" href="https://www.python.org">Python</a> &gt;= 3.9 with
+<a class="reference external" href="https://jinja.palletsprojects.com/en/stable/">Jinja2</a> is required
+for code generation of the SimpleITK core C++ library.</p></li>
+<li><p><a class="reference external" href="http://www.swig.org/">SWIG</a> &gt;= 4.3</p></li>
+<li><p>GTest or <a class="reference external" href="https://github.com/google/googletest">Google Test</a> &gt;= 1.15
+is needed if testing is enabled.</p></li>
+</ol>
+</section>
+<section id="configuration-and-building">
+<h3>Configuration and Building<a class="headerlink" href="#configuration-and-building" title="Permalink to this heading"></a></h3>
+<p>After the source code is obtained, SimpleITK can be configured on
+Unix-like systems like so:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>SimpleITK-build
+<span class="nb">cd</span><span class="w"> </span>SimpleITK-build
+cmake<span class="w"> </span>../SimpleITK
+</pre></div>
+</div>
+<p>If all the dependencies are installed in standard places, then the CMake
+configuration should detect them properly. Otherwise, if there are
+configuration errors, the proper CMake variable should be set. CMake
+variables can be either set with a CMake interactive GUI such as
+<cite>ccmake</cite> or <cite>cmake-qt</cite>, as arguments on the command line by using
+the following format: <cite>-D&lt;var&gt;=&lt;value&gt;</cite>, or by editing the CMakeCache.txt
+file.</p>
+<p>After proper configuration, SimpleITK can be built:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-j<span class="k">$(</span>nproc<span class="k">)</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-build-options">
+<span id="id3"></span><h3>Advanced Build Options<a class="headerlink" href="#advanced-build-options" title="Permalink to this heading"></a></h3>
+<p>SimpleITK is aware of the modularity of ITK and automatically enables
+and disables filters based on which modules are available from the ITK
+build which SimpleITK is compiled against. This makes it possible to
+customize SimpleITK to be a small library or to wrap additional ITK
+remote modules simply by configuring ITK with the desired modules
+enabled.</p>
+<p>For example, the CoherenceEnhancingDiffusionImageFilter is an optional
+filter in SimpleITK as it’s part of the ITK remote module
+AnisotropicDiffusionLBR. This remote module is not enabled by default
+when building ITK and SimpleITK. To enable it when using SimpleITK’s
+Superbuild add <cite>-DModule_AnisotropicDiffusionLBR:BOOL=ON</cite> to the
+command line or in the CMake GUI press the “Add Entry” button to
+define the variable as above.</p>
+<p>SimpleITK has a very flexible and robust build system utilizing
+CMake. It enables packagers to build SimpleITK in a variety of ways to
+suit their requirements and minimize recompilation of SimpleITK so
+that it can be wrapped for many different languages. Each of the
+language wrapping sub-directories e.g. “Wrapping/Python” can be
+configured and built as an independent project which is dependent on
+SimpleITK as an installed package of its libraries and header filers.</p>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h3>
+<p>After compilation the prudent thing to do is to test SimpleITK to
+ensure that the build is stable and suitable for installation and use. To enable
+testing the cmake <cite>BUILD_TESTING</cite> variable must be enabled during the build process.
+Then the following commands execute the SimpleITK tests.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>SimpleITK-build/SimpleITK-build
+ctest<span class="w"> </span>.
+</pre></div>
+</div>
+<p>On Windows you will need to specify configuration. Typically that would
+be the Release configuration, as such:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>SimpleITK-build/SimpleITK-build
+ctest<span class="w"> </span>-C<span class="w"> </span>Release
+</pre></div>
+</div>
+</section>
+<section id="installation-from-build-tree">
+<span id="id4"></span><h3>Installation from Build Tree<a class="headerlink" href="#installation-from-build-tree" title="Permalink to this heading"></a></h3>
+<section id="python-installation">
+<span id="id5"></span><h4>Python Installation<a class="headerlink" href="#python-installation" title="Permalink to this heading"></a></h4>
+<p>To install a built python package into the system Python, as root run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>SimpleITK-build/Wrapping/Python
+</pre></div>
+</div>
+<p>Preferably, a Python virtual environment is created and the
+distribution installed there.</p>
+<p>A Python Wheel file (.whl) is built by the “dist” target and produced in the
+“Wrapping/Python/dist” directory. If you use the
+Superbuild with the “make” generator then issue the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>-C<span class="w"> </span>SimpleITK-build<span class="w"> </span>dist
+</pre></div>
+</div>
+</section>
+<section id="r-installation">
+<h4>R Installation<a class="headerlink" href="#r-installation" title="Permalink to this heading"></a></h4>
+<p>To install a built R package:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>SimpleITK-build/Wrapping/R/Packaging
+R<span class="w"> </span>CMD<span class="w"> </span>INSTALL<span class="w"> </span>SimpleITK
+</pre></div>
+</div>
+<p>This installs the R package “SimpleITK” in /usr/local as root or
+your local R installation directory.</p>
+<p>If you work in a multi-user environment, and are considerate of
+your fellow users you can install the package in a local directory:</p>
+<ol class="arabic simple">
+<li><p>Create a local directory to install your R packages</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>my_R_libs
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>In your home directory create a file named .Renviron with the following line</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">R_LIBS_USER</span><span class="o">=</span><span class="s2">&quot;/path_to/my_R_libs&quot;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Check that the R library paths include this directory, in an R shell or from RStudio:</p></li>
+</ol>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="nf">.libPaths</span><span class="p">()</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>install</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>SimpleITK-build/Wrapping/R/Packaging
+R<span class="w"> </span>CMD<span class="w"> </span>INSTALL<span class="w"> </span>-l<span class="w"> </span>/path_to/my_R_libs<span class="w"> </span>SimpleITK
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="building-simpleitk-sphinx-based-documentation">
+<h2>Building SimpleITK Sphinx based documentation<a class="headerlink" href="#building-simpleitk-sphinx-based-documentation" title="Permalink to this heading"></a></h2>
+<p>SimpleITK uses <a class="reference external" href="https://www.sphinx-doc.org">Sphinx</a> to create the documentation hosted on read-the-docs. To build this documentation we set up a Python environment with the appropriate packages.</p>
+<section id="set-up-sphinx-python-virtual-environment">
+<h3>Set up Sphinx Python virtual environment<a class="headerlink" href="#set-up-sphinx-python-virtual-environment" title="Permalink to this heading"></a></h3>
+<p>The following are steps for setting up Sphinx:</p>
+<ol class="arabic simple">
+<li><p>Create a Python virtual environment (“sitkenv” is the name for the new virtual environment and its directory in this example).</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>sitkenv
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Activate the virtual environment</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>sitkenv/bin/activate
+<span class="o">(</span>sitkenv<span class="o">)</span><span class="w"> </span>$
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Install Sphinx and packages using the requirements.txt (found in SimpleITK/docs directory).</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>sitkenv<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>SimpleITK/docs/requirements.txt
+</pre></div>
+</div>
+</section>
+<section id="build-documentation">
+<h3>Build documentation<a class="headerlink" href="#build-documentation" title="Permalink to this heading"></a></h3>
+<p>Once the Sphinx environment is configured, build the SimpleITK documentation. From the SimpleITK/docs directory (on OSX/Linux):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>sitkenv<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>make<span class="w"> </span>html
+</pre></div>
+</div>
+<p>Results are in the SimpleITK/docs/build/html directory.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="filters.html" class="btn btn-neutral float-left" title="SimpleITK Filters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="buildingWindows.html" class="btn btn-neutral float-right" title="Building SimpleITK on Windows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NumFOCUS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

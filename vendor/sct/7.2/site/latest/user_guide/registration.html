@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registration &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Modules" href="modules/index.html" />
+    <link rel="prev" title="Image Segmentation" href="image_segmentation.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/registration.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Registration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#manual-registration">Manual registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#semi-automatic-registration">Semi-automatic registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#automatic-image-registration">Automatic image registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#segmentation-and-binary-image-registration">Segmentation and binary image registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-registration">Model registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-information">More information</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Registration</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/registration.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="registration">
+<h1>Registration<a class="headerlink" href="#registration" title="Link to this heading"></a></h1>
+<p>Goal of registration is to align position and orientation of images, models, and other objects in 3D space. 3D Slicer offers many registration tools, this page only lists those that are most commonly used.</p>
+<section id="manual-registration">
+<h2>Manual registration<a class="headerlink" href="#manual-registration" title="Link to this heading"></a></h2>
+<p>Any data nodes (images, models, markups, etc.) can be placed under a transform and the transform can be adjusted interactively in <a class="reference internal" href="modules/transforms.html"><span class="std std-doc">Transforms</span></a> module (using sliders) or in 3D views.</p>
+<p>Advantage of this approach is that it is simple, applicable to any data type, and approximate alignment can be reached very quickly. However, achieving accurate registration using this approach is tedious and time-consuming, because many fine adjustments steps are needed, with visual checks in multiple orientations after each adjustment.</p>
+</section>
+<section id="semi-automatic-registration">
+<h2>Semi-automatic registration<a class="headerlink" href="#semi-automatic-registration" title="Link to this heading"></a></h2>
+<p>Registration can be computed automatically from corresponding landmark point pairs specified on the two objects. Typially 6-8 points are enough for a robust and accurate rigid registration.</p>
+<p>Recommended modules:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Modules/LandmarkRegistration">Landmark registration</a>: for registering slightly misaligned images. Supports rigid and deformable registration with automatic local landmark refinement, live preview, image comparison.</p></li>
+<li><p>Fiducial registration wizard (in <a class="reference external" href="https://www.slicerigt.org/">SlicerIGT extension</a>): for registering any data nodes (even mixed data, such as registration of images to models), and for images that are not aligned at all. Supports rigid and deformable registration, automatic point matching, automatic collection from tracked pointer devices. See <a class="reference external" href="https://www.slicerigt.org/wp/user-tutorial/">U-12 SlicerIGT tutorial</a> for a quick introduction of main features.</p></li>
+</ul>
+</section>
+<section id="automatic-image-registration">
+<h2>Automatic image registration<a class="headerlink" href="#automatic-image-registration" title="Link to this heading"></a></h2>
+<p>Grayscale images can be automatically aligned to each other using intensity-based registration methods. If an image does not show up in the input image selector then most likely it is a color image, which can be converted to grayscale using <em>Vector to scalar volume</em> module.</p>
+<p>Intensity-based image registration methods require reasonable initial alignment, typically less than a few centimeter translation and less than 10-20 degrees rotation error. Some registration methods can perform initial position alignment (e.g., using center of gravity) and orientation alignment (e.g., matching moments). If automatic alignment is not robust then manual or semi-automatic registration methods can be used as a first step.</p>
+<p>It is highly recommended to crop the input images to cover approximately the same anatomical region. This allows faster and much more robust registration. Images can be cropped using <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Modules/CropVolume">Crop volume module</a>.</p>
+<p>Recommended modules:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/lassoan/SlicerElastix#slicerelastix">General registration (Elastix) (in SlicerElastix extension)</a>: Its default registration presets work without the need for any parameter adjustments.</p></li>
+<li><p><a class="reference external" href="https://github.com/simonoxen/SlicerANTs">General Registration (ANTs) (in SlicerANTS extension)</a>: Similarly to Elastix, default parameter set should work well for most image registration tasks. The module also exposes many registration parameters that users can tweak.</p></li>
+<li><p><a class="reference external" href="https://www.slicer.org/w/index.php/Documentation/Nightly/Modules/BRAINSFit">General registration (BRAINS)</a>: recommended for brain MRIs but with parameter tuning it can work on any other imaging modalities and anatomical regions.</p></li>
+<li><p><a class="reference external" href="https://github.com/moselhy/SlicerSequenceRegistration#volume-sequence-registration-for-3d-slicer">Sequence registration</a>: Automatic 4D image (3D image time sequence) registration using Elastix. Can be used for tracking position and shape changes of structures in time, or for motion compensation (register all time points to a selected time point).</p></li>
+</ul>
+</section>
+<section id="segmentation-and-binary-image-registration">
+<h2>Segmentation and binary image registration<a class="headerlink" href="#segmentation-and-binary-image-registration" title="Link to this heading"></a></h2>
+<p>Registration of segmentation and binary images are very different from grayscale images, as only the boundaries can guide the alignment process. Therefore, general image registration methods are not applicable to binary images.</p>
+<p>Recommended module:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SlicerRt/SegmentRegistration#segment-registration">Segment registration (in SegmentRegistration extension)</a>: registers a selected pair of segments fully automatically. Supports rigid, affine, and deformable registration. Binary images can be registered by converting to segmentation nodes first.</p></li>
+</ul>
+</section>
+<section id="model-registration">
+<h2>Model registration<a class="headerlink" href="#model-registration" title="Link to this heading"></a></h2>
+<p>During registration of models containing surface meshes, only the boundaries can guide the alignment process.</p>
+<p>Manual and semi-automatic registration methods described above are applicable to model registration. The following modules are recommended for automatic registration:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SlicerRt/SegmentRegistration#segment-registration">Segment registration (in SegmentRegistration extension)</a>: this module can be used after importing a model to a segmentation node. See details in the section above.</p></li>
+<li><p><a class="reference external" href="https://github.com/SlicerIGT/SlicerIGT#model-registration">Model registration (in SlicerIGT extension)</a>: uses iterative closest points. this method tends to get stuck in a local optimum, therefore it is important to start it from a good initial position (e.g., computed using manual or semi-automatic registration).</p></li>
+<li><p><a class="reference external" href="https://github.com/SlicerMorph/Tutorials/tree/main/FastModelAlign">FastModelAlign automatic surface registration method in SlicerMorph extension</a>: more robust (can converge from farther initial registration error, has higher chance of finding global optimum) than iterative closest point based algorithms. Allows rigid (with or without scaling) and affine registration of models.</p></li>
+</ul>
+</section>
+<section id="more-information">
+<h2>More information<a class="headerlink" href="#more-information" title="Link to this heading"></a></h2>
+<p>Over the years, vast amount of information was collected about image registration, which are not kept fully up-to-date, but still offer useful insights.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Registration/RegistrationLibrary">Registration Library</a>: list of example cases with data sets and steps to achieve the same result.</p></li>
+<li><p><a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/FAQ#User_FAQ:_Registration">Registration FAQ</a>: frequently asked questions related to registration and resampling</p></li>
+<li><p><a class="reference external" href="https://www.slicer.org/wiki/Slicer3:Registration">Former registration main page</a>: not fully up-to-date, but still useful information about registration</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="image_segmentation.html" class="btn btn-neutral float-left" title="Image Segmentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules/index.html" class="btn btn-neutral float-right" title="Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

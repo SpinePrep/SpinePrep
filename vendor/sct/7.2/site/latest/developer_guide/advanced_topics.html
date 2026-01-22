@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Topics &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Credits" href="authors.html" />
+    <link rel="prev" title="Style Guide" href="style_guide.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/advanced_topics.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html">Style Guide</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Advanced Topics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#memory-management">Memory Management</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pointers-to-vtk-object">Pointers to VTK object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#factory-methods">Factory methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#working-directory">Working directory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#view-layout-definition">View layout definition</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-simple-4-up-view-layout">Example: Simple 4-up view layout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#example-layout-containing-two-viewports">Example: Layout containing two viewports</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#event-broker">Event broker</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#problem">Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solution">Solution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-work-with-the-vtkobservermanager">How to work with the vtkObserverManager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Advanced Topics</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/advanced_topics.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="advanced-topics">
+<h1>Advanced Topics<a class="headerlink" href="#advanced-topics" title="Link to this heading"></a></h1>
+<section id="memory-management">
+<h2>Memory Management<a class="headerlink" href="#memory-management" title="Link to this heading"></a></h2>
+<section id="pointers-to-vtk-object">
+<h3>Pointers to VTK object<a class="headerlink" href="#pointers-to-vtk-object" title="Link to this heading"></a></h3>
+<p>If you are not familiar with VTK’s memory management read this <a class="reference external" href="https://aosabook.org/en/vtk.html">general introduction</a> and this <a class="reference external" href="https://www.vtk.org/Wiki/VTK/Tutorials/SmartPointers">page describing usage of smart pointers</a>. See Slicer-specific use cases and recommendations below.</p>
+<p>Calling the plain <code class="docutils literal notranslate"><span class="pre">New()</span></code> method of VTK objects and storing the returned pointer in a plain pointer should be avoided, as this very often causes memory leaks.</p>
+<p>Bad, should be avoided:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">vtkMRMLScalarVolumeNode</span><span class="o">*</span><span class="w"> </span><span class="n">vol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vtkMRMLScalarVolumeNode</span><span class="o">::</span><span class="n">New</span><span class="p">();</span>
+<span class="c1">// ... do something, such as vol-&gt;GetImageData(), someObject-&gt;SetVolume(vol)...</span>
+<span class="n">vol</span><span class="o">-&gt;</span><span class="n">Delete</span><span class="p">();</span>
+<span class="n">vol</span><span class="o">=</span><span class="nb">NULL</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Recommended:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">vtkNew</span><span class="o">&lt;</span><span class="n">MRMLScalarVolumeNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vol</span><span class="p">;</span>
+<span class="c1">//... do something, such as vol-&gt;GetImageData(), someObject-&gt;SetVolume(vol.GetPointer())...</span>
+</pre></div>
+</div>
+<p>Also good:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">vtkSmartPointer</span><span class="o">&lt;</span><span class="n">MRMLScalarVolumeNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vol</span><span class="o">=</span><span class="n">vtkSmartPointer</span><span class="o">&lt;</span><span class="n">MRMLScalarVolumeNode</span><span class="o">&gt;::</span><span class="n">New</span><span class="p">();</span>
+<span class="c1">///... do something, such as vol-&gt;GetImageData(), someObject-&gt;SetVolume(vol)...</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">vtkNew</span></code> is preferred in general for new object creation, as it has a simpler syntax and used almost exclusively in the Slicer core source code. A slight inconvenience is that when we need use the <code class="docutils literal notranslate"><span class="pre">GetPointer()</span></code> method to get the actual pointer value.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">vtkSmartPointer</span></code> pointer can be created without actually creating an object, so <code class="docutils literal notranslate"><span class="pre">vtkSmartPointer</span></code> should be used when:</p>
+<ul class="simple">
+<li><p>we don’t know the exact object type that we want to create at the time of the pointer creation (e.g., we create a <code class="docutils literal notranslate"><span class="pre">vtkSmartPointer&lt;vtkMRMLVolumeNode&gt;</span></code> and later set it to point to a <code class="docutils literal notranslate"><span class="pre">vtkMRMLScalarVolumeNode</span></code> or <code class="docutils literal notranslate"><span class="pre">vtkMRMLVectorVolumeNode</span></code>), or</p></li>
+<li><p>we need to take the ownership of an already created object (using <code class="docutils literal notranslate"><span class="pre">vtkSmartPointer::Take(...)</span></code>; see examples below)</p></li>
+</ul>
+</section>
+<section id="factory-methods">
+<h3>Factory methods<a class="headerlink" href="#factory-methods" title="Link to this heading"></a></h3>
+<p>Similarly to VTK, Slicer contains some “factory” methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScene::CreateNodeByClass()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLScene::GetNodesByClass()</span></code></p></li>
+<li><p>…</p></li>
+</ul>
+<p>Factory methods return a pointer to a VTK object (with a reference count of 1) that the caller “owns”, so the caller must take care of releasing the object to avoid <a class="reference external" href="https://en.wikipedia.org/wiki/Memory_leak">memory leak</a>.</p>
+<p>In C++, it is recommended to make a smart pointer take the ownership of the returned raw pointer. For example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// GetNodesByClass is a factory method, therefore a smart pointer is used to take the ownership of the returned object</span>
+<span class="n">vtkSmartPointer</span><span class="o">&lt;</span><span class="n">vtkCollection</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nodes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vtkSmartPointer</span><span class="o">&lt;</span><span class="n">vtkCollection</span><span class="o">&gt;::</span><span class="n">Take</span><span class="p">(</span><span class="n">scene</span><span class="o">-&gt;</span><span class="n">GetNodesByClass</span><span class="p">(</span><span class="s">&quot;vtkMRMLModelNode&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>In Python, the returned Python object maintains a reference to the underlying VTK object, therefore an extra reference is no longer needed and it is recommended to be immediately removed using the <code class="docutils literal notranslate"><span class="pre">UnRegister</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nodes</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">GetNodesByClass</span><span class="p">(</span><span class="s2">&quot;vtkMRMLModelNode&quot;</span><span class="p">)</span>
+<span class="n">nodes</span><span class="o">.</span><span class="n">UnRegister</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="c1"># GetNodesByClass method is NOT marked with VTK_NEWINSTANCE, manual unregistration is needed</span>
+</pre></div>
+</div>
+<p>Here are the different naming conventions for such “factory” methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GetXXX</span></code>: Return an existing object, reference count is not changed, the caller is not responsible for the object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NewXXX</span></code>: Solely instantiate an object (typically a factory method). The caller is responsible to decrement the reference count.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CreateXXX</span></code>: Instantiate and configure an object. The caller is responsible to decrement the reference count. If <code class="docutils literal notranslate"><span class="pre">XXX</span></code> is a MRML node, it is NOT added into the scene.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CreateAndAddXXX</span></code>: Instantiate, configure and add into the scene a MRML node. The caller is not responsible to decrement the reference count.</p></li>
+</ul>
+<section id="vtk-newinstance-wrapper-hint">
+<h4>VTK_NEWINSTANCE wrapper hint<a class="headerlink" href="#vtk-newinstance-wrapper-hint" title="Link to this heading"></a></h4>
+<p>If a factory method is marked with the <code class="docutils literal notranslate"><span class="pre">VTK_NEWINSTANCE</span></code> hint then the ownership is transferred to Python where garbage collection takes care of deleting the object when it is no longer needed.
+Calling <code class="docutils literal notranslate"><span class="pre">object.UnRegister(None)</span></code> is prohibited, as it would prematurely delete the object and may crash the application.
+In C++, the <code class="docutils literal notranslate"><span class="pre">VTK_NEWINSTANCE</span></code> hint has no effect, the caller of the factory method must still take the ownership of the returned object the same way as without the hint.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">box</span> <span class="o">=</span> <span class="n">roiNode</span><span class="o">.</span><span class="n">CreateROIBoxPolyDataWorld</span><span class="p">()</span>
+<span class="c1"># no need to call UnRegister, as CreateROIBoxPolyDataWorld method is marked with VTK_NEWINSTANCE</span>
+</pre></div>
+</div>
+</section>
+<section id="loadable-modules-c">
+<h4>Loadable modules (C++)<a class="headerlink" href="#loadable-modules-c" title="Link to this heading"></a></h4>
+<p>If storing in a new variable:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">vtkSmartPointer</span><span class="o">&lt;</span><span class="n">vtkCollection</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nodes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vtkSmartPointer</span><span class="o">&lt;</span><span class="n">vtkCollection</span><span class="o">&gt;::</span><span class="n">Take</span><span class="p">(</span><span class="n">mrmlScene</span><span class="o">-&gt;</span><span class="n">GetNodesByClass</span><span class="p">(</span><span class="s">&quot;vtkMRMLLinearTransformNode&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>If the variable is created already:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">vtkSmartPointer</span><span class="o">&lt;</span><span class="n">vtkCollection</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nodes</span><span class="p">;</span>
+<span class="n">nodes</span><span class="p">.</span><span class="n">TakeReference</span><span class="p">(</span><span class="n">mrmlScene</span><span class="o">-&gt;</span><span class="n">GetNodesByClass</span><span class="p">(</span><span class="s">&quot;vtkMRMLLinearTransformNode&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Unsafe, legacy method without using smart pointers (not recommended, because the <code class="docutils literal notranslate"><span class="pre">Delete()</span></code> method may be forgotten or skipped due to an early return from the function):</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">vtkCollection</span><span class="o">*</span><span class="w"> </span><span class="n">nodes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mrmlScene</span><span class="o">-&gt;</span><span class="n">GetNodesByClass</span><span class="p">(</span><span class="s">&quot;vtkMRMLLinearTransformNode&quot;</span><span class="p">);</span>
+<span class="c1">// ...</span>
+<span class="n">nodes</span><span class="o">-&gt;</span><span class="n">Delete</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="python-scripts-and-scripted-modules">
+<h4>Python scripts and scripted modules<a class="headerlink" href="#python-scripts-and-scripted-modules" title="Link to this heading"></a></h4>
+<p>Factory methods return an object that the caller owns (and thus the caller has to delete, with reference count &gt;0) and Python adds an additional reference to this object when stored in a Python variable, resulting in a reference count of &gt;1. To make sure that the object is deleted when the Python variable is deleted, we have to remove the additional reference that the factory method added. There is currently no automatic mechanism to remove that additional reference, so it has to be done manually by calling <code class="docutils literal notranslate"><span class="pre">UnRegister</span></code> (the reference count shouldn’t be explicitly set to any specific value, it is only allowed to increment/decrement it using <code class="docutils literal notranslate"><span class="pre">Register</span></code>/<code class="docutils literal notranslate"><span class="pre">UnRegister</span></code>):</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">nodes</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">GetNodesByClass</span><span class="p">(</span><span class="s1">&#39;vtkMRMLLinearTransformNode&#39;</span><span class="p">)</span>
+<span class="n">nodes</span><span class="o">.</span><span class="n">UnRegister</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="p">)</span> <span class="c1"># reference count is increased by both the factory method and the python reference; unregister to keep only the python reference</span>
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p><strong>To avoid forgetting the UnRegister call, it is better to avoid factory methods whenever it is possible.</strong></p>
+<p>For example, instead of using the <code class="docutils literal notranslate"><span class="pre">CreateNodeByClass</span></code> factory method and call <code class="docutils literal notranslate"><span class="pre">UnRegister</span></code> manually:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">CreateNodeByClass</span><span class="p">(</span><span class="s1">&#39;vtkMRMLLinearTransformNode&#39;</span><span class="p">)</span>
+<span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">AddNode</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">n</span><span class="o">.</span><span class="n">UnRegister</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>this should be used:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">AddNewNodeByClass</span><span class="p">(</span><span class="s1">&#39;vtkMRMLLinearTransformNode&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note: MRML scene’s <code class="docutils literal notranslate"><span class="pre">CreateNodeByClass</span></code> creates a node with the default settings set in the scene for that node type (using <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLScene.html#ae302c5ed4aabb2910bc35dcc9aa2513f">vtkMRMLScene::AddDefaultNode</a>).</p>
+</section>
+</section>
+</section>
+<section id="working-directory">
+<h2>Working directory<a class="headerlink" href="#working-directory" title="Link to this heading"></a></h2>
+<p>Similarly to other software, the current directory associated with Slicer corresponds to the folder the application executable is started from.</p>
+<p>Since the current working directory can be changed anytime by any module or Python package (e.g., to more conveniently write files in a specific directory) and it is not possible to enforce that the directory is restored to the original.</p>
+<p>Slicer provides a way to reliably access the working directory at startup time, through the <code class="docutils literal notranslate"><span class="pre">startupWorkingPath</span></code> application property:</p>
+<p>In Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">slicer</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">startupWorkingPath</span>
+</pre></div>
+</div>
+<p>In C++:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">qSlicerCoreApplication</span><span class="o">::</span><span class="n">startupWorkingPath</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="view-layout-definition">
+<h2>View layout definition<a class="headerlink" href="#view-layout-definition" title="Link to this heading"></a></h2>
+<p>View layout definition describes what views (3D, slice, plot, table, etc.) should be displayed and where.
+It is specified by an XML string.</p>
+<p>A layout may contain multiple <em>viewports</em>, each viewport is a separate window, which may be displayed in the main application window or separately, for example on a second screen.</p>
+<p>XML elements and their attributes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">viewports</span></code>: optional, if specified then it must be the root element. It can be used for specifying multiple viewports. It contains nested <code class="docutils literal notranslate"><span class="pre">layout</span></code> elements.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout</span></code>: The layout elements describe widget containers that embed one or multiple items. Arrangement of items are specified by type attribute of the layout element. It may be root element or it may be nested in <code class="docutils literal notranslate"><span class="pre">viewports</span></code> or <code class="docutils literal notranslate"><span class="pre">item</span></code> element.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: <code class="docutils literal notranslate"><span class="pre">vertical</span></code>, <code class="docutils literal notranslate"><span class="pre">horizontal</span></code>, <code class="docutils literal notranslate"><span class="pre">grid</span></code>, <code class="docutils literal notranslate"><span class="pre">tab</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">split</span></code>: <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code> (default), if <code class="docutils literal notranslate"><span class="pre">true</span></code> then the user can resize the views in it by dragging the splitter between the views. Default size can be set using <code class="docutils literal notranslate"><span class="pre">splitSize</span></code> attribute of child items. Only for <code class="docutils literal notranslate"><span class="pre">vertical</span></code> and <code class="docutils literal notranslate"><span class="pre">horizontal</span></code> layout type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: unique name of the layout, required if there are multiple viewports. If name is not specified then the empty string will be used as name. The empty string is a valid name, which refers to the default viewport, i.e., that is displayed in the application’s main window.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">label</span></code>: optional, if specified then this will be used as</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dockable</span></code>: <code class="docutils literal notranslate"><span class="pre">true</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">false</span></code> display the viewport as a dockable widget.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dockPosition</span></code>: If dockable, this can make the widget be docked by default. Valid choices are <code class="docutils literal notranslate"><span class="pre">floating</span></code> (default), <code class="docutils literal notranslate"><span class="pre">top</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom</span></code>, <code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom-left</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom-right</span></code>, <code class="docutils literal notranslate"><span class="pre">top-left</span></code>, <code class="docutils literal notranslate"><span class="pre">top-right</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">item</span></code>: container for view(s) or layouts, nested in <code class="docutils literal notranslate"><span class="pre">layout</span></code> element.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">splitSize</span></code>: default size if split is enabled in the layout</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">view</span></code>: view widget, nested in <code class="docutils literal notranslate"><span class="pre">item</span></code> element.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: this name is displayed in the view’s title bar</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">horizontalStretch</span></code> or <code class="docutils literal notranslate"><span class="pre">verticalStretch</span></code>: Relative size of views can be adjusted by specifying these stretch factors. The stretch factor must be an integer in the range of [0, 255].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">row</span></code> and <code class="docutils literal notranslate"><span class="pre">column</span></code>: row and column index. Only for <code class="docutils literal notranslate"><span class="pre">grid</span></code> layout type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span></code>: class of the view node, such as <code class="docutils literal notranslate"><span class="pre">vtkMRMLSliceNode</span></code>, <code class="docutils literal notranslate"><span class="pre">vtkMRMLViewNode</span></code>, <code class="docutils literal notranslate"><span class="pre">vtkMRMLTableViewNode</span></code>, <code class="docutils literal notranslate"><span class="pre">vtkMRMLPlotViewNode</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">singletontag</span></code>: layout name of the view node (<code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span></code>, … for 3D views; <code class="docutils literal notranslate"><span class="pre">Red</span></code>, <code class="docutils literal notranslate"><span class="pre">Yellow</span></code>, … for slice views)</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">property</span></code>: contains view properties</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: property name, such as <code class="docutils literal notranslate"><span class="pre">viewlabel</span></code> (displayed in the view’s title bar), <code class="docutils literal notranslate"><span class="pre">orientation</span></code> (for slice views),</p></li>
+<li><p>element text: property value</p></li>
+</ul>
+</li>
+</ul>
+<section id="example-simple-4-up-view-layout">
+<h3>Example: Simple 4-up view layout<a class="headerlink" href="#example-simple-4-up-view-layout" title="Link to this heading"></a></h3>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;layout</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;vertical&quot;</span><span class="w"> </span><span class="na">split=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;item&gt;</span>
+<span class="w">  </span><span class="nt">&lt;view</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;vtkMRMLViewNode&quot;</span><span class="w"> </span><span class="na">singletontag=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewlabel&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/property&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/view&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/item&gt;</span>
+<span class="w">  </span><span class="nt">&lt;item&gt;</span>
+<span class="w">  </span><span class="nt">&lt;view</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;vtkMRMLSliceNode&quot;</span><span class="w"> </span><span class="na">singletontag=</span><span class="s">&quot;Red&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;orientation&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>Axial<span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewlabel&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>R<span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewcolor&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>#F34A33<span class="nt">&lt;/property&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/view&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/item&gt;</span>
+<span class="nt">&lt;/layout&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="example-layout-containing-two-viewports">
+<h3>Example: Layout containing two viewports<a class="headerlink" href="#example-layout-containing-two-viewports" title="Link to this heading"></a></h3>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;viewports&gt;</span>
+<span class="w"> </span><span class="cm">&lt;!--default viewport--&gt;</span>
+<span class="w"> </span><span class="nt">&lt;layout</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;horizontal&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;item&gt;</span>
+<span class="w">   </span><span class="nt">&lt;view</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;vtkMRMLSliceNode&quot;</span><span class="w"> </span><span class="na">singletontag=</span><span class="s">&quot;Red&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;orientation&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>Axial<span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewlabel&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>R<span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewcolor&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>#F34A33<span class="nt">&lt;/property&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/view&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/item&gt;</span>
+<span class="w">  </span><span class="nt">&lt;item&gt;</span>
+<span class="w">   </span><span class="nt">&lt;view</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;vtkMRMLViewNode&quot;</span><span class="w"> </span><span class="na">singletontag=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewlabel&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/property&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/view&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/item&gt;</span>
+<span class="w"> </span><span class="nt">&lt;/layout&gt;</span>
+<span class="w"> </span><span class="cm">&lt;!--second dockable viewport--&gt;</span>
+<span class="w"> </span><span class="nt">&lt;layout</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;views+&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;horizontal&quot;</span><span class="w"> </span><span class="na">label=</span><span class="s">&quot;Views+&quot;</span><span class="w"> </span><span class="na">dockable=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="na">dockPosition=</span><span class="s">&quot;bottom&quot;</span><span class="nt">&gt;</span>&gt;
+<span class="w">  </span><span class="nt">&lt;item&gt;</span>
+<span class="w">   </span><span class="nt">&lt;view</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;vtkMRMLSliceNode&quot;</span><span class="w"> </span><span class="na">singletontag=</span><span class="s">&quot;Red+&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;orientation&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>Axial<span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewlabel&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>R+<span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewcolor&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>#f9a99f<span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewgroup&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/property&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/view&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/item&gt;</span>
+<span class="w">  </span><span class="nt">&lt;item&gt;</span>
+<span class="w">   </span><span class="nt">&lt;view</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;vtkMRMLViewNode&quot;</span><span class="w"> </span><span class="na">singletontag=</span><span class="s">&quot;1+&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;secondary&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewlabel&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>1+<span class="nt">&lt;/property&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;viewgroup&quot;</span><span class="w"> </span><span class="na">action=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>1<span class="nt">&lt;/property&gt;</span>
+<span class="w">   </span><span class="nt">&lt;/view&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/item&gt;</span>
+<span class="w"> </span><span class="nt">&lt;/layout&gt;</span>
+<span class="nt">&lt;/viewports&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="event-broker">
+<h2>Event broker<a class="headerlink" href="#event-broker" title="Link to this heading"></a></h2>
+<p>The basic idea of the EventBroker is to avoid the following kind of code that shows up in GUIs and other classes that depend on events generated by other classes:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">-&gt;</span><span class="n">AddObserver</span><span class="p">(</span><span class="n">vtkCommand</span><span class="o">::</span><span class="n">ModifiedEvent</span><span class="p">,</span><span class="w"> </span><span class="n">callbackCommand</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="problem">
+<h3>Problem<a class="headerlink" href="#problem" title="Link to this heading"></a></h3>
+<p>The problems with this:</p>
+<ul class="simple">
+<li><p>node ‘owns’ the observer, but the callbackCommand is opaque so it doesn’t know anything about what will happen when the event is invoked</p></li>
+<li><p>the GUI needs to explicitly remove the observer before it is destroyed</p></li>
+<li><p>node is not introspectable; you cannot get a list of observers on the node (all data and methods are private)</p></li>
+<li><p>there’s no easy way to know what side effects will happen for any Set call (either a priori or experimentally).</p></li>
+<li><p>there’s no way to collapse events or disable them</p></li>
+</ul>
+</section>
+<section id="solution">
+<h3>Solution<a class="headerlink" href="#solution" title="Link to this heading"></a></h3>
+<p>The EventBroker solve this by introducing a singleton that manages all observations.</p>
+<p>The EventBroker is a singleton, available as:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">vtkEventBroker</span><span class="o">*</span><span class="w"> </span><span class="n">broker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vtkEventBroker</span><span class="o">::</span><span class="n">GetInstance</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>with the broker, you can make a call like the following:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">broker</span><span class="o">-&gt;</span><span class="n">AddObservation</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">vtkCommand</span><span class="o">::</span><span class="n">ModifiedEvent</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">callbackCommand</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">node</span></code> is the subject of the observation.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The broker is also available for use from Python, but for adding observers in Python, it is recommended to use the higher-level <code class="docutils literal notranslate"><span class="pre">slicer.util.VTKObservationMixin</span></code> instead.</p>
+</div>
+<p>The broker does the following:</p>
+<ul class="simple">
+<li><p>adds <code class="docutils literal notranslate"><span class="pre">DeleteEvent</span></code> observers to both <code class="docutils literal notranslate"><span class="pre">node</span></code> and <code class="docutils literal notranslate"><span class="pre">this</span></code> so it can remove the observation automatically when either side is destroyed</p></li>
+<li><p>keeps an introspectable list of all observers it knows about</p></li>
+<li><p>has an option to keep a log of all event invocations for debugging and performance analysis</p></li>
+<li><p>has an option to turn off all event invocations</p></li>
+<li><p>has an <em>asynchronous</em> option to queue all event invocations and invoke them later (off by default)</p></li>
+<li><p>has option to collapse redundant events in the queue</p></li>
+</ul>
+<p>Future options include:</p>
+<ul class="simple">
+<li><p>add a timer to log the amount of time taken to process each event</p></li>
+<li><p>specify that some observations must be handled synchronously (e.g. for progress events that shouldn’t be collapsed)</p></li>
+</ul>
+<p>See the file <a class="reference external" href="https://apidocs.slicer.org/main/classvtkEventBroker.html#">vtkEventBroker API documentation</a> for more information on logging options and introspection features.</p>
+</section>
+<section id="how-to-work-with-the-vtkobservermanager">
+<h3>How to work with the vtkObserverManager<a class="headerlink" href="#how-to-work-with-the-vtkobservermanager" title="Link to this heading"></a></h3>
+<p>Discussion of Jan 27 2012:</p>
+<p>[…] the problem wasn’t that the Event Broker was used instead of going through <code class="docutils literal notranslate"><span class="pre">vtkObserverManager</span></code>, but that the <code class="docutils literal notranslate"><span class="pre">vtkObject::AddObserver()</span></code> was used with the callback command of the observer manager (that was later deleted which made the client data of the callback dirty when the event was fired).</p>
+<p>We should eventually review the entire “observation” mechanism, there are currently 3 ways of observing vtkObjects:</p>
+<ul class="simple">
+<li><p>via the <code class="docutils literal notranslate"><span class="pre">vtkObserverManager</span></code> API (please everybody use that one for now)</p></li>
+<li><p>via the <code class="docutils literal notranslate"><span class="pre">EventBroker</span></code> directly</p></li>
+<li><p>via <code class="docutils literal notranslate"><span class="pre">vtkObject::AddObserver</span></code> directly</p></li>
+</ul>
+<p>All three methods are valid but inconsistent with each other. In addition, it is still not user friendly to observe MRML nodes (using static functions as callback… how to synchronize a MRML node with a VTK widget in a displayable manager? how to observe with Python…).</p>
+<p>Bugs related to observers:</p>
+<ul class="simple">
+<li><p>Volume Rendering (<a class="reference external" href="https://github.com/Slicer/Slicer/issues/1572">Slicer issue #1572</a>, <a class="reference external" href="https://github.com/Slicer/Slicer/issues/1744">Slicer issue #1744</a>)</p>
+<ul>
+<li><p>Use AddObserver with vtkObserverManager callback that is deleted before an observed event is fired, crash when trying to dereference the deleted observer.</p></li>
+</ul>
+</li>
+<li><p>Python (<a class="reference external" href="https://github.com/Slicer/Slicer/issues/1656">Slicer issue #1656</a>)</p>
+<ul>
+<li><p>PyObject of the observer is deleted before an observed event is fired. crash in the callback</p></li>
+</ul>
+</li>
+<li><p>Current design notes</p>
+<ul>
+<li><p>For logics, <code class="docutils literal notranslate"><span class="pre">vtk[SetAnd]ObserveMRMLNode[Events]Macro</span></code> can only observe MRML nodes (see <code class="docutils literal notranslate"><span class="pre">vtkMRMLAbstractLogic::MRMLNodesCallback</span></code>)</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">QObjects</span></code> listening to <code class="docutils literal notranslate"><span class="pre">vtkObjects</span></code>, destruction must unlink observations (modules must call <code class="docutils literal notranslate"><span class="pre">setMRMLScene(0)</span></code> in destructor?)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Link to this heading"></a></h3>
+<p>The following reference provided insight on requirements and design precedents.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://en.wikipedia.org/wiki/Observer_pattern">Wikipedia definition of Observer Pattern</a></p></li>
+<li><p><a class="reference external" href="http://sigslot.sourceforge.net/">A C++ implementation</a></p></li>
+<li><p><a class="reference external" href="https://doc.qt.io/qt-6/signalsandslots.html">The Qt implementation</a></p></li>
+<li><p><a class="reference external" href="http://java.sun.com/products/jms/javadoc-102a/index.html">Java Message Service (JMS) API</a></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="style_guide.html" class="btn btn-neutral float-left" title="Style Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="authors.html" class="btn btn-neutral float-right" title="Credits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

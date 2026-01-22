@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surface Toolbox &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Create a DICOM Series" href="createdicomseries.html" />
+    <link rel="prev" title="Probe Volume With Model" href="probevolumewithmodel.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/surfacetoolbox.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#surface-models">Surface Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dynamicmodeler.html">Dynamic Modeler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="grayscalemodelmaker.html">Grayscale Model Maker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="labelmapsmoothing.html">Label Map Smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mergemodels.html">Merge Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modelmaker.html">Model Maker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modeltolabelmap.html">Model To LabelMap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="probevolumewithmodel.html">Probe Volume With Model</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Surface Toolbox</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Surface Toolbox</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/surfacetoolbox.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="surface-toolbox">
+<h1>Surface Toolbox<a class="headerlink" href="#surface-toolbox" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This module supports various cleanup and optimization processes on surface models.</p>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<p>Select the input and output models, and then enable the stages of the pipeline by selecting the tool buttons.</p>
+<p>Stages that include parameters will open up when they are enabled.</p>
+<p>Click apply to activate the pipeline and then click the Toggle button to compare the model before and after the operation.</p>
+<p>The module includes tools for:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#clean">Surface model cleaning</a></p></li>
+<li><p><a class="reference internal" href="#uniform-remeshing">Surface model uniform remeshing</a></p></li>
+<li><p><a class="reference internal" href="#decimate">Surface model decimation</a> (reduction of the number of triangles).</p></li>
+<li><p><a class="reference internal" href="#smooth">Surface model smoothing</a></p></li>
+<li><p><a class="reference internal" href="#fill-holes">Surface model holes filling</a></p></li>
+<li><p><a class="reference internal" href="#compute-surface-normals">Surface model normal computation</a></p></li>
+<li><p><a class="reference internal" href="#mirror">Surface model mirroring</a></p></li>
+<li><p>Surface model geometric transformations: <a class="reference internal" href="#scale">Scale</a> and <a class="reference internal" href="#translate">Translate</a></p></li>
+<li><p><a class="reference internal" href="#extract-edges">Edge extraction</a></p></li>
+<li><p><a class="reference internal" href="#extract-largest-component">Extraction of the largest component in the surface model</a></p></li>
+</ul>
+<p>These tools can be combined for multiple surface model processing effects.</p>
+<section id="clean">
+<h3>Clean<a class="headerlink" href="#clean" title="Link to this heading"></a></h3>
+<p>This tool can merge coincident points, remove unused points (i.e. not used by
+any cell) and treat degenerate cells.</p>
+</section>
+<section id="uniform-remeshing">
+<h3>Uniform remeshing<a class="headerlink" href="#uniform-remeshing" title="Link to this heading"></a></h3>
+<p>Uniformly remesh the surface using <a class="reference external" href="https://github.com/pyvista/pyacvd">ACVD algorithm</a>.</p>
+<p>This resampling typically provides higher quality meshes than decimation, with similar computation time.</p>
+<ul class="simple">
+<li><p><strong>Number of points:</strong> Number of desired points in the output mesh. Use higher number to preserve more details.</p></li>
+<li><p><strong>Subdivide:</strong> Number of subdivision to perform before remeshing. Each subdivision creates 4 triangles for each input triangle. This is needed if the required number of desired points is higher than the number of points in the input mesh, or there are some too large cells in the input mesh.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It requires <code class="docutils literal notranslate"><span class="pre">pyacvd</span></code> Python package for which the user is required to confirm the installation.</p>
+</div>
+</section>
+<section id="decimate">
+<h3>Decimate<a class="headerlink" href="#decimate" title="Link to this heading"></a></h3>
+<p>Perform a topology-preserving reduction of surface triangles. The user can
+modify the following parameters:</p>
+<ul class="simple">
+<li><p><strong>Reduction:</strong> Target reduction factor during decimation. Ratio of triangles that are requested to be eliminated. 0.8 means that the surface model size is requested to be reduced by 80%.</p></li>
+<li><p><strong>Boundary deletion:</strong> If enabled then <em>FastQuadric</em> method is used (it provides more even element sizes but cannot be forced to preserve boundary), otherwise <em>DecimatePro</em> method is used (that can preserve boundary edges but tend to create more ill-shaped triangles).</p></li>
+</ul>
+</section>
+<section id="smooth">
+<h3>Smooth<a class="headerlink" href="#smooth" title="Link to this heading"></a></h3>
+<p>Performs surface model smoothing on a surface model according to the following parameters:</p>
+<ul class="simple">
+<li><p><strong>Method:</strong> Selects the smoothing method: either a <em>Laplacian</em> filter or <em>Taubin’s non-shrinking</em> algorithm.</p></li>
+<li><p><strong>Iterations:</strong> Number of smoothing iterations.</p></li>
+<li><p><strong>Pass band:</strong> The pass-band value for the windowed sinc filter in the Taubin’s non-shrinking algorithm. This should be between 0 and 2, where lower values cause more smoothing.</p></li>
+<li><p><strong>Boundary smoothing:</strong> If enabled, boundary edges will be smoothed. Otherwise, the edges will remain fixed.</p></li>
+</ul>
+</section>
+<section id="fill-holes">
+<h3>Fill holes<a class="headerlink" href="#fill-holes" title="Link to this heading"></a></h3>
+<p>Fills up a hole in a open surface model.</p>
+<ul class="simple">
+<li><p><strong>Maximum hole size:</strong> Specifies the maximum size of holes that will be filled. This is represented as a radius to the bounding circumsphere containing the hole. Note that this is an approximate area; the actual area cannot be computed without first triangulating the hole.</p></li>
+</ul>
+</section>
+<section id="compute-surface-normals">
+<h3>Compute surface normals<a class="headerlink" href="#compute-surface-normals" title="Link to this heading"></a></h3>
+<p>Generate surface normals for geometry algorithms or for improving visualization through lighting.</p>
+<ul class="simple">
+<li><p><strong>Auto orient normals:</strong> Orient normals outwards from a closed surface.</p></li>
+<li><p><strong>Flip normals:</strong> Flip normal direction from its current or auto-oriented state.</p></li>
+<li><p><strong>Splitting:</strong> Allow sharp change in normals where angle between neighbor faces is above a threshold (indicated feature angle).</p>
+<ul>
+<li><p><strong>Feature angle for splitting:</strong> Normals will be split only along those edges where angle is larger than this value.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="mirror">
+<h3>Mirror<a class="headerlink" href="#mirror" title="Link to this heading"></a></h3>
+<p>Mirror the surface model along one or more axes.</p>
+<ul class="simple">
+<li><p><strong>X axis:</strong> Enable/disable the use of the X axis for the mirroring operation.</p></li>
+<li><p><strong>Y axis:</strong> Enable/disable the use of the Y axis for the mirroring operation.</p></li>
+<li><p><strong>Z axis:</strong> Enable/disable the use of the Z axis for the mirroring operation.</p></li>
+</ul>
+</section>
+<section id="scale">
+<h3>Scale<a class="headerlink" href="#scale" title="Link to this heading"></a></h3>
+<p>Performs a scaling transformation on the surface. This transformation can be non-uniform
+(different scaling factors for different axes).</p>
+<ul class="simple">
+<li><p><strong>Scale X:</strong> Scaling factor along the X axis.</p></li>
+<li><p><strong>Scale Y:</strong> Scaling factor along the Y axis.</p></li>
+<li><p><strong>Scale Z:</strong> Scaling factor along the Z axis.</p></li>
+</ul>
+</section>
+<section id="translate">
+<h3>Translate<a class="headerlink" href="#translate" title="Link to this heading"></a></h3>
+<p>Performs a translation transformation on the surface.</p>
+<ul class="simple">
+<li><p><strong>Center:</strong> enables/disables centering the model in the origin (this is done by translating the center of the object’s bounding box to the origin) before performing the translation.</p></li>
+<li><p><strong>Translate X:</strong> specifies the translation along the X axis.</p></li>
+<li><p><strong>Translate Y:</strong> specifies the translation along the Y axis.</p></li>
+<li><p><strong>Translate Z:</strong> specifies the translation along the Z axis.</p></li>
+</ul>
+</section>
+<section id="extract-edges">
+<h3>Extract edges<a class="headerlink" href="#extract-edges" title="Link to this heading"></a></h3>
+<p>Extract the edges of the surface model. The extraction can be controlled with the
+following parameters:</p>
+<ul class="simple">
+<li><p><strong>Boundary edges:</strong> Enable/disable the extraction of boundary edges (edges used only by one polygon or a line cell).</p></li>
+<li><p><strong>Feature edges:</strong> Enable/disable the extraction of feature edges (edges used by two triangles and whose dihedral angle is larger than the specified feature angle).</p></li>
+<li><p><strong>Feature angle:</strong> Minimum angle to consider an edge to be a feature edge.</p></li>
+<li><p><strong>Manifold edges:</strong> Enable/disable the extraction of manifold edges (edges used exactly by two polygons).</p></li>
+<li><p><strong>Non-manifold edges:</strong> Enable/disable the extraction of non-manifold edges (edges used by three or more polygons).</p></li>
+</ul>
+</section>
+<section id="extract-largest-component">
+<h3>Extract largest component<a class="headerlink" href="#extract-largest-component" title="Link to this heading"></a></h3>
+<p>Enable the extraction of the largest connected component.</p>
+</section>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Luca Antiga (Orobix)</p></li>
+<li><p>Steve Pieper (BWH)</p></li>
+<li><p>Beatriz Paniagua (Kitware)</p></li>
+<li><p>Martin Styner (UNC)</p></li>
+<li><p>Hans Johnson (University of Iowa)</p></li>
+<li><p>Ben Wilson (Kitware)</p></li>
+<li><p>Jean-Christophe Fillion-Robin (Kitware)</p></li>
+<li><p>Andras Lasso (PerkLab, Queen’s University)</p></li>
+<li><p>Sara Rolfe (Seattle Children’s Research Institute)</p></li>
+</ul>
+</section>
+<section id="acknowledgments">
+<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading"></a></h2>
+<p>Development was funded in part by NIH National Institute of Biomedical Imaging Bioengineering R01EB021391 (Shape Analysis Toolbox for Medical Image Computing Projects) and by the NSF National Science Foundation under Grant DBI-1759883 (An Integrated Platform for Retrieval, Visualization and Analysis of 3D Morphology From Digital Biological Collections).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="probevolumewithmodel.html" class="btn btn-neutral float-left" title="Probe Volume With Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="createdicomseries.html" class="btn btn-neutral float-right" title="Create a DICOM Series" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

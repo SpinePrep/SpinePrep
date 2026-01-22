@@ -1,0 +1,658 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Understanding and building a component selection process &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="_static/tedana_favicon.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=643184eb"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Support and communication" href="support.html" />
+    <link rel="prev" title="FAQ" href="faq.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/building_decision_trees.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Understanding and building a component selection process</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#expected-outputs-after-component-selection">Expected outputs after component selection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-outputs-from-component-selection">General outputs from component selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#outputs-of-each-decision-tree-step">Outputs of each decision tree step</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#decision-trees-distributed-with-tedana">Decision trees distributed with tedana</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#defining-a-custom-decision-tree">Defining a custom decision tree</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-information-fields">General information fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#external-regressor-configuration">External regressor configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nodes-in-the-decision-tree">Nodes in the decision tree</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-parts-of-selection-functions">Key parts of selection functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Understanding and building a component selection process</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/building_decision_trees.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="understanding-and-building-a-component-selection-process">
+<h1>Understanding and building a component selection process<a class="headerlink" href="#understanding-and-building-a-component-selection-process" title="Link to this heading"></a></h1>
+<p>This guide is designed for users who want to better understand the mechanics
+of the component selection process and people who are considering customizing
+their own decision tree or contributing to <code class="docutils literal notranslate"><span class="pre">tedana</span></code> code. We have tried to
+make this accessible, but it is long. If you just want to better understand
+what’s in the outputs from <code class="docutils literal notranslate"><span class="pre">tedana</span></code> start with
+<a class="reference internal" href="outputs.html#classification-output-descriptions"><span class="std std-ref">Classification output descriptions</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tedana</span></code> involves transforming data into components, currently via ICA, and then
+calculating metrics for each component. Each metric has one value per component that
+is stored in a <code class="docutils literal notranslate"><span class="pre">component_table</span></code> dataframe. This structure is then passed to a
+“decision tree” through which a series of binary choices categorize each component
+as <strong>accepted</strong> or <strong>rejected</strong>. The time series for the rejected components are
+regressed from the data in the <a class="reference external" href="denoising.html">final denoising step</a>.</p>
+<p>There are a couple of decision trees that are included by default in <code class="docutils literal notranslate"><span class="pre">tedana</span></code> but
+users can also build their own. This might be useful if one of the default decision
+trees needs to be slightly altered due to the nature of a specific data set, if one has
+an idea for a new approach to multi-echo denoising, or if one wants to integrate
+non-multi-echo metrics into a single decision tree.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We use two terminologies interchangeably.
+The whole process is called “component selection” and much of the code uses
+variants of that phrase
+(e.g. the <a class="reference internal" href="generated/tedana.selection.component_selector.ComponentSelector.html#tedana.selection.component_selector.ComponentSelector" title="tedana.selection.component_selector.ComponentSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentSelector</span></code></a> class,
+<a class="reference internal" href="generated/tedana.selection.selection_nodes.html#module-tedana.selection.selection_nodes" title="tedana.selection.selection_nodes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selection_nodes</span></code></a> for the functions used in selection).
+We call the steps for how to classify components a “decision tree” since each
+step in the selection process branches components into different intermediate
+or final classifications.</p>
+</div>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#expected-outputs-after-component-selection" id="id1">Expected outputs after component selection</a></p>
+<ul>
+<li><p><a class="reference internal" href="#general-outputs-from-component-selection" id="id2">General outputs from component selection</a></p></li>
+<li><p><a class="reference internal" href="#outputs-of-each-decision-tree-step" id="id3">Outputs of each decision tree step</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#decision-trees-distributed-with-tedana" id="id4">Decision trees distributed with tedana</a></p></li>
+<li><p><a class="reference internal" href="#defining-a-custom-decision-tree" id="id5">Defining a custom decision tree</a></p>
+<ul>
+<li><p><a class="reference internal" href="#general-information-fields" id="id6">General information fields</a></p></li>
+<li><p><a class="reference internal" href="#external-regressor-configuration" id="id7">External regressor configuration</a></p></li>
+<li><p><a class="reference internal" href="#nodes-in-the-decision-tree" id="id8">Nodes in the decision tree</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#key-parts-of-selection-functions" id="id9">Key parts of selection functions</a></p></li>
+</ul>
+</nav>
+<section id="expected-outputs-after-component-selection">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Expected outputs after component selection</a><a class="headerlink" href="#expected-outputs-after-component-selection" title="Link to this heading"></a></h2>
+<p>During processing, everything is stored in a
+<a class="reference internal" href="generated/tedana.selection.component_selector.ComponentSelector.html#tedana.selection.component_selector.ComponentSelector" title="tedana.selection.component_selector.ComponentSelector"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentSelector</span></code></a> called <code class="docutils literal notranslate"><span class="pre">selector</span></code>.
+The elements of that object are then saved to multiple files.
+The file key names are used below the full file names in the
+<a class="reference internal" href="outputs.html#output-filename-descriptions"><span class="std std-ref">Output filename descriptions</span></a>.</p>
+<section id="general-outputs-from-component-selection">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">General outputs from component selection</a><a class="headerlink" href="#general-outputs-from-component-selection" title="Link to this heading"></a></h3>
+<p>New columns in <code class="docutils literal notranslate"><span class="pre">selector.component_table_</span></code> and the “ICA metrics tsv” file:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>classification:
+While the decision table is running, there may also be intermediate
+classification labels, but the final labels are expected to be
+“accepted” or “rejected”. There will be a warning if other labels remain.</p></li>
+<li><p>classification_tags:
+Human readable tags that explain why a classification was reached.
+Each component can have no tags (an empty string or n/a), one tag,
+or a comma separated list of tags. These tags may be useful parameters
+for visualizing and reviewing results</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">selector.cross_component_metrics_</span></code> and “ICA cross component metrics json”:</dt><dd><p>A dictionary of metrics that are each a single value calculated across components,
+for example, kappa and rho elbows. User or pre-defined scaling factors are
+also stored here. Any constant that is used in the component classification
+processes that isn’t pre-defined in the decision tree file should be saved here.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">selector.component_status_table_</span></code> and “ICA status table tsv”:</dt><dd><p>A table where each column lists the classification status of
+each component after each node was run. Columns are only added
+for runs where component statuses can change.
+This is useful for understanding the classification
+path of each component through the decision tree</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">selector.tree</span></code> and “ICA decision tree json”:</dt><dd><p>A copy of the inputted decision tree specification with an added “output” field
+for each node. The output field (see next section) contains information about
+what happened during execution. Of particular note, each output includes a list
+of the metrics used within the node, “node_label”, which is a (hopefully) human
+readable brief description of the node’s function and, for nodes where component
+classifications can change, “n_false” &amp; “n_true” list who many components
+changed classifications. The inputted parameters include “if_true” and “if_false”
+which specify what changes for each component. These fields can be used to
+construct a visual flow chart or text-based summary of how classifications
+changed for each run.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">selector.tree[&quot;used_metrics&quot;]</span></code> and a field in “ICA decision tree json”:</dt><dd><p>A list of the metrics that were used in the decision tree. Everything in
+<code class="docutils literal notranslate"><span class="pre">used_metrics</span></code> should be in either <code class="docutils literal notranslate"><span class="pre">necessary_metrics</span></code> or
+<code class="docutils literal notranslate"><span class="pre">generated_metrics</span></code> If a used metric isn’t in either, a warning message
+will appear. This is a useful check that makes sure every metric used was
+pre-specified.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">selector.tree[&quot;classification_tags&quot;]</span></code> and a field in “ICA decision tree json”:</dt><dd><p>A list of the pre-specified classification tags that could be used in a decision tree.
+Any reporting interface should use this field so that all possible tags are listed
+even if a given tag is not used by any component by the end of the selection process.</p>
+</dd>
+</dl>
+</section>
+<section id="outputs-of-each-decision-tree-step">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Outputs of each decision tree step</a><a class="headerlink" href="#outputs-of-each-decision-tree-step" title="Link to this heading"></a></h3>
+<p>“ICA decision tree json” includes all the information from the specified decision tree
+for each “node” or function call. For each node, there is an “outputs” subfield with
+information from when the tree was executed.
+Each outputs field includes:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>decision_node_idx</dt><dd><p>The decision tree functions are run as part of an ordered list.
+This is the positional index (the location of the function in
+the list), starting with index 0.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>used_metrics</dt><dd><p>A list of the metrics used in a node of the decision tree</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>used_cross_component_metrics</dt><dd><p>A list of cross component metrics used in the node of a decision tree</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>node_label</dt><dd><p>A brief label for what happens in this node that can be used in a decision
+tree summary table or flow chart.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_true, n_false</dt><dd><p>For decision tree (dec) functions, the number of components that were classified
+as true or false, respectively, in this decision tree step.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>calc_cross_comp_metrics</dt><dd><p>For calculation (calc) functions, cross component metrics that were
+calculated in this function. When this is included, each of those
+metrics and the calculated values are also distinct keys in ‘outputs’.
+While the cross component metrics table does not include where each component
+was calculated, that information is stored here.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>added_component_table_metrics</dt><dd><p>It is possible to add a new metric to the component table during the selection process.
+This is useful if a metric is to be calculated on a subset of components based on what
+happened during previous steps in the selection process. This is <strong>not</strong> recommended,
+but, since it was done as part of the original decision tree process used in the
+meica and tedana_orig, it is possible.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+</section>
+<section id="decision-trees-distributed-with-tedana">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Decision trees distributed with tedana</a><a class="headerlink" href="#decision-trees-distributed-with-tedana" title="Link to this heading"></a></h2>
+<p>Two decision trees are distributed with <code class="docutils literal notranslate"><span class="pre">tedana</span></code>.
+These trees are documented in <a class="reference internal" href="included_decision_trees.html"><span class="doc">Included Decision Trees</span></a>.
+It might be useful to look at these trees while reading how to develop a custom
+decision tree.</p>
+</section>
+<section id="defining-a-custom-decision-tree">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Defining a custom decision tree</a><a class="headerlink" href="#defining-a-custom-decision-tree" title="Link to this heading"></a></h2>
+<p>Decision trees are stored in json files. The default trees are stored as part of
+the tedana code repository in <a class="reference external" href="https://github.com/ME-ICA/tedana/tree/main/tedana/resources/decision_trees">resources/decision_trees</a>. The minimal tree,
+minimal.json, is a good example highlighting the structure and steps in a tree. It
+may be helpful to look at that tree while reading this section. meica.json replicates
+the decision tree used in MEICA version 2.5, the predecessor to tedana. It is more
+complex, but also highlights additional possible functionality in decision trees.</p>
+<p>A user can specify another decision tree and link to the tree location when tedana is
+executed with the <code class="docutils literal notranslate"><span class="pre">--tree</span></code> option. The format is flexible to allow for future
+innovations, but be advised that this also allows you to create something with
+non-ideal results for the current code. Some criteria will result in an error if
+violated, but more will just give a warning. If you are designing or editing a new
+tree, look carefully at the warnings.</p>
+<p>A decision tree can include two types of nodes or functions.
+All functions are currently in <a class="reference internal" href="generated/tedana.selection.selection_nodes.html#module-tedana.selection.selection_nodes" title="tedana.selection.selection_nodes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selection_nodes</span></code></a>.</p>
+<ul class="simple">
+<li><p>A decision function will use existing metrics and potentially change the
+classification of the components based on those metrics. By convention, all
+these functions begin with “dec”.</p></li>
+<li><p>A calculation function will take existing metrics and calculate a value across
+components to be used for classification, for example the kappa and rho elbows.
+By convention, all these functions begin with “calc”.</p></li>
+<li><p>Nothing prevents a function from both calculating new cross component values and
+applying those values in a decision step, but following this convention should
+hopefully make decision tree specifications easier to follow and results easier
+to interpret.</p></li>
+</ul>
+<section id="general-information-fields">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">General information fields</a><a class="headerlink" href="#general-information-fields" title="Link to this heading"></a></h3>
+<p>There are several fields with general information. Some of these store general
+information that’s useful for reporting results and others store information
+that is used to check whether results are plausible &amp; can help avoid mistakes.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>tree_id</dt><dd><p>A descriptive name for the tree that will be logged.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>info</dt><dd><p>A brief description of the tree for info logging</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>report</dt><dd><p>A narrative description of the tree that could be used in report logging.
+This should include any citations, which must be included in the
+<a class="reference external" href="https://github.com/ME-ICA/tedana/blob/main/tedana/resources/references.bib">references BibTeX file</a>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<ul class="simple">
+<li><dl class="simple">
+<dt>necessary_metrics</dt><dd><p>A list of the necessary metrics in the component table that will be used
+by the tree. This field defines what metrics will be calculated on each ICA
+component. If a metric doesn’t exist then this will raise an error instead
+of executing a tree. If a necessary metric isn’t used, there will be a warning.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>generated_metrics</dt><dd><p>An optional initial field. It lists metrics that are to be calculated as
+part of the decision tree’s execution. This is used similarly to necessary_metrics
+except, since the decision tree starts before these metrics exist, it won’t raise
+an error when these metrics are not found. One might want to calculate a new metric
+if the metric uses only a subset of the components based on previous
+classifications. This does make interpretation of results more confusing, but, since
+this functionality is part of the tedana_orig and meica decision trees, it is included.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>intermediate_classifications</dt><dd><p>A list of intermediate classifications (i.e. “provisionalaccept”,
+“provisionalreject”). It is very important to pre-specify these because the code
+will make sure only the default classifications (“accepted” “rejected”
+“unclassified”) and intermediate classifications are used in a tree. This prevents
+someone from accidentially losing a component due to a spelling error or other
+minor variation in a classification label.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>classification_tags</dt><dd><p>A list of acceptable classification tags (i.e. “Likely BOLD”, “Unlikely BOLD”,
+“Low variance”). This will both be used to make sure only these tags are used in
+the tree and allow programs that interact with the results to see all potential
+tags in one place. Note: “Likely BOLD” is a required tag. If tedana is run and
+none of the components include the “Likely BOLD” tag, then ICA will be repeated
+with a different seed and then the selection process will repeat.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="external-regressor-configuration">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">External regressor configuration</a><a class="headerlink" href="#external-regressor-configuration" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">external_regressor_config</span></code> is an optional field. If this field is specified, then
+additional metrics will be calculated that include F, <img class="math" src="_images/math/2fc807898ff2ed580bd1543c9d726076fe764032.png" alt="R^2"/>, and p values for the fit
+of external regressors to each component time series.
+The p value might be useful for defining a statistically significant fit,
+while <img class="math" src="_images/math/2fc807898ff2ed580bd1543c9d726076fe764032.png" alt="R^2"/> can assess whether the regressors model a meaningful amount of variance.
+For example, even if nuisance regressors, like head motion, significantly fit an ICA component
+time series, do not reject if they only model 5% of the total variance of that component.</p>
+<p>Users will need to specify the
+external regressors using the <code class="docutils literal notranslate"><span class="pre">--external</span></code> option.
+<code class="docutils literal notranslate"><span class="pre">--external</span></code> takes a TSV file in which each column has a header label and is the length
+of the fMRI time series.
+This functionality can be used to integrate non-multi-echo decision criteria,
+such as correlations to head motion,  CSF, or respiration time series.
+These added metrics can then be used in decision tree steps just like any other metric.
+Two demonstration trees that apply this functionality are in <a class="reference external" href="https://github.com/ME-ICA/tedana/tree/main/tedana/resources/decision_trees">resources/decision_trees</a>.
+<code class="docutils literal notranslate"><span class="pre">demo_external_regressors_single_model.json</span></code> demonstrates the simplest application
+of external regressors and <code class="docutils literal notranslate"><span class="pre">demo_external_regressors_motion_task_models.json</span></code>
+highlights the full range of functionality.
+<a class="reference external" href="https://github.com/ME-ICA/tedana/tree/main/tedana/tests/data/external_regress_Ftest_3echo.tsv">This is an example TSV file</a> with column labels that work with both of these trees.
+Both these trees are based on <code class="docutils literal notranslate"><span class="pre">minimal.json</span></code>.
+While these might be good decision trees to use as is,
+they are both called “demo” because they demonstrate what is possible,
+but the utility of these specific decision trees have <strong>not yet</strong> been validated.</p>
+<p><code class="docutils literal notranslate"><span class="pre">external_regressor_config</span></code> is a list of dictionaries.
+Each dictionary defines statistical tests to apply to a group of
+regressors specified in <code class="docutils literal notranslate"><span class="pre">--external</span></code>.
+<code class="docutils literal notranslate"><span class="pre">demo_external_regressors_single_model.json</span></code> includes a single dictionary
+that specifies fitting all supplied regressors to a single nuisance model that is
+used to reject components.
+<code class="docutils literal notranslate"><span class="pre">demo_external_regressors_motion_task_models</span></code> includes one dictionary for
+a nuisance model to reject components and one for a task model to retain more
+task-correlated signal. For the nuisance model, columns with specific header names
+are also fit to partial models for motion and CSF regressors that are used to label
+why components were rejected.
+(i.e. Component X was rejected because it fit to head motion regressors.)
+Each dictionary in <code class="docutils literal notranslate"><span class="pre">external_regressor_config</span></code> must include the following sub-fields:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>“regress_ID”</dt><dd><p>A descriptive name for the external regressors that will be logged.
+Will be used in the <code class="docutils literal notranslate"><span class="pre">selector.component_table_</span></code> labels describing the outputs of the
+statistical tests.
+For example, if this field is <code class="docutils literal notranslate"><span class="pre">nuisance</span></code> then component table column labels will include:
+<code class="docutils literal notranslate"><span class="pre">Fstat</span> <span class="pre">nuisance</span> <span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">R2stat</span> <span class="pre">nuisance</span> <span class="pre">model</span></code>, and <code class="docutils literal notranslate"><span class="pre">pval</span> <span class="pre">nuisance</span> <span class="pre">model</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“info”</dt><dd><p>A brief description of the external regressors for info logging.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“report”</dt><dd><p>A narrative description of how the external regressors are used
+that will be used in report logging.
+This should include any citations, which must be included in the
+<a class="reference external" href="https://github.com/ME-ICA/tedana/blob/main/tedana/resources/references.bib">references BibTeX file</a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“detrend”</dt><dd><p>“true” or “false” to specify whether to include detrending regressors
+when fitting the external regressors to the ICA component time series.
+If “true”, it will specify the number of detrending time regressors to
+include based on the length of the time series.
+If “false”, it will just include an intercept regressor to remove the mean.
+This can also be a integer that defines the number of regressors to include.
+Can also be an integer specifying the number of detrending regressors.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“statistic”</dt><dd><p>The statistical test to use for fitting the external regressors to the
+ICA component time series. Currently, the only valid option is “F” for
+fitting using a linear model with an F statistic.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>“regressors”</dt><dd><p>A list of strings or regular expressions to specify the columns in
+the external regressor file to use in the model. Regular expressions begin with <code class="docutils literal notranslate"><span class="pre">^</span></code>
+For example, <code class="docutils literal notranslate"><span class="pre">[&quot;^.*$&quot;]</span></code> would mean use all regressors in the file,
+while <code class="docutils literal notranslate"><span class="pre">[&quot;^mot_.*$&quot;]</span></code> would mean use all regressors with labels beginging with <code class="docutils literal notranslate"><span class="pre">mot_</span></code>.
+<code class="docutils literal notranslate"><span class="pre">[&quot;mot_x&quot;,</span> <span class="pre">&quot;mot_y_&quot;,</span> <span class="pre">&quot;mot_z&quot;]</span></code> would be use regressors with those specific labels.
+Capitalization is ignored.
+Note: When tedana is run, regular expressions are replaced with the named regressors.
+The outputted decision tree will specify what was used and might be useful for validation.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>An optional field is <strong>“partial_models”</strong>.
+This is a dictionary where each element is a descriptor and column specification is similar to
+<code class="docutils literal notranslate"><span class="pre">regressors</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">&quot;partial_models&quot;:</span> <span class="pre">{&quot;Motion&quot;:</span> <span class="pre">[&quot;^mot_.*$&quot;],</span> <span class="pre">&quot;CSF&quot;:</span> <span class="pre">[&quot;^csf.*$&quot;]}</span></code>
+specifies two partial models for motion and CSF time series, where the columns in
+the external regressor tsv begin with either <code class="docutils literal notranslate"><span class="pre">mot_</span></code> or <code class="docutils literal notranslate"><span class="pre">csf</span></code>.
+When this field is used, statistics will be calculated for the full model with all regressors
+and each specified partial model. This can be used to potentially reject components that fit
+any combination of nuisance regressors and also note which components fit head motion regressors.
+If this option is included, there would be added columns in <code class="docutils literal notranslate"><span class="pre">selector.component_table_</span></code>, such as
+<code class="docutils literal notranslate"><span class="pre">Fstat</span> <span class="pre">nuisance</span> <span class="pre">Motion</span> <span class="pre">partial</span> <span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">pval</span> <span class="pre">nuisance</span> <span class="pre">Motion</span> <span class="pre">partial</span> <span class="pre">model</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">R2stat</span> <span class="pre">nuisance</span> <span class="pre">Motion</span> <span class="pre">partial</span> <span class="pre">model</span></code></p>
+</section>
+<section id="nodes-in-the-decision-tree">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Nodes in the decision tree</a><a class="headerlink" href="#nodes-in-the-decision-tree" title="Link to this heading"></a></h3>
+<p>The “nodes” field is an ordered list of elements where each element defines a
+node in the decision tree. Each node contains the information to call a function.</p>
+<p>All trees should start with a “manual_classification” node that should set all
+component classifications to “unclassified” and have “clear_classification_tags”
+set to true. There might be special cases where someone might want to violate
+these rules, but depending what else happens in preceding code, other functions
+will expect both of these columns to exist. This manual_classification step will
+make sure those columns are created and initialized.</p>
+<p>Every possible path through the tree should result in each component being
+classified as ‘accepted’ or ‘rejected’ by the time the tree is completed.</p>
+<p>There are several key fields for each node:</p>
+<ul class="simple">
+<li><p>“functionname”: The exact function name in <a class="reference internal" href="generated/tedana.selection.selection_nodes.html#module-tedana.selection.selection_nodes" title="tedana.selection.selection_nodes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selection_nodes</span></code></a> that will be called.</p></li>
+<li><p>“parameters”: Specifications of all required parameters for the function in functionname</p></li>
+<li><p>“kwargs”: Specifications for optional parameters for the function in functionname</p></li>
+</ul>
+<p>The only parameter that is used in all functions is <code class="docutils literal notranslate"><span class="pre">decide_comps</span></code>, which is used to
+identify, based on their classifications, the components a function should be applied
+to. It can be a single classification, or a comma separated string of classifications.
+In addition to the intermediate and default (“accepted”, “rejected”, “unclassified”)
+component classifications, this can be “all” for functions that should be applied to
+all components regardless of their classifications.</p>
+<p>Most decision functions also include <code class="docutils literal notranslate"><span class="pre">if_true</span></code> and <code class="docutils literal notranslate"><span class="pre">if_false</span></code>, which specify how to change
+the classification of each component based on whether a decision criterion is true
+or false. In addition to the default and intermediate classification options, this can
+also be “nochange”
+(e.g., for components where a&gt;b is true, “reject”, and for components where a&gt;b is false, “nochange”).
+The optional parameters <code class="docutils literal notranslate"><span class="pre">tag_if_true</span></code> and <code class="docutils literal notranslate"><span class="pre">tag_if_false</span></code>
+define the classification tags to be assigned to components.
+Currently, the only exceptions are <code class="docutils literal notranslate"><span class="pre">manual_classify</span></code> and <code class="docutils literal notranslate"><span class="pre">dec_classification_doesnt_exist</span></code>,
+which use <code class="docutils literal notranslate"><span class="pre">new_classification</span></code> to designate the new component classification and
+<code class="docutils literal notranslate"><span class="pre">tag</span></code> (optional) to designate which classification tag to apply.</p>
+<p>There are several optional parameters (to include within “kwargs”) in every decision
+tree function:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">custom_node_label</span></code>: A brief label for what happens in this node that can be used in
+a decision tree summary table or flow chart. If custom_node_label is not not defined,
+then each function has default descriptive text.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">log_extra_info</span></code>: Text for each function call is automatically placed
+in the logger output with the info label. These
+might be useful to give a narrative explanation of why a step was parameterized a
+certain way.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">only_used_metrics</span></code>: If true, this function will only return the names of the component
+table metrics that will be used when this function is fully run. This can be used to
+identify all used metrics before running the decision tree.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;_comments&quot;</span></code> can be used to add a longer explanation about what a node is doing.
+This will not be logged anywhere except in the tree, but may be useful to help explain the
+purpose of a given node.</p>
+</section>
+</section>
+<section id="key-parts-of-selection-functions">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Key parts of selection functions</a><a class="headerlink" href="#key-parts-of-selection-functions" title="Link to this heading"></a></h2>
+<p>There are several expectations for selection functions that are necessary for them to
+properly execute.
+In <a class="reference internal" href="generated/tedana.selection.selection_nodes.html#module-tedana.selection.selection_nodes" title="tedana.selection.selection_nodes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">selection_nodes</span></code></a>,
+<a class="reference internal" href="generated/tedana.selection.selection_nodes.manual_classify.html#tedana.selection.selection_nodes.manual_classify" title="tedana.selection.selection_nodes.manual_classify"><code class="xref py py-func docutils literal notranslate"><span class="pre">manual_classify()</span></code></a>,
+<a class="reference internal" href="generated/tedana.selection.selection_nodes.dec_left_op_right.html#tedana.selection.selection_nodes.dec_left_op_right" title="tedana.selection.selection_nodes.dec_left_op_right"><code class="xref py py-func docutils literal notranslate"><span class="pre">dec_left_op_right()</span></code></a>,
+and <a class="reference internal" href="generated/tedana.selection.selection_nodes.calc_kappa_elbow.html#tedana.selection.selection_nodes.calc_kappa_elbow" title="tedana.selection.selection_nodes.calc_kappa_elbow"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_kappa_elbow()</span></code></a>
+are good examples for how to meet these expectations.</p>
+<p>Create a dictionary called “outputs” that includes key fields that should be recorded.
+The following line should be at the end of each function to retain the output info:
+<code class="docutils literal notranslate"><span class="pre">selector.nodes[selector.current_node_idx_][&quot;outputs&quot;]</span> <span class="pre">=</span> <span class="pre">outputs</span></code></p>
+<p>Additional fields can be used to log function-specific information, but the following
+fields are common and may be used by other parts of the code:</p>
+<ul class="simple">
+<li><p>“decision_node_idx” (required): the ordered index for the current function in the
+decision tree.</p></li>
+<li><p>“node_label” (required): A decriptive label for what happens in the node.</p></li>
+<li><p>“n_true” &amp; “n_false” (required for decision functions): For decision functions,
+the number of components labeled true or false within the function call.</p></li>
+<li><p>“used_metrics” (required if a function uses metrics): The list of metrics used in
+the function. This can be hard coded, defined by input parameters, or empty.</p></li>
+<li><p>“used_cross_component_metrics” (required if a function uses cross component metrics):
+A list of cross component metrics used in the function. This can be hard coded,
+defined by input parameters, or empty.</p></li>
+<li><p>“calc_cross_comp_metrics” (required for calculation functions): A list of cross
+component metrics calculated within the function. The key-value pair for each
+calculated metric is also included in “outputs”</p></li>
+</ul>
+<p>Before any data are touched in the function, there should be an
+<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">only_used_metrics:</span></code> clause that returns <code class="docutils literal notranslate"><span class="pre">used_metrics</span></code> for the function
+call. This will be useful to gather all metrics a tree will use without requiring a
+specific dataset.</p>
+<p>Existing functions define <code class="docutils literal notranslate"><span class="pre">function_name_idx</span> <span class="pre">=</span> <span class="pre">f&quot;Step</span> <span class="pre">{selector.current_node_idx_}:</span> <span class="pre">[text</span> <span class="pre">of</span> <span class="pre">function_name]</span></code>.
+This is used in logging and is cleaner to initialize near the top of each function.</p>
+<p>Each function has code that creates a default node label in <code class="docutils literal notranslate"><span class="pre">outputs[&quot;node_label&quot;]</span></code>.
+The default node label may be used in decision tree visualization so it should be
+relatively short. Within this section, if there is a user-provided custom_node_label,
+that should be used instead.</p>
+<p>Calculation nodes should check if the value they are calculating was already calculated
+and output a warning if the function overwrites an existing value</p>
+<p>Code that adds the text <code class="docutils literal notranslate"><span class="pre">log_extra_info</span></code> into the output
+log (if they are provided by the user)</p>
+<p>After the above information is included,
+all functions will call <a class="reference internal" href="generated/tedana.selection.selection_utils.selectcomps2use.html#tedana.selection.selection_utils.selectcomps2use" title="tedana.selection.selection_utils.selectcomps2use"><code class="xref py py-func docutils literal notranslate"><span class="pre">selectcomps2use()</span></code></a>,
+which returns the components with classifications included in <code class="docutils literal notranslate"><span class="pre">decide_comps</span></code>
+and then runs <a class="reference internal" href="generated/tedana.selection.selection_utils.confirm_metrics_exist.html#tedana.selection.selection_utils.confirm_metrics_exist" title="tedana.selection.selection_utils.confirm_metrics_exist"><code class="xref py py-func docutils literal notranslate"><span class="pre">confirm_metrics_exist()</span></code></a>,
+which is an added check to make sure the metrics
+used by this function exist in the component table.</p>
+<p>Nearly every function has a clause like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">comps2use</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">log_decision_tree_step</span><span class="p">(</span><span class="n">function_name_idx</span><span class="p">,</span> <span class="n">comps2use</span><span class="p">,</span> <span class="n">decide_comps</span><span class="o">=</span><span class="n">decide_comps</span><span class="p">)</span>
+    <span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;n_true&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;n_false&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">else</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>If there are no components with the classifications in <code class="docutils literal notranslate"><span class="pre">decide_comps</span></code>, this logs that
+there’s nothing for the function to be run on, else continue.</p>
+<p>For decision functions, the key variable is <code class="docutils literal notranslate"><span class="pre">decision_boolean</span></code>, which should be a pandas
+dataframe column that is True or False for the components in <code class="docutils literal notranslate"><span class="pre">decide_comps</span></code> based on
+the function’s criteria.
+That column is an input to <a class="reference internal" href="generated/tedana.selection.selection_utils.change_comptable_classifications.html#tedana.selection.selection_utils.change_comptable_classifications" title="tedana.selection.selection_utils.change_comptable_classifications"><code class="xref py py-func docutils literal notranslate"><span class="pre">change_comptable_classifications()</span></code></a>,
+which will update the component_table classifications, update the classification history
+in <code class="docutils literal notranslate"><span class="pre">selector.component_status_table_</span></code>, and update the component classification_tags. Components not
+in <code class="docutils literal notranslate"><span class="pre">decide_comps</span></code> retain their existing classifications and tags.
+<a class="reference internal" href="generated/tedana.selection.selection_utils.change_comptable_classifications.html#tedana.selection.selection_utils.change_comptable_classifications" title="tedana.selection.selection_utils.change_comptable_classifications"><code class="xref py py-func docutils literal notranslate"><span class="pre">change_comptable_classifications()</span></code></a>
+also returns and should assign values to
+<code class="docutils literal notranslate"><span class="pre">outputs[&quot;n_true&quot;]</span></code> and <code class="docutils literal notranslate"><span class="pre">outputs[&quot;n_false&quot;]</span></code>. These log how many components were
+identified as true or false within each function.</p>
+<p>For calculation functions, the calculated values should be added as a value/key pair to
+both <code class="docutils literal notranslate"><span class="pre">selector.cross_component_metrics_</span></code> and <code class="docutils literal notranslate"><span class="pre">outputs</span></code>.</p>
+<p><a class="reference internal" href="generated/tedana.selection.selection_utils.log_decision_tree_step.html#tedana.selection.selection_utils.log_decision_tree_step" title="tedana.selection.selection_utils.log_decision_tree_step"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_decision_tree_step()</span></code></a>
+puts the relevant info from the function call into the program’s output log.</p>
+<p>Every function should end with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">selector</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">selector</span><span class="o">.</span><span class="n">current_node_idx_</span><span class="p">][</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputs</span>
+<span class="k">return</span> <span class="n">selector</span>
+
+<span class="n">functionname</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span><span class="n">functionname</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">DECISION_DOCS</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This makes sure the outputs from the function are saved in the class structure and the
+class structure is returned. The following line should include the function’s name and
+is used to make sure repeated variable names are compiled correctly for the API
+documentation.</p>
+<p>If you have made it this far, congratulations!!! If you follow these steps, you’ll be able
+to impress your colleagues, friends, and family by designing your very own decision
+tree functions.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="faq.html" class="btn btn-neutral float-left" title="FAQ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="support.html" class="btn btn-neutral float-right" title="Support and communication" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

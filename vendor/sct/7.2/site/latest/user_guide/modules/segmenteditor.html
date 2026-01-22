@@ -1,0 +1,664 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Segment editor &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Welcome" href="slicerwelcome.html" />
+    <link rel="prev" title="Segmentations" href="segmentations.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/segmenteditor.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Segment editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-cite">How to cite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#keyboard-shortcuts">Keyboard shortcuts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#main-options">Main options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#segments-table">Segments table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#effects-section">Effects section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#masking-options">Masking options</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#effects">Effects</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#threshold"> Threshold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#paint"> Paint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#draw"> Draw</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#erase"> Erase</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#level-tracing"> Level Tracing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grow-from-seeds"> Grow from seeds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fill-between-slices"> Fill between slices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#margin"> Margin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hollow"> Hollow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#smoothing"> Smoothing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scissors"> Scissors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#islands"> Islands</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#logical-operators"> Logical operators</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mask-volume"> Mask volume</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tips">Tips</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frequently-asked-questions">Frequently asked questions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cannot-paint-outside-some-boundaries">Cannot paint outside some boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cannot-edit-the-segments">Cannot edit the segments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#segmentation-is-not-accurate-enough">Segmentation is not accurate enough</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#generated-surface-contains-step-artifacts">Generated surface contains step artifacts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#paint-affects-neighbor-slices-or-stripes-appear-in-painted-segments">Paint affects neighbor slices or stripes appear in painted segments</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-modules">Related Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#information-for-developers">Information for Developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#segmentation">Segmentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Segment editor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-cite">How to cite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#keyboard-shortcuts">Keyboard shortcuts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#effects">Effects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tips">Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#frequently-asked-questions">Frequently asked questions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-modules">Related Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for Developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="brainsroiauto.html">Foreground masking (BRAINS)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Segment editor</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/segmenteditor.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="segment-editor">
+<h1>Segment editor<a class="headerlink" href="#segment-editor" title="Link to this heading"></a></h1>
+<p>This is a module is for specifying segments (structures of interest) in 2D/3D/4D images. Some of the tools mimic a painting interface like photoshop or gimp, but work on 3D arrays of voxels rather than on 2D pixels. The module offers editing of overlapping segments, display in both 2D and 3D views, fine-grained visualization options, editing in 3D views, create segmentation by interpolating or extrapolating segmentation on a few slices, editing on slices in any orientation.</p>
+<p>Segment Editor does not edit labelmap volumes or models, but segmentations can be easily converted to/from labelmap volumes and models using the Import/Export section of <a class="reference internal" href="segmentations.html"><span class="std std-doc">Segmentations</span></a> module.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/image_segmentation_segment_editor_module.png" /></p>
+<section id="how-to-cite">
+<h2>How to cite<a class="headerlink" href="#how-to-cite" title="Link to this heading"></a></h2>
+<p>To cite the Segment Editor in scientific publications, you can cite <a class="reference internal" href="../about.html#how-to-cite"><span class="std std-ref">3D Slicer</span></a> and the Segment Editor paper: <em>Cs. Pinter, A. Lasso, G. Fichtinger, “Polymorph segmentation representation for medical image computing”, Computer Methods and Programs in Biomedicine, Volume 171, p19-26, 2019</em> (<a class="reference external" href="https://github.com/EBATINCA/EbatincaDoc/blob/477aae710a5f741b21edaca4838cf48fd4ea0220/Papers/Pinter2019_Manuscript.pdf">pdf</a>, <a class="reference external" href="https://doi.org/10.1016/j.cmpb.2019.02.011">DOI</a>). Additional references to non-trivial algorithms used in Segment Editor effects are provided below, in the documentation of each effect.</p>
+</section>
+<section id="keyboard-shortcuts">
+<h2>Keyboard shortcuts<a class="headerlink" href="#keyboard-shortcuts" title="Link to this heading"></a></h2>
+<p>The following keyboard shortcuts are active when you are in the Segment Editor module.  They are intended to allow two-handed editing, where on hand is on the mouse and the other hand uses the keyboard to switch modes.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Key</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>left arrow</code></td>
+<td>move to previous slice</td>
+</tr>
+<tr>
+<td><code>right arrow</code></td>
+<td>move to next slice</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>mouse move</code></td>
+<td>scroll slices to mouse location</td>
+</tr>
+<tr>
+<td><code>Ctrl</code> + <code>mouse wheel</code></td>
+<td>zoom image in/out</td>
+</tr>
+<tr>
+<td><code>q</code></td>
+<td>select previous segment</td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td>select next segment</td>
+</tr>
+<tr>
+<td><code>z</code></td>
+<td>undo</td>
+</tr>
+<tr>
+<td><code>y</code></td>
+<td>redo</td>
+</tr>
+<tr>
+<td><code>esc</code></td>
+<td>unselect effect</td>
+</tr>
+<tr>
+<td><code>space</code></td>
+<td>toggle between last two active effects</td>
+</tr>
+<tr>
+<td><code>1</code>, <code>2</code>, … <code>0</code></td>
+<td>select effect (1-10)</td>
+</tr>
+<tr>
+<td><code>Shift</code> + <code>1</code>, <code>2</code>, … <code>0</code></td>
+<td>select effect (11-20)</td>
+</tr>
+<tr>
+<td><code>i</code></td>
+<td>toggle masking by intensity range</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://training.slicer.org/#segmentation-tutorials">Segmentation tutorials</a></p></li>
+</ul>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<section id="main-options">
+<h3>Main options<a class="headerlink" href="#main-options" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Segmentation</strong>: Choose the segmentation to edit</p></li>
+<li><p><strong>Source volume</strong>: Choose the volume to segment. The source volume that is selected the very first time after the segmentation is created is used to determine the segmentation’s labelmap representation geometry (extent, resolution, axis directions, origin). The source volume is used by all editor effects that uses intensity of the segmented volume (e.g., thresholding, level tracing). The source volume can be changed at any time during the segmentation process. Note: changing the source volume does not affect the segmentation’s labelmap representation geometry. To make changes to the geometry (make the extent larger, the resolution finer, etc.) click <strong>Specify geometry</strong> button next to the source volume selector, select a “Source geometry” node that will be used as a basis for the new geometry, adjust parameters, and click OK. To specify an arbitrary extens, an ROI (region of interest) node can be created and selected as source geometry. If the new geometry will crop a region from the existing segments, a warning icon will be displayed beside the “Pad output” checkbox. If the “Pad output” is checked, the extent will be expanded so that it contains both the existing segments and the new reference geometry.</p></li>
+</ul>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_specify_geometry.png" /></p>
+<ul class="simple">
+<li><p><strong>Add</strong>: Add a new segment to the segmentation and select it.</p></li>
+<li><p><strong>Remove</strong>: Select the segment you would like to delete then click Remove segment to delete from the segmentation.</p></li>
+<li><p><strong>Show 3D</strong>: Display your segmentation in the 3D Viewer. This is a toggle button. When turned on the surface is created and updated automatically as the user is segmenting. When turned off, the conversion is not ongoing so the segmentation process is faster. To change surface creation parameters: go to Segmentations module, click Update button in Closed surface row in Representations section, click Binary labelmap -&gt; Closed surface line, double-click on value column to edit a conversion parameter value. Setting Smoothing factor to 0 disables smoothing, making updates much faster. Set Smoothing factor to 0.1 for weak smoothing and 0.5 or larger for stronger smoothing.</p></li>
+</ul>
+</section>
+<section id="segments-table">
+<h3>Segments table<a class="headerlink" href="#segments-table" title="Link to this heading"></a></h3>
+<p>This table displays the list of all segments.</p>
+<p>Table columns:</p>
+<ul class="simple">
+<li><p><strong>Visibility</strong> (eye icon): Toggle segment’s visibility. To customize visualization: either open the slice view controls (click on push-pint and double-arrow icons at the top of a slice viewer) or go to Segmentations module.</p></li>
+<li><p><strong>Color swatch</strong>: set color and assign segment to standardized terminology.</p></li>
+<li><p><strong>State</strong> (flag icon): This column can be used for setting the editing status of each segment that can be used for filtering the table or mark segments for further processing.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Not</span> <span class="pre">started</span></code>: default starting state, indicates that editing has not happened yet.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">In</span> <span class="pre">progress</span></code>: when a “not started” segment is edited its state is automatically changed to this</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Completed</span></code>: user can manually select this state to indicate that the segmentat is complete</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Flagged</span></code>: user can manually select this state for any custom purpose, for example to bring the segment into the attention of an expert reviewer</p></li>
+</ul>
+</li>
+<li><p><strong>Layer</strong>: advanced information, displays the 3D layer index when there are overlapping segments. Hidden By default, can be shown by right-clicking on the table and enabling <code class="docutils literal notranslate"><span class="pre">Show</span> <span class="pre">layer</span> <span class="pre">column</span></code>.</p></li>
+</ul>
+<p><strong>Filter bar</strong>: It can be used for finding segments when editing segmentations that contain a large number of segments. By default the filter bar may not be shown, right-click on the segments table and click <code class="docutils literal notranslate"><span class="pre">Show</span> <span class="pre">filter</span> <span class="pre">bar</span></code> to show/hide it.</p>
+<ul class="simple">
+<li><p>Filter: filter by segment name</p></li>
+<li><p>Segment state toggle buttons: only segments of the selected states will be displayed in the segment list</p></li>
+</ul>
+</section>
+<section id="effects-section">
+<h3>Effects section<a class="headerlink" href="#effects-section" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Effect toolbar</strong>: Select the desired effect here. See below for more information about each effect.</p></li>
+<li><p><strong>Options</strong>: Options for the selected effect will be displayed here.</p></li>
+<li><p><strong>Undo/Redo</strong>: The module saves state of segmentation before each effect is applied. This is useful for experimentation and error correction. By default the last 10 states are remembered.</p></li>
+</ul>
+</section>
+<section id="masking-options">
+<h3>Masking options<a class="headerlink" href="#masking-options" title="Link to this heading"></a></h3>
+<p>These options allow you to define the editable areas and whether or not certain segments can be overwritten.</p>
+<ul class="simple">
+<li><p><strong>Editable area</strong>: Changes will be limited to the selected area. This can be used for drawing inside a specific region or split a segment into multiple segments.</p></li>
+<li><p><strong>Editable intensity range</strong>: Changes will be limited to areas where the source volume’s voxels are in the selected intensity range. It is useful when locally an intensity threshold separates well between different regions. Intensity range can be previewed by using Threshold effect.</p></li>
+<li><p><strong>Modify other segments</strong>: Select which segments will be overwritten rather than overlapped.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Overwrite</span> <span class="pre">all</span></code>: Segment will not overlap (default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Overwrite</span> <span class="pre">visible</span></code>: Visible segments will not overlap with each other. Hidden segments will not be overwritten by changes done to visible segments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Allow</span> <span class="pre">overlap</span></code>: Changing one segment will not change any other.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="effects">
+<h2>Effects<a class="headerlink" href="#effects" title="Link to this heading"></a></h2>
+<p>Effects operate either by clicking the Apply button in the effect options section or by clicking and/or dragging in slice or 3D views.</p>
+<section id="threshold">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_threshold.png" /> Threshold<a class="headerlink" href="#threshold" title="Link to this heading"></a></h3>
+<p>Use Threshold to determine a threshold range and save results to selected segment or use it as Editable intensity range.</p>
+</section>
+<section id="paint">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_paint.png" /> Paint<a class="headerlink" href="#paint" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Pick the radius (in millimeters) of the brush to apply</p></li>
+<li><p>Left click to apply single circle</p></li>
+<li><p>Left click and drag to fill a region</p></li>
+<li><p>A trace of circles is left which are applied when the mouse button is released</p></li>
+<li><p>Sphere mode applies the radius to slices above and below the current slice.</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Key</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Shift</code> + <code>mouse wheel</code></td>
+<td>increase/decrease brush size</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>shrink brush radius by 20%</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>grow brush</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="draw">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_draw.png" /> Draw<a class="headerlink" href="#draw" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Left click to lay individual points of an outline</p></li>
+<li><p>Left drag to lay down a continuous line of points</p></li>
+<li><p>Left double-click to add a point and fill the contour. Alternatively, right click to fill the current contour without adding any more points.</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Key</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>delete the last point added</td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td>apply segment</td>
+</tr>
+<tr>
+<td><code>Enter</code></td>
+<td>apply segment</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Scissors effect can be also used for drawing. Scissors effect works both in slice and 3D views, can be set to draw on more than one slice at a time, can erase as well, can be constrained to draw horizontal/vertical lines (using rectangle mode), etc.</p>
+</div>
+</section>
+<section id="erase">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_erase.png" /> Erase<a class="headerlink" href="#erase" title="Link to this heading"></a></h3>
+<p>Same as the Paint effect, but the highlighted regions are removed from the selected segment instead of added.</p>
+<p>If Masking / Editable area is set to a specific segment then the highlighted region is removed from selected segment <em>and</em> added to the masking segment. This is useful when a part of a segment has to be separated into another segment.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Key</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Shift</code> + <code>mouse wheel</code></td>
+<td>increase/decrease brush size</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>shrink brush radius by 20%</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>grow brush radius by 20%</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="level-tracing">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_level_tracing.png" /> Level Tracing<a class="headerlink" href="#level-tracing" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Moving the mouse defines an outline where the pixels all have the same background value as the current background pixel</p></li>
+<li><p>Clicking the left mouse button applies that outline to the label map</p></li>
+</ul>
+</section>
+<section id="grow-from-seeds">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_grow_from_seeds.png" /> Grow from seeds<a class="headerlink" href="#grow-from-seeds" title="Link to this heading"></a></h3>
+<p>Draw segment inside each anatomical structure. This method will start from these “seeds” and grow them to achieve complete segmentation.</p>
+<ul class="simple">
+<li><p>Initialize: Click this button after initial segmentation is completed (by using other editor effects).
+Initial computation may take more time than subsequent updates.
+Source volume and auto-complete method will be locked after initialization,
+therefore if either of these have to be changed then click Cancel and initialize again.</p></li>
+<li><p>Update: Update completed segmentation based on changed inputs.</p></li>
+<li><p>Auto-update: activate this option to automatically updating result preview when segmentation is changed.</p></li>
+<li><p>Cancel: Remove result preview. Seeds are kept unchanged, so parameters can be changed and segmentation can be restarted by clicking Initialize.</p></li>
+<li><p>Apply: Overwrite seeds segments with previewed results.</p></li>
+</ul>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>Only visible segments are used by this effect.</p></li>
+<li><p>At least two segments are required.</p></li>
+<li><p>If a part of a segment is erased or painting is removed using Undo (and not overwritten by another segment) then it is recommended to cancel and initialize. The reason is that effect of adding more information (painting more seeds) can be propagated to the complete segmentation, but removing information (removing some seed regions) will not change the complete segmentation.</p></li>
+<li><p>The method uses an improved version of the grow-cut algorithm described in <em>Liangjia Zhu, Ivan Kolesov, Yi Gao, Ron Kikinis, Allen Tannenbaum. An Effective Interactive Medical Image Segmentation Method Using Fast GrowCut, International Conference on Medical Image Computing and Computer Assisted Intervention (MICCAI), Interactive Medical Image Computing Workshop, 2014.</em></p></li>
+</ul>
+</section>
+<section id="fill-between-slices">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_fill_between_slices.png" /> Fill between slices<a class="headerlink" href="#fill-between-slices" title="Link to this heading"></a></h3>
+<p>Create complete segmentation on selected slices using any editor effect. You can skip any number of slices between segmented slices. This method will fill the skipped slices by interpolating between segmented slices.</p>
+<ul class="simple">
+<li><p>Initialize: Click this button after initial segmentation is completed (by using other editor effects).
+Initial computation may take more time than subsequent updates.
+Source volume and auto-complete method will be locked after initialization,
+therefore if either of these have to be changed then click Cancel and initialize again.</p></li>
+<li><p>Update: Update completed segmentation based on changed inputs.</p></li>
+<li><p>Auto-update: activate this option to automatically updating result preview when segmentation is changed.</p></li>
+<li><p>Cancel: Remove result preview. Seeds are kept unchanged, so parameters can be changed and segmentation can be restarted by clicking Initialize.</p></li>
+<li><p>Apply: Overwrite seeds segments with previewed results.</p></li>
+</ul>
+<p><a class="reference external" href="https://www.youtube.com/watch?v=u93kI1MG6Ic" title="Fill between slices"><img alt="" src="https://img.youtube.com/vi/u93kI1MG6Ic/0.jpg" /></a></p>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>Only visible segments are used by this effect.</p></li>
+<li><p>The method does not use the source volume, only the shape of the specified segments.</p></li>
+<li><p>The method uses <em>ND morphological contour interpolation algorithm</em> described in this paper: <a class="reference external" href="https://insight-journal.org/browse/publication/977">https://insight-journal.org/browse/publication/977</a></p></li>
+</ul>
+</section>
+<section id="margin">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_margin.png" /> Margin<a class="headerlink" href="#margin" title="Link to this heading"></a></h3>
+<p>Grows or shrinks the selected segment by the specified margin.</p>
+<p>By enabling <code class="docutils literal notranslate"><span class="pre">Apply</span> <span class="pre">to</span> <span class="pre">visible</span> <span class="pre">segments</span></code>, all visible segments of the segmentation will be processed (in the order of the segment list).</p>
+</section>
+<section id="hollow">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_hollow.png" /> Hollow<a class="headerlink" href="#hollow" title="Link to this heading"></a></h3>
+<p>Makes the selected visible segment hollow by replacing the segment with a uniform-thickness shell defined by the segment boundary.</p>
+<p>By enabling <code class="docutils literal notranslate"><span class="pre">Apply</span> <span class="pre">to</span> <span class="pre">visible</span> <span class="pre">segments</span></code>, all visible segments of the segmentation will be processed (in the order of the segment list).</p>
+</section>
+<section id="smoothing">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_smoothing.png" /> Smoothing<a class="headerlink" href="#smoothing" title="Link to this heading"></a></h3>
+<p>Smoothes segments by filling in holes and/or removing extrusions.</p>
+<p>By default, the current segment will be smoothed. By enabling <code class="docutils literal notranslate"><span class="pre">Apply</span> <span class="pre">to</span> <span class="pre">visible</span> <span class="pre">segments</span></code>, all visible segments of the segmentation will be smoothed (in the order of the segment list). This operation may be time-consuming for complex segmentations. The <code class="docutils literal notranslate"><span class="pre">Joint</span> <span class="pre">smoothing</span></code> method always smoothes all visible segments.</p>
+<p>By clicking <code class="docutils literal notranslate"><span class="pre">Apply</span></code> button, the entire segmentation is smoothed. To smooth a specific region, left click and drag in any slice or 3D view. Same smoothing method and strength is used as for the whole-segmentation mode (size of the brush does not affect smoothing strength, just makes it easier to designate a larger region).</p>
+<p>Available methods:</p>
+<ul class="simple">
+<li><p>Median: removes small extrusions and fills small gaps while keeps smooth contours mostly unchanged. Applied to selected segment only.</li></p></li>
+<li><p>Opening: removes extrusions smaller than the specified kernel size. Does not add anything to the segment. Applied to selected segment only.</li></p></li>
+<li><p>Closing: fills sharp corners and holes smaller than the specified kernel size. Does not remove anything from the segment. Applied to selected segment only.</li></p></li>
+<li><p>Gaussian: smoothes all details. Strong smoothing as achievable, but tends to shrink the segment. Applied to selected segment only.</li></p></li>
+<li><p>Joint smoothing: smoothes multiple segments at once, preserving watertight interface between them. If segments overlap, segment higher in the segments table will have priority. Applied to all visible segments.</p></li>
+</ul>
+</section>
+<section id="scissors">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_scissors.png" /> Scissors<a class="headerlink" href="#scissors" title="Link to this heading"></a></h3>
+<p>Clip segments to the specified region or fill regions of a segment (typically used with masking). Regions can be drawn on both slice view or 3D views.</p>
+<ul class="simple">
+<li><p>Left click to start drawing (free-form or rubber band circle or rectangle)</p></li>
+<li><p>Release button to apply</p></li>
+</ul>
+<p>By enabling <code class="docutils literal notranslate"><span class="pre">Apply</span> <span class="pre">to</span> <span class="pre">visible</span> <span class="pre">segments</span></code>, all visible segments of the segmentation will be processed (in the order of the segment list).</p>
+</section>
+<section id="islands">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_islands.png" /> Islands<a class="headerlink" href="#islands" title="Link to this heading"></a></h3>
+<p>Use this tool to process “islands”, i.e., connected regions that are defined as groups of non-empty voxels which touch each other but are surrounded by empty voxels.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Keep</span> <span class="pre">largest</span> <span class="pre">island</span></code>: keep the larges connected region.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Remove</span> <span class="pre">small</span> <span class="pre">islands</span></code>: keep all connected regions that are larger than <code class="docutils literal notranslate"><span class="pre">minimum</span> <span class="pre">size</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Split</span> <span class="pre">islands</span> <span class="pre">to</span> <span class="pre">segments</span></code>: create a unique segment for each connected region of the selected segment.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Keep</span> <span class="pre">selected</span> <span class="pre">island</span></code>: after selecting this mode, click in a non-empty area in a slice view to keep that region and remove all other regions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Remove</span> <span class="pre">selected</span> <span class="pre">island</span></code>: after selecting this mode, click in a non-empty area in a slice view to remove that region and preserve all other regions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">selected</span> <span class="pre">island</span></code>: after selecting this mode, click in an empty area in a slice view to add that empty region to the segment (fill hole).</p></li>
+</ul>
+</section>
+<section id="logical-operators">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_logical_operators.png" /> Logical operators<a class="headerlink" href="#logical-operators" title="Link to this heading"></a></h3>
+<p>Apply basic copy, clear, fill, and Boolean operations to the selected segment(s). See more details about the methods by clicking on “Show details” in the effect description in Segment Editor.</p>
+</section>
+<section id="mask-volume">
+<h3><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_segmenteditor_mask_volume.png" /> Mask volume<a class="headerlink" href="#mask-volume" title="Link to this heading"></a></h3>
+<p>Blank out inside/outside of a segment in a volume or create a binary mask. Result can be saved into a new volume or overwrite the input volume.
+This is useful for removing irrelevant details from an image (for example remove patient table; or crop the volume to arbitrary shape for volume rendering) or create masks for image processing operations (such as registration or intensity correction).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Operation</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Fill</span> <span class="pre">inside</span></code>: set all voxels of the selected volume to the specified <code class="docutils literal notranslate"><span class="pre">Fill</span> <span class="pre">value</span></code> inside the selected segment</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Fill</span> <span class="pre">outside</span></code>: set all voxels of the selected volume to the specified <code class="docutils literal notranslate"><span class="pre">Fill</span> <span class="pre">value</span></code> outside the selected segment</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Fill</span> <span class="pre">inside</span> <span class="pre">and</span> <span class="pre">outside</span></code>: create a binary labelmap volume as output, filled with <code class="docutils literal notranslate"><span class="pre">Outside</span> <span class="pre">fill</span> <span class="pre">value</span></code> and <code class="docutils literal notranslate"><span class="pre">Intside</span> <span class="pre">fill</span> <span class="pre">value</span></code>. Most image processing operations require background (outside, ignored) region to be filled with 0 value.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Soft</span> <span class="pre">edge</span></code>: if set to &gt;0 then transition between the inside/outside the mask is gradual. The value specifies the standard deviation of the Gaussian blurring function. Larger value results in softer transition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Input</span> <span class="pre">volume</span></code>: voxels of this volume will be used as input for the masking. Geometry and voxel type of the output volume will be the same as this volume’s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Output</span> <span class="pre">volume</span></code>: this volume will store the result of the masking. While it can be the same as the input volume, generally it is better to use a different output volume, because then the options can be adjusted and mask can be recomputed multiple times.</p></li>
+</ul>
+</section>
+</section>
+<section id="tips">
+<h2>Tips<a class="headerlink" href="#tips" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>A large radius paint brush with threshold painting is often a very fast way to segment anatomy that is consistently brighter or darker than the surrounding region, but partially connected to similar nearby structures (this happens a lot).</p></li>
+<li><p>Use the slice viewer menus to control the label map opacity and display mode (to show outlines only or full volume).</p></li>
+</ul>
+</section>
+<section id="frequently-asked-questions">
+<h2>Frequently asked questions<a class="headerlink" href="#frequently-asked-questions" title="Link to this heading"></a></h2>
+<section id="cannot-paint-outside-some-boundaries">
+<h3>Cannot paint outside some boundaries<a class="headerlink" href="#cannot-paint-outside-some-boundaries" title="Link to this heading"></a></h3>
+<p>When you create a segmentation, internal labelmap geometry (extent, origin, spacing, axis directions) is determined from the source volume <em>that you choose first</em>. You cannot paint outside this extent.</p>
+<p>If you want to extend the segmentation to a larger region then you need to modify segmentation’s geometry using “Specify geometry” button.</p>
+</section>
+<section id="cannot-edit-the-segments">
+<h3>Cannot edit the segments<a class="headerlink" href="#cannot-edit-the-segments" title="Link to this heading"></a></h3>
+<p>Masking settings (visible at the bottom of the effect options when any effect is selected) may prevent modifications of segments. If painting, erasing, etc. “does not work” then make sure your masking settings are set to default:</p>
+<ul class="simple">
+<li><p>Editable area: everywhere</p></li>
+<li><p>Editable intensity range: unchecked (it means that the segmentation is editable, regardless of the intensity values of the source volume)</p></li>
+</ul>
+</section>
+<section id="segmentation-is-not-accurate-enough">
+<h3>Segmentation is not accurate enough<a class="headerlink" href="#segmentation-is-not-accurate-enough" title="Link to this heading"></a></h3>
+<p>If details cannot be accurately depicted during segmentation or the exported surface has non-negligible errors (there are gaps or overlap between segments), then it is necessary to reduce the segmentation’s spacing (more accurately: spacing of the internal binary labelmap representation in the segmentation node). <em>Spacing</em> is also known as <em>voxel size</em> or may be referred to as <em>resolution</em> (which is inverse of spacing - higher resolution means smaller spacing).</p>
+<p>As a general rule, segmentation’s spacing needs to be 2-5x smaller than the size of the smallest relevant detail or the maximum acceptable surface error in the generated surface.</p>
+<p>By default, segmentation’s spacing is set from the <em>source volume that is selected first after the segmentation is created</em>. If the first selected source volume’s resolution is not sufficient or highly anisotropic (spacing value is not the same along the 3 axes) then one of the following is recommended:</p>
+<ul class="simple">
+<li><p>Option A. Crop and resample the input volume using <em>Crop volume</em> module before starting segmentation. Make spacing smaller (small enough to represent all details but not too small to slow things down and consume too much memory) and isotropic by reducing <em>Spacing scale</em> and enabling <em>Isotropic spacing</em>. Also adjust the region of interest to crop the volume to minimum necessary size to minimize memory usage and make editing faster.</p></li>
+<li><p>Option B. Click <em>Specify geometry</em> button in Segment Editor any time to specify smaller spacing. After this smooth segments using <em>Smoothing</em> effect. <em>Joint smoothing</em> method is recommended as it can smooth all the segments at once and it preserves boundaries between segments. <em>Joint smoothing</em> flattens all the processed segments into one layer, so if the segentation contains overlapping segments then segment in several steps, in each step only show a set of non-overlapping segments (or use any of the other smoothing methods, which only operate on the selected segment).</p></li>
+</ul>
+</section>
+<section id="generated-surface-contains-step-artifacts">
+<h3>Generated surface contains step artifacts<a class="headerlink" href="#generated-surface-contains-step-artifacts" title="Link to this heading"></a></h3>
+<p>If 3D surface generated from the segmentation contains step artifacts (looks “blocky”) then it is necessary to increase smoothing and/or reduce segmentation’s spacing.</p>
+<p>Users need to choose between having <em>smooth surface</em> vs. <em>no gaps or overlap between segments</em>. It is impossible to have both. To achieve the desired results, there are two parameters to control: segmentation’s spacing and surface smoothing factor:</p>
+<ol class="arabic simple">
+<li><p>Choose spacing that allows accurate segmentation (<a class="reference internal" href="#segmentation-is-not-accurate-enough">see <em>Segmentation is not accurate enough</em> section above</a>)</p></li>
+<li><p>Choose smoothing value that removes staircase artifacts but still preserves all details that you are interested in.</p></li>
+<li><p>If you find that the surface smoothing value that is high enough to remove staircase artifacts also removes relevant details then further reduce spacing.</p></li>
+</ol>
+</section>
+<section id="paint-affects-neighbor-slices-or-stripes-appear-in-painted-segments">
+<h3>Paint affects neighbor slices or stripes appear in painted segments<a class="headerlink" href="#paint-affects-neighbor-slices-or-stripes-appear-in-painted-segments" title="Link to this heading"></a></h3>
+<p>Segment Editor allows editing of segmentation on slices of arbitrary orientation. However, since edited segments are stored as binary labelmaps, “striping” artifacts may appear on thin segments or near boundary of any segments. See <a class="reference external" href="https://lassoan.github.io/SlicerSegmentationRecipes/ObliqueSliceSegmentation/"><em>Oblique segmentation</em> segmentation recipe</a> for more details and instructions on how to deal with these artifacts.</p>
+</section>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Threshold will not work with non-scalar volume background volumes.</p></li>
+<li><p>Mouse wheel can be used to move slice through volume, but on some platforms (mac) it may move more than one slice at a time.</p></li>
+</ul>
+</section>
+<section id="related-modules">
+<h2>Related Modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="segmentstatistics.html"><span class="std std-doc">Segment Statistics</span></a> module computes volume, surface, mean intensity, and various other metrics for each segment.</p></li>
+<li><p><a class="reference internal" href="segmentations.html"><span class="std std-doc">Segmentations</span></a> module allows changing visualization options, exporting/importing segments to/from other nodes (models, labelmap volumes), and moving or copying segments between segmentation nodes.</p></li>
+<li><p><a class="reference internal" href="data.html"><span class="std std-doc">Data</span></a> module shows all segmentations and segments in a tree structure. Commonly used operations are available by right-clicking on an item in the tree.</p></li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for Developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<p>See examples for creating and modifying segmentation nodes and using segment editor effects from your own modules in <a class="reference internal" href="../../developer_guide/modules/segmenteditor.html"><span class="doc std std-doc">Developer guide</span></a> and <a class="reference internal" href="../../developer_guide/script_repository.html#segmentations"><span class="std std-ref">Slicer script repository</span></a></p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Authors:</p>
+<ul class="simple">
+<li><p>Csaba Pinter (PerkLab, Queen’s University)</p></li>
+<li><p>Andras Lasso (PerkLab, Queen’s University)</p></li>
+<li><p>Kyle Sunderland (PerkLab, Queen’s University)</p></li>
+<li><p>Steve Pieper (Isomics Inc.)</p></li>
+<li><p>Wendy Plesniak (SPL, BWH)</p></li>
+<li><p>Ron Kikinis (SPL, BWH)</p></li>
+<li><p>Jim Miller (GE)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This module is partly funded by an Applied Cancer Research Unit of Cancer Care Ontario with funds provided by the Ministry of Health and Long-Term Care and the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.
+The work is part of the <a class="reference external" href="https://www.na-mic.org/">National Alliance for Medical Image Computing</a> (NA-MIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_isomics.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_nac.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_ge.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="segmentations.html" class="btn btn-neutral float-left" title="Segmentations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="slicerwelcome.html" class="btn btn-neutral float-right" title="Welcome" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

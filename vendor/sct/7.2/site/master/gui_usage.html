@@ -1,0 +1,770 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Graphical User Interface (GUI) &mdash; qMRLab 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command Line Interface (CLI)" href="batch_usage.html" />
+    <link rel="prev" title="Interfaces" href="usage-guidelines.html" /> 
+
+<!-- RTD Extra Head -->
+
+
+
+<script type="application/json" id="READTHEDOCS_DATA">{"ad_free": false, "api_host": "https://readthedocs.org", "builder": "sphinx", "canonical_url": null, "docroot": "/source/", "features": {"docsearch_disabled": false}, "global_analytics_code": "UA-17997319-1", "language": "en", "page": "gui_usage", "programming_language": "other", "project": "qmrlab", "proxied_api_host": "/_", "source_suffix": ".rst", "subprojects": {}, "theme": "sphinx_rtd_theme", "user_analytics_code": "", "version": "master"}</script>
+
+<!--
+Using this variable directly instead of using `JSON.parse` is deprecated.
+The READTHEDOCS_DATA global variable will be removed in the future.
+-->
+<script type="text/javascript">
+READTHEDOCS_DATA = JSON.parse(document.getElementById('READTHEDOCS_DATA').innerHTML);
+</script>
+
+
+
+<!-- end RTD <extrahead> -->
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="qmrlab" /><meta name="readthedocs-version-slug" content="master" /><meta name="readthedocs-resolver-filename" content="/gui_usage.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> qMRLab
+          
+
+          
+            
+            <img src="_static/qMR_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">qmrlab</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Key features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#data-simulator">Data simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#data-fitting-and-visualization">Data fitting and visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methods available</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#underdevelopment">UnderDevelopment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#processing">Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="filter_map_batch.html">filter_map:   Applies spatial filtering (2D or 3D)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#qsm">QSM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qsm_sb_batch.html">qsm_sb: Fast quantitative susceptibility mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#t1-relaxometry">T1_relaxometry</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vfa_t1_batch.html">vfa_t1: Compute a T1 map using Variable Flip Angle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mtv_batch.html">mtv :  Macromolecular Tissue Volume in brain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inversion_recovery_batch.html">inversion_recovery: Compute a T1 map using Inversion Recovery data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mp2rage_batch.html">mp2rage: Compute a T1 map using MP2RAGE</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#fieldmaps">FieldMaps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="b1_afi_batch.html">b1_afi map:  Actual Flip-Angle Imaging for B1+ mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="b1_dam_batch.html">b1_dam map:  Double-Angle Method for B1+ mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="b0_dem_batch.html">b0_dem map :  Dual Echo Method for B0 mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#noise">Noise</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="noise_level_batch.html">noise_level :  Noise histogram fitting within a noise mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="denoising_mppca_batch.html">denoising_mppca :  4d image denoising and noise map estimation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#t2-relaxometry">T2_relaxometry</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mwf_batch.html">mwf :  Myelin Water Fraction from Multi-Exponential T2w data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mono_t2_batch.html">mono_t2: Compute a monoexponential T2 map</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#magnetization-transfer">Magnetization_transfer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmt_bssfp_batch.html">qmt_bssfp : qMT using Balanced Steady State Free Precession acquisition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmt_sirfse_batch.html">qmt_sirfse:  qMT using Inversion Recovery Fast Spin Echo acquisition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mt_sat_batch.html">mt_sat :  Correction of Magnetization transfer for RF inhomogeneities and T1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmt_spgr_batch.html">qmt_spgr:  quantitative Magnetizatoion Transfer (qMT) using Spoiled Gradient Echo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mt_ratio_batch.html">mt_ratio :  Magnetization transfer ratio (MTR)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#diffusion">Diffusion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dti_batch.html">dti: Compute a tensor from diffusion data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="noddi_batch.html">noddi:   Neurite Orientation Dispersion and Density Imaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="charmed_batch.html">charmed: Composite Hindered and Restricted Model for Diffusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Protocols</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#mp2rage">mp2rage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#numberofshots"><code class="docutils literal notranslate"><span class="pre">NumberOfShots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#repetition-times"><code class="docutils literal notranslate"><span class="pre">Repetition</span> <span class="pre">Times</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#inversion-times"><code class="docutils literal notranslate"><span class="pre">Inversion</span> <span class="pre">Times</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#flip-angles"><code class="docutils literal notranslate"><span class="pre">Flip</span> <span class="pre">Angles</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">How to install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#qmrlab-in-matlab">qMRLab in MATLAB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#qmrlab-in-octave">qMRLab in Octave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#qmrlab-in-docker">qMRLab in Docker 🐳</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#how-to-cite">How to cite?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known-issues.html">Known issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known-issues.html#osx">OSX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="known-issues.html#apple-silicon-m1-compatibility">Apple Silicon (M1) compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gui-example.html">Beginner’s example with GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#open-matlab">1. Open matlab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#run-startup">2. Run startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#launch-the-gui">3. Launch the GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#model-selection">4. Model selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#download-example-data">5. Download example data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#view-the-data">6. View the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#set-up-the-protocol">7. Set up the protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#view-the-data-fit-in-1-voxel">8. View the data fit in 1 voxel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#fit-the-whole-dataset">9. Fit the whole dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="batch_example.html">Beginner’s example with CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#open-matlab-and-setup-path">1. Open MATLAB and setup path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#generate-a-batch-example">2. Generate a batch example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#run-the-batch">3. Run the batch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Example datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#download-example-datasets-via-gui">Download example datasets via GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#download-example-datasets-via-cli">Download example datasets via CLI</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">User Interface Guidelines</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="usage-guidelines.html">Interfaces</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Graphical User Interface (GUI)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#startup">1. Startup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#layout">2. Layout</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#menu-panel">2.1 Menu Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#main-panel">2.2 Main Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#options-panel">2.3 Options Panel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-viewer">3.  Data Viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-fitting">4.      Data Fitting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data-format">4.1     Data format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fitting-procedure">4.2     Fitting Procedure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#viewing-the-fit-results">4.3     Viewing the fit results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#simulation">5.      Simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">5.1.    Single Voxel Curve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">5.2.    Sensitivity Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">5.3. Multi Voxel Distribution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">6. Options Panel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">6.1 Protocol</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">6.2.    Fitting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">6.3. Options</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tutorial">7.      Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="batch_usage.html">Command Line Interface (CLI)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#general-structure">General structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#general-commands">General commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#model-structure">Model structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#all-models-have-the-following-properties">All models have the following properties:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#and-functions">And functions:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#most-models-have-these-additional-functions">Most models have these additional functions:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qmrflow_intro.html">qMRFlow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmrflow_intro.html#about">About</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmrflow_intro.html#benefits">Benefits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmrflow_intro.html#use-qmrflow-with-docker">Use qMRFlow with Docker 🐳</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmrflow_intro.html#use-qmrflow-locally">Use qMRFlow locally</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods_workflow.html">Available pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods_workflow.html#magnetizationtransfer">MagnetizationTransfer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmrflow_mtsat.html">MTsat: Magnetization transfer saturation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#usage">Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#container-requirements">Container requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#local-installation-requirements">Local installation requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#folder-organization">Folder organization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#optional-arguments">Optional arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#notes">Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qmrflow_mtr.html">MTR: Magnetization transfer ratio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#usage">Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#container-requirements">Container requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#local-installation-requirements">Local installation requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#folder-organization">Folder organization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#optional-arguments">Optional arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#notes">Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#reference">Reference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Open Pulse Sequences</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qmr_pullseq.html">qMRPullseq</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmr_pullseq.html#about">About</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmr_pullseq.html#vfa-t1-mapping">VFA T1 mapping</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contribute</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-doc.html">Developer’s Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qMRLab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="usage-guidelines.html">Interfaces</a> &raquo;</li>
+        
+      <li>Graphical User Interface (GUI)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/qMRLab/documentation/blob/master/source/gui_usage.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="graphical-user-interface-gui">
+<h1>Graphical User Interface (GUI)<a class="headerlink" href="#graphical-user-interface-gui" title="Permalink to this headline">¶</a></h1>
+<p>This section describes the various features and functionality of the user interface.</p>
+<div class="section" id="startup">
+<h2>1. Startup<a class="headerlink" href="#startup" title="Permalink to this headline">¶</a></h2>
+<p>Launch matlab from the qMRLab folder. Then load the default setup by typing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">startup</span>
+</pre></div>
+</div>
+<p>Then open the GUI by typing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qMRLab</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="layout">
+<h2>2. Layout<a class="headerlink" href="#layout" title="Permalink to this headline">¶</a></h2>
+<p>When you first launch qMRLab, you will be presented with a blank interface. The interface consists of three columns, or panels. On the left, you have the <em>Menu</em> panel, in the center you have the <em>Main panel</em>, and on the right, in a separate floating window, you have the <em>Options</em> panel.</p>
+<div class="figure" id="id8">
+<a class="reference internal image-reference" href="_images/gui_default.png"><img alt="_images/gui_default.png" src="_images/gui_default.png" style="width: 975.0px; height: 611.0px;" /></a>
+<p class="caption"><span class="caption-text">Default interface with 3 panels: (1) <code class="docutils literal notranslate"><span class="pre">Menu</span></code>, (2) <code class="docutils literal notranslate"><span class="pre">Main</span></code> and (3) floating <code class="docutils literal notranslate"><span class="pre">Options</span></code></span></p>
+</div>
+<div class="section" id="menu-panel">
+<h3>2.1 Menu Panel<a class="headerlink" href="#menu-panel" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Menu</span> <span class="pre">panel</span></code> is where you can choose the task you want to perform. It is divided in three sections: <code class="docutils literal notranslate"><span class="pre">Method</span></code>, <code class="docutils literal notranslate"><span class="pre">qMR</span> <span class="pre">Data</span> <span class="pre">Fit</span></code> and <code class="docutils literal notranslate"><span class="pre">qMR</span> <span class="pre">Data</span> <span class="pre">Simulator</span></code>.</p>
+<div class="section" id="method">
+<h4>2.1.1 Method<a class="headerlink" href="#method" title="Permalink to this headline">¶</a></h4>
+<p>At the top, you will find a drop-down menu where you can choose the MR acquisition method that you want to be working with. An updated list of the available methods is here: <a class="reference internal" href="methods.html#methods-available"><span class="std std-ref">Methods available</span></a></p>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">Main</span></code> and <code class="docutils literal notranslate"><span class="pre">Options</span></code> panels will update to the appropriate window according to your selection.
+If you plan to be working mainly with a particular method, select it from the drop-down menu first, and the click on the <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Default</span></code> button next to it. Next time you open qMRLab, your preferred method will be selected by default.</p>
+<p>Clicking on the <code class="docutils literal notranslate"><span class="pre">Open</span> <span class="pre">Options</span> <span class="pre">Panel</span></code> below the method drop-down menu will open the <em>Options</em> panel window and set its position on the right side of the <code class="docutils literal notranslate"><span class="pre">Main</span></code> panel. This is useful to bring back the <code class="docutils literal notranslate"><span class="pre">Options</span></code> panel window to the front if it’s hidden behind another window, to reset its position if you have resized the windows, or to reopen it in case you closed it.</p>
+</div>
+<div class="section" id="qmr-data-fit">
+<h4>2.1.2 qMR Data Fit<a class="headerlink" href="#qmr-data-fit" title="Permalink to this headline">¶</a></h4>
+<p>Click on the big <code class="docutils literal notranslate"><span class="pre">Fit</span> <span class="pre">Data</span></code> button only when you have selected your data files, set up your protocol and fitting options and are ready to begin the fitting process, which, depending on the size of your data and the method, can take from a few minutes to a couple of hours. The <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Results</span></code> button will prompt you to save a .mat file with the results of your data fit. <code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Results</span></code> will load previously saved results and display them. Refer to this section <a class="reference internal" href="#data-fitting"><span class="std std-ref">4.      Data Fitting</span></a> for more information.</p>
+</div>
+<div class="section" id="qmr-data-simulator">
+<h4>2.1.3 qMR Data Simulator<a class="headerlink" href="#qmr-data-simulator" title="Permalink to this headline">¶</a></h4>
+<p>The buttons of this menu allow you to choose between different data simulation mode. All Methods that involve a data fitting procedure present at least the following simulations: <code class="docutils literal notranslate"><span class="pre">Single</span> <span class="pre">Voxel</span> <span class="pre">Curve</span></code>, <code class="docutils literal notranslate"><span class="pre">Sensitivity</span> <span class="pre">Analysis</span></code> and <code class="docutils literal notranslate"><span class="pre">Multi</span> <span class="pre">Voxel</span> <span class="pre">Distribution</span></code>. Clicking on any one of these buttons will bring the corresponding interface in a floating window. When any of these interfaces are opened, clicking on the <code class="docutils literal notranslate"><span class="pre">update</span></code> button will launch the simulation using the current options (defined in the <code class="docutils literal notranslate"><span class="pre">Options</span></code> panel). The <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Results</span></code> button will prompt you to save a .mat file with the current simulation results. <code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Results</span></code> will load previously saved simulation results and display them in the appropriate panel. Refer to this section <a class="reference internal" href="#simulation"><span class="std std-ref">5.      Simulation</span></a> for more information.</p>
+<div class="section" id="single-voxel-curve">
+<h5>Single Voxel Curve<a class="headerlink" href="#single-voxel-curve" title="Permalink to this headline">¶</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">Single</span> <span class="pre">Voxel</span> <span class="pre">Curve</span></code> panel is a simple interface to simulate MR data from a single voxel, using the defined MR parameters and protocol. It is the fastest way to evaluate various acquisition protocols, the performance of the model and fitting options. Refer to section <a class="reference internal" href="#id1"><span class="std std-ref">5.1.    Single Voxel Curve</span></a> for more information.</p>
+</div>
+<div class="section" id="sensitivity-analysis">
+<h5>Sensitivity Analysis<a class="headerlink" href="#sensitivity-analysis" title="Permalink to this headline">¶</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">Sensitivity</span> <span class="pre">Analysis</span></code> simulation allows you to systematically vary one MR parameter, over a defined range and number of points, while keeping the others fixed. For each simulated data point, noise is added with a given SNR, and the fit is run multiple times while adding Gaussian noise. This allows you to evaluate the variance of the fit at each point. When the simulation is done, a plot shows any variable input parameters as the independent variable, as well as the mean values and variance of any fitted parameters. Refer to section <a class="reference internal" href="#id2"><span class="std std-ref">5.2.    Sensitivity Analysis</span></a> for more information.</p>
+</div>
+<div class="section" id="multi-voxel-distribution">
+<h5>Multi Voxel Distribution<a class="headerlink" href="#multi-voxel-distribution" title="Permalink to this headline">¶</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">Multi</span> <span class="pre">Voxel</span> <span class="pre">Distribution</span></code> is a tool to simulate any number of voxels, where any parameters combination are allowed to be varied simultaneously. You can choose how many voxels to simulate and which parameters are to be normally distributed, with its mean value and variance. The results can be displayed in a number of ways such as distribution histograms, scatter plots of input vs fitted parameters, error histograms, etc. Refer to section <a class="reference internal" href="#id3"><span class="std std-ref">5.3. Multi Voxel Distribution</span></a> for more information.</p>
+</div>
+</div>
+</div>
+<div class="section" id="main-panel">
+<h3>2.2 Main Panel<a class="headerlink" href="#main-panel" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Main</span></code> panel is where you can load your data files for fitting and for viewing the resulting parameters maps. This panel changes correspondingly to the Method selected in the <em>Menu</em> panel.</p>
+</div>
+<div class="section" id="options-panel">
+<h3>2.3 Options Panel<a class="headerlink" href="#options-panel" title="Permalink to this headline">¶</a></h3>
+<p>This is where you can set up all the parameters that are related to the simulation, the fitting and the protocol. The <code class="docutils literal notranslate"><span class="pre">Options</span></code> panel is displayed in a separate window than the <code class="docutils literal notranslate"><span class="pre">Menu</span></code> panel or <code class="docutils literal notranslate"><span class="pre">Main</span></code> panel. This is because each qMR acquisition method has its own particular options, and this window needs to be changed correspondingly. It can also be closed at any time, if it is not currently needed, to provide for a simpler interface. The <em>Options</em> panel consists of three sub-panels: <code class="docutils literal notranslate"><span class="pre">Protocol</span></code>, <code class="docutils literal notranslate"><span class="pre">Fitting</span></code>, and <code class="docutils literal notranslate"><span class="pre">Options</span></code>. At the bottom of all these sub-panels you will find buttons to <code class="docutils literal notranslate"><span class="pre">Reset</span></code> the changes you made, <code class="docutils literal notranslate"><span class="pre">Save</span></code> the current settings as a .mat file, <code class="docutils literal notranslate"><span class="pre">Load</span></code> a .mat file of settings, or go back to the <code class="docutils literal notranslate"><span class="pre">Default</span></code> settings. Refer to section <a class="reference internal" href="#id4"><span class="std std-ref">6. Options Panel</span></a> for more information.</p>
+<div class="section" id="protocol">
+<h4>2.3.1   Protocol<a class="headerlink" href="#protocol" title="Permalink to this headline">¶</a></h4>
+<p>Here you define the <code class="docutils literal notranslate"><span class="pre">acquisition</span> <span class="pre">protocol</span></code> that you wish to use for simulation, or in the case of data fitting, the protocol you used to acquire the data. See <a class="reference internal" href="#id5"><span class="std std-ref">6.1 Protocol</span></a> for more information.</p>
+</div>
+<div class="section" id="fitting">
+<h4>2.3.2   Fitting<a class="headerlink" href="#fitting" title="Permalink to this headline">¶</a></h4>
+<p>This is where you set up your <code class="docutils literal notranslate"><span class="pre">fitting</span> <span class="pre">options</span></code>. The fit parameters table lists all the variables that are available for fitting in the current method, a tick box to select which variables are to be held fixed, a starting value and lower/upper bounds. Note that some methods do not have fitting procedures, this table is empty in this case. Depending on the method, additional options may be available. See <a class="reference internal" href="#id6"><span class="std std-ref">6.2.    Fitting</span></a> for more information.</p>
+</div>
+<div class="section" id="options">
+<h4>2.3.3 Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h4>
+<p>This is where you set up all the options related to the simulations. Depending on the qMR method, different sets of options are available (e.g. the fitting procedure, assumptions of the model, etc). More info in <a class="reference internal" href="#id7"><span class="std std-ref">6.3. Options</span></a>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="data-viewer">
+<h2>3.  Data Viewer<a class="headerlink" href="#data-viewer" title="Permalink to this headline">¶</a></h2>
+<p>The viewer allows you to navigate through your (up tp) <code class="docutils literal notranslate"><span class="pre">5D</span></code> dataset easily using arrows:</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/imtool3D_volume.gif"><img alt="_images/imtool3D_volume.gif" src="_images/imtool3D_volume.gif" style="width: 640.0px; height: 411.0px;" /></a>
+</div>
+<p><strong>Use mouse controls to display your volume:</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Middle (shift+) Click and drag:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Zoom in/out</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Left            Click and drag:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Contrast/Brightness</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Right  (ctrl+)  Click and drag:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Pan</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Scroll wheel:</th><td class="field-body">Change slice</td>
+</tr>
+</tbody>
+</table>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/imtool3D_mouse.gif"><img alt="_images/imtool3D_mouse.gif" src="_images/imtool3D_mouse.gif" style="width: 640.0px; height: 444.0px;" /></a>
+</div>
+<p>The viewer provides ROI tools to create and modify a multi-label mask that is overlaid on the image.
+The <code class="docutils literal notranslate"><span class="pre">Mask</span></code> in the file browser is loaded automatically, you can delete it using right click on the button <code class="docutils literal notranslate"><span class="pre">label</span> <span class="pre">1</span></code>.
+The mask can be hidden/shown using the checkbox on the top (or use spacebar)… make sure the mask is toggle on when you draw it!
+The mask can have 5 different labels (1-5). Select the label on which you want to operate. One voxel can be attributed only one label (no overlaps between labels). The locker button prevents any modification and overwrite to labels that are not selected.
+ROI tools such as square or polygon can be converted to mask (right click on an ROI object) and conversely (mask2poly button).
+Statistics on each label (e.g. volume, mean intensity) can be obtained with mouse over the label number.</p>
+<p><strong>Brush tool controls:</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Middle click and drag:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">Change brush diameter</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Right click:</th><td class="field-body">erase</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">double click:</th><td class="field-body">(smart brush only) Toggle between bright or dark segmentation</td>
+</tr>
+</tbody>
+</table>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/imtool3D_roi.gif"><img alt="_images/imtool3D_roi.gif" src="_images/imtool3D_roi.gif" style="width: 640.0px; height: 411.0px;" /></a>
+</div>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/imtool3D_smartbrush.gif"><img alt="_images/imtool3D_smartbrush.gif" src="_images/imtool3D_smartbrush.gif" style="width: 640.0px; height: 411.0px;" /></a>
+</div>
+<p><strong>Polygon tool controls:</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Click on a line:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">add a button</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Double click on a point:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">toggle between a line and a curve</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Middle click on a point:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">delete this intermediary point</td>
+</tr>
+</tbody>
+</table>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/imtool3D_polygon.gif"><img alt="_images/imtool3D_polygon.gif" src="_images/imtool3D_polygon.gif" style="width: 640.0px; height: 425.0px;" /></a>
+</div>
+</div>
+<div class="section" id="data-fitting">
+<h2>4.      Data Fitting<a class="headerlink" href="#data-fitting" title="Permalink to this headline">¶</a></h2>
+<p>qMRLab provides a convenient interface to fit your  data and visualize the parameters maps. To ensure that the results are successful, you’ll need to define the appropriate protocol, as it was used for data acquisition, and to format your qMR data in the way qMRLab expects it to be.</p>
+<div class="section" id="data-format">
+<h3>4.1     Data format<a class="headerlink" href="#data-format" title="Permalink to this headline">¶</a></h3>
+<p>Currently supported file types are .mat and .nii files. Your files should respect the following:</p>
+<ul class="simple">
+<li>For .mat files, the name of the file can be anything, but the array it contains should be named appropriately. The list of input names is case sensitive and is specified at the top of the <code class="docutils literal notranslate"><span class="pre">Data</span></code> dialog box. For example, for a qMT SPGR experiment, <code class="docutils literal notranslate"><span class="pre">MTdata</span></code> (for the actual MT data array) or <em>R1map</em> / <em>B1map</em> / <em>B0map</em> / <em>Mask</em> respectively for a R1 / B1 / B0 or Mask file.</li>
+</ul>
+<div class="figure" id="id9">
+<a class="reference internal image-reference" href="_images/inputs.png"><img alt="_images/inputs.png" src="_images/inputs.png" style="width: 961.0px; height: 247.0px;" /></a>
+<p class="caption"><span class="caption-text">Example of list of inputs for qMT SPGR experiment</span></p>
+</div>
+<ul class="simple">
+<li>Each model will expect a different format of inputs, but in general, for single slice (2D) imaging, the main data is a 3D array with size [nx, ny, ndata], where nx/ny is the number of voxels in the x/y direction, and ndata is the number of data points for each voxel. For volume imaging (3D), data is a 4D array with size [nx, ny, nz, ndata], where nx/ny/ndata are as above, and nz is the number of voxels (or slices) in the z direction (e.g. in this example <em>MTdata</em> would have several datapoints per voxel).</li>
+<li>Other files (e.g. in this example <em>R1map / B1map / B0map / Mask</em>) are formatted as [nx, ny, nz].</li>
+</ul>
+<p>For a more detailed description of the format required for each input, type this in the maltab window:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">help</span> <span class="n">Modelname</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">Modelname</span></code> is name of the available models (e.g. in this example <em>help SPGR</em>). Alternatively, in the <code class="docutils literal notranslate"><span class="pre">Options</span></code> panel, you can press on the <code class="docutils literal notranslate"><span class="pre">Help</span></code> button</p>
+</div>
+<div class="section" id="fitting-procedure">
+<h3>4.2     Fitting Procedure<a class="headerlink" href="#fitting-procedure" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="single-voxel">
+<h4>4.2.1 Single voxel<a class="headerlink" href="#single-voxel" title="Permalink to this headline">¶</a></h4>
+<p>This is useful when you want to preview the fit of a single voxel (note this option is only available on voxelwise computations)</p>
+<ol class="arabic simple">
+<li>Select the acquisition method of your data using the ‘Method’ drop-down menu in the <code class="docutils literal notranslate"><span class="pre">Menu</span></code> panel.</li>
+<li>In the <code class="docutils literal notranslate"><span class="pre">Menu</span></code> panel, in the <code class="docutils literal notranslate"><span class="pre">Fit</span> <span class="pre">qMR</span> <span class="pre">data</span></code> panel, enter your study ID in the <code class="docutils literal notranslate"><span class="pre">Study</span> <span class="pre">ID</span></code> box (optional).</li>
+<li>Load your data by clicking the browse button beside the <code class="docutils literal notranslate"><span class="pre">Data:</span></code> line, or enter the full file path to it in the textbox.</li>
+<li>You can view any of these maps by clicking its <code class="docutils literal notranslate"><span class="pre">View</span></code> button.</li>
+</ol>
+<div class="figure" id="id10">
+<a class="reference internal image-reference" href="_images/view_data.png"><img alt="_images/view_data.png" src="_images/view_data.png" style="width: 962.0px; height: 856.0px;" /></a>
+<p class="caption"><span class="caption-text">Example of viewing option, in this case R1map used for qMT SPGR</span></p>
+</div>
+<ol class="arabic simple" start="5">
+<li>Define or load the appropriate protocol in the <em>Options</em> panel (see <a class="reference internal" href="#id5"><span class="std std-ref">6.1 Protocol</span></a> for details).</li>
+<li>Define your fitting options in the Options panel (see <a class="reference internal" href="#id6"><span class="std std-ref">6.2.    Fitting</span></a> for details).</li>
+<li>You can preview the fitted curve for a selected voxel by using the <code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">Data</span> <span class="pre">Fit</span></code> button. Make sure a dataset is loaded by clicking <code class="docutils literal notranslate"><span class="pre">View</span></code> beside the data file field</li>
+<li>Click <code class="docutils literal notranslate"><span class="pre">Select</span></code> button in the <code class="docutils literal notranslate"><span class="pre">Cursor</span></code> section to activate voxel selection mode, select a voxel to preview and click <code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">Data</span> <span class="pre">Fit</span></code>. You can now see the fitted curve and the parameters computed for that voxel.</li>
+</ol>
+<div class="figure" id="id11">
+<a class="reference internal image-reference" href="_images/imtool3D_fit.gif"><img alt="_images/imtool3D_fit.gif" src="_images/imtool3D_fit.gif" style="width: 640.0px; height: 444.0px;" /></a>
+<p class="caption"><span class="caption-text">Example of fitting in 1 voxel, which was selected with the cursor on the image.</span></p>
+</div>
+</div>
+<div class="section" id="whole-dataset">
+<h4>4.2.2 Whole dataset<a class="headerlink" href="#whole-dataset" title="Permalink to this headline">¶</a></h4>
+<p>Follow steps 1-6 above, then</p>
+<ol class="arabic simple" start="7">
+<li>In the <em>Menu</em> panel, click on <code class="docutils literal notranslate"><span class="pre">Fit</span> <span class="pre">data</span></code> to start the fitting process.</li>
+<li>Once the fitting is done, a temporary file will be saved in the ‘FitResults’ subfolder of the current working directory. You can save the current fit results elsewhere by clicking <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Results</span></code> in the ‘qMR data fit’ section of the <em>Menu</em> panel.</li>
+<li>Use the controls in the <code class="docutils literal notranslate"><span class="pre">Fit</span> <span class="pre">Results</span></code> section to visualize the results (ssee <a class="reference internal" href="#viewing-the-fit-results"><span class="std std-ref">4.3     Viewing the fit results</span></a> for details).</li>
+</ol>
+</div>
+</div>
+<div class="section" id="viewing-the-fit-results">
+<h3>4.3     Viewing the fit results<a class="headerlink" href="#viewing-the-fit-results" title="Permalink to this headline">¶</a></h3>
+<p>Once you have finished fitting your qMR data, or when you load previously saved fit results by clicking <code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Results</span></code> in the <code class="docutils literal notranslate"><span class="pre">qMR</span> <span class="pre">data</span> <span class="pre">fit</span></code> section of the <code class="docutils literal notranslate"><span class="pre">Menu</span></code> panel, the maps will be displayed in the <code class="docutils literal notranslate"><span class="pre">Fit</span> <span class="pre">Results</span></code> section. Use controls on the left side of the figure to navigate the maps:</p>
+<ul class="simple">
+<li><em>Source</em>: select the parameter map to display</li>
+<li><em>View</em>: select the side from which to view the data (available only on 3D maps)</li>
+<li><em>Slice</em>: navigate through the z direction of the current view (available only on 3D maps)</li>
+<li><em>Color Map</em>: choose the color scheme to use from a set of pre-defined Malab colormaps</li>
+<li><em>Range</em>: Control the colormap min/max values. Clicking ‘Auto’ will set the min/max values using the min/max of the currently displayed image. Top textbox/slider allows you to manually set the Min value, while bottom textbox/slider are for the Max value</li>
+<li><em>Open viewer</em>: open the current data in an external viewer to display simultaneous axial/sagittal/coronal views.</li>
+<li><em>Save figure</em>: save the current figure</li>
+<li><em>Histogram</em>: open a new window with an histogram of the voxels in the currently selected slice (note that zooming in on a particular section while still produce an histogram of the full slice)</li>
+<li><em>View data fit</em>: display raw data + fitted curve of the currently selected voxel (use ‘Cursor’ button to activate voxel selection mode).</li>
+<li><em>Pan</em>: change the cursor mode to ‘Pan’. Click and hold inside the figure to move around. Double click inside the figure to reset view. Clicking again the Pan button will turn off pan mode.</li>
+<li><em>Zoom</em>: change the cursor mode to ‘Zoom’. Click and hold inside the figure to draw a region to zoom in on. Double click inside the figure to reset view. Clicking again the Zoom button will turn off zoom mode.</li>
+<li><em>Select</em>: change the cursor mode to ‘Data Cursor’. Click on a voxel to display info (X/Y is the position of the voxel, index is the value of the map at this point, RGB is the mapped color code).</li>
+</ul>
+</div>
+</div>
+<div class="section" id="simulation">
+<h2>5.      Simulation<a class="headerlink" href="#simulation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>5.1.    Single Voxel Curve<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The Single Voxel Curve simulation interface allows you to simulate qMR data for the defined parameters and protocol. Once the simulation is done, you can also rapidly test the effect of changing fitting options without having to run the simulation again. It is the fastest way to evaluate various acquisition protocols and the performance of the model and fitting options. A plot of the fitted curve over the actual data will be displayed, and the resulting fitted parameters are compared to the input parameters.</p>
+<ol class="arabic simple">
+<li>Select the acquisition method of your qMR data using the ‘Method’ drop-down menu in the <em>Menu</em> panel.</li>
+<li>In the <em>Menu</em> panel, click on <strong>Single Voxel Curve</strong> to display the interface in the <em>Main</em> panel.</li>
+<li>Using the <em>Options</em> panel, define or load the protocol you wish to use (see section 5.1).</li>
+<li>Using the <em>Options</em> panel, define or load your initial fitting options (see section 5.2).</li>
+<li>Using the <code class="docutils literal notranslate"><span class="pre">Options</span></code> panel, define or load your simulation parameters (see section 5.3).</li>
+<li>In the <code class="docutils literal notranslate"><span class="pre">Menu</span></code> panel, click on the big <code class="docutils literal notranslate"><span class="pre">Simulate</span> <span class="pre">data</span></code> button. A progress bar will appear to show the progression of the simulation. Clicking <code class="docutils literal notranslate"><span class="pre">Cancel</span></code> in the progress bar window will stop the current simulation.</li>
+<li>Once the simulation is done, the results are displayed in the <code class="docutils literal notranslate"><span class="pre">Main</span></code> panel.</li>
+<li>If you want to see the effect of changing fitting options, use the <em>Options</em> panel to make your changes. Then, in the <code class="docutils literal notranslate"><span class="pre">Main</span></code> panel inside the ‘Simulation Fit Results’ panel, click on <code class="docutils literal notranslate"><span class="pre">Update</span> <span class="pre">Fit</span></code>. Clicking this button without changing fitting options will also generate a new noisy data distribution and recalculate the fitted curve.</li>
+<li>Once the fitting is done, a temporary file (SimCurveTempResults) will be saved in the ‘SimResults’ subfolder of the current active method (e.g. <em>qMTLab/SPGR/SimResults/</em>). You can save the current simulation results by clicking <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Results</span></code> in the <code class="docutils literal notranslate"><span class="pre">qMR</span> <span class="pre">Data</span> <span class="pre">Simulator</span> <span class="pre">fit</span></code> section of the <em>Menu</em> panel. You can later load it using the <code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Results</span></code> button.</li>
+</ol>
+<div class="figure" id="id12">
+<a class="reference internal image-reference" href="_images/single_voxel_curve.png"><img alt="_images/single_voxel_curve.png" src="_images/single_voxel_curve.png" style="width: 844.0px; height: 794.0px;" /></a>
+<p class="caption"><span class="caption-text">Example result of simulation in 1 voxel. Remember to set options in ‘Options’ panel</span></p>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>5.2.    Sensitivity Analysis<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The Sensitivity Analysis simulation allows you to systematically vary one parameter, over a defined range and number of points, while keeping the others fixed. For each simulated data point, noise is added with a given SNR, and the fit is run multiple times while adding gaussian noise. This allows you to evaluate the variance of the fit at each point. When the simulation is done, a plot shows any variable input parameters as the independent variable, as well as the mean values and variance of any fitted parameters.</p>
+<ol class="arabic simple">
+<li>Select the acquisition method of your data using the ‘Method’ drop-down menu in the <em>Menu</em> panel.</li>
+<li>In the <em>Menu</em> panel, click on <strong>Sensitivity Analysis</strong> to display the interface in the <em>Main</em> panel.</li>
+<li>Using the <em>Options</em> panel, define or load the protocol you wish to use (see section 5.1).</li>
+<li>Using the <em>Options</em> panel, define or load your fitting options (see section 5.2).</li>
+<li>Using the <em>Options</em> panel, define or load your simulation parameters (see section 5.3). The parameters defined here are used as the fixed parameters values as one parameter at a time is systematically varied during the simulation process.</li>
+<li>In the <em>Main</em> panel, use the ‘Parameters variation’ table to define your analysis settings. Select the parameters that are to be varied by setting a mark in the appropriate checkbox, set the minimum and maximum values for this parameter under the column ‘Min’ and ‘Max’, and the size of the incrementing step under ‘Step’. Set the number of times you want to add noise and fit for each data point by entering an integer value in the ‘# of runs’ box. These settings can be saved, retrieved or reset to their initial settings using the ‘Save’, ‘Load’ and ‘Reset’ buttons respectively.</li>
+<li>In the <em>Menu panel</em>, click on the big <strong>Simulate data</strong> button. A progress bar will appear to show the progression of the simulation. Clicking <strong>Cancel</strong> in the progress bar window will stop the current simulation.</li>
+<li>Once the simulation is done, the results are displayed in the ‘Plot Results’ section in the Main panel. Using the ‘x axis’ and ‘y axis’ dropdown menu, you can change the independent/dependant parameters respectively. The parameters that have been varied will be available under the ‘x axis’ menu, while all the model parameters will be available under the ‘y axis’ menu.</li>
+<li>A temporary file (SimVaryTempResults) will be saved in the ‘SimResults’ subfolder of the current active method (<em>e.g. qMTLab/SPGR/SimResults/</em>). You can save the current simulation results by clicking <strong>Save Results</strong> in the ‘qMT Data Simulator fit’ section of the <em>Menu panel</em>. You can later load it using the <strong>Load Results</strong> button.</li>
+</ol>
+<div class="figure" id="id13">
+<a class="reference internal image-reference" href="_images/sensitivity_analysis.png"><img alt="_images/sensitivity_analysis.png" src="_images/sensitivity_analysis.png" style="width: 429.0px; height: 428.5px;" /></a>
+<p class="caption"><span class="caption-text">Example of sensitivity analysis of the F parameter for qMT</span></p>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>5.3. Multi Voxel Distribution<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>The Multi Voxel Distribution is a tool to simulate any number of voxels, where any combination of parameters are allowed to be varied simultaneously. You can choose how many voxels to simulate and which parameters are to be normally distributed, with its mean value and variance. The results can be displayed in a number of ways such as distribution histograms, scatter plots of input vs fitted parameters, error histograms, etc.</p>
+<ol class="arabic simple">
+<li>Select the acquisition method of your qMR data using the ‘Method’ drop-down menu in the <em>Menu</em> panel.</li>
+<li>In the <em>Menu</em> panel, click on <strong>Multi Voxel Distribution</strong> to display the interface in the <em>Main</em> panel.</li>
+<li>Using the <em>Options</em> panel, define or load the protocol you wish to use (see section 5.1).</li>
+<li>Using the <em>Options</em> panel, define or load your fitting options (see section 5.2).</li>
+<li>Using the <em>Options</em> panel, define or load your simulation parameters (see section 5.3). The parameters defined here are used as the fixed parameters values for parameters that are not selected to be varied.</li>
+<li>In the <em>Main</em> panel, use the ‘Parameters distribution’ table to define your distribution settings. Select the parameters that are to be varied by setting a mark in the appropriate checkbox, set the mean and standard deviation values for this parameter under the column ‘Mean’ and ‘Std’ respectively. Set the number of voxels you want to simulate by entering an integer value in the ‘# of voxels’ box. These settings can be saved, retrieved or reset to their initial settings using the <strong>Save</strong>, <strong>Load</strong> and <strong>Reset</strong> buttons respectively.</li>
+<li>Click on <strong>Get Parameters</strong> in the ‘Parameters distribution’ section to generate a set of normally distributed parameters using the current settings. You can look at the distribution in the ‘Plot Results’ section, by choosing ‘Input parameters’ under the ‘Plot type’ dropdown menu. Select the parameters you want to look at with the ‘x axis’ dropdown menu. You can generate a new set of random values by clicking on the <strong>Get Parameters</strong> button again.</li>
+<li>In the <em>Menu</em> panel, click on the big <strong>Simulate data</strong> button. A progress bar will appear to show the progression of the simulation. Clicking <strong>Cancel</strong> in the progress bar window will stop the current simulation.</li>
+<li>Once the simulation is done, the results are displayed in the ‘Plot Results’ section in the Main panel. Using the ‘Plot type’ dropdown menu, choose what plot you want to view. Plot types are defined below.</li>
+<li>A temporary file (SimRndTempResults) will be saved in the ‘SimResults’ subfolder of the current active method (e.g. qMTLab/SPGR/SimResults/). You can save the current simulation results by clicking ‘Save Results’ in the ‘qMT Data Simulator fit’ section of the Menu panel. You can later load it using the ‘Load Results’ button.</li>
+</ol>
+<div class="section" id="plot-types">
+<h4>Plot types<a class="headerlink" href="#plot-types" title="Permalink to this headline">¶</a></h4>
+<p>Different plot types are available to analyze your simulation results. Depending on the plot type, available selections under ‘x axis’ and ‘y axis’ dropdown menus will change accordingly.</p>
+<ul class="simple">
+<li><em>Input parameters</em>: Histogram of initial input parameters distribution.</li>
+<li><em>Fit results</em>: Histogram of fitted parameters distribution.</li>
+<li><em>Input vs. Fit</em>: Scatter plot of input parameter value vs fitted value.</li>
+<li><em>Error</em>: Histogram of the error distribution. Error is defined as: Fit-Input</li>
+<li><em>Pct error</em>: Histogram of the percentage error distribution. Percentage error is defined as: 100×(Fit-Input)/Input</li>
+<li><em>MPE</em>: Bar graph of the mean percentage error, defined as: 100/n ∑((Fit-Input)/Input), where n is the number of simulated voxels.</li>
+<li><em>RMSE</em>: Bar graph of the root mean squared error, defined as: √(1/n∑(Fit-Input)^2), where n is the number of simulated voxels.</li>
+<li><em>NRMSE</em>: Bar graph of the normalized root mean squared error, defined as  RMSE/(max⁡(Input)-min⁡(Input)) , where max(Input) is the maximum value in the input parameter distribution, and min(Input) is the minimum value.</li>
+</ul>
+<div class="figure" id="id14">
+<a class="reference internal image-reference" href="_images/multi-vox-distro.png"><img alt="_images/multi-vox-distro.png" src="_images/multi-vox-distro.png" style="width: 424.5px; height: 428.0px;" /></a>
+<p class="caption"><span class="caption-text">Example of MultiVoxel Distribution (option: Input parameters)</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>6. Options Panel<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>Each qMR acquisition method has its own particular options for simulation, protocol and fitting. These options can be modified by using the <em>Options</em> panel. The <em>Options</em> panel consists of three sub-panels of options: ‘Protocol’, ‘Fitting’ and ‘Options’. At the bottom of all these sub-panels you will find buttons to <strong>Reset</strong> the changes you made, <strong>Save</strong> the current settings as a .mat file, <strong>Load</strong> a .mat file of settings, or go back to the <strong>Default</strong> settings. The <strong>Help</strong> button will open the help for the particular model.</p>
+<div class="figure" id="id15">
+<a class="reference internal image-reference" href="_images/options-panel.png"><img alt="_images/options-panel.png" src="_images/options-panel.png" style="width: 1200.0px; height: 909.0px;" /></a>
+<p class="caption"><span class="caption-text">Example of <em>Options</em> panel for qMT SPGR and Inversion Recovery</span></p>
+</div>
+<div class="section" id="id5">
+<h3>6.1 Protocol<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>The ‘Protocol’ panel is where you define all options relating to the acquisition sequence. These options are specific for each method. For all methods, you will find (at the top of the protocol panel) input text fields corresponding to the independent variables. You will need to load a previously saved text (.txt) file with the required options and format by using the <strong>Load</strong> button. Press the <strong>Help</strong> button in this panel to see the format expected by each of the models in the <em>Protocol</em> section</p>
+<p>For example, the <em>vfa_t1</em> model is expecting</p>
+<dl class="docutils">
+<dt><em>Protocol</em></dt>
+<dd><dl class="first last docutils">
+<dt>VFAData Array [nbFA x 2]:</dt>
+<dd>[FA1 TR1; FA2 TR2;…]      flip angle [degrees] TR [s]</dd>
+</dl>
+</dd>
+</dl>
+<p>Which means a text file where each row is a different flip angle, 1st column is the flip angle in degrees, 2nd is the TR in sec, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">3</span> <span class="mf">0.015</span>
+<span class="mi">20</span> <span class="mf">0.015</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>6.2.    Fitting<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>The ‘Fitting’ panel is where you determine the upper, lower and starting points of your parameters. You can also select which parameters should be kept fixed for the fitting.</p>
+</div>
+<div class="section" id="id7">
+<h3>6.3. Options<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>The ‘Options’ panel is where you specify the properties of the model and the fitting. For example, the assumptions/type of model (e.g. for SPGR, the SledPikeRP or Yarnykh model), type of images (magnitude or magnitude/phase for Inversion Recovery), etc.</p>
+</div>
+</div>
+<div class="section" id="tutorial">
+<h2>7.      Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
+<p>See the video here:</p>
+<div style="position: relative; padding-bottom: 5%; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+    <iframe width="700" height="394" src="https://www.youtube.com/embed/-yrbtCYDorI?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+</div></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="batch_usage.html" class="btn btn-neutral float-right" title="Command Line Interface (CLI)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="usage-guidelines.html" class="btn btn-neutral float-left" title="Interfaces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NeuroPoly
+      
+        <span class="commit">
+          Revision <code>a4cf06e4</code>.
+        </span>
+      
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+   
+
+</body>
+</html>

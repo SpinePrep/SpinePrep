@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; SimpleITK 2.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css" />
+
+  
+    <link rel="shortcut icon" href="_static/yellow_itk_icon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Fundamental Concepts" href="fundamentalConcepts.html" />
+    <link rel="prev" title="License" href="license.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpleitk" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/gettingStarted.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SimpleITK
+              <img src="_static/simpleitk_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-the-binaries">Downloading the binaries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-binary-files">Python binary files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#wheels-for-generic-python-distribution">Wheels for Generic Python Distribution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conda-based-distributions-anaconda-miniconda">Conda-based distributions (Anaconda, Miniconda)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#c-binary-files">C# binary files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#java-binary-files">Java binary files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#r-binary-files">R binary files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#latest-binaries">Latest binaries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#recommended-software">Recommended Software</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fiji-fiji-is-just-imagej">Fiji (Fiji is Just ImageJ)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ipython-and-jupyter">IPython and Jupyter</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentalConcepts.html">Fundamental Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registrationOverview.html">Registration Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Common Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IO.html">Reading and Writing for Images and Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">SimpleITK Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">Building SimpleITK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setUp.html">Setting Up Eclipse and Visual Studio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsAndCourses.html">Tutorials and Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrationGuide2.0.html">Migration Guide 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FilterTemplates.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="link_examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimpleITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/gettingStarted.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
+<p>Welcome to SimpleITK!</p>
+<p>SimpleITK provides a simplified interface to ITK in a variety of
+languages. A user can either download pre-built binaries, if they
+are available for the desired platform and language, or SimpleITK can be
+<a class="reference internal" href="building.html#building-simpleitk"><span class="std std-ref">built from the source code</span></a>.</p>
+<p>In the following sections we describe how to install SimpleITK and
+auxiliary software tools.</p>
+<p>After installing SimpleITK, we recommend going over the
+<a class="reference external" href="https://simpleitk.org/TUTORIAL/">virtual tutorial</a> and skimming
+the <a class="reference external" href="http://www.simpleitk.org/doxygen/latest/html/">Doxygen</a> pages for
+more information.</p>
+<section id="downloading-the-binaries">
+<span id="installation-binaries"></span><h2>Downloading the binaries<a class="headerlink" href="#downloading-the-binaries" title="Permalink to this heading"></a></h2>
+<p>One of the great advantages of SimpleITK is that (typically) the user does not
+have to build it — he or she can simply download the binaries and get started
+right away!</p>
+<p>Currently, <strong>Python</strong> binaries are available on Microsoft Windows, GNU
+Linux and Mac OS X. <strong>C# and Java</strong> binaries are available for
+Windows. <strong>R</strong> binaries are not available but a convenient
+<a class="reference external" href="https://github.com/SimpleITK/SimpleITKRInstaller">remotes based installer</a>  for Linux and Mac is.</p>
+<section id="python-binary-files">
+<h3>Python binary files<a class="headerlink" href="#python-binary-files" title="Permalink to this heading"></a></h3>
+<p>There are currently two Python binary package choices: Python Wheels,
+and Anaconda packages for the Anaconda Python distribution. We
+recommend the use of a <a class="reference internal" href="faq.html#faq-virtualenv"><span class="std std-ref">virtual environment</span></a>
+for installation of SimpleITK.</p>
+<section id="wheels-for-generic-python-distribution">
+<span id="installation-generic-python"></span><h4>Wheels for Generic Python Distribution<a class="headerlink" href="#wheels-for-generic-python-distribution" title="Permalink to this heading"></a></h4>
+<p>From the command line use the <a class="reference external" href="https://pip.pypa.io/en/latest/index.html">pip
+program</a> to install a
+binary wheel:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>simpleitk
+</pre></div>
+</div>
+<p>This installation requires a recent version of pip, to properly detect
+compatibility with the filename tags`PEP 427
+&lt;<a class="reference external" href="https://www.python.org/dev/peps/pep-0427/">https://www.python.org/dev/peps/pep-0427/</a>&gt;`__ , stable API
+<a class="reference external" href="https://peps.python.org/pep-0425/">PEP 425</a> , and package
+name normalization. Pip can be updated using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-U</span> <span class="pre">pip</span></code>.
+Also the Python environment must be compatible with one of
+the pre-compiled binary wheels.</p>
+<p>Alternatively, the wheels can be manually downloaded from <a class="reference external" href="https://github.com/SimpleITK/SimpleITK/releases">GitHub releases</a> or
+<a class="reference external" href="https://pypi.python.org/pypi/SimpleITK">PyPI</a>, and then installed with pip.</p>
+</section>
+<section id="conda-based-distributions-anaconda-miniconda">
+<h4>Conda-based distributions (Anaconda, Miniconda)<a class="headerlink" href="#conda-based-distributions-anaconda-miniconda" title="Permalink to this heading"></a></h4>
+<p>SimpleITK Conda binaries are available for the conda-forge ecosystem. To get started run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>sitk<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>simpleitk<span class="w"> </span>--channel<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
+conda<span class="w"> </span>activate<span class="w"> </span>sitk
+</pre></div>
+</div>
+<p>This will create and activate a new conda environment named <code class="docutils literal notranslate"><span class="pre">sitk</span></code> with Python 3.11 and SimpleITK installed from the <a class="reference external" href="https://anaconda.org/conda-forge/simpleitk">Anaconda
+conda-forge channel</a>. The version of python can be changed to any
+supported version.</p>
+<p>The above <code class="docutils literal notranslate"><span class="pre">create</span></code> command creates an environment which only used the conda-forge channel. This follows Conda-forge’s
+recommendation to not mix the <code class="docutils literal notranslate"><span class="pre">defaults</span></code> channel with the conda-forge channel. Mixing the channels can cause package
+dependency issues, missing libraries, and a non-functional virtual environment. Alternatively, the
+<a class="reference external" href="https://github.com/conda-forge/miniforge">miniforge</a> installer can be used to create dedicated conda-forge
+environments.</p>
+</section>
+</section>
+<section id="c-binary-files">
+<h3>C# binary files<a class="headerlink" href="#c-binary-files" title="Permalink to this heading"></a></h3>
+<p><strong>Binaries for select C# platforms</strong> can be found on SimpleITK’s
+<a class="reference external" href="https://github.com/SimpleITK/SimpleITK/releases">GitHub releases</a>
+under the appropriate version. Installing the library should only
+involve importing the unzipped files into the C# environment. The
+files have the following naming convention:</p>
+<p><code class="docutils literal notranslate"><span class="pre">SimpleITK-version-CSharp-buildplatform-targetplatform.zip</span></code></p>
+<p>e.g.</p>
+<div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">SimpleITK-1.2.4-CSharp-win64-x64.zip</span></code></div>
+</div>
+<p>Details about how to set up a C# Visual Studio project with SimpleITK
+can be found in the <a class="reference internal" href="setUp.html#setup-csharp"><span class="std std-ref">setup SimpleITK with CSharp</span></a> page.</p>
+</section>
+<section id="java-binary-files">
+<h3>Java binary files<a class="headerlink" href="#java-binary-files" title="Permalink to this heading"></a></h3>
+<p><strong>Binaries for select Java platforms</strong> can be found on SimpleITK’s
+<a class="reference external" href="https://github.com/SimpleITK/SimpleITK/releases">GitHub releases page</a>
+under the appropriate version. Installation instructions are available
+at <a class="reference internal" href="setUp.html#setup-java"><span class="std std-ref">setup SimpleITK with Java</span></a>.</p>
+</section>
+<section id="r-binary-files">
+<h3>R binary files<a class="headerlink" href="#r-binary-files" title="Permalink to this heading"></a></h3>
+<p>R binaries are not available.</p>
+<p>For Linux and Mac one can easily build and install SimpleITK from source using a <a class="reference external" href="https://cran.r-project.org/web/packages/remotes/readme/README.html">remotes</a> based installer
+referencing this <a class="reference external" href="https://github.com/SimpleITK/SimpleITKRInstaller">GitHub Repository</a>.</p>
+<p>This installation requires <a class="reference external" href="https://github.com/r-lib/remotes">R remotes</a>,
+<a class="reference external" href="https://cmake.org/">CMake</a>, <a class="reference external" href="https://git-scm.com/">git</a>, and a compiler
+in the path.</p>
+<p>One line commands to build and install the package:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>remotes::install_github<span class="o">(</span><span class="s2">&quot;SimpleITK/SimpleITKRInstaller&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>or using six cores for compilation (change this number based on your hardware):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>remotes::install_github<span class="o">(</span><span class="s2">&quot;SimpleITK/SimpleITKRInstaller&quot;</span>,<span class="w"> </span>configure.vars<span class="o">=</span>c<span class="o">(</span><span class="s2">&quot;MAKEJ=6&quot;</span><span class="o">))</span>
+</pre></div>
+</div>
+</section>
+<section id="latest-binaries">
+<h3>Latest binaries<a class="headerlink" href="#latest-binaries" title="Permalink to this heading"></a></h3>
+<p>If the latest SimpleITK bug fixes and features are required then
+pre-release binaries are available. The pre-release binaries are built
+from the actively developed master branch. The SimpleITK packages are
+available on <a class="reference external" href="https://github.com/SimpleITK/SimpleITK/releases/tag/latest">Github releases</a> under
+the “latest” tag. The packages include Python, CSharp and Java. To
+upgrade to the latest pre-release Python binary package run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>--pre<span class="w"> </span>simpleitk<span class="w"> </span>--find-links<span class="w"> </span>https://github.com/SimpleITK/SimpleITK/releases/tag/latest
+</pre></div>
+</div>
+</section>
+</section>
+<section id="recommended-software">
+<h2>Recommended Software<a class="headerlink" href="#recommended-software" title="Permalink to this heading"></a></h2>
+<section id="fiji-fiji-is-just-imagej">
+<h3>Fiji (Fiji is Just ImageJ)<a class="headerlink" href="#fiji-fiji-is-just-imagej" title="Permalink to this heading"></a></h3>
+<p>SimpleITK has a built in function,
+<a class="reference external" href="https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#a86cb9e226d455efca3ba034dc2154605">itk::simple::Show()</a>,
+which can be used for viewing images in an interactive session.
+By default this Show function searches for an installed
+<a class="reference external" href="https://fiji.sc">Fiji</a> to display images.  If Fiji is not found,
+then it searches for <a class="reference external" href="https://imagej.net/ij/">ImageJ</a>. Fiji/ImageJ were
+chosen because they can handle all the image types that SimpleITK
+supports, including 3D vector images with n components per pixel.</p>
+<p>The Show function searches for Fiji/ImageJ in a number of standard locations.
+The exact locations depend on the system type (Linux, Mac or Windows).
+Enabling the <strong>“debugOn</strong>” option to <strong>“Show</strong>”, allows the user to see
+where SimpleITK is searching for Fiji (or other viewing application)
+and the actual command used to launch the viewing application.</p>
+<p>Show is a functional interface to the <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ImageViewer.html">ImageViewer class</a>.
+Other viewing applications can be configured using an ImageViewer object,
+see the following section of the <a class="reference internal" href="faq.html#faq"><span class="std std-ref">Frequently Asked Questions</span></a>:</p>
+<blockquote>
+<div><p><a class="reference internal" href="faq.html#alt-viewer"><span class="std std-ref">Can I use another image file viewer beside Fiji?</span></a>.</p>
+</div></blockquote>
+</section>
+<section id="ipython-and-jupyter">
+<h3>IPython and Jupyter<a class="headerlink" href="#ipython-and-jupyter" title="Permalink to this heading"></a></h3>
+<p>For python users, <a class="reference external" href="http://ipython.org/">IPython</a> with
+<a class="reference external" href="http://jupyter.org">Jupyter</a> is a terrific environment to perform
+interactive computing for image processing.  The addition of the
+<a class="reference external" href="https://numpy.org">numpy</a> and <a class="reference external" href="https://www.scipy.org">scipy</a> packages
+creates a powerful interactive development environment.</p>
+<p>We have instructional <a class="reference external" href="http://insightsoftwareconsortium.github.io/SimpleITK-Notebooks/">SimpleITK Jupyter
+Notebooks</a>
+which can help a user get started.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="license.html" class="btn btn-neutral float-left" title="License" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fundamentalConcepts.html" class="btn btn-neutral float-right" title="Fundamental Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NumFOCUS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

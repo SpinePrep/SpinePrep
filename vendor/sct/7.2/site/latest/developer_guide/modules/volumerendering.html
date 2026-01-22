@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volume rendering &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Volumes" href="volumes.html" />
+    <link rel="prev" title="Transforms" href="transforms.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/modules/volumerendering.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Modules API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selftests.html">Self Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequences.html">Sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Volume rendering</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#key-classes">Key classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#format-of-vp-json-volume-property-json">Format of .vp.json (volume property JSON)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#format-of-volume-property-vp-file">Format of Volume Property (.vp) file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#volume-rendering-presets">Volume rendering presets</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="volumes.html">Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules API</a></li>
+      <li class="breadcrumb-item active">Volume rendering</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/modules/volumerendering.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="volume-rendering">
+<h1>Volume rendering<a class="headerlink" href="#volume-rendering" title="Link to this heading"></a></h1>
+<section id="key-classes">
+<h2>Key classes<a class="headerlink" href="#key-classes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLVolumeRenderingDisplayNode.html">vtkMRMLVolumeRenderingDisplayNode</a> controls the volume rendering properties. Each volume rendering technique has its own subclass.</p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkSlicerVolumeRenderingLogic.html">vtkSlicerVolumeRenderingLogic</a> contains utility functions</p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLScalarVolumeNode.html">vtkMRMLScalarVolumeNode</a> contains the volume itself</p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLVolumePropertyNode.html">vtkMRMLVolumePropertyNode</a> points to the transfer functions</p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLMarkupsROINode.html">vtkMRMLMarkupsROINode</a> controls the clipping planes</p></li>
+<li><p><a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLVolumeRenderingDisplayableManager.html">vtkMRMLVolumeRenderingDisplayableManager</a> responsible for adding VTK actors to the renderers</p></li>
+</ul>
+</section>
+<section id="format-of-vp-json-volume-property-json">
+<h2>Format of .vp.json (volume property JSON)<a class="headerlink" href="#format-of-vp-json-volume-property-json" title="Link to this heading"></a></h2>
+<p>Since Slicer version 5.9, volume rendering properties are stored in JSON format by default, with the file extension <code class="docutils literal notranslate"><span class="pre">.vp.json</span></code>. This format is self-describing and easier to interpret than the legacy text file format. Details are specified by this JSON schema: <a class="reference external" href="https://raw.githubusercontent.com/slicer/slicer/main/Modules/Loadable/VolumeRendering/Resources/Schema/volume-property-schema-v1.0.0.json">https://raw.githubusercontent.com/slicer/slicer/main/Modules/Loadable/VolumeRendering/Resources/Schema/volume-property-schema-v1.0.0.json</a></p>
+<p>Example <code class="docutils literal notranslate"><span class="pre">.vp.json</span></code> file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;@schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://raw.githubusercontent.com/slicer/slicer/main/Modules/Loadable/VolumeRendering/Resources/Schema/volume-property-schema-v1.0.0.json#&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;volumeProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;effectiveRange&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">220.0</span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;shade&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;lighting&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;diffuse&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;ambient&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;specular&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;specularPower&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">                    </span><span class="p">},</span>
+<span class="w">                    </span><span class="nt">&quot;rgbTransferFunction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;colorTransferFunction&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;points&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.168627</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">40.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.403922</span><span class="p">,</span><span class="w"> </span><span class="mf">0.145098</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0784314</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">40.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.403922</span><span class="p">,</span><span class="w"> </span><span class="mf">0.145098</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0784314</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">120.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.780392</span><span class="p">,</span><span class="w"> </span><span class="mf">0.607843</span><span class="p">,</span><span class="w"> </span><span class="mf">0.380392</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">220.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.847059</span><span class="p">,</span><span class="w"> </span><span class="mf">0.835294</span><span class="p">,</span><span class="w"> </span><span class="mf">0.788235</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1024.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+<span class="w">                        </span><span class="p">]</span>
+<span class="w">                    </span><span class="p">},</span>
+<span class="w">                    </span><span class="nt">&quot;scalarOpacityUnitDistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;scalarOpacity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;piecewiseLinearFunction&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;points&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">120.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">220.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.375</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1024.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="p">}</span>
+<span class="w">                        </span><span class="p">]</span>
+<span class="w">                    </span><span class="p">},</span>
+<span class="w">                    </span><span class="nt">&quot;gradientOpacity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;piecewiseLinearFunction&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;points&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">255.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;y&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="p">}</span>
+<span class="w">                        </span><span class="p">]</span>
+<span class="w">                    </span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="format-of-volume-property-vp-file">
+<h2>Format of Volume Property (.vp) file<a class="headerlink" href="#format-of-volume-property-vp-file" title="Link to this heading"></a></h2>
+<p>Legacy text file format for storing volume properties. It is only supported for backward compatibility and it is recommended to use the .vp.json file format instead.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span> <span class="o">=&gt;</span> <span class="n">interpolation</span> <span class="nb">type</span>
+<span class="mi">1</span> <span class="o">=&gt;</span> <span class="n">shading</span> <span class="n">enabled</span>
+<span class="mf">0.9</span> <span class="o">=&gt;</span> <span class="n">diffuse</span> <span class="n">reflection</span>
+<span class="mf">0.1</span> <span class="o">=&gt;</span> <span class="n">ambient</span> <span class="n">reflection</span>
+<span class="mf">0.2</span> <span class="o">=&gt;</span> <span class="n">specular</span> <span class="n">reflection</span>
+<span class="mi">10</span> <span class="o">=&gt;</span> <span class="n">specular</span> <span class="n">reflection</span> <span class="n">power</span>
+<span class="mi">14</span> <span class="o">-</span><span class="mi">3024</span> <span class="mi">0</span> <span class="o">-</span><span class="mf">86.9767</span> <span class="mi">0</span> <span class="mf">45.3791</span> <span class="mf">0.169643</span> <span class="mf">139.919</span> <span class="mf">0.589286</span> <span class="mf">347.907</span> <span class="mf">0.607143</span> <span class="mf">1224.16</span> <span class="mf">0.607143</span> <span class="mi">3071</span> <span class="mf">0.616071</span> <span class="o">=&gt;</span> <span class="n">scalar</span> <span class="n">opacity</span> <span class="n">transfer</span> <span class="n">function</span> <span class="p">(</span><span class="n">total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">values</span><span class="p">,</span> <span class="n">each</span> <span class="n">control</span> <span class="n">point</span> <span class="ow">is</span> <span class="n">defined</span> <span class="n">by</span> <span class="n">a</span> <span class="n">pair</span> <span class="n">of</span> <span class="n">values</span><span class="p">:</span> <span class="n">intensity</span> <span class="ow">and</span> <span class="n">opacity</span><span class="p">)</span>
+<span class="mi">4</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">255</span> <span class="mi">1</span> <span class="o">=&gt;</span> <span class="n">gradient</span> <span class="n">opacity</span> <span class="n">transfer</span> <span class="n">function</span> <span class="p">(</span><span class="n">total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">values</span><span class="p">,</span> <span class="n">each</span> <span class="n">control</span> <span class="n">point</span> <span class="ow">is</span> <span class="n">defined</span> <span class="n">by</span> <span class="n">a</span> <span class="n">pair</span> <span class="n">of</span> <span class="n">values</span><span class="p">:</span> <span class="n">intensity</span> <span class="n">gradient</span> <span class="ow">and</span> <span class="n">opacity</span><span class="p">)</span>
+<span class="mi">28</span> <span class="o">-</span><span class="mi">3024</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="o">-</span><span class="mf">86.9767</span> <span class="mi">0</span> <span class="mf">0.25098</span> <span class="mi">1</span> <span class="mf">45.3791</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">139.919</span> <span class="mi">1</span> <span class="mf">0.894893</span> <span class="mf">0.894893</span> <span class="mf">347.907</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mf">0.25098</span> <span class="mf">1224.16</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">3071</span> <span class="mf">0.827451</span> <span class="mf">0.658824</span> <span class="mi">1</span> <span class="o">=&gt;</span> <span class="n">color</span> <span class="n">transfer</span> <span class="n">function</span> <span class="p">(</span><span class="n">total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">values</span><span class="p">,</span> <span class="n">each</span> <span class="n">control</span> <span class="n">point</span> <span class="ow">is</span> <span class="n">defined</span> <span class="n">by</span> <span class="mi">4</span> <span class="n">of</span> <span class="n">values</span><span class="p">:</span> <span class="n">intensity</span> <span class="ow">and</span> <span class="n">R</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">B</span> <span class="n">color</span> <span class="n">components</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>Examples for common operations on transform are provided in the <a class="reference internal" href="../script_repository.html#volumes"><span class="std std-ref">script repository</span></a>.</p>
+</section>
+<section id="volume-rendering-presets">
+<h2>Volume rendering presets<a class="headerlink" href="#volume-rendering-presets" title="Link to this heading"></a></h2>
+<p>Volume rendering presets that are bundled in Slicer core are specified in a preset file and corresponding icon is stored as an application resource.</p>
+<p>To add a new volume rendering preset:</p>
+<ul class="simple">
+<li><p>Add a new entry to <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Modules/Loadable/VolumeRendering/Resources/presets.xml">presets.xml</a></p></li>
+<li><p>Add a corresponding icon of 128x100 pixels into <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Modules/Loadable/VolumeRendering/Resources/Icons">presets icons folder</a>.</p></li>
+<li><p>Add the icon to <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Modules/Loadable/VolumeRendering/Resources/qSlicerVolumeRenderingModule.qrc">qSlicerVolumeRenderingModule.qrc</a></p></li>
+</ul>
+<p>Presets can be also added at runtime - see <a class="reference internal" href="../script_repository.html#register-custom-volume-rendering-presets"><span class="std std-ref">example in the script repository</span></a>. In this case, icons are loaded from the preset scene file.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="transforms.html" class="btn btn-neutral float-left" title="Transforms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="volumes.html" class="btn btn-neutral float-right" title="Volumes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

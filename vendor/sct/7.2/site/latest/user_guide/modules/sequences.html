@@ -1,0 +1,291 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sequences &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Crop volume sequence" href="cropvolumesequence.html" />
+    <link rel="prev" title="Segment statistics" href="segmentstatistics.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/sequences.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#sequences">Sequences</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Sequences</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-cases">Use cases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#definitions">Definitions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cropvolumesequence.html">Crop volume sequence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="multivolumeimporter.html">MultiVolumeImporter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="multivolumeexplorer.html">MultiVolumeExplorer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Sequences</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/sequences.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="sequences">
+<h1>Sequences<a class="headerlink" href="#sequences" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The Sequences module can create and visualize sequences of nodes, for example time 4D CT, cine-MRI, 4D ultrasound, or navigated 2D ultrasound. The module is not limited to just image sequences as it works for sequences of any other nodes (transforms, markups, …) including their display properties. Multiple sequences can be replayed in real-time, optionally synchronized, to visualize the contents in 2D and 3D.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_sequences_cardiac_ct.gif" /></p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_sequences_ultrasound_tool_guidance.gif" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_sequences_shape_model.gif" /></p>
+</section>
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<section id="explore-sequences-module-using-sample-data">
+<h3>Explore Sequences module using sample data<a class="headerlink" href="#explore-sequences-module-using-sample-data" title="Link to this heading"></a></h3>
+<p>Option A. Load sample data sets using “Sample Data” module</p>
+<ul class="simple">
+<li><p>Go to the Sample Data module and click on one of these data sets:</p>
+<ul>
+<li><p>CTPCardioSeq: cardiac 4D perfusion CT</p></li>
+<li><p>CTCardioSeq: cardiac 4D coronary CT</p></li>
+</ul>
+</li>
+<li><p>Use the toolbar to start replay or browse time points</p></li>
+</ul>
+<p>Option B. Download scene files and load them into the application</p>
+<ul class="simple">
+<li><p>Download one of these scene files:</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/SlicerRt/SequencesData/raw/master/SampleSceneModelDeformation.mrb">Deformation of a 3D model</a></p></li>
+<li><p><a class="reference external" href="https://github.com/SlicerRt/SequencesData/raw/master/SampleSceneUsGuidedNeedleInsertion.mrb">Ultrasound-guided needle insertion: moving tracked ultrasound image and tools, synchronized replay of image ad transforms</a></p></li>
+</ul>
+</li>
+<li><p>Load the downloaded .mrb scene file into Slicer by drag-and-dropping the file to the application window then clicking OK</p></li>
+<li><p>Use the toolbar to start replay or browse time points</p></li>
+</ul>
+</section>
+<section id="recording-node-changes-into-a-sequence-node">
+<h3>Recording node changes into a sequence node<a class="headerlink" href="#recording-node-changes-into-a-sequence-node" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Go to Sequences module.</p></li>
+<li><p>If a node is not selected in the <em>Sequence browser</em> selector then click on it and choose <em>Create new SequenceBrowser</em>.</p></li>
+<li><p>Click the green <code class="docutils literal notranslate"><span class="pre">+</span></code> button next to <em>(new sequence)</em>. This creates a new sequence that will store the segmentation for each timepoint.</p></li>
+<li><p>In the <em>Proxy node</em> column and in the last row of the table, choose the node that you want to record changes. This indicates that this sequence will store states of the chosen segmentation node.</p></li>
+<li><p>Check the <em>Save changes</em> checkbox to allow modifying the sequence by editing the segmentation node.- Click the record button (red dot) in the sequence browser toolbar and start modifying the node to record changes.</p></li>
+<li><p>Click the record button (red dot) in the sequence browser toolbar and start modifying the node to record changes.</p></li>
+<li><p>Click the stop button in the sequence browser toolbar to stop recording.</p></li>
+<li><p>Move the slider or click the play button in the sequence browser toolbar to review recorded data.</p></li>
+</ul>
+</section>
+<section id="creating-sequences-from-a-set-of-nodes">
+<h3>Creating sequences from a set of nodes<a class="headerlink" href="#creating-sequences-from-a-set-of-nodes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Load all your nodes (volumes, models, etc.) into Slicer - these will be referred to as <em>data nodes</em></p></li>
+<li><p>Open the Sequences module</p></li>
+<li><p>Switch to the Sequences tab</p></li>
+<li><p>Click <em>Select a Sequence</em>, choose <em>Create new Sequence</em></p></li>
+<li><p>In the <em>Add/remove data nodes</em> section select your first data node in the list and click the left arrow button</p></li>
+<li><p>Repeat this for all data nodes: select the next data node and click the left arrow button (Slicer will automatically jump to the next data node of the same type, so you may need to keep clicking the arrow button)</p></li>
+<li><p>To replay the sequence that you have just created: switch to <em>Sequence browser</em> tab</p></li>
+<li><p>Click on <em>Select a Sequence</em> in the Master node list and select your sequence node (it is called <em>Sequence</em> by default)</p></li>
+<li><p>Press the play button to start replay of the data</p></li>
+<li><p>Go to the Data module and select all input <em>data nodes</em>. Right-click and choose to delete them, to prevent them from occluding the view.</p></li>
+<li><p>To visualize a volume in 2D: drag-and-drop the <em>Sequence [time=…]</em> node into a slice view</p></li>
+<li><p>To visualize a volume in 3D viewer using volume rendering: drag-and-drop the <em>Sequence [time=…]</em> node into a 3D view</p></li>
+</ul>
+</section>
+<section id="create-a-segmentation-node-sequence">
+<h3>Create a segmentation node sequence<a class="headerlink" href="#create-a-segmentation-node-sequence" title="Link to this heading"></a></h3>
+<p>To allow segmenting each time point of the image, you need to create a segmentation sequence:</p>
+<ul class="simple">
+<li><p>Create a new Segmentation node (e.g., by segmenting the image at one timepoint)</p></li>
+<li><p>Go to the Sequences module</p></li>
+<li><p>Click the green <code class="docutils literal notranslate"><span class="pre">+</span></code> button next to <em>(new sequence)</em>. This creates a new sequence that will store the segmentation for each timepoint.</p></li>
+<li><p>Choose your segmentation node in the <em>Proxy node</em> column and in the last row of the table. This indicates that this sequence will store states of the chosen segmentation node.</p></li>
+<li><p>Check the <em>Save changes</em> checkbox to allow modifying the sequence by editing the segmentation node.</p></li>
+</ul>
+</section>
+<section id="convert-multivolume-node-to-sequence-node">
+<h3>Convert MultiVolume node to Sequence node<a class="headerlink" href="#convert-multivolume-node-to-sequence-node" title="Link to this heading"></a></h3>
+<p>If your data is in a <em>MultiVolume</em> node, you can convert it to a <em>Sequence</em> node by following these steps:</p>
+<ul class="simple">
+<li><p>Save your 4D volume (to a .nrrd file)</p></li>
+<li><p>Load the saved .nrrd file as a sequence node: in the Add data dialog, select <em>Volume Sequence</em> in the Description column</p></li>
+</ul>
+</section>
+<section id="load-dicom-file-as-sequence-node">
+<h3>Load DICOM file as Sequence node<a class="headerlink" href="#load-dicom-file-as-sequence-node" title="Link to this heading"></a></h3>
+<p>In Application settings / DICOM / MultiVolumeImporterPlugin / Preferred multi-volume import format, select “volume sequence”. After this, volume sequences will be loaded as Sequence nodes by default.</p>
+<p>It is also possible to choose the import format for each loaded DICOM data set, by following these steps:</p>
+<ul class="simple">
+<li><p>Open the DICOM browser, select data set to load</p></li>
+<li><p>Check the “Advanced” checkbox</p></li>
+<li><p>Click “Examine”</p></li>
+<li><p>In the populated table, check the checkbox in the row that contains “… frames Volume Sequence by …” (to load data set as multi-volume node, select row “… frames Multivolume by …”)</p></li>
+</ul>
+</section>
+</section>
+<section id="definitions">
+<h2>Definitions<a class="headerlink" href="#definitions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Sequence: Contains an ordered array of data nodes, each data node is tagged with an index value.</p></li>
+<li><p>Data node: A regular MRML node, one item in the sequence. Data nodes are stored privately inside the sequence, therefore they are not visible in the main scene (where the sequence node is located). Singleton nodes are not allowed to be stored as data nodes. Sequence nodes can be data nodes, therefore a sequence of sequence nodes can be used to represent higher-dimensional data sets.</p></li>
+<li><p>Sequence index: The index describes the dimension of the data node sequence. The index name (such as “time”), unit (such as “s”), and type (such as “numeric” or “text”) is the same for the whole sequence. The index value is specified for each data node. The index type information is used for sorting (numerical or string sorting) and for matching the index values (in the case of a numerical index we can find the closest data node even if there is no perfectly matching index value).</p></li>
+<li><p>Sequence browsing: A sequence node only contains the data nodes, but does not store any node relationships, such as parent transform, display properties, etc. These relationships can be only defined for the virtual output nodes that are generated by the Sequence browser module. Several browser nodes can be created to visualize data from the same sequence to support comparing multiple different time points from the same sequence.</p></li>
+<li><p>Proxy node: The sequence browser node creates a copy of the selected privately stored data node in the main scene. This copy is the proxy node (formerly <em>virtual output node</em>).</p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Authors:</p>
+<ul class="simple">
+<li><p>Andras Lasso (PerkLab, Queen’s University)</p></li>
+<li><p>Matthew Holden (PerkLab, Queen’s University)</p></li>
+<li><p>Kyle Sunderland (PerkLab, Queen’s University)</p></li>
+<li><p>Kevin Wang (Princess Margaret Cancer Centre)</p></li>
+<li><p>Gabor Fichtinger (PerkLab, Queen’s University)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is funded in part by an Applied Cancer Research Unit of Cancer Care Ontario with funds provided by the Ministry of Health and Long-Term Care and the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide a free, open-source toolset for radiotherapy and related image-guided interventions.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_cco.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_ocairo.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="segmentstatistics.html" class="btn btn-neutral float-left" title="Segment statistics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cropvolumesequence.html" class="btn btn-neutral float-right" title="Crop volume sequence" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

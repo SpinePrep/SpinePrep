@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Segmentations &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Segment editor" href="segmenteditor.html" />
+    <link rel="prev" title="Scene Views" href="sceneviews.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/segmentations.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Segmentations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-cases">Use cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#edit-segmentation">Edit segmentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#import-an-existing-segmentation-from-volume-file">Import an existing segmentation from volume file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#import-an-existing-segmentation-from-model-surface-mesh-file">Import an existing segmentation from model (surface mesh) file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#editing-a-segmentation-imported-from-model-surface-mesh-file">Editing a segmentation imported from model (surface mesh) file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#export-segmentation-to-model-surface-mesh-file">Export segmentation to model (surface mesh) file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#export-segmentation-to-labelmap-volume">Export segmentation to labelmap volume</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#export-segmentation-to-labelmap-volume-file">Export segmentation to labelmap volume file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-new-representation-in-segmentation-conversion">Create new representation in segmentation (conversion)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adjust-how-segments-are-displayed">Adjust how segments are displayed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#managing-segmentations-using-python-scripts">Managing segmentations using Python scripts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dicom-export">DICOM export</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#segmentation">Segmentation</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Segmentations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-cases">Use cases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="brainsroiauto.html">Foreground masking (BRAINS)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Segmentations</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/segmentations.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="segmentations">
+<h1>Segmentations<a class="headerlink" href="#segmentations" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The Segmentations module manages segmentations. Each segmentation can contain multiple segments, which correspond to one structure or ROI. Each segment can contain multiple data representations for the same structure, and the module supports automatic conversion between these representations (the default ones are: planar contour, binary labelmap, closed surface model), as well as advanced display settings and import/export features.</p>
+<ul class="simple">
+<li><p>Visualization of structures in 2D and 3D views</p></li>
+<li><p>Define regions of interest as input to further analysis (volume measurements, masking for computing radiomics features, etc.)</p></li>
+<li><p>Create surface meshes from images for 3D printing</p></li>
+<li><p>Editing of 3D closed surfaces</p></li>
+</ul>
+<p>Motivation, features, and details of the infrastructure are explained in paper <em>Cs. Pinter, A. Lasso, G. Fichtinger, “Polymorph segmentation representation for medical image computing”, Computer Methods and Programs in Biomedicine, Volume 171, p19-26, 2019</em> (<a class="reference external" href="https://github.com/EBATINCA/EbatincaDoc/blob/477aae710a5f741b21edaca4838cf48fd4ea0220/Papers/Pinter2019_Manuscript.pdf">pdf</a>, <a class="reference external" href="https://doi.org/10.1016/j.cmpb.2019.02.011">DOI</a>) and in the related <a class="reference external" href="https://qspace.library.queensu.ca/handle/1974/26422">PhD dissertation</a>.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/image_segmentation_segmentations_module.png" /></p>
+</section>
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<section id="edit-segmentation">
+<h3>Edit segmentation<a class="headerlink" href="#edit-segmentation" title="Link to this heading"></a></h3>
+<p>Segmentation can be edited using <a class="reference internal" href="segmenteditor.html"><span class="std std-doc">Segment Editor</span></a> module.</p>
+</section>
+<section id="import-an-existing-segmentation-from-volume-file">
+<h3>Import an existing segmentation from volume file<a class="headerlink" href="#import-an-existing-segmentation-from-volume-file" title="Link to this heading"></a></h3>
+<p>3D volumes in NRRD (.nrrd or .nhdr) and Nifti (.nii or .nii.gz) file formats can be directly loaded as segmentation:</p>
+<ul class="simple">
+<li><p>Drag-and-drop the volume file to the application window (or use menu: <code class="docutils literal notranslate"><span class="pre">File</span></code> / <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Data</span></code>, then select the file)</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Description</span></code> column choose <code class="docutils literal notranslate"><span class="pre">Segmentation</span></code></p></li>
+<li><p>Optional: if a color table (specifying name and color for each label value) is available then load that first into the application and then select it as <code class="docutils literal notranslate"><span class="pre">Color</span> <span class="pre">node</span></code> in the <code class="docutils literal notranslate"><span class="pre">Options</span></code> section. Specification of the color table file format is available <a class="reference internal" href="../../developer_guide/modules/colors.html#color-table-text-file-format-txt-ctbl"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">OK</span></code></p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To avoid the need to always manually select <code class="docutils literal notranslate"><span class="pre">Segmentation</span></code>, save the <code class="docutils literal notranslate"><span class="pre">.nrrd</span></code> file using the <code class="docutils literal notranslate"><span class="pre">.seg.nrrd</span></code> file extension. It makes Slicer load the image as a segmentation by default.</p>
+</div>
+<p>Other image file formats can be loaded as labelmap volume and then converted to segmentation:</p>
+<ul class="simple">
+<li><p>Drag-and-drop the volume file to the application window (or use menu: <code class="docutils literal notranslate"><span class="pre">File</span></code> / <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Data</span></code>, then select the file)</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Show</span> <span class="pre">Options</span></code></p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Options</span></code> column check <code class="docutils literal notranslate"><span class="pre">LabelMap</span></code> checkbox (to indicate that the volume is a labelmap, not a grayscale image)</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">OK</span></code></p></li>
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Data</span></code> module, <code class="docutils literal notranslate"><span class="pre">Subject</span> <span class="pre">hierarchy</span></code> tab</p></li>
+<li><p>Right-click on the name of the imported volume and choose <code class="docutils literal notranslate"><span class="pre">Convert</span> <span class="pre">labelmap</span> <span class="pre">to</span> <span class="pre">segmentation</span> <span class="pre">node</span></code></p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To show the segmentation in 3D, go to <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> module and click <code class="docutils literal notranslate"><span class="pre">Show</span> <span class="pre">3D</span></code>. Alternatively, go to <code class="docutils literal notranslate"><span class="pre">Data</span></code> module and drag-and-drop the segmentation into each view where you want to see them - if the segmentation is dragged into a 3D view then it will be shown there in 3D.</p>
+</div>
+</section>
+<section id="import-an-existing-segmentation-from-model-surface-mesh-file">
+<h3>Import an existing segmentation from model (surface mesh) file<a class="headerlink" href="#import-an-existing-segmentation-from-model-surface-mesh-file" title="Link to this heading"></a></h3>
+<p>3D models in STL and OBJ formats can be directly loaded as segmentation:</p>
+<ul class="simple">
+<li><p>Drag-and-drop the volume file to the application window (or use menu: <code class="docutils literal notranslate"><span class="pre">File</span></code> / <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Data</span></code>, then select the file)</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Description</span></code> column choose <code class="docutils literal notranslate"><span class="pre">Segmentation</span></code></p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">OK</span></code></p></li>
+</ul>
+<p>If the model contains very thin and delicate structures then default resolution for binary labelmap representation may be not sufficient for editing. Default resolution is computed so that the labelmap contains a total of approximately 256x256x256 voxels. To make the resolution finer:</p>
+<ul class="simple">
+<li><p>Go to Segmentations module</p></li>
+<li><p>In Representations section, click Binary labelmap -&gt; Create, then Update</p></li>
+<li><p>In the displayed popup:</p>
+<ul>
+<li><p>In Conversion path section, click Closed surface -&gt; Binary labelmap</p></li>
+<li><p>In Conversion parameters section, set oversampling factor to 2 (if this is not enough then you can try 2.5, 3, 4, …) - larger values increase more memory usage and computation time (oversampling factor of 2x increases memory usage by 2^3 = 8x).</p></li>
+<li><p>Click Convert</p></li>
+</ul>
+</li>
+</ul>
+<p>Other mesh file formats can be loaded as model and then converted to segmentation node:</p>
+<ul class="simple">
+<li><p>Drag-and-drop the volume file to the application window (or use menu: <code class="docutils literal notranslate"><span class="pre">File</span></code> / <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Data</span></code>, then select the file)</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">OK</span></code></p></li>
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Data</span></code> module, <code class="docutils literal notranslate"><span class="pre">Subject</span> <span class="pre">hierarchy</span></code> tab</p></li>
+<li><p>Right-click on the name of the imported volume and choose <code class="docutils literal notranslate"><span class="pre">Convert</span> <span class="pre">model</span> <span class="pre">to</span> <span class="pre">segmentation</span> <span class="pre">node</span></code></p></li>
+</ul>
+</section>
+<section id="editing-a-segmentation-imported-from-model-surface-mesh-file">
+<h3>Editing a segmentation imported from model (surface mesh) file<a class="headerlink" href="#editing-a-segmentation-imported-from-model-surface-mesh-file" title="Link to this heading"></a></h3>
+<p>Selection of a <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">volume</span></code> is required for editing a segmentation. The source volume specifies the geometry (origin, spacing, axis directions, and extents) of the voxel grid that is used during editing.</p>
+<p>If no volume is available then it can be created by the following steps:</p>
+<ul class="simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Segment</span> <span class="pre">editor</span></code> module</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Specify</span> <span class="pre">geometry</span></code> button (on the right side of <code class="docutils literal notranslate"><span class="pre">Source</span> <span class="pre">volume</span></code> node selector)</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">Source</span> <span class="pre">geometry</span></code> choose the segmentation (this specifies the extents, i.e., the bounding box so that the complete object is included)</p></li>
+<li><p>Adjust <code class="docutils literal notranslate"><span class="pre">Spacing</span></code> values as needed. It is recommended to set the same value for all three axes. Using smaller values preserve more details but at the cost of increased memory usage and computation time.</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">OK</span></code></p></li>
+<li><p>When an editing operation is started then the Segment Editor will ask if the source representation should be changed to binary labelmap. Answer <code class="docutils literal notranslate"><span class="pre">Yes</span></code>, because binary labelmap representation is required for editing.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Certain editing operations are available directly on models, without converting to segmentation. For example, using Surface Toolbox and Dynamic Modeler modules.</p>
+</div>
+</section>
+<section id="export-segmentation-to-model-surface-mesh-file">
+<h3>Export segmentation to model (surface mesh) file<a class="headerlink" href="#export-segmentation-to-model-surface-mesh-file" title="Link to this heading"></a></h3>
+<p>Segments can be exported to STL or OBJ files for 3D printing or visualization/processing in external software:</p>
+<ul class="simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">to</span> <span class="pre">files</span></code> section in <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> module (or in <code class="docutils literal notranslate"><span class="pre">Segment</span> <span class="pre">editor</span></code> module: choose <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">to</span> <span class="pre">files</span></code>, in the drop-down menu of <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> button)</p></li>
+<li><p>Choose destination folder, file format, etc.</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Export</span></code></p></li>
+</ul>
+<p>Other file formats:</p>
+<ul class="simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Data</span></code> module, right-click on the segmentation node, and choose <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">visible</span> <span class="pre">segments</span> <span class="pre">to</span> <span class="pre">models</span></code> (alternatively, use <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> module’s <code class="docutils literal notranslate"><span class="pre">Export/import</span> <span class="pre">models</span> <span class="pre">and</span> <span class="pre">labelmaps</span></code> section)</p></li>
+<li><p>In application menu, choose <code class="docutils literal notranslate"><span class="pre">File</span></code> / <code class="docutils literal notranslate"><span class="pre">Save</span></code></p></li>
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">format</span></code></p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Save</span></code></p></li>
+</ul>
+</section>
+<section id="export-segmentation-to-labelmap-volume">
+<h3>Export segmentation to labelmap volume<a class="headerlink" href="#export-segmentation-to-labelmap-volume" title="Link to this heading"></a></h3>
+<p>If segments in a segmentation do not overlap each other then segmentation is saved as a 3D volume node by default when the scene is saved (application menu: File / Save). If the segmentation contains overlapping segments then it is saved as a 4D volume: each 3D volume containing a set of non-overlapping segments.</p>
+<p>To force saving segmentation as a 3D volume, export it to a labelmap volume by right-clicking on the segmentation in Data module.</p>
+<p>For advanced export options, <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> module’s <code class="docutils literal notranslate"><span class="pre">Export/import</span> <span class="pre">models</span> <span class="pre">and</span> <span class="pre">labelmaps</span></code> section can be used. If exported segmentation geometry (origin, spacing, axis directions, extents) must exactly match another volume’s then then choose that volume as <code class="docutils literal notranslate"><span class="pre">Reference</span> <span class="pre">volume</span></code> in <code class="docutils literal notranslate"><span class="pre">Advanced</span></code> section. Using a reference volume for labelmap export may result in the segmentation being cropped if some regions are outside of the new geometry. A confirmation popup will be displayed before the segmentation is cropped.</p>
+</section>
+<section id="export-segmentation-to-labelmap-volume-file">
+<h3>Export segmentation to labelmap volume file<a class="headerlink" href="#export-segmentation-to-labelmap-volume-file" title="Link to this heading"></a></h3>
+<p>If source representation of a a segmentation node is binary labelmap then the segmentation will be saved in standard NRRD file format. This is the recommended way of saving segmentation volumes, as it saves additional metadata (segment names, colors, DICOM terminology) in the image file in custom fields and allows saving of overlapping segments.</p>
+<p>For exporting segmentation as NRRD or NIFTI file for external software that uses 3D labelmap volume file + color table file for segmentation storage:</p>
+<ul class="simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">to</span> <span class="pre">files</span></code> section in <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> module (or in <code class="docutils literal notranslate"><span class="pre">Segment</span> <span class="pre">editor</span></code> module: choose <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">to</span> <span class="pre">files</span></code>, in the drop-down menu of <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> button)</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">format</span></code> selector choose <code class="docutils literal notranslate"><span class="pre">NRRD</span></code> or <code class="docutils literal notranslate"><span class="pre">NIFTI</span></code>. NRRD format is recommended, as it is a simple, general-purpose file format. For neuroimaging, NIFTI file format may be a better choice, as it is the most commonly used research file format in that field.</p></li>
+<li><p>Optional: choose Reference volume if you want your segmentation to match a selected volume’s geometry (origin, spacing, axis directions) instead of the current segmentation geometry</p></li>
+<li><p>Optional: check <code class="docutils literal notranslate"><span class="pre">Use</span> <span class="pre">color</span> <span class="pre">table</span> <span class="pre">values</span></code> checkbox and select a color table to set voxel values in the exported files from values specified in the color table. The label value is index of the color table entry that has the same name as the segment name. If a color table is not specified then, voxel values are based on the order of segments in the segment list (voxels that are outside of all segments are set to 0, voxels of the first segment are set to  1, voxels of the second segment are set to 2, etc).</p></li>
+<li><p>Set additional options (destination folder, compression, etc.) as needed</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Export</span></code></p></li>
+</ul>
+<p>Labelmap volumes can be created in any other formats by <a class="reference internal" href="#export-segmentation-to-labelmap-volume"><span class="std std-ref">exporting segmentation to labelmap volume</span></a> then in application menu, choose <code class="docutils literal notranslate"><span class="pre">File</span></code> / <code class="docutils literal notranslate"><span class="pre">Save</span></code>.</p>
+<p>Using a reference volume for labelmap export may result in the segmentation being cropped if some regions are outside of the new geometry. A confirmation popup will be displayed before the segmentation is cropped.</p>
+</section>
+<section id="create-new-representation-in-segmentation-conversion">
+<h3>Create new representation in segmentation (conversion)<a class="headerlink" href="#create-new-representation-in-segmentation-conversion" title="Link to this heading"></a></h3>
+<p>The supported representations are listed in the Representations section. Existing representations are marked with a green tick, the source representation is marked with a gold star. The source representation is the editable (for example, in Segment Editor module) and it is the source of all conversions.</p>
+<ul class="simple">
+<li><p>To create a representation, click on the Create button in the corresponding row. To specify a custom conversion path or parameters (reference geometry for labelmaps, smoothing for surfaces, etc.), click the down-arrow button in the “Create” button and choose “Advanced create…”, then choose a conversion path from the list at the top, and adjust the conversion parameters in the section at the bottom.</p></li>
+<li><p>To update a representation (re-create from the source representation) using custom conversion path or parameters, click the “Update” button in the corresponding row.</p></li>
+<li><p>To remove a representation, click the down-arrow button in the “Update” button then choose “Remove”.</p></li>
+</ul>
+</section>
+<section id="adjust-how-segments-are-displayed">
+<h3>Adjust how segments are displayed<a class="headerlink" href="#adjust-how-segments-are-displayed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>By right-clicking the eye icon in the segments table the display options are shown and the different display modes can be turned on or off</p></li>
+<li><p>Advanced display options are available in <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> module’s <code class="docutils literal notranslate"><span class="pre">Display</span></code> sections.</p></li>
+</ul>
+</section>
+<section id="managing-segmentations-using-python-scripts">
+<h3>Managing segmentations using Python scripts<a class="headerlink" href="#managing-segmentations-using-python-scripts" title="Link to this heading"></a></h3>
+<p>See Script repository’s <a class="reference internal" href="../../developer_guide/script_repository.html#segmentations"><span class="std std-ref">Segmentations section</span></a> for examples.</p>
+</section>
+<section id="dicom-export">
+<h3>DICOM export<a class="headerlink" href="#dicom-export" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Make sure the source representation is <code class="docutils literal notranslate"><span class="pre">binary</span> <span class="pre">labelmap</span></code> (as the source representation is used when exporting into DICOM, and currently only binary labelmap representation is supported). The source representation can be set in <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> module, <code class="docutils literal notranslate"><span class="pre">Representations</span></code> section. If the yellow star (that designates the source representation) is in the <code class="docutils literal notranslate"><span class="pre">binary</span> <span class="pre">labelmap</span></code> row then the representation is already good, no further action is needed. If the yellow star is in another row then click <code class="docutils literal notranslate"><span class="pre">Make</span> <span class="pre">source</span></code> button in the <code class="docutils literal notranslate"><span class="pre">binary</span> <span class="pre">labelmap</span></code> row (if that button is not shown then click <code class="docutils literal notranslate"><span class="pre">Create</span></code> button first).</p></li>
+<li><p>Make sure the necessary extensions are installed:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">QuantitativeReporting</span></code> extension is required for exporting into DICOM Segmentation Object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SlicerRT</span></code> extension is required for exporting into legacy DICOM RT Structure Set. RT Structure Sets are not recommended for storing segmentations, as they cannot store arbitrarily complex 3D shapes.</p></li>
+</ul>
+</li>
+<li><p>If the segmented image was not loaded from the DICOM database (for example, if the image was loaded from a NRRD or NIFTI file) then a DICOM image needs to be created in the database and the segmentation must be updated to reference this image (this is necessary because a DICOM requires a segmentation to be associated with a DICOM image) by following these steps:</p>
+<ul>
+<li><p><a class="reference internal" href="dicom.html#export-data-from-the-scene-to-dicom-database"><span class="std std-ref">export the source volume to DICOM</span></a> (agree to create patient and study when asked)</p></li>
+<li><p>load the exported volume from the DICOM database</p></li>
+<li><p>in <code class="docutils literal notranslate"><span class="pre">Segment</span> <span class="pre">Editor</span></code> module, click <code class="docutils literal notranslate"><span class="pre">Specify</span> <span class="pre">geometry</span></code> button, choose the loaded volume as <code class="docutils literal notranslate"><span class="pre">Source</span> <span class="pre">geometry</span></code>, and click OK</p></li>
+</ul>
+</li>
+<li><p>Go to Data module, right-click on the segmentation, choose <code class="docutils literal notranslate"><span class="pre">Export</span> <span class="pre">to</span> <span class="pre">DICOM</span></code>, and follow <a class="reference internal" href="dicom.html#export-data-from-the-scene-to-dicom-database"><span class="std std-ref">these instructions</span></a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Segments table</p>
+<ul>
+<li><p>Add/remove segments</p></li>
+<li><p>Edit selected: takes user to <a class="reference internal" href="segmenteditor.html"><span class="std std-doc">Segment Editor</span></a> module</p></li>
+<li><p>Set visibility and per-segment display settings, opacity, color, segment name</p></li>
+</ul>
+</li>
+<li><p>Display</p>
+<ul>
+<li><p>Segmentations-wide display settings (not per-segment!): visibility, opacity (will be multiplied with per-segment opacity for display)</p></li>
+<li><p>Views: Individual views to show the selected segmentation in</p></li>
+<li><p>Slice intersection thickness</p></li>
+<li><p>Representation in 3D/2D views: The representation to be shown in the 3D and 2D views. Useful if there are multiple representations available, for example if we want to show the closed surface in the 3D view but the labelmap in the slice views</p></li>
+</ul>
+</li>
+<li><p>Representations</p>
+<ul>
+<li><p>List of supported representations and related operations</p></li>
+<li><p>The already existing representations have a green tick, the source representation (that is the source of all conversions and the representation that can be edited) a gold star</p></li>
+<li><p>The buttons in each row can be used to create, remove, update a representation</p>
+<ul>
+<li><p>Advanced conversion is possible (to use the non-default path or conversion parameters) by long-pressing the Create or Update button</p></li>
+<li><p>Existing representations can be made master by clicking Make source. The source representation is used as source for conversions, it is the one that can be edited, and saved to disk</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Copy/move (import/export)</p>
+<ul>
+<li><p>Left panel lists the segments in the selected segmentation</p></li>
+<li><p>Right panel shows the external data container</p></li>
+<li><p>The arrow buttons van be used to copy (with plus sign) or move (no plus sign) segments between the segmentation and the external node</p></li>
+<li><p>New labelmap or model can be created by clicking the appropriate button on the top of the right panel</p></li>
+<li><p>Multiple segments can be exported into a labelmap. In case of overlapping segments, the subsequent segments will overwrite the previous ones!</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Subject hierarchy</strong></p>
+<ul class="simple">
+<li><p>Segmentations are shown in subject hierarchy as any other node, with the exception that the contained segments are in a “virtual branch”.</p>
+<ul>
+<li><p>The segments can be moved between segmentations, but drag&amp;drop to anywhere other than under another segmentation is not allowed</p></li>
+</ul>
+</li>
+<li><p>Special subject hierarchy features for segmentations</p>
+<ul>
+<li><p>Create representation: Create the chosen representation using the default path</p></li>
+</ul>
+</li>
+<li><p>Special subject hierarchy features for segments</p>
+<ul>
+<li><p>Show only this segment: Useful if only one segment needs to be shown and there are many, so clicking the eye buttons would take a long time</p></li>
+<li><p>Show all segments</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://training.slicer.org/#segmentation-tutorials">Segmentation tutorials</a></p></li>
+</ul>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>When segmentation is displayed in 2D views using <code class="docutils literal notranslate"><span class="pre">Closed</span> <span class="pre">surface</span></code> representation (either because this is the only available representation or because this representation is chosen to be shown in <code class="docutils literal notranslate"><span class="pre">Segmentations</span></code> module: <code class="docutils literal notranslate"><span class="pre">Display</span></code> / <code class="docutils literal notranslate"><span class="pre">Advanced</span></code> / <code class="docutils literal notranslate"><span class="pre">Representation</span> <span class="pre">in</span> <span class="pre">2D</span> <span class="pre">views</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Closed</span> <span class="pre">surface</span></code>) then filling of the contours may appear incomplete and/or inverted. This is just a rendering error and does not affect the segmentation content. To avoid seeing such rendering artifacts, create <code class="docutils literal notranslate"><span class="pre">Binary</span> <span class="pre">labelmap</span></code> representation and choose <code class="docutils literal notranslate"><span class="pre">Representation</span> <span class="pre">in</span> <span class="pre">2D</span> <span class="pre">views</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Binary</span> <span class="pre">labelmap</span></code>.</p></li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Libs/vtkSegmentationCore">vtkSegmentationCore on GitHub</a> (within Slicer)</p></li>
+<li><p><a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Modules/Loadable/Segmentations">Segmentations Slicer module on GitHub</a></p></li>
+<li><p><a class="reference external" href="https://www.slicer.org/wiki/Documentation/Labs/Segmentations">Segmentations Labs page</a></p></li>
+<li><p><a class="reference internal" href="../../developer_guide/script_repository.html#segmentations"><span class="std std-ref">Manipulation of segmentations from Python scripts - examples in script repository</span></a></p></li>
+</ul>
+</section>
+<section id="related-modules">
+<h2>Related modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="segmenteditor.html"><span class="std std-doc">Segment Editor</span></a> module is for editing segments of a segmentation node</p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SlicerRt/SlicerRT/wiki/Segmentation">Development notes</a></p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Authors:</p>
+<ul class="simple">
+<li><p>Csaba Pinter (PerkLab, Queen’s University)</p></li>
+<li><p>Andras Lasso (PerkLab, Queen’s University)</p></li>
+<li><p>Kyle Sunderland (PerkLab, Queen’s University)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is funded in part by An Applied Cancer Research Unit of Cancer Care Ontario with funds provided by the Ministry of Health and Long-Term Care and the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_cco.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_ocairo.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_isomics.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sceneviews.html" class="btn btn-neutral float-left" title="Scene Views" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="segmenteditor.html" class="btn btn-neutral float-right" title="Segment editor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

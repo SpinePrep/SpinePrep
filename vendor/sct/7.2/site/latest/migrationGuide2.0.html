@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Migration Guide 2.0 &mdash; SimpleITK 2.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css" />
+
+  
+    <link rel="shortcut icon" href="_static/yellow_itk_icon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer" href="FilterTemplates.html" />
+    <link rel="prev" title="Frequently Asked Questions" href="faq.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpleitk" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/migrationGuide2.0.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SimpleITK
+              <img src="_static/simpleitk_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentalConcepts.html">Fundamental Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registrationOverview.html">Registration Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Common Conventions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IO.html">Reading and Writing for Images and Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">SimpleITK Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">Building SimpleITK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setUp.html">Setting Up Eclipse and Visual Studio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsAndCourses.html">Tutorials and Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Migration Guide 2.0</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#interface-compatibility">Interface Compatibility</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#composite-transforms">Composite Transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filter-s-execute-method">Filter’s Execute Method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#morphology-radius">Morphology Radius</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fastmarchingimagefilter">FastMarchingImageFilter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#behavior-changes">Behavior Changes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#itkv5">ITKv5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#show-environment-variables">Show Environment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#images">Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dicom-mochorome1">DICOM MOCHOROME1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python-installation">Python Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-threading">Multi-threading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#registration-smoothing">Registration Smoothing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="FilterTemplates.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="link_examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimpleITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Migration Guide 2.0</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/migrationGuide2.0.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="migration-guide-2-0">
+<span id="lbl-migration-guide2-0"></span><h1>Migration Guide 2.0<a class="headerlink" href="#migration-guide-2-0" title="Permalink to this heading"></a></h1>
+<p>With the release of SimpleITK 2.0 there are changes to the interface and to the behaviour of some methods and classes. The intent of this document is to provide guidance on how to modify code so that it is compatible with SimpleITK 2.0.</p>
+<p>This document will continue to evolve after the SimpleITK 2.0 release, consider reading the <a class="reference external" href="https://simpleitk.readthedocs.io/en/master/migrationGuide2.0.html">latest</a> version. Contributions to update this document that share problems and solutions when updating to SimpleITK 2.0 are welcomed.</p>
+<section id="interface-compatibility">
+<h2>Interface Compatibility<a class="headerlink" href="#interface-compatibility" title="Permalink to this heading"></a></h2>
+<p>These changes list API changes that cause compilation or runtime errors.</p>
+<section id="composite-transforms">
+<h3>Composite Transforms<a class="headerlink" href="#composite-transforms" title="Permalink to this heading"></a></h3>
+<p>The <cite>Transform::AddTransform</cite> method was removed.</p>
+<p>Composite transformations were previously represented using the generic <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1Transform.html">Transform class</a>. This class served both as a base class for all transformations and as a composite transformation. This dual purpose
+has been separated. Composite transformations are now represented by a dedicated class <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1CompositeTransform.html">CompositeTransform</a> and the associated functionality was removed from the <cite>Transform</cite> class.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>1.x</p></td>
+<td><p>2.x</p></td>
+</tr>
+<tr class="row-even"><td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tx</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Transform</span><span class="p">()</span>
+<span class="n">tx1</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">TranslationTransform</span><span class="p">(</span><span class="mi">3</span><span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">76</span><span class="p">))</span>
+<span class="n">tx2</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Euler3DTransform</span><span class="p">()</span>
+<span class="n">tx</span><span class="o">.</span><span class="n">AddTransform</span><span class="p">(</span><span class="n">tx1</span><span class="p">)</span>
+<span class="n">tx</span><span class="o">.</span><span class="n">AddTransform</span><span class="p">(</span><span class="n">tx2</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tx1</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">TranslationTransform</span><span class="p">(</span><span class="mi">3</span><span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">76</span><span class="p">))</span>
+<span class="n">tx2</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Euler3DTransform</span><span class="p">()</span>
+<span class="n">tx</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">CompositeTransform</span><span class="p">([</span><span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">])</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This change does effect compatibility when reading or writing <cite>CompositeTransforms</cite> between versions.</p>
+</section>
+<section id="filter-s-execute-method">
+<h3>Filter’s Execute Method<a class="headerlink" href="#filter-s-execute-method" title="Permalink to this heading"></a></h3>
+<p>The Filters’ <cite>Execute</cite> methods with filter parameters as arguments was removed. A filter object’s parameters are only set via the SetXYZ methods. For example the <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1STAPLEImageFilter.html">STAPLEImageFilter class</a>:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>1.x</p></td>
+<td><p>2.x</p></td>
+</tr>
+<tr class="row-even"><td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">staple_filter</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">STAPLEImageFilter</span><span class="p">()</span>
+
+<span class="n">staple_image</span> <span class="o">=</span> <span class="n">staple_filter</span><span class="o">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span>
+                                     <span class="n">image2</span><span class="p">,</span> <span class="n">image3</span><span class="p">,</span>
+                                     <span class="n">confidenceWeight</span><span class="p">,</span>
+                                     <span class="n">foregroundValue</span><span class="p">,</span>
+                                     <span class="n">maximumIterations</span><span class="p">)</span>
+<span class="n">staple_specificity</span> <span class="o">=</span> <span class="n">staple_filter</span><span class="o">.</span><span class="n">GetSpecificity</span><span class="p">()</span>
+</pre></div>
+</div>
+</td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">staple_filter</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">STAPLEImageFilter</span><span class="p">()</span>
+<span class="n">staple_filter</span><span class="o">.</span><span class="n">ConfidenceWeight</span><span class="p">(</span><span class="n">confidenceWeight</span><span class="p">)</span>
+<span class="n">staple_filter</span><span class="o">.</span><span class="n">SetForegroundValue</span><span class="p">(</span><span class="n">foregroundValue</span><span class="p">)</span>
+<span class="n">staple_filter</span><span class="o">.</span><span class="n">SetMaximumIterations</span><span class="p">(</span><span class="n">maximumIterations</span><span class="p">)</span>
+<span class="n">staple_image</span> <span class="o">=</span> <span class="n">staple_filter</span><span class="o">.</span><span class="n">Execute</span><span class="p">([</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">,</span> <span class="n">image3</span><span class="p">])</span>
+
+<span class="n">staple_specificity</span> <span class="o">=</span> <span class="n">staple_filter</span><span class="o">.</span><span class="n">GetSpecificity</span><span class="p">()</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Alternatively, the procedural method could be used if no measurements or side effects on the object are needed.</p>
+</section>
+<section id="morphology-radius">
+<h3>Morphology Radius<a class="headerlink" href="#morphology-radius" title="Permalink to this heading"></a></h3>
+<p>The procedural interfaces for morphology filters only accept vector values for the radius parameter. Previously the procedures accepted a scalar for the radius parameter. For example, a structuring element of radius 5 used on a 3D image is specified as [5, 5, 5]:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>1.x</p></td>
+<td><p>2.x</p></td>
+</tr>
+<tr class="row-even"><td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">seg</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">BinaryDilate</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">seg</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">BinaryDilate</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="n">seg</span><span class="o">.</span><span class="n">GetDimension</span><span class="p">())</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following is a list of procedures affected by this change:</p>
+<ul class="simple">
+<li><p><cite>BinaryClosingByReconstruction</cite></p></li>
+<li><p><cite>BinaryDilate</cite></p></li>
+<li><p><cite>BinaryErode</cite></p></li>
+<li><p><cite>BinaryMorphologicalClosing</cite></p></li>
+<li><p><cite>BinaryMorphologicalOpening</cite></p></li>
+<li><p><cite>BinaryOpeningByReconstruction</cite></p></li>
+<li><p><cite>BlackTopHat</cite></p></li>
+<li><p><cite>ClosingByReconstruction</cite></p></li>
+<li><p><cite>DilateObjectMorphology</cite></p></li>
+<li><p><cite>ErodeObjectMorphology</cite></p></li>
+<li><p><cite>GrayscaleDilate</cite></p></li>
+<li><p><cite>GrayscaleErode</cite></p></li>
+<li><p><cite>GrayscaleMorphologicalClosing</cite></p></li>
+<li><p><cite>GrayscaleMorphologicalOpening</cite></p></li>
+<li><p><cite>MorphologicalGradient</cite></p></li>
+<li><p><cite>OpeningByReconstruction</cite></p></li>
+<li><p><cite>WhiteTopHat</cite></p></li>
+</ul>
+</section>
+<section id="fastmarchingimagefilter">
+<h3>FastMarchingImageFilter<a class="headerlink" href="#fastmarchingimagefilter" title="Permalink to this heading"></a></h3>
+<p>The <cite>FastMarchingImageFilter::AddTrialPoints</cite> and <cite>FastMarchingImageFilter::ClearTrialPoints</cite> methods were removed. The <cite>SetTrialPoints</cite> method can be used instead to set the whole list of trial points.</p>
+</section>
+</section>
+<section id="behavior-changes">
+<h2>Behavior Changes<a class="headerlink" href="#behavior-changes" title="Permalink to this heading"></a></h2>
+<section id="itkv5">
+<h3>ITKv5<a class="headerlink" href="#itkv5" title="Permalink to this heading"></a></h3>
+<p>SimpleITK 2.0 uses ITK version 5.0. This major version change to ITK includes numerous changes to the usage and behavior of ITK. The <a class="reference external" href="https://github.com/InsightSoftwareConsortium/ITK/blob/master/Documentation/docs/migration_guides/itk_5_migration_guide.md">ITK v5 Migration Guide</a> contains valuable information documenting changes.</p>
+</section>
+<section id="show-environment-variables">
+<h3>Show Environment Variables<a class="headerlink" href="#show-environment-variables" title="Permalink to this heading"></a></h3>
+<p>The environment variables related to the <cite>Show</cite> method are only checked once. The <cite>Show</cite> method is a wrapper for the <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ImageViewer.html">ImageViewer</a> class, changing the behavior from SimpleITK 1.0. The SITK_SHOW_EXTENSION and SITK_SHOW_COMMAND environment variables if defined initialize the corresponding global defaults only the first time accessed. The environment variables SITK_COLOR_COMMAND and SITK_SHOW_3D_COMMAND were removed as the ImageViewer class allows for direct configuration of the command.</p>
+</section>
+<section id="images">
+<h3>Images<a class="headerlink" href="#images" title="Permalink to this heading"></a></h3>
+<p>Images support sub-image left assignment of constants and matching image regions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">img</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span> <span class="o">=</span> <span class="n">img2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="dicom-mochorome1">
+<h3>DICOM MOCHOROME1<a class="headerlink" href="#dicom-mochorome1" title="Permalink to this heading"></a></h3>
+<p>Changes to DICOM reading, due to SimpleITK’s move from ITK 4.x to 5.x. Photometric interpretation, tag 0028|0004, is now taken into account when reading the image.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>MOCHOROME1: previously intensity values loaded as is, now they are inverted. Code that previously inverted the intensities explicitly needs to be removed.</p></li>
+<li><p>Color images (e.g. YBR_FULL_422): Previously channels loaded as is, now they are converted to RGB. If previous code used the photometric interpretation tag value to perform color space conversions outside of SimpleITK it will need to be  modified. For example, previously the first channel for an image with photometric interpretation of YBR_FULL was luminance and could be used as the grayscale version of the image. Now all three channels are used to compute the image luminance:</p></li>
+</ol>
+</div></blockquote>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>1.x</p></td>
+<td><p>2.x</p></td>
+</tr>
+<tr class="row-even"><td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+<span class="n">grayscale_image</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">VectorIndexSelectionCast</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+<td><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+<span class="n">grayscale_image</span> <span class="o">=</span> <span class="mf">0.299</span><span class="o">*</span><span class="n">sitk</span><span class="o">.</span><span class="n">VectorIndexSelectionCast</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="mf">0.587</span><span class="o">*</span><span class="n">sitk</span><span class="o">.</span><span class="n">VectorIndexSelectionCast</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="mf">0.114</span><span class="o">*</span><span class="n">sitk</span><span class="o">.</span><span class="n">VectorIndexSelectionCast</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span>
+<span class="n">grayscale_image</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Cast</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">RescaleIntensity</span><span class="p">(</span><span class="n">grayscale_image</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="python-installation">
+<h3>Python Installation<a class="headerlink" href="#python-installation" title="Permalink to this heading"></a></h3>
+<p>The Python installation procedure to use <cite>setup.py</cite> changed. To install see the updated <a class="reference internal" href="building.html#python-installation"><span class="std std-ref">Python Installation</span></a> documentation.</p>
+</section>
+<section id="multi-threading">
+<h3>Multi-threading<a class="headerlink" href="#multi-threading" title="Permalink to this heading"></a></h3>
+<p>The upgrade to ITKv5 contains a major refactoring of ITK’s threading model. Details on the behavior of the new default PoolMultiThreader can be found in the <a class="reference external" href="https://github.com/InsightSoftwareConsortium/ITK/blob/main/Documentation/docs/migration_guides/itk_5_migration_guide.md#multithreading-refactored">ITK v5 Multi-Threading Section</a>.</p>
+<p>The SimpleITK <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ProcessObject.html">ProcessObject class</a> contains the methods to configure the ITK Threader used and the number of threads and number of work units used for an algorithm.</p>
+</section>
+<section id="registration-smoothing">
+<h3>Registration Smoothing<a class="headerlink" href="#registration-smoothing" title="Permalink to this heading"></a></h3>
+<p>Results from the registration framework may change due to the the Gaussian smoothing algorithm changing from the <cite>DiscreteGaussianImageFilter</cite> to the <cite>SmoothingRecursiveGaussianImageFilter</cite>.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="faq.html" class="btn btn-neutral float-left" title="Frequently Asked Questions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="FilterTemplates.html" class="btn btn-neutral float-right" title="Developer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NumFOCUS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

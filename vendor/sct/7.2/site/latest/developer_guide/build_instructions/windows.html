@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Windows &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="macOS" href="macos.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/build_instructions/windows.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Build Instructions</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Windows</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#install-prerequisites">Install prerequisites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#set-up-source-and-build-folders">Set up source and build folders</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configure-and-build-slicer">Configure and build Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-slicer">Run Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#test-slicer">Test Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#package-slicer-create-installer-package">Package Slicer (create installer package)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#debug-slicer">Debug Slicer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#common-errors">Common errors</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="macos.html">macOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linux.html">GNU/Linux systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_errors.html">Common errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="common_errors.html#other-errors">Other errors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Build Instructions</a></li>
+      <li class="breadcrumb-item active">Windows</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/build_instructions/windows.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="windows">
+<h1>Windows<a class="headerlink" href="#windows" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Slicer relies on a number of large third-party libraries (such VTK, ITK, DCMTK), which take a long time to build and use a lot of disk space. Currently, build requires disk space of 15GB (for release mode) or 60GB (for debug mode). Build time on a desktop computer is typically 3-4 hours, on a laptop it may take 8-12 hours.</p>
+</div>
+<section id="install-prerequisites">
+<h2>Install prerequisites<a class="headerlink" href="#install-prerequisites" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.cmake.org/cmake/resources/software.html">CMake</a> version &gt;= 3.20.6.</p>
+<ul>
+<li><p>Avoid versions with known Slicer build issues:</p>
+<ul>
+<li><p>3.21.0 (CMake issue <a class="reference external" href="https://gitlab.kitware.com/cmake/cmake/-/issues/22476">22476</a>)</p></li>
+<li><p>3.25.0 to 3.25.2 (CMake issues <a class="reference external" href="https://gitlab.kitware.com/cmake/cmake/-/issues/24180">24180</a>, <a class="reference external" href="https://gitlab.kitware.com/cmake/cmake/-/issues/24567">24567</a>)</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://git-scm.com/download/win">Git</a> &gt;= 1.7.10</p>
+<ul>
+<li><p>Note: CMake must be able to find <code class="docutils literal notranslate"><span class="pre">git.exe</span></code> and <code class="docutils literal notranslate"><span class="pre">patch.exe</span></code>. If git is installed in the default location then they may be found there, but if they are not found then either add the folder that contains them to <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable; or set <code class="docutils literal notranslate"><span class="pre">GIT_EXECUTABLE</span></code> and <code class="docutils literal notranslate"><span class="pre">Patch_EXECUTABLE</span></code> as environment variables or as CMake variables at configure time.</p></li>
+</ul>
+</li>
+<li><p>Visual Studio:</p>
+<ul>
+<li><p>Download <a class="reference external" href="https://aka.ms/vs/17/release/vs_community.exe">free Community edition</a> (recommended) or a <a class="reference external" href="https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-history#evergreen-bootstrappers">commercial edition</a> of Visual Studio 2022. Visual Studio 2026 with v143 toolset and latest CMake 4.x is usable for building Slicer core and some of its extensions, but it is not an officially supported build configuration yet.</p></li>
+<li><p>Enable <code class="docutils literal notranslate"><span class="pre">Desktop</span> <span class="pre">development</span> <span class="pre">with</span> <span class="pre">C++</span></code> and in installation details</p></li>
+<li><p>Enable the <code class="docutils literal notranslate"><span class="pre">MSVC</span> <span class="pre">v145</span> <span class="pre">-</span> <span class="pre">VS2026</span> <span class="pre">C++</span> <span class="pre">x64...</span></code> (Visual Studio 2026 v145 toolset with 64-bit support) component - in some distributions, this option is not enabled by default.</p></li>
+<li><p>Enable the <code class="docutils literal notranslate"><span class="pre">MSVC</span> <span class="pre">v143</span> <span class="pre">-</span> <span class="pre">VS2022</span> <span class="pre">C++</span> <span class="pre">x64...</span></code> (Visual Studio 2022 v143 toolset with 64-bit support) component - in some distributions, this option is not enabled by default.</p></li>
+<li><p>Enable the latest Windows10 SDK component - without this CMake might not find a compiler during configuration step.</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.qt.io/download-open-source">Qt</a>: Download the Qt universal installer and then set up either Qt5 or Qt6 as described below.</p>
+<ul>
+<li><p>Qt5 (current stable, officially supported version): Install Qt 5.15.2. In the Select Components tab of the universal installer, click Categories, select Archive, and click Filter to fetch older versions of Qt. Qt version 5.15.2 and its components can be selected by expanding the <code class="docutils literal notranslate"><span class="pre">Qt</span></code> category. Components required: <code class="docutils literal notranslate"><span class="pre">MSVC2019</span> <span class="pre">64-bit</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">WebEngine</span></code>. Installing <code class="docutils literal notranslate"><span class="pre">Sources</span></code> and <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">Debug</span> <span class="pre">Information</span> <span class="pre">Files</span></code> are recommended for debugging (they allow stepping into Qt files with the debugger in debug-mode builds).</p></li>
+<li><p>Qt6 (experimental): Download the Qt universal installer and run the tool. On the “Customize” page of the Qt Maintenance Tool, expand the “Qt” tree. Then expand the tree matching the latest version of Qt 6 (minimum tested version is Qt-6.9.3, recommended version is the latest supported open-source version). Select <code class="docutils literal notranslate"><span class="pre">MSVC</span> <span class="pre">2022</span> <span class="pre">64-bit</span></code>. Selecting <code class="docutils literal notranslate"><span class="pre">Sources</span></code> and <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">Debug</span> <span class="pre">Information</span> <span class="pre">Files</span></code> are recommended for debugging (they allow stepping into Qt files with the debugger in debug-mode builds). Expand the “Additional Libraries” tree and select <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">5</span> <span class="pre">Compatibility</span> <span class="pre">module</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">Multimedia</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">Positioning</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">Shader</span> <span class="pre">Tools</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">State</span> <span class="pre">Machines</span></code>, <code class="docutils literal notranslate"><span class="pre">Qt</span> <span class="pre">WebChannel</span></code>. Collapse the “Qt” tree. Expand the “Extensions” tree, then expand “Qt WebEngine” and finally expand the corresponding tree matching the chosen Qt version (e.g. 6.9.3). Select <code class="docutils literal notranslate"><span class="pre">MSVC</span> <span class="pre">2022</span> <span class="pre">x64</span></code>.</p></li>
+<li><p>Note: These are all free, open-source components with LGPL license which allow free usage for any purpose, for any individuals or companies.</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://nsis.sourceforge.io/Download">NSIS</a> (optional): Needed if packaging Slicer. Make sure you install the language packs.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Other Visual Studio IDE and compiler toolset versions</strong></p>
+<ul class="simple">
+<li><p>Visual Studio 2019 (v142) toolset is not tested anymore but probably still works.</p></li>
+<li><p>Cygwin and Mingw: not tested and not recommended. Building with cygwin gcc not supported, but the cygwin shell environment can be used to run utilities such as git.</p></li>
+</ul>
+</div>
+</section>
+<section id="set-up-source-and-build-folders">
+<h2>Set up source and build folders<a class="headerlink" href="#set-up-source-and-build-folders" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Create source folder. This folder will be referred to as <code class="docutils literal notranslate"><span class="pre">&lt;Slicer_SOURCE&gt;</span></code> in the following. Recommended path: <code class="docutils literal notranslate"><span class="pre">C:\D\S</span></code></p>
+<ul>
+<li><p>Due to maximum path length limitations during build the build process, source and build folders must be located in a folder with very short (couple of characters) total path length.</p></li>
+<li><p>While it is not enforced, we strongly recommend you to avoid the use of spaces for both the source directory and the build directory.</p></li>
+</ul>
+</li>
+<li><p>Create build folder. This folder will be referred to as <code class="docutils literal notranslate"><span class="pre">&lt;Slicer_BUILD&gt;</span></code> in the following. Recommended path: <code class="docutils literal notranslate"><span class="pre">C:\D\SR</span></code> for release-mode build, <code class="docutils literal notranslate"><span class="pre">C:\D\SD</span></code> for debug-mode build.</p>
+<ul>
+<li><p>You cannot use the same build tree for both release or debug mode builds. If both build types are needed, then the same source directory can be used, but a separate build directory must be created and configured for each build type.</p></li>
+<li><p>How to decide between Debug and Release mode?</p>
+<ul>
+<li><p>Release mode build: runs at same speed as official build, requires less disk space (about 15GB); but step-by-step debugging is not available</p></li>
+<li><p>Debug mode build: allows debugging (adding breakpoints, step through the code line by line during execution, watch variables); but it may run 5x or more slower, requires more space (about 60GB), and user interface editing in Qt designer is not available</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Download source code into <em>Slicer source</em> folder from GitHub: <a class="reference external" href="https://github.com/Slicer/Slicer.git">https://github.com/Slicer/Slicer.git</a></p>
+<ul>
+<li><p>The following command can be executed in <em>Slicer source</em> folder to achieve this: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/Slicer/Slicer.git</span> <span class="pre">.</span></code> (note the dot at the end of the command; the <code class="docutils literal notranslate"><span class="pre">.</span></code> is needed because without that git would create a <code class="docutils literal notranslate"><span class="pre">Slicer</span></code> subfolder in the current directory)</p></li>
+</ul>
+</li>
+<li><p>Configure the repository for developers (optional): Needed if changes need to be contributed to Slicer repository.</p>
+<ul>
+<li><p>Right-click on <code class="docutils literal notranslate"><span class="pre">&lt;Slicer_SOURCE&gt;/Utilities</span></code> folder in Windows Explorer and select <code class="docutils literal notranslate"><span class="pre">Git</span> <span class="pre">bash</span> <span class="pre">here</span></code></p></li>
+<li><p>Execute this command in the terminal (and answer all questions): <code class="docutils literal notranslate"><span class="pre">./SetupForDevelopment.sh</span></code></p></li>
+<li><p>Note: more information about how to use git in Slicer can be found on <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Nightly/Developers/DevelopmentWithGit">this page</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="configure-and-build-slicer">
+<h2>Configure and build Slicer<a class="headerlink" href="#configure-and-build-slicer" title="Link to this heading"></a></h2>
+<p>Build takes several hours. Warnings will appear during the build (it is practically not feasible to have warning-free builds in large multi-platform projects that rely on third-party libraries), but there must not be any errors. If any problems occur, read the <a class="reference internal" href="#common-errors">Common errors</a> section.</p>
+<section id="using-command-line-recommended">
+<h3>Using command-line (recommended)<a class="headerlink" href="#using-command-line-recommended" title="Link to this heading"></a></h3>
+<p>Specify source, build, and Qt location and compiler version and start the build using the following commands (these can be put into a .bat file so that they can be executed again easily), assuming default folder locations:</p>
+<p>Release mode:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">cd</span> C:\D
+
+<span class="s2">&quot;C:\Program Files\CMake\bin\cmake.exe&quot;</span> <span class="se">^</span>
+<span class="se"> </span> -G <span class="s2">&quot;Visual Studio 17 2022&quot;</span> -A x64 <span class="se">^</span>
+<span class="se"> </span> -DQt5_DIR:PATH=C:/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5 <span class="se">^</span>
+<span class="se"> </span> -S C:\D\S -B C:\D\SR
+
+<span class="s2">&quot;C:\Program Files\CMake\bin\cmake.exe&quot;</span> --build C:\D\SR --config Release
+</pre></div>
+</div>
+<p>Debug mode:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">cd</span> C:\D
+
+<span class="s2">&quot;C:\Program Files\CMake\bin\cmake.exe&quot;</span> <span class="se">^</span>
+<span class="se"> </span> -G <span class="s2">&quot;Visual Studio 17 2022&quot;</span> -A x64 <span class="se">^</span>
+<span class="se"> </span> -DQt5_DIR:PATH=C:/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5 <span class="se">^</span>
+<span class="se"> </span> -S C:\D\S -B C:\D\SD
+
+<span class="s2">&quot;C:\Program Files\CMake\bin\cmake.exe&quot;</span> --build C:\D\SD --config Debug
+</pre></div>
+</div>
+</section>
+<section id="using-graphical-user-interface-alternative-solution">
+<h3>Using graphical user interface (alternative solution)<a class="headerlink" href="#using-graphical-user-interface-alternative-solution" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">CMake</span> <span class="pre">(cmake-gui)</span></code> from the Windows Start menu</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Where</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">source</span> <span class="pre">code</span></code> to <code class="docutils literal notranslate"><span class="pre">&lt;Slicer_SOURCE&gt;</span></code> location</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">Where</span> <span class="pre">to</span> <span class="pre">build</span> <span class="pre">the</span> <span class="pre">binaries</span></code> to <code class="docutils literal notranslate"><span class="pre">&lt;Slicer_BUILD&gt;</span></code> location. Do not configure yet!</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">Qt5_DIR</span></code> variable pointing to Qt5 folder: click Add entry button, set <code class="docutils literal notranslate"><span class="pre">Name</span></code> to <code class="docutils literal notranslate"><span class="pre">Qt5_DIR</span></code>, set <code class="docutils literal notranslate"><span class="pre">Type</span></code> to <code class="docutils literal notranslate"><span class="pre">PATH</span></code>, and set <code class="docutils literal notranslate"><span class="pre">Value</span></code> to the Qt5 folder, such as <code class="docutils literal notranslate"><span class="pre">C:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5</span></code>.</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Configure</span></code></p></li>
+<li><p>Select your compiler: <code class="docutils literal notranslate"><span class="pre">Visual</span> <span class="pre">Studio</span> <span class="pre">17</span> <span class="pre">2022</span></code>, and click <code class="docutils literal notranslate"><span class="pre">Finish</span></code></p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Generate</span></code> and wait for project generation to finish (may take a few minutes)</p></li>
+<li><p>Click <code class="docutils literal notranslate"><span class="pre">Open</span> <span class="pre">Project</span></code></p></li>
+<li><p>If building in release mode:</p>
+<ul>
+<li><p>Open the top-level Slicer.sln file in the build directory in Visual Studio</p></li>
+<li><p>Set active configuration to Release. Visual Studio will select Debug build configuration by default when you first open the solution in the Visual Studio GUI. If you build Slicer in release mode and accidentally forget to switch the build configuration to Release then the build will fail. Note: you can avoid this manual configuration mode selection by setting <code class="docutils literal notranslate"><span class="pre">CMAKE_CONFIGURATION_TYPES</span></code> to Release in cmake-gui.</p></li>
+</ul>
+</li>
+<li><p>Build the <code class="docutils literal notranslate"><span class="pre">ALL_BUILD</span></code> project</p></li>
+</ul>
+</section>
+</section>
+<section id="run-slicer">
+<h2>Run Slicer<a class="headerlink" href="#run-slicer" title="Link to this heading"></a></h2>
+<p>Run <code class="docutils literal notranslate"><span class="pre">&lt;Slicer_BUILD&gt;/Slicer-build/Slicer.exe</span></code> application.</p>
+<p>Note: <code class="docutils literal notranslate"><span class="pre">Slicer.exe</span></code> is a “launcher”, which sets environment variables and launches the real executable: <code class="docutils literal notranslate"><span class="pre">&lt;Slicer_BUILD&gt;/Slicer-build\bin\Release\SlicerApp-real.exe</span></code> (use <code class="docutils literal notranslate"><span class="pre">Debug</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Release</span></code> for debug-mode builds).</p>
+</section>
+<section id="test-slicer">
+<h2>Test Slicer<a class="headerlink" href="#test-slicer" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Start Visual Studio with the launcher:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Slicer</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">VisualStudioProject</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select build configuration. Usually <code class="docutils literal notranslate"><span class="pre">Release</span></code> or <code class="docutils literal notranslate"><span class="pre">Debug</span></code>.</p></li>
+<li><p>In the “Solution Explorer”, right click on <code class="docutils literal notranslate"><span class="pre">RUN_TESTS</span></code> project (in the CMakePredefinedTargets folder) and then select <code class="docutils literal notranslate"><span class="pre">Build</span></code>.</p></li>
+</ul>
+</section>
+<section id="package-slicer-create-installer-package">
+<h2>Package Slicer (create installer package)<a class="headerlink" href="#package-slicer-create-installer-package" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Start Visual Studio with the launcher:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Slicer</span><span class="o">.</span><span class="n">exe</span> <span class="o">--</span><span class="n">VisualStudioProject</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Select <code class="docutils literal notranslate"><span class="pre">Release</span></code> build configuration.</p></li>
+<li><p>In the “Solution Explorer”, right click on <code class="docutils literal notranslate"><span class="pre">PACKAGE</span></code> project (in the CMakePredefinedTargets folder) and then select <code class="docutils literal notranslate"><span class="pre">Build</span></code>.</p></li>
+</ul>
+</section>
+<section id="debug-slicer">
+<h2>Debug Slicer<a class="headerlink" href="#debug-slicer" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>C++ debugging: Visual Studio is recommended on Windows, see <a class="reference internal" href="../debugging/windowscpp.html"><span class="std std-doc">instructions</span></a>.</p></li>
+<li><p>Python debugging: multiple development environments can be used, see <a class="reference internal" href="../debugging/python.html#python-debugging"><span class="std std-ref">instructions</span></a>.</p></li>
+</ul>
+</section>
+<section id="common-errors">
+<h2>Common errors<a class="headerlink" href="#common-errors" title="Link to this heading"></a></h2>
+<section id="errors-related-to-python">
+<h3>Errors related to Python<a class="headerlink" href="#errors-related-to-python" title="Link to this heading"></a></h3>
+<p>Errors due to missing Python libraries (or other Python related errors, such as building a <code class="docutils literal notranslate"><span class="pre">python-...-requirements</span></code> project or Python-wrapping SimpleITK) may be caused by the build system detecting Python installations somewhere on the system, instead of Slicer’s own Python environment. To resolve such issues, remove all references to Python in the environment variables (PATH, PYTHONPATH, PYTHONHOME). Alternatively, temporarily rename or remove other Python installations before starting to build Slicer; they can be restored after Slicer build is completed.</p>
+</section>
+<section id="custom-slicer-and-ctk-widgets-do-not-show-up-in-qt-designer">
+<h3>Custom Slicer and CTK widgets do not show up in Qt designer<a class="headerlink" href="#custom-slicer-and-ctk-widgets-do-not-show-up-in-qt-designer" title="Link to this heading"></a></h3>
+<p>Qt Designer can only use designer plugins (in <code class="docutils literal notranslate"><span class="pre">c:\D\SR\Slicer-build\bin\designer</span></code> and <code class="docutils literal notranslate"><span class="pre">c:\D\SR\CTK-build\CTK-build\bin\designer</span></code>) that are built in the same mode (e.g. <code class="docutils literal notranslate"><span class="pre">Debug</span></code> or <code class="docutils literal notranslate"><span class="pre">Release</span></code>).</p>
+<p>In pre-built Qt packages (downloaded from Qt website) Qt Designer is only provided in <code class="docutils literal notranslate"><span class="pre">Release</span></code> mode. If Qt is built from source in <code class="docutils literal notranslate"><span class="pre">Release</span></code> mode (default) or <code class="docutils literal notranslate"><span class="pre">Release</span> <span class="pre">and</span> <span class="pre">Debug</span></code> mode then Qt designer will be in <code class="docutils literal notranslate"><span class="pre">Release</span></code> mode. In all these cases, Qt Designer can be used only if Slicer is built in <code class="docutils literal notranslate"><span class="pre">Release</span></code> mode.</p>
+<p>If Qt is built from source in <code class="docutils literal notranslate"><span class="pre">Debug</span></code> mode mode then Qt designer will be in <code class="docutils literal notranslate"><span class="pre">Debug</span></code> mode. In this case, Qt Designer can be used only if Slicer is built in <code class="docutils literal notranslate"><span class="pre">Debug</span></code> mode.</p>
+</section>
+<section id="other-problems">
+<h3>Other problems<a class="headerlink" href="#other-problems" title="Link to this heading"></a></h3>
+<p>See list of issues common to all operating systems on <a class="reference internal" href="common_errors.html"><span class="std std-doc">Common errors</span></a> page.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="macos.html" class="btn btn-neutral float-right" title="macOS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

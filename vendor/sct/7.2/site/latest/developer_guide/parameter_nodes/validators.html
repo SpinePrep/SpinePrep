@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validators &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GUI Connection" href="gui_connection.html" />
+    <link rel="prev" title="Defaults" href="defaults.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/parameter_nodes/validators.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Parameter Nodes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="supported_types.html">Supported types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="defaults.html">Defaults</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Validators</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#built-in-validators">Built-in validators</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-validators">Custom Validators</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_connection.html">GUI Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui_creation.html">GUI Creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced/index.html">Advanced</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Parameter Nodes</a></li>
+      <li class="breadcrumb-item active">Validators</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/parameter_nodes/validators.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="validators">
+<h1>Validators<a class="headerlink" href="#validators" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>It can be useful to restrict the set of that values that a parameter node parameter can be set to. These can be done with <code class="docutils literal notranslate"><span class="pre">Validator</span></code> annotations.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">slicer.parameterNodeWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">parameterNodeWrapper</span><span class="p">,</span> <span class="n">Minimum</span><span class="p">,</span> <span class="n">Default</span>
+
+<span class="nd">@parameterNodeWrapper</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomParameterNode</span><span class="p">:</span>
+  <span class="n">numIterations</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Minimum</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">500</span>
+
+  <span class="c1"># To have a list where the values in the list need to be validated</span>
+  <span class="n">chosenFeatures</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;feat1&quot;</span><span class="p">,</span> <span class="s2">&quot;feat2&quot;</span><span class="p">,</span> <span class="s2">&quot;feat3&quot;</span><span class="p">])]]</span>
+</pre></div>
+</div>
+<p>This will cause a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> to be raised if someone tried setting <code class="docutils literal notranslate"><span class="pre">numIterations</span></code> to a negative value.</p>
+<p>Multiple validators can be placed in the <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> block and they will be run in the order they were placed.</p>
+</section>
+<section id="built-in-validators">
+<h2>Built-in validators<a class="headerlink" href="#built-in-validators" title="Link to this heading"></a></h2>
+<p>The list of built-in validators is as follows:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Class name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NotNone()</code></td>
+<td>Ensures the value is not <code>None</code>.</td>
+</tr>
+<tr>
+<td><code>IsInstance(classtype)</code>/<code>IsInstance((class1type, class2type))</code></td>
+<td>Ensures the value is an instance of particular type or set of types.</td>
+</tr>
+<tr>
+<td><code>Minimum(value)</code></td>
+<td>Ensures the value is greater than or equal to the given value.</td>
+</tr>
+<tr>
+<td><code>Maximum(value)</code></td>
+<td>Ensures the value is less than or equal to the given value.</td>
+</tr>
+<tr>
+<td><code>WithinRange(minimum, maximum)</code></td>
+<td>Ensures the value is within the range given by minimum and maximum, inclusive.</td>
+</tr>
+<tr>
+<td><code>Choice(validChoices)</code></td>
+<td>Ensures the value is contained in the given list of valid choices. <code>validChoices</code> can be any iterable.</td>
+</tr>
+<tr>
+<td><code>Exclude(invalidChoices)</code></td>
+<td>Ensures the value is not contained in the given list of invalid choices. <code>invalidChoices</code> can be any iterable.</td>
+</tr>
+</tbody>
+</table>
+<p>Some built-in types have the following validators applied to them by default:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Type</th>
+<th>Default validators</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int</code>, <code>str</code>, <code>bool</code>, any of the <code>pathlib</code> path types</td>
+<td><code>NotNone()</code>, <code>IsInstance(&lt;type&gt;)</code></td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td><code>NotNone()</code>, <code>IsInstance((float, int))</code> (this allows implicit conversion from int)</td>
+</tr>
+<tr>
+<td><code>vtkMRMLModelNode</code> (and subclasses)</td>
+<td><code>IsInstance(&lt;type&gt;)</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="custom-validators">
+<h2>Custom Validators<a class="headerlink" href="#custom-validators" title="Link to this heading"></a></h2>
+<p>Custom validators can easily be created and used with the <code class="docutils literal notranslate"><span class="pre">parameterNodeWrapper</span></code>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">slicer.parameterNodeWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">parameterNodeWrapper</span><span class="p">,</span> <span class="n">Validator</span>
+
+<span class="c1"># Custom validators must derive from the Validator class.</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MatchesRegex</span><span class="p">(</span><span class="n">Validator</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">regex</span> <span class="o">=</span> <span class="n">regex</span>
+  <span class="c1"># Custom validators must implement a validate function that raises an Exception</span>
+  <span class="c1"># if the given value is invalid.</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regex</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Did not match regex&quot;</span><span class="p">)</span>
+
+<span class="nd">@parameterNodeWrapper</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomParameterNode</span><span class="p">:</span>
+  <span class="n">value</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MatchesRegex</span><span class="p">(</span><span class="s2">&quot;[abc]+&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;abcba&quot;</span>
+
+
+<span class="n">param</span> <span class="o">=</span> <span class="n">CustomParameterNode</span><span class="p">(</span><span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">AddNewNodeByClass</span><span class="p">(</span><span class="s1">&#39;vtkMRMLScriptedModuleNode&#39;</span><span class="p">))</span>
+
+<span class="n">param</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;abcabc&quot;</span> <span class="c1"># ok</span>
+<span class="n">param</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span> <span class="c1"># ValueError raised</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="defaults.html" class="btn btn-neutral float-left" title="Defaults" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gui_connection.html" class="btn btn-neutral float-right" title="GUI Connection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

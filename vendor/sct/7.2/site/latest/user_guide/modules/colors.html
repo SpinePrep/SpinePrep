@@ -1,0 +1,426 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Colors &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Plots" href="plots.html" />
+    <link rel="prev" title="Compare Volumes" href="comparevolumes.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/colors.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#informatics">Informatics</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Colors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to">How to</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#built-in-color-lookup-tables">Built-in color lookup tables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sampledata.html">Sample Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tables.html">Tables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="terminologies.html">Terminologies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="texts.html">Texts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dataprobe.html">DataProbe</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Colors</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/colors.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="colors">
+<h1>Colors<a class="headerlink" href="#colors" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The Colors module manages color look up tables, stored in Color nodes. These tables translate between a numeric value and a color for displaying of various data types, such as volumes (to specify coloring based on voxel values), models (for displaying scalars), and markups (for displaying curve curvatures and other measurements in 3D views). The module also used for assigning colors to various displayable nodes and show color legend in viewers.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/colors_legend.jpg" /></p>
+<p>Two lookup table types are available:</p>
+<ul class="simple">
+<li><p>Discrete table: List of named colors are specified (example: GenericAnatomyColors). Discrete tables can be used for continuous mapping as well, in this case the colors are used as samples at equal distance within the specified range, and smoothly interpolating between them (example: Grey).
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/colors_discrete.png" /></p></li>
+<li><p>Continuous scale: Color is specified for arbitrarily chosen numerical values and color value can be computed by smoothly interpolating between these values (example: PET-DICOM). No names are specified for colors.
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/colors_continuous.png" /></p></li>
+</ul>
+</section>
+<section id="how-to">
+<h2>How to<a class="headerlink" href="#how-to" title="Link to this heading"></a></h2>
+<section id="edit-a-color-lookup-table">
+<h3>Edit a color lookup table<a class="headerlink" href="#edit-a-color-lookup-table" title="Link to this heading"></a></h3>
+<p>All built-in lookup tables are read-only to ensure consistency when using these colors. To edit a lookup table:</p>
+<ul class="simple">
+<li><p>Go to Colors module</p></li>
+<li><p>Choose a built-in lookup table that is similar to the desired color mapping. For example, <code class="docutils literal notranslate"><span class="pre">Labels</span></code> can be used as a starting points for a discrete table, <code class="docutils literal notranslate"><span class="pre">PET-DICOM</span></code> can be used for creating an editable continuous scale.</p></li>
+<li><p>Click the yellow “copy” folder + icon next to the colors selector to create a copy.</p></li>
+<li><p>Specify a name for the new color lookup table and click OK.</p></li>
+</ul>
+<p>The loaded color table will appear in the “User generated” category at the top. Click on the arrow on the category name (or click to select and hit the right-arrow key) to open it and see the color tables in that category.</p>
+</section>
+<section id="save-a-color-lookup-table">
+<h3>Save a color lookup table<a class="headerlink" href="#save-a-color-lookup-table" title="Link to this heading"></a></h3>
+<p>To save a modified color table to file, use the application menu: File / Save.</p>
+<p>File format is described in the <a class="reference internal" href="../../developer_guide/modules/colors.html"><span class="doc std std-doc">Developer guide</span></a>.</p>
+</section>
+<section id="load-a-color-lookup-table">
+<h3>Load a color lookup table<a class="headerlink" href="#load-a-color-lookup-table" title="Link to this heading"></a></h3>
+<p>To save a modified color table to file, drag-and-drop the file to the application window (or use the application menu: File / Add Data) and click OK.</p>
+<p>The loaded color table will appear in the “File” category at the top. Click on the arrow on the category name (or click to select and hit the right-arrow key) to open it and see the color tables in that category.</p>
+</section>
+<section id="show-color-legend">
+<h3>Show color legend<a class="headerlink" href="#show-color-legend" title="Link to this heading"></a></h3>
+<p>There are several ways of showing/hiding color legend:</p>
+<ul class="simple">
+<li><p>In Data module: Right-click on an eye icon in the data tree to open the visibility menu. In that menu, “Show color legend” option can be used for showing/hiding the color legend in all views. The option only appears if a color lookup table is already associated with the selected item.</p></li>
+<li><p>In Colors module: Color legend can be added/hidden for any displayable node at one place. Open the Color Legend section, select a displayable node (volume, model, markup). Click <code class="docutils literal notranslate"><span class="pre">Create</span></code> to create a color legend, and adjust visualization options.</p></li>
+<li><p>In Volumes, Models, Markups modules: Color Legend section can be used to show legend for the selected node.</p></li>
+<li><p>In slice views: Right-click on a volume to open the view context menu. In that menu, “Show color legend” option can be used to show/hide color legend for that volume in slice views.</p></li>
+</ul>
+<p>For displaying mapping from numeric values to colors (for example, for displaying a parametric image), choose <code class="docutils literal notranslate"><span class="pre">Label</span> <span class="pre">text</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Value</span></code>. For displaying color names (for example, names of anatomical structures for a labelmap volume), choose <code class="docutils literal notranslate"><span class="pre">Label</span> <span class="pre">text</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Color</span> <span class="pre">name</span></code>.</p>
+<div class="admonition-tip admonition">
+<p class="admonition-title">Tip</p>
+<p>For displaying color legend for segment names: <a class="reference internal" href="segmentations.html#export-segmentation-to-labelmap-volume"><span class="std std-ref">Export the segments to a labelmap volume</span></a>. This creates a color table, which can be displayed as a color legend.</p>
+</div>
+</section>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Colors:</strong> a drop down menu from which to select from the list of loaded color nodes</p>
+<ul>
+<li><p>Copy Color Node button: Duplicate the current color node to edit the color entries. Necessary, because built-in color nodes are note editable.</p></li>
+</ul>
+</li>
+<li><p><strong>Discrete table</strong></p>
+<ul>
+<li><p><strong>Number of Colors:</strong> the number of colors in the currently selected table.</p></li>
+<li><p><strong>Hide empty Colors:</strong> When checked, hide the unnamed color entries in the list below.</p></li>
+<li><p><strong>Scalar Range:</strong> The range of scalar values that are mapped to to the full range of colors. This only changes the display range, not the values in the table. It is used if the scalar range in a model or markups node is chosen as “Color table (LUT)”</p></li>
+<li><p><strong>Table of currently selected colors</strong></p>
+<ul>
+<li><p><strong>Index:</strong> the integer value giving the index of this color in the look up table, used to match it up with a scalar value in a volume voxel.</p></li>
+<li><p><strong>Color:</strong> a box showing the current color. When viewing an editable table, double click on it to bring up a color picker.</p></li>
+<li><p><strong>Label:</strong> the text description of the color, often an anatomical label. For some tables, the name is automatically generated from the RGBA values.</p></li>
+<li><p><strong>Opacity:</strong> a value between 0 and 1 describing how opaque this color is. The background color at index 0 is usually set to 0 and other colors to 1.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Continuous Display Panel</strong>: Inspect the color values by clicking on the circles that determine the points of the continuous function. Click elsewhere in the color display to add new points.</p>
+<ul>
+<li><p><strong>Point:</strong> the index of this point.</p></li>
+<li><p><strong>Color box:</strong> click on this to edit the color for this point.</p></li>
+<li><p><strong>X:</strong> the numeric value that maps to this color.</p></li>
+</ul>
+</li>
+<li><p><strong>Color legend</strong></p>
+<ul>
+<li><p><strong>Displayable node:</strong> node that the color legened will ve displayed for.</p></li>
+<li><p><strong>Color legend</strong></p>
+<ul>
+<li><p><strong>Create</strong>: create color legend for the selected Displayable node, using the Colors node chosen at the top.</p></li>
+<li><p><strong>Use current colors</strong>: set the Colors node chosen at the top for showing the Displayable node.</p></li>
+<li><p><strong>Delete</strong>: remove the Displayable node’s color legend.</p></li>
+</ul>
+</li>
+<li><p><strong>Visible:</strong> show/hide the color legend.</p></li>
+<li><p><strong>View:</strong> Choose which views the color legend is allowed to be appear in. Color legend for models and markups is only displayable in the views where these nodes appear.</p></li>
+<li><p><strong>Title:</strong> Title displayed at the top of the color legend. Set to the Displayable node’s name by default.</p></li>
+<li><p><strong>Label text</strong></p>
+<ul>
+<li><p><strong>Value:</strong> Numeric value is displayed in labels next to the color bar. Intended for displaying continuous numeric scale.</p></li>
+<li><p><strong>Color name:</strong> The color name is displayed in labels next to the color bar. Intended for displaying names of labels (segments).</p></li>
+</ul>
+</li>
+<li><p><strong>Number of labels:</strong> Number of labels to display. Only applicable if <code class="docutils literal notranslate"><span class="pre">Value</span></code> is used as label text.</p></li>
+<li><p><strong>Number of colors:</strong> Maximum number of colors displayed. Reduce the number to see discrete colors instead of a continuous color gradient. Only applicable if <code class="docutils literal notranslate"><span class="pre">Value</span></code> is used as label text.</p></li>
+<li><p><strong>Orientation</strong>: choose between horizontal or vertical color bar orientation.</p></li>
+<li><p><strong>Position</strong>: horizontal and vertical position in the view</p></li>
+<li><p><strong>Size</strong>: length of the long and short side of the legend box.</p></li>
+<li><p><strong>Title properties</strong> and <strong>Label properties</strong>: controls the format of the title and label text.</p></li>
+<li><p><strong>Format:</strong> label format (only for label properties). Defined using <a class="reference external" href="https://www.cplusplus.com/reference/cstdio/printf/">printf specifiers</a>. Examples:</p>
+<ul>
+<li><p>display with 1 fractional digit: <code class="docutils literal notranslate"><span class="pre">%.1f</span></code></p></li>
+<li><p>display integer values: <code class="docutils literal notranslate"><span class="pre">%.0f</span></code></p></li>
+<li><p>display with 4 significant digits: <code class="docutils literal notranslate"><span class="pre">%.4g</span></code></p></li>
+<li><p>display string label annotation: <code class="docutils literal notranslate"><span class="pre">%s</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>Color:</strong> text color.</p></li>
+<li><p><strong>Opacity:</strong> allows displaying the text semi-transparently.</p></li>
+<li><p><strong>Font:</strong> the font used to display the title text. Arial: sans-serif font. Courier: fixed-width font. Times: serif font.</p></li>
+<li><p><strong>Style:</strong> check these boxes if you wish to adjust the style of the title text font. <strong>Shadow</strong> makes the text visible over both dark and bright background.</p></li>
+<li><p><strong>Size:</strong> font size of the title. Label size is auto-scaled to fit the specified size of the color legend.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="built-in-color-lookup-tables">
+<h2>Built-in color lookup tables<a class="headerlink" href="#built-in-color-lookup-tables" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Discrete</p>
+<ul>
+<li><p>Labels: A legacy color table that contains some anatomical mapping</p></li>
+<li><p>DiscreteFullRainbow.png ]] FullRainbow: A full rainbow of 256 colors, goes from red to red with all rainbow colors in between. Useful for colorful display of a label map.</p></li>
+<li><p>Grey: A grey scale ranging from black at 0 to white at 255. Useful for displaying MRI volumes.</p></li>
+<li><p>Iron: A scale from red to  yellow, 157 colors.</p></li>
+<li><p>Rainbow: Goes from red to purple, passing through the colors of the rainbow in between. Useful for a colorful display of a label map.</p></li>
+<li><p>Ocean: A lighter blue scale of 256 values, useful for showing registration results.</p></li>
+<li><p>Desert: Red to yellow/orange scale, 256 colous.</p></li>
+<li><p>InvertedGrey: A white to black scale, 256 colors, useful to highlight negative versions, or to flip intensities of signal values.</p></li>
+<li><p>ReverseRainbow: A colorful display option, 256 colors going from purple to red.</p></li>
+<li><p>fMRI: A combination of Ocean (0-22) and Desert (23-42), useful for displaying functional MRI volumes (highlights activation).</p></li>
+<li><p>fMRIPA: A small fMRI positive activation scale going from red to yellow from 0-19, useful for displaying functional MRI volumes when don’t need the blue of the fMRI scale.</p></li>
+<li><p>Random: A random selection of 256 rgb colors, useful to distinguish between a small number of labeled regions (especially outside of the brain).</p></li>
+<li><p>Red: A red scale of 256 values. Useful for layering with Cyan.</p></li>
+<li><p>Green: A green scale of 256 values, useful for layering with Magenta.</p></li>
+<li><p>Blue: A blue scale of 256 values from black to pure blue, useful for layering with Yellow.</p></li>
+<li><p>Yellow: A yellow scale of 256 values, from black to pure yellow, useful for layering with blue (it’s complementary, layering yields gray).</p></li>
+<li><p>Cyan: A cyan ramp of 256 values, from black to cyan, complementary ramp to red, layering yields gray.</p></li>
+<li><p>Magenta: A magenta scale of 256 colors from black to magenta, complementary ramp to green, layering yields gray.</p></li>
+<li><p>Warm1: A scale from yellow to red, of 256 colors, ramp of warm colors that’s complementary to Cool1.</p></li>
+<li><p>Warm2: A scale from green to yellow, 256 colors, ramp of warm colors that’s complementary to Cool2.</p></li>
+<li><p>Warm3: A scale from cyan to green, 256 colors, ramp of warm colors that’s complementary to Cool3.</p></li>
+<li><p>Cool1: A scale from blue to cyan, 256 colors, ramp of cool colors that’s complementary to Warm1.</p></li>
+<li><p>Cool2: A scale from magenta to blue, 256 colous, ramp of cool colors that’s complementary to Warm2.</p></li>
+<li><p>Cool3: A scale from red to magenta, ramp of cool colors that’s complementary to Warm3.</p></li>
+<li><p>RandomIntegers: A random scale with 1000 entries.</p></li>
+<li><p>GenericAnatomyColors: a list of whole body anatomy labels and useful colors for them, the default for the Editor module creating new label map volumes</p></li>
+<li><p>Generic Colors: a list of colors with the names being the same as the integer value for each entry</p></li>
+</ul>
+</li>
+<li><p>Shade:</p>
+<ul>
+<li><p>WarmShade1: A scale from black to red, of 256 colors, ramp of warm colors with variation in value that’s complementary to CoolShade1.</p></li>
+<li><p>WarmShade2: A scale from black to yellow, through green, of 256 colors, ramp of warm colors with variation in value that’s complementary to CoolShade2.</p></li>
+<li><p>WarmShade3: A scale from black to green, of 256 colors, ramp of warm colors with variation in value that’s complementary to CoolShade3.</p></li>
+<li><p>CoolShade1: A scale from black to cyan, 256 colors, ramp of cool colors with variation in value that is complementary to WarmShade1.</p></li>
+<li><p>CoolShade2: A scale from black to blue through purple, 256 colors, ramp of cool colors with variation in value that is complementary to WarmShade2.</p></li>
+<li><p>CoolShade3: A scale from black to magenta, 256 colors, ramp of cool colors with variation in value that is complementary to WarmShade3.</p></li>
+</ul>
+</li>
+<li><p>Tint:</p>
+<ul>
+<li><p>WarmTint1: A scale from white to red, 256 colors, ramp of warm colors with variation in saturation that’s complementary to CoolTint1.</p></li>
+<li><p>WarmTint2: A scale from white to yellow, 256 colors, ramp of warm colors with variation in saturation that’s complementary to CoolTint2.</p></li>
+<li><p>WarmTint3: A scale from white to green, 256 colors, ramp of warm colors with variation in saturation that’s complementary to CoolTint3.</p></li>
+<li><p>CoolTint1: A scale from white to cyan, 256 colors, ramp of cool colors with variations in saturation that’s complementary to WarmTint1.</p></li>
+<li><p>CoolTint2: A scale from white to blue, 256 colors, ramp of cool colors with variations in saturation that’s complementary to WarmTint2.</p></li>
+<li><p>CoolTint3: A scale from white to magenta, 256 colors, ramp of cool colors with variations in saturation that’s complementary to WarmTint3.</p></li>
+</ul>
+</li>
+<li><p>Continuous</p>
+<ul>
+<li><p>RedGreenBlue: A scale defined from -6.0 to 6.0 that maps to a rainbow from red to blue through green.</p></li>
+</ul>
+</li>
+<li><p>FreeSurfer</p>
+<ul>
+<li><p>Heat: The Heat FreeSurfer color table, shows hot spots with high activation</p></li>
+<li><p>BlueRed: A FreeSurfer color scale, 256 colors, from blue to red</p></li>
+<li><p>RedBlue: A FreeSurfer color scale, 256 colors, from red to blue</p></li>
+<li><p>RedGreen: A FreeSurfer color scale, 256 colors, from red to green, used to highlight sulcal curvature</p></li>
+<li><p>GreenRed: A FreeSurfer color scale, 256 colors, from green to red, used to highlight sulcal curvature</p></li>
+<li><p>FreeSurferLabels: A color table read in from a text file, each line of the format: IntegerLabel  Name  R  G  B  Alpha</p></li>
+</ul>
+</li>
+<li><p>PET</p>
+<ul>
+<li><p>PET-Heat: Useful for displaying colorized PET data.</p></li>
+<li><p>PET-Rainbow: Useful for displaying colorized PET data.</p></li>
+<li><p>PET-MaximumIntensityProjection: Useful for displaying inverse grey PET data.</p></li>
+<li><p>PET-Rainbow2: <code class="docutils literal notranslate"><span class="pre">rainbow</span></code> color table from the FIJI PET-CT plugin.</p></li>
+<li><p>PET-DICOM: <a class="reference external" href="https://dicom.nema.org/medical/Dicom/2017d/output/chtml/part06/chapter_B.html">DICOM standard color lookup table</a> <code class="docutils literal notranslate"><span class="pre">PET</span></code>.</p></li>
+<li><p>PET-HotMetalBlue:  <a class="reference external" href="https://dicom.nema.org/medical/Dicom/2017d/output/chtml/part06/chapter_B.html">DICOM standard color lookup table</a> <code class="docutils literal notranslate"><span class="pre">Hot</span> <span class="pre">Metal</span> <span class="pre">Blue</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Cartilage MRI</p>
+<ul>
+<li><p>dGEMRIC-1.5T: Useful for displaying 1.5 tesla delayed gadolinium-enhanced MRI of cartilage</p></li>
+<li><p>dGEMRIC-3T: Useful for displaying 3 Tesla delayed gadolinium-enhanced MRI of cartilage</p></li>
+</ul>
+</li>
+<li><p>Default Labels from File: a list of color nodes loaded from files, from the default Slicer color directory.</p>
+<ul>
+<li><p>ColdToHotRainbow: a shifted rainbow that runs from blue to red, useful when needing to display a volume for which larger values are hotter.</p></li>
+<li><p>HotToColdRainbow: a shifted rainbow that runs from red to blue, useful when needing to display a volume for which larger values are colder.</p></li>
+<li><p>PelvisColor: useful for displaying segmented pelvic MRI volumes.</p></li>
+<li><p>Slicer3_2010_Brain_Labels: a brain segmentation table with 16 labels defined.</p></li>
+<li><p>64Color-Nonsemantic: A color table with no semantic labels, pure color information.</p></li>
+<li><p>MediumChartColors: A Stephen Few palette. Similar to the Dark Bright color but in the medium range of intensity. May be a better choice for bar charts.</p></li>
+<li><p>DarkBrightChartColors: Palette designed by Stephen Few in “Practical Rules for Using Colors in Charts”. Similar to the Maureen Stone palette. Stephen Few recommends this palette for highlighting data. This palette is useful when display small points or thin lines. Again, this palette is good for categorical data.</p></li>
+<li><p>Slicer3_2010_LabelColors: a table with 16 labels defined.</p></li>
+<li><p>AbdomenColors: useful for displaying segmented abdominal MRI volumes</p></li>
+<li><p>SPL-BrainAtlas-ColorFile: useful for displaying segmented brain MRI volumes</p></li>
+<li><p>SPL-BrainAtlas-2012-ColorFile: an updated brain segmentation color node</p></li>
+<li><p>LightPaleChartColors: A light pale palette from Stephen Few, useful for charts.</p></li>
+<li><p>SPL-BrainAtlas-2009-ColorFile: an updated brain segmentation color node</p></li>
+</ul>
+</li>
+<li><p>File: If you load a color file from File -&gt; Add Data, it will appear here.</p></li>
+<li><p>User Generated: A user defined color table, use the editor to specify it. Copies of other color tables get displayed in this category. If you create a new color node, it will appear here.</p></li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<p>See examples and other developer information in <a class="reference internal" href="../../developer_guide/modules/colors.html"><span class="doc std std-doc">Developer guide</span></a>.</p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Nicole Aucoin (SPL, BWH)</p></li>
+<li><p>Jim Miller (GE)</p></li>
+<li><p>Julien Finet (Kitware Inc.)</p></li>
+<li><p>Andras Lasso (PerkLab, Queen’s)</p></li>
+<li><p>Mikhail Polkovnikov (IHEP)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is part of the <a class="reference external" href="https://www.na-mic.org/">National Alliance for Medical Image Computing</a> (NA-MIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_spl.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_ge.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_kitware.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="comparevolumes.html" class="btn btn-neutral float-left" title="Compare Volumes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plots.html" class="btn btn-neutral float-right" title="Plots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

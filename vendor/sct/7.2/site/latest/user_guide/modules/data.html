@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="DICOM" href="dicom.html" />
+    <link rel="prev" title="Modules" href="index.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/data.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to">How to</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-new-subject-from-scratch">Create new Subject from scratch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-new-folder">Create new folder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rename-item">Rename item</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#apply-transform-on-node-or-branch">Apply transform on node or branch</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#subject-hierarchy-tab">Subject hierarchy tab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transform-hierarchy-tab">Transform hierarchy tab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#all-nodes-tab">All nodes tab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#common-section-for-all-tabs">Common section for all tabs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Data</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/data.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="data">
+<h1>Data<a class="headerlink" href="#data" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Data module shows all data sets loaded into the scene and allows modification of basic properties and perform common operations on all kinds of data, without switching to other modules.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Subject</span> <span class="pre">Hierarchy</span></code> tab shows selected nodes in a freely editable folder structure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Transform</span> <span class="pre">Hierarchy</span></code> tab shows data organized by what transforms are applied to them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">All</span> <span class="pre">Nodes</span></code> tab shows all nodes in simple list. This is intended for advanced users and troubleshooting.</p></li>
+</ul>
+<p>In Subject Hierarchy, DICOM data is automatically added as patient-study-series hierarchy. Non-DICOM data can be parsed if loaded from a local directory structure, or can be manually organized in tree structure by creating DICOM-like hierarchy or folders.</p>
+<p>Subject hierarchy provides features for the underlying data nodes, including cloning, bulk transforming, bulk show/hide, type-specific features, and basic node operations such as delete or rename. Additional plugins provide other type-specific features and general operations, see <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Labs/SubjectHierarchy">Subject hierarchy labs page</a>.</p>
+<ul class="simple">
+<li><p>Subject hierarchy view</p>
+<ul>
+<li><p>Overview all loaded data objects in the same place, types indicated by icons</p></li>
+<li><p>Organize data in folders or patient/subject trees</p></li>
+<li><p>Visualize and bulk-handle lots of data nodes loaded from disk</p></li>
+<li><p>Easy show/hide of branches of displayable data</p></li>
+<li><p>Transform whole study (any branch)</p></li>
+<li><p>Export DICOM data (edit DICOM tags)</p></li>
+<li><p>Lots of type-specific functionality offered by the plugins</p></li>
+</ul>
+</li>
+<li><p>Transform hierarchy view</p>
+<ul>
+<li><p>Manage transformation chains/hierarchies</p></li>
+</ul>
+</li>
+<li><p>All nodes view</p>
+<ul>
+<li><p>Developer tool for debugging problems</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="how-to">
+<h2>How to<a class="headerlink" href="#how-to" title="Link to this heading"></a></h2>
+<section id="create-new-subject-from-scratch">
+<h3>Create new Subject from scratch<a class="headerlink" href="#create-new-subject-from-scratch" title="Link to this heading"></a></h3>
+<p>Right-click on the empty area and select ‘Create new subject’</p>
+</section>
+<section id="create-new-folder">
+<h3>Create new folder<a class="headerlink" href="#create-new-folder" title="Link to this heading"></a></h3>
+<p>Right-click on an existing item or the empty area and select ‘Create new folder’. Folder type hierarchy item can be converted to Subject or Study using the context menu</p>
+</section>
+<section id="rename-item">
+<h3>Rename item<a class="headerlink" href="#rename-item" title="Link to this heading"></a></h3>
+<p>Right-click on the node and select ‘Rename’, or double-click the name of a node</p>
+</section>
+<section id="apply-transform-on-node-or-branch">
+<h3>Apply transform on node or branch<a class="headerlink" href="#apply-transform-on-node-or-branch" title="Link to this heading"></a></h3>
+<p>Double-click the cell of the node or branch to transform in the transform column (same icon as Transforms module), then set the desired transform. If the column is not visible, check the ‘Transforms’ checkbox under the tree.  An example can be seen in the top screenshot at Patient 2</p>
+</section>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<section id="subject-hierarchy-tab">
+<h3>Subject hierarchy tab<a class="headerlink" href="#subject-hierarchy-tab" title="Link to this heading"></a></h3>
+<p>Contains all the objects in the Subject hierarchy in a tree representation.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_data_subjecthierarchy.png" /></p>
+<p>Folder structure:</p>
+<ul class="simple">
+<li><p>Nodes can be drag&amp;dropped under other nodes, thus re-arranging the tree</p></li>
+<li><p>New folder or subject can be added by right-clicking the <code class="docutils literal notranslate"><span class="pre">Scene</span></code> item at the top</p></li>
+<li><p>Data loaded from <strong>DICOM</strong> are automatically added to the tree of patient, study, series</p></li>
+<li><p><strong>Non-DICOM</strong> data also appears automatically in Subject hierarchy. There are multiple ways to organize them in hierarchy:</p>
+<ul>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">hierarchy</span> <span class="pre">from</span> <span class="pre">loaded</span> <span class="pre">directory</span> <span class="pre">structure</span></code> action in the context menu of the scene (right-click on empty area, see screenshot below). This organizes the nodes according to the local file structure they have been loaded from.</p></li>
+<li><p>Drag&amp;drop manually under a hierarchy node</p></li>
+<li><p>Legacy model and annotation hierarchies from old scenes are imported as subject hierarchy</p></li>
+</ul>
+</li>
+</ul>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_data_create_hierarchy_from_directory.png" /></p>
+<p>Operations (accessible in the context menu of the nodes by right-clicking them):</p>
+<ul class="simple">
+<li><p>Common for all nodes:</p>
+<ul>
+<li><p><strong>Show/hide</strong> node or branch: Click on the eye icon</p></li>
+<li><p><strong>Delete</strong>: Delete both data node and SH node</p></li>
+<li><p><strong>Rename</strong>: Rename both data node and SH node</p></li>
+<li><p><strong>Clone</strong>: Creates a copy of the selected node that will be identical in every manner. Its name will contain a <code class="docutils literal notranslate"><span class="pre">_Copy</span></code> postfix</p></li>
+<li><p><strong>Edit properties</strong>: If the role of the node is specified (i.e. its icon is not a question mark), then the corresponding module is opened and the node selected (e.g. Volumes module for volumes)</p></li>
+<li><p><strong>Create child…</strong>: Create a node with the specified type</p></li>
+<li><p><strong>Transform node or branch</strong>: Double-click the cell of the node or branch to transform in the <code class="docutils literal notranslate"><span class="pre">Applied</span> <span class="pre">transform</span></code> column, then set the desired transform. If the column is not visible, check the ‘Transforms’ checkbox under the tree. An example can be seen in the top screenshot at ‘Day 2’ study</p></li>
+</ul>
+</li>
+<li><p>Operations for specific node types:</p>
+<ul>
+<li><p><strong>Volumes</strong>: icon, Edit properties and additional information in tooltip</p>
+<ul>
+<li><p><strong>‘Register this…’</strong> action to select fixed image for registration. Right-click the moving image to initiate registration</p></li>
+<li><p><strong>‘Segment this…’</strong> action allows segmenting the volume, for example, in the Segment Editor module</p></li>
+<li><p><strong>‘Toggle labelmap outline display’</strong> for labelmaps</p></li>
+</ul>
+</li>
+<li><p><strong>Models</strong>: icon, Edit properties and additional information in tooltip</p></li>
+<li><p><strong>SceneViews</strong>: icon, Edit properties and Restore scene view</p></li>
+<li><p><strong>Transforms</strong>: icon, additional tooltip info, Edit properties, Invert, Reset to identity</p></li>
+</ul>
+</li>
+</ul>
+<p>Highlights: when an item is selected, the related items are highlighted. Meaning of colors:</p>
+<ul class="simple">
+<li><p>Green: Items referencing the current item directly via DICOM or node references</p></li>
+<li><p>Yellow: Items referenced by the current item directly via DICOM or node references</p></li>
+<li><p>Light yellow: Items referenced by the current item recursively via node references</p></li>
+</ul>
+<p>Subject hierarchy item information section: Displays detailed information about the selected subject hierarchy item.</p>
+</section>
+<section id="transform-hierarchy-tab">
+<h3>Transform hierarchy tab<a class="headerlink" href="#transform-hierarchy-tab" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Nodes</strong>: The view lists all transformable nodes of the scene as a hierarchical tree that describes the relationships between nodes. Nodes are graphical objects such as volumes or models that control the displays in the different views (2D, 3D). To rename an item, double click with the left button on any item (but the scene) in the list. A right click pops up a menu containing different actions: “Insert Transform” creates an identity linear transform node and applies it on the selected node. “Edit properties” opens the module of the node (e.g. “Volumes” for volume nodes, “Models” for model nodes, etc.). “Rename” opens a dialog to rename the node. “Delete” removes the node from the scene. Internal drag-and-drops are supported in the view, while moving a node position within the same parent has no effect, changing the parent of a node has a different meaning depending on the current scene model.</p></li>
+<li><p><strong>Show MRML ID’s</strong>: Show/hide in the tree view a second column containing the node ID of the nodes. Hidden by default</p></li>
+<li><p><strong>Show hidden nodes</strong>: Show/hide the hidden nodes. By default, only the main nodes are shown</p></li>
+</ul>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_data_transform_hierarchy.png" /></p>
+</section>
+<section id="all-nodes-tab">
+<h3>All nodes tab<a class="headerlink" href="#all-nodes-tab" title="Link to this heading"></a></h3>
+<p>List of all nodes in the scene. Supports Edit properties, Rename, Delete.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_data_allnodes.png" /></p>
+</section>
+<section id="common-section-for-all-tabs">
+<h3>Common section for all tabs<a class="headerlink" href="#common-section-for-all-tabs" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Filter</strong>: Hide all the nodes not matching the typed string. This can be useful to quickly search for a specific node. Please note that the search is case sensitive</p></li>
+<li><p><strong>MRML node information</strong>: Attribute list of the currently selected node. Attributes can be edited (double click in the “Attribute value” cell), added (with the “Add” button) or removed (with the “Remove” button).</p></li>
+</ul>
+</section>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>[Data loading and visualization]<a class="reference external" href="https://training.slicer.org/#stc-vis-102-data-loading-and-3d-visualization">https://training.slicer.org/#stc-vis-102-data-loading-and-3d-visualization</a>) demonstrates the basic usage of Data module.</p></li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Code snippets accessing and manipulating subject hierarchy items can be found in the <a class="reference internal" href="../../developer_guide/script_repository.html#subject-hierarchy"><span class="std std-ref">script repository</span></a>.</p></li>
+<li><p><strong>Implementing new plugins</strong>: Plugins are the real power of subject hierarchy, as they provide support for data node types, and add functionality to the context menu items.
+To create a C++ plugin, implement a child class of qSlicerSubjectHierarchyAbstractPlugin, for Python plugin see below. Many examples can be found in Slicer core and in the SlicerRT extension, look for folders named SubjectHierarchyPlugins.</p>
+<ul>
+<li><p>Writing plugins in <strong>Python</strong>:</p>
+<ul>
+<li><p>Child class of AbstractScriptedSubjectHierarchyPlugin which is a Python adaptor of the C++ qSlicerSubjectHierarchyScriptedPlugin class</p></li>
+<li><p>Example: <a class="reference external" href="https://github.com/SlicerHeart/SlicerHeart/blob/master/ValveAnnulusAnalysis/HeartValveLib/HeartValvesSubjectHierarchyPlugin.py">role plugin</a> in SlicerHeart extension, <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Modules/Scripted/SegmentEditor/SubjectHierarchyPlugins/SegmentEditorSubjectHierarchyPlugin.py">function plugin</a> in Segment Editor module</p></li>
+</ul>
+</li>
+<li><p><strong>Role</strong> plugins: add support for new data node types</p>
+<ul>
+<li><p>Defines: ownership, icon, tooltip, edit properties, help text (in the yellow question mark popup), visibility icon, set/get display visibility, displayed node name (if different than name of the node object)</p></li>
+<li><p>Existing plugins in Slicer core: Markups, Models, SceneViews, Charts, Folder, Tables, Transforms, LabelMaps, Volumes</p></li>
+</ul>
+</li>
+<li><p><strong>Function</strong> plugins: add feature in right-click context menu for certain types of nodes</p>
+<ul>
+<li><p>Defines: list of context menu actions for nodes and the scene, types of nodes for which the action shows up, functions handling the defined action</p></li>
+<li><p>Existing plugins in Slicer core: CloneNode, ParseLocalData, Register, Segment, DICOM, Volumes, Markups, Models, Annotations, Segmentations, Segments, etc.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Additional information on <a class="reference external" href="https://www.slicer.org/wiki/Documentation/Labs/SubjectHierarchy">Subject hierarchy labs page</a></p></li>
+<li><p>Manual editing of segmentations can be done in the <a class="reference internal" href="segmenteditor.html"><span class="std std-doc">Segment Editor module</span></a></p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>End-user advocate: Ron Kikinis (SPL, NA-MIC)</p>
+<p>Authors:</p>
+<ul class="simple">
+<li><p>Csaba Pinter (PerkLab, Queen’s University)</p></li>
+<li><p>Julien Finet (Kitware)</p></li>
+<li><p>Alex Yarmarkovich (Isomics)</p></li>
+<li><p>Nicole Aucoin (SPL, BWH)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is part of the National Alliance for Medical Image Computing (NAMIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149. This work was also funded by An Applied Cancer Research Unit of Cancer Care Ontario with funds provided by the Ministry of Health, Canada</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_kitware.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_isomics.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_spl.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_cco.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dicom.html" class="btn btn-neutral float-right" title="DICOM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slicer API &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mrml" href="mrml.html" />
+    <link rel="prev" title="Developer Guide" href="index.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/api.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Slicer API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c">C++</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python">Python</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#native-python-documentation">Native Python documentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#doxygen-style-documentation">Doxygen-style documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Slicer API</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/api.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="slicer-api">
+<h1>Slicer API<a class="headerlink" href="#slicer-api" title="Link to this heading"></a></h1>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h2>
+<p>Check out these <a class="reference external" href="https://training.slicer.org/#developer-tutorials">developer tutorials</a> to get started with customizing and extending 3D Slicer using Python scripting or C++.</p>
+</section>
+<section id="c">
+<h2>C++<a class="headerlink" href="#c" title="Link to this heading"></a></h2>
+<p>Majority of Slicer core modules and all basic infrastructure are implemented in C++.
+Documentation of these classes are available at: <a class="reference external" href="https://apidocs.slicer.org/main">https://apidocs.slicer.org/main</a></p>
+</section>
+<section id="python">
+<h2>Python<a class="headerlink" href="#python" title="Link to this heading"></a></h2>
+<section id="native-python-documentation">
+<h3>Native Python documentation<a class="headerlink" href="#native-python-documentation" title="Link to this heading"></a></h3>
+<p>Python-style documentation is available for the following packages:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mrml.html">mrml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicer.html">slicer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#slicer.app"><code class="docutils literal notranslate"><span class="pre">app</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#slicer.mrmlScene"><code class="docutils literal notranslate"><span class="pre">mrmlScene</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#slicer.modules"><code class="docutils literal notranslate"><span class="pre">modules</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#slicer.moduleNames"><code class="docutils literal notranslate"><span class="pre">moduleNames</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#module-slicer.cli">slicer.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#slicer-logic">slicer.logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#module-slicer.ScriptedLoadableModule">slicer.ScriptedLoadableModule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#module-slicer.testing">slicer.testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#module-slicer.util">slicer.util</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vtkTeem.html">vtkTeem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vtkAddon.html">vtkAddon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vtkITK.html">vtkITK</a></li>
+</ul>
+</div>
+</section>
+<section id="doxygen-style-documentation">
+<h3>Doxygen-style documentation<a class="headerlink" href="#doxygen-style-documentation" title="Link to this heading"></a></h3>
+<p>Slicer core infrastructure is mostly implemented in C++ and it is made available in Python in the <code class="docutils literal notranslate"><span class="pre">slicer</span></code> namespace.
+Documentation of these classes is available at: <a class="reference external" href="https://apidocs.slicer.org/main/">https://apidocs.slicer.org/main/</a></p>
+<p>C++ classes are made available in Python using two mechanisms: PythonQt and VTK Python wrapper. They have a few slight differences:</p>
+<ul class="simple">
+<li><p>Qt classes (class name starts with <code class="docutils literal notranslate"><span class="pre">q</span></code> or <code class="docutils literal notranslate"><span class="pre">Q</span></code>): for example, <a class="reference external" href="https://apidocs.slicer.org/main/classqSlicerMarkupsPlaceWidget.html">qSlicerMarkupsPlaceWidget</a>. These classes are all derived from QObject and follow <a class="reference external" href="https://www.qt.io/">Qt</a> conventions. They support properties, signals, and slots.</p></li>
+<li><p>VTK classes (class name starts with <code class="docutils literal notranslate"><span class="pre">vtk</span></code>): for example, <a class="reference external" href="https://apidocs.slicer.org/main/classvtkMRMLModelDisplayNode.html">vtkMRMLModelDisplayNode</a>. These classes are all derived from vtkObject and follow <a class="reference external" href="https://vtk.org/">VTK</a> conventions.</p></li>
+</ul>
+<p>This documentation is generated using the Doxygen tool, which uses C++ syntax. The following rules can help in interpreting this documentation for Python:</p>
+<ul>
+<li><p>Public member functions: They can be accessed as <code class="docutils literal notranslate"><span class="pre">objectName.memberFunctionName(arguments)</span></code> for example a method of the <code class="docutils literal notranslate"><span class="pre">slicer.mrmlScene</span></code> object can be called as: <code class="docutils literal notranslate"><span class="pre">slicer.mrmlScene.GetNumberOfNodesByClass('vtkMRMLTransformNode')</span></code>. In Qt classes, only methods that have <code class="docutils literal notranslate"><span class="pre">Q_INVOKABLE</span></code> keyword next to them are available from Python. <code class="docutils literal notranslate"><span class="pre">virtual</span></code> and <code class="docutils literal notranslate"><span class="pre">override</span></code> specifiers can be ignored (they just indicate that the method can be or is  overridden in a child class).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">className</span></code> (for Qt classes): constructor, shows the arguments that can be passed when an object is created. Qt objects can be instantiated using <code class="docutils literal notranslate"><span class="pre">qt.QSomeObject()</span></code>. For example <code class="docutils literal notranslate"><span class="pre">myObj</span> <span class="pre">=</span> <span class="pre">qt.QComboBox()</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">New</span></code> (for VTK classes): constructor, never needs an argument. VTK objects can be instantiated using <code class="docutils literal notranslate"><span class="pre">vtk.vtkSomeObject()</span></code>. For example <code class="docutils literal notranslate"><span class="pre">myObj</span> <span class="pre">=</span> <span class="pre">vtk.vtkPolyData()</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">~className</span></code>: destructor, can be ignored, Python calls it automatically when needed (when there are no more references to an object). If a variable holds the last reference to an object then it can be deleted by calling <code class="docutils literal notranslate"><span class="pre">del</span></code> or setting the variable to a new value. For example: <code class="docutils literal notranslate"><span class="pre">del(myObj)</span></code> or <code class="docutils literal notranslate"><span class="pre">myObj</span> <span class="pre">=</span> <span class="pre">None</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SafeDownCast</span></code> (for VTK classes): not needed for Python, as type conversions are automatic.</p></li>
+</ul>
+</li>
+<li><p>Static Public Member Functions: can be accessed as <code class="docutils literal notranslate"><span class="pre">slicer.className.memberFunctionName(arguments)</span></code> for example: <code class="docutils literal notranslate"><span class="pre">slicer.vtkMRMLModelDisplayNode.GetSliceDisplayModeAsString(0)</span></code>.</p></li>
+<li><p>Properties (for Qt classes): these are values that are accessible as object attributes in Python and can be read and written as <code class="docutils literal notranslate"><span class="pre">objectName.propertyName</span></code>. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">qSlicerMarkupsPlaceWidget</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">deleteAllControlPointsOptionVisible</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">deleteAllControlPointsOptionVisible</span><span class="o">=</span><span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">.</span><span class="n">deleteAllControlPointsOptionVisible</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</li>
+<li><p>Public slots (for Qt classes): publicly available methods. Note that <code class="docutils literal notranslate"><span class="pre">setSomeProperty</span></code> methods show up in the documentation but in Python these methods are not available and instead property values can be set using <code class="docutils literal notranslate"><span class="pre">someProperty</span> <span class="pre">=</span> <span class="pre">...</span></code>.</p></li>
+<li><p>Signals (for Qt classes): signals that can be connected to Python methods</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">someFunction</span><span class="p">():</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;clicked!&quot;</span><span class="p">)</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="n">qt</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;MyButton&quot;</span><span class="p">)</span>
+<span class="n">b</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;clicked()&quot;</span><span class="p">,</span> <span class="n">someFunction</span><span class="p">)</span>  <span class="c1"># someFunction will be called when the button is clicked</span>
+<span class="n">b</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>Public Types: most commonly used for specifying enumerated values (indicated by <code class="docutils literal notranslate"><span class="pre">enum</span></code> type). These values can be accessed as <code class="docutils literal notranslate"><span class="pre">slicer.className.typeName</span></code>, for example <code class="docutils literal notranslate"><span class="pre">slicer.qSlicerMarkupsPlaceWidget.HidePlaceMultipleMarkupsOption</span></code></p></li>
+<li><p>Protected Slots, Member Functions, Attributes: for internal use only, not accessible in Python.</p></li>
+</ul>
+<p>Mapping commonly used data types from C++ documentation to Python:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span></code> -&gt; Python: if the return value of a method is this type then it means that no value is returned</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">someClass*</span></code> (object pointer) -&gt; Python: since Python takes care of reference counting, it can be simply interpreted in Python as <code class="docutils literal notranslate"><span class="pre">someClass</span></code>. The called method can modify the object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">char</span></code>, <code class="docutils literal notranslate"><span class="pre">short</span></code> (with optional <code class="docutils literal notranslate"><span class="pre">signed</span></code> or <code class="docutils literal notranslate"><span class="pre">unsigned</span></code> prefix) -&gt; Python: <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code> -&gt; Python: <code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">double[3]</span></code> -&gt; Python: initialize a variable before the method call as <code class="docutils literal notranslate"><span class="pre">point</span> <span class="pre">=</span> <span class="pre">np.zeros(3)</span></code> (or <code class="docutils literal notranslate"><span class="pre">point</span> <span class="pre">=</span> <span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></code>) and use it as argument in the function</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">std::string</span></code>, <code class="docutils literal notranslate"><span class="pre">QString</span></code>, <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">QString&amp;</span></code>  -&gt; Python: <code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span></code> -&gt; Python: <code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Developer Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mrml.html" class="btn btn-neutral float-right" title="mrml" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

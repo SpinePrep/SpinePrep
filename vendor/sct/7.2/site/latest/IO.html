@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reading and Writing for Images and Transforms &mdash; SimpleITK 2.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css" />
+      <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
+
+  
+    <link rel="shortcut icon" href="_static/yellow_itk_icon.svg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/tabs.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="SimpleITK Filters" href="filters.html" />
+    <link rel="prev" title="Common Conventions" href="conventions.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="simpleitk" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/IO.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SimpleITK
+              <img src="_static/simpleitk_logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingStarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentalConcepts.html">Fundamental Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registrationOverview.html">Registration Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conventions.html">Common Conventions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reading and Writing for Images and Transforms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#images">Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transformations">Transformations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="filters.html">SimpleITK Filters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">Building SimpleITK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setUp.html">Setting Up Eclipse and Visual Studio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsAndCourses.html">Tutorials and Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrationGuide2.0.html">Migration Guide 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FilterTemplates.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="link_examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SimpleITK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Reading and Writing for Images and Transforms</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/IO.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="reading-and-writing-for-images-and-transforms">
+<h1>Reading and Writing for Images and Transforms<a class="headerlink" href="#reading-and-writing-for-images-and-transforms" title="Permalink to this heading"></a></h1>
+<section id="images">
+<span id="image-io"></span><h2>Images<a class="headerlink" href="#images" title="Permalink to this heading"></a></h2>
+<p>There are numerous file formats support by SimpleITK’s image readers and writers.
+Support for a particular format is handled by a specific ITK
+<a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1ImageIOBase.html">ImageIO</a> class.
+By default, the ImageIO is automatically determined for a particular file based
+on the file name suffix and/or the contents of the file’s header.
+Advanced SimpleITK installations can configure or extend which file formats
+are supported by SimpleITK. A list of registered ImageIO’s can be found using the
+<code class="docutils literal notranslate"><span class="pre">GetRegisteredImageIOs()</span></code> method, but is posted here:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1BMPImageIO.html">BMPImageIO</a> ( *.bmp, *.BMP )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1BioRadImageIO.html">BioRadImageIO</a> ( *.PIC, *.pic )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1Bruker2dseqImageIO.html">Bruker2dseqImageIO</a></p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1GDCMImageIO.html">GDCMImageIO</a></p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1GE4ImageIO.html">GE4ImageIO</a></p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1GE5ImageIO.html">GE5ImageIO</a></p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1GiplImageIO.html">GiplImageIO</a> ( *.gipl *.gipl.gz)</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1HDF5ImageIO.html">HDF5ImageIO</a></p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1JPEGImageIO.html">JPEGImageIO</a> ( *.jpg, *.JPG, *.jpeg, *.JPEG )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1LSMImageIO.html">LSMImageIO</a> ( *.tif, *.TIF, *.tiff, *.TIFF, *.lsm, *.LSM )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1MINCImageIO.html">MINCImageIO</a> ( *.mnc, *.MNC )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1MRCImageIO.html">MRCImageIO</a> ( *.mrc, *.rec )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1MetaImageIO.html">MetaImageIO</a> ( *.mha, *.mhd )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1NiftiImageIO.html">NiftiImageIO</a> ( *.nia, *.nii, *.nii.gz, *.hdr, *.img, *.img.gz )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1NrrdImageIO.html">NrrdImageIO</a> ( *.nrrd, *.nhdr )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1PNGImageIO.html">PNGImageIO</a> ( *.png, *.PNG )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1StimulateImageIO.html">StimulateImageIO</a></p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1TIFFImageIO.html">TIFFImageIO</a> ( *.tif, *.TIF, *.tiff, *.TIFF )</p></li>
+<li><p><a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1VTKImageIO.html">VTKImageIO</a> ( *.vtk )</p></li>
+</ul>
+</div></blockquote>
+<p>A read and write example using SimpleITK’s <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ImageFileReader.html">ImageFileReader</a> and <a class="reference external" href="https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1ImageFileWriter.html">ImageFileWriter</a> classes:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">C#</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">C++</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Java</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">Lua</button><button aria-controls="panel-0-0-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-4" name="0-4" role="tab" tabindex="-1">Python</button><button aria-controls="panel-0-0-5" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-5" name="0-5" role="tab" tabindex="-1">R</button><button aria-controls="panel-0-0-6" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-6" name="0-6" role="tab" tabindex="-1">Ruby</button><button aria-controls="panel-0-0-7" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-7" name="0-7" role="tab" tabindex="-1">Tcl</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">ImageFileReader</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ImageFileReader</span><span class="p">();</span>
+<span class="w">  </span><span class="n">reader</span><span class="p">.</span><span class="n">SetImageIO</span><span class="p">(</span><span class="s">&quot;PNGImageIO&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">reader</span><span class="p">.</span><span class="n">SetFileName</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">);</span>
+<span class="w">  </span><span class="n">Image</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="p">.</span><span class="n">Execute</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">ImageFileWriter</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ImageFileWriter</span><span class="p">();</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="n">SetFileName</span><span class="p">(</span><span class="n">outputImageFileName</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">image</span><span class="p">);</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"></div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">ImageFileReader</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ImageFileReader</span><span class="p">();</span>
+<span class="w">  </span><span class="n">reader</span><span class="p">.</span><span class="na">setImageIO</span><span class="p">(</span><span class="s">&quot;PNGImageIO&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">reader</span><span class="p">.</span><span class="na">setFileName</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">);</span>
+<span class="w">  </span><span class="n">Image</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">ImageFileWriter</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ImageFileWriter</span><span class="p">();</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">setFileName</span><span class="p">(</span><span class="n">outputImageFileName</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="n">image</span><span class="p">);</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-3" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-3" name="0-3" role="tabpanel" tabindex="0"><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nv">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="nf">ImageFileReader</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">reader</span><span class="p">:</span><span class="nf">SetImageIO</span><span class="p">(</span><span class="s2">&quot;PNGImageIO&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">reader</span><span class="p">:</span><span class="nf">SetFileName</span><span class="p">(</span><span class="nv">inputImageFileName</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">reader</span><span class="p">:</span><span class="nf">Execute</span><span class="p">();</span>
+
+<span class="w">  </span><span class="nv">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="nf">ImageFileWriter</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">writer</span><span class="p">:</span><span class="nf">SetFileName</span><span class="p">(</span><span class="nv">outputImageFileName</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">writer</span><span class="p">:</span><span class="nf">Execute</span><span class="p">(</span><span class="nv">image</span><span class="p">);</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-4" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-4" name="0-4" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">reader</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ImageFileReader</span><span class="p">()</span>
+    <span class="n">reader</span><span class="o">.</span><span class="n">SetImageIO</span><span class="p">(</span><span class="s2">&quot;PNGImageIO&quot;</span><span class="p">)</span>
+    <span class="n">reader</span><span class="o">.</span><span class="n">SetFileName</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ImageFileWriter</span><span class="p">()</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">SetFileName</span><span class="p">(</span><span class="n">outputImageFileName</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-5" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-5" name="0-5" role="tabpanel" tabindex="0"><div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">reader</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ImageFileReader</span><span class="p">()</span>
+<span class="w">  </span><span class="n">reader</span><span class="o">$</span><span class="nf">SetImageIO</span><span class="p">(</span><span class="s">&quot;PNGImageIO&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">reader</span><span class="o">$</span><span class="nf">SetFileName</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">)</span>
+<span class="w">  </span><span class="n">image</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">reader</span><span class="o">$</span><span class="nf">Execute</span><span class="p">()</span>
+
+<span class="w">  </span><span class="n">writer</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ImageFileWriter</span><span class="p">()</span>
+<span class="w">  </span><span class="n">writer</span><span class="o">$</span><span class="nf">SetFileName</span><span class="p">(</span><span class="n">outputImageFileName</span><span class="p">)</span>
+<span class="w">  </span><span class="n">writer</span><span class="o">$</span><span class="nf">Execute</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-6" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-6" name="0-6" role="tabpanel" tabindex="0"><div class="highlight-ruby notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Simpleitk</span><span class="o">::</span><span class="no">ImageFileReader</span><span class="o">.</span><span class="n">new</span>
+<span class="w">  </span><span class="n">reader</span><span class="o">.</span><span class="n">set_image_io</span><span class="p">(</span><span class="s2">&quot;PNGImageIO&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">reader</span><span class="o">.</span><span class="n">set_file_name</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">)</span>
+<span class="w">  </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="o">.</span><span class="n">execute</span>
+
+<span class="w">  </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Simpleitk</span><span class="o">::</span><span class="no">ImageFileWriter</span><span class="o">.</span><span class="n">new</span>
+<span class="w">  </span><span class="n">writer</span><span class="o">.</span><span class="n">set_file_name</span><span class="w"> </span><span class="n">outputImageFileName</span>
+<span class="w">  </span><span class="n">writer</span><span class="o">.</span><span class="n">execute</span><span class="w"> </span><span class="n">image</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-7" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-7" name="0-7" role="tabpanel" tabindex="0"><div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nv">ImageFileReader</span><span class="w"> </span>reader
+<span class="w">  </span><span class="nv">reader</span><span class="w"> </span>SetImageIO<span class="w"> </span><span class="s2">&quot;PNGImageIO&quot;</span>
+<span class="w">  </span><span class="nv">reader</span><span class="w"> </span>SetFileName<span class="w"> </span><span class="nv">$inputImageFileName</span>
+<span class="w">  </span><span class="k">set</span><span class="w"> </span>image<span class="w"> </span><span class="k">[</span><span class="w"> </span><span class="nv">reader</span><span class="w"> </span>Execute<span class="w"> </span><span class="k">]</span>
+
+<span class="w">  </span><span class="nv">ImageFileWriter</span><span class="w"> </span>writer
+<span class="w">  </span><span class="nv">writer</span><span class="w"> </span>SetFileName<span class="w"> </span><span class="nv">$outputImageFileName</span>
+<span class="w">  </span><span class="nv">writer</span><span class="w"> </span>Execute<span class="w"> </span><span class="nv">$image</span>
+
+<span class="w">  </span><span class="nv">reader</span><span class="w"> </span><span class="o">-</span>delete
+<span class="w">  </span><span class="nv">writer</span><span class="w"> </span><span class="o">-</span>delete
+<span class="w">  </span><span class="nv">$image</span><span class="w"> </span><span class="nv">-delete</span>
+</pre></div>
+</div>
+</div></div>
+<p>The above example specifies using the PNGImageIO to read the file.
+If that line is omitted, SimpleITK would determine which IO to use automatically,
+based on the file name’s suffix and/or the file’s header.</p>
+<p>A more compact example using SimpleITK’s procedural interface:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">C#</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">C++</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">Java</button><button aria-controls="panel-1-1-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-3" name="1-3" role="tab" tabindex="-1">Lua</button><button aria-controls="panel-1-1-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-4" name="1-4" role="tab" tabindex="-1">Python</button><button aria-controls="panel-1-1-5" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-5" name="1-5" role="tab" tabindex="-1">R</button><button aria-controls="panel-1-1-6" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-6" name="1-6" role="tab" tabindex="-1">Ruby</button><button aria-controls="panel-1-1-7" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-7" name="1-7" role="tab" tabindex="-1">Tcl</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">Image</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sitk</span><span class="p">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">,</span><span class="w"> </span><span class="n">PixelIDValueEnum</span><span class="p">.</span><span class="n">sitkUnknown</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;PNGImageIO&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">sitk</span><span class="p">.</span><span class="n">WriteImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="n">outputImageFileName</span><span class="p">);</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"></div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">Image</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleITK</span><span class="p">.</span><span class="na">readImage</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">,</span><span class="w"> </span><span class="n">PixelIDValueEnum</span><span class="p">.</span><span class="na">sitkUnknown</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;PNGImageIO&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="n">SimpleITK</span><span class="p">.</span><span class="na">writeImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="n">outputImageFileName</span><span class="p">);</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-3" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-3" name="1-3" role="tabpanel" tabindex="0"><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nv">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="nf">ReadImage</span><span class="p">(</span><span class="nv">inputImageFileName</span><span class="p">,</span><span class="w"> </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="py">sitkUnknown</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PNGImageIO&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="nf">WriteImage</span><span class="p">(</span><span class="nv">image</span><span class="p">,</span><span class="w"> </span><span class="nv">outputImageFileName</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-4" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-4" name="1-4" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">image</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadImage</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">,</span> <span class="n">imageIO</span><span class="o">=</span><span class="s2">&quot;PNGImageIO&quot;</span><span class="p">)</span>
+    <span class="n">sitk</span><span class="o">.</span><span class="n">WriteImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">outputImageFileName</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-5" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-5" name="1-5" role="tabpanel" tabindex="0"><div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">image</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ReadImage</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">)</span>
+<span class="w">  </span><span class="nf">WriteImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="n">outputImageFileName</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-6" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-6" name="1-6" role="tabpanel" tabindex="0"><div class="highlight-ruby notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Simpleitk</span><span class="o">::</span><span class="n">read_image</span><span class="p">(</span><span class="n">inputImageFileName</span><span class="p">,</span><span class="w"> </span><span class="no">Simpleitk</span><span class="o">::</span><span class="no">SitkUnknown</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PNGImageIO&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="no">Simpleitk</span><span class="o">::</span><span class="n">write_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span><span class="w"> </span><span class="n">outputImageFileName</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-7" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-7" name="1-7" role="tabpanel" tabindex="0"><div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="k">set</span><span class="w"> </span>image<span class="w"> </span><span class="k">[</span><span class="w"> </span><span class="nv">ReadImage</span><span class="w"> </span><span class="nv">$inputImageFileName</span><span class="w"> </span><span class="nv">$sitkUnknown</span><span class="w"> </span><span class="s2">&quot;PNGImageIO&quot;</span><span class="w"> </span><span class="k">]</span>
+<span class="w">  </span><span class="nv">WriteImage</span><span class="w"> </span><span class="nv">$image</span><span class="w"> </span><span class="nv">$outputImageFileName</span>
+
+<span class="w">  </span><span class="nv">$image</span><span class="w"> </span><span class="nv">-delete</span>
+</pre></div>
+</div>
+</div></div>
+<p>Similarly, if the imageIO parameter is omitted, SimpleITK will determine
+which IO to use automatically.</p>
+<p>Finally, one can also specify the desired pixel type for the returned image,
+regardless of the underlying pixel type. This is done via the <code class="docutils literal notranslate"><span class="pre">SetOutputPixelType</span></code> of
+the <code class="docutils literal notranslate"><span class="pre">ImageFileReader</span></code> or setting the <code class="docutils literal notranslate"><span class="pre">ReadImage</span></code>’s <code class="docutils literal notranslate"><span class="pre">outputPixelType</span></code> parameter.</p>
+<p>When reading a scalar image and specifying a different scalar type from the underlying one,
+the returned image’s pixel type will be a simple casting of the actual type. This casting can result
+in loss of data when performing a narrowing conversion. For example, if
+the underlying pixel type is <code class="docutils literal notranslate"><span class="pre">sitk.sitkFloat32</span></code> and the specified pixel type
+is <code class="docutils literal notranslate"><span class="pre">sitk.sitkUInt8</span></code>. Explicitly specifying a pixel type is commonly done in conjunction
+with the SimpleITK registration framework. This framework only accepts images with
+float pixel types. Therefore, it is common to read the images and specify their pixel type as
+<code class="docutils literal notranslate"><span class="pre">sitk.sitkFloat32</span></code> or <code class="docutils literal notranslate"><span class="pre">sitk.sitkFloat64</span></code>.</p>
+<p>When reading a vector image and specifying the pixel type as a scalar, the returned pixel
+values are computed based on the number of channels in the original image. This conversion makes
+several assumptions, three channels mean an RGB image, four channels an RGBA image. These assumptions are
+useful, but may not be what you need if the original image was not in these color-spaces (e.g. HSV).</p>
+<p>For those looking for further details, the ITK class which deals with these conversions is
+<a class="reference external" href="https://itk.org/Doxygen/html/classitk_1_1ConvertPixelBuffer.html">ConvertPixelBuffer</a>.</p>
+</section>
+<section id="transformations">
+<span id="transformation-io"></span><h2>Transformations<a class="headerlink" href="#transformations" title="Permalink to this heading"></a></h2>
+<p>In SimpleITK, transformation files can be written in several different formats.
+Just as there are numerous IOs for images, there are several for transforms,
+including TxtTransformIO, MINCTransformIO, HDF5TransformIO, and MatlabTransformIO
+(although this list can be extended as well). These support a variety of file
+formats, including .txt, .tfm, .xfm, .hdf and .mat.</p>
+<p>Because of the size of displacement fields, writing them may require more careful
+attention.  To save a displacement field we recommend using one of the binary
+transformation file formats (e.g. .hdf, .mat). Saving it in a text based format
+results in significantly larger files and longer IO runtimes. Another option is
+to save the displacement field found in a DisplacementFieldTransform object as an
+image (.nrrd, .nhdr, .mha, .mhd, .nii, .nii.gz).</p>
+<p>Here is a simple example of creating a transformation, writing it to a file,
+reading it back, and then comparing the results.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">C#</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">C++</button><button aria-controls="panel-2-2-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-2" name="2-2" role="tab" tabindex="-1">Java</button><button aria-controls="panel-2-2-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-3" name="2-3" role="tab" tabindex="-1">Lua</button><button aria-controls="panel-2-2-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-4" name="2-4" role="tab" tabindex="-1">Python</button><button aria-controls="panel-2-2-5" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-5" name="2-5" role="tab" tabindex="-1">R</button><button aria-controls="panel-2-2-6" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-6" name="2-6" role="tab" tabindex="-1">Ruby</button><button aria-controls="panel-2-2-7" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-7" name="2-7" role="tab" tabindex="-1">Tcl</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><div class="highlight-csharp notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">Euler2DTransform</span><span class="w"> </span><span class="n">basic_transform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Euler2DTransform</span><span class="p">();</span>
+<span class="w">  </span><span class="n">VectorDouble</span><span class="w"> </span><span class="n">trans</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VectorDouble</span><span class="p">(</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">double</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">}</span><span class="w"> </span><span class="p">);</span>
+<span class="w">  </span><span class="n">basic_transform</span><span class="p">.</span><span class="n">SetTranslation</span><span class="p">(</span><span class="n">trans</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">string</span><span class="w"> </span><span class="n">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;euler2D_cs.tfm&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">sitk</span><span class="p">.</span><span class="n">WriteTransform</span><span class="p">(</span><span class="n">basic_transform</span><span class="p">,</span><span class="w"> </span><span class="n">file_name</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">Transform</span><span class="w"> </span><span class="n">read_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sitk</span><span class="p">.</span><span class="n">ReadTransform</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">Debug</span><span class="p">.</span><span class="n">Assert</span><span class="p">(</span><span class="w"> </span><span class="n">basic_transform</span><span class="p">.</span><span class="n">GetName</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">read_result</span><span class="p">.</span><span class="n">GetName</span><span class="p">()</span><span class="w"> </span><span class="p">);</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"></div><div aria-labelledby="tab-2-2-2" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-2" name="2-2" role="tabpanel" tabindex="0"><div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">Euler2DTransform</span><span class="w"> </span><span class="n">basic_transform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Euler2DTransform</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">double</span><span class="o">[]</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">};</span>
+<span class="w">  </span><span class="n">VectorDouble</span><span class="w"> </span><span class="n">trans</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VectorDouble</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+<span class="w">  </span><span class="n">basic_transform</span><span class="p">.</span><span class="na">setTranslation</span><span class="p">(</span><span class="n">trans</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">String</span><span class="w"> </span><span class="n">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;euler2D_java.tfm&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">SimpleITK</span><span class="p">.</span><span class="na">writeTransform</span><span class="p">(</span><span class="n">basic_transform</span><span class="p">,</span><span class="w"> </span><span class="n">file_name</span><span class="p">);</span>
+<span class="w">  </span><span class="n">Transform</span><span class="w"> </span><span class="n">read_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SimpleITK</span><span class="p">.</span><span class="na">readTransform</span><span class="p">(</span><span class="n">file_name</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">assert</span><span class="w"> </span><span class="n">basic_transform</span><span class="p">.</span><span class="na">getClass</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">read_result</span><span class="p">.</span><span class="na">getClass</span><span class="p">();</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-3" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-3" name="2-3" role="tabpanel" tabindex="0"><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nv">basic_transform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="nf">Euler2DTransform</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">trans</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="nf">VectorDouble</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">trans</span><span class="p">:</span><span class="nf">push_back</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">trans</span><span class="p">:</span><span class="nf">push_back</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">basic_transform</span><span class="p">:</span><span class="nf">SetTranslation</span><span class="p">(</span><span class="nv">trans</span><span class="p">)</span>
+
+<span class="w">  </span><span class="nv">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;euler2D_lua.tfm&#39;</span>
+<span class="w">  </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="nf">WriteTransform</span><span class="p">(</span><span class="nv">basic_transform</span><span class="p">,</span><span class="w"> </span><span class="nv">file_name</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">read_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">SimpleITK</span><span class="p">.</span><span class="nf">ReadTransform</span><span class="p">(</span><span class="nv">file_name</span><span class="p">)</span>
+
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">read_result</span><span class="p">:</span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">basic_transform</span><span class="p">:</span><span class="nf">GetName</span><span class="p">(),</span><span class="w"> </span><span class="s2">&quot;type error&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-4" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-4" name="2-4" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">basic_transform</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Euler2DTransform</span><span class="p">()</span>
+    <span class="n">basic_transform</span><span class="o">.</span><span class="n">SetTranslation</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;euler2D_py.tfm&quot;</span>
+    <span class="n">sitk</span><span class="o">.</span><span class="n">WriteTransform</span><span class="p">(</span><span class="n">basic_transform</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+    <span class="n">read_result</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ReadTransform</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">read_result</span><span class="p">,</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Euler2DTransform</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-5" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-5" name="2-5" role="tabpanel" tabindex="0"><div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">basic_transform</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">Euler2DTransform</span><span class="p">()</span>
+<span class="w">  </span><span class="n">basic_transform</span><span class="o">$</span><span class="nf">SetTranslation</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">))</span>
+
+<span class="w">  </span><span class="n">file_name</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&#39;euler2D_r.tfm&#39;</span>
+<span class="w">  </span><span class="nf">WriteTransform</span><span class="p">(</span><span class="n">basic_transform</span><span class="p">,</span><span class="w"> </span><span class="n">file_name</span><span class="p">)</span>
+<span class="w">  </span><span class="n">read_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">ReadTransform</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+<span class="w">  </span><span class="nf">stopifnot</span><span class="p">(</span><span class="n">read_result</span><span class="o">$</span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">basic_transform</span><span class="o">$</span><span class="nf">GetName</span><span class="p">())</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-6" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-6" name="2-6" role="tabpanel" tabindex="0"><div class="highlight-ruby notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">basic_transform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Simpleitk</span><span class="o">::</span><span class="no">Euler2DTransform</span><span class="o">.</span><span class="n">new</span>
+<span class="w">  </span><span class="n">trans</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Simpleitk</span><span class="o">::</span><span class="no">VectorDouble</span><span class="o">.</span><span class="n">new</span>
+<span class="w">  </span><span class="n">trans</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">2</span><span class="o">.</span><span class="mi">0</span>
+<span class="w">  </span><span class="n">trans</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">3</span><span class="o">.</span><span class="mi">0</span>
+<span class="w">  </span><span class="n">basic_transform</span><span class="o">.</span><span class="n">set_translation</span><span class="p">(</span><span class="n">trans</span><span class="p">)</span>
+
+<span class="w">  </span><span class="n">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;euler2D_rb.tfm&#39;</span>
+<span class="w">  </span><span class="no">Simpleitk</span><span class="o">::</span><span class="n">write_transform</span><span class="p">(</span><span class="n">basic_transform</span><span class="p">,</span><span class="w"> </span><span class="n">file_name</span><span class="p">)</span>
+<span class="w">  </span><span class="n">read_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Simpleitk</span><span class="o">::</span><span class="n">read_transform</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+
+<span class="w">  </span><span class="k">raise</span><span class="w"> </span><span class="s2">&quot;This shouldn&#39;t happen.&quot;</span><span class="w"> </span><span class="k">unless</span><span class="w"> </span><span class="n">basic_transform</span><span class="o">.</span><span class="n">class</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">read_result</span><span class="o">.</span><span class="n">class</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-7" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-7" name="2-7" role="tabpanel" tabindex="0"><div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nv">Euler2DTransform</span><span class="w"> </span>basic_transform
+<span class="w">  </span><span class="k">set</span><span class="w"> </span>trans<span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="nv">2.0</span><span class="w"> </span><span class="mf">3.0</span><span class="w"> </span><span class="k">}</span>
+<span class="w">  </span><span class="nv">basic_transform</span><span class="w"> </span>SetTranslation<span class="w"> </span><span class="nv">$trans</span>
+
+<span class="w">  </span><span class="k">set</span><span class="w"> </span>file_name<span class="w"> </span><span class="s2">&quot;euler2D_tcl.tfm&quot;</span>
+<span class="w">  </span><span class="nv">WriteTransform</span><span class="w"> </span>basic_transform<span class="w"> </span><span class="nv">$file_name</span>
+<span class="w">  </span><span class="k">set</span><span class="w"> </span>read_result<span class="w"> </span><span class="k">[</span><span class="w"> </span><span class="nv">ReadTransform</span><span class="w"> </span><span class="nv">$file_name</span><span class="w"> </span><span class="k">]</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="k">{</span><span class="w"> </span><span class="k">[</span><span class="nv">basic_transform</span><span class="w"> </span>GetName<span class="k">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">[</span><span class="nv">$read_result</span><span class="w"> </span><span class="nv">GetName</span><span class="k">]</span><span class="w"> </span><span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">error</span><span class="w"> </span><span class="s2">&quot;This should not happen&quot;</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="k">}</span>
+
+<span class="w">  </span><span class="nv">basic_transform</span><span class="w"> </span><span class="o">-</span>delete
+<span class="w">  </span><span class="nv">$read_result</span><span class="w"> </span><span class="nv">-delete</span>
+</pre></div>
+</div>
+</div></div>
+<p>In all languages, except Python, <code class="docutils literal notranslate"><span class="pre">read_result</span></code> returns an object of the
+generic <code class="docutils literal notranslate"><span class="pre">sitk.Transform()</span></code> class and <code class="docutils literal notranslate"><span class="pre">basic_transform</span></code> creates a
+<code class="docutils literal notranslate"><span class="pre">sitk.Euler2DTransform()</span></code> object, but both
+represent the same transformation. Although this example only uses a single
+SimpleITK transformation, a .tfm file can hold a composite (set of
+transformations).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="conventions.html" class="btn btn-neutral float-left" title="Common Conventions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="filters.html" class="btn btn-neutral float-right" title="SimpleITK Filters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 NumFOCUS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

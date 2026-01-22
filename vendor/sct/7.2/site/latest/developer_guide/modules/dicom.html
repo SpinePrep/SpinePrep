@@ -1,0 +1,223 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DICOM (Digital Imaging and Communications in Medicine) &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Markups" href="markups.html" />
+    <link rel="prev" title="Colors" href="colors.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/modules/dicom.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Modules API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">DICOM (Digital Imaging and Communications in Medicine)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#customize-table-columns-in-dicom-browser">Customize table columns in DICOM browser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#customize-dicom-browser-table-content">Customize DICOM browser table content</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plugin-architecture">Plugin architecture</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dicom-networking-development">DICOM Networking Development</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selftests.html">Self Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequences.html">Sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumes.html">Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules API</a></li>
+      <li class="breadcrumb-item active">DICOM (Digital Imaging and Communications in Medicine)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/modules/dicom.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="dicom-digital-imaging-and-communications-in-medicine">
+<h1>DICOM (Digital Imaging and Communications in Medicine)<a class="headerlink" href="#dicom-digital-imaging-and-communications-in-medicine" title="Link to this heading"></a></h1>
+<p>Refer to the <a class="reference internal" href="../../user_guide/modules/dicom.html"><span class="std std-doc">Slicer User Guide DICOM Section</span></a> for a comprehensive overview of the DICOM standard and related features in Slicer.</p>
+<p>The overall DICOM Implementation in 3D Slicer consists of two main bodies of code embedded within the application.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://commontk.org">CTK</a> code is responsible for the implementation of the DICOM database and DIMSE networking layer. The CTK code is implemented in C++ and follows the Qt style.</p></li>
+<li><p>The DICOM Module exposes CTK functionality to Slicer users, and provides hooks through which other modules can register DICOM Plugins to handle the conversion of specific DICOM data objects into the corresponding MRML representation.  Once the data is in slicer, it can be operated on via the standard Slicer mechanisms.</p></li>
+</ul>
+<p>Additional tools are available for Slicer Python scripted module development:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.dcmtk.org/en/">DICOM Toolkit (DCMTK)</a> command line application tools are installed with 3D Slicer and can be called synchronously within a Slicer scripted module.</p></li>
+<li><p>The <a class="reference external" href="https://github.com/ImagingDataCommons/dicomweb-client">DICOMweb Client (<code class="docutils literal notranslate"><span class="pre">dicomweb-client</span></code>)</a> Python module is available within 3D Slicer for DICOMweb networking.</p></li>
+<li><p>Various Slicer-specific implementations for DICOM management and network are provided in the <a class="reference external" href="https://github.com/Slicer/Slicer/tree/main/Modules/Scripted/DICOMLib">DICOMLib scripted module</a>.</p></li>
+</ul>
+<section id="customize-table-columns-in-dicom-browser">
+<h2>Customize table columns in DICOM browser<a class="headerlink" href="#customize-table-columns-in-dicom-browser" title="Link to this heading"></a></h2>
+<p>Columns in the browser can be renamed, reordered, shown/hidden, etc. An example snippet to customize the browser can be found in the <a class="reference internal" href="../script_repository.html#customize-table-columns-in-dicom-browser"><span class="std std-ref">script repository</span></a>.</p>
+<p>The changes made like this are written into the database (ColumnDisplayProperties table), so the column customizations can be done only once per database.</p>
+</section>
+<section id="customize-dicom-browser-table-content">
+<h2>Customize DICOM browser table content<a class="headerlink" href="#customize-dicom-browser-table-content" title="Link to this heading"></a></h2>
+<p>The way the raw DICOM tags are represented in the fields of the DICOM tables is determined by the displayed field generator rules. These rules are subclasses of the <a class="reference external" href="https://github.com/commontk/CTK/blob/9c2af28e84da1abb986036317d75009d4c149923/Libs/DICOM/Core/ctkDICOMDisplayedFieldGeneratorAbstractRule.h">ctkDICOMDisplayedFieldGeneratorAbstractRule class</a>, and need to be <a class="reference external" href="https://github.com/commontk/CTK/blob/9c2af28e84da1abb986036317d75009d4c149923/Libs/DICOM/Core/ctkDICOMDisplayedFieldGenerator.h#L70">registered</a> to the displayed field generator in order to take part of the generation.</p>
+<p>The fields are <a class="reference external" href="https://github.com/commontk/CTK/9c2af28e84da1abb986036317d75009d4c149923/blob/Libs/DICOM/Core/ctkDICOMDatabase.h#L207">updated</a> when 1) files are added to the database or 2) the database schema is updated (happens when opening an older database with a newer Slicer). In the <a class="reference external" href="https://github.com/commontk/CTK/tree/9c2af28e84da1abb986036317d75009d4c149923">current</a> version only those files (i.e. instances) are processed for which the displayed fields have never been generated.</p>
+<p>When updating the displayed fields, every rule defines the fields it is responsible for using the cached DICOM tags in the database. Tags can be requested to be cached in the rules from the <a class="reference external" href="https://github.com/commontk/CTK/blob/9c2af28e84da1abb986036317d75009d4c149923/Libs/DICOM/Core/ctkDICOMDisplayedFieldGeneratorAbstractRule.h#L63">getRequiredDICOMTags</a> function. New field values are generated by the rules instance by instance. First, the getDisplayedFieldsForInstance function is called for each rule in which the custom values are generated from the raw tags, then the results are merged by calling mergeDisplayedFieldsForInstance for all the rules. Each field can be requested to be merged with “expect same value”, which uses the only non-empty value and throws a warning if conflicting values are encountered, or with “concatenate”, which simply concatenates the displayed field values together.</p>
+<p>The existing two rules can be used as examples: the <a class="reference external" href="https://github.com/commontk/CTK/blob/9c2af28e84da1abb986036317d75009d4c149923/Libs/DICOM/Core/ctkDICOMDisplayedFieldGeneratorDefaultRule.cpp">default</a> and the <a class="reference external" href="https://github.com/commontk/CTK/blob/9c2af28e84da1abb986036317d75009d4c149923/Libs/DICOM/Core/ctkDICOMDisplayedFieldGeneratorRadiotherapySeriesDescriptionRule.cpp">RT</a> rules.</p>
+</section>
+<section id="plugin-architecture">
+<h2>Plugin architecture<a class="headerlink" href="#plugin-architecture" title="Link to this heading"></a></h2>
+<p>There are many different kind of DICOM information objects and import/export of all of them would not be feasible to implement in the Slicer core (see more information in the <a class="reference internal" href="../../user_guide/modules/dicom.html#dicom-plugins"><span class="std std-ref">DICOM module user manual</span></a>). Therefore, extensions can implement custom importer/exporter classes based on DICOMLib.DICOMPlugin class and add them to slicer.modules.dicomPlugins dictionary object. The DICOM module uses these plugins to determine list of loadable and exportable items.</p>
+</section>
+<section id="dicom-networking-development">
+<h2>DICOM Networking Development<a class="headerlink" href="#dicom-networking-development" title="Link to this heading"></a></h2>
+<p>3D Slicer leverages CTK, DCMTK, and <code class="docutils literal notranslate"><span class="pre">dicomweb-client</span></code> to provide DICOM networking capabilities. Medical DICOM images stored on a remote Picture and Archiving Communication Systems (PACS) can be queried, fetched to Slicer, annotated, and then stored back to the PACS.</p>
+<p>We suggest that Slicer developers dealing with DICOM networking explore local test environment options to fit their needs.</p>
+<ul class="simple">
+<li><p>DCMTK provides tools for testing DIMSE networking. You can use DCMTK’s <code class="docutils literal notranslate"><span class="pre">storescp.exe</span></code> tool distributed with 3D Slicer to test asynchronous store requests with DIMSE.</p></li>
+</ul>
+<p>Run the following command from a shell prompt:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;path/to/Slicer x.y.z</span><span class="se">\b</span><span class="s2">in\storescp.exe&quot;</span> <span class="o">&lt;</span><span class="n">port</span><span class="o">-</span><span class="n">number</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Then in Slicer, send DICOM data to the server at <code class="docutils literal notranslate"><span class="pre">localhost:&lt;port-number</span></code>.</p>
+<ul class="simple">
+<li><p>Several open source PACS platforms can be installed locally to support DICOMweb testing in an isolated environment, including:</p>
+<ul>
+<li><p><a class="reference external" href="https://www.orthanc-server.com/index.php">Orthanc</a></p></li>
+<li><p><a class="reference external" href="https://www.dcm4che.org/">DCM4CHE</a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<p>See the <a class="reference external" href="https://commontk.org">CTK web site</a> for more information on the internals of the DICOM implementation. This tool uses the <a class="reference external" href="https://dicom.offis.de">DCMTK DICOM library</a>.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>Examples for common DICOM operations are provided in the <a class="reference internal" href="../script_repository.html#dicom"><span class="std std-ref">script repository</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="colors.html" class="btn btn-neutral float-left" title="Colors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="markups.html" class="btn btn-neutral float-right" title="Markups" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

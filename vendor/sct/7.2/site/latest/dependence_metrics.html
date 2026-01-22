@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TE (In)Dependence Models &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="_static/tedana_favicon.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=643184eb"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Included Decision Trees" href="included_decision_trees.html" />
+    <link rel="prev" title="Denoising Data with Components" href="denoising.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/dependence_metrics.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TE (In)Dependence Models</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dependence_metrics.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="te-in-dependence-models">
+<span id="dependence-models"></span><h1>TE (In)Dependence Models<a class="headerlink" href="#te-in-dependence-models" title="Link to this heading"></a></h1>
+<p>Functional MRI signal can be described in terms of fluctuations in <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>
+and <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>.
+In the below equation, <img class="math" src="_images/math/1cc08c2d6c78d68fdfc1735c11a90ba0768fc6ae.png" alt="S(t, TE_k)"/> is signal at a given time <img class="math" src="_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/>
+and for a given echo time <img class="math" src="_images/math/e4f4b9d04e5e63ad9acade2aab3b5a9fa0b4a9f2.png" alt="TE_k"/>.
+<img class="math" src="_images/math/5266d548740578b06644abbe5e3ede9aa53aa672.png" alt="\bar{S}(TE_k)"/> is the mean signal across time for the echo time
+<img class="math" src="_images/math/e4f4b9d04e5e63ad9acade2aab3b5a9fa0b4a9f2.png" alt="TE_k"/>.
+<img class="math" src="_images/math/a9f9bfe9176508ad2848b3a9c214d93711f9c884.png" alt="{\Delta}{S_0}(t)"/> is the difference in <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> at time <img class="math" src="_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/> from the average <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>.
+<img class="math" src="_images/math/a18b3e0ae2301db4f589d47e0ae3969114fae52f.png" alt="{\Delta}{R_2^*}(t)"/> is the difference in <img class="math" src="_images/math/f380b3f7e042ce60820d0fea9e8ceaaf90478df7.png" alt="R_2^*"/> at time <img class="math" src="_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/> from the average <img class="math" src="_images/math/f380b3f7e042ce60820d0fea9e8ceaaf90478df7.png" alt="R_2^*"/>.</p>
+<div class="math">
+<p><img src="_images/math/f88592e6c4b24aba6afe57ad52b0673bdab89644.png" alt="S(t, TE_k) = \bar{S}(TE_k) * (1 + \frac{{\Delta}{S_0}(t)}{\bar{S}_0} - {\Delta}{R_2^*}(t)*TE_k)"/></p>
+</div><p>If we ignore time, this can be simplified to</p>
+<div class="math">
+<p><img src="_images/math/37465ae542e5e612d1c904fe043cc083192cc051.png" alt="\frac{{\Delta}S(TE_k)}{\bar{S}(TE_k)} = \frac{{\Delta}S_0}{S_0}-{\Delta}{R_2^*}*TE_k"/></p>
+</div><p>In order to evaluate whether signal change is being driven by fluctuations in
+<strong>either</strong> <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> <strong>or</strong> <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>, one can break this overall model
+into submodels by zeroing out certain terms.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Remember- <img class="math" src="_images/math/f380b3f7e042ce60820d0fea9e8ceaaf90478df7.png" alt="R_2^*"/> is just <img class="math" src="_images/math/5eb71e028b79d0f99db92a487f48b1e26a6323df.png" alt="\frac{1}{T_2^*}"/></p>
+</div>
+<p>For a <strong>TE-independence model</strong>, if there were no fluctuations in <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>:</p>
+<div class="math">
+<p><img src="_images/math/c7b001a557c8aa79bcb546a36b6c27f44928748d.png" alt="\frac{{\Delta}S(TE_k)}{\bar{S(TE_k)}} = \frac{{\Delta}S_0}{S_0}
+
+{\Delta}S(TE_k) = {\bar{S}(TE_k)} * \frac{{\Delta}S_0}{S_0}"/></p>
+</div><p>Note that TE is not a parameter in this model.
+Hence, this model is TE-independent.</p>
+<p>Also, <img class="math" src="_images/math/eef12ec6054f76e54f0357d0696c0e436fe62c3b.png" alt="\frac{{\Delta}S_0}{S_0}"/> is a scalar (i.e., doesn’t change with
+TE), so we can just ignore that, which means we only use <img class="math" src="_images/math/6c37dbaf9b519d197c6c905dba800b7979abcbc0.png" alt="{\bar{S}(TE_k)}"/>
+(mean echo-wise signal).</p>
+<p>Thus, the model becomes <img class="math" src="_images/math/f017f6306250f923e3e7f79bc372f2e2f795a4e9.png" alt="{\Delta}S(TE_k) = {\bar{S}(TE_k)} * X"/>, where we
+fit X to the data using regression and evaluate model fit.</p>
+<p>For TEDPCA/TEDICA, we use regression to get parameter estimates (raw PEs; not
+standardized beta values) for component time-series against echo-specific data,
+and substitute those PEs for <img class="math" src="_images/math/6c37dbaf9b519d197c6c905dba800b7979abcbc0.png" alt="{\bar{S}(TE_k)}"/>.
+Thus, to assess the TE-independence of a component, we use the model
+<img class="math" src="_images/math/abf7ee41c3cba161db56b894ab59bb15a862635a.png" alt="PE(TE_k) = {\bar{S}(TE_k)} * X"/>, fit X to the data, and evaluate model
+fit.</p>
+<p>For a <strong>TE-dependence model</strong>, if there were no fluctuations in <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>:</p>
+<div class="math">
+<p><img src="_images/math/b341e3dcc0245116aae5bfff90a73c6773d614fe.png" alt="\frac{{\Delta}S(TE_k)}{\bar{S}(TE_k)} = -{\Delta}{R_2^*}*TE_k
+
+{\Delta}S(TE_k) = {\bar{S}(TE_k)} * -{\Delta}{R_2^*}*TE_k
+
+{\Delta}S(TE_k) = {\bar{S}(TE_k)} * TE_k * X
+
+PE(TE_k) = {\bar{S}(TE_k)} * TE_k * X"/></p>
+</div><p>Note that TE is a parameter in this model. Hence, it is TE-dependent.</p>
+<section id="applying-our-models-to-signal-decay-curves">
+<h2>Applying our models to signal decay curves<a class="headerlink" href="#applying-our-models-to-signal-decay-curves" title="Link to this heading"></a></h2>
+<p>As an example, let us simulate some data.
+We will simulate signal decay for two time points, as well as the signal decay
+for the hypothetical overall average over time.
+In one time point, only <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> will fluctuate.
+In the other, only <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> will fluctuate.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>To make things easier, we’re simulating these data with echo times of 0 to
+200 milliseconds, at 1ms intervals.
+In real life, you’ll generally only have 3-5 echoes to work with.
+Real signal from each echo will also be contaminated with random noise and
+will have influences from both <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> and <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>.</p>
+</div>
+<img alt="_images/b01_simulated_fluctuations.png" src="_images/b01_simulated_fluctuations.png" />
+<p>We can see that <img class="math" src="_images/math/27632c3b32819dc9d27fdb1554627691e25341cb.png" alt="{\Delta}S(TE_k)"/> has very different curves for the two
+simulated datasets.
+Moreover, as expected, <img class="math" src="_images/math/453dc51208948a4460b45a50ca3caeb18a0cf5ea.png" alt="\frac{{\Delta}S(TE_k)}{\bar{S}(TE_k)}"/> is flat
+across echoes for the <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>-fluctuating data and scales roughly linearly with TE
+for the <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>-fluctuating data.</p>
+<p>We then fit our TE-dependence and TE-independence models to the
+<img class="math" src="_images/math/27632c3b32819dc9d27fdb1554627691e25341cb.png" alt="{\Delta}S(TE_k)"/> data, which gives us predicted data for each model for
+each dataset.</p>
+<img alt="_images/b02_model_fits.png" src="_images/b02_model_fits.png" />
+<p>As expected, the <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> model fits perfectly to the <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>-fluctuating dataset, while
+the <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> model fits quite well to the <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>-fluctuating dataset.</p>
+<p>The actual model fits can be calculated as F-statistics.
+Then, the F-statistics per voxel are averaged across voxels into the Kappa and
+Rho pseudo-F-statistics.</p>
+</section>
+<section id="applying-our-models-to-spatiotemporal-decompositions">
+<h2>Applying our models to spatiotemporal decompositions<a class="headerlink" href="#applying-our-models-to-spatiotemporal-decompositions" title="Link to this heading"></a></h2>
+<p>Now let us see how this extends to time series, components, and component
+parameter estimates.</p>
+<p>We have the means to simulate <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>- and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>-based fluctuations, so here we have
+generated two time series- one <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>-based and one <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>-based.
+Both time series share the same level of percent signal change (a standard
+deviation equivalent to 5% of the mean), although the mean <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> (16000) is very
+different from the mean <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> (30).</p>
+<p>We can then average those two time series with different weights to create
+components that are <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/>- or <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/>-based to various degrees.
+In this case, both <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> contribute equally to the simulated time series.
+This simulated time series will act as our ICA component for this example.</p>
+<img alt="_images/b03_component_timeseries.png" src="_images/b03_component_timeseries.png" />
+<p>We also simulate multi-echo data for a single voxel with the same levels of
+<img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> fluctuations as in the pure <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> time series above.
+Here we show time series for a subset of echo times.</p>
+<img alt="_images/b04_echo_timeseries.png" src="_images/b04_echo_timeseries.png" />
+<p>And here we can see how those signals decay with echo time (again for only a
+subset of echo times):</p>
+<img alt="_images/b05_echo_value_distributions.png" src="_images/b05_echo_value_distributions.png" />
+<p>We then run a regression for each echo’s data against the component time series,
+producing one parameter estimate for each echo time.
+The parameter estimates match the signal decay curve for <img class="math" src="_images/math/27632c3b32819dc9d27fdb1554627691e25341cb.png" alt="{\Delta}S(TE_k)"/>,
+as seen above.
+We can thus apply the same TE-dependence and -independence models as above,
+in order to calculate single-voxel <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> and <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> values.
+Note that the metric values are extremely high, due to the inflated
+degrees of freedom resulting from using so many echoes in the simulations.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>You may also notice that, despite the fact that <img class="math" src="_images/math/e1a532bc5e84b68ad4c41c707fdda9bad507cb4c.png" alt="T_2^*"/> and <img class="math" src="_images/math/182ab051139a312c2a7ee4d721792fe87d23eef3.png" alt="S_0"/> fluctuate the same
+amount and that both contributed equally to the component, <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> is
+much higher than <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/>.</p>
+</div>
+<img alt="_images/b06_component_model_fits.png" src="_images/b06_component_model_fits.png" />
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="denoising.html" class="btn btn-neutral float-left" title="Denoising Data with Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="included_decision_trees.html" class="btn btn-neutral float-right" title="Included Decision Trees" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

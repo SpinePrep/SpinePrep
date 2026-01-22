@@ -1,0 +1,461 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supported types &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Defaults" href="defaults.html" />
+    <link rel="prev" title="Overview" href="overview.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/parameter_nodes/supported_types.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Parameter Nodes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Supported types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#built-in-types">Built-in types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mrml-nodes">MRML nodes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enum">Enum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#parameter-packs">Parameter Packs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="defaults.html">Defaults</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validators.html">Validators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui_connection.html">GUI Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui_creation.html">GUI Creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="advanced/index.html">Advanced</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/index.html">Modules API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Parameter Nodes</a></li>
+      <li class="breadcrumb-item active">Supported types</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/parameter_nodes/supported_types.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="supported-types">
+<h1>Supported types<a class="headerlink" href="#supported-types" title="Link to this heading"></a></h1>
+<section id="built-in-types">
+<h2>Built-in types<a class="headerlink" href="#built-in-types" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;parameterNodeWrapper</span></code> decorator keys off of the type hints given in the class definition, similar to python’s <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass">dataclasses.dataclass</a> class.</p>
+<p>The classes that are recognized by default are</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vtkMRMLNode</span></code> (including subclasses)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">list</span></code> (hinted as <code class="docutils literal notranslate"><span class="pre">list[int]</span></code>, <code class="docutils literal notranslate"><span class="pre">list[str]</span></code>, etc)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tuple</span></code> (hinted as <code class="docutils literal notranslate"><span class="pre">tuple[int,</span> <span class="pre">bool]</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple[str,</span> <span class="pre">vtkMRMLNode,</span> <span class="pre">float]</span></code>, etc)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> (hinted as <code class="docutils literal notranslate"><span class="pre">dict[keyType,</span> <span class="pre">valueType]</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enum.Enum</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pathlib.PosixPath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pathlib.WindowsPath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pathlib.PurePath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pathlib.PurePosixPath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pathlib.PureWindowsPath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">typing.Union</span></code> (hinted as <code class="docutils literal notranslate"><span class="pre">typing.Union[int,</span> <span class="pre">str]</span></code>, <code class="docutils literal notranslate"><span class="pre">typing.Union[bool,</span> <span class="pre">vtkMRMLModelNode,</span> <span class="pre">float]</span></code>, etc)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">typing.Optional</span></code> (hinted as <code class="docutils literal notranslate"><span class="pre">typing.Optional[int]</span></code>, <code class="docutils literal notranslate"><span class="pre">typing.Optional[float]</span></code>, etc)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parameterPack</span></code> (see <a class="reference internal" href="#parameter-packs">Parameter Packs</a>)</p></li>
+</ul>
+<p>When using container types like <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, or <code class="docutils literal notranslate"><span class="pre">dict</span></code>, only these types are recognized as element types by default. Note that containers can be nested, such as <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">list[int]]</span></code>.</p>
+<p>For using custom types in parameter node wrappers, first see if <a class="reference internal" href="#parameter-packs">Parameter Packs</a>, will suit your needs. If not, check out the <a class="reference internal" href="advanced/custom_classes.html"><span class="std std-doc">Custom Classes</span></a> page.</p>
+</section>
+<section id="mrml-nodes">
+<h2>MRML nodes<a class="headerlink" href="#mrml-nodes" title="Link to this heading"></a></h2>
+<p>MRML nodes from non-core modules are supported, but to define a <code class="docutils literal notranslate"><span class="pre">parameterNodeWrapper</span></code> in the global space of a module (i.e. not inside a function) you can’t use the classes from <code class="docutils literal notranslate"><span class="pre">slicer</span></code> namespace. This is because they are not added to the slicer namespace until after the class is created. Here is an example on how to use <code class="docutils literal notranslate"><span class="pre">vtkMRMLMarkupsFiducialNode</span></code>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">slicer.parameterNodeWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">slicer</span><span class="w"> </span><span class="kn">import</span> <span class="n">vtkMRMLMarkupsFiducialNode</span>
+
+<span class="nd">@parameterNodeWrapper</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomParameterNode</span><span class="p">:</span>
+  <span class="n">markup</span><span class="p">:</span> <span class="n">vtkMRMLMarkupsFiducialNode</span>
+  <span class="n">markups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">vtkMRMLMarkupsFiducialNode</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For uses of MRML nodes in Python code, it is preferred to use <code class="docutils literal notranslate"><span class="pre">slicer.&lt;node&gt;</span></code> rather than <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">&lt;specific-mrml-package&gt;</span> <span class="pre">import</span> <span class="pre">&lt;node&gt;</span></code> as this is more robust if MRML nodes change packages (e.g. from an extension to the core).</p>
+</div>
+</section>
+<section id="enum">
+<h2>Enum<a class="headerlink" href="#enum" title="Link to this heading"></a></h2>
+<p>Instances of <a class="reference external" href="https://docs.python.org/3/library/enum.html"><code class="docutils literal notranslate"><span class="pre">enum.Enum</span></code></a> are serialized by their <em>name</em>, not their value. This allows enums to hold unserialized metadata, accessible via <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum.value"><code class="docutils literal notranslate"><span class="pre">Enum.value</span></code></a>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">slicer.parameterNodeWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="s1">&#39;#FF0000&#39;</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="s1">&#39;#00FF00&#39;</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s1">&#39;#0000FF&#39;</span>
+
+<span class="nd">@parameterNodeWrapper</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomParameterNode</span><span class="p">:</span>
+    <span class="n">color</span><span class="p">:</span> <span class="n">Color</span>
+</pre></div>
+</div>
+<p>It also means that if you changed the name of an enum value (e.g. from <code class="docutils literal notranslate"><span class="pre">RED</span></code> to <code class="docutils literal notranslate"><span class="pre">Red</span></code>), it would break the loading of old MRB files or MRML scenes that saved a <code class="docutils literal notranslate"><span class="pre">Color</span></code> parameter.</p>
+</section>
+<section id="parameter-packs">
+<h2>Parameter Packs<a class="headerlink" href="#parameter-packs" title="Link to this heading"></a></h2>
+<p>It is often useful to group related information together in structures with useful names. Another decorator, <code class="docutils literal notranslate"><span class="pre">&#64;parameterPack</span></code> was added to make this easier. This will make the class behave in a similar manner to Python’s <code class="docutils literal notranslate"><span class="pre">&#64;dataclasses.dataclass</span></code>. These <code class="docutils literal notranslate"><span class="pre">parameterPack</span></code>s can then be used in a <code class="docutils literal notranslate"><span class="pre">parameterNodeWrapper</span></code>. Typically the name will stored as <code class="docutils literal notranslate"><span class="pre">&lt;pack-name&gt;.&lt;pack-member-name&gt;</span></code> in the underlying parameter node when used with a <code class="docutils literal notranslate"><span class="pre">parameterNodeWrapper</span></code>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">slicer.parameterNodeWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="nd">@parameterPack</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Point</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">float</span>
+
+
+<span class="nd">@parameterPack</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BoundingBox</span><span class="p">:</span>
+    <span class="c1"># can nest parameterPacks</span>
+    <span class="n">topLeft</span><span class="p">:</span> <span class="n">Point</span>
+    <span class="n">bottomRight</span><span class="p">:</span> <span class="n">Point</span>
+
+
+<span class="nd">@parameterNodeWrapper</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParameterNodeType</span><span class="p">:</span>
+    <span class="c1"># Can add them to a @parameterNodeWrapper like any other type.</span>
+    <span class="c1"># Will be stored in the underlying parameter node as</span>
+    <span class="c1">#  - box.topLeft.x (default value is 0)</span>
+    <span class="c1">#  - box.topLeft.y (default value is 1)</span>
+    <span class="c1">#  - box.bottomRight.x (default value is 1)</span>
+    <span class="c1">#  - box.bottomRight.y (default value is 0)</span>
+    <span class="n">box</span><span class="p">:</span> <span class="n">BoundingBox</span> <span class="o">=</span> <span class="n">BoundingBox</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Point</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+
+<span class="n">parameterNode</span> <span class="o">=</span> <span class="n">slicer</span><span class="o">.</span><span class="n">mrmlScene</span><span class="o">.</span><span class="n">AddNewNodeByClass</span><span class="p">(</span><span class="s1">&#39;vtkMRMLScriptedModuleNode&#39;</span><span class="p">)</span>
+<span class="n">param</span> <span class="o">=</span> <span class="n">ParameterNodeType</span><span class="p">(</span><span class="n">parameterNode</span><span class="p">)</span>
+
+<span class="c1"># can set wholesale</span>
+<span class="n">param</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">topLeft</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># or can set piecewise</span>
+<span class="n">param</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">bottomRight</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">param</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">bottomRight</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
+</pre></div>
+</div>
+<p>The created <code class="docutils literal notranslate"><span class="pre">parameterPack</span></code> will have the following attributes:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">slicer.parameterNodeWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@parameterPack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">ParameterPack</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="c1"># if the type is Annotated, it will treat the annotations the same as @parameterNodeWrapper</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">x</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">WithinRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">option</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">])]</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># with no arguments the constructor will use the given (or implied) defaults.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">ParameterPack</span><span class="p">()</span>  <span class="c1"># == ParameterPack(x=0.0, option=&quot;b&quot;)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># positional arguments are accepted in the order the members are declared in</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p2</span> <span class="o">=</span> <span class="n">ParameterPack</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># keyword arguments are accepted with the keyword being the member names</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p3</span> <span class="o">=</span> <span class="n">ParameterPack</span><span class="p">(</span><span class="n">option</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># unspecified arguments use their default</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p4</span> <span class="o">=</span> <span class="n">ParameterPack</span><span class="p">(</span><span class="mf">4.5</span><span class="p">)</span>  <span class="c1"># == ParameterPack(x=4.5, option=&quot;b&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p5</span> <span class="o">=</span> <span class="n">ParameterPack</span><span class="p">(</span><span class="n">option</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>  <span class="c1"># == ParameterPack(x=0.0, option=&quot;a&quot;)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># validators are run on construction</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p6</span> <span class="o">=</span> <span class="n">ParameterPack</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="go">ValueError: Value must be within range [0, 10], is -1</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># validators are run on set attribute</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p4</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s2">&quot;c&quot;</span>
+<span class="go">ParameterPack(x=4.5, option=b)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># the classes automatically have __eq__ added to them</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">==</span> <span class="n">p2</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p2</span> <span class="o">==</span> <span class="n">p3</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># the classes are also given a __repr__ and a __str__ that describes their attributes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">p4</span><span class="p">)</span>
+<span class="go">ParameterPack(x=4.5, option=&quot;b&quot;)</span>
+</pre></div>
+</div>
+<p>If any of the autogenerated dunder methods (<code class="docutils literal notranslate"><span class="pre">__init__</span></code>, <code class="docutils literal notranslate"><span class="pre">__eq__</span></code>, <code class="docutils literal notranslate"><span class="pre">__str__</span></code>, <code class="docutils literal notranslate"><span class="pre">__repr__</span></code>) are overridden in the parameterPack, they will not be autogenerated.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="nd">@parameterPack</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParameterPack</span><span class="p">:</span>
+    <span class="n">i</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">j</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">k</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="c1"># custom constructor</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+
+    <span class="c1"># default __eq__, __str__, and __repr__ are generated</span>
+</pre></div>
+</div>
+<section id="parameter-packs-with-invariants">
+<h3>Parameter Packs with invariants<a class="headerlink" href="#parameter-packs-with-invariants" title="Link to this heading"></a></h3>
+<p>Invariants can be added to <code class="docutils literal notranslate"><span class="pre">parameterPack</span></code>s via validators as described above. However this is only good for invariants on independent parameters (you can do something like <code class="docutils literal notranslate"><span class="pre">x:</span> <span class="pre">Annotated[int,</span> <span class="pre">Minimum(0)]</span></code>, but you can’t do something like make sure parameter <code class="docutils literal notranslate"><span class="pre">x</span></code> is less than another parameter <code class="docutils literal notranslate"><span class="pre">y</span></code> with validators).</p>
+<p>More complex invariants can be enforced by making the <code class="docutils literal notranslate"><span class="pre">parameterPack</span></code> parameters private (via leading underscore convention) and then offering public accessors that enforce the invariants. While this is a little bit more work, most of the time it is still less work than making a non-<code class="docutils literal notranslate"><span class="pre">parameterPack</span></code> custom class work with the <code class="docutils literal notranslate"><span class="pre">parameterNodeWrapper</span></code>.</p>
+<p>E.g.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">slicer.parameterNodeWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">parameterPack</span><span class="p">,</span>
+    <span class="n">Default</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BadDateException</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="nd">@parameterPack</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Date</span><span class="p">:</span>
+    <span class="c1"># Private parameters that will be written to the scene.</span>
+    <span class="c1"># Can still set defaults on the private parameters.</span>
+    <span class="n">_month</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">_day</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">_year</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1970</span>
+
+    <span class="c1"># A checker for the multi-parameter invariant</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">checkDate</span><span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+        <span class="c1"># note: this is assuming leap years don&#39;t exist and negative years are allowable</span>
+        <span class="k">if</span> <span class="n">month</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">month</span> <span class="o">&gt;</span> <span class="mi">12</span> <span class="ow">or</span> <span class="n">day</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">day</span> <span class="o">&gt;</span> <span class="mi">31</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadDateException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad date: </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">day</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">month</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">day</span> <span class="o">&gt;</span> <span class="mi">28</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadDateException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad date: </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">day</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">month</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span> <span class="ow">and</span> <span class="n">day</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadDateException</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad date: </span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">day</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">year</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># override the __init__ function to enforce the invariant</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">month</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_month</span> <span class="o">=</span> <span class="n">month</span>
+        <span class="k">if</span> <span class="n">day</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_day</span> <span class="o">=</span> <span class="n">day</span>
+        <span class="k">if</span> <span class="n">year</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_year</span> <span class="o">=</span> <span class="n">year</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_month</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_year</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Date(month=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">, day=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">, year=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="c1"># Add properties that access the private parameters and enforces the invariant.</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">month</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_month</span>
+
+    <span class="nd">@month</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">month</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkDate</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_month</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">day</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_day</span>
+
+    <span class="nd">@day</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">day</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_year</span>
+
+    <span class="nd">@year</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">year</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_year</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># Can even add helper functions for a nicer interface.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">day</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">year</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkDate</span><span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_month</span> <span class="o">=</span> <span class="n">month</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_day</span> <span class="o">=</span> <span class="n">day</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_year</span> <span class="o">=</span> <span class="n">year</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When trying to enforce invariants over complex classes, care needs to be taken to not allow the user to accidentally break the invariant. Consider the following code:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">slicer.parameterNodeWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">parameterPack</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="nd">@parameterPack</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InvariantTestPack</span><span class="p">:</span>
+    <span class="n">_listA</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">_listB</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">checkInvariant</span><span class="p">(</span><span class="n">listA</span><span class="p">,</span> <span class="n">listB</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">listA</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">listB</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invariant failed&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listA</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">listB</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">listA</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_listA</span> <span class="o">=</span> <span class="n">listA</span>
+        <span class="k">if</span> <span class="n">listB</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_listB</span> <span class="o">=</span> <span class="n">listB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkInvariant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_listA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listB</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listA</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listA</span>
+
+    <span class="nd">@listA</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkInvariant</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">listB</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_listA</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listB</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listB</span>
+
+    <span class="nd">@listB</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listB</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkInvariant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">listA</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_listB</span> <span class="o">=</span> <span class="n">value</span>
+</pre></div>
+</div>
+<p>It is very easy for the user to accidentally break the invariant</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">pack</span> <span class="o">=</span> <span class="n">InvariantTestPack</span><span class="p">(</span><span class="n">listA</span><span class="o">=</span><span class="p">[],</span> <span class="n">listB</span><span class="o">=</span><span class="p">[])</span>
+
+<span class="n">pack</span><span class="o">.</span><span class="n">listA</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># raises ValueError</span>
+
+<span class="n">pack</span><span class="o">.</span><span class="n">listA</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># BAD: does not raise ValueError</span>
+</pre></div>
+</div>
+<p>The problem comes from the fact that giving direct access to <code class="docutils literal notranslate"><span class="pre">listA</span></code> and <code class="docutils literal notranslate"><span class="pre">listB</span></code> allows the user to change them without <code class="docutils literal notranslate"><span class="pre">InvariantTestPack</span></code>’s knowledge. This is just how Python works.</p>
+<p>This can be worked around a couple of ways. One way is to essentially flatten the methods of <code class="docutils literal notranslate"><span class="pre">list</span></code> into the <code class="docutils literal notranslate"><span class="pre">parameterPack</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">appendListA(value)</span> <span class="pre">-&gt;</span> <span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">getListA(index)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">setListB(index,</span> <span class="pre">value)</span> <span class="pre">-&gt;</span> <span class="pre">None</span></code>). Or if the object you are returning has observation capabilities (similar to signals from Qt or <code class="docutils literal notranslate"><span class="pre">AddObserver</span></code> from VTK) you can try to hook into those.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="defaults.html" class="btn btn-neutral float-right" title="Defaults" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

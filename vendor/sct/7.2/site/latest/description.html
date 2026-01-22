@@ -1,0 +1,2176 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Schema Tools API" href="api.html"><link rel="prev" title="Translating a BEP Document into Schema Code" href="doc_to_schema.html">
+        <link rel="prefetch" href="_static/black_logo.svg" as="image">
+        <link rel="prefetch" href="_static/white_logo.svg" as="image">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+        <title>BIDS schema description - BIDS Schema Tools documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="bidsschematools" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/description.html" /><meta name="readthedocs-http-status" content="200" /></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">BIDS Schema Tools  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="_static/black_logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="_static/white_logo.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">BIDS Schema Tools  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">BIDS Schema Tools Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc_to_schema.html">Translating a BEP Document into Schema Code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">BIDS schema description</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">Schema Tools API</a><input aria-label="Toggle navigation of Schema Tools API" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/bidsschematools.html">bidsschematools</a><input aria-label="Toggle navigation of bidsschematools" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/bidsschematools.data.html">bidsschematools.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/bidsschematools.expressions.html">bidsschematools.expressions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/description.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="bids-schema-description">
+<h1>BIDS schema description<a class="headerlink" href="#bids-schema-description" title="Link to this heading">¶</a></h1>
+<p>Portions of the BIDS specification are defined using YAML files in order to
+make the specification machine-readable.</p>
+<p>Currently the portions of the specification that rely on this schema are:</p>
+<ul class="simple">
+<li><p>the entity tables,</p></li>
+<li><p>entity definitions,</p></li>
+<li><p>filename templates,</p></li>
+<li><p>metadata tables.</p></li>
+</ul>
+<p>Any changes to the specification should be mirrored in the schema.</p>
+<section id="organization-and-syntax">
+<h2>Organization and syntax<a class="headerlink" href="#organization-and-syntax" title="Link to this heading">¶</a></h2>
+<p>At the time of this writing, the schema has the following file layout:</p>
+<div class="highlight-plain notranslate"><div class="highlight"><pre><span></span>├── meta
+│   ├── ...
+│   └── versions.yaml
+├── objects
+│   ├── ...
+│   └── suffixes.yaml
+├── rules
+│   ├── checks
+│   │   ├── ...
+│   │   └── references.yaml
+│   ├── files
+│   │   ├── common
+│   │   │   ├── core.yaml
+│   │   │   └── tables.yaml
+│   │   ├── deriv
+│   │   │   ├── imaging.yaml
+│   │   │   └── preprocessed_data.yaml
+│   │   └── raw
+│   │       ├── ...
+│   │       └── task.yaml
+│   ├── sidecars
+│   │   ├── derivatives
+│   │   │   └── common_derivatives.yaml
+│   │   ├── ...
+│   │   └── pet.yaml
+│   ├── tabular_data
+│   │   ├── derivatives
+│   │   │   └── common_derivatives.yaml
+│   │   ├── ...
+│   │   └── task.yaml
+│   ├── ...
+│   └── modalities.yaml
+├── BIDS_VERSION
+└── SCHEMA_VERSION
+</pre></div>
+</div>
+<p>The top-level organization includes <code class="docutils literal notranslate"><span class="pre">objects</span></code>, where terms are defined;
+<code class="docutils literal notranslate"><span class="pre">rules</span></code>, where constraints (such as valid filenames or required metadata fields)
+are defined;
+and <code class="docutils literal notranslate"><span class="pre">meta</span></code>, where definitions useful for interpreting the schema are defined.</p>
+<p>Each file is made up of YAML data, most often an <em>object</em>.
+For example, the file <code class="docutils literal notranslate"><span class="pre">rules/checks/mri.yaml</span></code> contains the contents:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">PhasePartUnits</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">issue</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PHASE_UNITS</span>
+<span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">Phase images (with the `part-phase` entity) must have units</span>
+<span class="w">      </span><span class="no">&quot;rad&quot; or &quot;arbitrary&quot;.</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span>
+<span class="w">  </span><span class="nt">selectors</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">modality == &quot;mri&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">entities.part == &quot;phase&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;&quot;Units&quot;</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">sidecar&#39;</span>
+<span class="w">  </span><span class="nt">checks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intersects([sidecar.Units], [&quot;rad&quot;, &quot;arbitrary&quot;])</span>
+</pre></div>
+</div>
+<p>When we wish to refer to a file we might write <code class="docutils literal notranslate"><span class="pre">rules/checks/mri.yaml</span></code>.
+Alternately, we can use <code class="docutils literal notranslate"><span class="pre">rules.checks.mri</span></code> to refer to the object contained by the
+file.
+Using this notation, the <em>qualified name</em>, the contents of an entire directory or a
+portion of a file can be referred to unambiguously.
+For example, the entire <code class="docutils literal notranslate"><span class="pre">rules/checks/</span></code> directory is referred to as <code class="docutils literal notranslate"><span class="pre">rules.checks</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">rules.checks.mri.PhasePartUnits.issue</span></code> refers to the object:</p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PHASE_UNITS&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Phase images (with the `part-phase` [...]\n\&quot;rad\&quot; or \&quot;arbitrary\&quot;.\n&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>These qualified names may be used in this README, as well as in <em>references</em> and
+<em>expressions</em>.</p>
+<section id="description-formatting">
+<h3>Description formatting<a class="headerlink" href="#description-formatting" title="Link to this heading">¶</a></h3>
+<p>Many objects throughout the schema have a <code class="docutils literal notranslate"><span class="pre">description</span></code> field,
+which will typically be rendered somewhere in the specification.
+Because the specification is written in <a class="reference external" href="https://en.wikipedia.org/wiki/Markdown">Markdown</a>,
+these <code class="docutils literal notranslate"><span class="pre">description</span></code> fields may also contain Markdown,
+including links to other locations in the specification.</p>
+<p>Because the same description may be used in multiple locations,
+a mechanism is needed to ensure that the correct path is discovered
+to render the description in each location.
+To do this, the path should follow the form <code class="docutils literal notranslate"><span class="pre">SPEC_ROOT/path/within/source.md#anchor</span></code>.
+For example, to link to the
+<a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/common-principles.html#definitions">Definitions</a>
+section of
+<a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/common-principles.html">Common principles</a>,
+use the path <code class="docutils literal notranslate"><span class="pre">SPEC_ROOT/common-principles.md#definitions</span></code>:</p>
+<div class="highlight-Markdown notranslate"><div class="highlight"><pre><span></span>[<span class="nt">Common principles - Definitions</span>](<span class="na">SPEC_ROOT/common-principles.md#definitions</span>)
+</pre></div>
+</div>
+<p>Note that the Markdown extension <code class="docutils literal notranslate"><span class="pre">.md</span></code> MUST be used for this to render correctly.</p>
+<p>For more information please see the following pull request and linked discussions:
+<a class="reference external" href="https://github.com/bids-standard/bids-specification/pull/1096">#1096</a></p>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h3>
+<p>Some schema entries take the form:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">ObjectName</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.metadata.OtherObjectName</span>
+</pre></div>
+</div>
+<p>This object may be <em>dereferenced</em> by replacing the <code class="docutils literal notranslate"><span class="pre">$ref</span></code> entry
+with the object being referenced.
+The following two prototypical examples are presented to clarify the semantics of
+references (the cases in which they are used will be presented later):</p>
+<ol class="arabic">
+<li><p>In <code class="docutils literal notranslate"><span class="pre">objects.enums</span></code>:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">_GeneticLevelEnum</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">  </span><span class="nt">enum</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.enums.Genetic.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.enums.Genomic.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.enums.Epigenomic.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.enums.Transcriptomic.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.enums.Metabolomic.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.enums.Proteomic.value</span>
+</pre></div>
+</div>
+<p>and in <code class="docutils literal notranslate"><span class="pre">objects.metadata</span></code>:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">GeneticLevel</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GeneticLevel</span>
+<span class="w">  </span><span class="nt">display_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Genetic Level</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">Describes the level of analysis.</span>
+<span class="w">    </span><span class="no">Values MUST be one of `&quot;Genetic&quot;`, `&quot;Genomic&quot;`, `&quot;Epigenomic&quot;`,</span>
+<span class="w">    </span><span class="no">`&quot;Transcriptomic&quot;`, `&quot;Metabolomic&quot;`, or `&quot;Proteomic&quot;`.</span>
+<span class="w">  </span><span class="nt">anyOf</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.enums._GeneticLevelEnum</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">array</span>
+<span class="w">      </span><span class="nt">items</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects.enums._GeneticLevelEnum</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">_GeneticLevelEnum</span></code> is used to describe the valid values of <code class="docutils literal notranslate"><span class="pre">GeneticLevel</span></code>,
+(which are in turn references to individual values), and the references inside <code class="docutils literal notranslate"><span class="pre">GeneticLevel.anyOf</span></code> indicate that there may be a single
+such value or a list of values.</p>
+</li>
+<li><p>In <a class="reference internal" href="#./rules/files/deriv/imaging.yaml"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">rules.files.deriv.imaging</span></code></span></a>:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">anat_parametric_volumetric</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rules.files.raw.anat.parametric</span>
+<span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$ref</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meta.templates.deriv.volumetric.entities</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rules.files.raw.anat.parametric.entities</span>
+</pre></div>
+</div>
+<p>Here, the derivative datatype rule starts by copying the raw datatype rule
+<code class="docutils literal notranslate"><span class="pre">rules.files.raw.anat.nonparametric</span></code>.
+It then <em>overrides</em> the <code class="docutils literal notranslate"><span class="pre">entities</span></code> portion of that rule with a new object.
+To <em>extend</em> the original <code class="docutils literal notranslate"><span class="pre">entities</span></code>, it composes
+<code class="docutils literal notranslate"><span class="pre">meta.templates.deriv.volumetric.entities</span></code>
+and <code class="docutils literal notranslate"><span class="pre">rules.files.raw.anat.nonparametric.entities</span></code>.
+When multiple references are aggregated, the first reference takes
+precedence.</p>
+<p>Note also that <code class="docutils literal notranslate"><span class="pre">value:</span> <span class="pre">null</span></code> can be used to “delete” a key from a template.
+For example, in <code class="docutils literal notranslate"><span class="pre">rules.files.raw.events</span></code>:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">events__pet</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rules.files.raw.events.events</span>
+<span class="w">  </span><span class="nt">datatypes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pet</span>
+<span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meta.templates.raw.task.entities</span>
+<span class="w">    </span><span class="nt">tracer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">reconstruction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="c1"># Most events allow acquisition, PET doesn&#39;t</span>
+<span class="w">    </span><span class="nt">acquisition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+</pre></div>
+</div>
+<p>This technique should be used judiciously, preferring semantic clarity to brevity.
+Templates should be expected to grow as BIDS evolves,
+and should thus be used only where those changes should propagate.</p>
+</li>
+</ol>
+</section>
+<section id="expressions">
+<h3>Expressions<a class="headerlink" href="#expressions" title="Link to this heading">¶</a></h3>
+<p>Rules definitions make use of a limited language of expressions that always evaluate to <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>.
+These expressions may be used as <code class="docutils literal notranslate"><span class="pre">selectors</span></code>, determining whether a rule applies,
+or <code class="docutils literal notranslate"><span class="pre">checks</span></code>, determining whether a rule is satisfied.</p>
+<p>Re-examining <code class="docutils literal notranslate"><span class="pre">rules.checks.mri.PhasePartUnits</span></code> from above:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">PhasePartUnits</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">issue</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PHASE_UNITS</span>
+<span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">Phase images (with the `part-phase` entity) must have units</span>
+<span class="w">      </span><span class="no">&quot;rad&quot; or &quot;arbitrary&quot;.</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">error</span>
+<span class="w">  </span><span class="nt">selectors</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">modality == &quot;mri&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">entities.part == &quot;phase&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;&quot;Units&quot;</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">sidecar&#39;</span>
+<span class="w">  </span><span class="nt">checks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">intersects([sidecar.Units], [&quot;rad&quot;, &quot;arbitrary&quot;])</span>
+</pre></div>
+</div>
+<p>We see expressions may contain:</p>
+<ul class="simple">
+<li><p>fields such as <code class="docutils literal notranslate"><span class="pre">modality</span></code>, <code class="docutils literal notranslate"><span class="pre">entities</span></code> (which has a <code class="docutils literal notranslate"><span class="pre">.part</span></code> subfield), <code class="docutils literal notranslate"><span class="pre">sidecar</span></code></p></li>
+<li><p>String literals such as <code class="docutils literal notranslate"><span class="pre">&quot;mri&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Units&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;rad&quot;</span></code></p></li>
+<li><p>Lists containing fields or strings</p></li>
+<li><p>Comparison operators such as <code class="docutils literal notranslate"><span class="pre">==</span></code> (equality) or <code class="docutils literal notranslate"><span class="pre">in</span></code> (subfield exists in field)</p></li>
+<li><p>Functions such as <code class="docutils literal notranslate"><span class="pre">intersects()</span></code></p></li>
+</ul>
+<p>In fact, the full list of fields is defined in the <code class="docutils literal notranslate"><span class="pre">meta.context</span></code> object,
+which (currently) contains at the top level:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">schema</span></code>: access to the schema itself</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataset</span></code>: attributes of the whole dataset</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subject</span></code>: attributes of the current subject</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: the full path of the current file (relative to dataset root)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">entities</span></code>: an object of entities parsed from the path</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">datatype</span></code>: the datatype, parsed from the path</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">suffix</span></code>: the suffix, parsed from the path</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extension</span></code>: the file extension</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">modality</span></code>: the file modality, determined by datatype</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sidecar</span></code>: the metadata values, accumulated by the inheritance principle</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">associations</span></code>: associated files, discovered by the inheritance principle</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">columns</span></code>: the columns in the current TSV file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">json</span></code>: the contents of the current JSON file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gzip</span></code>: the contents of the current file GZIP header</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nifti_header</span></code>: selected contents of the current NIfTI file’s header</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ome</span></code>: the contents of the current OME-XML metadata</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tiff</span></code>: the contents of the current TIFF file’s header</p></li>
+</ul>
+<p>Some of these are strings, while others are nested objects.
+These are to be populated by an <em>interpreter</em> of the schema,
+and provide the <em>namespace</em> in which expressions are evaluated.</p>
+<p>The following operators should be defined by an interpreter:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">==</span></code></p></td>
+<td><p>equality</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">suffix</span> <span class="pre">==</span> <span class="pre">&quot;T1w&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">!=</span></code></p></td>
+<td><p>inequality</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">entities.task</span> <span class="pre">!=</span> <span class="pre">&quot;rest&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;</span></code>/<code class="docutils literal notranslate"><span class="pre">&gt;</span></code></p></td>
+<td><p>less-than / greater-than</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sidecar.EchoTime</span> <span class="pre">&lt;</span> <span class="pre">0.5</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>/<code class="docutils literal notranslate"><span class="pre">&gt;=</span></code></p></td>
+<td><p>less-than-or-equal / greater-than-or-equal</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">4</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">in</span></code></p></td>
+<td><p>object lookup, true if RHS is a subfield of LHS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;Units&quot;</span> <span class="pre">in</span> <span class="pre">sidecar</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">!</span></code></p></td>
+<td><p>negation, true if the following value is false, or vice versa</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">!true</span> <span class="pre">==</span> <span class="pre">false</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span></code></p></td>
+<td><p>conjunction, true if both RHS and LHS are true</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;Units&quot;</span> <span class="pre">in</span> <span class="pre">sidecar</span> <span class="pre">&amp;&amp;</span> <span class="pre">sidecar.Units</span> <span class="pre">==</span> <span class="pre">&quot;mm&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">||</span></code></p></td>
+<td><p>disjunction, true if either RHS or LHS is true</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&lt;</span> <span class="pre">mn</span> <span class="pre">||</span> <span class="pre">a</span> <span class="pre">&gt;</span> <span class="pre">mx</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.</span></code></p></td>
+<td><p>object query, returns value of subfield</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sidecar.Units</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+<td><p>array/string index, returns value of Nth element (0-indexed)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">columns.participant_label[0]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">+</span></code></p></td>
+<td><p>numeric addition / string concatenation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">+</span> <span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">stem</span> <span class="pre">+</span> <span class="pre">&quot;suffix&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-</span></code>/<code class="docutils literal notranslate"><span class="pre">*</span></code>/<code class="docutils literal notranslate"><span class="pre">/</span></code></p></td>
+<td><p>numeric operators (division coerces to float)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">length(array)</span> <span class="pre">-</span> <span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">*</span> <span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">2</span> <span class="pre">==</span> <span class="pre">0.5</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The following functions should be defined by an interpreter:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Note</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">allequal(a:</span> <span class="pre">array,</span> <span class="pre">b:</span> <span class="pre">array)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if arrays have the same length and paired elements are equal</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">allequal(sorted(columns.onset,</span> <span class="pre">&quot;numeric&quot;),</span> <span class="pre">columns.onset)</span></code></p></td>
+<td><p>True if the array columns.onset is sorted numerically.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">count(arg:</span> <span class="pre">array,</span> <span class="pre">val:</span> <span class="pre">any)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p></td>
+<td><p>Number of elements in an array equal to <code class="docutils literal notranslate"><span class="pre">val</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count(columns.type,</span> <span class="pre">&quot;EEG&quot;)</span></code></p></td>
+<td><p>The number of times “EEG” appears in the column “type” of the current TSV file</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">exists(arg:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">array,</span> <span class="pre">rule:</span> <span class="pre">str)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p></td>
+<td><p>Count of files in an array that exist in the dataset. String is array with length 1. See following section for the meanings of rules.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exists(sidecar.IntendedFor,</span> <span class="pre">&quot;subject&quot;)</span></code></p></td>
+<td><p>True if all files in <code class="docutils literal notranslate"><span class="pre">IntendedFor</span></code> exist, relative to the subject directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">index(arg:</span> <span class="pre">array,</span> <span class="pre">val:</span> <span class="pre">any)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p></td>
+<td><p>Index of first element in an array equal to <code class="docutils literal notranslate"><span class="pre">val</span></code>, <code class="docutils literal notranslate"><span class="pre">null</span></code> if not found</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">index([&quot;i&quot;,</span> <span class="pre">&quot;j&quot;,</span> <span class="pre">&quot;k&quot;],</span> <span class="pre">axis)</span></code></p></td>
+<td><p>The number, from 0-2 corresponding to the string <code class="docutils literal notranslate"><span class="pre">axis</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">intersects(a:</span> <span class="pre">array,</span> <span class="pre">b:</span> <span class="pre">array)</span> <span class="pre">-&gt;</span> <span class="pre">array</span> <span class="pre">|</span> <span class="pre">bool</span></code></p></td>
+<td><p>The intersection of arrays <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>, or <code class="docutils literal notranslate"><span class="pre">false</span></code> if there are no shared values.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">intersects(dataset.modalities,</span> <span class="pre">[&quot;pet&quot;,</span> <span class="pre">&quot;mri&quot;])</span></code></p></td>
+<td><p>Non-empty array if either PET or MRI data is found in dataset, otherwise false</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">length(arg:</span> <span class="pre">array)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p></td>
+<td><p>Number of elements in an array</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">length(columns.onset)</span> <span class="pre">&gt;</span> <span class="pre">0</span></code></p></td>
+<td><p>True if there is at least one value in the onset column</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">match(arg:</span> <span class="pre">str,</span> <span class="pre">pattern:</span> <span class="pre">str)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if <code class="docutils literal notranslate"><span class="pre">arg</span></code> matches the regular expression <code class="docutils literal notranslate"><span class="pre">pattern</span></code> (anywhere in string)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">match(extension,</span> <span class="pre">&quot;.gz$&quot;)</span></code></p></td>
+<td><p>True if the file extension ends with <code class="docutils literal notranslate"><span class="pre">.gz</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max(arg:</span> <span class="pre">array)</span> <span class="pre">-&gt;</span> <span class="pre">number</span></code></p></td>
+<td><p>The largest non-<code class="docutils literal notranslate"><span class="pre">n/a</span></code> value in an array</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">max(columns.onset)</span></code></p></td>
+<td><p>The time of the last onset in an events.tsv file</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">min(arg:</span> <span class="pre">array)</span> <span class="pre">-&gt;</span> <span class="pre">number</span></code></p></td>
+<td><p>The smallest non-<code class="docutils literal notranslate"><span class="pre">n/a</span></code> value in an array</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">min(sidecar.SliceTiming)</span> <span class="pre">==</span> <span class="pre">0</span></code></p></td>
+<td><p>A check that the onset of the first slice is 0s</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sorted(arg:</span> <span class="pre">array,</span> <span class="pre">method:</span> <span class="pre">str)</span> <span class="pre">-&gt;</span> <span class="pre">array</span></code></p></td>
+<td><p>The sorted values of the input array; defaults to type-determined sort. If method is “lexical”, or “numeric” use lexical or numeric sort.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sorted(sidecar.VolumeTiming)</span> <span class="pre">==</span> <span class="pre">sidecar.VolumeTiming</span></code></p></td>
+<td><p>True if <code class="docutils literal notranslate"><span class="pre">sidecar.VolumeTiming</span></code> is sorted</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">substr(arg:</span> <span class="pre">str,</span> <span class="pre">start:</span> <span class="pre">int,</span> <span class="pre">end:</span> <span class="pre">int)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p></td>
+<td><p>The portion of the input string spanning from start position to end position</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">substr(path,</span> <span class="pre">0,</span> <span class="pre">length(path)</span> <span class="pre">-</span> <span class="pre">3)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">path</span></code> with the last three characters dropped</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">type(arg:</span> <span class="pre">Any)</span> <span class="pre">-&gt;</span> <span class="pre">str</span></code></p></td>
+<td><p>The name of the type, including <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;object&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;null&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">type(datatypes)</span></code></p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">&quot;array&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unique(arg:</span> <span class="pre">array)</span> <span class="pre">-&gt;</span> <span class="pre">array)</span></code></p></td>
+<td><p>The unique values of the input array, retaining their input order. Equal float and int values are not considered distinct.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">length(unique(columns.X))</span> <span class="pre">==</span> <span class="pre">length(columns.X)</span></code></p></td>
+<td><p>True if column <code class="docutils literal notranslate"><span class="pre">X</span></code> contains no duplicate values.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="the-exists-function">
+<h4>The <code class="docutils literal notranslate"><span class="pre">exists()</span></code> function<a class="headerlink" href="#the-exists-function" title="Link to this heading">¶</a></h4>
+<p>In various places, BIDS datasets may declare links between files.
+In order to validate these links,
+the <code class="docutils literal notranslate"><span class="pre">exists()</span></code> function returns a count of files that can be found within the dataset.
+To accommodate the various ways of declaring these links,
+the following rules are defined:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">rule</span></code></p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;dataset&quot;</span></code></p></td>
+<td><p>A path relative to the root of the dataset.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exists('participants.tsv',</span> <span class="pre">'dataset')</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;subject&quot;</span></code></p></td>
+<td><p>A path relative to the current subject directory.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exists('ses-1/anat/sub-01_ses-1_T1w.nii.gz',</span> <span class="pre">'subject')</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;stimuli&quot;</span></code></p></td>
+<td><p>A path relative to the <code class="docutils literal notranslate"><span class="pre">/stimuli</span></code> directory.</p></td>
+<td><p>For <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code>: <code class="docutils literal notranslate"><span class="pre">exists(columns.stim_file,</span> <span class="pre">'stimuli')</span> <span class="pre">==</span> <span class="pre">length(columns.stim_file)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;file&quot;</span></code></p></td>
+<td><p>A path relative to the directory containing the current file.</p></td>
+<td><p>For <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code>: <code class="docutils literal notranslate"><span class="pre">exists(columns.filename,</span> <span class="pre">'file')</span> <span class="pre">==</span> <span class="pre">length(columns.stim_file)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;bids-uri&quot;</span></code></p></td>
+<td><p>A URI of the form <code class="docutils literal notranslate"><span class="pre">bids:&lt;dataset&gt;:&lt;relative-path&gt;</span></code>. If <code class="docutils literal notranslate"><span class="pre">&lt;dataset&gt;</span></code> is empty, the current dataset is used.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exists('bids::participants.tsv',</span> <span class="pre">'bids-uri')</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="the-special-value-null">
+<h4>The special value <code class="docutils literal notranslate"><span class="pre">null</span></code><a class="headerlink" href="#the-special-value-null" title="Link to this heading">¶</a></h4>
+<p>Missing values in the context object have the special value <code class="docutils literal notranslate"><span class="pre">null</span></code>.
+This value propagates through all of the above operations in a fully-defined,
+hopefully intuitive way.
+Most operations involving <code class="docutils literal notranslate"><span class="pre">null</span></code> simply resolve to <code class="docutils literal notranslate"><span class="pre">null</span></code>:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sidecar.MissingValue</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">null.anything</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">null[0]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">&amp;&amp;</span> <span class="pre">true</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">||</span> <span class="pre">true</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">!null</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">+</span> <span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">-</span> <span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">*</span> <span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">/</span> <span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">match(null,</span> <span class="pre">pattern)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">intersects(list,</span> <span class="pre">null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">intersects(null,</span> <span class="pre">list)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">allequal(list,</span> <span class="pre">null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">allequal(null,</span> <span class="pre">list)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">substr(null,</span> <span class="pre">0,</span> <span class="pre">1)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">substr(str,</span> <span class="pre">null,</span> <span class="pre">1)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">substr(str,</span> <span class="pre">0,</span> <span class="pre">null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">length(null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">count(null,</span> <span class="pre">val)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">count(list,</span> <span class="pre">null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">index(null,</span> <span class="pre">val)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">index([0],</span> <span class="pre">null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">index([],</span> <span class="pre">val)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">min(null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max(null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unique(null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">exists(null,</span> <span class="pre">&quot;bids-uri&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">exists(&quot;/path&quot;,</span> <span class="pre">null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The following operators have boolean results:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Result</p></th>
+<th class="head"><p>Comment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">==</span> <span class="pre">false</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">==</span> <span class="pre">true</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">!=</span> <span class="pre">false</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">!=</span> <span class="pre">true</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">==</span> <span class="pre">null</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">null</span> <span class="pre">==</span> <span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Also <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> and <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;VolumeTiming&quot;</span> <span class="pre">in</span> <span class="pre">null</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">type()</span></code> function returns a string:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type(null)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;null&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Finally, if an expression (selector or check) evaluates to <code class="docutils literal notranslate"><span class="pre">null</span></code>,
+the <code class="docutils literal notranslate"><span class="pre">null</span></code> will be interpreted equivalent to <code class="docutils literal notranslate"><span class="pre">false</span></code>.
+That is, a <code class="docutils literal notranslate"><span class="pre">null</span></code> selector will not apply the current rule, and a <code class="docutils literal notranslate"><span class="pre">null</span></code>
+check will fail.</p>
+</section>
+</section>
+</section>
+<section id="object-files">
+<h2>Object files<a class="headerlink" href="#object-files" title="Link to this heading">¶</a></h2>
+<p>Object files define “objects” or “terms”, which are semantic descriptions of
+concepts used in BIDS. These reside under the <code class="docutils literal notranslate"><span class="pre">object.*</span></code> namespace in the schema.
+These files <strong>do not</strong> describe how objects of different types
+(for example file suffixes and file entities) interact with one another,
+or whether objects are required in a given dataset or file.</p>
+<section id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h3>
+<p>There are currently 12 sub-namespaces, which fall into five rough categories.</p>
+<p>The namespaces are:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Namespace</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Group</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">objects.common_principles</span></code></p></td>
+<td><p>Terms that are used throughout BIDS</p></td>
+<td><p>General terms</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">objects.modalities</span></code></p></td>
+<td><p>Broad categories of data represented in BIDS, roughly matching recording instrument</p></td>
+<td><p>General terms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">objects.metaentities</span></code></p></td>
+<td><p>Placeholders and wildcards to reduce verbosity of some templates in BIDS</p></td>
+<td><p>General terms</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">objects.entities</span></code></p></td>
+<td><p>Name-value pairs appearing in filenames</p></td>
+<td><p>Name/value terms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">objects.metadata</span></code></p></td>
+<td><p>Name-value pairs appearing in JSON files</p></td>
+<td><p>Name/value terms</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">objects.columns</span></code></p></td>
+<td><p>Column headings and values appearing in TSV files</p></td>
+<td><p>Name/value terms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">objects.datatypes</span></code></p></td>
+<td><p>Subdirectories that organize files by type (such as <code class="docutils literal notranslate"><span class="pre">anat</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>)</p></td>
+<td><p>Value terms</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">objects.suffixes</span></code></p></td>
+<td><p>Filename suffixes that describe the contents of the file</p></td>
+<td><p>Value terms</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">objects.extensions</span></code></p></td>
+<td><p>Filename component that describe the format of the file</p></td>
+<td><p>Value terms</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">objects.formats</span></code></p></td>
+<td><p>Terms that define the forms values (for example, in metadata) might take</p></td>
+<td><p>Formats</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">objects.files</span></code></p></td>
+<td><p>Files and directories that may appear at the root of a dataset</p></td>
+<td><p>Files</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">objects.enums</span></code></p></td>
+<td><p>Full descriptions of enumerated values used in other sub-namespaces</p></td>
+<td><p>Value terms</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Because these objects vary, the contents of each namespace can vary.</p>
+<p>Common fields to all objects:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>A description of the term that can be understood that should not depend on particular surrounding text; may contain markdown for rendering</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>A human-friendly name, for tools to display; may include spaces</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The name/value terms groups (<code class="docutils literal notranslate"><span class="pre">entities</span></code>, <code class="docutils literal notranslate"><span class="pre">metadata</span></code> and <code class="docutils literal notranslate"><span class="pre">columns</span></code>) define terms where
+a name, when present, has a given meaning, and its value may be restricted.</p>
+<p>These objects additionally have the field:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>For terms that can take on multiple values (such as entities, metadata fields), the name of the term as it appears in the specification and in a dataset; must be alphanumeric; mutually exclusive with <code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>The type (such as <code class="docutils literal notranslate"><span class="pre">string</span></code>, <code class="docutils literal notranslate"><span class="pre">integer</span></code>, <code class="docutils literal notranslate"><span class="pre">object</span></code>) of values the term describes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p>The format of the term (defined in <code class="docutils literal notranslate"><span class="pre">objects.formats</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">objects.columns</span></code> additionally permit a <code class="docutils literal notranslate"><span class="pre">definition</span></code> field that may take any value permissible
+for the definition of a column in a JSON sidecar:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">definition</span></code></p></td>
+<td><p>A JSON object that describes the column as in <a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/common-principles.html#tabular-files">Common principles - Tabular files</a>. This is mutually exclusive with the <code class="docutils literal notranslate"><span class="pre">type</span></code> field, and is used for fields that have overridable definitions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Value terms groups (<code class="docutils literal notranslate"><span class="pre">datatypes</span></code>, <code class="docutils literal notranslate"><span class="pre">suffixes</span></code>, <code class="docutils literal notranslate"><span class="pre">extensions</span></code>) define terms where a field
+can take on multiple values.
+For example, a file has one datatype, as compared to a collection of entities.</p>
+<p>These objects may have the fields:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>For terms that cannot take on multiple values (for example suffixes or extensions), the string value of the term</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">formats</span></code> terms provide one additional field:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pattern</span></code></p></td>
+<td><p>Regular expression validating a string rendering of a value</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="value-constraints">
+<h4>Value constraints<a class="headerlink" href="#value-constraints" title="Link to this heading">¶</a></h4>
+<p>For name/value terms, the <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">format</span></code> fields allow constraints to be placed on
+the values described by the names.</p>
+<p>Additional fields may apply to further constrain the type:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">maximum</span></code>/<code class="docutils literal notranslate"><span class="pre">minimum</span></code>/<code class="docutils literal notranslate"><span class="pre">exclusiveMinimum</span></code></p></td>
+<td><p>Value ranges for <code class="docutils literal notranslate"><span class="pre">integer</span></code> and <code class="docutils literal notranslate"><span class="pre">number</span></code> types</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">maxValue</span></code>/<code class="docutils literal notranslate"><span class="pre">minValue</span></code></p></td>
+<td><p>Value ranges for <code class="docutils literal notranslate"><span class="pre">integer</span></code> and <code class="docutils literal notranslate"><span class="pre">number</span></code> types</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">maxItems</span></code>/<code class="docutils literal notranslate"><span class="pre">minItems</span></code></p></td>
+<td><p>Size ranges for <code class="docutils literal notranslate"><span class="pre">array</span></code> types</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">enum</span></code></p></td>
+<td><p>List of accepted values for <code class="docutils literal notranslate"><span class="pre">string</span></code> types</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Some values may be more flexible, allowing multiple possible values, or may be
+arrays or objects:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">anyOf</span></code></p></td>
+<td><p>A list of constraints, any of which could apply</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">items</span></code></p></td>
+<td><p>The array described contains values whose types are constrained</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">properties</span></code></p></td>
+<td><p>The object described has a given set of fields; the values of these fields may be constrained</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">additionalProperties</span></code></p></td>
+<td><p>The object described has constraints on its values, but not the names</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="on-reused-objects-with-different-definitions">
+<h3>On reused objects with different definitions<a class="headerlink" href="#on-reused-objects-with-different-definitions" title="Link to this heading">¶</a></h3>
+<p>In a few cases, two objects with the same name appear multiple times in the specification.
+When this happens, it is preferred to find a common definition, and clarify it in the rules (see below).
+However, in some cases, the object description and permissible values differ, and it needs to be defined
+as two separate objects.</p>
+<p>Consider the following examples:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># reference column for channels.tsv files for EEG data</span>
+<span class="nt">reference__eeg</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference</span>
+<span class="w">  </span><span class="nt">display_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Electrode reference</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">Name of the reference electrode(s).</span>
+<span class="w">    </span><span class="no">This column is not needed when it is common to all channels.</span>
+<span class="w">    </span><span class="no">In that case the reference electrode(s) can be specified in `*_eeg.json` as `EEGReference`).</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="c1"># reference column for channels.tsv files for iEEG data</span>
+<span class="nt">reference__ieeg</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">reference</span>
+<span class="w">  </span><span class="nt">display_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Electrode reference</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">Specification of the reference (for example, `mastoid`, `ElectrodeName01`, `intracranial`, `CAR`, `other`, `n/a`).</span>
+<span class="w">    </span><span class="no">If the channel is not an electrode channel (for example, a microphone channel) use `n/a`.</span>
+<span class="w">  </span><span class="nt">anyOf</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">      </span><span class="nt">enum</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">n/a</span>
+</pre></div>
+</div>
+<p>Here, the TSV column <code class="docutils literal notranslate"><span class="pre">&quot;reference&quot;</span></code> means different things when used for EEG data,
+as compared to iEEG data, so two definitions are needed.
+Because columns use <code class="docutils literal notranslate"><span class="pre">snake_case</span></code> (meaning they can be expected to contain underscores),
+two underscores are needed to separate the column name from the string that indicates the use of the term.</p>
+<p>The convention can be summed up in the following rules:</p>
+<ol class="arabic simple">
+<li><p>Each specific term takes on the form <code class="docutils literal notranslate"><span class="pre">&lt;term&gt;_&lt;context&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;term&gt;</span></code> is the common name that
+the two (or more) terms share, <code class="docutils literal notranslate"><span class="pre">&lt;context&gt;</span></code> indicates when the specific term applies.</p></li>
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">&lt;term&gt;</span></code> appears in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code> then <code class="docutils literal notranslate"><span class="pre">&lt;context&gt;</span></code> begins with an extra <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p></li>
+</ol>
+<section id="valid-fields-for-definitions-by-sub-namespace">
+<h4>Valid fields for definitions by sub-namespace<a class="headerlink" href="#valid-fields-for-definitions-by-sub-namespace" title="Link to this heading">¶</a></h4>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.common_principles</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.modalities</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.metaentities</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.entities</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>Key of entity, such as <code class="docutils literal notranslate"><span class="pre">sub</span></code> or <code class="docutils literal notranslate"><span class="pre">ses</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>Type of value (always <code class="docutils literal notranslate"><span class="pre">string</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p>Permissible format of values, either <code class="docutils literal notranslate"><span class="pre">label</span></code> or <code class="docutils literal notranslate"><span class="pre">index</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">enum</span></code></p></td>
+<td><p>Exclusive list of valid values, if present</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Note that descriptions should apply to <em>all</em> uses of the entity; if additional information
+applies in certain contexts, that should be written in the specification, and not the schema.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.metadata</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>Name of field in JSON object (in <code class="docutils literal notranslate"><span class="pre">CamelCase</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unit</span></code></p></td>
+<td><p>Interpretation of numeric values</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>Type of value (one of <code class="docutils literal notranslate"><span class="pre">array</span></code>, <code class="docutils literal notranslate"><span class="pre">string</span></code>, <code class="docutils literal notranslate"><span class="pre">integer</span></code>, <code class="docutils literal notranslate"><span class="pre">number</span></code>, <code class="docutils literal notranslate"><span class="pre">object</span></code> or <code class="docutils literal notranslate"><span class="pre">boolean</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p>Permissible format of values, from definitions in <code class="docutils literal notranslate"><span class="pre">objects.formats</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enum</span></code></p></td>
+<td><p>Exclusive list of valid values, if present</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
+<td><p>Maximum for numeric values</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">minimum</span></code></p></td>
+<td><p>Minimum for numeric values</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*</span></code></p></td>
+<td><p>JSON-schema fields to further constrain values</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.columns</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>Name of column in TSV file (in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">definition</span></code></p></td>
+<td><p>JSON definition of a column, according to <a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/common-principles.html#tabular-files">Tabular files</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unit</span></code></p></td>
+<td><p>Interpretation of numeric values</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>Type of value</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p>Permissible format of values, from definitions in <code class="docutils literal notranslate"><span class="pre">objects.formats</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pattern</span></code></p></td>
+<td><p>Regular expression constraining string values</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enum</span></code></p></td>
+<td><p>Exclusive list of valid values, if present</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">maximum</span></code></p></td>
+<td><p>Maximum for numeric values</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">minimum</span></code></p></td>
+<td><p>Minimum for numeric values</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*</span></code></p></td>
+<td><p>JSON-schema fields to further constrain values</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.datatypes</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>String value of <code class="docutils literal notranslate"><span class="pre">datatype</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.suffixes</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>String value of <code class="docutils literal notranslate"><span class="pre">suffix</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unit</span></code></p></td>
+<td><p>Interpretation of values in a data file with the given suffix</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">maxValue</span></code></p></td>
+<td><p>Maximum permissible value in a data file with the given suffix</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">minValue</span></code></p></td>
+<td><p>Minimum permissible value in a data file with the given suffix</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">anyOf</span></code></p></td>
+<td><p>Used to describe multiple permissible units</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.extensions</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>String value of <code class="docutils literal notranslate"><span class="pre">extension</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.formats</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pattern</span></code></p></td>
+<td><p>Regular expression defining format</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.files</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">file_type</span></code></p></td>
+<td><p>Indicator that the file is a regular file (<code class="docutils literal notranslate"><span class="pre">&quot;regular&quot;</span></code>) or directory (<code class="docutils literal notranslate"><span class="pre">&quot;directory&quot;</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">objects.enums</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code></p></td>
+<td><p>Human-friendly name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>Term definition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>String value of <code class="docutils literal notranslate"><span class="pre">enum</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="rule-files">
+<h2>Rule files<a class="headerlink" href="#rule-files" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">rules.*</span></code> namespace contains most of the validatable content of the schema,
+apart from value constraints that can be encoded in <code class="docutils literal notranslate"><span class="pre">objects</span></code>.</p>
+<p>There are several types of rule, and this section is subject to reconsolidation as
+patterns are found.</p>
+<section id="core-concepts">
+<h3>Core concepts<a class="headerlink" href="#core-concepts" title="Link to this heading">¶</a></h3>
+<p>Core concepts are <a class="reference internal" href="#expressions">expressions</a> (defined above), requirement levels and issues.</p>
+<section id="requirement-levels-and-severity">
+<h4>Requirement levels and severity<a class="headerlink" href="#requirement-levels-and-severity" title="Link to this heading">¶</a></h4>
+<p>BIDS follows RFC 2119 and has three requirement levels: OPTIONAL, RECOMMENDED and REQUIRED.
+In the schema, we use <code class="docutils literal notranslate"><span class="pre">optional</span></code>, <code class="docutils literal notranslate"><span class="pre">recommended</span></code> and <code class="docutils literal notranslate"><span class="pre">required</span></code>.</p>
+<p>A rule interpreter (validator) is expected to treat:</p>
+<ul class="simple">
+<li><p>missing REQUIRED data/metadata as an error,</p></li>
+<li><p>missing RECOMMENDED data/metadata as a warning,</p></li>
+<li><p>and silently pass over missing OPTIONAL data.</p></li>
+</ul>
+<p>BIDS also defines a level <code class="docutils literal notranslate"><span class="pre">DEPRECATED</span></code>, rendered in the schema as <code class="docutils literal notranslate"><span class="pre">deprecated</span></code>,
+and corresponding to a warning if the data/metadata is present.</p>
+</section>
+<section id="issues">
+<h4>Issues<a class="headerlink" href="#issues" title="Link to this heading">¶</a></h4>
+<p>Issues are messages intended to be communicated to a dataset curator to indicate an issue
+with their dataset.</p>
+<p>They have a code and severity as well:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">code</span></code></p></td>
+<td><p>Issue identifier, such as <code class="docutils literal notranslate"><span class="pre">EVENTS_TSV_MISSING</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">level</span></code></p></td>
+<td><p>Issue severity (<code class="docutils literal notranslate"><span class="pre">warning</span></code> or <code class="docutils literal notranslate"><span class="pre">error</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">message</span></code></p></td>
+<td><p>Message for display to a user</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A level of <code class="docutils literal notranslate"><span class="pre">warning</span></code> corresponds to a rule in the specification that is RECOMMENDED,
+while a level of <code class="docutils literal notranslate"><span class="pre">error</span></code> corresponds to a rule that is REQUIRED.</p>
+<p>In some cases, an issue is contained next to a <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">required</span></code> or <code class="docutils literal notranslate"><span class="pre">level:</span> <span class="pre">recommended</span></code>
+as part of a larger rule.
+In these cases, the <code class="docutils literal notranslate"><span class="pre">level</span></code> field should be omitted from the issue
+to avoid duplication or conflict.</p>
+</section>
+</section>
+<section id="filename-construction-rules">
+<span id="id1"></span><h3>Filename construction rules<a class="headerlink" href="#filename-construction-rules" title="Link to this heading">¶</a></h3>
+<p>A significant portion of BIDS is devoted to the naming of files,
+and almost all filenames consist of entities, a suffix, an extension, and a data type.
+Exceptions will be noted below.</p>
+<p><code class="docutils literal notranslate"><span class="pre">rules.files</span></code> contains the following subdivisions.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Namespace</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rules.files.common.core</span></code></p></td>
+<td><p>Files and directories that reside at the top level of datasets</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rules.files.common.tables</span></code></p></td>
+<td><p>Tabular metadata files that associate metadata with entities</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rules.files.raw.*</span></code></p></td>
+<td><p>Raw data and metadata files that have entities, suffixes, datatypes and extensions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">rules.files.deriv.*</span></code></p></td>
+<td><p>Derivative data and metadata files that have entities, suffixes, datatypes and extensions</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="core-files-and-directories">
+<h4>Core files and directories<a class="headerlink" href="#core-files-and-directories" title="Link to this heading">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">rules.files.common.core</span></code> describes files that have little-to-no variability in their form.
+These either have a single <code class="docutils literal notranslate"><span class="pre">path</span></code> field, or a <code class="docutils literal notranslate"><span class="pre">stem</span></code> field and a list of <code class="docutils literal notranslate"><span class="pre">extensions</span></code>:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">level</span></code></p></td>
+<td><p>Requirement level of file, one of (<code class="docutils literal notranslate"><span class="pre">optional</span></code>, <code class="docutils literal notranslate"><span class="pre">recommended</span></code>, <code class="docutils literal notranslate"><span class="pre">required</span></code>, <code class="docutils literal notranslate"><span class="pre">deprecated</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">path</span></code></p></td>
+<td><p>Location of file, relative to dataset root; mutually exclusive with <code class="docutils literal notranslate"><span class="pre">stem</span></code> and <code class="docutils literal notranslate"><span class="pre">extensions</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stem</span></code></p></td>
+<td><p>Name of file, relative to dataset root, up to but not including the extension; mutually exclusive with <code class="docutils literal notranslate"><span class="pre">path</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extensions</span></code></p></td>
+<td><p>List of valid extension strings, including the initial dot (<code class="docutils literal notranslate"><span class="pre">.</span></code>); mutually exclusive with <code class="docutils literal notranslate"><span class="pre">path</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>These are the entries for <code class="docutils literal notranslate"><span class="pre">dataset_description.json</span></code> and <code class="docutils literal notranslate"><span class="pre">README</span></code>:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">dataset_description</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">  </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dataset_description.json</span>
+<span class="nt">README</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">  </span><span class="nt">stem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">README</span>
+<span class="w">  </span><span class="nt">extensions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.md</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.rst</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.txt</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">README</span></code> and <code class="docutils literal notranslate"><span class="pre">README.md</span></code> are both valid, while only <code class="docutils literal notranslate"><span class="pre">dataset_description.json</span></code> is permitted.</p>
+</section>
+<section id="tabular-metadata-files">
+<h4>Tabular metadata files<a class="headerlink" href="#tabular-metadata-files" title="Link to this heading">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">rules.files.common.tables</span></code> describes TSV files and their associated metadata,
+including <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">samples.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">*_sessions.tsv</span></code> and <code class="docutils literal notranslate"><span class="pre">*_scans.tsv</span></code>.
+The first two use the <code class="docutils literal notranslate"><span class="pre">stem</span></code> field, while the latter two specify the entities used
+to construct the filename.</p>
+<p>The valid fields are:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">level</span></code></p></td>
+<td><p>Requirement level of file, one of (<code class="docutils literal notranslate"><span class="pre">optional</span></code>, <code class="docutils literal notranslate"><span class="pre">recommended</span></code>, <code class="docutils literal notranslate"><span class="pre">required</span></code>, <code class="docutils literal notranslate"><span class="pre">deprecated</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stem</span></code></p></td>
+<td><p>Name of file, relative to dataset root, up to but not including the extension; mutually exclusive with <code class="docutils literal notranslate"><span class="pre">entities</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">entities</span></code></p></td>
+<td><p>Object where the keys are entries in <code class="docutils literal notranslate"><span class="pre">objects.entities</span></code>. The value is a requirement level.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extensions</span></code></p></td>
+<td><p>List of valid extension strings, including the initial dot (<code class="docutils literal notranslate"><span class="pre">.</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For example:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">participants</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">  </span><span class="nt">stem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">participants</span>
+<span class="w">  </span><span class="nt">extensions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.tsv</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.json</span>
+<span class="nt">sessions</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">suffixes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sessions</span>
+<span class="w">  </span><span class="nt">extensions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.tsv</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.json</span>
+<span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+</pre></div>
+</div>
+<p>Note that these files do not have a <code class="docutils literal notranslate"><span class="pre">datatype</span></code>, but otherwise follow the same rules as above.</p>
+</section>
+<section id="bids-filenames">
+<h4>BIDS filenames<a class="headerlink" href="#bids-filenames" title="Link to this heading">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">rules.files.raw</span></code> and <code class="docutils literal notranslate"><span class="pre">rules.files.deriv</span></code> contain series of related rules.
+These are largely grouped by datatype, but file types that appear in multiple locations may be grouped together.</p>
+<p>The files described take the form:</p>
+<div class="highlight-plain notranslate"><div class="highlight"><pre><span></span>[sub-&lt;label&gt;/][ses-&lt;label&gt;/]&lt;datatype&gt;/&lt;entities&gt;_&lt;suffix&gt;&lt;extension&gt;
+</pre></div>
+</div>
+<p>Rules have the following fields:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">suffixes</span></code></p></td>
+<td><p>List of suffixes found in <code class="docutils literal notranslate"><span class="pre">objects.suffixes</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extensions</span></code></p></td>
+<td><p>List of valid extension strings, including initial dot (<code class="docutils literal notranslate"><span class="pre">.</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datatypes</span></code></p></td>
+<td><p>List of datatypes found in <code class="docutils literal notranslate"><span class="pre">objects.datatypes</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">entities</span></code></p></td>
+<td><p>Object where the keys are entries in <code class="docutils literal notranslate"><span class="pre">objects.entities</span></code>. The value is either a requirement level or an object described by the following table.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Requirement level</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">level</span></code></p></td>
+<td><p>REQUIRED</p></td>
+<td><p>Requirement level of field, one of (<code class="docutils literal notranslate"><span class="pre">optional</span></code>, <code class="docutils literal notranslate"><span class="pre">recommended</span></code>, <code class="docutils literal notranslate"><span class="pre">required</span></code>, <code class="docutils literal notranslate"><span class="pre">deprecated</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">format</span></code></p></td>
+<td><p>OPTIONAL</p></td>
+<td><p>Override of entity field - Permissible format of values, either <code class="docutils literal notranslate"><span class="pre">label</span></code> or <code class="docutils literal notranslate"><span class="pre">index</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enum</span></code></p></td>
+<td><p>OPTIONAL</p></td>
+<td><p>Override of entity field - Exclusive list of valid values, if present</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>As an example, let us look at a (modified) part of <code class="docutils literal notranslate"><span class="pre">meg.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">meg</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">suffixes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meg</span>
+<span class="w">  </span><span class="nt">extensions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.fif</span>
+<span class="w">  </span><span class="nt">datatypes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meg</span>
+<span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">    </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">    </span><span class="nt">acquisition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">processing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+
+<span class="nt">crosstalk</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">suffixes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meg</span>
+<span class="w">  </span><span class="nt">extensions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.fif</span>
+<span class="w">  </span><span class="nt">datatypes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meg</span>
+<span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">    </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">acquisition</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">      </span><span class="nt">enum</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">crosstalk</span>
+</pre></div>
+</div>
+<p>In this case, the first group has one suffix: <code class="docutils literal notranslate"><span class="pre">meg</span></code>.
+The second group has the same suffix (<code class="docutils literal notranslate"><span class="pre">meg</span></code>), but describes different rules for files with that suffix.
+While the valid extension is the same for both groups (<code class="docutils literal notranslate"><span class="pre">.fif</span></code>), the entities are not.</p>
+<p>Specifically, files in the first group may have <code class="docutils literal notranslate"><span class="pre">task</span></code>, <code class="docutils literal notranslate"><span class="pre">run</span></code>, <code class="docutils literal notranslate"><span class="pre">processing</span></code>, and <code class="docutils literal notranslate"><span class="pre">split</span></code> entities,
+while files in the second group may not.
+Also, when files in the second group have the <code class="docutils literal notranslate"><span class="pre">acq</span></code> entity, the associated value MUST be <code class="docutils literal notranslate"><span class="pre">crosstalk</span></code>.</p>
+<p>A common derivatives type is preprocessed data, where the type of the generated data is the same
+as the input data.
+BIDS Derivatives specifies that these files may be distinguished from raw data
+with the new entities <code class="docutils literal notranslate"><span class="pre">space-&lt;label&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">desc-&lt;label&gt;</span></code>.</p>
+<p>This rule is encoded:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">meg_meg_common</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rules.files.raw.meg.meg</span>
+<span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rules.files.raw.meg.meg.entities</span>
+<span class="w">    </span><span class="nt">space</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+</pre></div>
+</div>
+<p>When expanded, this becomes:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">meg_meg_common</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">suffixes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meg</span>
+<span class="w">  </span><span class="nt">extensions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.fif</span>
+<span class="w">  </span><span class="nt">datatypes</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meg</span>
+<span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">subject</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">    </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">task</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">    </span><span class="nt">acquisition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">processing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">split</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">space</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="sidecar-and-tabular-data-rules">
+<h3>Sidecar and tabular data rules<a class="headerlink" href="#sidecar-and-tabular-data-rules" title="Link to this heading">¶</a></h3>
+<p>Tabular data and JSON sidecar files follow a similar pattern:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>JSON</p></td>
+<td><p>field</p></td>
+<td><p>value</p></td>
+</tr>
+<tr class="row-odd"><td><p>TSV</p></td>
+<td><p>column header</p></td>
+<td><p>column values</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In the specification, groups of fields/columns are described together in a table
+that includes the name of the field/column, the requirement level and a description.
+The definitions, including name and description, appear in <code class="docutils literal notranslate"><span class="pre">objects.metadata</span></code>,
+and the columns appear in <code class="docutils literal notranslate"><span class="pre">objects.columns</span></code>.</p>
+<p>Here, we define YAML “tables” that can be rendered in the specification. These
+take the form:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">RuleName</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selectors</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">expression1</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">expression2</span>
+<span class="w">  </span><span class="nt">fields</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">FieldName1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">recommended</span>
+<span class="w">        </span><span class="nt">level_addendum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required if XYZ</span>
+<span class="w">        </span><span class="nt">description_addendum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Additional text following object description.</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">FieldName2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+
+<span class="nt">RuleNameReq</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selectors</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">expression1</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">expression2</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">expression3</span>
+<span class="w">  </span><span class="nt">fields</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">FieldName1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">        </span><span class="nt">issue</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ISSUE_NAME</span>
+<span class="w">          </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A description of the problem for a user</span>
+</pre></div>
+</div>
+<p>Here we show an example of two fields, one that is RECOMMENDED in most cases
+but REQUIRED in another, the other of which is OPTIONAL.</p>
+<p><code class="docutils literal notranslate"><span class="pre">selectors</span></code> indicate whether the current rule applies to a given file.
+This is not rendered in the text, but may be used by a validator.
+<code class="docutils literal notranslate"><span class="pre">fields</span></code> is an object with keys that appear in <code class="docutils literal notranslate"><span class="pre">objects.metadata</span></code>/<code class="docutils literal notranslate"><span class="pre">objects.columns</span></code>.
+If the value is a string, then it is a requirement level.
+If it is an object, then the it has the following fields</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Requirement level</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">level</span></code></p></td>
+<td><p>REQUIRED</p></td>
+<td><p>Requirement level of field, one of (<code class="docutils literal notranslate"><span class="pre">optional</span></code>, <code class="docutils literal notranslate"><span class="pre">recommended</span></code>, <code class="docutils literal notranslate"><span class="pre">required</span></code>, <code class="docutils literal notranslate"><span class="pre">deprecated</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">level_addendum</span></code></p></td>
+<td><p>OPTIONAL</p></td>
+<td><p>Additional text to describe cases where requirement level changes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">description_addendum</span></code></p></td>
+<td><p>OPTIONAL</p></td>
+<td><p>Additional text to follow the <code class="docutils literal notranslate"><span class="pre">objects.metadata.&lt;fieldname&gt;.description</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">issue</span></code></p></td>
+<td><p>OPTIONAL</p></td>
+<td><p><a class="reference internal" href="#issues">issue object</a>, if additional communication is warranted</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The second table implements the change in the first table’s <code class="docutils literal notranslate"><span class="pre">level_addendum</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">expression3</span></code> selector indicates the additional case where the more stringent
+rule is applied.</p>
+<section id="valid-fields-for-definitions">
+<h4>Valid fields for definitions<a class="headerlink" href="#valid-fields-for-definitions" title="Link to this heading">¶</a></h4>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">rules.sidecars.*</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">selectors</span></code></p></td>
+<td><p>List of expressions; any evaluating false indicate rule does not apply</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fields</span></code></p></td>
+<td><p>Object with keys that may be found in <code class="docutils literal notranslate"><span class="pre">objects.metadata</span></code>, values either a requirement level or an object</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rules.tabular_data.*</span></code></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">selectors</span></code></p></td>
+<td><p>List of expressions; any evaluating false indicate rule does not apply</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">columns</span></code></p></td>
+<td><p>Object with keys that may be found in <code class="docutils literal notranslate"><span class="pre">objects.columns</span></code>, values either a requirement level or an object</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">initial_columns</span></code></p></td>
+<td><p>An optional list of columns that must be the first N columns of a file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">index_columns</span></code></p></td>
+<td><p>An optional list of columns that uniquely identify a row.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">additional_columns</span></code></p></td>
+<td><p>Indicates whether additional columns may be defined. One of <code class="docutils literal notranslate"><span class="pre">allowed</span></code>, <code class="docutils literal notranslate"><span class="pre">allowed_if_defined</span></code> and <code class="docutils literal notranslate"><span class="pre">not_allowed</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+</ol>
+<p>The following tables demonstrate how mutual exclusive, required fields,
+may be set in <code class="docutils literal notranslate"><span class="pre">rules.sidecars.*</span></code>:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">MRIFuncRepetitionTime</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selectors</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">modality == &quot;mri&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datatype == &quot;func&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;!(&quot;VolumeTiming&quot;</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">sidecar)&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">match(extension, &quot;^\.nii(\.gz)?$&quot;)</span>
+<span class="w">  </span><span class="nt">fields</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">RepetitionTime</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">      </span><span class="nt">level_addendum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mutually exclusive with `VolumeTiming`</span>
+
+<span class="nt">MRIFuncVolumeTiming</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selectors</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">modality == &quot;mri&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datatype == &quot;func&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;!(&quot;RepetitionTime&quot;</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">sidecar)&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">match(extension, &quot;^\.nii(\.gz)?$&quot;)</span>
+<span class="w">  </span><span class="nt">fields</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">VolumeTiming</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">      </span><span class="nt">level_addendum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mutually exclusive with `RepetitionTime`</span>
+</pre></div>
+</div>
+<p>An additional check will be required to assert that both are not present,
+but these tables may be combined for rendering purposes.</p>
+<p>Here we present an example rule in <code class="docutils literal notranslate"><span class="pre">rules.tabular_data.eeg</span></code>:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">EEGChannels</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selectors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datatype == &quot;eeg&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">suffix == &quot;channels&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension == &quot;.tsv&quot;</span>
+<span class="w">  </span><span class="nt">initial_columns</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name__channels</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">type__channels</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">units</span>
+<span class="w">  </span><span class="nt">columns</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name__channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">    </span><span class="nt">type__channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">    </span><span class="nt">units</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">required</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">sampling_frequency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">reference</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">low_cutoff</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">high_cutoff</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">notch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">    </span><span class="nt">status_descriptions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">optional</span>
+<span class="w">  </span><span class="nt">additional_columns</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allowed_if_defined</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="checks">
+<h3>Checks<a class="headerlink" href="#checks" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">rules.checks</span></code> can contain more complex rules. Structurally, these are similar to sidecar rules,
+in that they have selectors.
+They additionally have a <code class="docutils literal notranslate"><span class="pre">checks</span></code> list, and an explicit issue.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">issue</span></code></p></td>
+<td><p>Issue code object (see <a class="reference internal" href="#issues">Issues</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">selectors</span></code></p></td>
+<td><p>List of expressions; any evaluating false indicate rule does not apply</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">checks</span></code></p></td>
+<td><p>List of expressions; any evaluating false indicate rule is violated and issue should be raised</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">EventsMissing</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">issue</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">EVENTS_TSV_MISSING</span>
+<span class="w">    </span><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">Task scans should have a corresponding events.tsv file.</span>
+<span class="w">      </span><span class="no">If this is a resting state scan you can ignore this warning or rename the task to include the word &quot;rest&quot;.</span>
+<span class="w">    </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">warning</span><span class="w"> </span><span class="c1"># could be an error with the proper selectors, I think</span>
+<span class="w">  </span><span class="nt">selectors</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;&quot;task&quot;</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">entities&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;!match(entities.task,</span><span class="nv"> </span><span class="s">&quot;rest&quot;)&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">suffix != &quot;events&quot;</span>
+<span class="w">  </span><span class="nt">checks</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;&quot;events&quot;</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">associations&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="ordering-rules">
+<h3>Ordering rules<a class="headerlink" href="#ordering-rules" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">rules.entities</span></code> - This file contains a list of keys into <code class="docutils literal notranslate"><span class="pre">objects.entities</span></code> and
+simply defines the order in which entities, when present, MUST appear in filenames</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rules.common_principles</span></code> - This file contains a list of terms that appear in <code class="docutils literal notranslate"><span class="pre">objects.common_principles</span></code>
+that determines the order they appear in the specification</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rules.metaentities</span></code> - This file contains a list of terms that appear in <code class="docutils literal notranslate"><span class="pre">objects.metaentities</span></code>
+that determines the order they appear in the specification</p></li>
+</ul>
+</section>
+<section id="one-off-rules">
+<h3>One-off rules<a class="headerlink" href="#one-off-rules" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">rules.modalities</span></code> - The keys in this file are the modalities, the values objects with the following field:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">datatypes</span></code></p></td>
+<td><p>List of datatypes mapping to modality</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rules.dataset_metadata</span></code> - These are similar to <code class="docutils literal notranslate"><span class="pre">rules.sidecars.*</span></code>, for JSON files at the root level.
+This is likely to go away in favor of other approaches.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rules.errors</span></code> - This file describes errors that cannot be expressed in the schema. This provides common
+codes and language that implementing validators can use to ensure the same problems are reported to
+users in the same way.</p></li>
+</ul>
+</section>
+</section>
+<section id="version-of-the-schema">
+<h2>Version of the schema<a class="headerlink" href="#version-of-the-schema" title="Link to this heading">¶</a></h2>
+<p>File <code class="docutils literal notranslate"><span class="pre">SCHEMA_VERSION</span></code> in the top of the directory contains a semantic
+version (<code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR.PATCH</span></code>) for the schema (how it is organized).
+Note that while in <code class="docutils literal notranslate"><span class="pre">0.</span></code> series, breaking changes are
+permitted without changing the <code class="docutils literal notranslate"><span class="pre">MAJOR</span></code> (leading) component of the version.
+Going forward, the 2nd, <code class="docutils literal notranslate"><span class="pre">MINOR</span></code> indicator should be
+incremented whenever schema organization introduces “breaking changes”:
+changes which would cause existing tools reading schema to
+adjust their code to be able to read it again.
+Additions of new components to the schema should increment the last,
+<code class="docutils literal notranslate"><span class="pre">PATCH</span></code>, component of the version so that tools could selectively
+enable/disable loading specific components of the schema.
+With the release of <code class="docutils literal notranslate"><span class="pre">1.0.0</span></code> version of the schema,
+we expect that the <code class="docutils literal notranslate"><span class="pre">MAJOR</span></code> component
+will be incremented whenever schema organization introduces “breaking changes”,
+<code class="docutils literal notranslate"><span class="pre">MINOR</span></code> - when adding new components to the schema,
+and <code class="docutils literal notranslate"><span class="pre">PATCH</span></code> - when fixing errors in existing components.</p>
+</section>
+<section id="schema-publication">
+<h2>Schema publication<a class="headerlink" href="#schema-publication" title="Link to this heading">¶</a></h2>
+<p>The BIDS Schema is compiled into a single, dereferenced object during
+the ReadTheDocs build of the specification.
+This object is published as a JSON document that can be found at <code class="docutils literal notranslate"><span class="pre">/schema.json</span></code>
+at the root of the specification.
+For example, the schema used to construct the 1.8.0 release of BIDS can be found at
+<a class="reference external" href="https://bids-specification.readthedocs.io/en/v1.8.0/schema.json">https://bids-specification.readthedocs.io/en/v1.8.0/schema.json</a>,
+and the latest version that includes unreleased changes to BIDS and the schema may
+be found at <a class="reference external" href="https://bids-specification.readthedocs.io/en/latest/schema.json">https://bids-specification.readthedocs.io/en/latest/schema.json</a>.</p>
+<p>The JSON version of the schema contains <code class="docutils literal notranslate"><span class="pre">schema_version</span></code> and <code class="docutils literal notranslate"><span class="pre">bids_version</span></code> keys
+that identify the state of both the schema and the specification at the time it was
+compiled.</p>
+</section>
+<section id="metaschema">
+<h2>Metaschema<a class="headerlink" href="#metaschema" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">metaschema.json</span></code> file is a meta-schema that uses the JSON Schema language to
+formalize the allowable directories, files, fields and values of the BIDS schema,
+ensuring consistency across the entire schema directory. Validation of the schema is
+incorporated into the CI, so any changes that are inconsistent will be flagged before
+inclusion.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="api.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Schema Tools API</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="doc_to_schema.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Translating a BEP Document into Schema Code</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, bids-specification
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">BIDS schema description</a><ul>
+<li><a class="reference internal" href="#organization-and-syntax">Organization and syntax</a><ul>
+<li><a class="reference internal" href="#description-formatting">Description formatting</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#expressions">Expressions</a><ul>
+<li><a class="reference internal" href="#the-exists-function">The <code class="docutils literal notranslate"><span class="pre">exists()</span></code> function</a></li>
+<li><a class="reference internal" href="#the-special-value-null">The special value <code class="docutils literal notranslate"><span class="pre">null</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#object-files">Object files</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#value-constraints">Value constraints</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#on-reused-objects-with-different-definitions">On reused objects with different definitions</a><ul>
+<li><a class="reference internal" href="#valid-fields-for-definitions-by-sub-namespace">Valid fields for definitions by sub-namespace</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rule-files">Rule files</a><ul>
+<li><a class="reference internal" href="#core-concepts">Core concepts</a><ul>
+<li><a class="reference internal" href="#requirement-levels-and-severity">Requirement levels and severity</a></li>
+<li><a class="reference internal" href="#issues">Issues</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#filename-construction-rules">Filename construction rules</a><ul>
+<li><a class="reference internal" href="#core-files-and-directories">Core files and directories</a></li>
+<li><a class="reference internal" href="#tabular-metadata-files">Tabular metadata files</a></li>
+<li><a class="reference internal" href="#bids-filenames">BIDS filenames</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sidecar-and-tabular-data-rules">Sidecar and tabular data rules</a><ul>
+<li><a class="reference internal" href="#valid-fields-for-definitions">Valid fields for definitions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#checks">Checks</a></li>
+<li><a class="reference internal" href="#ordering-rules">Ordering rules</a></li>
+<li><a class="reference internal" href="#one-off-rules">One-off rules</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-of-the-schema">Version of the schema</a></li>
+<li><a class="reference internal" href="#schema-publication">Schema publication</a></li>
+<li><a class="reference internal" href="#metaschema">Metaschema</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

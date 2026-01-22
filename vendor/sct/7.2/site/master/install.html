@@ -1,0 +1,594 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>How to install &mdash; qMRLab 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Known issues" href="known-issues.html" />
+    <link rel="prev" title="Protocols" href="protocols.html" /> 
+
+<!-- RTD Extra Head -->
+
+
+
+<script type="application/json" id="READTHEDOCS_DATA">{"ad_free": false, "api_host": "https://readthedocs.org", "builder": "sphinx", "canonical_url": null, "docroot": "/source/", "features": {"docsearch_disabled": false}, "global_analytics_code": "UA-17997319-1", "language": "en", "page": "install", "programming_language": "other", "project": "qmrlab", "proxied_api_host": "/_", "source_suffix": ".rst", "subprojects": {}, "theme": "sphinx_rtd_theme", "user_analytics_code": "", "version": "master"}</script>
+
+<!--
+Using this variable directly instead of using `JSON.parse` is deprecated.
+The READTHEDOCS_DATA global variable will be removed in the future.
+-->
+<script type="text/javascript">
+READTHEDOCS_DATA = JSON.parse(document.getElementById('READTHEDOCS_DATA').innerHTML);
+</script>
+
+
+
+<!-- end RTD <extrahead> -->
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="qmrlab" /><meta name="readthedocs-version-slug" content="master" /><meta name="readthedocs-resolver-filename" content="/install.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> qMRLab
+          
+
+          
+            
+            <img src="_static/qMR_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">qmrlab</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Key features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#data-simulator">Data simulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#data-fitting-and-visualization">Data fitting and visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methods available</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#underdevelopment">UnderDevelopment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#processing">Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="filter_map_batch.html">filter_map:   Applies spatial filtering (2D or 3D)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#qsm">QSM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qsm_sb_batch.html">qsm_sb: Fast quantitative susceptibility mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#t1-relaxometry">T1_relaxometry</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vfa_t1_batch.html">vfa_t1: Compute a T1 map using Variable Flip Angle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mtv_batch.html">mtv :  Macromolecular Tissue Volume in brain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inversion_recovery_batch.html">inversion_recovery: Compute a T1 map using Inversion Recovery data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mp2rage_batch.html">mp2rage: Compute a T1 map using MP2RAGE</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#fieldmaps">FieldMaps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="b1_afi_batch.html">b1_afi map:  Actual Flip-Angle Imaging for B1+ mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="b1_dam_batch.html">b1_dam map:  Double-Angle Method for B1+ mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="b0_dem_batch.html">b0_dem map :  Dual Echo Method for B0 mapping</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#noise">Noise</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="noise_level_batch.html">noise_level :  Noise histogram fitting within a noise mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="denoising_mppca_batch.html">denoising_mppca :  4d image denoising and noise map estimation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#t2-relaxometry">T2_relaxometry</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mwf_batch.html">mwf :  Myelin Water Fraction from Multi-Exponential T2w data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mono_t2_batch.html">mono_t2: Compute a monoexponential T2 map</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#magnetization-transfer">Magnetization_transfer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmt_bssfp_batch.html">qmt_bssfp : qMT using Balanced Steady State Free Precession acquisition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmt_sirfse_batch.html">qmt_sirfse:  qMT using Inversion Recovery Fast Spin Echo acquisition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mt_sat_batch.html">mt_sat :  Correction of Magnetization transfer for RF inhomogeneities and T1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qmt_spgr_batch.html">qmt_spgr:  quantitative Magnetizatoion Transfer (qMT) using Spoiled Gradient Echo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mt_ratio_batch.html">mt_ratio :  Magnetization transfer ratio (MTR)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="methods.html#diffusion">Diffusion</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dti_batch.html">dti: Compute a tensor from diffusion data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="noddi_batch.html">noddi:   Neurite Orientation Dispersion and Density Imaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="charmed_batch.html">charmed: Composite Hindered and Restricted Model for Diffusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Protocols</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#mp2rage">mp2rage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#numberofshots"><code class="docutils literal notranslate"><span class="pre">NumberOfShots</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#repetition-times"><code class="docutils literal notranslate"><span class="pre">Repetition</span> <span class="pre">Times</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#inversion-times"><code class="docutils literal notranslate"><span class="pre">Inversion</span> <span class="pre">Times</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="protocols.html#flip-angles"><code class="docutils literal notranslate"><span class="pre">Flip</span> <span class="pre">Angles</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Installation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How to install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#qmrlab-in-matlab">qMRLab in MATLAB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qmrlab-in-octave">qMRLab in Octave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#qmrlab-in-docker">qMRLab in Docker 🐳</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-cite">How to cite?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known-issues.html">Known issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known-issues.html#osx">OSX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="known-issues.html#apple-silicon-m1-compatibility">Apple Silicon (M1) compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gui-example.html">Beginner’s example with GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#open-matlab">1. Open matlab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#run-startup">2. Run startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#launch-the-gui">3. Launch the GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#model-selection">4. Model selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#download-example-data">5. Download example data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#view-the-data">6. View the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#set-up-the-protocol">7. Set up the protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#view-the-data-fit-in-1-voxel">8. View the data fit in 1 voxel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gui-example.html#fit-the-whole-dataset">9. Fit the whole dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="batch_example.html">Beginner’s example with CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#open-matlab-and-setup-path">1. Open MATLAB and setup path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#generate-a-batch-example">2. Generate a batch example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_example.html#run-the-batch">3. Run the batch</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_datasets.html">Example datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#download-example-datasets-via-gui">Download example datasets via GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_datasets.html#download-example-datasets-via-cli">Download example datasets via CLI</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">User Interface Guidelines</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage-guidelines.html">Interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gui_usage.html">Graphical User Interface (GUI)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#startup">1. Startup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#layout">2. Layout</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#menu-panel">2.1 Menu Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#main-panel">2.2 Main Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#options-panel">2.3 Options Panel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#data-viewer">3.  Data Viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#data-fitting">4.      Data Fitting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#data-format">4.1     Data format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#fitting-procedure">4.2     Fitting Procedure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#viewing-the-fit-results">4.3     Viewing the fit results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#simulation">5.      Simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id1">5.1.    Single Voxel Curve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id2">5.2.    Sensitivity Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id3">5.3. Multi Voxel Distribution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#id4">6. Options Panel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id5">6.1 Protocol</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id6">6.2.    Fitting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gui_usage.html#id7">6.3. Options</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gui_usage.html#tutorial">7.      Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="batch_usage.html">Command Line Interface (CLI)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#general-structure">General structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#general-commands">General commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batch_usage.html#model-structure">Model structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#all-models-have-the-following-properties">All models have the following properties:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#and-functions">And functions:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch_usage.html#most-models-have-these-additional-functions">Most models have these additional functions:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Workflows</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qmrflow_intro.html">qMRFlow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmrflow_intro.html#about">About</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmrflow_intro.html#benefits">Benefits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmrflow_intro.html#use-qmrflow-with-docker">Use qMRFlow with Docker 🐳</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmrflow_intro.html#use-qmrflow-locally">Use qMRFlow locally</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods_workflow.html">Available pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods_workflow.html#magnetizationtransfer">MagnetizationTransfer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qmrflow_mtsat.html">MTsat: Magnetization transfer saturation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#usage">Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#container-requirements">Container requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#local-installation-requirements">Local installation requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#folder-organization">Folder organization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#optional-arguments">Optional arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#notes">Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtsat.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qmrflow_mtr.html">MTR: Magnetization transfer ratio</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#usage">Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#description">Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#container-requirements">Container requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#local-installation-requirements">Local installation requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#folder-organization">Folder organization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#optional-arguments">Optional arguments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#notes">Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qmrflow_mtr.html#reference">Reference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Open Pulse Sequences</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qmr_pullseq.html">qMRPullseq</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qmr_pullseq.html#about">About</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qmr_pullseq.html#vfa-t1-mapping">VFA T1 mapping</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Contribute</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev-doc.html">Developer’s Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qMRLab</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>How to install</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/qMRLab/documentation/blob/master/source/install.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="how-to-install">
+<h1>How to install<a class="headerlink" href="#how-to-install" title="Permalink to this headline">¶</a></h1>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/access_options.png"><img alt="_images/access_options.png" src="_images/access_options.png" style="width: 800.0px; height: 200.0px;" /></a>
+</div>
+<div class="section" id="qmrlab-in-matlab">
+<h2>qMRLab in MATLAB<a class="headerlink" href="#qmrlab-in-matlab" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Minimum required version: <cite>R2014b</cite></li>
+<li><dl class="first docutils">
+<dt>Required MATLAB products:</dt>
+<dd><ul class="first last">
+<li>Image Processing Toolbox</li>
+<li>Optimization Toolbox</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Available interfaces:</dt>
+<dd><ul class="first last">
+<li>Graphical User interface (GUI) 🖥</li>
+<li>Command Line Interface (CLI) ⌨️</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>If you have a MATLAB license, you can easily start using qMRLab:</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Download the latest stable release <a class="reference external" href="https://github.com/qMRLab/qMRLab/releases">here</a>.</dt>
+<dd><ul class="first last simple">
+<li>Scroll down to the page, download links are under the <cite>Assets</cite> tab.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Extract the downloaded <cite>.zip</cite> or <cite>.tar.gz</cite> file to a directory of your choice.</p>
+</li>
+<li><p class="first">Open MATLAB point your current directory to the <cite>qMRLab</cite> folder.</p>
+</li>
+<li><p class="first">Ensure that you can see <cite>qMRLab.m</cite> in the list of files of your current directory.</p>
+</li>
+<li><p class="first">Execute the following command in your <cite>Command Window</cite> to initialize qMRLab’s default environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">startup</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>6.1. If you would like to use <strong>GUI</strong>, execute the following command in your <cite>Command Window</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qMRLab</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>To see the beginners guide for <strong>GUI</strong> please refer to <span class="xref std std-ref">Beginners example with GUI</span></li>
+</ul>
+<p>6.2. If you would like to use <strong>CLI</strong>, ensure that the environment is ready to use by executing the following command in your <cite>Command Window</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qMRLabVer</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>To see the beginners guide to <strong>CLI</strong> please refer to <span class="xref std std-ref">Beginners example with batch</span></li>
+</ul>
+</div>
+<div class="section" id="qmrlab-in-octave">
+<h2>qMRLab in Octave<a class="headerlink" href="#qmrlab-in-octave" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Minimum required version: <cite>4.2.0</cite></li>
+<li><dl class="first docutils">
+<dt>Available interfaces:</dt>
+<dd><ul class="first last">
+<li>Command Line Interface (CLI) ⌨️</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>If you don’t have Octave installed, you can find the instructions <a class="reference external" href="https://www.gnu.org/software/octave/">here</a>.</li>
+</ul>
+<p>GNU Octave is the free clone software for MATLAB. You can use nearly all the qMRLab methods in Octave via <strong>CLI</strong>:</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Download the latest stable release <a class="reference external" href="https://github.com/qMRLab/qMRLab/releases/latest/download/qMRLab_latest.zip">here</a>.</dt>
+<dd><ul class="first last simple">
+<li>Scroll down to the page, download links are under the <cite>Assets</cite> tab.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Extract the downloaded <cite>.zip</cite> or <cite>.tar.gz</cite> file to a directory of your choice.</p>
+</li>
+<li><p class="first">To initialize qMRLab for <strong>CLI</strong> use in Octave, open your terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">../</span><span class="n">directory</span><span class="o">/</span><span class="n">where</span><span class="o">/</span><span class="n">you</span><span class="o">/</span><span class="n">extracted</span><span class="o">/</span><span class="n">qMRLab</span>
+<span class="n">octave</span>
+<span class="n">startup</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>If you are running qMRLab in Octave for the first time, qMRLab will attempt to install the following packages (if not already installed):</dt>
+<dd><ul class="first last">
+<li><cite>struct</cite></li>
+<li><cite>optim</cite></li>
+<li><cite>io</cite></li>
+<li><cite>statistics</cite></li>
+<li><cite>image</cite></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<ol class="arabic" start="4">
+<li><p class="first">Ensure that qMRLab is ready to use by executing the following command in your <cite>Command Window</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qMRLabVer</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<ul class="simple">
+<li>To see the beginners guide to <strong>CLI</strong> please refer to <span class="xref std std-ref">Beginners example with batch</span></li>
+</ul>
+</div>
+<div class="section" id="qmrlab-in-docker">
+<h2>qMRLab in Docker 🐳<a class="headerlink" href="#qmrlab-in-docker" title="Permalink to this headline">¶</a></h2>
+<p>Beginning from the release <cite>v2.3.0</cite>, qMRLab offers different flavors of Docker images:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>🖥 <a class="reference external" href="https://hub.docker.com/repository/docker/qmrlab/mcrgui">qmrlab/mcrgui</a></dt>
+<dd><ul class="first last">
+<li>Use qMRLab <strong>GUI</strong> without MATLAB license! Instructions are available <a class="reference external" href="https://hub.docker.com/repository/docker/qmrlab/mcrgui">elsewhere</a>.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>📑 <a class="reference external" href="https://hub.docker.com/repository/docker/qmrlab/octjn">qmrlab/octjn</a></dt>
+<dd><ul class="first last">
+<li>Use qMRLab in <strong>Jupyter Notebooks</strong>! This image comes with <strong>SoS Kernel</strong> and some cool visualization libraries in <strong>Python</strong>, allowing you to combine qMRI processing with qMRLab in Octave and interactive visualization, all in the same notebook. Instructions are available <a class="reference external" href="https://hub.docker.com/repository/docker/qmrlab/octjn">elsewhere</a>.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>⌨️ <a class="reference external" href="https://hub.docker.com/repository/docker/qmrlab/minimal">qmrlab/minimal</a></dt>
+<dd><ul class="first last">
+<li>Barebones qMRLab in Octave (i.e <cite>qmrlab/octjn</cite> without <cite>jupyter</cite>). Instructions are available <a class="reference external" href="https://hub.docker.com/repository/docker/qmrlab/minimal">elsewhere</a>.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Docker image tags are coherent with qMRLab release versions. For example, if you would like to get Docker image with qMRLab <cite>v2.4.0</cite> installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">qmrlab</span><span class="o">/</span><span class="n">octjn</span><span class="p">:</span><span class="n">v2</span><span class="mf">.4.0</span>
+</pre></div>
+</div>
+<p>🚀 Docker images are built and published automatically by <a class="reference external" href="https://hub.docker.com/repository/docker/qmrlab/minimal">qMRLab’s Azure Release Pipelines</a>.</p>
+</div>
+<div class="section" id="how-to-cite">
+<h2>How to cite?<a class="headerlink" href="#how-to-cite" title="Permalink to this headline">¶</a></h2>
+<p>If you use qMRLab in you work, please cite:</p>
+<p>Karakuzu, A., Boudreau, M., Duval, T., Boshkovski, T., Leppert, I. R., Cabana, J. F., … &amp; Stikov, N. (2020). qMRLab: Quantitative MRI analysis, under one umbrella. Journal of Open Source Software, 5(53), 2343. doi: 10.21105/joss.02343</p>
+<p>Please also cite the reference for the particular module you are using (specified in each model’s page).</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="known-issues.html" class="btn btn-neutral float-right" title="Known issues" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="protocols.html" class="btn btn-neutral float-left" title="Protocols" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, NeuroPoly
+      
+        <span class="commit">
+          Revision <code>a4cf06e4</code>.
+        </span>
+      
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+   
+
+</body>
+</html>

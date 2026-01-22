@@ -1,0 +1,549 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transforms &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="View Controllers" href="viewcontrollers.html" />
+    <link rel="prev" title="Welcome" href="slicerwelcome.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/transforms.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Transforms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-cases">Use cases</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#create-a-transform">Create a transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#apply-transform-to-a-node">Apply transform to a node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#harden-transform-on-a-node">Harden transform on a node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#modify-transform">Modify transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compute-transform">Compute transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#save-transform">Save transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#load-transform">Load transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#visualize-transform">Visualize transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interaction">Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#information">Information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#edit">Edit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#display">Display</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#apply-transform">Apply transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#convert">Convert</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Transforms</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/transforms.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="transforms">
+<h1>Transforms<a class="headerlink" href="#transforms" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This module is used for creating, editing, and visualization of spatial transformations. Transformations are stored in transform nodes and define position, orientation, and warping in the world coordinate system or relative to other nodes, such as volumes, models, markups, or other transform nodes.</p>
+<p>See a summary of main features demonstrated in <a class="reference external" href="https://screencast.com/t/Z6dQVjK3m">this video</a>.</p>
+<p>Supported transform types:</p>
+<ul class="simple">
+<li><p>linear transform: rigid, scaling, shearing, affine, etc. specified by a 4x4 homogeneous transformation matrix</p></li>
+<li><p>b-spline transform: displacement field specified at regular grid points, with b-spline interpolation</p></li>
+<li><p>grid transform: dense displacement field, with trilinear interpolation</p></li>
+<li><p>thin-plate splines: displacements specified at arbitrarily placed points, with thin-plate spline interpolation</p></li>
+<li><p>composite transforms: any combinations of the transforms above, in any order, any of them optionally inverted</p></li>
+</ul>
+</section>
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<section id="create-a-transform">
+<h3>Create a transform<a class="headerlink" href="#create-a-transform" title="Link to this heading"></a></h3>
+<p>Transform node can be created in multiple ways:</p>
+<ul class="simple">
+<li><p>Method A: In Data module’s Subject hierarchy tab, right-click on the “Transform” column and choose “Create new transform”. This always creates a general “Transform”.</p></li>
+<li><p>Method B: In Data module’s Subject hierarchy tab, right-click on the “Visibility” column of any transformable node and choose “Interaction” to create a parent transform and display the interaction handles (See <a class="reference internal" href="#interaction"><span class="std std-ref">Interaction section</span></a>). This always creates a general “Transform”.</p></li>
+<li><p>Method C: In Data module’s Transform hierarchy tab, right-click on an item and choose “Insert transform”. This always creates a “Linear transform”. Advantage of this method is that it is easy to build and overview hierarchy of transforms.</p></li>
+<li><p>Method D: In Transforms module click on the “Transform” node selector and choose one of the “Create new…” options.</p></li>
+</ul>
+<p>How to choose transform type: Create “Linear transform” if you only work with linear transforms, because certain modules only allow you to select this node type as input. In other cases, it is recommended to  create the general “Transform” node. Multiple transform node types exist because earlier Slicer could only store a simple transformation in a node. Now a transform node can contain any transformation type (linear, grid, bspline, thin-plate spline, or even composite transformation - an arbitrary sequence of any transformations), therefore transform node types only differ in their name. In some modules, node selectors only accept a certain transform node type, therefore it may be necessary to create that expected transform type, but in the long term it is expected that all modules will accept the general “Transform” node type.</p>
+</section>
+<section id="apply-transform-to-a-node">
+<h3>Apply transform to a node<a class="headerlink" href="#apply-transform-to-a-node" title="Link to this heading"></a></h3>
+<p>“Applying a transform” means setting parent transform to a node to translate, rotate, and/or warp it. If the parent transform is changed then the position or shape of the node is automatically updated. If the transform is removed then original (non-transformed) state of the node is restored.</p>
+<p>A transform can be applied to a node in multiple ways:</p>
+<ul class="simple">
+<li><p>Method A: In Data module’s Subject hierarchy tab, right-click on the “Transform” column and choose a transform (or “Create new transform”). The transform can be interactively edited in 3D views by right-clicking on “Transform” column and choosing “Interaction”.</p></li>
+<li><p>Method B: In Data module’s Transform hierarchy tab, drag the nodes under a transform.</p></li>
+<li><p>Method C: In Transforms module’s “Apply transform” section move nodes from the Transformable list to the Transformed list by selecting them and click the arrow button between them.</p></li>
+</ul>
+<p>Parent transform can be set for transform nodes, thereby creating a hierarchy (tree) of transforms. This transform tree is displayed in Data module’s Transform hierarchy tab.</p>
+</section>
+<section id="harden-transform-on-a-node">
+<h3>Harden transform on a node<a class="headerlink" href="#harden-transform-on-a-node" title="Link to this heading"></a></h3>
+<p>“Hardening a transform” means permanently modify the node according to the currently applied transform. For example, coordinate values of model points are updated with the transformed coordinates, or a warped image voxels are resampled. After hardening the transform, the node is no longer associated with the transform.</p>
+<p>A transform can be hardened on a node in multiple ways:</p>
+<ul class="simple">
+<li><p>Method A: In Data module, right-click on Transform column and click “Harden transform”</p></li>
+<li><p>Method B: In Transforms module’s “Apply transform” section, click the harden button (below the left arrow button).</p></li>
+</ul>
+<p>If non-linear transform is hardened on a volume then the volume is resampled using the same spacing and axis directions as the original volume (using linear interpolation). Extents are updated to fully contain the transformed volume. To specify a different image extent or resolution, one of the image resampling modules can be used, such as “Resample Scalar/Vector/DWI volume”.</p>
+</section>
+<section id="modify-transform">
+<h3>Modify transform<a class="headerlink" href="#modify-transform" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Invert: all transforms can be inverted by clicking “Invert” button in Transforms module’s Edit section. This is a reversible operation, as the transform’s internal representation is not changed, just a flag is set that the transform has to be interpreted as its inverse.</p></li>
+<li><p>Split: a composite transform can be split to multiple transform nodes (so that each component is stored in a separate transform node) by clicking “Split” button in Transforms module’s Edit section.</p></li>
+<li><p>Change translation/rotation:</p>
+<ul>
+<li><p>linear transforms can be edited using translation and rotation sliders Transforms module’s Edit section. “Translation in global or local reference frame” button controls if translation is performed in the parent coordinate system or the rotated coordinate system.</p></li>
+<li><p>translation and rotation of a linear transform can be interactively edited in 3D by enabling “Visible in 3D view” in Transform’s module Display / Interaction section. See <a class="reference internal" href="#interaction"><span class="std std-ref">Interaction section</span></a>.</p></li>
+</ul>
+</li>
+<li><p>Edit warping transform: to specify/edit a warping transform that translates a set of points to specified positions, you can use <a class="reference internal" href="../registration.html#semi-automatic-registration"><span class="std std-ref">semi-automatic registration methods</span></a></p></li>
+</ul>
+</section>
+<section id="compute-transform">
+<h3>Compute transform<a class="headerlink" href="#compute-transform" title="Link to this heading"></a></h3>
+<p>Transforms are usually computed using <a class="reference internal" href="../registration.html"><span class="std std-doc">spatial registration tools</span></a>.</p>
+</section>
+<section id="save-transform">
+<h3>Save transform<a class="headerlink" href="#save-transform" title="Link to this heading"></a></h3>
+<p>Transforms are saved into <a class="reference external" href="https://itk.org/">ITK</a> transform file format. ITK always saves transform “from parent”, as this is the direction that is necessary for transforming images.</p>
+<p>If a transform node in Slicer has a transformation with “to parent” direction (e.g., it was computed like that or a “from parent” transform got inverted) then:</p>
+<ul class="simple">
+<li><p>linear transforms: the transform is automatically converted to “from parent” direction.</p></li>
+<li><p>warping transforms: the transform is saved as special inverse transform class that most ITK-based applications cannot interpret. If compatibility with other applications is needed, the transform can be converted to a displacement field before saving.</p></li>
+</ul>
+<p>A quick way to export a linear transform to another software or to text files is to copy the homogeneous transformation matrix values to the clipboard by clicking “Copy” button in Edit section in Transforms module.</p>
+</section>
+<section id="load-transform">
+<h3>Load transform<a class="headerlink" href="#load-transform" title="Link to this heading"></a></h3>
+<p>Drag-and-drop the transform file to the application window and make sure “Transform” is selected in Description column.</p>
+<p>MetaImage (mha), NIFTI (nii) vector volumes can be loaded as displacement field (grid) transform. The volume and its vectors are expected to be stored in LPS coordinate system (during reading they are converted to RAS to match coordinate system conventions in Slicer).</p>
+<p>A quick way to import a linear transform from another software or from text files is to copy the homogeneous transformation matrix values to the clipboard, and click “Paste” button in Edit section in Transforms module.</p>
+</section>
+<section id="visualize-transform">
+<h3>Visualize transform<a class="headerlink" href="#visualize-transform" title="Link to this heading"></a></h3>
+<p>Transforms can be visualized in both 2D and 3D views, as glyphs representing the displacement vectors as arrows, cones, or spheres; regular grids that are deformed by the transform; or contours that represent lines or surfaces where the displacement magnitude has a specific value. See documentation of <a class="reference internal" href="#display"><span class="std std-ref">Display section</span></a> for details. Linear transforms can also be interacted with using an interaction handle widget. See <a class="reference internal" href="#interaction"><span class="std std-ref">Interaction section</span></a></p>
+</section>
+<section id="interaction">
+<h3>Interaction<a class="headerlink" href="#interaction" title="Link to this heading"></a></h3>
+<p><img alt="Interaction handles in 2D and 3D views." src="https://github.com/Slicer/Slicer/releases/download/docs-resources/interaction_handles_1.gif" /></p>
+<section id="interaction-keybinds">
+<h4>Interaction keybinds<a class="headerlink" href="#interaction-keybinds" title="Link to this heading"></a></h4>
+<p>For macOS, refer to <a class="reference internal" href="../user_interface.html#alternate-macos-keybindings"><span class="std std-ref">alternate macOS keybindings</span></a>.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Handle</th>
+<th>Key</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Translation</td>
+<td><code>Left-click</code></td>
+<td>Translate along a specific axis, or parallel to the view plane</td>
+</tr>
+<tr>
+<td>Translation</td>
+<td><code>Left-click</code> + <code>Alt</code></td>
+<td>Translate the center of transformation</td>
+</tr>
+<tr>
+<td>Rotation</td>
+<td><code>Left-click</code></td>
+<td>Rotate around a specific axis, or parallel to the view plane</td>
+</tr>
+<tr>
+<td>Scale</td>
+<td><code>Left-click</code></td>
+<td>Scale along a specific axis</td>
+</tr>
+<tr>
+<td>Scale</td>
+<td><code>Left-click</code> + <code>Alt</code></td>
+<td>Uniform scale along a specific axis</td>
+</tr>
+<tr>
+<td>Translation</td>
+<td><code>Left-click</code> + <code>Alt</code></td>
+<td>Translate the center of transformation</td>
+</tr>
+<tr>
+<td>Any</td>
+<td><code>Right-click</code></td>
+<td>Show context menu</td>
+</tr>
+<tr>
+<td>Any</td>
+<td><code>Right-click</code> during interaction</td>
+<td>Cancel and return to original state</td>
+</tr>
+<tr>
+<td>Any</td>
+<td><code>Escape</code> during interaction</td>
+<td>Cancel and return to original state</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="context-menu">
+<h4>Context menu<a class="headerlink" href="#context-menu" title="Link to this heading"></a></h4>
+<p><img alt="Context menu showing the following options when right-clicking on a transform node." src="https://github.com/Slicer/Slicer/releases/download/docs-resources/interaction_context_menu_1.png" /></p>
+<ul class="simple">
+<li><p>Edit properties: Switch to the Transforms module and select the specified transform node.</p></li>
+<li><p>Invert transform: Invert the transform matrix.</p></li>
+<li><p>Reset transform to identity: Reset the transform matrix back to an identity transform.</p></li>
+<li><p>Reset center of transformation:</p>
+<ul>
+<li><p>Transform origin: Reset the center of transformation to [0,0,0] in the local coordinate system.</p></li>
+<li><p>Transformed nodes: Reset the center of transformation to the bounds center of all nodes that are transformed.</p></li>
+<li><p>Individual nodes: Reset the center of transformation to the center of the bounds for a specific node.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<p>Transform: Select the transform node to display, control and edit.</p>
+<section id="information">
+<h3>Information<a class="headerlink" href="#information" title="Link to this heading"></a></h3>
+<p>Displays details about what transformation(s) a transform node contains, such as type and direction (“to parent” or “from parent).</p>
+<p>It also displays displacement value at the current mouse pointer position (in slice views, it is enough to just move the mouse pointer; in 3D views, Shift key must be held down while moving the mouse).</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_information.png" /></p>
+</section>
+<section id="edit">
+<h3>Edit<a class="headerlink" href="#edit" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Transform matrix: 4x4 homogeneous transformation matrix. Each element is editable on double click. Type Enter to validate change, Escape to cancel or Tab to edit the next element. First 3 columns of the matrix specifies an axis of the transformed coordinate system. Scale factor along an axis is the column norm of the corresponding column. Last column specifies origin of the transformed coordinate system. Last row of the transform is always [0, 0, 0, 1].</p></li>
+<li><p>Translation and rotation sliders:</p>
+<ul>
+<li><p>Translation: Apply LR, PA, and IS translational components of the transformation matrix in RAS space (in mm). Min and Max control the lower and upper bounds of the sliders.</p></li>
+<li><p>Rotation: Apply LR, PA, and IS rotation angles (degrees) in the RAS space. Rotations are concatenated.</p></li>
+<li><p>Note: Linear transform edit sliders only show relative translation and rotation because a transformation can be achieved using many different series of transforms. To make this clear to users, only one transform slider can be non-zero at a time (all previously modified sliders are reset to 0 when a slider is moved). The only exception is translation sliders in “translate first” mode (i.e., when translation in global/local coordinate system button is not depressed): in this case there is a only one way how a specific translation can be achieved, therefore transform sliders are not reset to 0. An rotating dial widget would be a more appropriate visual representation of the behavior than sliders, but slider is chosen because it is a standard widget and users are already familiar with it.</p></li>
+</ul>
+</li>
+<li><p>Translation reference frame: Determines what coordinate system the translation (specified by translation sliders) is specified in - in the parent coordinate system or in the rotated coordinate system.</p></li>
+<li><p>Identity: Resets transformation matrix to identity matrix.</p></li>
+<li><p>Invert: Inverts the transformation matrix.</p></li>
+<li><p>Split: Split a composite transform so that each of its component is stored in a separate transform node.</p></li>
+<li><p>Copy: Copy the homogeneous transformation matrix values to the clipboard. Values are separated by spaces, each line of the transform is in a separate line.</p></li>
+<li><p>Paste: Paste transformation matrix from clipboard. Values can be separated by spaces, commas, or semicolons, which allows copy/pasting numpy array from Python console or matrix from Matlab.</p></li>
+<li><p>Center of transformation: The center of transformation of the selected transform. This is the position that the sliders will rotate around, and where the interaction handles are positioned. The center of transformation can be edited/displayed in world or local coordinates. Clicking the ‘Reset’ button will reset the center of transformation to the local coordinates [0,0,0].</p></li>
+</ul>
+<p><img alt="Widget for editing linear transforms." src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_edit.png" /></p>
+<p><img alt="Widget for editing/displaying the center of transformation." src="https://github.com/Slicer/Slicer/releases/download/docs-resources/center_of_transformation.png" /></p>
+</section>
+<section id="display">
+<h3>Display<a class="headerlink" href="#display" title="Link to this heading"></a></h3>
+<p>This section allows visualization of how much and what direction of displacements specified by the transform.</p>
+<section id="id1">
+<h4>Interaction<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p><img alt="Display options widget for controlling interaction handle visibility." src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_display_interaction.png" /></p>
+<p>The interaction section controls the visibility of interaction handles for manual positioning of transforms. Individual axes can be enabled/disabled separately for 3D and Slice views by clicking the “More options” button.</p>
+</section>
+<section id="visualization-modes">
+<h4>Visualization modes<a class="headerlink" href="#visualization-modes" title="Link to this heading"></a></h4>
+<p><img alt="Transforms module section for controlling transform display options." src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_display_2024_03_26.png" /></p>
+<ol class="arabic simple">
+<li><p>Glyph mode</p></li>
+</ol>
+<p>Slice view:</p>
+<ul class="simple">
+<li><p>Arrow: the arrow shows the displacement vector at the arrow starting point, projected to the slice plane</p></li>
+<li><p>Cone: the cone shows the displacement vector at the cone centerpoint, projected to the slice plane</p></li>
+<li><p>Sphere: the circle diameter shows the displacement vector magnitude at the circle centerpoint</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Glyph - arrow (slice view)</th>
+<th>Glyph - cone (slice view)</th>
+<th>Glyph - sphere (slice view)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_glyph_arrow_2d.png" /></td>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_glyph_cone_2d.png" /></td>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_glyph_sphere_2d.png" /></td>
+</tr>
+</tbody>
+</table>
+<p>3D view:</p>
+<ul class="simple">
+<li><p>Arrow: the arrow shows the displacement vector at the arrow starting point</p></li>
+<li><p>Cone: the cone shows the displacement vector at the cone centerpoint</p></li>
+<li><p>Sphere: the sphere diameter shows the displacement vector magnitude at the circle centerpoint</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Glyph - arrow (3D view)</th>
+<th>Glyph - cone (3D view)</th>
+<th>Glyph - sphere (3D view)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_glyph_arrow_3d_slice.png" /></td>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_glyph_cone_3d_roi.png" /></td>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_glyph_sphere_3d_volume.png" /></td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple" start="2">
+<li><p>Grid mode</p></li>
+</ol>
+<ul class="simple">
+<li><p>Slice view: Grid visualization (2D): shows a regular grid, deformed by the displacement vector projected to the slice</p></li>
+<li><p>3D view: shows a regular grid, deformed by the displacement vector</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Grid (slice view)</th>
+<th>Grid - slice plane (3D view)</th>
+<th>Grid - volume (3D view)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_grid_2d.png" /></td>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_grid_3d_slice.png" /></td>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_grid_3d_volume.png" /></td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple" start="3">
+<li><p>Contour mode</p></li>
+</ol>
+<ul class="simple">
+<li><p>Slice view: iso-lines corresponding to selected displacement magnitude values</p></li>
+<li><p>3D view: iso-surfaces corresponding to selected displacement magnitude values</p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Contour (slice view)</th>
+<th>Contour (3D view)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_contour_2d.png" /></td>
+<td><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/module_transforms_contour_3d_volume.png" /></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="coloring">
+<h4>Coloring<a class="headerlink" href="#coloring" title="Link to this heading"></a></h4>
+<p>Open Transforms module / Display section / Colors section. If you click on a small circle then above the color bar you can see the small color swatch. On its left side is the points index (an integer that tells which point is being edited and that can be used to jump to the previous/next point), and on its right side is the mm value corresponding to that color.</p>
+<p>The default colormap is:</p>
+<ul class="simple">
+<li><p>1mm (or below) = gray</p></li>
+<li><p>2mm = green</p></li>
+<li><p>5mm = yellow</p></li>
+<li><p>10mm (or above) = red</p></li>
+</ul>
+<p>You can drag-and-drop any of the small circles or modify the mm value in the editbox. You can also add more color values by clicking on the color bar. Then, you can assign a color and/or adjust the mm value. If you click on a circle and press the DEL key then the color value is deleted.</p>
+<p>If you need to know accurate displacement values at specific positions then switch to contour mode and in the “Levels” list enter all the mm values that you are interested in. For example, if you enter only a single value “3” in the Levels field you will see a curve going through the points where the displacement is exactly 3 mm; on one side of the curve the displacements are smaller, on the other side the displacements are larger.</p>
+<p>You can show both contours and grid or glyph representations by loading the same transform twice and choosing a different representation for each.</p>
+</section>
+</section>
+<section id="apply-transform">
+<h3>Apply transform<a class="headerlink" href="#apply-transform" title="Link to this heading"></a></h3>
+<p>Controls what nodes the currently selected Transform is applied to.</p>
+<ul class="simple">
+<li><p>Transformable: List the nodes in the scene that <em>do not</em> directly use the selected transform node.</p></li>
+<li><p>Transformed: List the nodes in the scene that use the selected transform node.</p></li>
+<li><p>Right arrow: Apply the selected transform node to the selected nodes in Transformable list.</p></li>
+<li><p>Left arrow: Remove the selected transform node from the selected nodes in the Transformed list.</p></li>
+<li><p>Harden transform: Harden selected transform on the nodes selected in the Transformed list.</p></li>
+</ul>
+</section>
+<section id="convert">
+<h3>Convert<a class="headerlink" href="#convert" title="Link to this heading"></a></h3>
+<p>This section can sample the selected transform on a grid (specified by the selected “Reference volume”) and save it to a node. Depending on the type of selected “Output displacement field” node, slightly different information is exported:</p>
+<ul class="simple">
+<li><p>Scalar volume node : magnitude of displacement is saved as a scalar volume</p></li>
+<li><p>Vector volume node: displacement vectors are saved as voxel values (in RAS coordinate system). When the vector volume is written to file, the image grid is saved in LPS coordinate system, but displacement values are still kept in RAS coordinate system.</p></li>
+<li><p>Transform node: a grid transform is constructed. This can be used for creating an inverted displacement field that any ITK application can read. When the grid transform is written to file, both the image grid and displacement values are saved in LPS coordinate system.</p></li>
+</ul>
+</section>
+</section>
+<section id="related-modules">
+<h2>Related modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../registration.html"><span class="doc std std-doc">Registration modules</span></a>: transforms can be computed automatically using semi-automatic or automatic registration modules</p></li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<p>See examples and other developer information in <a class="reference internal" href="../../developer_guide/modules/transforms.html"><span class="doc std std-doc">Developer guide</span></a> and <a class="reference internal" href="../../developer_guide/script_repository.html#transforms"><span class="std std-ref">Script repository</span></a>.</p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Alex Yarmarkovich (Isomics, SPL)</p></li>
+<li><p>Jean-Christophe Fillion-Robin (Kitware)</p></li>
+<li><p>Julien Finet (Kitware)</p></li>
+<li><p>Andras Lasso (PerkLab, Queen’s)</p></li>
+<li><p>Franklin King (PerkLab, Queen’s)</p></li>
+<li><p>Kyle Sunderland (PerkLab, Queen’s)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is funded in part by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_isomics.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_kitware.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_nac.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="slicerwelcome.html" class="btn btn-neutral float-left" title="Welcome" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="viewcontrollers.html" class="btn btn-neutral float-right" title="View Controllers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

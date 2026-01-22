@@ -1,0 +1,228 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules API &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Colors" href="colors.html" />
+    <link rel="prev" title="Caching" href="../parameter_nodes/advanced/caching.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/developer_guide/modules/index.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/modules/index.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/settings.html">Application settings</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Slicer API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mrml_overview.html">MRML Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../module_overview.html">Module Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameter_nodes/index.html">Parameter Nodes</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Modules API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="selftests.html">Self Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sequences.html">Sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="volumes.html">Volumes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../python_faq.html">Python FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../script_repository.html">Script repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../build_instructions/index.html">Build Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debugging/index.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html">Contributing to Slicer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../advanced_topics.html">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html">Credits</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Modules API</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/developer_guide/modules/index.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="modules-api">
+<h1>Modules API<a class="headerlink" href="#modules-api" title="Link to this heading"></a></h1>
+<p>Modules usually interact with each other only indirectly, by making changes and observing changes in the MRML scene. However, modules can also directly use functions offered by other modules, by calling its logic functions. Examples and notes for using specific modules are provided below.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="colors.html#color-table-csv-file-format-csv">Color table CSV file format (.csv)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colors.html#color-table-text-file-format-txt-ctbl">Color table text file format (.txt, .ctbl)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colors.html#debugging">Debugging</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dicom.html">DICOM (Digital Imaging and Communications in Medicine)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html#customize-table-columns-in-dicom-browser">Customize table columns in DICOM browser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html#customize-dicom-browser-table-content">Customize DICOM browser table content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html#plugin-architecture">Plugin architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html#dicom-networking-development">DICOM Networking Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="markups.html">Markups</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markups.html#markups-json-file-format-mrk-json">Markups json file format (.mrk.json)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html#markups-fiducial-point-list-file-format-fcsv">Markups fiducial point list file format (.fcsv)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html#markups-control-points-table-file-format-csv-tsv">Markups control points table file format (.csv, .tsv)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plots.html">Plots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="selftests.html">Self Tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="selftests.html#faq">FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="segmentations.html">Segmentations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html#segmentation-labelmap-file-format-seg-nrrd">Segmentation labelmap file format (.seg.nrrd)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html#segmentation-surface-file-format-seg-vtm">Segmentation surface file format (.seg.vtm)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="segmenteditor.html">Segment editor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html#effect-parameters">Effect parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sequences.html">Sequences</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sequences.html#volume-sequence-file-format-seq-nrrd">Volume sequence file format (.seq.nrrd)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html#related-mrml-nodes">Related MRML nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html#transform-files">Transform files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html#displacement-field-files">Displacement field files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html#events">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="volumerendering.html">Volume rendering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html#key-classes">Key classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html#format-of-vp-json-volume-property-json">Format of .vp.json (volume property JSON)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html#format-of-volume-property-vp-file">Format of Volume Property (.vp) file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html#volume-rendering-presets">Volume rendering presets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="volumes.html">Volumes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../parameter_nodes/advanced/caching.html" class="btn btn-neutral float-left" title="Caching" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="colors.html" class="btn btn-neutral float-right" title="Colors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

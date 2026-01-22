@@ -1,0 +1,887 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.2.0">
+    
+    
+      
+        <title>Extending the BIDS specification - Brain Imaging Data Structure v1.2.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/application.750b69bd.css">
+      
+      
+    
+    
+      <script src="assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    
+    
+      
+    
+      
+    
+    
+      
+    
+    
+  <script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="bids-specification" /><meta name="readthedocs-version-slug" content="v1.2.0" /><meta name="readthedocs-resolver-filename" content="/06-extensions.html" /><meta name="readthedocs-http-status" content="200" /></head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#contributing-to-and-extending-the-bids-specification" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="." title="Brain Imaging Data Structure v1.2.0" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Brain Imaging Data Structure v1.2.0
+            </span>
+            <span class="md-header-nav__topic">
+              Extending the BIDS specification
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="." title="Brain Imaging Data Structure v1.2.0" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    Brain Imaging Data Structure v1.2.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
+    
+    <label class="md-nav__link" for="nav-1">
+      The BIDS Specification
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        The BIDS Specification
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="01-introduction.html" title="Introduction" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="02-common-principles.html" title="Common principles" class="md-nav__link">
+      Common principles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="03-modality-agnostic-files.html" title="Modality agnostic files" class="md-nav__link">
+      Modality agnostic files
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1-4" type="checkbox" id="nav-1-4">
+    
+    <label class="md-nav__link" for="nav-1-4">
+      Modality specific files
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-4">
+        Modality specific files
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html" title="Magnetic Resonance Imaging" class="md-nav__link">
+      Magnetic Resonance Imaging
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/02-magnetoencephalography.html" title="Magnetoencephalography" class="md-nav__link">
+      Magnetoencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/03-electroencephalography.html" title="Electroencephalography" class="md-nav__link">
+      Electroencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/04-intracranial-electroencephalography.html" title="intracranial Electroencephalography" class="md-nav__link">
+      intracranial Electroencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/05-task-events.html" title="Task events" class="md-nav__link">
+      Task events
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/06-physiological-and-other-continous-recordings.html" title="Physiological and other continous recordings" class="md-nav__link">
+      Physiological and other continous recordings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/07-behavioral-experiments.html" title="Behavioral experiments (with no MRI)" class="md-nav__link">
+      Behavioral experiments (with no MRI)
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="05-longitudinal-and-multi-site-studies.html" title="Longitudinal and multi-site studies" class="md-nav__link">
+      Longitudinal and multi-site studies
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Extending the BIDS specification
+      </label>
+    
+    <a href="06-extensions.html" title="Extending the BIDS specification" class="md-nav__link md-nav__link--active">
+      Extending the BIDS specification
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contributing-to-bids" title="Contributing to BIDS" class="md-nav__link">
+    Contributing to BIDS
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-bids-starter-kit" title="The BIDS Starter Kit" class="md-nav__link">
+    The BIDS Starter Kit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-bids-contributor-guide" title="The BIDS Contributor guide" class="md-nav__link">
+    The BIDS Contributor guide
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bids-extension-proposals" title="BIDS Extension Proposals" class="md-nav__link">
+    BIDS Extension Proposals
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1-7" type="checkbox" id="nav-1-7">
+    
+    <label class="md-nav__link" for="nav-1-7">
+      Appendix
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-7">
+        Appendix
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/01-contributors.html" title="Contributors" class="md-nav__link">
+      Contributors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/02-licenses.html" title="Licenses" class="md-nav__link">
+      Licenses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/03-hed.html" title="HED" class="md-nav__link">
+      HED
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/04-entity-table.html" title="Entity-table" class="md-nav__link">
+      Entity-table
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/05-units.html" title="Units" class="md-nav__link">
+      Units
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/06-meg-file-formats.html" title="MEG file formats" class="md-nav__link">
+      MEG file formats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/07-meg-systems.html" title="MEG systems" class="md-nav__link">
+      MEG systems
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/08-coordinate-systems.html" title="Coordinate-systems" class="md-nav__link">
+      Coordinate-systems
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="CHANGES.html" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/bids-standard/bids-starter-kit" title="The BIDS Starter Kit" class="md-nav__link">
+      The BIDS Starter Kit
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contributing-to-bids" title="Contributing to BIDS" class="md-nav__link">
+    Contributing to BIDS
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-bids-starter-kit" title="The BIDS Starter Kit" class="md-nav__link">
+    The BIDS Starter Kit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-bids-contributor-guide" title="The BIDS Contributor guide" class="md-nav__link">
+    The BIDS Contributor guide
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bids-extension-proposals" title="BIDS Extension Proposals" class="md-nav__link">
+    BIDS Extension Proposals
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="contributing-to-and-extending-the-bids-specification">Contributing to and extending the BIDS specification</h1>
+<p>This page lists some ways that you can get involved with the BIDS community.</p>
+<h2 id="contributing-to-bids">Contributing to BIDS</h2>
+<p>There are many ways to get involved with the BIDS community!</p>
+<h3 id="the-bids-starter-kit">The BIDS Starter Kit</h3>
+<p>If you're new
+to the BIDS community and you'd like to learn a bit more, we recommend checking
+out the <a href="https://github.com/bids-standard/bids-starter-kit/blob/master/README.md">BIDS Starter Kit</a>.
+This has introductory information about the BIDS specification, tools in
+the BIDS ecosystem, and how you can get involved.</p>
+<h3 id="the-bids-contributor-guide">The BIDS Contributor guide</h3>
+<p>If you'd like to get involved more heavily in helping extend the BIDS
+specification or develop tools for it, see the <a href="https://docs.google.com/document/d/1pWmEEY-1-WuwBPNy5tDAxVJYQ9Een4hZJM06tQZg8X4/edit?usp%3Dsharing&amp;sa=D&amp;ust=1537468908724000">BIDS Contributor Guide</a>.
+It contains more in-depth information for getting involved with the BIDS
+community.</p>
+<h2 id="bids-extension-proposals">BIDS Extension Proposals</h2>
+<p>The BIDS specification can be extended in a backwards compatible way and will
+evolve over time. These are accomplished with BIDS Extension Proposals (BEPs),
+which are community-driven processes.</p>
+<p>Below is a table of currently-active BEPs.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Extension label</th>
+<th align="left">Title</th>
+<th align="left">Moderators/leads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1QwfHyBzOyFWOLO4u_kkojLpUhW0-4_M7Ubafu9Gf4Gg">BEP001</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1QwfHyBzOyFWOLO4u_kkojLpUhW0-4_M7Ubafu9Gf4Gg">Structural acquisitions that include multiple contrasts (multi echo, flip angle, inversion time) sequences</a></td>
+<td align="left">Gilles de Hollander</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1bq5eNDHTb6Nkx3WUiOBgKvLNnaa5OMcGtD0AZ9yms2M">BEP002</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1bq5eNDHTb6Nkx3WUiOBgKvLNnaa5OMcGtD0AZ9yms2M">The BIDS Models Specification</a></td>
+<td align="left">Tal Yarkoni</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1Wwc4A6Mow4ZPPszDIWfCUCRNstn7d_zzaWPcfcHmgI4">BEP003</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1Wwc4A6Mow4ZPPszDIWfCUCRNstn7d_zzaWPcfcHmgI4">Common Derivatives</a></td>
+<td align="left">Chris Gorgolewski</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1kyw9mGgacNqeMbp4xZet3RnDhcMmf4_BmRgKaOkO2Sc">BEP004</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1kyw9mGgacNqeMbp4xZet3RnDhcMmf4_BmRgKaOkO2Sc">Susceptibility Weighted Imaging (SWI)</a></td>
+<td align="left">Fidel Alfaro Almagro</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/15tnn5F10KpgHypaQJNNGiNKsni9035GtDqJzWqkkP6c">BEP005</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/15tnn5F10KpgHypaQJNNGiNKsni9035GtDqJzWqkkP6c">Arterial Spin Labeling (ASL)</a></td>
+<td align="left">Henk-Jan Mutsaerts and Michael Chappell</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1mqMLnxVdLwZjDd4ZiWFqjEAmOmfcModA_R535v3eQs0">BEP009</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1mqMLnxVdLwZjDd4ZiWFqjEAmOmfcModA_R535v3eQs0">Positron Emission Tomography (PET)</a></td>
+<td align="left">Melanie Ganz</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1YG2g4UkEio4t_STIBOqYOwneLEs1emHIXbGKynx7V0Y">BEP011</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1YG2g4UkEio4t_STIBOqYOwneLEs1emHIXbGKynx7V0Y">The structural preprocessing derivatives</a></td>
+<td align="left">Andrew Hoopes</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/16CvBwVMAs0IMhdoKmlmcm3W8254dQmNARo-7HhE-lJU">BEP012</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/16CvBwVMAs0IMhdoKmlmcm3W8254dQmNARo-7HhE-lJU">The functional preprocessing derivatives</a></td>
+<td align="left">Camille Maumet and Chris Markiewicz</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1qBNQimDx6CuvHjbDvuFyBIrf2WRFUOJ-u50canWjjaw">BEP013</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1qBNQimDx6CuvHjbDvuFyBIrf2WRFUOJ-u50canWjjaw">The resting state fMRI derivatives</a></td>
+<td align="left">Steven Giavasis</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/11gCzXOPUbYyuQx8fErtMO9tnOKC3kTWiL9axWkkILNE">BEP014</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/11gCzXOPUbYyuQx8fErtMO9tnOKC3kTWiL9axWkkILNE">The affine transformations and nonlinear field warps</a></td>
+<td align="left">Oscar Esteban</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1WYOTXDB7GzlHoWqLjd45I3uGBgPxXddST-NTqBnroJE">BEP015</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1WYOTXDB7GzlHoWqLjd45I3uGBgPxXddST-NTqBnroJE">Mapping file</a></td>
+<td align="left">Eric Earl, Camille Maumet, and Vasudev Raguram</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1cQYBvToU7tUEtWMLMwXUCB_T8gebCotE1OczUpMYW60">BEP016</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1cQYBvToU7tUEtWMLMwXUCB_T8gebCotE1OczUpMYW60">The diffusion weighted imaging derivatives</a></td>
+<td align="left">Franco Pestilli and Oscar Esteban</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1ugBdUF6dhElXdj3u9vw0iWjE6f_Bibsro3ah7sRV0GA">BEP017</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1ugBdUF6dhElXdj3u9vw0iWjE6f_Bibsro3ah7sRV0GA">Generic BIDS connectivity data schema</a></td>
+<td align="left">Eugene Duff and Paul McCarthy</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1uRkgyzESLKuGjXi98Z97Wh6vt-iLN5nOAb9TG16CjUs">BEP018</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1uRkgyzESLKuGjXi98Z97Wh6vt-iLN5nOAb9TG16CjUs">Genetic information</a></td>
+<td align="left">Cyril R Pernet, Clara Moreau, and Thomas Nichols</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1FqJI791ycXr0bfRg2qyLqAf0RpVttJ2cInOgMWrKsNU">BEP019</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1FqJI791ycXr0bfRg2qyLqAf0RpVttJ2cInOgMWrKsNU">DICOM Metadata</a></td>
+<td align="left">Satrajit Ghosh</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1eggzTCzSHG3AEKhtnEDbcdk-2avXN6I94X8aUPEBVsw">BEP020</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1eggzTCzSHG3AEKhtnEDbcdk-2avXN6I94X8aUPEBVsw">Eye Tracking including Gaze Position and Pupil Size(ET)</a></td>
+<td align="left">Benjamin Gagl and Dejan Draschkow</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1PmcVs7vg7Th-cGC-UrX8rAhKUHIzOI-uIOh69_mvdlw">BEP021</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1PmcVs7vg7Th-cGC-UrX8rAhKUHIzOI-uIOh69_mvdlw">Common Electrophysiological Derivatives</a></td>
+<td align="left">Stefan Appelhoff, Cyril Pernet, Robert Oostenveld, Teon Brooks</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1pWCb02YNv5W-UZZja24fZrdXLm4X7knXMiZI7E2z7mY">BEP022</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1pWCb02YNv5W-UZZja24fZrdXLm4X7knXMiZI7E2z7mY">Magnetic Resonance Spectroscopy (MRS)</a></td>
+<td align="left">Dickson Wong</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1yzsd1J9GT-aA0DWhdlgNr5LCu6_gvbjLyfvYq2FuxlY">BEP023</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1yzsd1J9GT-aA0DWhdlgNr5LCu6_gvbjLyfvYq2FuxlY">PET Preprocessing derivatives</a></td>
+<td align="left">Martin Noergaard, Graham Searle, Melanie Ganz</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1fqnJZ18x5LJC8jiJ8yvPHUGFzNBZ6gW2kywYrUKWtuo">BEP024</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1fqnJZ18x5LJC8jiJ8yvPHUGFzNBZ6gW2kywYrUKWtuo">Computed Tomography scan (CT)</a></td>
+<td align="left">Hugo Boniface</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1chZv7vAPE-ebPDxMktfI9i1OkLNR2FELIfpVYsaZPr4">BEP025</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1chZv7vAPE-ebPDxMktfI9i1OkLNR2FELIfpVYsaZPr4">Medical Population Imaging Data structure (MIDS)</a></td>
+<td align="left">Jose Manuel Saborit Torres</td>
+</tr>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/14KC1d5-Lx-7ZSMtwS7pVAAvz-2WR_uoo5FvsNirzqJw">BEP026</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/14KC1d5-Lx-7ZSMtwS7pVAAvz-2WR_uoo5FvsNirzqJw">Microelectrode Recordings (MER)</a></td>
+<td align="left">Greydon Gilmore</td>
+</tr>
+</tbody>
+</table>
+<p>When an extension reaches maturity it is merged into the main body of the
+specification.  Below is a table of BEPs that have been merged in the main body
+of the specification.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Extension label</th>
+<th align="left">Title</th>
+<th align="left">Moderators/leads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><a href="https://docs.google.com/document/d/1FWex_kSPWVh_f4rKgd5rxJmxlboAPtQlmBc1gyZlRZM">BEP008</a></td>
+<td align="left"><a href="https://docs.google.com/document/d/1QwfHyBzOyFWOLO4u_kkojLpUhW0-4_M7Ubafu9Gf4Gg">Magnetoencephalography (MEG)</a></td>
+<td align="left">Guiomar Niso</td>
+</tr>
+</tbody>
+</table>
+<p>All of the extension ideas that are not backwards compatible and thus
+will have to wait for BIDS 2.0 are listed
+<a href="https://docs.google.com/document/d/1LEgsMiisGDe1Gv-hBp1EcLmoz7AlKj6VYULUgDD3Zdw">here</a></p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="05-longitudinal-and-multi-site-studies.html" title="Longitudinal and multi-site studies" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Longitudinal and multi-site studies
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="99-appendices/01-contributors.html" title="Contributors" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Contributors
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/application.39abc4af.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      
+        <script src="readthedocs-data.js"></script>
+      
+        
+      
+        
+      
+    
+  </body>
+</html>

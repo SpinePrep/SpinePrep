@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tedana.selection.selection_nodes.dec_left_op_right &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="../_static/tedana_favicon.png"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=643184eb"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="tedana.selection.selection_nodes.dec_reclassify_high_var_comps" href="tedana.selection.selection_nodes.dec_reclassify_high_var_comps.html" />
+    <link rel="prev" title="tedana.selection.selection_nodes.dec_classification_doesnt_exist" href="tedana.selection.selection_nodes.dec_classification_doesnt_exist.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/generated/tedana.selection.selection_nodes.dec_left_op_right.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.workflows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.workflows</span></code>: Common workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.decay"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.decay</span></code>: Modeling signal decay across echoes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.combine"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.combine</span></code>: Combining time series across echoes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.decomposition"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.decomposition</span></code>: Data decomposition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.metrics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.metrics</span></code>: Computing TE-dependence metrics</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#module-tedana.selection"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.selection</span></code>: Component selection</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.component_selector.ComponentSelector.html">tedana.selection.component_selector.ComponentSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.component_selector.TreeError.html">tedana.selection.component_selector.TreeError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.component_selector.load_config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.selection.component_selector</span></code>.load_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.component_selector.validate_tree.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.selection.component_selector</span></code>.validate_tree</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="tedana.selection.selection_nodes.html">tedana.selection.selection_nodes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_extend_factor.html">tedana.selection.selection_nodes.calc_extend_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_kappa_elbow.html">tedana.selection.selection_nodes.calc_kappa_elbow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_max_good_meanmetricrank.html">tedana.selection.selection_nodes.calc_max_good_meanmetricrank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_median.html">tedana.selection.selection_nodes.calc_median</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_revised_meanmetricrank_guesses.html">tedana.selection.selection_nodes.calc_revised_meanmetricrank_guesses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_rho_elbow.html">tedana.selection.selection_nodes.calc_rho_elbow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_varex_kappa_ratio.html">tedana.selection.selection_nodes.calc_varex_kappa_ratio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.calc_varex_thresh.html">tedana.selection.selection_nodes.calc_varex_thresh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.dec_classification_doesnt_exist.html">tedana.selection.selection_nodes.dec_classification_doesnt_exist</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">tedana.selection.selection_nodes.dec_left_op_right</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.dec_reclassify_high_var_comps.html">tedana.selection.selection_nodes.dec_reclassify_high_var_comps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.dec_variance_lessthan_thresholds.html">tedana.selection.selection_nodes.dec_variance_lessthan_thresholds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tedana.selection.selection_nodes.manual_classify.html">tedana.selection.selection_nodes.manual_classify</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.selection_utils.html">tedana.selection.selection_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.tedica.html">tedana.selection.tedica</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tedana.selection.tedpca.html">tedana.selection.tedpca</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.gscontrol"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.gscontrol</span></code>: Global signal control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.io</span></code>: Reading and writing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.reporting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.reporting</span></code>: Reporting functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.stats"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.stats</span></code>: Statistical functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.bibtex"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.bibtex</span></code>: Tools for working with BibTeX files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#module-tedana.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">tedana.utils</span></code>: Utility functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="tedana.selection.selection_nodes.html">tedana.selection.selection_nodes</a></li>
+      <li class="breadcrumb-item active">tedana.selection.selection_nodes.dec_left_op_right</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/tedana.selection.selection_nodes.dec_left_op_right.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tedana-selection-selection-nodes-dec-left-op-right">
+<h1>tedana.selection.selection_nodes.dec_left_op_right<a class="headerlink" href="#tedana-selection-selection-nodes-dec-left-op-right" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="tedana.selection.selection_nodes.dec_left_op_right">
+<span class="sig-name descname"><span class="pre">dec_left_op_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_false</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decide_comps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left2_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right2_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op3</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left3</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right3</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left3_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right3_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_extra_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_node_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_used_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_if_true</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_if_false</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/me-ica/tedana/blob/e093290/tedana/selection/selection_nodes.py#L143"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tedana.selection.selection_nodes.dec_left_op_right" title="Link to this definition"></a></dt>
+<dd><p>Perform a relational comparison.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selector</strong> (<a class="reference internal" href="tedana.selection.component_selector.ComponentSelector.html#tedana.selection.component_selector.ComponentSelector" title="tedana.selection.component_selector.ComponentSelector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComponentSelector</span></code></a>) – If only_used_metrics is False, the updated selector is returned.</p></li>
+<li><p><strong>tag_if_true</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The classification tag to apply if a component is classified True. Default=””.</p></li>
+<li><p><strong>tag_if_false</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The classification tag to apply if a component is classified False. Default=””.</p></li>
+<li><p><strong>decide_comps</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">list[str]</span></code>) – What classification(s) to operate on. using default or
+intermediate_classification labels. For example: decide_comps=’unclassified’
+means to operate only on unclassified components. Use ‘all’ to include all
+components.</p></li>
+<li><p><strong>op</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Must be one of: “&gt;”, “&gt;=”, “==”, “&lt;=”, “&lt;”
+Applied the user defined operator to left op right</p></li>
+<li><p><strong>left, right</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The labels for the two metrics to be used for comparision.
+For example: left=’kappa’, right=’rho’ and op=’&gt;’ means this
+function will test kappa&gt;rho. One of the two can also be a number.
+In that case, a metric would be compared against a fixed threshold.
+For example left=’T2fitdiff_invsout_ICAmap_Tstat’, right=0, and op=’&gt;’
+means this function will test T2fitdiff_invsout_ICAmap_Tstat&gt;0</p></li>
+<li><p><strong>left_scale, right_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Multiply the left or right metrics value by a constant. For example
+if left=’kappa’, right=’rho’, right_scale=2, and op=’&gt;’ this tests
+kappa&gt;(2*rho). These can also be a string that is a value in
+cross_component_metrics, since those will resolve to a single value.
+This cannot be a label for a component_table column since that would
+output a different value for each component. Default=1</p></li>
+<li><p><strong>op2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, Default=None)</p></li>
+<li><p><strong>left2, right2, left3, right3</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, Default=None)</p></li>
+<li><p><strong>left2_scale, right2_scale, left3_scale, right3_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, Default=1) – This function can also be used to calculate the intersection of two or three
+boolean statements. If op2, left2, and right2 are defined then
+this function returns
+(left_scale*)left op (right_scale*right) AND (left2_scale*)left2 op2 (right2_scale*right2)
+if the “3” parameters are also defined then it’s the intersection of all 3 statements</p></li>
+<li><p><strong>log_extra_info</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Additional text to the information log. Default=””.</p></li>
+<li><p><strong>custom_node_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – A short label to describe what happens in this step. If “” then a label is
+automatically generated. Default=””.</p></li>
+<li><p><strong>only_used_metrics</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – If True, only return the component_table metrics that would be used. Default=False.</p></li>
+<li><p><strong>tag_if_true</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The classification tag to apply if a component is classified True. Default=””.</p></li>
+<li><p><strong>tag_if_false</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The classification tag to apply if a component is classified False. Default=””.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>selector</strong> (<a class="reference internal" href="tedana.selection.component_selector.ComponentSelector.html#tedana.selection.component_selector.ComponentSelector" title="tedana.selection.component_selector.ComponentSelector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComponentSelector</span></code></a>) – If only_used_metrics is False, the updated selector is returned.</p></li>
+<li><p><strong>used_metrics</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">set(str)</span></code>) – If only_used_metrics is True, the names of the metrics used in the
+function are returned.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is ideally run with one boolean statement at a time so that
+the result of each boolean is logged. For example, it’s better to test
+kappa&gt;kappa_elbow and rho&gt;rho_elbow with two separate calls to this function
+so that the results of each test can be easily viewed. That said, particularly for
+the original kundu decision tree, if you’re making decisions on components with
+various classifications based on multiple boolean statements, the decision tree
+becomes really messy and the added functionality here is useful.
+Combinations of boolean statements only test with “and” and not “or”. This is
+an intentional decision because, if a classification changes if A&gt;B or C&gt;D are true
+then A&gt;B and C&gt;D should be logged separately</p>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tedana.selection.selection_nodes.dec_classification_doesnt_exist.html" class="btn btn-neutral float-left" title="tedana.selection.selection_nodes.dec_classification_doesnt_exist" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tedana.selection.selection_nodes.dec_reclassify_high_var_comps.html" class="btn btn-neutral float-right" title="tedana.selection.selection_nodes.dec_reclassify_high_var_comps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

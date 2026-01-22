@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiVolumeImporter &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MultiVolumeExplorer" href="multivolumeexplorer.html" />
+    <link rel="prev" title="Crop volume sequence" href="cropvolumesequence.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/multivolumeimporter.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quantification">Quantification</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#sequences">Sequences</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sequences.html">Sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cropvolumesequence.html">Crop volume sequence</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">MultiVolumeImporter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-cases">Use cases</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tutorials">Tutorials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#panels-and-their-use">Panels and their use</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-modules">Related modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="multivolumeexplorer.html">MultiVolumeExplorer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">MultiVolumeImporter</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/multivolumeimporter.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="multivolumeimporter">
+<h1>MultiVolumeImporter<a class="headerlink" href="#multivolumeimporter" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This module can load multiple images - referred to as “frames” - as a multi-volume. Each frame can be a 2D or 3D image, must have the same geometry (origin, spacing, axis directions, extents), and have only a single scalar component.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This module is being phased out. It will be replaced by the more generic <a class="reference internal" href="sequences.html"><span class="std std-doc">Sequences</span></a> module, which can handle any type of images, geometry does not need to be the same for all frames, and can store not only images, but any other node types (images, transforms, markups, etc.). Therefore, it is generally recommended to use Sequences module instead.</p>
+</div>
+</section>
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h2>
+<p>Most frequently used for these scenarios:</p>
+<ul class="simple">
+<li><p>Import multiple frames from files in a folder. Each frame must be stored as a separate NRRD, NIfTI, or any other image format supported by 3D Slicer.</p></li>
+<li><p>Import multiple frames from DICOM. This module registers a reader plugin in the DICOM module. The plugin automatically recognizes image sequences and loads them as a multivolume data set. In the application settings -&gt; DICOM -&gt; MultiVolumeImporterPlugin section, <code class="docutils literal notranslate"><span class="pre">Preferred</span> <span class="pre">multi-volume</span> <span class="pre">import</span> <span class="pre">format</span></code> setting specifies if DICOM image sequences will be read as <code class="docutils literal notranslate"><span class="pre">multi-volume</span></code> or a <code class="docutils literal notranslate"><span class="pre">volume</span> <span class="pre">sequence</span></code>. It is generally recommended to use <code class="docutils literal notranslate"><span class="pre">volume</span> <span class="pre">sequence</span></code>, as multi-volumes will be phased out.</p></li>
+</ul>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h2>
+<p>Sample datasets are available:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/Slicer/SlicerDataStore/releases/download/SHA256/db316acece8767d581dcd0ec068b1f61c289d8843b932a7eecf0ef724926e3da">CTCardioMultiVolume.zip</a>: ECG-gated contrast-enhanced cardiac CT, 10 frames, each saved as a nrrd file - <em>the file must be renamed after downloading</em></p></li>
+</ul>
+</section>
+<section id="panels-and-their-use">
+<h2>Panels and their use<a class="headerlink" href="#panels-and-their-use" title="Link to this heading"></a></h2>
+<ul>
+<li><p><strong>Basic settings</strong></p>
+<ul>
+<li><p><strong>Input directory</strong>: location of the input data as a collection of frames.</p>
+<ul>
+<li><p>Frames can be in independent volume files or a single 4D NIfTI file with the selected directory.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The only files contained in the directory from which you are trying to import should be image volumes. The module will attempt to read each of these files.</p>
+<p>If you use non-DICOM input data type, the frames will be sorted based on the <strong>alphanumerical order</strong> of the frame filenames. If you have more than 10 frames, you should name them as follows to make sure they are ordered correctly, for example:</p>
+<ul class="simple">
+<li><p>Correct naming: frame001.nrrd, frame002.nrrd, …, frame023.nrrd, …, frame912.nrrd</p></li>
+<li><p>Incorrect naming: frame1.nrrd, frame2.nrrd, …, frame14.nrrd, …, frame1045.nrrrd.</p></li>
+</ul>
+</div>
+</li>
+</ul>
+</li>
+<li><p><strong>Output node</strong>: MultiVolume node that will keep the loaded data. You need to create a new node or select and existing one when importing the data.</p></li>
+</ul>
+</li>
+<li><p><strong>Advanced settings</strong>: contains elements that can be changed by the user. These items will be associated with the resulting multivolume, and will be available in case they are needed for the subsequent post-processing of the data (e.g., for pharmacokinetic modeling)</p>
+<ul class="simple">
+<li><p><strong>Frame identifying DICOM tag</strong>: in all modes, shows the DICOM tag that will be used to separate individual frames/volumes in the DICOM series. This field does not have meaning when the input data type is non-DICOM.</p></li>
+<li><p><strong>Frame identifying units</strong>: automatically populated for pre-defined tags. Needs to be defined for other input data types.</p></li>
+<li><p><strong>Initial value</strong> and <strong>Step</strong>: specify values of the frame-identifying units for non-DICOM data type.</p></li>
+<li><p><strong>Import button</strong>: once the panels are populated with the appropriate settings, hit this button to import the dataset into Slicer. Note that depending on the size of the data this operation can take significant time, so be patient.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="related-modules">
+<h2>Related modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="multivolumeexplorer.html"><span class="std std-doc">MultiVolumeExplorer</span></a> module can be used for browsing the multi-volume data set after it is imported using MultiVolumeImporter module.</p></li>
+<li><p><a class="reference external" href="http://qiicr.org/tool/PkModeling/">PkModeling extension</a> can be used for pharmacokinetic analysis of the DCE MRI data.</p></li>
+<li><p><a class="reference internal" href="sequences.html"><span class="std std-doc">Sequences</span></a> is a more generic version of MultiVolumeImporter/MultiVolumeExplorer module. Eventually, multi-volume modules will be deprecated and removed from 3D Slicer and only Sequences module will remain.</p></li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<p>Development of this module was initiated at the <a class="reference external" href="https://www.na-mic.org/wiki/2012_Project_Week:4DImageSlicer4">2012 NA-MIC Project week in Salt Lake City, UT</a>.</p>
+<p>This module is an Slicer module stored in a separate repository, but bundled in the Slicer installation package. The source code is available on Github at <a class="reference external" href="https://github.com/fedorov/MultiVolumeImporter">https://github.com/fedorov/MultiVolumeImporter</a>.</p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Andrey Fedorov (SPL, BWH)</p></li>
+<li><p>Jean-Cristophe Fillion Robin (Kitware)</p></li>
+<li><p>Julien Finet (Kitware)</p></li>
+<li><p>Steve Pieper (Isomics)</p></li>
+<li><p>Ron Kikinis (SPL, BWH)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This work is supported by NA-MIC, NAC, NCIGT, and the Slicer Community. This work is partially supported by the following grants: P41EB015898, P41RR019703, R01CA111288 and U01CA151261.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_ncigt.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_spl.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_kitware.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_nac.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cropvolumesequence.html" class="btn btn-neutral float-left" title="Crop volume sequence" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multivolumeexplorer.html" class="btn btn-neutral float-right" title="MultiVolumeExplorer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

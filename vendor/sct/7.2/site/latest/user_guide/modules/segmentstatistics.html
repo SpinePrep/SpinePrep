@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Segment statistics &mdash; 3D Slicer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=0defd4e4" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Sequences" href="sequences.html" />
+    <link rel="prev" title="PET Standard Uptake Value Computation" href="petstandarduptakevaluecomputation.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="slicer" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/user_guide/modules/segmentstatistics.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            3D Slicer
+              <img src="../../_static/3D-Slicer-Mark.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About 3D Slicer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_help.html">Get Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_interface.html">User Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coordinate_systems.html">Coordinate systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_loading_and_saving.html">Data Loading and Saving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image_segmentation.html">Image Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data.html">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dicom.html">DICOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sceneviews.html">Scene Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentations.html">Segmentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmenteditor.html">Segment editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slicerwelcome.html">Welcome</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="viewcontrollers.html">View Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumerendering.html">Volume rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="volumes.html">Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#wizards">Wizards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#informatics">Informatics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#registration">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#segmentation">Segmentation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#quantification">Quantification</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="markups.html">Markups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lineprofile.html">Line Profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="petstandarduptakevaluecomputation.html">PET Standard Uptake Value Computation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Segment statistics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#computed-metrics">Computed metrics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#frequently-asked-questions">Frequently asked questions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#related-modules">Related Modules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#information-for-developers">Information for developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#sequences">Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#diffusion">Diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#filtering">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#surface-models">Surface Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#developer-tools">Developer Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#legacy-and-retired-modules">Legacy and retired modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../extensions.html">Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings.html">Application settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">Developer Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">3D Slicer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Modules</a></li>
+      <li class="breadcrumb-item active">Segment statistics</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/slicer/slicer/blob/main/Docs/user_guide/modules/segmentstatistics.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="segment-statistics">
+<h1>Segment statistics<a class="headerlink" href="#segment-statistics" title="Link to this heading"></a></h1>
+<p>This is a module for the calculation of statistics related to the structure of segmentations, such as volume, surface area, mean intensity, and various other metrics for each segment.</p>
+<section id="computed-metrics">
+<h2>Computed metrics<a class="headerlink" href="#computed-metrics" title="Link to this heading"></a></h2>
+<section id="labelmap-statistics">
+<h3>Labelmap statistics<a class="headerlink" href="#labelmap-statistics" title="Link to this heading"></a></h3>
+<p>The values are computed from the binary labelmap representation of the segment.</p>
+<ul class="simple">
+<li><p>Voxel count: the number of voxels in the segment</p></li>
+<li><p>Volume mm3: the volume of the segment in mm3</p></li>
+<li><p>Volume cm3: the volume of the segment in cm3</p></li>
+<li><p>Centroid: the center of mass of the segment in RAS coordinates</p></li>
+<li><p>Feret diameter: the diameter of a sphere that can encompass the entire segment</p></li>
+<li><p>Surface area mm2: the surface area of the segment in mm2</p></li>
+<li><p>Roundness: the roundness of the segment. Calculated from ratio of the area of the sphere calculated from the Feret diameter by the actual area. Value of 1 represents a spherical structure. See detailed definition <a class="reference external" href="https://www.insight-journal.org/browse/publication/301">here</a>.</p></li>
+<li><p>Flatness: the flatness of the segment. Calculated from square root of the ratio of the second smallest principal moment by the smallest. Value of 0 represents a flat structure. See detailed definition <a class="reference external" href="https://www.insight-journal.org/browse/publication/301">here</a>.</p></li>
+<li><p>Elongation: the elongation of the segment. Calculated from square root of the ratio of the second largest principal moment by the second smallest. See detailed definition <a class="reference external" href="https://www.insight-journal.org/browse/publication/301">here</a>.</p></li>
+<li><p>Principal moments: the principal moments of inertia for each axes of the segment</p></li>
+<li><p>Principal axes: the principal axes of rotation of the segment</p></li>
+<li><p>Oriented bounding box: the non-axis aligned bounding box that encompasses the segment. Principal axis directions are used to orient the bounding box.</p></li>
+</ul>
+</section>
+<section id="scalar-volume-statistics">
+<h3>Scalar volume statistics<a class="headerlink" href="#scalar-volume-statistics" title="Link to this heading"></a></h3>
+<p>The values are computed from the binary labelmap representation of the segment, for the part that overlaps with the chosen scalar volume.</p>
+<ul class="simple">
+<li><p>Voxel count: the number of voxels in the segment</p></li>
+<li><p>Volume mm3: volume of that part of the segment that overlaps with the chosen scalar volume, in mm3</p></li>
+<li><p>Volume cm3: volume of that part of the segment that overlaps with the chosen scalar volume, in cm3</p></li>
+<li><p>Minimum: the minimum scalar value in the segment</p></li>
+<li><p>Maximum: the maximum scalar value in the segment</p></li>
+<li><p>Mean: the mean scalar value in the segment</p></li>
+<li><p>Median: the median scalar value in the segment</p></li>
+<li><p>Standard deviation: the standard deviation of scalar values in the segment (computed using <em>corrected sample standard deviation</em> formula)</p></li>
+</ul>
+</section>
+<section id="closed-surface-statistics">
+<h3>Closed surface statistics<a class="headerlink" href="#closed-surface-statistics" title="Link to this heading"></a></h3>
+<p>The values are computed from the closed surface representation of the segment.</p>
+<ul class="simple">
+<li><p>Surface area mm2: the surface area of the segment in mm2</p></li>
+<li><p>Volume mm3: the volume of the segment in mm3</p></li>
+<li><p>Volume cm3: the volume of the segment in cm3</p></li>
+</ul>
+</section>
+</section>
+<section id="frequently-asked-questions">
+<h2>Frequently asked questions<a class="headerlink" href="#frequently-asked-questions" title="Link to this heading"></a></h2>
+<section id="what-is-the-difference-between-the-surface-and-volume-values-computed-by-various-plugins">
+<h3>What is the difference between the surface and volume values computed by various plugins?<a class="headerlink" href="#what-is-the-difference-between-the-surface-and-volume-values-computed-by-various-plugins" title="Link to this heading"></a></h3>
+<p>There are several ways of computing volume and surface of a segment. The main difference relates to the representation being used (3D binary image or surface mesh) and if the entire segment is used or only the part that overlaps with the selected scalar volume. Difference between the values should be very small, less than one percent, so it usually does not matter which one is used. Usually it does not matter which plugin is used, but to minimize variance between values, it is recommended to consistently use the same plugin within a study.</p>
+<p>How to choose between plugins:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Labelmap</span></code> plugin is a good choice for computing the volume of a segment for most cases. The volume is computed from the number of voxels multiplied by the volume of a singlevoxel. By default, surface computation in <code class="docutils literal notranslate"><span class="pre">Labelmap</span></code> plugin is disabled - either enable <code class="docutils literal notranslate"><span class="pre">Surface</span> <span class="pre">mm2</span></code> measurement in advanced settings to make this plugin compute surface area; or click <code class="docutils literal notranslate"><span class="pre">Show</span> <span class="pre">3D</span></code> button to create closed surface representation for the segment and then get surface area from <code class="docutils literal notranslate"><span class="pre">Closed</span> <span class="pre">surface</span></code> plugin.</p></li>
+<li><p>If primarily the closed surface representation of the segmentation is used (e.g., 3D visualization, 3D printing) then it may be more appropriate to use the <code class="docutils literal notranslate"><span class="pre">Closed</span> <span class="pre">surface</span></code> plugin to compute both the volume and surface of the segment. The values are computed from the closed surface representation of the segmentation that is shown in 3D views.</p></li>
+<li><p>If the scalar volume input is set in the module then the <code class="docutils literal notranslate"><span class="pre">Scalar</span> <span class="pre">volume</span></code> plugin computes image intensity statistics for each segment. In this case, using values provided by the <code class="docutils literal notranslate"><span class="pre">Scalar</span> <span class="pre">volume</span></code> plugin makes sense. Surface and volume values are computed by the same method as in <code class="docutils literal notranslate"><span class="pre">Labelmap</span></code> plugin, the only difference is that the values are computed for only that part of the segments that overlap with the scalar volume.</p></li>
+</ul>
+</section>
+<section id="how-to-get-cross-sectional-area-of-a-segment-along-a-certain-axis">
+<h3>How to get cross-sectional area of a segment along a certain axis?<a class="headerlink" href="#how-to-get-cross-sectional-area-of-a-segment-along-a-certain-axis" title="Link to this heading"></a></h3>
+<p>There are several modules in various extensions to compute cross-sectional areas in segmentations:</p>
+<ul class="simple">
+<li><p><strong>in axial slices:</strong> you can use the <code class="docutils literal notranslate"><span class="pre">Segment</span> <span class="pre">Cross-Section</span> <span class="pre">Area</span></code> module in <a class="reference external" href="https://github.com/PerkLab/SlicerSandbox">Sandbox</a> extension.</p></li>
+<li><p><strong>along a line in arbitrary direction:</strong> you can use <code class="docutils literal notranslate"><span class="pre">SegmentGeometry</span></code> module in <a class="reference external" href="https://github.com/jmhuie/SlicerBiomech">SlicerBiomech</a> extension.</p></li>
+<li><p><strong>along a curve:</strong> you can segment the region and use <code class="docutils literal notranslate"><span class="pre">Cross-section</span> <span class="pre">analysis</span></code> or <code class="docutils literal notranslate"><span class="pre">Stenosis</span> <span class="pre">measurement</span></code> modules in <a class="reference external" href="https://github.com/vmtk/SlicerExtension-VMTK">VMTK</a> extension.</p></li>
+<li><p><strong>in a single slice (either axial oblique):</strong> you can use a closed curve markup (enable area measurement in <code class="docutils literal notranslate"><span class="pre">Measurements</span></code> section in <code class="docutils literal notranslate"><span class="pre">Markups</span></code> module).</p></li>
+</ul>
+</section>
+</section>
+<section id="related-modules">
+<h2>Related Modules<a class="headerlink" href="#related-modules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="segmentations.html"><span class="std std-doc">Segmentations</span></a> module allows changing conversion options, such as decimation and smoothing when converting from labelmap to closed surface representations, which are mainly for visualization, but can have an impact on some statistics such as volume and surface area.  The Segmentations module can also be used for exporting/importing segments to/from other nodes (models, labelmap volumes), and moving or copying segments between segmentation nodes.</p></li>
+<li><p><a class="reference internal" href="segmenteditor.html"><span class="std std-doc">Segment Editor</span></a> module for segmentation of volumes using tools for editing (paint, draw, erase, level tracing, grow from seeds, threshold, etc.)</p></li>
+</ul>
+</section>
+<section id="information-for-developers">
+<h2>Information for developers<a class="headerlink" href="#information-for-developers" title="Link to this heading"></a></h2>
+<p>See examples for calculating statistics from your own modules in the <a class="reference internal" href="../../developer_guide/script_repository.html#quantifying-segments"><span class="std std-ref">Slicer script repository</span></a>.
+Additional plugins for computation of other statistical measurements may be registered by subclassing <a class="reference external" href="https://github.com/Slicer/Slicer/blob/main/Modules/Scripted/SegmentStatistics/SegmentStatisticsPlugins/SegmentStatisticsPluginBase.py">SegmentStatisticsPluginBase.py</a>, and registering the plugin with SegmentStatisticsLogic.</p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<p>Authors:</p>
+<ul class="simple">
+<li><p>Csaba Pinter (PerkLab, Queen’s University)</p></li>
+<li><p>Andras Lasso (PerkLab, Queen’s University)</p></li>
+<li><p>Christian Bauer (University of Iowa)</p></li>
+<li><p>Steve Pieper (Isomics Inc.)</p></li>
+<li><p>Kyle Sunderland (PerkLab, Queen’s University)</p></li>
+</ul>
+</section>
+<section id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
+<p>This module is partly funded by an Applied Cancer Research Unit of Cancer Care Ontario with funds provided by the Ministry of Health and Long-Term Care and the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.
+The work is part of the <a class="reference external" href="https://www.na-mic.org/">National Alliance for Medical Image Computing</a> (NA-MIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149.</p>
+<p><img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_perklab.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_isomics.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_namic.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_nac.png" />
+<img alt="" src="https://github.com/Slicer/Slicer/releases/download/docs-resources/logo_ge.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="petstandarduptakevaluecomputation.html" class="btn btn-neutral float-left" title="PET Standard Uptake Value Computation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sequences.html" class="btn btn-neutral float-right" title="Sequences" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Slicer Community.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

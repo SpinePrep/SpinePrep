@@ -1,0 +1,261 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Included Decision Trees &mdash; tedana 25.1.1a3.dev2+ge0932906e documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/theme_overrides.css?v=ef81f6ce" />
+
+  
+    <link rel="shortcut icon" href="_static/tedana_favicon.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=643184eb"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="https://cdn.rawgit.com/chrisfilo/zenodo.js/v0.1/zenodo.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="TE (In)Dependence Models" href="dependence_metrics.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tedana" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/included_decision_trees.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tedana
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-echo.html">About multi-echo fMRI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using tedana from the command line</a></li>
+<li class="toctree-l1"><a class="reference internal" href="approach.html">tedana’s denoising approach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs.html">Outputs of tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="building_decision_trees.html">Understanding and building a component selection process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="support.html">Support and communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to tedana</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">The tedana roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="denoising.html">Denoising Data with Components</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ME-ICA/tedana/releases">What's New</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tedana</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Included Decision Trees</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/included_decision_trees.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="included-decision-trees">
+<h1>Included Decision Trees<a class="headerlink" href="#included-decision-trees" title="Link to this heading"></a></h1>
+<p>Five decision trees are currently distributed with <code class="docutils literal notranslate"><span class="pre">tedana</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">meica</span></code> is the decision tree that is based on MEICA version 2.5 and
+<code class="docutils literal notranslate"><span class="pre">tedana_orig</span></code> is very similar and has been included with <code class="docutils literal notranslate"><span class="pre">tedana</span></code>
+since the start of this project. An explanation of why these both exist
+is <a class="reference external" href="faq.html#tree-differences">in the FAQ</a>
+While multiple publications have used and benefited from this decision,
+tree, but it includes many steps with arbitrary thresholds and, when
+components seem misclassified, it’s often hard to understand why.</p>
+<p><code class="docutils literal notranslate"><span class="pre">minimal</span></code> is a simplified version of that decision tree with fewer
+steps and arbitrary thresholds. Minimal is designed to be more stable
+and comprehensible, but it has not yet be extensively validated and
+parts of the tree may change in response to additional tests on a
+wider range of data sets.</p>
+<p>With the addition of options to fit external regressors to components,
+there are two demonstration decision trees that implement this new functionality.
+While these might work well, since they have not yet been validated on data, they
+are labeled <code class="docutils literal notranslate"><span class="pre">demo</span></code>.
+<code class="docutils literal notranslate"><span class="pre">decision_tree_demo_external_regressors_single_model</span></code>
+demonstrates fitting all nuisance regressors to a single model.
+<code class="docutils literal notranslate"><span class="pre">decision_tree_demo_external_regressors_motion_task_models</span></code>
+demonstrates fitting nuisance regressors to a model,
+partial tests and tagging for components that fit Motion or CSF regressors,
+and retention of some components that fit task regressors.</p>
+<p>Flowcharts describing the steps in these trees are below.
+As documented more in <a class="reference internal" href="building_decision_trees.html"><span class="doc">Understanding and building a component selection process</span></a>, the input to each tree
+is a table with metrics, like <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> or <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/>, for each
+component. Each step or node in the decision tree either calculates
+new values or changes component classifications based on these metrics.
+When a component classification changes to <code class="docutils literal notranslate"><span class="pre">accept</span></code> or <code class="docutils literal notranslate"><span class="pre">reject</span></code>, a
+<code class="docutils literal notranslate"><span class="pre">classification_tag</span></code> is also assigned which may help understand why
+a component was given a specific classification.</p>
+<p>Each step in the flow chart is labeled with a <code class="docutils literal notranslate"><span class="pre">node</span></code> number.
+If <code class="docutils literal notranslate"><span class="pre">tedana</span></code> is run using one of these trees, those node
+numbers will match the numbers in the <code class="docutils literal notranslate"><span class="pre">ICA</span> <span class="pre">status</span> <span class="pre">table</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">ICA</span> <span class="pre">decision</span> <span class="pre">tree</span></code> that are described in
+<a class="reference internal" href="outputs.html#output-filename-descriptions"><span class="std std-ref">Output filename descriptions</span></a>. These node numbers can be used
+to see when in the process a component’s classifiation changed.</p>
+<a class="reference internal image-reference" href="_images/decision_tree_legend.png"><img alt="Legend for Decision Tree Flow Charts" src="_images/decision_tree_legend.png" style="width: 300px;" />
+</a>
+<section id="meica-decision-tree">
+<h2>meica decision tree<a class="headerlink" href="#meica-decision-tree" title="Link to this heading"></a></h2>
+<p>Nodes 1-5 reject components that are very unlikely to be BOLD.
+In nodes 9-10 components where <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> &gt;
+<img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> elbow and <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> &lt; <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/>
+elbow are classified as <cite>provisional accept</cite>. A non-obvious aspect
+of this decision tree is that no decision node below this point distinguishes
+components that are <cite>provisional accept</cite> from components that are still
+<cite>unclassified</cite> and nothing that does not cross the <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> and
+<img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> elbow thresholds is inherantly rejected. The number of
+<cite>provisional accept</cite> components is used to see if the process should
+be restarted (node 11) and calculate other thresholds (nodes 12-16 &amp; 20),
+but nothing is directly accepted or rejected based on the elbow thresholds.
+Several additional criteria are used to reject components (nodes 17, 21, &amp; 22).
+In older versions of <code class="docutils literal notranslate"><span class="pre">tedana</span></code> components were classified as <cite>ignored</cite>.
+This meant too small/minor to lose a degree of freedom by rejecting so treat
+like the <cite>accepted</cite> components. This was widely confusing to many users so they
+are now classified as <cite>accepted</cite> but with classification tags <cite>low variance</cite>
+(node 18) or <cite>accept borderline</cite> (nodes 24 &amp; 25).</p>
+<a class="reference internal image-reference" href="_images/decision_tree_meica.png"><img alt="MEICA Decision Tree Flow Chart" src="_images/decision_tree_meica.png" style="width: 400px;" />
+</a>
+<p><a class="reference external" href="_static/decision_tree_meica.tex">LaTeX file to generate the meica decision tree flow chart</a></p>
+</section>
+<section id="tedana-orig-decision-tree">
+<h2>tedana_orig decision tree<a class="headerlink" href="#tedana-orig-decision-tree" title="Link to this heading"></a></h2>
+<p>Identical to the meica decision tree until node 21. In the tedana tree,
+components that cross the threshold criteria in nodes 21 and 22 are
+rejected and not included in the calculation for a new variance explained
+threshold in node 23. In the meica tree, those components are provisionally
+rejected, but still included in the new variance explained calculation and
+can be potentially accepted in nodes 24 and 25. This means tedana will give
+the same results as meica or reject additional components base on those two
+final decision criteria.</p>
+<a class="reference internal image-reference" href="_images/decision_tree_tedana_orig.png"><img alt="tedana_orig Decision Tree Flow Chart" src="_images/decision_tree_tedana_orig.png" style="width: 400px;" />
+</a>
+<p><a class="reference external" href="_static/decision_tree_tedana_orig.tex">LaTeX file to generate the tedana_orig decision tree flow chart</a></p>
+</section>
+<section id="minimal-decision-tree">
+<h2>Minimal decision tree<a class="headerlink" href="#minimal-decision-tree" title="Link to this heading"></a></h2>
+<p>The minimal tree starts similarly to the other trees by rejecting components
+that are very unlikely to be BOLD (nodes 1-5). Then all components where
+<img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> &gt; <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> elbow and <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> &lt; <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> elbow
+are <cite>provisional accept</cite> and otherwise are <cite>provisional reject</cite> (nodes 8 &amp; 10).
+The only expection to this is if <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> &gt; <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> elbow and
+<img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> &gt; 2* <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> than it is <cite>provisional accept</cite> regardless of the
+<img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> elbow under the assumption that there is enough T2* weighted signal
+the component should not be rejected even if it also contains noise (node 9).
+If <cite>provisional reject</cite> components have very low variance they are accepted rather
+than losing degrees of freedom, but no more than 1% of the total variance can be
+accepted this way (node 11). After that point, everything that is
+<cite>provisional accept</cite> is accepted (node 12) and everything that is <cite>provisional reject</cite>
+is rejected (node 13)</p>
+<a class="reference internal image-reference" href="_images/decision_tree_minimal.png"><img alt="Minimal Decision Tree Flow Chart" src="_images/decision_tree_minimal.png" style="width: 400px;" />
+</a>
+<p><a class="reference external" href="_static/decision_tree_minimal.tex">LaTeX file to generate the minimal decision tree flow chart</a></p>
+</section>
+<section id="demo-external-regressors-single-model">
+<h2>Demo external regressors single model<a class="headerlink" href="#demo-external-regressors-single-model" title="Link to this heading"></a></h2>
+<p>This tree is similar to the minimal tree except there is an added node (node 11)
+where components are rejected if they significantly fit a model of external nuisance regressor
+time series and the fit models a substantial amount of the total variance.
+Unlike the minimal tree, components that would be accepted based on <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> &amp; <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/>
+criteria can be rejected based on a fit to external regressors.
+This is called a “demo” tree because it is demonstrating how fits to external regressors can
+be used. It might be a good decision tree to use,
+but results have not yet been tested and validated.</p>
+<a class="reference internal image-reference" href="_images/decision_tree_demo_external_regressors_single_model.png"><img alt="External Decision Tree With Motion and Task Models Flow Chart" src="_images/decision_tree_demo_external_regressors_single_model.png" style="width: 400px;" />
+</a>
+</section>
+<section id="demo-external-regressors-motion-task-models">
+<h2>Demo external regressors, motion task models<a class="headerlink" href="#demo-external-regressors-motion-task-models" title="Link to this heading"></a></h2>
+<p>This is based on the minimal tree, but multiple nodes were added to demonstrate how to use
+external regressors for fits.
+Unlike the minimal tree, components that would be accepted based on <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> &amp; <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/>
+criteria can be rejected based on a fit to external regressors.
+Components are rejected if they significantly fit a model of external nuisance regressor
+time series and the fit models a substantial amount of the total variance (node 10).
+For rejected components, if they also fit a partial model of motion external regressors (node 11),
+or CSF external regressors (node 12), the outputs are also tagged to say they fit those groups
+of regressors.
+Additionally, if a rejected component fits the task design and has
+<img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> &gt; <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> elbow, then it is accepted under the conservative assumption to
+retain task fitting components with some <img class="math" src="_images/math/470059201a109a44654c5abe6a41b75e67f3d926.png" alt="T_2^*`"/> signal even if those components also
+contain potentially rejection-worthy noise (node 13).
+This is called a “demo” tree because it is demonstrating how fits to external regressors can
+be used. It might be a good decision tree to use,
+but results have not yet been tested and validated.</p>
+<a class="reference internal image-reference" href="_images/decision_tree_demo_external_regressors_motion_task_models.png"><img alt="External Decision Tree With Motion and Task Models Flow Chart" src="_images/decision_tree_demo_external_regressors_motion_task_models.png" style="width: 400px;" />
+</a>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dependence_metrics.html" class="btn btn-neutral float-left" title="TE (In)Dependence Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017-2025, tedana developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

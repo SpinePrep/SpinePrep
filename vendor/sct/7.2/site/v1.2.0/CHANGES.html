@@ -1,0 +1,1114 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.2.0">
+    
+    
+      
+        <title>Changelog - Brain Imaging Data Structure v1.2.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/application.750b69bd.css">
+      
+      
+    
+    
+      <script src="assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    
+    
+      
+    
+      
+    
+    
+      
+    
+    
+  <script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="bids-specification" /><meta name="readthedocs-version-slug" content="v1.2.0" /><meta name="readthedocs-resolver-filename" content="/CHANGES.html" /><meta name="readthedocs-http-status" content="200" /></head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#v120" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="." title="Brain Imaging Data Structure v1.2.0" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Brain Imaging Data Structure v1.2.0
+            </span>
+            <span class="md-header-nav__topic">
+              Changelog
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="." title="Brain Imaging Data Structure v1.2.0" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    Brain Imaging Data Structure v1.2.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
+    
+    <label class="md-nav__link" for="nav-1">
+      The BIDS Specification
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        The BIDS Specification
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="01-introduction.html" title="Introduction" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="02-common-principles.html" title="Common principles" class="md-nav__link">
+      Common principles
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="03-modality-agnostic-files.html" title="Modality agnostic files" class="md-nav__link">
+      Modality agnostic files
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1-4" type="checkbox" id="nav-1-4">
+    
+    <label class="md-nav__link" for="nav-1-4">
+      Modality specific files
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-4">
+        Modality specific files
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html" title="Magnetic Resonance Imaging" class="md-nav__link">
+      Magnetic Resonance Imaging
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/02-magnetoencephalography.html" title="Magnetoencephalography" class="md-nav__link">
+      Magnetoencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/03-electroencephalography.html" title="Electroencephalography" class="md-nav__link">
+      Electroencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/04-intracranial-electroencephalography.html" title="intracranial Electroencephalography" class="md-nav__link">
+      intracranial Electroencephalography
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/05-task-events.html" title="Task events" class="md-nav__link">
+      Task events
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/06-physiological-and-other-continous-recordings.html" title="Physiological and other continous recordings" class="md-nav__link">
+      Physiological and other continous recordings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="04-modality-specific-files/07-behavioral-experiments.html" title="Behavioral experiments (with no MRI)" class="md-nav__link">
+      Behavioral experiments (with no MRI)
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="05-longitudinal-and-multi-site-studies.html" title="Longitudinal and multi-site studies" class="md-nav__link">
+      Longitudinal and multi-site studies
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="06-extensions.html" title="Extending the BIDS specification" class="md-nav__link">
+      Extending the BIDS specification
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1-7" type="checkbox" id="nav-1-7">
+    
+    <label class="md-nav__link" for="nav-1-7">
+      Appendix
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-7">
+        Appendix
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/01-contributors.html" title="Contributors" class="md-nav__link">
+      Contributors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/02-licenses.html" title="Licenses" class="md-nav__link">
+      Licenses
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/03-hed.html" title="HED" class="md-nav__link">
+      HED
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/04-entity-table.html" title="Entity-table" class="md-nav__link">
+      Entity-table
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/05-units.html" title="Units" class="md-nav__link">
+      Units
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/06-meg-file-formats.html" title="MEG file formats" class="md-nav__link">
+      MEG file formats
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/07-meg-systems.html" title="MEG systems" class="md-nav__link">
+      MEG systems
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="99-appendices/08-coordinate-systems.html" title="Coordinate-systems" class="md-nav__link">
+      Coordinate-systems
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Changelog
+      </label>
+    
+    <a href="CHANGES.html" title="Changelog" class="md-nav__link md-nav__link--active">
+      Changelog
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v120" title="v1.2.0" class="md-nav__link">
+    v1.2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v112-2019-01-10" title="v.1.1.2 (2019-01-10)" class="md-nav__link">
+    v.1.1.2 (2019-01-10)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v112-2019-01-10_1" title="v1.1.2 (2019-01-10)" class="md-nav__link">
+    v1.1.2 (2019-01-10)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#111" title="1.1.1" class="md-nav__link">
+    1.1.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#110" title="1.1.0" class="md-nav__link">
+    1.1.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#102" title="1.0.2" class="md-nav__link">
+    1.0.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#101" title="1.0.1" class="md-nav__link">
+    1.0.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#101-rc1" title="1.0.1-rc1" class="md-nav__link">
+    1.0.1-rc1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100" title="1.0.0" class="md-nav__link">
+    1.0.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rc4" title="1.0.0-rc4" class="md-nav__link">
+    1.0.0-rc4
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rc3" title="1.0.0-rc3" class="md-nav__link">
+    1.0.0-rc3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rc2" title="1.0.0-rc2" class="md-nav__link">
+    1.0.0-rc2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rc1" title="1.0.0-rc1" class="md-nav__link">
+    1.0.0-rc1
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="https://github.com/bids-standard/bids-starter-kit" title="The BIDS Starter Kit" class="md-nav__link">
+      The BIDS Starter Kit
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v120" title="v1.2.0" class="md-nav__link">
+    v1.2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v112-2019-01-10" title="v.1.1.2 (2019-01-10)" class="md-nav__link">
+    v.1.1.2 (2019-01-10)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v112-2019-01-10_1" title="v1.1.2 (2019-01-10)" class="md-nav__link">
+    v1.1.2 (2019-01-10)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#111" title="1.1.1" class="md-nav__link">
+    1.1.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#110" title="1.1.0" class="md-nav__link">
+    1.1.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#102" title="1.0.2" class="md-nav__link">
+    1.0.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#101" title="1.0.1" class="md-nav__link">
+    1.0.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#101-rc1" title="1.0.1-rc1" class="md-nav__link">
+    1.0.1-rc1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100" title="1.0.0" class="md-nav__link">
+    1.0.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rc4" title="1.0.0-rc4" class="md-nav__link">
+    1.0.0-rc4
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rc3" title="1.0.0-rc3" class="md-nav__link">
+    1.0.0-rc3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rc2" title="1.0.0-rc2" class="md-nav__link">
+    1.0.0-rc2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-rc1" title="1.0.0-rc1" class="md-nav__link">
+    1.0.0-rc1
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  <h1>Changelog</h1>
+                
+                <p>Changelog</p>
+<h2 id="v120"><a href="https://bids-specification.readthedocs.io/en/v1.2.0/">v1.2.0</a></h2>
+<ul>
+<li>Update Pipfile.lock <a href="https://github.com/bids-standard/bids-specification/pull/144">#144</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>[MRG] clarify encoding of README, CHANGES, TSV, and JSON files <a href="https://github.com/bids-standard/bids-specification/pull/140">#140</a> (<a href="https://github.com/sappelhoff">sappelhoff</a>)</li>
+<li>Update site_name and release protocol <a href="https://github.com/bids-standard/bids-specification/pull/137">#137</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>BF: Example for IntendedFor was missing session indicator in the filename <a href="https://github.com/bids-standard/bids-specification/pull/129">#129</a> (<a href="https://github.com/yarikoptic">yarikoptic</a>)</li>
+<li>Add "part" keyword for mag/phase BOLD images (based on BEP001). <a href="https://github.com/bids-standard/bids-specification/pull/128">#128</a> (<a href="https://github.com/tsalo">tsalo</a>)</li>
+<li>Update to Release_Protocol.md <a href="https://github.com/bids-standard/bids-specification/pull/126">#126</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>Update tag naming convention <a href="https://github.com/bids-standard/bids-specification/pull/123">#123</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>[MRG] Merge bep006 and bep010 <a href="https://github.com/bids-standard/bids-specification/pull/108">#108</a> (<a href="https://github.com/sappelhoff">sappelhoff</a>)</li>
+<li>Adding formal decision-making rules <a href="https://github.com/bids-standard/bids-specification/pull/104">#104</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>[MRG] number of small corrections to the specification <a href="https://github.com/bids-standard/bids-specification/pull/98">#98</a> (<a href="https://github.com/robertoostenveld">robertoostenveld</a>)</li>
+</ul>
+<h2 id="v112-2019-01-10"><a href="https://github.com/bids-standard/bids-specification/tree/v.1.1.2">v.1.1.2</a> (2019-01-10)</h2>
+<h2 id="v112-2019-01-10_1"><a href="https://github.com/bids-standard/bids-specification/tree/v1.1.2">v1.1.2</a> (2019-01-10)</h2>
+<ul>
+<li>REL: v.1.1.2 <a href="https://github.com/bids-standard/bids-specification/pull/121">#121</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Update 01-contributors.md <a href="https://github.com/bids-standard/bids-specification/pull/120">#120</a> (<a href="https://github.com/oesteban">oesteban</a>)</li>
+<li>Global fields in data dictionaries <a href="https://github.com/bids-standard/bids-specification/pull/117">#117</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Propose BEP026 MER <a href="https://github.com/bids-standard/bids-specification/pull/116">#116</a> (<a href="https://github.com/greydongilmore">greydongilmore</a>)</li>
+<li>Remove duplicate entries in MEG table <a href="https://github.com/bids-standard/bids-specification/pull/113">#113</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>Propose BEP025 MIDS <a href="https://github.com/bids-standard/bids-specification/pull/110">#110</a> (<a href="https://github.com/josator2">josator2</a>)</li>
+<li>repair links <a href="https://github.com/bids-standard/bids-specification/pull/106">#106</a> (<a href="https://github.com/sappelhoff">sappelhoff</a>)</li>
+<li>Autogenerate CHANGES.md <a href="https://github.com/bids-standard/bids-specification/pull/103">#103</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>Added contributor information <a href="https://github.com/bids-standard/bids-specification/pull/100">#100</a> (<a href="https://github.com/jgrethe">jgrethe</a>)</li>
+<li>ENH: First(?) good practice recommendation. No excessive overrides in Inheritance principle <a href="https://github.com/bids-standard/bids-specification/pull/99">#99</a> (<a href="https://github.com/yarikoptic">yarikoptic</a>)</li>
+<li>adding extensions page <a href="https://github.com/bids-standard/bids-specification/pull/97">#97</a> (<a href="https://github.com/choldgraf">choldgraf</a>)</li>
+<li>Fix up some urls (as detected to be broken/inconsistent <a href="https://github.com/bids-standard/bids-specification/pull/95">#95</a> (<a href="https://github.com/yarikoptic">yarikoptic</a>)</li>
+<li>Change BEP numbers to include MRS <a href="https://github.com/bids-standard/bids-specification/pull/94">#94</a> (<a href="https://github.com/Hboni">Hboni</a>)</li>
+<li>RF harmonize and thus shorten templates etc <a href="https://github.com/bids-standard/bids-specification/pull/93">#93</a> (<a href="https://github.com/yarikoptic">yarikoptic</a>)</li>
+<li>put links and some text into README <a href="https://github.com/bids-standard/bids-specification/pull/91">#91</a> (<a href="https://github.com/sappelhoff">sappelhoff</a>)</li>
+<li>Add extension proposal in 01-introduction.md <a href="https://github.com/bids-standard/bids-specification/pull/88">#88</a> (<a href="https://github.com/Hboni">Hboni</a>)</li>
+<li>additional table to recap 'volume acquisition timing' <a href="https://github.com/bids-standard/bids-specification/pull/87">#87</a> (<a href="https://github.com/Remi-Gau">Remi-Gau</a>)</li>
+<li>Small typo in "scanning sequence" DICOM tag <a href="https://github.com/bids-standard/bids-specification/pull/84">#84</a> (<a href="https://github.com/Remi-Gau">Remi-Gau</a>)</li>
+<li>Update 01-contributors.md <a href="https://github.com/bids-standard/bids-specification/pull/83">#83</a> (<a href="https://github.com/teonbrooks">teonbrooks</a>)</li>
+<li>Added CBV contrast <a href="https://github.com/bids-standard/bids-specification/pull/82">#82</a> (<a href="https://github.com/TheChymera">TheChymera</a>)</li>
+<li>Add CC-BY 4.0 license <a href="https://github.com/bids-standard/bids-specification/pull/81">#81</a> (<a href="https://github.com/KirstieJane">KirstieJane</a>)</li>
+<li>Fix Travis break <a href="https://github.com/bids-standard/bids-specification/pull/80">#80</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>ENH: allow _dir for other EPI (func, dwi) sequences <a href="https://github.com/bids-standard/bids-specification/pull/78">#78</a> (<a href="https://github.com/yarikoptic">yarikoptic</a>)</li>
+<li>Added appendix to mkdocs and added some internal links <a href="https://github.com/bids-standard/bids-specification/pull/77">#77</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>DOC: added JC Houde as contributor. <a href="https://github.com/bids-standard/bids-specification/pull/76">#76</a> (<a href="https://github.com/jchoude">jchoude</a>)</li>
+<li>Updated my contributions <a href="https://github.com/bids-standard/bids-specification/pull/75">#75</a> (<a href="https://github.com/nicholst">nicholst</a>)</li>
+<li>update HED appendix <a href="https://github.com/bids-standard/bids-specification/pull/74">#74</a> (<a href="https://github.com/sappelhoff">sappelhoff</a>)</li>
+<li>[MRG] unicode: replace greek mu and omega by micro and ohm signs <a href="https://github.com/bids-standard/bids-specification/pull/73">#73</a> (<a href="https://github.com/sappelhoff">sappelhoff</a>)</li>
+<li>Update 01-contributors.md <a href="https://github.com/bids-standard/bids-specification/pull/72">#72</a> (<a href="https://github.com/francopestilli">francopestilli</a>)</li>
+<li>add ce-\&lt;label&gt; for fmri data <a href="https://github.com/bids-standard/bids-specification/pull/70">#70</a> (<a href="https://github.com/dasturge">dasturge</a>)</li>
+<li>pin pip version <a href="https://github.com/bids-standard/bids-specification/pull/68">#68</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Fix link in index <a href="https://github.com/bids-standard/bids-specification/pull/46">#46</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>edit contributing md <a href="https://github.com/bids-standard/bids-specification/pull/44">#44</a> (<a href="https://github.com/Park-Patrick">Park-Patrick</a>)</li>
+<li>Mkdocs configuration and RTD setup <a href="https://github.com/bids-standard/bids-specification/pull/42">#42</a> (<a href="https://github.com/choldgraf">choldgraf</a>)</li>
+<li>Move definitions, compulsory, and raw/derivatives sections to principles <a href="https://github.com/bids-standard/bids-specification/pull/40">#40</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Remove duplicate section <a href="https://github.com/bids-standard/bids-specification/pull/39">#39</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>mkdocs rendering <a href="https://github.com/bids-standard/bids-specification/pull/36">#36</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Style consistency <a href="https://github.com/bids-standard/bids-specification/pull/35">#35</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Renaming files to conform with style guide <a href="https://github.com/bids-standard/bids-specification/pull/34">#34</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>enable travis cache <a href="https://github.com/bids-standard/bids-specification/pull/32">#32</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>FIX - corrected link that is shown for CC0 <a href="https://github.com/bids-standard/bids-specification/pull/31">#31</a> (<a href="https://github.com/robertoostenveld">robertoostenveld</a>)</li>
+<li>[WIP] added linter integration via travis <a href="https://github.com/bids-standard/bids-specification/pull/30">#30</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Cleanup <a href="https://github.com/bids-standard/bids-specification/pull/29">#29</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>[MRG] split intro, commons, mr, and meg into folder from specification.md <a href="https://github.com/bids-standard/bids-specification/pull/28">#28</a> (<a href="https://github.com/teonbrooks">teonbrooks</a>)</li>
+<li>Add some bids starter kit contributors <a href="https://github.com/bids-standard/bids-specification/pull/27">#27</a> (<a href="https://github.com/KirstieJane">KirstieJane</a>)</li>
+<li>Embedded footnotes into text <a href="https://github.com/bids-standard/bids-specification/pull/25">#25</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>Making HED Strategy Guide link prettier <a href="https://github.com/bids-standard/bids-specification/pull/24">#24</a> (<a href="https://github.com/fake-filo">fake-filo</a>)</li>
+<li>Fix/more cleanup <a href="https://github.com/bids-standard/bids-specification/pull/21">#21</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>formatted MEG (8.4) <a href="https://github.com/bids-standard/bids-specification/pull/17">#17</a> (<a href="https://github.com/franklin-feingold">franklin-feingold</a>)</li>
+<li>small fixes <a href="https://github.com/bids-standard/bids-specification/pull/16">#16</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Add meg img <a href="https://github.com/bids-standard/bids-specification/pull/14">#14</a> (<a href="https://github.com/sappelhoff">sappelhoff</a>)</li>
+<li>[WIP] Cleaning up the specification <a href="https://github.com/bids-standard/bids-specification/pull/13">#13</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Adding code of conduct <a href="https://github.com/bids-standard/bids-specification/pull/6">#6</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+<li>Renaming the main document <a href="https://github.com/bids-standard/bids-specification/pull/1">#1</a> (<a href="https://github.com/chrisfilo">chrisfilo</a>)</li>
+</ul>
+<h2 id="111">1.1.1</h2>
+<ul>
+<li>
+<p>Improved the MEG landmark coordinates description.</p>
+</li>
+<li>
+<p>Replaced ManufacturersCapModelName in meg.json with CapManufacturer and
+    CapManufacturersModelName.</p>
+</li>
+<li>
+<p>Remove EEGSamplingFrequency and ManufacturersAmplifierModelName
+    from the meg.json.</p>
+</li>
+<li>
+<p>Improved the behavioral data description.</p>
+</li>
+</ul>
+<h2 id="110">1.1.0</h2>
+<ul>
+<li>Added support for MEG data (merged BEP008)</li>
+<li>Added SequenceName field.</li>
+<li>Added support for describing events with Hierarchical Event Descriptors [<a href="04-modality-specific-files/05-task-events.html">4.3 Task events</a>].</li>
+<li>Added VolumeTiming and AcquisitionDuration fields [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#task-including-resting-state-imaging-data">4.1 Task (including resting state) imaging data</a>].</li>
+<li>Added DwellTime field.</li>
+</ul>
+<h2 id="102">1.0.2</h2>
+<ul>
+<li>
+<p>Added support for high resolution (anatomical) T2star images [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#anatomy-imaging-data">4.1 Anatomy imaging data</a>].</p>
+</li>
+<li>
+<p>Added support for multiple defacing masks [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#anatomy-imaging-data">4.1 Anatomy imaging data</a>].</p>
+</li>
+<li>
+<p>Added optional key and metadata field for contrast enhanced structural scans
+    [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#anatomy-imaging-data">4.1 Anatomy imaging data</a>]</p>
+</li>
+<li>
+<p>Added DelayTime field [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#task-including-resting-state-imaging-data">4.1 Task (including resting state) imaging data</a>].</p>
+</li>
+<li>
+<p>Added support for multi echo BOLD data [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#task-including-resting-state-imaging-data">4.1 Task (including resting state) imaging data</a>].</p>
+</li>
+</ul>
+<h2 id="101">1.0.1</h2>
+<ul>
+<li>
+<p>Added InstitutionName field [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#task-including-resting-state-imaging-data">4.1 Task (including resting state) imaging data</a>].</p>
+</li>
+<li>
+<p>Added InstitutionAddress field [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#task-including-resting-state-imaging-data">4.1 Task (including resting state) imaging data</a>].</p>
+</li>
+<li>
+<p>Added DeviceSerialNumber field [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#task-including-resting-state-imaging-data">4.1 Task (including resting state) imaging data</a>].</p>
+</li>
+<li>
+<p>Added NumberOfVolumesDiscardedByUser and
+    NumberOfVolumesDiscardedByScanner field [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#task-including-resting-state-imaging-data">4.1 Task (including
+    resting state) imaging data</a>].</p>
+</li>
+<li>
+<p>Added TotalReadoutTime to functional images metadata list
+     [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#task-including-resting-state-imaging-data">4.1 Task (including resting state) imaging
+    data</a>].</p>
+</li>
+</ul>
+<h2 id="101-rc1">1.0.1-rc1</h2>
+<ul>
+<li>
+<p>Added T1 Rho maps [<a href="04-modality-specific-files/01-magnetic-resonance-imaging-data.html#anatomy-imaging-data">4.1 Anatomy imaging
+    data</a>].</p>
+</li>
+<li>
+<p>Added support for phenotypic information split into multiple files
+    [<a href="03-modality-agnostic-files.html#participants-file">3.2 Participant key file</a>].</p>
+</li>
+<li>
+<p>Added recommendations for multi site datasets</p>
+</li>
+<li>
+<p>Added SoftwareVersions</p>
+</li>
+<li>
+<p>Added run-&lt;run_index&gt; to the phase encoding
+    maps. Improved the description.</p>
+</li>
+<li>
+<p>Added InversionTime metadata key.</p>
+</li>
+<li>
+<p>Clarification on the source vs raw language.</p>
+</li>
+<li>
+<p>Added trial_type column to the event files.</p>
+</li>
+<li>
+<p>Added missing sub-&lt;participant_label&gt; in
+    behavioral data file names</p>
+</li>
+<li>
+<p>Added ability to store stimuli files.</p>
+</li>
+<li>
+<p>Clarified the language describing allowed subject labels.</p>
+</li>
+<li>
+<p>Added quantitative proton density maps.</p>
+</li>
+</ul>
+<h2 id="100">1.0.0</h2>
+<ul>
+<li>
+<p>Added ability to specify fieldmaps acquired with multiple parameter
+    sets.</p>
+</li>
+<li>
+<p>Added ability to have multiple runs of the same fieldmap.</p>
+</li>
+<li>
+<p>Added FLASH anatomical images.</p>
+</li>
+</ul>
+<h2 id="100-rc4">1.0.0-rc4</h2>
+<ul>
+<li>
+<p>Replaced links to neurolex with explicit DICOM Tags.</p>
+</li>
+<li>
+<p>Added sourcedata.</p>
+</li>
+<li>
+<p>Added data dictionaries.</p>
+</li>
+<li>
+<p>Be more explicit about contents of JSON files for structural
+    (anatomical) scans.</p>
+</li>
+</ul>
+<h2 id="100-rc3">1.0.0-rc3</h2>
+<ul>
+<li>
+<p>Renamed PhaseEncodingDirection values from “x”, “y”,
+    “z” to “i”, “j”, “k” to avoid confusion with FSL parameters</p>
+</li>
+<li>
+<p>Renamed SliceEncodingDirection values from “x”, “y”,
+    “z” to “i”, “j”, “k”</p>
+</li>
+</ul>
+<h2 id="100-rc2">1.0.0-rc2</h2>
+<ul>
+<li>
+<p>Removed the requirement that TSV files cannot include more than two
+    consecutive spaces.</p>
+</li>
+<li>
+<p>Refactor of the definitions sections (copied from the
+    manuscript)</p>
+</li>
+<li>
+<p>Make support for uncompressed .nii files more explicit.</p>
+</li>
+<li>
+<p>Added BIDSVersion to dataset.json</p>
+</li>
+<li>
+<p>Remove the statement that SliceEncodingDirection is
+    necessary for slice time correction</p>
+</li>
+<li>
+<p>Change dicom converter recommendation from dcmstack to dcm2nii and
+    dicm2nii following interactions with the community (see
+    <a href="https://github.com/moloney/dcmstack/issues/39">https://github.com/moloney/dcmstack/issues/39</a> and
+    <a href="https://github.com/neurolabusc/dcm2niix/issues/4">https://github.com/neurolabusc/dcm2niix/issues/4</a>).</p>
+</li>
+<li>
+<p>Added section on behavioral experiments with no accompanying MRI
+    acquisition</p>
+</li>
+<li>
+<p>Add _magnitude.nii[.gz] image for GE type
+    fieldmaps.</p>
+</li>
+<li>
+<p>Replaced EchoTimeDifference with
+    EchoTime1 and EchoTime2 (SPM toolbox
+    requires this input).</p>
+</li>
+<li>
+<p>Added support for single band reference image for DWI.</p>
+</li>
+<li>
+<p>Added DatasetDOI field in the dataset
+    description.</p>
+</li>
+<li>
+<p>Added description of more metadata fields relevant to DWI fieldmap
+    correction.</p>
+</li>
+<li>
+<p>PhaseEncodingDirection is now expressed in “x”, “y” etc. instead of “PA”
+    “RL” for DWI scans
+    (so it’s the same as BOLD scans)</p>
+</li>
+<li>
+<p>Added rec-&lt;label&gt; flag to BOLD files to
+    distinguish
+    between different reconstruction algorithms
+    (analogous to anatomical scans).</p>
+</li>
+<li>
+<p>Added recommendation to use _physio suffix for continuous recordings
+    of motion
+    parameters obtained by
+    the scanner side reconstruction algorithms.</p>
+</li>
+</ul>
+<h2 id="100-rc1">1.0.0-rc1</h2>
+<ul>
+<li>Initial release</li>
+</ul>
+<p>* <em>This Change Log was automatically generated by <a href="https://github.com/skywinder/Github-Changelog-Generator">github_changelog_generator</a></em></p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="99-appendices/08-coordinate-systems.html" title="Coordinate-systems" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Coordinate-systems
+              </span>
+            </div>
+          </a>
+        
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/application.39abc4af.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      
+        <script src="readthedocs-data.js"></script>
+      
+        
+      
+        
+      
+    
+  </body>
+</html>
