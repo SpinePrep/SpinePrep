@@ -1,0 +1,18 @@
+:root {
+  --md-primary-fg-color: #0f172a;
+  /* Slate 900 */
+  --md-accent-fg-color: #06b6d4;
+  /* Cyan 500 */
+}
+
+/* Dark mode overrides for specific elements */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #0f172a;
+  --md-bg-color: #020617;
+  /* Slate 950 */
+}
+
+.md-typeset h1,
+.md-typeset h2 {
+  font-weight: 700;
+}

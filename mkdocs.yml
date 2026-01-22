@@ -1,0 +1,91 @@
+site_name: SpinePrep
+site_url: https://spineprep.org/
+repo_url: https://github.com/spineprep/spineprep
+repo_name: spineprep/spineprep
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: assets/images/logo.png
+  favicon: assets/images/favicon.png
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: slate
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: slate
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+  - redirects:
+      redirect_maps:
+        # Redirects from old paths if needed
+        # 'old.md': 'new.md'
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - glightbox
+  #- mkdocstrings:
+  #    handlers:
+  #      python:
+  #        paths: [src]
+  #        options:
+  #          docstring_style: google
+
+extra_css:
+  - assets/css/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Setup: setup.md
+  - Pipeline:
+    - Overview: pipeline/overview.md
+  - Reference:
+    - CLI: reference/cli.md
+    - API: reference/api.md
+    - Config: reference/config.md
+  - Help:
+    - Contributing: contributing.md
