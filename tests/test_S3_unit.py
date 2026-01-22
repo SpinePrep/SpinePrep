@@ -13,9 +13,7 @@ import csv
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from spineprep.S3_func_init_and_crop import (
-    _process_s3_2_registration,
-    _process_s3_3_outlier_gating,
-    _process_s3_4_crop_and_qc,
+    _process_s3_1_dummy_drop_and_localization,
     _extract_subject_session_from_work_dir
 )
 
