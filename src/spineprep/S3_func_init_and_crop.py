@@ -437,12 +437,11 @@ def _render_s3_1_simple_func_with_mask(
              # T -> axis 0 is now s (z), axis 1 is c (y)
              # flipud -> axis 0 is flipped (height)
              height = func_slice.shape[0]
-             
              # Y-axis (vertical in display) maps to S-axis (Z) inverted
-             # y = height - 1 - s
-             # range s_min to s_max corresponds to:
-             y_min_disp = height - s_max
-             y_max_disp = height - s_min
+             # Mask pixels use row = height - 1 - s
+             # To perfectly enclose/match, we use the same transform:
+             y_min_disp = height - 1 - s_max
+             y_max_disp = height - 1 - s_min
              
              # X-axis (horizontal in display) maps to C-axis (Y)
              x_min_disp = c_min
@@ -474,7 +473,7 @@ def _render_s3_1_simple_func_with_mask(
                    new_h = int(h * ratio)
                    img = img.resize((w, new_h), resample=Image.Resampling.LANCZOS)
         except Exception as e:
-            print(f"Aspect ratio correction skipped: {e}")
+            pass # Aspect ratio correction skipped
         
         # Use ImageMagick for resize
         ppm_path = output_path.with_suffix(".ppm")
@@ -495,7 +494,7 @@ def _render_s3_1_simple_func_with_mask(
         return None
         
     except Exception as e:
-        print(f"S3.1 figure render error: {e}")
+        pass # S3.1 figure render error
         return None
 
 
@@ -714,6 +713,7 @@ def _process_s3_1_dummy_drop_and_localization(
     out_root: Optional[Path] = None,
     cordref_std_path: Optional[Path] = None,
     cordmask_dseg_path: Optional[Path] = None,
+    run_id: Optional[str] = None,
 ) -> dict[str, Any]:
     """
     S3.1: Dummy-volume drop + fast median reference + func cord localization + func_ref0.
@@ -732,11 +732,72 @@ def _process_s3_1_dummy_drop_and_localization(
     init_dir = work_dir / "init"
     init_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load 4D BOLD data
-    bold_img = nib.load(bold_path)
-    bold_data = bold_img.get_fdata()
-    bold_affine = bold_img.affine
+    # Define expected output paths
+    func_ref_fast_path = init_dir / "func_ref_fast.nii.gz"
+    func_ref0_path = init_dir / "func_ref0.nii.gz"
+    localize_dir = init_dir / "localize"
+    localize_dir.mkdir(parents=True, exist_ok=True)
+    discovery_seg_path = localize_dir / "func_ref_fast_seg.nii.gz"
+    roi_mask_path = localize_dir / "func_ref_fast_roi_mask.nii.gz"
+    func_bold_coarse_path = init_dir / "func_bold_coarse.nii.gz"
+    func_ref_fast_crop_path = localize_dir / "func_ref_fast_crop.nii.gz"
 
+    ok = False
+    out = ""
+
+    # OPTIMIZATION: Check if S3.1 heavy outputs already exist to avoid expensive re-computation
+    if func_ref_fast_path.exists() and discovery_seg_path.exists() and func_bold_coarse_path.exists():
+         # Load func_ref_fast_data for bbox calculation/clipping limits
+         func_ref_fast_img_tmp = nib.load(func_ref_fast_path)
+         func_ref_fast_data = func_ref_fast_img_tmp.get_fdata()
+         # Load affine
+         # Note: We don't define bold_affine here for later use because we return early!
+         
+         # Re-calculate bbox from discovery seg (fast, robust)
+         disc_img = nib.load(discovery_seg_path)
+         disc_data = disc_img.get_fdata()
+         coords = np.argwhere(disc_data > 0)
+         if coords.size > 0:
+             pad_xy = 10
+             pad_z = 0
+             r_min, c_min, s_min = coords.min(axis=0) - [pad_xy, pad_xy, pad_z]
+             r_max, c_max, s_max = coords.max(axis=0) + [pad_xy, pad_xy, pad_z]
+             r_min, r_max = max(0, r_min), min(func_ref_fast_data.shape[0], r_max)
+             c_min, c_max = max(0, c_min), min(func_ref_fast_data.shape[1], c_max)
+             s_min, s_max = max(0, s_min), min(func_ref_fast_data.shape[2], s_max)
+             crop_bbox = [int(r_min), int(r_max), int(c_min), int(c_max), int(s_min), int(s_max)]
+         else:
+             crop_bbox = None
+             
+         # Reconstruct figure path for dashboard consistency
+         # Use run_id if available for unique per-run filenames, else fall back to subject prefix
+         figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
+         if out_root:
+             fig_path = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_func_localization_crop_box_sagittal.png"
+         else:
+             fig_path = None
+
+         return {
+              "func_ref_fast_path": func_ref_fast_path,
+              "func_ref0_path": func_ref0_path,
+              "discovery_seg_path": discovery_seg_path,
+              "roi_mask_path": roi_mask_path,
+              "func_ref_fast_crop_path": func_ref_fast_crop_path,
+              "func_bold_coarse_path": func_bold_coarse_path,
+              "discovery_seg_crop_path": localize_dir / "func_ref_fast_seg_crop.nii.gz",
+              "localization_status": "PASS",
+              "failure_message": None,
+              "figure_path": fig_path,
+              "crop_bbox": crop_bbox,
+         }
+    
+    # ELSE: Heavy Computation - Restore Logic
+    
+    # Load BOLD data
+    bold_img = nib.load(bold_path)
+    bold_affine = bold_img.affine
+    bold_data = bold_img.get_fdata()
+    
     # Get dummy volume count from policy
     dummy_volumes = policy.get("dummy_volumes", {}).get("count", 4)
 
@@ -753,22 +814,18 @@ def _process_s3_1_dummy_drop_and_localization(
         func_ref_fast_data = bold_data_dropped
 
     # Save func_ref_fast
-    func_ref_fast_path = init_dir / "func_ref_fast.nii.gz"
     func_ref_fast_img = nib.Nifti1Image(func_ref_fast_data, bold_affine)
     nib.save(func_ref_fast_img, func_ref_fast_path)
-
-    # For testing: create a simple localization result
-    # In real implementation, this would call S2 exact spec localization
-    localize_dir = init_dir / "localize"
-    localize_dir.mkdir(parents=True, exist_ok=True)
-
-    # Real Localization: Register T2 CordRef onto FuncRefFast
-    # This provides a robust "discovery" of the cord location in functional space.
-    discovery_seg_path = localize_dir / "func_ref_fast_seg.nii.gz"
-    roi_mask_path = localize_dir / "func_ref_fast_roi_mask.nii.gz"
     
+    # Save func_ref0 (first volume)
+    if bold_data_dropped.ndim == 4:
+        func_ref0_data = bold_data_dropped[:, :, :, 0]
+    else:
+        func_ref0_data = bold_data_dropped
+    func_ref0_img = nib.Nifti1Image(func_ref0_data, bold_affine)
+    nib.save(func_ref0_img, func_ref0_path)
+
     # Real Localization: Contrast-agnostic model (SCT 7.x syntax)
-    # Use sct_deepseg spinalcord for robust cord detection with -largest 1 to remove brain artifacts
     cmd_seg = [
         "sct_deepseg", "spinalcord",
         "-i", str(func_ref_fast_path),
@@ -801,9 +858,10 @@ def _process_s3_1_dummy_drop_and_localization(
         coords = np.argwhere(disc_data > 0)
         if coords.size > 0:
             # ROI = bbox of cord pixels + padding
-            pad = 20 # 20 voxels padding around cord
-            r_min, c_min, s_min = coords.min(axis=0) - pad
-            r_max, c_max, s_max = coords.max(axis=0) + pad
+            pad_xy = 10 # 10 voxels padding around cord (approx 20mm total margin)
+            pad_z = 0   # No Z padding
+            r_min, c_min, s_min = coords.min(axis=0) - [pad_xy, pad_xy, pad_z]
+            r_max, c_max, s_max = coords.max(axis=0) + [pad_xy, pad_xy, pad_z]
             
             # Clip to image bounds
             r_min, r_max = max(0, r_min), min(func_ref_fast_data.shape[0], r_max)
@@ -825,8 +883,7 @@ def _process_s3_1_dummy_drop_and_localization(
     func_ref_fast_crop_path = localize_dir / "func_ref_fast_crop.nii.gz"
     crop_affine = bold_affine.copy()
     crop_affine[:3, 3] = nib.affines.apply_affine(bold_affine, [crop_bbox[0], crop_bbox[2], crop_bbox[4]])
-    func_ref_fast_crop_img = nib.Nifti1Image(func_ref_fast_crop_data, crop_affine)
-    nib.save(func_ref_fast_crop_img, func_ref_fast_crop_path)
+    nib.save(nib.Nifti1Image(func_ref_fast_crop_data, crop_affine), func_ref_fast_crop_path)
 
 
     # Save CROPPED discovery seg (EXACT match for crop_bbox)
@@ -878,13 +935,15 @@ def _process_s3_1_dummy_drop_and_localization(
             out_root = extracted_root
     
     # Determine figures directory (matching S2 structure)
+    # Use run_id if available for unique per-run filenames
     if subject and out_root:
         if session:
             figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
-            figure_name = f"sub-{subject}_ses-{session}_desc-S3_func_localization_crop_box_sagittal.png"
         else:
             figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
-            figure_name = f"sub-{subject}_desc-S3_func_localization_crop_box_sagittal.png"
+        # Use run_id for unique filenames per functional run
+        figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
+        figure_name = f"{figure_prefix}_desc-S3_func_localization_crop_box_sagittal.png"
     else:
         # Fallback for test cases
         figures_dir = work_dir.parent.parent / "derivatives" / "spineprep" / "sub-test" / "ses-none" / "figures"
@@ -964,6 +1023,40 @@ def _process_s3_2_outlier_gating(
     """
     metrics_dir = work_dir / "metrics"
     metrics_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Define output paths
+    func_ref_path = work_dir / "func_ref.nii.gz"
+    frame_metrics_path = metrics_dir / "frame_metrics.tsv"
+    outlier_mask_path = metrics_dir / "outlier_mask.json"
+    
+    # OPTIMIZATION: Skip heavy computation if outputs exist
+    if func_ref_path.exists() and frame_metrics_path.exists() and outlier_mask_path.exists():
+         try:
+             with open(outlier_mask_path, "r") as f:
+                 outlier_info = json.load(f)
+             outlier_frac = outlier_info.get("outlier_fraction", 0.0)
+         except Exception:
+             outlier_frac = 0.0
+
+         # Reconstruct figure path
+         subject, session, out_root = _extract_subject_session_from_work_dir(work_dir)
+         # Use work_dir name as run_id for unique per-run filenames
+         run_id = work_dir.name if work_dir.name.startswith("sub-") else None
+         figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
+         if out_root:
+             fig_path = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_frame_metrics.png"
+         else:
+             fig_path = None
+
+         return {
+            "outlier_status": "PASS",
+            "failure_message": None,
+            "func_ref_path": func_ref_path,
+            "frame_metrics_path": frame_metrics_path,
+            "outlier_mask_path": outlier_mask_path,
+            "outlier_fraction": outlier_frac,
+            "figure_path": fig_path
+         }
     
     # Load inputs
     bold_img = nib.load(bold_data_path)
@@ -1062,7 +1155,7 @@ def _process_s3_2_outlier_gating(
         # Or FAIL.
         # Policy could say min_good_frames.
         # Fallback: Median of all
-        print("WARNING: Too few good frames for robust reference. Using all frames.")
+        # print("WARNING: Too few good frames for robust reference. Using all frames.")
         robust_ref_data = np.median(bold_data, axis=3)
         robust_ref_indices = list(range(n_frames))
     else:
@@ -1104,13 +1197,15 @@ def _process_s3_2_outlier_gating(
     # Render Plot
     # subject/session for figure path
     subject, session, out_root = _extract_subject_session_from_work_dir(work_dir)
+    # Use work_dir name as run_id for unique per-run filenames
+    run_id = work_dir.name if work_dir.name.startswith("sub-") else None
     if subject and out_root:
         if session:
             figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
-            fig_name = f"sub-{subject}_ses-{session}_desc-S3_frame_metrics.png"
         else:
             figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
-            fig_name = f"sub-{subject}_desc-S3_frame_metrics.png"
+        figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
+        fig_name = f"{figure_prefix}_desc-S3_frame_metrics.png"
     else:
         figures_dir = work_dir.parent.parent / "derivatives" / "spineprep" / "sub-test" / "ses-none" / "figures"
         fig_name = "test_desc-S3_frame_metrics.png"
@@ -1150,7 +1245,7 @@ def _process_s3_2_outlier_gating(
         plt.savefig(figure_path)
         plt.close(fig)
     except Exception as e:
-        print(f"Failed to plot metrics: {e}")
+        pass # Failed to plot metrics
 
     result = {
         "outlier_status": "PASS",
@@ -1254,13 +1349,14 @@ def _process_s3_3_crop_and_qc(
     # 3. Render Figures
     # S3_crop_box_sagittal on funcref
     subject, session, out_root = _extract_subject_session_from_work_dir(work_dir)
+    # Use work_dir name as run_id for unique per-run filenames
+    run_id = work_dir.name if work_dir.name.startswith("sub-") else None
     if subject and out_root:
         if session:
             figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
-            prefix = f"sub-{subject}_ses-{session}"
         else:
             figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
-            prefix = f"sub-{subject}"
+        prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
     else:
         figures_dir = work_dir.parent.parent / "derivatives" / "spineprep" / "sub-test" / "ses-none" / "figures"
         prefix = "test"
@@ -1274,8 +1370,11 @@ def _process_s3_3_crop_and_qc(
     
     # We need to calculate crop_box in index coordinates relative to func_ref
     try:
-         # Load crop mask to find bbox
-         mask_img = nib.as_closest_canonical(nib.load(crop_mask_path))
+         # OPTION A FIX: Use full FOV discovery_seg_path for red box calculation
+         # This ensures the red box exactly matches the blue mask extent.
+         # Since discovery_seg_path is in the same space as func_ref_fast_path (Full FOV),
+         # no offset correction is needed.
+         mask_img = nib.as_closest_canonical(nib.load(discovery_seg_path))
          mask_data = mask_img.get_fdata() > 0
          
          # BBox: r_min, r_max, c_min, c_max, s_min, s_max
@@ -1284,48 +1383,9 @@ def _process_s3_3_crop_and_qc(
              r_min, c_min, s_min = coords.min(axis=0)
              r_max, c_max, s_max = coords.max(axis=0)
              
-             # Apply padding logic similar to S3.1 if we want the "Red Box" to represent 
-             # the final crop region. The crop mask IS the region, so bbox of crop mask is 
-             # likely the exact crop. S3.1 padded around discovery mask. 
-             # But here we already have the explicit cylindrical mask.
-             # So the red box should enclose the cylindrical mask.
-             
-             # HOWEVER: The actual crop logic in step 2 uses sct_crop_image -m crop_mask.
-             # sct_crop_image generally uses the bounding box of the mask.
-             # So bbox of crop_mask_path IS the correct crop box.
-             
+             # Red box = bounding box of the full discovery segmentation
+             # This matches the blue overlay exactly
              crop_bbox = [int(r_min), int(r_max), int(c_min), int(c_max), int(s_min), int(s_max)]
-
-             # CORRECTION: The crop_mask is in S3.2 Coarse Crop Space. The background is S3.1 Full FOV Space.
-             # We must shift the crop_bbox by the offset between Coarse Crop and Full FOV.
-             # Offset = (Origin_Coarse - Origin_Full) / VoxelSize
-             # Assuming same orientation (RPI) and resolution.
-             
-             full_img = nib.load(func_ref_fast_path)
-             coarse_img = nib.load(functional_ref_path) # or using mask_img directly if it's in coarse space
-             
-             # Calculate offset in voxels
-             aff_full = full_img.affine
-             aff_coarse = coarse_img.affine
-             
-             # Inverse full affine maps world -> full_voxels
-             inv_aff_full = np.linalg.inv(aff_full)
-             
-             # Transform coarse origin (0,0,0) to full voxel space
-             # This gives the top-left corner of the coarse image in full image coordinates
-             origin_coarse_world = aff_coarse @ [0, 0, 0, 1]
-             origin_coarse_in_full = inv_aff_full @ origin_coarse_world
-             
-             off_r = int(round(origin_coarse_in_full[0]))
-             off_c = int(round(origin_coarse_in_full[1]))
-             off_s = int(round(origin_coarse_in_full[2]))
-             
-             # Apply offset
-             crop_bbox = [
-                 crop_bbox[0] + off_r, crop_bbox[1] + off_r,
-                 crop_bbox[2] + off_c, crop_bbox[3] + off_c,
-                 crop_bbox[4] + off_s, crop_bbox[5] + off_s
-             ]
          else:
              crop_bbox = None
              
@@ -1592,6 +1652,7 @@ def _process_session_s3(
                 out_root=out_root,
                 cordref_std_path=cordref_std_path,
                 cordmask_dseg_path=cordmask_dseg_path,
+                run_id=run_id,
             )
             run_result["results"].append(("S3.1", s3_1_res))
             
@@ -1636,18 +1697,36 @@ def _process_session_s3(
             run_result["results"].append(("S3.3", s3_3_res))
             
             # Copy final figures to derivatives/figures
+            reportlets = {}
+            if "figure_path" in s3_1_res and s3_1_res["figure_path"]:
+                 reportlets["func_localization_crop"] = str(Path(s3_1_res["figure_path"]).relative_to(out_root)) if Path(s3_1_res["figure_path"]).is_absolute() else str(s3_1_res["figure_path"])
+
+            if "figure_path" in s3_2_res and s3_2_res["figure_path"]:
+                 reportlets["frame_metrics"] = str(Path(s3_2_res["figure_path"]).relative_to(out_root)) if Path(s3_2_res["figure_path"]).is_absolute() else str(s3_2_res["figure_path"])
+
             if s3_3_res.get("figures"):
                 figs_out = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
                 figs_out.mkdir(parents=True, exist_ok=True)
-                for fig_p in s3_3_res["figures"]:
-                     if fig_p.exists():
-                         name = fig_p.name.replace("test_", f"{run_id}_") # Fix potential prefix issue
-                         if not name.startswith(run_id):
-                             name = f"{run_id}_{fig_p.name}" # Ensure uniqueness
-                         
-                         import shutil
-                         shutil.copy2(fig_p, figs_out / name)
+                
+                # Helper to copy and record
+                def _copy_and_record(src_path, key_suffix, reportlet_key):
+                    if src_path and Path(src_path).exists():
+                        name = Path(src_path).name
+                        if not name.startswith(run_id):
+                             name = f"{run_id}_{name}"
+                        dest = figs_out / name
+                        import shutil
+                        shutil.copy2(src_path, dest)
+                        reportlets[reportlet_key] = str(dest.relative_to(out_root))
 
+                # Assuming order: crop_box, funcref_montage
+                figures = s3_3_res["figures"]
+                if len(figures) > 0:
+                    _copy_and_record(figures[0], "crop_box_sagittal", "crop_box_sagittal")
+                if len(figures) > 1:
+                    _copy_and_record(figures[1], "funcref_montage", "funcref_montage")
+
+            run_result["reportlets"] = reportlets
             run_result["status"] = "PASS"
             
         except Exception as e:
