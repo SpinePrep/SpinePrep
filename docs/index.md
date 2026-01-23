@@ -1,13 +1,26 @@
 ---
 template: home.html
 title: Home
+hide:
+  - navigation
 ---
 
-### Features
 
-- **Automated**: S0-S11 pipeline automation.
-- **Robust**: Spinal cord specific processing.
-- **QC-First**: Every step emits quality reports.
+<div class="grid cards" markdown>
+
+-   :material-robot: **Automated**
+
+    End-to-end S0-S11 pipeline automation for spinal cord fMRI.
+
+-   :material-spine: **Robust**
+
+    Tailored processing for the unique challenges of spinal cord imaging.
+
+-   :material-check-decagram: **QC-First**
+
+    Every preprocessing step emits detailed quality reports.
+
+</div>
 
 ### Citation
 

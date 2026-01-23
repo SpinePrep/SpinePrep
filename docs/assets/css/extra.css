@@ -1,15 +1,14 @@
 :root {
-  --md-primary-fg-color: #0f172a;
-  /* Slate 900 */
-  --md-accent-fg-color: #06b6d4;
-  /* Cyan 500 */
+  --md-primary-fg-color: #0f172a; /* Slate 900 */
+  --md-accent-fg-color: #06b6d4; /* Cyan 500 */
+  --tx-hero-bg-light: radial-gradient(circle at center, #f1f5f9 0%, #ffffff 100%);
+  --tx-hero-text-light: #334155;
 }
 
-/* Dark mode overrides for specific elements */
 [data-md-color-scheme="slate"] {
   --md-primary-fg-color: #0f172a;
-  --md-bg-color: #020617;
-  /* Slate 950 */
+  --md-bg-color: #020617; /* Slate 950 */
+  --tx-hero-bg-dark: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
 }
 
 .md-typeset h1,

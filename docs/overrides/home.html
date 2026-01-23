@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 
 {% block tabs %}
-  {{ super() }}
+{{ super() }}
 {% endblock %}
 
 {% block content %}
@@ -10,85 +10,140 @@
     max-width: none;
     padding: 0;
   }
+
   .tx-hero {
     height: 80vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle at center, #1a202c 0%, #000 100%);
+    background: var(--tx-hero-bg-dark, #020617);
     text-align: center;
     padding: 2rem;
     position: relative;
     overflow: hidden;
   }
+
+  /* Light mode override if needed, though we default to dark theme */
+  [data-md-color-scheme="default"] .tx-hero {
+    background: var(--tx-hero-bg-light, #ffffff);
+  }
+
   .tx-hero h1 {
     font-size: 4rem;
     font-weight: 800;
     margin-bottom: 1rem;
-    background: linear-gradient(to right, #00BCD4, #fff);
+    background: linear-gradient(to right, #00BCD4, #e2e8f0);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    z-index: 2;
   }
+
   .tx-hero p {
     font-size: 1.5rem;
     max-width: 800px;
     margin-bottom: 2rem;
-    color: #a0aec0;
+    color: #94a3b8;
+    /* Slate 400 */
+    z-index: 2;
   }
+
   .tx-cta-buttons {
     display: flex;
     gap: 1rem;
+    z-index: 2;
   }
+
   .tx-btn {
     padding: 0.8rem 2rem;
     border-radius: 50px;
     font-weight: bold;
     text-decoration: none;
-    transition: transform 0.2s;
+    transition: all 0.2s ease;
   }
+
   .tx-btn-primary {
-    background: #00BCD4;
+    background: #06b6d4;
+    /* Cyan 500 */
     color: #000;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
   }
-  .tx-btn-secondary {
-    border: 2px solid #00BCD4;
-    color: #00BCD4;
-  }
-  .tx-btn:hover {
+
+  .tx-btn-primary:hover {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
     transform: scale(1.05);
   }
-  .tx-spine-scroller {
+
+  .tx-btn-secondary {
+    border: 2px solid #06b6d4;
+    color: #06b6d4;
+  }
+
+  .tx-btn-secondary:hover {
+    background: rgba(6, 182, 212, 0.1);
+    transform: scale(1.05);
+  }
+
+  .tx-spine-svg {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     bottom: 0;
-    width: 2px;
-    height: 100px;
-    background: linear-gradient(to bottom, #00BCD4, transparent);
-    animation: scroll-pulse 2s infinite;
+    height: 400px;
+    width: 200px;
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 1;
   }
-  @keyframes scroll-pulse {
-    0% { height: 0; opacity: 0; }
-    50% { height: 100px; opacity: 1; }
-    100% { height: 0; opacity: 0; transform: translate(-50%, 100px); }
+
+  .tx-nerve-path {
+    fill: none;
+    stroke: #06b6d4;
+    stroke-width: 2;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: nerve-pulse 3s ease-out infinite;
+  }
+
+  @keyframes nerve-pulse {
+    0% {
+      stroke-dashoffset: 1000;
+      opacity: 0;
+    }
+
+    20% {
+      opacity: 1;
+    }
+
+    80% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+
+    100% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
   }
 </style>
 
 <div class="tx-hero">
   <h1>SpinePrep</h1>
   <p>Robust, automated preprocessing for spinal cord fMRI.</p>
-  
+
   <div class="tx-cta-buttons">
     <a href="setup/" class="tx-btn tx-btn-primary">Get Started</a>
     <a href="pipeline/overview/" class="tx-btn tx-btn-secondary">View Pipeline</a>
   </div>
 
-  <div class="tx-spine-scroller"></div>
+  <svg class="tx-spine-svg" viewBox="0 0 100 200" preserveAspectRatio="none">
+    <!-- Abstract spinal curve -->
+    <path class="tx-nerve-path" d="M50,200 C50,150 20,100 50,50 C80,0 50,-50 50,-50" />
+  </svg>
 </div>
 
-<div class="md-grid">
-  <div class="md-main__inner md-grid" style="margin-top: 4rem;">
+<div class="md-container">
+  <div class="md-grid md-typeset" style="max-width: 800px; margin: 4rem auto; padding: 0 1rem;">
     {{ super() }}
   </div>
 </div>
