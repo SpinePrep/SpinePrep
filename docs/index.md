@@ -12,7 +12,7 @@ hide:
 
     End-to-end S0-S11 pipeline automation for spinal cord fMRI.
 
--   :material-spine: **Robust**
+-   :material-shield-check: **Robust**
 
     Tailored processing for the unique challenges of spinal cord imaging.
 
