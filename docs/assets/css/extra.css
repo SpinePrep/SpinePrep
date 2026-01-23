@@ -5,7 +5,8 @@
   /* Cyan 700 - Clinical Teal */
 
   /* Clinical Hero Variables */
-  --tx-hero-bg-light: radial-gradient(circle at center, #f8fafc 0%, #ffffff 100%);
+  --tx-hero-bg-light: #ffffff;
+  /* Flat white for maximum clinical clean */
   --tx-hero-text-light: #0f172a;
 
   /* Card Styling - Technical/Bordered */
