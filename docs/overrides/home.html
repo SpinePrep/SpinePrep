@@ -12,40 +12,54 @@
   }
 
   .tx-hero {
-    height: 80vh;
+    height: 60vh;
+    /* Reduced height for cleaner look */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--tx-hero-bg-dark, #020617);
+    background: var(--tx-hero-bg-light, #f8fafc);
     text-align: center;
     padding: 2rem;
     position: relative;
     overflow: hidden;
   }
 
-  /* Light mode override if needed, though we default to dark theme */
-  [data-md-color-scheme="default"] .tx-hero {
-    background: var(--tx-hero-bg-light, #ffffff);
+  /* Dark mode override */
+  [data-md-color-scheme="slate"] .tx-hero {
+    background: var(--tx-hero-bg-dark, #020617);
   }
 
   .tx-hero h1 {
-    font-size: 4rem;
+    font-size: 5rem;
     font-weight: 800;
-    margin-bottom: 1rem;
-    background: linear-gradient(to right, #00BCD4, #e2e8f0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+    color: var(--md-primary-fg-color);
+    /* Remove gradient text for cleaner look */
+    background: none;
+    -webkit-text-fill-color: initial;
     z-index: 2;
+  }
+
+  /* Dark mode text color override for H1 */
+  [data-md-color-scheme="slate"] .tx-hero h1 {
+    color: #f8fafc;
   }
 
   .tx-hero p {
     font-size: 1.5rem;
-    max-width: 800px;
-    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-bottom: 2.5rem;
+    color: #475569;
+    /* Slate 600 */
+    line-height: 1.6;
+    z-index: 2;
+  }
+
+  [data-md-color-scheme="slate"] .tx-hero p {
     color: #94a3b8;
     /* Slate 400 */
-    z-index: 2;
   }
 
   .tx-cta-buttons {
@@ -55,75 +69,50 @@
   }
 
   .tx-btn {
-    padding: 0.8rem 2rem;
-    border-radius: 50px;
-    font-weight: bold;
+    padding: 1rem 2.5rem;
+    border-radius: 6px;
+    /* Squarer buttons for clinical feel */
+    font-weight: 600;
     text-decoration: none;
     transition: all 0.2s ease;
+    border: 1px solid transparent;
+    /* Prevent layout shift */
   }
 
   .tx-btn-primary {
-    background: #06b6d4;
-    /* Cyan 500 */
-    color: #000;
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+    background: #0f172a;
+    /* Navy */
+    color: #fff;
+    box-shadow: none;
   }
 
   .tx-btn-primary:hover {
-    box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
-    transform: scale(1.05);
+    background: #1e293b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 
   .tx-btn-secondary {
-    border: 2px solid #06b6d4;
-    color: #06b6d4;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    background: white;
   }
 
   .tx-btn-secondary:hover {
-    background: rgba(6, 182, 212, 0.1);
-    transform: scale(1.05);
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    transform: translateY(-1px);
   }
 
-  .tx-spine-svg {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 0;
-    height: 400px;
-    width: 200px;
-    opacity: 0.6;
-    pointer-events: none;
-    z-index: 1;
+  [data-md-color-scheme="slate"] .tx-btn-secondary {
+    background: transparent;
+    border-color: #334155;
+    color: #e2e8f0;
   }
 
-  .tx-nerve-path {
-    fill: none;
-    stroke: #06b6d4;
-    stroke-width: 2;
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: nerve-pulse 3s ease-out infinite;
-  }
-
-  @keyframes nerve-pulse {
-    0% {
-      stroke-dashoffset: 1000;
-      opacity: 0;
-    }
-
-    20% {
-      opacity: 1;
-    }
-
-    80% {
-      stroke-dashoffset: 0;
-      opacity: 0;
-    }
-
-    100% {
-      stroke-dashoffset: 0;
-      opacity: 0;
-    }
+  [data-md-color-scheme="slate"] .tx-btn-secondary:hover {
+    border-color: #475569;
+    background: rgba(255, 255, 255, 0.05);
   }
 </style>
 
@@ -135,11 +124,6 @@
     <a href="setup/" class="tx-btn tx-btn-primary">Get Started</a>
     <a href="pipeline/overview/" class="tx-btn tx-btn-secondary">View Pipeline</a>
   </div>
-
-  <svg class="tx-spine-svg" viewBox="0 0 100 200" preserveAspectRatio="none">
-    <!-- Abstract spinal curve -->
-    <path class="tx-nerve-path" d="M50,200 C50,150 20,100 50,50 C80,0 50,-50 50,-50" />
-  </svg>
 </div>
 
 <div class="md-container">
