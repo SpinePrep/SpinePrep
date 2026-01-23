@@ -20,6 +20,10 @@ hide:
 
     Every preprocessing step emits detailed quality reports.
 
+-   :material-repeat-variant: **Reproducible**
+
+    Deterministic execution guarantees identical results, every time.
+
 </div>
 
 ### Citation
