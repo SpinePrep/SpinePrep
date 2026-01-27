@@ -2,7 +2,7 @@
 
 ## Installation
 
-SpinePrep is designed to run via **Docker** or **Apptainer** (Singularity) to ensure reproducibility.
+SpinalfMRIprep is designed to run via **Docker** or **Apptainer** (Singularity) to ensure reproducibility.
 
 ### Prerequisites
 
@@ -13,14 +13,14 @@ SpinePrep is designed to run via **Docker** or **Apptainer** (Singularity) to en
 ### Installation
 
 ```bash
-git clone https://github.com/spineprep/spineprep.git
-cd spineprep
+git clone https://github.com/spinalfmriprep/spinalfmriprep.git
+cd spinalfmriprep
 poetry install
 ```
 
 ## Project Structure
 
-SpinePrep enforces a strict directory structure to ensure data integrity and workflow determinism.
+SpinalfMRIprep enforces a strict directory structure to ensure data integrity and workflow determinism.
 
 ### Workspace Naming
 Work directories inside your project follow a canonical naming convention:

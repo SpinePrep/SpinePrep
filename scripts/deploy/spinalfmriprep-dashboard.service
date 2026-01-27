@@ -1,12 +1,12 @@
 [Unit]
-Description=SpinePrep QC Dashboard Server (latest wf)
+Description=SpinalfMRIprep QC Dashboard Server (latest wf)
 After=network-online.target tailscaled.service
 Wants=network-online.target tailscaled.service
 
 [Service]
 Type=simple
-EnvironmentFile=/etc/spineprep-dashboard.env
-ExecStart=/usr/bin/python3 /opt/spineprep/spineprep_dashboard_server.py
+EnvironmentFile=/etc/spinalfmriprep-dashboard.env
+ExecStart=/usr/bin/python3 /opt/spinalfmriprep/spinalfmriprep_dashboard_server.py
 Restart=always
 RestartSec=2
 TimeoutStartSec=10

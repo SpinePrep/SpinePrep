@@ -1,10 +1,10 @@
-# SpinePrep Documentation Cache
+# SpinalfMRIprep Documentation Cache
 
 This directory contains cached vendor documentation for offline access by agents.
 
 ## SCT Documentation
 
-Spinal Cord Toolbox (SCT) documentation is cached here for the pinned SCT version used by SpinePrep.
+Spinal Cord Toolbox (SCT) documentation is cached here for the pinned SCT version used by SpinalfMRIprep.
 
 ### Fetching SCT Docs
 
@@ -47,7 +47,7 @@ python -m http.server 8000
 ### Notes
 
 - The cached docs are **gitignored** (`docs/vendor/` is in `.gitignore`)
-- This is an **opt-in** script; it does not run as part of any SpinePrep pipeline step
+- This is an **opt-in** script; it does not run as part of any SpinalfMRIprep pipeline step
 - The script tries htmlzip first, then falls back to wget mirroring if htmlzip is unavailable
 - If version-specific docs (e.g., `7.2`) aren't published, you can try `SCT_VERSION=latest` to fetch the latest published docs
 - Provenance (URL, SHA256, SCT image digest) is recorded in `PROVENANCE.txt` for auditability

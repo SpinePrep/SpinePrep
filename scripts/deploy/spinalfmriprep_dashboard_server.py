@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SpinePrep Canonical Dashboard Server
+SpinalfMRIprep Canonical Dashboard Server
 
 Serves the latest workflow dashboard from the most recent run under a work root.
 Exposes only on localhost; intended to be published via Tailscale Serve.
@@ -51,10 +51,10 @@ def _env_float(name: str, default: float) -> float:
 
 def load_config() -> Config:
     return Config(
-        work_root=_env_path("SPINEPREP_WORK_ROOT", "/mnt/ssd1/SpinePrep/work"),
-        host=_env_str("SPINEPREP_DASH_HOST", "127.0.0.1"),
-        port=_env_int("SPINEPREP_DASH_PORT", 17837),
-        refresh_seconds=_env_float("SPINEPREP_DASH_REFRESH_SECONDS", 5.0),
+        work_root=_env_path("SPINALFMRIPREP_WORK_ROOT", "/mnt/ssd1/SpinalfMRIprep/work"),
+        host=_env_str("SPINALFMRIPREP_DASH_HOST", "127.0.0.1"),
+        port=_env_int("SPINALFMRIPREP_DASH_PORT", 17837),
+        refresh_seconds=_env_float("SPINALFMRIPREP_DASH_REFRESH_SECONDS", 5.0),
     )
 
 
@@ -171,8 +171,8 @@ def safe_join(root: Path, url_path: str) -> Optional[Path]:
     return candidate
 
 
-class SpineprepDashboardHandler(SimpleHTTPRequestHandler):
-    server_version = "SpinePrepDashboard/1.0"
+class SpinalfmriprepDashboardHandler(SimpleHTTPRequestHandler):
+    server_version = "SpinalfMRIprepDashboard/1.0"
 
     def do_GET(self) -> None:
         cfg: Config = self.server.cfg  # type: ignore[attr-defined]
@@ -206,7 +206,7 @@ class SpineprepDashboardHandler(SimpleHTTPRequestHandler):
             return
 
         # Workfolders API endpoint
-        if path == "/__spineprep__/workfolders.json":
+        if path == "/__spinalfmriprep__/workfolders.json":
             if cache.all_workfolders is None:
                 cache.all_workfolders = find_all_workfolders(cfg.work_root)
             
@@ -232,7 +232,7 @@ class SpineprepDashboardHandler(SimpleHTTPRequestHandler):
             return
 
         # Status endpoint
-        if path == "/__spineprep__/status.json":
+        if path == "/__spinalfmriprep__/status.json":
             payload = {
                 "work_root": str(cfg.work_root),
                 "latest_out": str(cache.latest_out) if cache.latest_out else None,
@@ -280,11 +280,11 @@ class SpineprepDashboardHandler(SimpleHTTPRequestHandler):
             # No workfolders found
             body = (
                 "<html><body style='font-family: sans-serif; background: #1a1a1a; color: #e6e6e6; padding: 20px;'>"
-                "<h2>SpinePrep dashboard: no runs found</h2>"
+                "<h2>SpinalfMRIprep dashboard: no runs found</h2>"
                 f"<p>Looked under: <code>{cfg.work_root}</code></p>"
                 "<p>Expected: <code>wf_*/dashboard/index.html</code></p>"
                 "<p>Canonical patterns: <code>wf_smoke_*</code>, <code>wf_reg_*</code>, <code>wf_full_*</code></p>"
-                "<p>Generate a dashboard with: <code>spineprep qc --out &lt;out&gt;</code></p>"
+                "<p>Generate a dashboard with: <code>spinalfmriprep qc --out &lt;out&gt;</code></p>"
                 "</body></html>\n"
             ).encode("utf-8")
             self.send_response(HTTPStatus.NOT_FOUND)
@@ -320,15 +320,15 @@ def main() -> int:
     cfg = load_config()
     cfg.work_root.mkdir(parents=True, exist_ok=True)
 
-    httpd = ThreadingHTTPServer((cfg.host, cfg.port), SpineprepDashboardHandler)
+    httpd = ThreadingHTTPServer((cfg.host, cfg.port), SpinalfmriprepDashboardHandler)
     httpd.cfg = cfg  # type: ignore[attr-defined]
     httpd.cache = LatestCache()  # type: ignore[attr-defined]
 
-    print(f"[spineprep-dashboard] serving latest wf under {cfg.work_root} on {cfg.host}:{cfg.port}")
+    print(f"[spinalfmriprep-dashboard] serving latest wf under {cfg.work_root} on {cfg.host}:{cfg.port}")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\n[spineprep-dashboard] shutting down")
+        print("\n[spinalfmriprep-dashboard] shutting down")
         httpd.shutdown()
     return 0
 

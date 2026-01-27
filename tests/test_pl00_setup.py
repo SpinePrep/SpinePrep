@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from spineprep.S0_setup import EnvCheck, check_S0_setup, run_S0_setup
+from spinalfmriprep.S0_setup import EnvCheck, check_S0_setup, run_S0_setup
 
 
 REQUIRED_V1_KEYS = {
@@ -30,7 +30,7 @@ def _load_qc(path: Path) -> dict:
 
 
 def test_S0_setup_run_and_check_are_deterministic(tmp_path):
-    import spineprep.S0_setup as S0
+    import spinalfmriprep.S0_setup as S0
 
     fake_checks = [
         EnvCheck(
@@ -40,16 +40,16 @@ def test_S0_setup_run_and_check_are_deterministic(tmp_path):
             info={"runtime": "docker", "version": "24.0"},
         ),
         EnvCheck(
-            name="image_present:spineprep",
+            name="image_present:spinalfmriprep",
             passed=True,
             message="present",
-            info={"image": "spineprep:latest", "repodigests": "sha256:abc"},
+            info={"image": "spinalfmriprep:latest", "repodigests": "sha256:abc"},
         ),
         EnvCheck(
-            name="spineprep_cmd:spineprep --version",
+            name="spinalfmriprep_cmd:spinalfmriprep --version",
             passed=True,
             message="ok",
-            info={"image": "spineprep:latest", "command": "spineprep --version", "stdout": "1.0"},
+            info={"image": "spinalfmriprep:latest", "command": "spinalfmriprep --version", "stdout": "1.0"},
         ),
         EnvCheck(
             name="pam50_availability",
@@ -106,7 +106,7 @@ def test_S0_setup_fails_when_v1_dataset_missing(tmp_path):
 
 def test_S0_setup_fails_when_sct_missing(monkeypatch, tmp_path):
     project_root = _make_project_root(tmp_path)
-    import spineprep.S0_setup as S0
+    import spinalfmriprep.S0_setup as S0
 
     monkeypatch.setattr(
         S0,
@@ -119,10 +119,10 @@ def test_S0_setup_fails_when_sct_missing(monkeypatch, tmp_path):
                 info={"runtime": "docker", "version": "24.0"},
             ),
             EnvCheck(
-                name="image_present:spineprep",
+                name="image_present:spinalfmriprep",
                 passed=False,
                 message="Required image not found locally.",
-                info={"image": "spineprep:latest", "repodigests": ""},
+                info={"image": "spinalfmriprep:latest", "repodigests": ""},
             ),
         ],
     )
@@ -131,13 +131,13 @@ def test_S0_setup_fails_when_sct_missing(monkeypatch, tmp_path):
     result = run_S0_setup(project_root, "S0_SETUP")
     assert result.status == "FAIL"
     qc = _load_qc(result.qc_path)
-    image_check = next(check for check in qc["checks"] if check["name"] == "image_present:spineprep")
+    image_check = next(check for check in qc["checks"] if check["name"] == "image_present:spinalfmriprep")
     assert image_check["passed"] is False
 
 
 def test_S0_setup_fails_when_container_command_fails(monkeypatch, tmp_path):
     project_root = _make_project_root(tmp_path)
-    import spineprep.S0_setup as S0
+    import spinalfmriprep.S0_setup as S0
 
     monkeypatch.setattr(
         S0,
@@ -174,7 +174,7 @@ def test_S0_setup_fails_when_container_command_fails(monkeypatch, tmp_path):
 
 def test_S0_setup_fails_when_pam50_missing(monkeypatch, tmp_path):
     project_root = _make_project_root(tmp_path)
-    import spineprep.S0_setup as S0
+    import spinalfmriprep.S0_setup as S0
 
     monkeypatch.setattr(S0, "_container_checks", lambda: [])
     monkeypatch.setattr(S0, "_check_pam50_path", lambda: (False, "PAM50 missing", None))

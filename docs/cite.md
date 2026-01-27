@@ -1,16 +1,16 @@
-# Cite SpinePrep
+# Cite SpinalfMRIprep
 
-If you use SpinePrep in your research, please cite:
+If you use SpinalfMRIprep in your research, please cite:
 
 ## Primary Citation
 
 !!! quote "BibTeX"
     ```bibtex
-    @software{spineprep2026,
-      title = {SpinePrep: A Robust Preprocessing Pipeline for Spinal Cord fMRI},
-      author = {SpinePrep Team},
+    @software{spinalfmriprep2026,
+      title = {SpinalfMRIprep: A Robust Preprocessing Pipeline for Spinal Cord fMRI},
+      author = {SpinalfMRIprep Team},
       year = {2026},
-      url = {https://spineprep.org},
+      url = {https://spinalfmriprep.org},
       note = {Preprint forthcoming}
     }
     ```
@@ -18,17 +18,17 @@ If you use SpinePrep in your research, please cite:
 ## DOI
 
 <!-- Replace with actual DOI when available -->
-[![DOI](https://img.shields.io/badge/DOI-Preprint%20Forthcoming-blue)](https://spineprep.org)
+[![DOI](https://img.shields.io/badge/DOI-Preprint%20Forthcoming-blue)](https://spinalfmriprep.org)
 
 ## Related Publications
 
-*Publications using SpinePrep will be listed here as they become available.*
+*Publications using SpinalfMRIprep will be listed here as they become available.*
 
 ---
 
 ## Acknowledgments
 
-SpinePrep builds upon the excellent work of:
+SpinalfMRIprep builds upon the excellent work of:
 
 - [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/) - Core processing algorithms
 - [fMRIPrep](https://fmriprep.org/) - Pipeline design inspiration

@@ -15,11 +15,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 import pytest
 
-from spineprep.S3_func_init_and_crop import (
+from spinalfmriprep.S3_func_init_and_crop import (
     _process_s3_1_dummy_drop_and_localization,
     run_S3_func_init_and_crop,
 )
-from spineprep.subtask import ExecutionContext, set_execution_context, should_exit_after_subtask
+from spinalfmriprep.subtask import ExecutionContext, set_execution_context, should_exit_after_subtask
 
 
 def test_s3_1_subtask_execution(tmp_path):
@@ -121,10 +121,9 @@ def test_s3_1_skips_later_subtasks(tmp_path):
     set_execution_context(ExecutionContext(target_subtask="S3.1"))
 
     try:
-        from spineprep.S3_func_init_and_crop import (
-            _process_s3_2_registration,
-            _process_s3_3_outlier_gating,
-            _process_s3_4_crop_and_qc,
+        from spinalfmriprep.S3_func_init_and_crop import (
+            _process_s3_2_outlier_gating,
+            _process_s3_3_crop_and_qc,
         )
 
         work_dir = tmp_path / "work"
@@ -132,33 +131,27 @@ def test_s3_1_skips_later_subtasks(tmp_path):
 
         policy = {}
 
-        # S3.2 should return None (skipped)
-        result_s3_2 = _process_s3_2_registration(
+        # S3.2 (Outlier gating) should return None (skipped)
+        result_s3_2 = _process_s3_2_outlier_gating(
+            Path("/dummy/bold.nii.gz"),
             Path("/dummy/ref0.nii.gz"),
-            Path("/dummy/cordref.nii.gz"),
+            Path("/dummy/mask.nii.gz"),
             work_dir,
             policy,
         )
         assert result_s3_2 is None
 
-        # S3.3 should return None (skipped)
-        result_s3_3 = _process_s3_3_outlier_gating(
+        # S3.3 (Crop) should return None (skipped)
+        result_s3_3 = _process_s3_3_crop_and_qc(
             Path("/dummy/bold.nii.gz"),
-            Path("/dummy/ref0.nii.gz"),
             Path("/dummy/mask.nii.gz"),
+            Path("/dummy/ref.nii.gz"),
+            Path("/dummy/ref_fast.nii.gz"),
+            Path("/dummy/disc_seg.nii.gz"),
             work_dir,
             policy,
         )
         assert result_s3_3 is None
-
-        # S3.4 should return None (skipped)
-        result_s3_4 = _process_s3_4_crop_and_qc(
-            Path("/dummy/bold.nii.gz"),
-            Path("/dummy/mask.nii.gz"),
-            work_dir,
-            policy,
-        )
-        assert result_s3_4 is None
 
     finally:
         set_execution_context(None)
@@ -171,22 +164,64 @@ def test_s3_all_subtasks_without_target(tmp_path):
 
     try:
         out_dir = tmp_path / "test_output_all"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 1. Setup minimal S2 outputs (Required Dependency)
+        s2_work = out_dir / "work" / "S2_anat_cordref" / "sub-test_ses-none"
+        s2_work.mkdir(parents=True, exist_ok=True)
+        
+        import nibabel as nib
+        import numpy as np
+        
+        # Create dummy S2 cordref
+        affine = np.eye(4)
+        nib.save(nib.Nifti1Image(np.random.rand(64,64,30).astype(np.float32), affine), s2_work / "cordref_std.nii.gz")
+        nib.save(nib.Nifti1Image(np.random.rand(64,64,30).astype(np.uint8), affine), s2_work / "cordmask_dseg.nii.gz")
+
+        # 2. Setup Input BIDS Data
+        func_dir = out_dir / "sub-test" / "ses-none" / "func"
+        func_dir.mkdir(parents=True, exist_ok=True)
+        bold_path = func_dir / "sub-test_ses-none_task-rest_bold.nii.gz"
+        # 4D bold: 64x64x30x10 volumes
+        nib.save(nib.Nifti1Image(np.random.rand(64,64,30,10).astype(np.float32), affine), bold_path)
+        
+        import json
+        
+        inventory = {
+            "files": [
+                {
+                    "path": str(bold_path.relative_to(out_dir)), 
+                    "subject": "test", 
+                    "session": "none"
+                }
+            ],
+            "bids_root": str(out_dir),
+            "dataset_key": "test_ds"
+        }
+        
+        inv_dir = out_dir / "work" / "S1_input_verify"
+        inv_dir.mkdir(parents=True, exist_ok=True)
+        (inv_dir / "bids_inventory.json").write_text(json.dumps(inventory))
 
         # Run without subtask_id
+        # run_S3 will load inventory from out_dir/work/S1_input_verify/bids_inventory.json
         result = run_S3_func_init_and_crop(
             subtask_id=None,
             out=str(out_dir),
         )
 
         # Verify all subtasks executed
-        assert result.status == "PASS"
-        # StepResult does not expose subtask breakdown. 
-        # Check byproducts.
-        run_work_dir = out_dir / "runs" / "S3_func_init_and_crop" / "sub-test" / "ses-none" / "func" / "test_bold.nii"
+        assert result.status == "PASS", f"Run failed with: {result.failure_message}"
+        
+        # Check byproducts
+        # Note: run_id will be derived from filename 'sub-test_ses-none_task-rest'
+        run_id = "sub-test_ses-none_task-rest"
+        run_work_dir = out_dir / "runs" / "S3_func_init_and_crop" / run_id
+        
         assert (run_work_dir / "init" / "func_ref0.nii.gz").exists() # S3.1
-        assert (run_work_dir / "init" / "t2_to_func_warp.nii.gz").exists() # S3.2
-        assert (run_work_dir / "metrics" / "frame_metrics.tsv").exists() # S3.3
-        assert (run_work_dir / "funccrop_bold.nii.gz").exists() # S3.4
+        # S3.2 (Registration) removed
+        assert (run_work_dir / "metrics" / "frame_metrics.tsv").exists() # S3.2 (Outlier gating)
+        assert (run_work_dir / "funccrop_bold.nii.gz").exists() # S3.3 (Crop)
 
     finally:
         set_execution_context(None)

@@ -1,9 +1,9 @@
 
 import sys
 from pathlib import Path
-sys.path.append("/mnt/ssd1/SpinePrep/src")
+sys.path.append("/mnt/ssd1/SpinalfMRIprep/src")
 
-from spineprep.S3_func_init_and_crop import run_S3_func_init_and_crop
+from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop
 
 def verify_s3():
     print("Starting S3 Verification...")
@@ -52,7 +52,7 @@ def verify_s3():
     print("All expected outputs found.")
     
     # Check Figures
-    figures_dir = out_dir / "derivatives" / "spineprep" / "sub-test" / "ses-none" / "figures"
+    figures_dir = out_dir / "derivatives" / "spinalfmriprep" / "sub-test" / "ses-none" / "figures"
     expected_figs = [
         "sub-test_ses-none_desc-S3_func_localization_crop_box_sagittal.png", # S3.1
         "sub-test_ses-none_desc-S3_t2_to_func_overlay.png", # S3.2

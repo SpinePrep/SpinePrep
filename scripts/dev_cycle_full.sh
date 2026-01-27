@@ -40,7 +40,7 @@ if [ -z "$OUT" ]; then
 fi
 
 echo "=========================================="
-echo "SpinePrep Development Cycle"
+echo "SpinalfMRIprep Development Cycle"
 echo "=========================================="
 echo "Step: $STEP"
 echo "Output: $OUT"

@@ -1,7 +1,7 @@
-# SpinePrep Development Workflow
+# SpinalfMRIprep Development Workflow
 
 ## Overview
-This document describes the integrated development cycle for SpinePrep. The workflow ensures code quality, correctness, and adherence to acceptance criteria through systematic testing and validation.
+This document describes the integrated development cycle for SpinalfMRIprep. The workflow ensures code quality, correctness, and adherence to acceptance criteria through systematic testing and validation.
 
 ## Development Cycle
 
@@ -31,7 +31,7 @@ Acceptance (testable):
 ```
 
 ### 2. Implement
-- Code in `src/spineprep/S{N}_*.py`
+- Code in `src/spinalfmriprep/S{N}_*.py`
 - Follow step contracts and QC requirements
 - Ensure deterministic outputs
 - Add proper error handling
@@ -61,7 +61,7 @@ python3 scripts/smoke_s{N}.py
 python3 scripts/validate_regression.py --step S{N}_func_init_and_crop
 
 # Check QC outputs
-poetry run spineprep check S{N}_func_init_and_crop --dataset-key <key> --out <out>
+poetry run spinalfmriprep check S{N}_func_init_and_crop --dataset-key <key> --out <out>
 ```
 
 **Validation Process:**
@@ -91,7 +91,7 @@ python3 scripts/acceptance_test.py --ticket BUILD-S{N}-T{i} --step S{N}_func_ini
 
 ### Run a step
 ```bash
-poetry run spineprep run S{N}_func_init_and_crop --dataset-key <key> --out <out>
+poetry run spinalfmriprep run S{N}_func_init_and_crop --dataset-key <key> --out <out>
 ```
 
 ### Run full development cycle
@@ -156,7 +156,7 @@ This automatically runs:
 
 Every step must produce:
 - **QC JSON**: Machine-readable status (`{OUT}/logs/{STEP}/{DATASET_KEY}/qc_status.json`)
-- **Reportlets**: Human-readable figures (PNG files in `derivatives/spineprep/.../figures/`)
+- **Reportlets**: Human-readable figures (PNG files in `derivatives/spinalfmriprep/.../figures/`)
 - **Artifacts**: Required outputs as specified in ROADMAP
 
 ## Work Directory Naming

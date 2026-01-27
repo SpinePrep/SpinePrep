@@ -101,7 +101,7 @@ def build_index(datasets: list[dict], out_root: Path) -> None:
         "<html>",
         "<head>",
         "<meta charset=\"utf-8\" />",
-        "<title>SpinePrep QC</title>",
+        "<title>SpinalfMRIprep QC</title>",
         "<style>",
         "body { background: #000; color: #e6e6e6; font-family: Arial, sans-serif; }",
         "a { color: #7dcfff; text-decoration: none; }",
@@ -111,7 +111,7 @@ def build_index(datasets: list[dict], out_root: Path) -> None:
         "</style>",
         "</head>",
         "<body>",
-        "<h1>SpinePrep QC</h1>",
+        "<h1>SpinalfMRIprep QC</h1>",
         "<p class=\"muted\">Generated from work/wf_full_* and work/wf_reg_* outputs.</p>",
     ]
     if not datasets:

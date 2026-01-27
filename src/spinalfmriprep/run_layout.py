@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from spineprep.subtask import ExecutionContext, set_execution_context
+from spinalfmriprep.subtask import ExecutionContext, set_execution_context
 
 
 def setup_subtask_context(subtask_id: Optional[str] = None) -> ExecutionContext:

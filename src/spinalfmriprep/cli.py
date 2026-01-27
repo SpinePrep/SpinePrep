@@ -1,5 +1,5 @@
 """
-SpinePrep command line interface.
+SpinalfMRIprep command line interface.
 
 Implements S0_SETUP run/check for bootstrap policy validation.
 """
@@ -14,12 +14,12 @@ from pathlib import Path
 
 from importlib import metadata
 
-from spineprep.S0_setup import check_S0_setup, run_S0_setup
-from spineprep.S2_anat_cordref import StepResult
+from spinalfmriprep.S0_setup import check_S0_setup, run_S0_setup
+from spinalfmriprep.S2_anat_cordref import StepResult
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="spineprep", description="SpinePrep CLI")
+    parser = argparse.ArgumentParser(prog="spinalfmriprep", description="SpinalfMRIprep CLI")
     parser.add_argument("--version", action="store_true", help="Print version and exit.")
     subparsers = parser.add_subparsers(dest="command", required=False)
 
@@ -92,7 +92,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.version:
         try:
-            version = metadata.version("spineprep")
+            version = metadata.version("spinalfmriprep")
         except metadata.PackageNotFoundError:
             version = "unknown"
         print(version)
@@ -146,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _run_S1(args):
-    from spineprep.S1_input_verify import run_S1_input_verify
+    from spinalfmriprep.S1_input_verify import run_S1_input_verify
 
     return run_S1_input_verify(
         dataset_key=args.dataset_key,
@@ -157,7 +157,7 @@ def _run_S1(args):
 
 
 def _check_S1(args):
-    from spineprep.S1_input_verify import check_S1_input_verify
+    from spinalfmriprep.S1_input_verify import check_S1_input_verify
 
     return check_S1_input_verify(
         dataset_key=args.dataset_key,
@@ -169,7 +169,7 @@ def _check_S1(args):
 
 def _run_S2(args):
     if args.reportlets_only:
-        from spineprep.S2_anat_cordref import run_S2_anat_cordref_reportlets_only
+        from spinalfmriprep.S2_anat_cordref import run_S2_anat_cordref_reportlets_only
 
         return run_S2_anat_cordref_reportlets_only(
             dataset_key=args.dataset_key,
@@ -179,7 +179,7 @@ def _run_S2(args):
         )
     elif args.dataset_keys:
         # Batch mode: process multiple datasets in parallel
-        from spineprep.S2_anat_cordref import run_S2_anat_cordref_batch
+        from spinalfmriprep.S2_anat_cordref import run_S2_anat_cordref_batch
 
         if args.out is None:
             return StepResult(status="FAIL", failure_message="--out is required for batch processing")
@@ -210,7 +210,7 @@ def _run_S2(args):
             )
     else:
         # Single dataset mode
-        from spineprep.S2_anat_cordref import run_S2_anat_cordref
+        from spinalfmriprep.S2_anat_cordref import run_S2_anat_cordref
 
         return run_S2_anat_cordref(
             dataset_key=args.dataset_key,
@@ -221,7 +221,7 @@ def _run_S2(args):
 
 
 def _check_S2(args):
-    from spineprep.S2_anat_cordref import check_S2_anat_cordref
+    from spinalfmriprep.S2_anat_cordref import check_S2_anat_cordref
 
     return check_S2_anat_cordref(
         dataset_key=args.dataset_key,
@@ -232,7 +232,7 @@ def _check_S2(args):
 
 
 def _run_S3(args):
-    from spineprep.S3_func_init_and_crop import run_S3_func_init_and_crop
+    from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop
 
     return run_S3_func_init_and_crop(
         dataset_key=args.dataset_key,
@@ -243,7 +243,7 @@ def _run_S3(args):
 
 
 def _check_S3(args):
-    from spineprep.S3_func_init_and_crop import check_S3_func_init_and_crop
+    from spinalfmriprep.S3_func_init_and_crop import check_S3_func_init_and_crop
 
     return check_S3_func_init_and_crop(
         dataset_key=args.dataset_key,

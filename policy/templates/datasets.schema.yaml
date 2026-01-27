@@ -1,5 +1,5 @@
 # policy/datasets.yaml
-# Canonical, versioned dataset manifest for SpinePrep (BIDS-only).
+# Canonical, versioned dataset manifest for SpinalfMRIprep (BIDS-only).
 # Rule for references: prefer `doi` when available, otherwise set `homepage`.
 
 version: 1
@@ -27,7 +27,7 @@ datasets:
       participants: null
       sessions: null
 
-    spec:                                     # required fields for SpinePrep routing/coverage
+    spec:                                     # required fields for SpinalfMRIprep routing/coverage
       domains: []                             # ["spinalcord","brain_spine","cord_anat","cord_fmri"]
       modalities: []                          # ["anat","func","fmap","physio"]
       paradigms: []                           # ["task","rest"]

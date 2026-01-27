@@ -3,7 +3,7 @@ from pathlib import Path
 import nibabel as nib
 import numpy as np
 
-from spineprep.S1_input_verify import check_S1_input_verify, run_S1_input_verify
+from spinalfmriprep.S1_input_verify import check_S1_input_verify, run_S1_input_verify
 
 
 def _write_mapping(path: Path, dataset_key: str, bids_root: Path) -> Path:

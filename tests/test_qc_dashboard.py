@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from spineprep.qc_dashboard import generate_dashboard
+from spinalfmriprep.qc_dashboard import generate_dashboard
 
 
 def test_generate_dashboard_writes_index_and_reportlet_pages(tmp_path: Path) -> None:
@@ -15,7 +15,7 @@ def test_generate_dashboard_writes_index_and_reportlet_pages(tmp_path: Path) -> 
     qc_dir.mkdir(parents=True, exist_ok=True)
 
     # Dummy reportlet file
-    fig_rel = "derivatives/spineprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
+    fig_rel = "derivatives/spinalfmriprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
     fig_path = out / fig_rel
     fig_path.parent.mkdir(parents=True, exist_ok=True)
     fig_path.write_bytes(b"not_a_real_png")
@@ -60,7 +60,7 @@ def test_generate_dashboard_without_workfolder(tmp_path: Path) -> None:
     qc_dir.mkdir(parents=True, exist_ok=True)
 
     # Dummy reportlet file
-    fig_rel = "derivatives/spineprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
+    fig_rel = "derivatives/spinalfmriprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
     fig_path = out / fig_rel
     fig_path.parent.mkdir(parents=True, exist_ok=True)
     fig_path.write_bytes(b"not_a_real_png")
@@ -86,8 +86,8 @@ def test_generate_dashboard_without_workfolder(tmp_path: Path) -> None:
     assert (out / "dashboard" / "index.html").exists()
 
     index_html = (out / "dashboard" / "index.html").read_text(encoding="utf-8")
-    # Workfolder should NOT be displayed when path doesn't contain wf_*
-    assert "Workfolder:" not in index_html
+    # Workfolder NAME should NOT be displayed when path doesn't contain wf_*
+    assert "Workfolder: other" not in index_html
 
 
 

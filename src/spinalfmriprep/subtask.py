@@ -1,5 +1,5 @@
 """
-Subtask execution infrastructure for SpinePrep.
+Subtask execution infrastructure for SpinalfMRIprep.
 
 Provides decorators and context managers to mark code sections as belonging to
 specific subtasks, enabling selective execution via --subtask CLI flag.
@@ -99,7 +99,7 @@ class ExecutionContext:
 
 
 # Global execution context (thread-local would be better for multi-threading,
-# but SpinePrep is single-threaded)
+# but SpinalfMRIprep is single-threaded)
 _execution_context: Optional[ExecutionContext] = None
 
 

@@ -1,6 +1,6 @@
 # Validation
 
-SpinePrep is validated on multiple public and internal datasets spanning diverse acquisition protocols and clinical populations.
+SpinalfMRIprep is validated on multiple public and internal datasets spanning diverse acquisition protocols and clinical populations.
 
 ## Validation Datasets
 
@@ -32,7 +32,7 @@ Every preprocessing step generates:
 
 ## Reproducibility
 
-SpinePrep guarantees deterministic outputs:
+SpinalfMRIprep guarantees deterministic outputs:
 
 - Containerized execution (Docker/Singularity)
 - Pinned dependency versions

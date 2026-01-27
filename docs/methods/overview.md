@@ -1,6 +1,6 @@
 # Methods Overview
 
-SpinePrep implements an end-to-end preprocessing pipeline for spinal cord fMRI, designed for robustness against the unique challenges of spinal imaging: physiological noise, small anatomical targets, and susceptibility artifacts.
+SpinalfMRIprep implements an end-to-end preprocessing pipeline for spinal cord fMRI, designed for robustness against the unique challenges of spinal imaging: physiological noise, small anatomical targets, and susceptibility artifacts.
 
 ## Pipeline Architecture
 

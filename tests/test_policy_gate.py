@@ -3,7 +3,7 @@ from pathlib import Path
 
 import yaml
 
-from spineprep.policy import load_dataset_policy, run_v1_policy_gate
+from spinalfmriprep.policy import load_dataset_policy, run_v1_policy_gate
 
 
 BASE_POLICY = Path("policy/datasets.yaml")

@@ -1,5 +1,5 @@
 $schema: "http://json-schema.org/draft-07/schema#"
-title: SpinePrep dataset manifest
+title: SpinalfMRIprep dataset manifest
 description: Schema for policy/datasets.yaml
 
 type: object

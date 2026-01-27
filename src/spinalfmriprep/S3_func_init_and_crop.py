@@ -25,12 +25,12 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial
 from dataclasses import dataclass
 
-from spineprep.subtask import (
+from spinalfmriprep.subtask import (
     should_exit_after_subtask,
     subtask,
     subtask_context,
 )
-from spineprep.S2_anat_cordref import StepResult
+from spinalfmriprep.S2_anat_cordref import StepResult
 
 
 # ============================================================================
@@ -175,7 +175,7 @@ def _find_s2_cordmask_dseg(
     """
     Locate S2 anat cordmask definition (dseg).
 
-    Looks in: derivatives/spineprep/sub-{subject}/[ses-{session}]/anat/
+    Looks in: derivatives/spinalfmriprep/sub-{subject}/[ses-{session}]/anat/
               *_desc-cordmask_dseg.nii.gz
 
     Args:
@@ -186,7 +186,7 @@ def _find_s2_cordmask_dseg(
     Returns:
         Path to cordmask_dseg.nii.gz or None
     """
-    anat_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}"
+    anat_dir = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}"
     if session:
         anat_dir = anat_dir / f"ses-{session}" / "anat"
     else:
@@ -773,7 +773,7 @@ def _process_s3_1_dummy_drop_and_localization(
          # Use run_id if available for unique per-run filenames, else fall back to subject prefix
          figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
          if out_root:
-             fig_path = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_func_localization_crop_box_sagittal.png"
+             fig_path = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_func_localization_crop_box_sagittal.png"
          else:
              fig_path = None
 
@@ -938,15 +938,15 @@ def _process_s3_1_dummy_drop_and_localization(
     # Use run_id if available for unique per-run filenames
     if subject and out_root:
         if session:
-            figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
+            figures_dir = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
         else:
-            figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
+            figures_dir = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
         # Use run_id for unique filenames per functional run
         figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
         figure_name = f"{figure_prefix}_desc-S3_func_localization_crop_box_sagittal.png"
     else:
         # Fallback for test cases
-        figures_dir = work_dir.parent.parent / "derivatives" / "spineprep" / "sub-test" / "ses-none" / "figures"
+        figures_dir = work_dir.parent.parent / "derivatives" / "spinalfmriprep" / "sub-test" / "ses-none" / "figures"
         figure_name = "test_desc-S3_func_localization_crop_box_sagittal.png"
     
     figures_dir.mkdir(parents=True, exist_ok=True)
@@ -1044,7 +1044,7 @@ def _process_s3_2_outlier_gating(
          run_id = work_dir.name if work_dir.name.startswith("sub-") else None
          figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
          if out_root:
-             fig_path = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_frame_metrics.png"
+             fig_path = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_frame_metrics.png"
          else:
              fig_path = None
 
@@ -1201,13 +1201,13 @@ def _process_s3_2_outlier_gating(
     run_id = work_dir.name if work_dir.name.startswith("sub-") else None
     if subject and out_root:
         if session:
-            figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
+            figures_dir = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
         else:
-            figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
+            figures_dir = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
         figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
         fig_name = f"{figure_prefix}_desc-S3_frame_metrics.png"
     else:
-        figures_dir = work_dir.parent.parent / "derivatives" / "spineprep" / "sub-test" / "ses-none" / "figures"
+        figures_dir = work_dir.parent.parent / "derivatives" / "spinalfmriprep" / "sub-test" / "ses-none" / "figures"
         fig_name = "test_desc-S3_frame_metrics.png"
     
     figures_dir.mkdir(parents=True, exist_ok=True)
@@ -1353,12 +1353,12 @@ def _process_s3_3_crop_and_qc(
     run_id = work_dir.name if work_dir.name.startswith("sub-") else None
     if subject and out_root:
         if session:
-            figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
+            figures_dir = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
         else:
-            figures_dir = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
+            figures_dir = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
         prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
     else:
-        figures_dir = work_dir.parent.parent / "derivatives" / "spineprep" / "sub-test" / "ses-none" / "figures"
+        figures_dir = work_dir.parent.parent / "derivatives" / "spinalfmriprep" / "sub-test" / "ses-none" / "figures"
         prefix = "test"
         
     figures_dir.mkdir(parents=True, exist_ok=True)
@@ -1705,7 +1705,7 @@ def _process_session_s3(
                  reportlets["frame_metrics"] = str(Path(s3_2_res["figure_path"]).relative_to(out_root)) if Path(s3_2_res["figure_path"]).is_absolute() else str(s3_2_res["figure_path"])
 
             if s3_3_res.get("figures"):
-                figs_out = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
+                figs_out = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
                 figs_out.mkdir(parents=True, exist_ok=True)
                 
                 # Helper to copy and record
@@ -1742,7 +1742,7 @@ def _process_session_s3(
 
 def _run_s3_test_harness(out: Optional[str]) -> StepResult:
     """Original test harness for verifying S3 subtasks logic without BIDS structure."""
-    from spineprep.run_layout import setup_subtask_context
+    from spinalfmriprep.run_layout import setup_subtask_context
     
     # ... (Keep original logic mostly intact but wrapped) ...
     if out is None:
@@ -1768,7 +1768,7 @@ def _run_s3_test_harness(out: Optional[str]) -> StepResult:
         cordref_img = nib.Nifti1Image(cordref_data, test_affine)
         nib.save(cordref_img, cordref_std_path)
         
-    s2_anat_deriv = out_path / "derivatives" / "spineprep" / "sub-test" / "anat"
+    s2_anat_deriv = out_path / "derivatives" / "spinalfmriprep" / "sub-test" / "anat"
     s2_anat_deriv.mkdir(parents=True, exist_ok=True)
     cordmask_dseg_path = s2_anat_deriv / "sub-test_ses-none_desc-cordmask_dseg.nii.gz"
     if not cordmask_dseg_path.exists():
@@ -1808,7 +1808,7 @@ def _run_s3_test_harness(out: Optional[str]) -> StepResult:
     )
     
     if out:
-        from spineprep.qc_dashboard import generate_dashboard_safe
+        from spinalfmriprep.qc_dashboard import generate_dashboard_safe
         generate_dashboard_safe(Path(out))
         
     return StepResult("PASS", None)
@@ -1826,7 +1826,7 @@ def run_S3_func_init_and_crop(
     Run S3 functional initialization and cropping step.
     Orchestrates processing for all functional runs found in BIDS inventory.
     """
-    from spineprep.run_layout import setup_subtask_context
+    from spinalfmriprep.run_layout import setup_subtask_context
     if subtask_id:
         setup_subtask_context(subtask_id)
 
@@ -1912,7 +1912,7 @@ def run_S3_func_init_and_crop(
         json.dump(qc_summary, f, indent=2)
         
     # Dashboard
-    from spineprep.qc_dashboard import generate_dashboard_safe
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
     generate_dashboard_safe(out_path)
     
     return StepResult(qc_summary["status"], qc_summary["failure_message"], runs_path=runs_path, qc_path=qc_path)

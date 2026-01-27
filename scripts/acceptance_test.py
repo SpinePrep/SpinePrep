@@ -15,7 +15,7 @@ from pathlib import Path
 # Add src to path for workfolder utilities
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spineprep.workfolder import get_next_workfolder
+from spinalfmriprep.workfolder import get_next_workfolder
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

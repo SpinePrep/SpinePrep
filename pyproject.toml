@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "spineprep"
+name = "spinalfmriprep"
 version = "0.0.1"
-description = "SpinePrep pipeline utilities"
-authors = ["SpinePrep Team <dev@spineprep.local>"]
+description = "SpinalfMRIprep pipeline utilities"
+authors = ["SpinalfMRIprep Team <dev@spinalfmriprep.local>"]
 readme = "README.md"
-packages = [{ include = "spineprep", from = "src" }]
+packages = [{ include = "spinalfmriprep", from = "src" }]
 
 [tool.poetry.scripts]
-spineprep = "spineprep.cli:main"
+spinalfmriprep = "spinalfmriprep.cli:main"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"

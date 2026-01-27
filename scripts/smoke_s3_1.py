@@ -13,7 +13,7 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spineprep.S3_func_init_and_crop import run_S3_func_init_and_crop
+from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop
 
 
 def main() -> int:

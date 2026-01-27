@@ -17,12 +17,12 @@ fi
 
 DATASETS_LOCAL="${2:-config/datasets_local.yaml}"
 
-poetry run spineprep run S2_anat_cordref \
+poetry run spinalfmriprep run S2_anat_cordref \
   --dataset-key openneuro_ds005884_cospine_motor \
   --datasets-local "${DATASETS_LOCAL}" \
   --out "${OUT_ROOT}/openneuro_ds005884_cospine_motor"
 
-poetry run spineprep run S2_anat_cordref \
+poetry run spinalfmriprep run S2_anat_cordref \
   --dataset-key openneuro_ds005883_cospine_pain \
   --datasets-local "${DATASETS_LOCAL}" \
   --out "${OUT_ROOT}/openneuro_ds005883_cospine_pain"

@@ -25,7 +25,7 @@ def main():
         cmd = [
             "poetry",
             "run",
-            "spineprep",
+            "spinalfmriprep",
             "run",
             "S1_input_verify",
             "--dataset-key",

@@ -17,7 +17,7 @@ from typing import Dict, List, Optional, Tuple
 
 import yaml
 
-from spineprep.policy import DatasetPolicyError, load_dataset_policy, run_v1_policy_gate
+from spinalfmriprep.policy import DatasetPolicyError, load_dataset_policy, run_v1_policy_gate
 
 
 @dataclass
@@ -95,7 +95,7 @@ def run_pl00_setup(project_root: Path, step: str) -> StepResult:
             qc_path,
             state_path,
             status,
-            f"poetry run spineprep run {step} --project-root {project_root}",
+            f"poetry run spinalfmriprep run {step} --project-root {project_root}",
         )
         return StepResult(status=status, failure_message=failure_message, qc_path=qc_path, state_path=state_path)
 
@@ -142,7 +142,7 @@ def run_pl00_setup(project_root: Path, step: str) -> StepResult:
         qc_path,
         state_path,
         status,
-        f"poetry run spineprep run {step} --project-root {project_root}",
+        f"poetry run spinalfmriprep run {step} --project-root {project_root}",
     )
 
     return StepResult(status=status, failure_message=failure_message, qc_path=qc_path, state_path=state_path)
@@ -253,7 +253,7 @@ def _container_checks() -> List[EnvCheck]:
                 EnvCheck(
                     name=f"image_defined:{key}",
                     passed=False,
-                    message="SpinePrep image not provided; set SPINEPREP_IMAGE.",
+                    message="SpinalfMRIprep image not provided; set SPINALFMRIPREP_IMAGE.",
                     info={"image": ""},
                 )
             )
@@ -330,12 +330,12 @@ def _detect_runtime() -> Tuple[Optional[str], Optional[str]]:
 
 
 def _required_images() -> List[dict]:
-    spineprep_image = os.environ.get("SPINEPREP_IMAGE")
+    spinalfmriprep_image = os.environ.get("SPINALFMRIPREP_IMAGE")
     images = [
         {
-            "key": "spineprep",
-            "image": spineprep_image,
-            "commands": [["spineprep", "--version"], ["python", "--version"]],
+            "key": "spinalfmriprep",
+            "image": spinalfmriprep_image,
+            "commands": [["spinalfmriprep", "--version"], ["python", "--version"]],
         },
         {
             "key": "sct",

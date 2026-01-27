@@ -200,7 +200,7 @@ def run_S2_anat_cordref(
     )
 
     # Generate dashboard (non-blocking)
-    from spineprep.qc_dashboard import generate_dashboard_safe
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
     generate_dashboard_safe(Path(out))
 
     return StepResult(status=status, failure_message=failure_message, runs_path=runs_path, qc_path=qc_path)
@@ -595,7 +595,7 @@ def run_S2_anat_cordref_batch(
         )
 
     # Generate dashboard for batch (non-blocking)
-    from spineprep.qc_dashboard import generate_dashboard_safe
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
     generate_dashboard_safe(out_base)
 
     return results
@@ -607,7 +607,7 @@ def _format_command_line(
     bids_root: Optional[Path],
     out: Optional[Path],
 ) -> str:
-    parts = ["poetry", "run", "spineprep", "run", "S2_anat_cordref"]
+    parts = ["poetry", "run", "spinalfmriprep", "run", "S2_anat_cordref"]
     if dataset_key:
         parts.extend(["--dataset-key", str(dataset_key)])
     if datasets_local:
@@ -2061,8 +2061,8 @@ def _get_sct_version() -> Optional[str]:
 
 def _derivatives_anat_dir(out_root: Path, subject: str, session: Optional[str]) -> Path:
     if session:
-        return out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "anat"
-    return out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "anat"
+        return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "anat"
+    return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "anat"
 
 
 def _format_derivative_name(subject: str, session: Optional[str], desc: str, suffix: str) -> str:
@@ -2108,8 +2108,8 @@ def _relpath(path: Optional[Path], out_root: Path) -> Optional[str]:
 
 def _derivatives_figures_dir(out_root: Path, subject: Optional[str], session: Optional[str]) -> Path:
     if session:
-        return out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
-    return out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
+        return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
+    return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
 
 
 def _format_reportlet_name(
@@ -5129,8 +5129,8 @@ def _find_rootlets_output(folder: Path, base: Path) -> Optional[Path]:
 
 def _derivatives_xfm_dir(out_root: Path, subject: str, session: Optional[str]) -> Path:
     if session:
-        return out_root / "derivatives" / "spineprep" / f"sub-{subject}" / f"ses-{session}" / "xfm"
-    return out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "xfm"
+        return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "xfm"
+    return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "xfm"
 
 
 def _format_xfm_name(subject: str, session: Optional[str], suffix: str) -> str:

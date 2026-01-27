@@ -16,7 +16,7 @@ import yaml
 # Add src to path for workfolder utilities
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spineprep.workfolder import get_next_workfolder
+from spinalfmriprep.workfolder import get_next_workfolder
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = PROJECT_ROOT / "policy" / "datasets.yaml"
@@ -70,7 +70,7 @@ def main() -> int:
         cmd = [
             "poetry",
             "run",
-            "spineprep",
+            "spinalfmriprep",
             "run",
             args.step,
             "--dataset-key",
@@ -95,7 +95,7 @@ def main() -> int:
         check_cmd = [
             "poetry",
             "run",
-            "spineprep",
+            "spinalfmriprep",
             "check",
             args.step,
             "--dataset-key",

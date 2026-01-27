@@ -17,7 +17,7 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spineprep.S3_func_init_and_crop import _process_s3_1_dummy_drop_and_localization
+from spinalfmriprep.S3_func_init_and_crop import _process_s3_1_dummy_drop_and_localization
 import yaml
 
 

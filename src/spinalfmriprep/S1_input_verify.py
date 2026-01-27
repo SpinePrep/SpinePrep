@@ -14,7 +14,7 @@ import numpy as np
 from jsonschema import Draft7Validator
 import yaml
 
-from spineprep.policy import DatasetPolicyError, load_dataset_policy
+from spinalfmriprep.policy import DatasetPolicyError, load_dataset_policy
 
 
 @dataclass
@@ -76,7 +76,7 @@ def run_S1_input_verify(
     )
 
     # Generate dashboard (non-blocking)
-    from spineprep.qc_dashboard import generate_dashboard_safe
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
     generate_dashboard_safe(Path(out))
 
     return StepResult(
@@ -160,7 +160,7 @@ def _format_command_line(
     bids_root: Optional[Path],
     out: Optional[Path],
 ) -> str:
-    parts = ["poetry", "run", "spineprep", "run", "S1_input_verify"]
+    parts = ["poetry", "run", "spinalfmriprep", "run", "S1_input_verify"]
     if dataset_key:
         parts.extend(["--dataset-key", str(dataset_key)])
     if datasets_local:

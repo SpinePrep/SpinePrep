@@ -20,7 +20,7 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spineprep.workfolder import get_next_workfolder, migrate_workfolder
+from spinalfmriprep.workfolder import get_next_workfolder, migrate_workfolder
 
 
 def migrate_wf_directories(work_root: Path, dry_run: bool = False) -> list[tuple[Path, Path, bool]]:

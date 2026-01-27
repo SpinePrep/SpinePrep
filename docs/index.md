@@ -29,10 +29,10 @@ hide:
 ### Citation
 
 ```bibtex
-@software{spineprep,
-  title = {SpinePrep: A Robust Preprocessing Pipeline for Spinal Cord fMRI},
-  author = {SpinePrep Team},
+@software{spinalfmriprep,
+  title = {SpinalfMRIprep: A Robust Preprocessing Pipeline for Spinal Cord fMRI},
+  author = {SpinalfMRIprep Team},
   year = {2026},
-  url = {https://spineprep.org}
+  url = {https://spinalfmriprep.org}
 }
 ```

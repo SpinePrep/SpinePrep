@@ -2,12 +2,12 @@
 set -euo pipefail
 
 # Fetch published SCT documentation HTML for offline use.
-# This script is opt-in and does not affect SpinePrep pipeline steps.
+# This script is opt-in and does not affect SpinalfMRIprep pipeline steps.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Default SCT image from SpinePrep's S0_setup.py
+# Default SCT image from SpinalfMRIprep's S0_setup.py
 SCT_IMAGE_DEFAULT="vnmd/spinalcordtoolbox_7.2:20251215"
 SCT_IMAGE="${SCT_IMAGE:-$SCT_IMAGE_DEFAULT}"
 

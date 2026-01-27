@@ -1,6 +1,6 @@
-# SpinePrep
+# SpinalfMRIprep
 
-SpinePrep is a spine fMRI/structural preprocessing and QC pipeline.
+SpinalfMRIprep is a spine fMRI/structural preprocessing and QC pipeline.
 
 ## Repo hygiene (important)
 

@@ -5,7 +5,7 @@ import numpy as np
 import nibabel as nib
 from pathlib import Path
 
-from spineprep.S2_anat_cordref import (
+from spinalfmriprep.S2_anat_cordref import (
     _validate_vertebral_label_outputs,
     _estimate_initcenter_from_disc_labels,
     _check_labeling_consistency,
@@ -142,7 +142,7 @@ def test_estimate_initcenter_from_disc_labels_empty(tmp_path: Path) -> None:
 
 def test_dashboard_with_new_labeling_fields(tmp_path: Path) -> None:
     """Test that dashboard generation still works with new labeling QC fields."""
-    from spineprep.qc_dashboard import generate_dashboard
+    from spinalfmriprep.qc_dashboard import generate_dashboard
     
     out = tmp_path / "work" / "wf_test"
     qc_dir = out / "logs" / "S2_anat_cordref" / "test_ds"

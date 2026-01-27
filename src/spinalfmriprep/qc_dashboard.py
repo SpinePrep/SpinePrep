@@ -1,5 +1,5 @@
 """
-QC Dashboard generator for SpinePrep workflows.
+QC Dashboard generator for SpinalfMRIprep workflows.
 
 Scans QC JSON files and generates HTML dashboard with reportlet galleries.
 """
@@ -138,7 +138,7 @@ def _generate_workfolder_dropdown_html(workfolder_name: Optional[str], is_index_
         "  }",
         "",
         "  // Fetch workfolder list",
-        "  fetch('/__spineprep__/workfolders.json')",
+        "  fetch('/__spinalfmriprep__/workfolders.json')",
         "    .then(response => response.json())",
         "    .then(workfolders => {",
         "      select.innerHTML = '';",
@@ -416,7 +416,7 @@ def _generate_index_html(
         "<html>",
         "<head>",
         "<meta charset=\"utf-8\" />",
-        "<title>SpinePrep QC Dashboard</title>",
+        "<title>SpinalfMRIprep QC Dashboard</title>",
         "<style>",
         "body { background: #1a1a1a; color: #e6e6e6; font-family: Arial, sans-serif; margin: 20px; }",
         "a { color: #7dcfff; text-decoration: none; }",
@@ -433,7 +433,7 @@ def _generate_index_html(
     lines.append("</style>")
     lines.append("</head>")
     lines.append("<body>")
-    lines.append("<h1>SpinePrep QC Dashboard</h1>")
+    lines.append("<h1>SpinalfMRIprep QC Dashboard</h1>")
     lines.extend(dropdown_html)
     
     if not step_data:
