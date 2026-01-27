@@ -79,15 +79,19 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started:
-    - Setup: setup.md
-  - Pipeline:
-    - Overview: pipeline/overview.md
+  - Methods:
+    - Overview: methods/overview.md
+  - Validation: validation/index.md
+  - Usage:
+    - Getting Started: setup.md
+    - Pipeline Guide: pipeline/overview.md
   - Reference:
     - CLI: reference/cli.md
     - API: reference/api.md
     - Config: reference/config.md
-    - Vendor Cache: reference/vendor_cache.md
+    - Schemas: reference/schemas.md
+  - Cite: cite.md
   - Help:
     - Contributing: contributing.md
     - Development Workflow: DEVELOPMENT_WORKFLOW.md
+
