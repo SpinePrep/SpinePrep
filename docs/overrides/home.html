@@ -5,131 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<style>
-  .md-content {
-    max-width: none;
-    padding: 0;
-  }
-
-  .tx-hero {
-    min-height: 40vh;
-    /* Compact clinical header */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: var(--tx-hero-bg-light, #f8fafc);
-    text-align: center;
-    padding: 3rem 1rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Dark mode override */
-  [data-md-color-scheme="slate"] .tx-hero {
-    background: var(--tx-hero-bg-dark, #020617);
-  }
-
-  .tx-hero h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    letter-spacing: -0.02em;
-    color: var(--md-primary-fg-color);
-    /* Remove gradient text for cleaner look */
-    background: none;
-    -webkit-text-fill-color: initial;
-    z-index: 2;
-  }
-
-  /* Dark mode text color override for H1 */
-  [data-md-color-scheme="slate"] .tx-hero h1 {
-    color: #f8fafc;
-  }
-
-  .tx-hero p {
-    font-size: 1.25rem;
-    max-width: 600px;
-    margin-bottom: 2rem;
-    color: #475569;
-    /* Slate 600 */
-    line-height: 1.6;
-    z-index: 2;
-  }
-
-  [data-md-color-scheme="slate"] .tx-hero p {
-    color: #94a3b8;
-    /* Slate 400 */
-  }
-
-  .tx-cta-buttons {
-    display: flex;
-    gap: 1rem;
-    z-index: 2;
-  }
-
-  .tx-btn {
-    padding: 1rem 2.5rem;
-    border-radius: 6px;
-    /* Squarer buttons for clinical feel */
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-    /* Prevent layout shift */
-  }
-
-  .tx-btn-primary {
-    background: #0f172a;
-    /* Navy */
-    color: #fff !important;
-    box-shadow: none;
-  }
-
-  .tx-btn-primary:hover {
-    background: #1e293b;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-
-  .tx-btn-secondary {
-    border: 1px solid #e2e8f0;
-    color: #0f172a;
-    background: white;
-  }
-
-  .tx-btn-secondary:hover {
-    border-color: #cbd5e1;
-    background: #f8fafc;
-    transform: translateY(-1px);
-  }
-
-  [data-md-color-scheme="slate"] .tx-btn-secondary {
-    background: transparent;
-    border-color: #334155;
-    color: #e2e8f0;
-  }
-
-  [data-md-color-scheme="slate"] .tx-btn-secondary:hover {
-    border-color: #475569;
-    background: rgba(255, 255, 255, 0.05);
-  }
-</style>
-
 <div class="tx-hero">
   <h1>SpinalfMRIprep</h1>
   <p>Robust, automated preprocessing for spinal cord fMRI.</p>
 
-  <!-- Metrics Badges -->
-  <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; justify-content: center;">
-    <span
-      style="background: #0e7490; color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
-      ✓ Validated on 5 datasets
-    </span>
-    <span
-      style="background: #475569; color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
-      📄 Preprint forthcoming
-    </span>
+  <div class="tx-badges">
+    <span class="tx-badge tx-badge--primary">✓ Validated on 5 datasets</span>
+    <span class="tx-badge tx-badge--secondary">📄 Preprint forthcoming</span>
   </div>
 
   <div class="tx-cta-buttons">
@@ -139,7 +21,7 @@
 </div>
 
 <div class="md-container">
-  <div class="md-grid md-typeset" style="max-width: 800px; margin: 4rem auto; padding: 0 1rem;">
+  <div class="md-grid md-typeset tx-home-content">
     {{ super() }}
   </div>
 </div>

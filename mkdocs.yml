@@ -81,17 +81,27 @@ nav:
   - Home: index.md
   - Methods:
     - Overview: methods/overview.md
+    - S0 Setup: methods/S0_setup.md
+    - S1 Input Verify: methods/S1_input_verify.md
+    - S2 Anat Cord Ref: methods/S2_anat_cordref.md
+    - S3 Func Init & Crop: methods/S3_func_init_and_crop.md
+    - S4 Motion Correction: methods/S4_motion_correction.md
+    - S5 Distortion Correction: methods/S5_distortion_correction.md
+    - S6 Registration: methods/S6_registration.md
+    - S7 Normalization: methods/S7_normalization.md
+    - S8 Segmentation: methods/S8_segmentation.md
+    - S9 Smoothing: methods/S9_smoothing.md
+    - S10 Confounds: methods/S10_confounds.md
+    - S11 Export: methods/S11_export.md
   - Validation: validation/index.md
   - Usage:
-    - Getting Started: setup.md
-    - Pipeline Guide: pipeline/overview.md
+    - Quick Start: quickstart.md
+    - Full Tutorial: tutorial.md
   - Reference:
     - CLI: reference/cli.md
     - API: reference/api.md
     - Config: reference/config.md
     - Schemas: reference/schemas.md
+    - Vendor Cache: reference/vendor_cache.md
   - Cite: cite.md
-  - Help:
-    - Contributing: contributing.md
-    - Development Workflow: DEVELOPMENT_WORKFLOW.md
 
