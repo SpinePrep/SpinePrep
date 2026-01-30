@@ -61,18 +61,18 @@ def run_S2_anat_cordref(
     if out is None:
         return StepResult(status="FAIL", failure_message="--out is required for S2_anat_cordref")
 
-    inventory_path = Path(out) / "work" / "S1_input_verify" / "bids_inventory.json"
+    # Per-dataset inventory path (matches S1 output structure)
+    ds_key = dataset_key or "ad_hoc"
+    inventory_path = Path(out) / "work" / "S1_input_verify" / ds_key / "bids_inventory.json"
     if not inventory_path.exists():
         return StepResult(
             status="FAIL",
             failure_message=f"Missing required inventory: {inventory_path}",
-            runs_path=Path(out) / "logs" / "S2_anat_cordref_runs.jsonl",
-            qc_path=Path(out) / "logs" / "S2_anat_cordref_qc.json",
+            runs_path=Path(out) / "logs" / "S2_anat_cordref" / ds_key / "runs.jsonl",
+            qc_path=Path(out) / "logs" / "S2_anat_cordref" / ds_key / "qc.json",
         )
 
     inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
-    if dataset_key and inventory.get("dataset_key") != dataset_key:
-        return StepResult(status="FAIL", failure_message="Inventory dataset_key mismatch.")
 
     policy_path = Path("policy") / "S2_anat_cordref.yaml"
     try:
@@ -296,8 +296,7 @@ def check_S2_anat_cordref(
         reportlets = run.get("reportlets", {})
         required_reportlets = [
             "cordmask_montage",
-            "centerline_montage",
-            "vertebral_labels_montage",
+            "totalspineseg_montage",
             "pam50_reg_overlay",
         ]
         for key in required_reportlets:
@@ -348,8 +347,10 @@ def run_S2_anat_cordref_reportlets_only(
     if out is None:
         return StepResult(status="FAIL", failure_message="--out is required for S2_anat_cordref")
 
-    runs_path = Path(out) / "logs" / "S2_anat_cordref_runs.jsonl"
-    qc_path = Path(out) / "logs" / "S2_anat_cordref_qc.json"
+    # Per-dataset paths
+    ds_key = dataset_key or "ad_hoc"
+    runs_path = Path(out) / "logs" / "S2_anat_cordref" / ds_key / "runs.jsonl"
+    qc_path = Path(out) / "logs" / "S2_anat_cordref" / ds_key / "qc.json"
 
     # Check that runs.jsonl exists and is non-empty
     if not runs_path.exists() or runs_path.stat().st_size == 0:
@@ -360,8 +361,8 @@ def run_S2_anat_cordref_reportlets_only(
             qc_path=qc_path,
         )
 
-    # Load inventory to get dataset_key
-    inventory_path = Path(out) / "work" / "S1_input_verify" / "bids_inventory.json"
+    # Load inventory to get dataset_key (per-dataset path)
+    inventory_path = Path(out) / "work" / "S1_input_verify" / ds_key / "bids_inventory.json"
     if not inventory_path.exists():
         return StepResult(
             status="FAIL",
@@ -379,9 +380,6 @@ def run_S2_anat_cordref_reportlets_only(
             runs_path=runs_path,
             qc_path=qc_path,
         )
-
-    if dataset_key and inventory.get("dataset_key") != dataset_key:
-        return StepResult(status="FAIL", failure_message="Inventory dataset_key mismatch.")
 
     # Load policy (needed for _summarise_runs)
     policy_path = Path("policy") / "S2_anat_cordref.yaml"
@@ -431,11 +429,137 @@ def run_S2_anat_cordref_reportlets_only(
     return StepResult(status=status, failure_message=failure_message, runs_path=runs_path, qc_path=qc_path)
 
 
+def run_S2_anat_cordref_reportlets_only_batch(
+    dataset_keys: list[str],
+    out_base: Path,
+) -> dict[str, StepResult]:
+    """
+    Regenerate only QC reportlets for multiple datasets, skipping all processing.
+    
+    This is the batch version of run_S2_anat_cordref_reportlets_only.
+    Useful for updating visualizations without re-running expensive SCT processing.
+    
+    Reads from the aggregate runs.jsonl and filters runs by dataset_key.
+    
+    Args:
+        dataset_keys: List of dataset keys to regenerate reportlets for
+        out_base: Base output directory containing existing step outputs
+        
+    Returns:
+        Dictionary mapping dataset_key to StepResult
+    """
+    results: dict[str, StepResult] = {}
+    
+    # Read the aggregate runs.jsonl
+    aggregate_runs_path = out_base / "logs" / "S2_anat_cordref_runs.jsonl"
+    if not aggregate_runs_path.exists():
+        # Fall back to trying per-dataset runs.jsonl
+        for ds_key in dataset_keys:
+            result = run_S2_anat_cordref_reportlets_only(
+                dataset_key=ds_key,
+                datasets_local=None,
+                bids_root=None,
+                out=out_base,
+            )
+            results[ds_key] = result
+        from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+        generate_dashboard_safe(out_base)
+        return results
+    
+    # Read all runs from aggregate file
+    try:
+        all_runs = _read_runs_jsonl(aggregate_runs_path)
+    except Exception as err:
+        for ds_key in dataset_keys:
+            results[ds_key] = StepResult(
+                status="FAIL",
+                failure_message=f"Failed to read aggregate runs.jsonl: {err}",
+            )
+        return results
+    
+    # Load policy
+    policy_path = Path("policy") / "S2_anat_cordref.yaml"
+    try:
+        policy = _load_policy(policy_path)
+    except ValueError as err:
+        for ds_key in dataset_keys:
+            results[ds_key] = StepResult(status="FAIL", failure_message=str(err))
+        return results
+    
+    # Process each dataset
+    for ds_key in dataset_keys:
+        # Filter runs for this dataset
+        dataset_runs = [r for r in all_runs if r.get("dataset_key") == ds_key]
+        
+        if not dataset_runs:
+            results[ds_key] = StepResult(
+                status="FAIL",
+                failure_message=f"No runs found for dataset_key={ds_key} in {aggregate_runs_path}",
+            )
+            continue
+        
+        # Regenerate reportlets for this dataset's runs
+        dataset_runs = _render_reportlets_for_runs(
+            runs=dataset_runs,
+            out_root=out_base,
+            dataset_key=ds_key,
+        )
+        
+        # Load inventory for QC summary
+        inventory_path = out_base / "work" / "S1_input_verify" / ds_key / "bids_inventory.json"
+        if inventory_path.exists():
+            try:
+                inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+            except Exception:
+                inventory = {"dataset_key": ds_key, "bids_root": "unknown"}
+        else:
+            inventory = {"dataset_key": ds_key, "bids_root": "unknown"}
+        
+        # Regenerate per-dataset QC JSON
+        qc_path = out_base / "logs" / "S2_anat_cordref" / ds_key / "qc.json"
+        qc_path.parent.mkdir(parents=True, exist_ok=True)
+        qc = _summarise_runs(inventory, policy_path, dataset_runs)
+        _write_json(qc_path, qc)
+        
+        results[ds_key] = StepResult(
+            status=qc.get("status", "PASS"),
+            failure_message=qc.get("failure_message"),
+            qc_path=qc_path,
+        )
+    
+    # Update aggregate runs.jsonl with new reportlet paths
+    # Merge updated runs back into all_runs
+    updated_runs = []
+    processed_keys = set(dataset_keys)
+    for run in all_runs:
+        if run.get("dataset_key") not in processed_keys:
+            updated_runs.append(run)
+    # Add the regenerated runs
+    for ds_key in dataset_keys:
+        dataset_runs = [r for r in all_runs if r.get("dataset_key") == ds_key]
+        # Re-render and add back
+        dataset_runs = _render_reportlets_for_runs(
+            runs=dataset_runs,
+            out_root=out_base,
+            dataset_key=ds_key,
+        )
+        updated_runs.extend(dataset_runs)
+    
+    _write_runs_jsonl(aggregate_runs_path, updated_runs)
+    
+    # Regenerate dashboard
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+    generate_dashboard_safe(out_base)
+    
+    return results
+
+
 def run_S2_anat_cordref_batch(
     dataset_keys: list[str],
     datasets_local: Optional[Path],
     out_base: Path,
     max_workers: int = 32,
+    s1_base: Optional[Path] = None,
 ) -> dict[str, StepResult]:
     """
     Run S2_anat_cordref on multiple datasets, with parallelism at SESSION level.
@@ -448,19 +572,24 @@ def run_S2_anat_cordref_batch(
         datasets_local: Path to datasets_local.yaml
         out_base: Base output directory (each dataset gets out_base/{dataset_key})
         max_workers: Number of sessions to process in parallel (default: 32)
+        s1_base: Base path for S1 outputs (chain model). If None, uses out_base.
+                 For chain model, pass work/done/{scope}/S1/ to read S1 outputs.
 
     Returns:
         Dictionary mapping dataset_key to StepResult
     """
     from concurrent.futures import ProcessPoolExecutor, as_completed
 
+    # Chain model: read S1 outputs from s1_base if provided, else from out_base
+    inventory_base = s1_base if s1_base else out_base
+
     # Collect all sessions from all datasets
     all_sessions = []  # List of session info dicts
     dataset_inventories = {}
 
     for dataset_key in dataset_keys:
-        out = out_base / dataset_key
-        inventory_path = out / "work" / "S1_input_verify" / "bids_inventory.json"
+        # Per-dataset inventory path (chain model: read from S1 done path)
+        inventory_path = inventory_base / "work" / "S1_input_verify" / dataset_key / "bids_inventory.json"
 
         if not inventory_path.exists():
             continue  # Skip if inventory doesn't exist
@@ -479,7 +608,7 @@ def run_S2_anat_cordref_batch(
                 "subject": subject,
                 "session": session,
                 "bids_root": str(bids_root_path),  # Convert to string for pickling
-                "out_root": str(out),  # Convert to string for pickling
+                "out_root": str(out_base),  # Shared output root for all datasets
                 "candidates": candidates.get(key, []),
             })
 
@@ -505,6 +634,7 @@ def run_S2_anat_cordref_batch(
 
     # Process all sessions in parallel
     all_runs = {}  # dataset_key -> list of runs
+    all_runs_flat = []  # Flat list of all runs with dataset_key for shared JSONL
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         future_to_session = {
             executor.submit(_process_single_session_batch_worker, sess): sess
@@ -515,32 +645,62 @@ def run_S2_anat_cordref_batch(
             sess = future_to_session[future]
             try:
                 dataset_key, subject, session, run = future.result()
-                if dataset_key not in all_runs:
-                    all_runs[dataset_key] = []
+                # Add dataset_key to run record for dashboard grouping
+                run["dataset_key"] = dataset_key
                 run["command_line"] = _format_command_line(
                     dataset_key=dataset_key,
                     datasets_local=datasets_local,
                     bids_root=None,
-                    out=out_base / dataset_key,
+                    out=out_base,
                 )
+                if dataset_key not in all_runs:
+                    all_runs[dataset_key] = []
                 all_runs[dataset_key].append(run)
+                all_runs_flat.append(run)
             except Exception as e:  # noqa: BLE001
                 import traceback
                 dataset_key = sess["dataset_key"]
-                if dataset_key not in all_runs:
-                    all_runs[dataset_key] = []
                 error_msg = f"Session processing error: {e}"
                 error_trace = traceback.format_exc()
-                all_runs[dataset_key].append({
+                run = {
+                    "dataset_key": dataset_key,
                     "subject": sess["subject"],
                     "session": sess["session"],
                     "status": "FAIL",
                     "failure_message": error_msg,
                     "error_traceback": error_trace,
                     "run_id": _format_run_id(sess["subject"], sess["session"]),
-                })
+                }
+                if dataset_key not in all_runs:
+                    all_runs[dataset_key] = []
+                all_runs[dataset_key].append(run)
+                all_runs_flat.append(run)
 
-    # Group runs by dataset and generate outputs
+    # Render reportlets for all runs (shared output structure)
+    # Update runs in all_runs dict with reportlet paths
+    policy_path = Path("policy") / "S2_anat_cordref.yaml"
+    
+    for dataset_key in list(all_runs.keys()):
+        runs = all_runs[dataset_key]
+        runs = _render_reportlets_for_runs(
+            runs=runs,
+            out_root=out_base,
+            dataset_key=dataset_key,
+        )
+        all_runs[dataset_key] = runs
+    
+    # Rebuild all_runs_flat with updated reportlet info
+    all_runs_flat = []
+    for dataset_key in dataset_keys:
+        if dataset_key in all_runs:
+            all_runs_flat.extend(all_runs[dataset_key])
+
+    # Write shared runs.jsonl (all datasets together)
+    runs_path = out_base / "logs" / "S2_anat_cordref_runs.jsonl"
+    runs_path.parent.mkdir(parents=True, exist_ok=True)
+    _write_runs_jsonl(runs_path, all_runs_flat)
+
+    # Generate per-dataset QC files and results
     results = {}
     for dataset_key in dataset_keys:
         if dataset_key not in all_runs:
@@ -551,7 +711,6 @@ def run_S2_anat_cordref_batch(
             continue
 
         runs = all_runs[dataset_key]
-        out = out_base / dataset_key
 
         if dataset_key not in dataset_inventories:
             results[dataset_key] = StepResult(
@@ -562,26 +721,17 @@ def run_S2_anat_cordref_batch(
 
         inventory = dataset_inventories[dataset_key]
 
-        # Load policy for QC summarization
-        policy_path = Path("policy") / "S2_anat_cordref.yaml"
-
-        # Render reportlets
-        runs = _render_reportlets_for_runs(
-            runs=runs,
-            out_root=out,
-            dataset_key=dataset_key,
-        )
-
-        # Write outputs
-        runs_path = out / "logs" / "S2_anat_cordref_runs.jsonl"
-        qc_path = out / "logs" / "S2_anat_cordref_qc.json"
-        _write_runs_jsonl(runs_path, runs)
+        # Write per-dataset QC file in new structure
+        qc_dir = out_base / "logs" / "S2_anat_cordref" / dataset_key
+        qc_dir.mkdir(parents=True, exist_ok=True)
+        qc_path = qc_dir / "qc.json"
 
         qc = _summarise_runs(inventory, policy_path, runs)
+        qc["dataset_key"] = dataset_key
         _write_json(qc_path, qc)
 
         # Append metrics
-        metrics_path = out / "logs" / "metrics" / "summary.jsonl"
+        metrics_path = out_base / "logs" / "metrics" / "summary.jsonl"
         _append_metrics(metrics_path, dataset_key, runs)
 
         status = qc.get("status", "FAIL")
@@ -593,6 +743,18 @@ def run_S2_anat_cordref_batch(
             runs_path=runs_path,
             qc_path=qc_path,
         )
+
+    # Write combined QC summary
+    combined_qc_path = out_base / "logs" / "S2_anat_cordref_qc.json"
+    combined_qc = {
+        "step": "S2_anat_cordref",
+        "datasets": list(dataset_keys),
+        "total_runs": len(all_runs_flat),
+        "passed": sum(1 for r in all_runs_flat if r.get("status") == "PASS"),
+        "failed": sum(1 for r in all_runs_flat if r.get("status") == "FAIL"),
+        "runs": all_runs_flat,
+    }
+    _write_json(combined_qc_path, combined_qc)
 
     # Generate dashboard for batch (non-blocking)
     from spinalfmriprep.qc_dashboard import generate_dashboard_safe
@@ -678,13 +840,27 @@ def _load_policy(path: Path) -> dict:
     contrast_map = segmentation.get("contrast_map", {"T2w": "t2", "T1w": "t1"})
     if not isinstance(contrast_map, dict):
         raise ValueError("S2_anat_cordref policy segmentation.contrast_map must be a mapping.")
+    # Cord segmentation method: contrast_agnostic (default) or totalspineseg
+    cord_method = segmentation.get("cord_method", "contrast_agnostic")
+    if cord_method not in ("contrast_agnostic", "totalspineseg"):
+        raise ValueError("S2_anat_cordref policy segmentation.cord_method must be 'contrast_agnostic' or 'totalspineseg'.")
     labeling = raw.get("labeling", {})
+    # Labeling method: totalspineseg (default) or sct_label_vertebrae
+    labeling_method = labeling.get("method", "totalspineseg")
+    if labeling_method not in ("totalspineseg", "sct_label_vertebrae"):
+        raise ValueError("S2_anat_cordref policy labeling.method must be 'totalspineseg' or 'sct_label_vertebrae'.")
     clean_labels = labeling.get("clean_labels", 1)
     if not isinstance(clean_labels, int):
         raise ValueError("S2_anat_cordref policy labeling.clean_labels must be an int.")
     initcenter = labeling.get("initcenter")
     if initcenter is not None and not isinstance(initcenter, int):
         raise ValueError("S2_anat_cordref policy labeling.initcenter must be an int or null.")
+    # TotalSpineSeg QC thresholds
+    qc_thresholds = labeling.get("qc_thresholds", {})
+    tss_min_levels = qc_thresholds.get("min_vertebral_levels", 5)
+    tss_min_coverage = qc_thresholds.get("min_coverage_ratio", 0.8)
+    tss_max_gap = qc_thresholds.get("max_inter_level_gap_mm", 15)
+    tss_min_confidence = qc_thresholds.get("min_confidence", 0.7)
     rootlets = raw.get("rootlets", {})
     rootlets_enabled = bool(rootlets.get("enabled", False))
     eligible_modalities = rootlets.get("eligible_modalities", ["T2w"])
@@ -711,10 +887,16 @@ def _load_policy(path: Path) -> dict:
         "crop_min_z_slices": crop_min_z_slices,
         # Segmentation parameters
         "contrast_map": contrast_map,
-        "centerline": bool(segmentation.get("centerline", True)),
+        "cord_method": cord_method,
         # Labeling parameters
+        "labeling_method": labeling_method,
         "clean_labels": clean_labels,
         "initcenter": initcenter,
+        # TotalSpineSeg QC thresholds
+        "tss_min_levels": tss_min_levels,
+        "tss_min_coverage": tss_min_coverage,
+        "tss_max_gap": tss_max_gap,
+        "tss_min_confidence": tss_min_confidence,
         # Rootlets parameters
         "rootlets_enabled": rootlets_enabled,
         "rootlets_modalities": eligible_modalities,
@@ -795,6 +977,7 @@ def _process_single_session_batch_worker(session_info: dict) -> tuple[str, str, 
     Worker function for batch processing - processes one (subject, session) from any dataset.
 
     This is a module-level function (not nested) so it can be pickled for multiprocessing.
+    Derivatives are stored with dataset_key prefix: derivatives/spinalfmriprep/{dataset_key}/sub-XX/
     """
     # Convert string paths back to Path objects
     candidates_paths = []
@@ -808,6 +991,8 @@ def _process_single_session_batch_worker(session_info: dict) -> tuple[str, str, 
     policy_path = Path("policy") / "S2_anat_cordref.yaml"
     policy = _load_policy(policy_path)
 
+    dataset_key = session_info["dataset_key"]
+
     run = _process_session(
         subject=session_info["subject"],
         session=session_info["session"],
@@ -815,10 +1000,11 @@ def _process_single_session_batch_worker(session_info: dict) -> tuple[str, str, 
         bids_root=Path(session_info["bids_root"]),
         out_root=Path(session_info["out_root"]),
         policy=policy,
+        dataset_key=dataset_key,  # Pass dataset_key for derivatives prefix
     )
 
     return (
-        session_info["dataset_key"],
+        dataset_key,
         session_info["subject"],
         session_info["session"],
         run,
@@ -832,6 +1018,7 @@ def _process_session(
     bids_root: Path,
     out_root: Path,
     policy: dict,
+    dataset_key: Optional[str] = None,
 ) -> dict:
     selection = _select_cordref(candidates, policy["preference"])
     run_id = _format_run_id(subject, session)
@@ -892,93 +1079,115 @@ def _process_session(
     if not ok:
         return _fail_run(subject, session, run_id, f"Cropping failed: {message}")
 
-    derivatives_dir = _derivatives_anat_dir(out_root, subject, session)
+    derivatives_dir = _derivatives_anat_dir(out_root, subject, session, dataset_key)
     derivatives_dir.mkdir(parents=True, exist_ok=True)
 
     cordref_name = _format_derivative_name(subject, session, "desc-cordref", selection["modality"])
     cordref_path = derivatives_dir / cordref_name
     _copy_nifti(cropped_path, cordref_path)
 
+    # Cord segmentation based on policy cord_method
     seg_path = derivatives_dir / _format_derivative_name(
-        subject, session, "desc-cordmask_dseg", selection["modality"]
+        subject, session, "desc-cord_dseg", selection["modality"]
     )
     contrast = policy["contrast_map"].get(selection["modality"], "t2")
-    ok, message = _run_command(
-        [
-            "sct_deepseg_sc",
-            "-i",
-            str(cordref_path),
-            "-c",
-            str(contrast),
-            "-o",
-            str(seg_path),
-        ]
-    )
+    cord_method = policy.get("cord_method", "contrast_agnostic")
+    
+    if cord_method == "contrast_agnostic":
+        # Use contrast-agnostic model (optimized for CSA consistency)
+        # Task name is "spinalcord" in SCT 7.x
+        ok, message = _run_command(
+            [
+                "sct_deepseg",
+                "spinalcord",
+                "-i",
+                str(cordref_path),
+                "-o",
+                str(seg_path),
+            ]
+        )
+    else:
+        # Use legacy sct_deepseg_sc with contrast (for backward compat or if TSS cord preferred)
+        ok, message = _run_command(
+            [
+                "sct_deepseg_sc",
+                "-i",
+                str(cordref_path),
+                "-c",
+                str(contrast),
+                "-o",
+                str(seg_path),
+            ]
+        )
     if not ok:
-        return _fail_run(subject, session, run_id, f"Segmentation failed: {message}")
-
-    centerline_path = None
-    if policy["centerline"]:
-        centerline_path = derivatives_dir / _format_derivative_name(
-            subject, session, "desc-centerline_dseg", selection["modality"]
-        )
-        ok, message = _run_command(
-            [
-                "sct_get_centerline",
-                "-i",
-                str(seg_path),
-                "-method",
-                "fitseg",
-                "-extrapolation",
-                "0",
-                "-o",
-                str(centerline_path),
-            ]
-        )
-        if not ok:
-            return _fail_run(subject, session, run_id, f"Centerline failed: {message}")
-        masked_centerline = derivatives_dir / _format_derivative_name(
-            subject, session, "desc-centerline_masked_dseg", selection["modality"]
-        )
-        ok, message = _run_command(
-            [
-                "sct_maths",
-                "-i",
-                str(centerline_path),
-                "-mul",
-                str(seg_path),
-                "-o",
-                str(masked_centerline),
-            ]
-        )
-        if not ok:
-            return _fail_run(subject, session, run_id, f"Centerline mask failed: {message}")
-        centerline_path = masked_centerline
+        return _fail_run(subject, session, run_id, f"Cord segmentation failed: {message}")
 
     try:
         metrics = _compute_segmentation_metrics(seg_path)
     except ValueError as err:
         return _fail_run(subject, session, run_id, f"Metric computation failed: {err}")
 
-    label_info = _run_vertebral_labeling(
+    # Run TotalSpineSeg for vertebrae, discs, and canal segmentation
+    tss_info = _run_totalspineseg(
         cordref_path=cordref_path,
-        seg_path=seg_path,
-        contrast=contrast,
         work_dir=work_dir,
-        clean_labels=policy["clean_labels"],
-        initcenter=policy["initcenter"],
     )
-    if label_info["status"] == "FAIL":
-        return _fail_run(subject, session, run_id, label_info["failure_message"])
+    if tss_info["status"] == "FAIL":
+        return _fail_run(subject, session, run_id, tss_info["failure_message"])
 
+    # Save TSS outputs to derivatives
     vertebral_labels_path = None
     disc_labels_path = None
-    if label_info["status"] == "PASS":
+    canal_path = None
+    tss_vertebrae_path = None
+    tss_discs_path = None
+    tss_output_path = None
+    
+    if tss_info["status"] == "PASS":
+        # SCT-compatible vertebral labels (for registration)
         vertebral_labels_path = derivatives_dir / _format_derivative_name(
             subject, session, "desc-vertebral_labels", selection["modality"]
         )
-        _copy_file(Path(label_info["vertebral_labels_path"]), vertebral_labels_path)
-        disc_labels_path = Path(label_info["disc_labels_path"])
+        _copy_file(Path(tss_info["vertebral_labels_path"]), vertebral_labels_path)
+        
+        # SCT-compatible disc labels (for registration)
+        disc_labels_path = derivatives_dir / _format_derivative_name(
+            subject, session, "desc-disc_labels", selection["modality"]
+        )
+        _copy_file(Path(tss_info["disc_labels_path"]), disc_labels_path)
+        
+        # Canal segmentation (new from TSS)
+        canal_path = derivatives_dir / _format_derivative_name(
+            subject, session, "desc-canal_dseg", selection["modality"]
+        )
+        _copy_file(Path(tss_info["canal_path"]), canal_path)
+        
+        # Full TSS output with original labels (for visualization)
+        tss_output_path = derivatives_dir / _format_derivative_name(
+            subject, session, "desc-totalspineseg_dseg", selection["modality"]
+        )
+        _copy_file(Path(tss_info["tss_output_path"]), tss_output_path)
+        
+        # TSS vertebrae with original labels (for visualization)
+        tss_vertebrae_path = derivatives_dir / _format_derivative_name(
+            subject, session, "desc-tss_vertebrae_dseg", selection["modality"]
+        )
+        _copy_file(Path(tss_info["vertebrae_path"]), tss_vertebrae_path)
+        
+        # TSS discs with original labels (for visualization)
+        tss_discs_path = derivatives_dir / _format_derivative_name(
+            subject, session, "desc-tss_discs_dseg", selection["modality"]
+        )
+        _copy_file(Path(tss_info["discs_path"]), tss_discs_path)
+    
+    # Create label_info dict for backward compatibility
+    label_info = {
+        "status": tss_info["status"],
+        "failure_message": tss_info.get("failure_message"),
+        "vertebral_labels_path": str(vertebral_labels_path) if vertebral_labels_path else None,
+        "disc_labels_path": str(disc_labels_path) if disc_labels_path else None,
+        "metrics": tss_info.get("metrics", {}),
+    }
 
     rootlets_info = _run_rootlets_segmentation(
         cordref_path=cordref_path,
@@ -1062,12 +1271,16 @@ def _process_session(
         "cordref_modality": selection["modality"],
         "cordref_path": _relpath(cordref_path, out_root),
         "cordmask_path": _relpath(seg_path, out_root),
-        "centerline_path": _relpath(centerline_path, out_root) if centerline_path else None,
         "vertebral_labels_path": _relpath(vertebral_labels_path, out_root),
         "disc_labels_path": _relpath(disc_labels_path, out_root),
+        "canal_path": _relpath(canal_path, out_root) if canal_path else None,
+        "tss_output_path": _relpath(tss_output_path, out_root) if tss_output_path else None,
+        "tss_vertebrae_path": _relpath(tss_vertebrae_path, out_root) if tss_vertebrae_path else None,
+        "tss_discs_path": _relpath(tss_discs_path, out_root) if tss_discs_path else None,
         "rootlets_path": _relpath(rootlets_path, out_root) if rootlets_path else None,
         "metrics": metrics,
         "labels": label_info,
+        "tss": tss_info,
         "rootlets": rootlets_info,
         "registration": {
             "selected": selected_variant,
@@ -1401,6 +1614,211 @@ def _run_vertebral_labeling(
         "disc_labels_path": str(disc_labels),
         "metrics": metrics,
         "attempts": attempts,
+    }
+
+
+# TotalSpineSeg label mapping (from https://github.com/neuropoly/totalspineseg)
+TSS_LABELS = {
+    "spinal_cord": 1,
+    "spinal_canal": 2,
+    # Vertebrae: C1-C7 (11-17), T1-T12 (21-32), L1-L5 (41-45), Sacrum (50)
+    "vertebrae": {
+        "C1": 11, "C2": 12, "C3": 13, "C4": 14, "C5": 15, "C6": 16, "C7": 17,
+        "T1": 21, "T2": 22, "T3": 23, "T4": 24, "T5": 25, "T6": 26,
+        "T7": 27, "T8": 28, "T9": 29, "T10": 30, "T11": 31, "T12": 32,
+        "L1": 41, "L2": 42, "L3": 43, "L4": 44, "L5": 45,
+        "S": 50,
+    },
+    # Discs: C2-C3 to C6-C7 (63-67), C7-T1 to T11-T12 (71-82), T12-L1 to L4-L5 (91-95), L5-S (100)
+    "discs": {
+        "C2/C3": 63, "C3/C4": 64, "C4/C5": 65, "C5/C6": 66, "C6/C7": 67,
+        "C7/T1": 71, "T1/T2": 72, "T2/T3": 73, "T3/T4": 74, "T4/T5": 75,
+        "T5/T6": 76, "T6/T7": 77, "T7/T8": 78, "T8/T9": 79, "T9/T10": 80,
+        "T10/T11": 81, "T11/T12": 82,
+        "T12/L1": 91, "L1/L2": 92, "L2/L3": 93, "L3/L4": 94, "L4/L5": 95,
+        "L5/S": 100,
+    },
+}
+
+# Reverse mappings for label -> name
+TSS_VERTEBRA_NAMES = {v: k for k, v in TSS_LABELS["vertebrae"].items()}
+TSS_DISC_NAMES = {v: k for k, v in TSS_LABELS["discs"].items()}
+
+
+def _run_totalspineseg(
+    cordref_path: Path,
+    work_dir: Path,
+) -> dict:
+    """
+    Run TotalSpineSeg segmentation on the cordref image.
+    
+    TotalSpineSeg outputs a single NIfTI with multiple label values:
+    - 1: spinal cord
+    - 2: spinal canal
+    - 11-50: vertebrae (C1-S)
+    - 63-100: intervertebral discs
+    
+    Args:
+        cordref_path: Path to cropped anatomical reference
+        work_dir: Working directory for outputs
+        
+    Returns:
+        Dict with status, paths to extracted components, and metrics
+    """
+    tss_dir = work_dir / "totalspineseg"
+    tss_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Run TotalSpineSeg
+    # Syntax: sct_deepseg totalspineseg -i input.nii.gz -o output.nii.gz
+    # SCT adds suffixes: _step2_output, _step1_cord, _step1_canal, etc.
+    output_path = tss_dir / "tss.nii.gz"
+    ok, message = _run_command(
+        [
+            "sct_deepseg",
+            "totalspineseg",
+            "-i",
+            str(cordref_path),
+            "-o",
+            str(output_path),
+        ]
+    )
+    # TotalSpineSeg outputs: tss_step2_output.nii.gz, tss_step1_cord.nii.gz, etc.
+    tss_output = tss_dir / "tss_step2_output.nii.gz"
+    tss_cord = tss_dir / "tss_step1_cord.nii.gz"
+    tss_canal = tss_dir / "tss_step1_canal.nii.gz"
+    
+    if not tss_output.exists():
+        # List what files were actually created for debugging
+        created_files = list(tss_dir.rglob("*.nii.gz"))
+        if not ok:
+            return {
+                "status": "FAIL",
+                "failure_message": f"TotalSpineSeg failed: {message}",
+            }
+        return {
+            "status": "FAIL",
+            "failure_message": f"TotalSpineSeg output not found. Created files: {[str(f.relative_to(tss_dir)) for f in created_files[:10]]}",
+        }
+    
+    # Load TSS output and extract components
+    try:
+        tss_img = cast(Any, nib.load(tss_output))
+        tss_data = tss_img.get_fdata()
+        if tss_data.ndim > 3:
+            tss_data = tss_data[..., 0]
+        affine = tss_img.affine
+        header = tss_img.header
+    except Exception as e:
+        return {
+            "status": "FAIL",
+            "failure_message": f"Failed to load TotalSpineSeg output: {e}",
+        }
+    
+    # Use TSS's own cord and canal outputs if available (more accurate)
+    cord_path = tss_cord if tss_cord.exists() else tss_dir / "cord.nii.gz"
+    canal_path = tss_canal if tss_canal.exists() else tss_dir / "canal.nii.gz"
+    
+    # If TSS didn't provide separate cord/canal files, extract from main output
+    if not tss_cord.exists():
+        cord_mask = (tss_data == TSS_LABELS["spinal_cord"]).astype(np.uint8)
+        nib.save(nib.Nifti1Image(cord_mask, affine, header), cord_path)
+    
+    if not tss_canal.exists():
+        canal_mask = (tss_data == TSS_LABELS["spinal_canal"]).astype(np.uint8)
+        nib.save(nib.Nifti1Image(canal_mask, affine, header), canal_path)
+    
+    # Extract vertebrae (labels 11-50) - keep original labels for visualization
+    vertebrae_labels = list(TSS_LABELS["vertebrae"].values())
+    vertebrae_mask = np.isin(tss_data, vertebrae_labels).astype(np.uint8)
+    vertebrae_data = np.where(vertebrae_mask, tss_data, 0).astype(np.uint8)
+    vertebrae_path = tss_dir / "vertebrae.nii.gz"
+    nib.save(nib.Nifti1Image(vertebrae_data, affine, header), vertebrae_path)
+    
+    # Extract discs (labels 63-100) - keep original labels
+    disc_labels = list(TSS_LABELS["discs"].values())
+    discs_mask = np.isin(tss_data, disc_labels).astype(np.uint8)
+    discs_data = np.where(discs_mask, tss_data, 0).astype(np.uint8)
+    discs_path = tss_dir / "discs.nii.gz"
+    nib.save(nib.Nifti1Image(discs_data, affine, header), discs_path)
+    
+    # Create SCT-compatible vertebral labels (convert TSS labels to SCT convention)
+    # SCT uses: C1=1, C2=2, ..., C7=7, T1=8, ..., T12=19, L1=20, ..., L5=24
+    sct_vertebral_data = np.zeros_like(tss_data, dtype=np.uint8)
+    for name, tss_label in TSS_LABELS["vertebrae"].items():
+        if name == "S":
+            continue  # Skip sacrum for SCT compat
+        mask = tss_data == tss_label
+        if name.startswith("C"):
+            sct_label = int(name[1:])  # C1=1, C7=7
+        elif name.startswith("T"):
+            sct_label = int(name[1:]) + 7  # T1=8, T12=19
+        elif name.startswith("L"):
+            sct_label = int(name[1:]) + 19  # L1=20, L5=24
+        else:
+            continue
+        sct_vertebral_data[mask] = sct_label
+    sct_vertebral_path = tss_dir / "vertebral_labels_sct.nii.gz"
+    nib.save(nib.Nifti1Image(sct_vertebral_data, affine, header), sct_vertebral_path)
+    
+    # Create SCT-compatible disc labels (point labels at disc centers)
+    # SCT uses: disc below C2 = 3, disc below C3 = 4, etc.
+    sct_disc_data = np.zeros_like(tss_data, dtype=np.uint8)
+    for name, tss_label in TSS_LABELS["discs"].items():
+        mask = tss_data == tss_label
+        if not mask.any():
+            continue
+        # Get centroid of disc
+        coords = np.argwhere(mask)
+        centroid = coords.mean(axis=0).astype(int)
+        # Convert disc name to SCT label (disc C2/C3 = 3, C3/C4 = 4, etc.)
+        upper, lower = name.split("/")
+        if upper.startswith("C"):
+            sct_label = int(upper[1:]) + 1  # C2/C3 = 3
+        elif upper.startswith("T"):
+            sct_label = int(upper[1:]) + 8  # T1/T2 = 9
+        elif upper.startswith("L"):
+            sct_label = int(upper[1:]) + 20  # L1/L2 = 21
+        else:
+            continue
+        # Place single voxel at centroid
+        sct_disc_data[tuple(centroid)] = sct_label
+    sct_disc_path = tss_dir / "disc_labels_sct.nii.gz"
+    nib.save(nib.Nifti1Image(sct_disc_data, affine, header), sct_disc_path)
+    
+    # Compute metrics
+    present_vertebrae = sorted([TSS_VERTEBRA_NAMES[int(v)] for v in np.unique(vertebrae_data) if v > 0])
+    present_discs = sorted([TSS_DISC_NAMES[int(v)] for v in np.unique(discs_data) if v > 0])
+    
+    # Load cord/canal for volume metrics
+    try:
+        cord_vol_data = nib.load(cord_path).get_fdata()
+        cord_volume_vox = int(np.sum(cord_vol_data > 0))
+    except Exception:
+        cord_volume_vox = 0
+    try:
+        canal_vol_data = nib.load(canal_path).get_fdata()
+        canal_volume_vox = int(np.sum(canal_vol_data > 0))
+    except Exception:
+        canal_volume_vox = 0
+    
+    return {
+        "status": "PASS",
+        "failure_message": None,
+        "tss_output_path": str(tss_output),
+        "cord_path": str(cord_path),
+        "canal_path": str(canal_path),
+        "vertebrae_path": str(vertebrae_path),
+        "discs_path": str(discs_path),
+        "vertebral_labels_path": str(sct_vertebral_path),  # SCT-compatible
+        "disc_labels_path": str(sct_disc_path),  # SCT-compatible
+        "metrics": {
+            "vertebrae_count": len(present_vertebrae),
+            "disc_count": len(present_discs),
+            "present_vertebrae": present_vertebrae,
+            "present_discs": present_discs,
+            "cord_volume_vox": cord_volume_vox,
+            "canal_volume_vox": canal_volume_vox,
+        },
     }
 
 
@@ -1789,13 +2207,17 @@ def _render_reportlets_for_runs(runs: list[dict], out_root: Path, dataset_key: s
 def _render_reportlets(run: dict, out_root: Path, dataset_key: str) -> tuple[dict, Optional[str]]:
     subject = run.get("subject")
     session = run.get("session")
-    figures_dir = _derivatives_figures_dir(out_root, subject, session)
+    # Use dataset_key from run record if present, otherwise use passed dataset_key
+    run_dataset_key = run.get("dataset_key", dataset_key)
+    figures_dir = _derivatives_figures_dir(out_root, subject, session, run_dataset_key)
     figures_dir.mkdir(parents=True, exist_ok=True)
 
     cordref_path = _abs_path(out_root, run.get("cordref_path"))
     cordmask_path = _abs_path(out_root, run.get("cordmask_path"))
-    centerline_path = _abs_path(out_root, run.get("centerline_path"))
     vertebral_labels_path = _abs_path(out_root, run.get("vertebral_labels_path"))
+    disc_labels_path = _abs_path(out_root, run.get("disc_labels_path"))
+    canal_path = _abs_path(out_root, run.get("canal_path"))
+    tss_output_path = _abs_path(out_root, run.get("tss_output_path"))
     rootlets_path = _abs_path(out_root, run.get("rootlets_path"))
     reg_selected = run.get("registration", {}).get(run.get("registration", {}).get("selected", "disc"), {})
     template2anat = reg_selected.get("template2anat")
@@ -1838,41 +2260,27 @@ def _render_reportlets(run: dict, out_root: Path, dataset_key: str) -> tuple[dic
         out_root,
     )
 
-    centerline_for_qc = centerline_path
-    if centerline_path is not None:
-        dilated = qc_root / "centerline" / "centerline_dilated.nii.gz"
-        centerline_for_qc = _dilate_mask(centerline_path, dilated) or centerline_path
-
-    centerline_montage = _render_centerline_montage(
-        qc_root=qc_root / "centerline_montage",
-        image=cordref_path,
-        centerline_sagittal=centerline_for_qc,
-        centerline_axial=centerline_path,
-        cordmask=cordmask_path,
-    )
-    reportlets["centerline_montage"] = _copy_reportlet(
-        centerline_montage,
-        figures_dir / _format_reportlet_name(subject, session, "S2_centerline_montage"),
-        out_root,
-    )
-
-    labels_status = (run.get("labels") or {}).get("status", "PASS")
-    if labels_status == "PASS" and vertebral_labels_path is not None:
-        vertebral_png = _render_vertebral_labels_montage(
-            qc_root=qc_root / "vertebral_labels",
+    # TotalSpineSeg comprehensive visualization (vertebrae + discs + cord + canal)
+    tss_info = run.get("tss") or run.get("labels") or {}
+    tss_status = tss_info.get("status", "PASS")
+    if tss_status == "PASS" and tss_output_path is not None:
+        tss_montage_png = _render_totalspineseg_montage(
+            qc_root=qc_root / "totalspineseg_montage",
             image=cordref_path,
-            labels_path=vertebral_labels_path,
+            tss_output_path=tss_output_path,
+            cord_path=cordmask_path,  # Use the contrast-agnostic cord segmentation
+            canal_path=canal_path,
         )
-        reportlets["vertebral_labels_montage"] = _copy_reportlet(
-            vertebral_png,
-            figures_dir / _format_reportlet_name(subject, session, "S2_vertebral_labels_montage"),
+        reportlets["totalspineseg_montage"] = _copy_reportlet(
+            tss_montage_png,
+            figures_dir / _format_reportlet_name(subject, session, "S2_totalspineseg_montage"),
             out_root,
         )
     else:
-        reportlets["vertebral_labels_montage"] = _write_not_available_panel(
-            figures_dir / _format_reportlet_name(subject, session, "S2_vertebral_labels_montage"),
+        reportlets["totalspineseg_montage"] = _write_not_available_panel(
+            figures_dir / _format_reportlet_name(subject, session, "S2_totalspineseg_montage"),
             out_root,
-            "Vertebral labels not available",
+            "TotalSpineSeg not available",
         )
 
     reg_gif = None
@@ -1923,8 +2331,7 @@ def _render_reportlets(run: dict, out_root: Path, dataset_key: str) -> tuple[dic
 
     required = [
         "cordmask_montage",
-        "centerline_montage",
-        "vertebral_labels_montage",
+        "totalspineseg_montage",
         "pam50_reg_overlay",
     ]
     missing = [key for key in required if not reportlets.get(key)]
@@ -2059,10 +2466,24 @@ def _get_sct_version() -> Optional[str]:
     return output.strip() or None
 
 
-def _derivatives_anat_dir(out_root: Path, subject: str, session: Optional[str]) -> Path:
+def _derivatives_anat_dir(out_root: Path, subject: str, session: Optional[str], dataset_key: Optional[str] = None) -> Path:
+    """
+    Return the derivatives anat directory path.
+    
+    If dataset_key is provided, includes it in the path for multi-dataset workflows:
+    out_root/derivatives/spinalfmriprep/{dataset_key}/sub-XX/[ses-XX/]anat
+    
+    If dataset_key is None, uses the traditional path:
+    out_root/derivatives/spinalfmriprep/sub-XX/[ses-XX/]anat
+    """
+    if dataset_key:
+        base = out_root / "derivatives" / "spinalfmriprep" / dataset_key / f"sub-{subject}"
+    else:
+        base = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}"
+    
     if session:
-        return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "anat"
-    return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "anat"
+        return base / f"ses-{session}" / "anat"
+    return base / "anat"
 
 
 def _format_derivative_name(subject: str, session: Optional[str], desc: str, suffix: str) -> str:
@@ -2106,10 +2527,24 @@ def _relpath(path: Optional[Path], out_root: Path) -> Optional[str]:
         return str(path)
 
 
-def _derivatives_figures_dir(out_root: Path, subject: Optional[str], session: Optional[str]) -> Path:
-    if session:
-        return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
-    return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
+def _derivatives_figures_dir(out_root: Path, subject: Optional[str], session: Optional[str], dataset_key: Optional[str] = None) -> Path:
+    """
+    Return the derivatives figures directory path.
+    
+    If dataset_key is provided, includes it in the path for multi-dataset workflows:
+    out_root/derivatives/spinalfmriprep/{dataset_key}/sub-XX/[ses-XX/]figures
+    
+    If dataset_key is None, uses the traditional path:
+    out_root/derivatives/spinalfmriprep/sub-XX/[ses-XX/]figures
+    """
+    if dataset_key:
+        if session:
+            return out_root / "derivatives" / "spinalfmriprep" / dataset_key / f"sub-{subject}" / f"ses-{session}" / "figures"
+        return out_root / "derivatives" / "spinalfmriprep" / dataset_key / f"sub-{subject}" / "figures"
+    else:
+        if session:
+            return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
+        return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
 
 
 def _format_reportlet_name(
@@ -4485,6 +4920,533 @@ def _render_vertebral_labels_montage(
             + [str(output)]
         )
     )
+    return output if ok else None
+
+
+def _render_disc_labels_montage(
+    qc_root: Path,
+    image: Optional[Path],
+    disc_labels_path: Optional[Path],
+) -> Optional[Path]:
+    """
+    Render disc labels visualization showing intervertebral disc positions.
+    
+    Disc labels are shown as horizontal lines at each disc position with
+    text annotations on the right margin (e.g., C2/C3, C3/C4, T1/T2, etc.).
+    
+    Args:
+        qc_root: Directory for QC outputs
+        image: Path to anatomical reference image
+        disc_labels_path: Path to disc labels NIfTI (from sct_label_vertebrae)
+        
+    Returns:
+        Path to generated PNG, or None on failure
+    """
+    if image is None or disc_labels_path is None:
+        return None
+    qc_root.mkdir(parents=True, exist_ok=True)
+    try:
+        img = nib.as_closest_canonical(nib.load(image))
+        disc_img = nib.as_closest_canonical(nib.load(disc_labels_path))
+    except Exception:
+        return None
+    img_data = img.get_fdata()
+    disc_data = disc_img.get_fdata()
+    if img_data.ndim > 3:
+        img_data = img_data[..., 0]
+    if disc_data.ndim > 3:
+        disc_data = disc_data[..., 0]
+    if img_data.shape != disc_data.shape:
+        return None
+
+    # Disc labels are typically point-like (single voxel per disc)
+    # Find all non-zero disc labels
+    disc_mask = disc_data > 0
+    if not disc_mask.any():
+        return None
+    coords = np.argwhere(disc_mask)
+    if coords.size == 0:
+        return None
+    
+    # Find center x-slice for sagittal view
+    x_index = int(np.median(coords[:, 0]))
+    x_index = max(0, min(x_index, img_data.shape[0] - 1))
+    img_slice = img_data[x_index, :, :]
+    if img_slice.ndim != 2:
+        return None
+
+    # Flip for display (superior at top)
+    img_slice = np.flipud(img_slice.T)
+    
+    # Get disc label positions - project to y-z plane (sagittal view)
+    # Each disc label value corresponds to the disc below that vertebra
+    # e.g., label 3 = C2-C3 disc, label 4 = C3-C4 disc, etc.
+    disc_positions: list[tuple[int, int, float]] = []  # (y_pixel, z_pixel, label_value)
+    for lab in sorted(np.unique(disc_data[disc_mask])):
+        if lab <= 0:
+            continue
+        lab_coords = np.argwhere(disc_data == lab)
+        if lab_coords.size == 0:
+            continue
+        # Use median y, z position for this disc
+        y_pos = float(np.median(lab_coords[:, 1]))
+        z_pos = float(np.median(lab_coords[:, 2]))
+        disc_positions.append((int(y_pos), int(z_pos), int(lab)))
+
+    if not disc_positions:
+        return None
+
+    # Normalize image
+    vmin, vmax = np.percentile(img_slice, [1, 99])
+    if vmax <= vmin:
+        vmin, vmax = float(img_slice.min()), float(img_slice.max())
+    if vmax <= vmin:
+        vmax = vmin + 1.0
+
+    normalized = np.clip((img_slice - vmin) / (vmax - vmin), 0, 1)
+    base = (normalized * 255).astype(np.uint8)
+    base_rgb = np.repeat(base[..., np.newaxis], 3, axis=2)
+    overlay = base_rgb.copy()
+
+    # Draw horizontal lines at disc positions
+    h, w = img_slice.shape
+    for y_pos, z_pos, lab in disc_positions:
+        # Convert to display coordinates (after flip)
+        z_display = h - 1 - z_pos
+        z_display = max(0, min(z_display, h - 1))
+        # Draw horizontal line across the image
+        line_color = np.array([255, 255, 0], dtype=np.uint8)  # Yellow
+        for y in range(w):
+            # Blend the line with existing pixels
+            overlay[z_display, y] = (overlay[z_display, y] * 0.3 + line_color * 0.7).astype(np.uint8)
+
+    output = qc_root / "disc_labels.png"
+    ppm_path = qc_root / "disc_labels.ppm"
+    _write_ppm(ppm_path, overlay)
+
+    def _disc_name(label_value: int) -> str:
+        """Convert SCT-style disc label to human-readable name (C2/C3, T1/T2, etc.)."""
+        if label_value <= 0:
+            return str(label_value)
+        # SCT convention: disc label N is below vertebra N-1 (between N-1 and N)
+        # e.g., disc 3 = C2-C3, disc 4 = C3-C4, ..., disc 8 = C7-T1, disc 9 = T1-T2
+        def _vert_name(v: int) -> str:
+            if v <= 0:
+                return str(v)
+            if v <= 7:
+                return f"C{v}"
+            if v <= 19:
+                return f"T{v - 7}"
+            if v <= 24:
+                return f"L{v - 19}"
+            if v <= 29:
+                return f"S{v - 24}"
+            return str(v)
+        
+        upper = label_value - 1
+        lower = label_value
+        return f"{_vert_name(upper)}/{_vert_name(lower)}"
+
+    # Resize and add text annotations
+    target_width = 1200
+    src_h, src_w = int(overlay.shape[0]), int(overlay.shape[1])
+    if src_w <= 0:
+        return None
+    scale = target_width / src_w
+    out_h = max(1, int(round(src_h * scale)))
+    margin_width = 240
+    pointsize = 32
+    min_spacing = 38
+
+    # Compute text positions
+    label_text: list[tuple[int, int, str]] = []
+    for y_pos, z_pos, lab in disc_positions:
+        z_display = h - 1 - z_pos
+        y_out = int(round(z_display * scale))
+        y_out = max(0, min(y_out, out_h - 1))
+        label_text.append((y_out, lab, _disc_name(lab)))
+
+    # Sort and enforce minimum spacing
+    label_text.sort(key=lambda t: t[0])
+    adjusted: list[tuple[int, int, str]] = []
+    last_y = -10_000
+    for y_out, lab, text in label_text:
+        y_adj = y_out
+        if y_adj - last_y < min_spacing:
+            y_adj = last_y + min_spacing
+        y_adj = max(0, min(y_adj, out_h - 1))
+        adjusted.append((y_adj, lab, text))
+        last_y = y_adj
+    
+    # Handle overflow
+    if adjusted:
+        y_limit = max(0, out_h - 1 - pointsize)
+        overflow = adjusted[-1][0] - y_limit
+        if overflow > 0:
+            adjusted = [(max(0, y - overflow), lab, text) for (y, lab, text) in adjusted]
+
+    ok, _ = _run_command(
+        [
+            "convert",
+            str(ppm_path),
+            "-filter",
+            "Lanczos",
+            "-resize",
+            f"{target_width}x",
+            "-background",
+            "#000000",
+            "-gravity",
+            "East",
+            "-splice",
+            f"{margin_width}x0",
+            "-gravity",
+            "NorthWest",
+            "-pointsize",
+            str(pointsize),
+            "-stroke",
+            "#000000",
+            "-strokewidth",
+            "1",
+        ]
+        + [
+            item
+            for (y, lab, text) in adjusted
+            for item in (
+                "-fill",
+                "#FFFF00",  # Yellow text matching lines
+                "-annotate",
+                f"+{target_width + 10}+{max(0, y - pointsize // 2)}",
+                text,
+            )
+        ]
+        + [str(output)]
+    )
+    return output if ok else None
+
+
+def _render_totalspineseg_montage(
+    qc_root: Path,
+    image: Optional[Path],
+    tss_output_path: Optional[Path],
+    cord_path: Optional[Path],
+    canal_path: Optional[Path],
+) -> Optional[Path]:
+    """
+    Render TotalSpineSeg-style comprehensive visualization.
+    
+    Shows a sagittal view with:
+    - Vertebrae as colored regions (rainbow per level)
+    - Intervertebral discs as colored bands
+    - Spinal cord as blue overlay
+    - Spinal canal as cyan overlay
+    - Disc labels on LEFT margin
+    - Vertebral labels on RIGHT margin
+    
+    Args:
+        qc_root: Directory for QC outputs
+        image: Path to anatomical reference image
+        tss_output_path: Path to TotalSpineSeg output NIfTI (with all labels)
+        cord_path: Path to cord segmentation (optional, extracted from TSS)
+        canal_path: Path to canal segmentation (optional, extracted from TSS)
+        
+    Returns:
+        Path to generated PNG, or None on failure
+    """
+    if image is None or tss_output_path is None:
+        return None
+    qc_root.mkdir(parents=True, exist_ok=True)
+    
+    try:
+        img = nib.as_closest_canonical(nib.load(image))
+        tss_img = nib.as_closest_canonical(nib.load(tss_output_path))
+    except Exception:
+        return None
+    
+    img_data = img.get_fdata()
+    tss_data = tss_img.get_fdata()
+    if img_data.ndim > 3:
+        img_data = img_data[..., 0]
+    if tss_data.ndim > 3:
+        tss_data = tss_data[..., 0]
+    if img_data.shape != tss_data.shape:
+        return None
+    
+    # Load cord and canal if provided separately (for cleaner overlays)
+    cord_data = None
+    canal_data = None
+    if cord_path and cord_path.exists():
+        try:
+            cord_img = nib.as_closest_canonical(nib.load(cord_path))
+            cord_data = cord_img.get_fdata()
+            if cord_data.ndim > 3:
+                cord_data = cord_data[..., 0]
+        except Exception:
+            cord_data = None
+    if canal_path and canal_path.exists():
+        try:
+            canal_img = nib.as_closest_canonical(nib.load(canal_path))
+            canal_data = canal_img.get_fdata()
+            if canal_data.ndim > 3:
+                canal_data = canal_data[..., 0]
+        except Exception:
+            canal_data = None
+    
+    # Find center x-slice for sagittal view using the TSS segmentation
+    tss_mask = tss_data > 0
+    if not tss_mask.any():
+        return None
+    coords = np.argwhere(tss_mask)
+    if coords.size == 0:
+        return None
+    x_index = int(np.median(coords[:, 0]))
+    x_index = max(0, min(x_index, img_data.shape[0] - 1))
+    
+    # Extract sagittal slices
+    img_slice = img_data[x_index, :, :]
+    tss_slice = tss_data[x_index, :, :]
+    if img_slice.ndim != 2:
+        return None
+    
+    # Flip for display (superior at top)
+    img_slice = np.flipud(img_slice.T)
+    tss_slice = np.flipud(tss_slice.T)
+    h, w = img_slice.shape
+    
+    # Normalize image
+    vmin, vmax = np.percentile(img_slice, [1, 99])
+    if vmax <= vmin:
+        vmin, vmax = float(img_slice.min()), float(img_slice.max())
+    if vmax <= vmin:
+        vmax = vmin + 1.0
+    normalized = np.clip((img_slice - vmin) / (vmax - vmin), 0, 1)
+    base = (normalized * 255).astype(np.uint8)
+    base_rgb = np.repeat(base[..., np.newaxis], 3, axis=2)
+    overlay = base_rgb.copy()
+    
+    # Define color palette for vertebrae (TotalSpineSeg-like rainbow)
+    # Each vertebral level gets a unique color
+    vertebrae_colors = {
+        # Cervical: blues/cyans
+        11: (135, 206, 250),  # C1 - light sky blue
+        12: (100, 149, 237),  # C2 - cornflower blue
+        13: (255, 215, 0),    # C3 - gold
+        14: (255, 165, 0),    # C4 - orange
+        15: (50, 205, 50),    # C5 - lime green
+        16: (144, 238, 144),  # C6 - light green
+        17: (178, 102, 255),  # C7 - purple
+        # Thoracic: warm colors
+        21: (255, 99, 71),    # T1 - tomato
+        22: (255, 215, 0),    # T2 - gold
+        23: (255, 182, 193),  # T3 - light pink
+        24: (152, 251, 152),  # T4 - pale green
+        25: (135, 206, 235),  # T5 - sky blue
+        26: (238, 130, 238),  # T6 - violet
+        27: (255, 160, 122),  # T7 - light salmon
+        28: (173, 216, 230),  # T8 - light blue
+        29: (255, 228, 181),  # T9 - moccasin
+        30: (221, 160, 221),  # T10 - plum
+        31: (176, 224, 230),  # T11 - powder blue
+        32: (250, 250, 210),  # T12 - light goldenrod
+        # Lumbar: greens/browns
+        41: (144, 238, 144),  # L1 - light green
+        42: (189, 183, 107),  # L2 - dark khaki
+        43: (216, 191, 216),  # L3 - thistle
+        44: (245, 222, 179),  # L4 - wheat
+        45: (188, 143, 143),  # L5 - rosy brown
+        # Sacrum
+        50: (139, 69, 19),    # S - saddle brown
+    }
+    
+    # Disc colors (slightly darker/different hue than adjacent vertebrae)
+    disc_colors = {
+        63: (255, 200, 100),   # C2-C3
+        64: (255, 180, 80),    # C3-C4
+        65: (255, 160, 60),    # C4-C5
+        66: (255, 140, 40),    # C5-C6
+        67: (255, 120, 20),    # C6-C7
+        71: (200, 100, 100),   # C7-T1
+        72: (180, 100, 120),   # T1-T2
+        73: (160, 100, 140),   # T2-T3
+        74: (140, 100, 160),   # T3-T4
+        75: (120, 100, 180),   # T4-T5
+        76: (100, 100, 200),   # T5-T6
+        77: (100, 120, 180),   # T6-T7
+        78: (100, 140, 160),   # T7-T8
+        79: (100, 160, 140),   # T8-T9
+        80: (100, 180, 120),   # T9-T10
+        81: (100, 200, 100),   # T10-T11
+        82: (120, 180, 100),   # T11-T12
+        91: (140, 160, 100),   # T12-L1
+        92: (160, 140, 100),   # L1-L2
+        93: (180, 120, 100),   # L2-L3
+        94: (200, 100, 100),   # L3-L4
+        95: (220, 80, 100),    # L4-L5
+        100: (240, 60, 100),   # L5-S
+    }
+    
+    # Overlay vertebrae
+    for label, color in vertebrae_colors.items():
+        mask = tss_slice == label
+        if mask.any():
+            overlay[mask] = (overlay[mask] * 0.3 + np.array(color) * 0.7).astype(np.uint8)
+    
+    # Overlay discs
+    for label, color in disc_colors.items():
+        mask = tss_slice == label
+        if mask.any():
+            overlay[mask] = (overlay[mask] * 0.2 + np.array(color) * 0.8).astype(np.uint8)
+    
+    # Overlay spinal canal (cyan, semi-transparent)
+    if canal_data is not None:
+        canal_slice = canal_data[x_index, :, :]
+        canal_slice = np.flipud(canal_slice.T)
+        canal_mask = canal_slice > 0
+        if canal_mask.any():
+            canal_color = np.array([0, 200, 200])  # Cyan
+            overlay[canal_mask] = (overlay[canal_mask] * 0.5 + canal_color * 0.5).astype(np.uint8)
+    else:
+        # Extract from TSS data
+        canal_mask = tss_slice == TSS_LABELS["spinal_canal"]
+        if canal_mask.any():
+            canal_color = np.array([0, 200, 200])  # Cyan
+            overlay[canal_mask] = (overlay[canal_mask] * 0.5 + canal_color * 0.5).astype(np.uint8)
+    
+    # Overlay spinal cord (blue, on top)
+    if cord_data is not None:
+        cord_slice = cord_data[x_index, :, :]
+        cord_slice = np.flipud(cord_slice.T)
+        cord_mask = cord_slice > 0
+        if cord_mask.any():
+            cord_color = np.array([65, 105, 225])  # Royal blue
+            overlay[cord_mask] = (overlay[cord_mask] * 0.4 + cord_color * 0.6).astype(np.uint8)
+    else:
+        # Extract from TSS data
+        cord_mask = tss_slice == TSS_LABELS["spinal_cord"]
+        if cord_mask.any():
+            cord_color = np.array([65, 105, 225])  # Royal blue
+            overlay[cord_mask] = (overlay[cord_mask] * 0.4 + cord_color * 0.6).astype(np.uint8)
+    
+    # Save overlay as PPM
+    output = qc_root / "tss_montage.png"
+    ppm_path = qc_root / "tss_overlay.ppm"
+    _write_ppm(ppm_path, overlay)
+    
+    # Collect present vertebrae and discs for labels
+    present_vertebrae: list[tuple[int, int, str]] = []  # (z_display, label, name)
+    present_discs: list[tuple[int, int, str]] = []  # (z_display, label, name)
+    
+    for label, name in TSS_VERTEBRA_NAMES.items():
+        mask = tss_slice == label
+        if mask.any():
+            coords2d = np.argwhere(mask)
+            z_center = float(np.median(coords2d[:, 0]))
+            present_vertebrae.append((int(z_center), label, name))
+    
+    for label, name in TSS_DISC_NAMES.items():
+        mask = tss_slice == label
+        if mask.any():
+            coords2d = np.argwhere(mask)
+            z_center = float(np.median(coords2d[:, 0]))
+            present_discs.append((int(z_center), label, name))
+    
+    # Sort by z position (superior to inferior)
+    present_vertebrae.sort(key=lambda t: t[0])
+    present_discs.sort(key=lambda t: t[0])
+    
+    # Resize and add labels
+    target_width = 1200
+    src_h, src_w = int(overlay.shape[0]), int(overlay.shape[1])
+    if src_w <= 0:
+        return None
+    scale = target_width / src_w
+    out_h = max(1, int(round(src_h * scale)))
+    
+    # Margins for labels on both sides
+    left_margin = 200   # For disc labels
+    right_margin = 200  # For vertebral labels
+    pointsize = 28
+    min_spacing = 32
+    
+    # Compute label positions for vertebrae (RIGHT side)
+    vert_labels: list[tuple[int, str, str]] = []
+    for z_pos, label, name in present_vertebrae:
+        y_out = int(round(z_pos * scale))
+        y_out = max(0, min(y_out, out_h - 1))
+        color = vertebrae_colors.get(label, (255, 255, 255))
+        rgb_fill = f"rgb({color[0]},{color[1]},{color[2]})"
+        vert_labels.append((y_out, name, rgb_fill))
+    
+    # Adjust spacing for vertebrae
+    vert_adjusted: list[tuple[int, str, str]] = []
+    last_y = -10_000
+    for y_out, name, rgb_fill in vert_labels:
+        y_adj = y_out
+        if y_adj - last_y < min_spacing:
+            y_adj = last_y + min_spacing
+        y_adj = max(0, min(y_adj, out_h - 1))
+        vert_adjusted.append((y_adj, name, rgb_fill))
+        last_y = y_adj
+    
+    # Compute label positions for discs (LEFT side)
+    disc_labels_list: list[tuple[int, str, str]] = []
+    for z_pos, label, name in present_discs:
+        y_out = int(round(z_pos * scale))
+        y_out = max(0, min(y_out, out_h - 1))
+        color = disc_colors.get(label, (255, 200, 100))
+        rgb_fill = f"rgb({color[0]},{color[1]},{color[2]})"
+        disc_labels_list.append((y_out, name, rgb_fill))
+    
+    # Adjust spacing for discs
+    disc_adjusted: list[tuple[int, str, str]] = []
+    last_y = -10_000
+    for y_out, name, rgb_fill in disc_labels_list:
+        y_adj = y_out
+        if y_adj - last_y < min_spacing:
+            y_adj = last_y + min_spacing
+        y_adj = max(0, min(y_adj, out_h - 1))
+        disc_adjusted.append((y_adj, name, rgb_fill))
+        last_y = y_adj
+    
+    # Build ImageMagick command
+    # Resize, add margins on both sides, then annotate
+    cmd = [
+        "convert",
+        str(ppm_path),
+        "-filter", "Lanczos",
+        "-resize", f"{target_width}x",
+        "-background", "#000000",
+        # Add left margin for disc labels
+        "-gravity", "West",
+        "-splice", f"{left_margin}x0",
+        # Add right margin for vertebral labels
+        "-gravity", "East",
+        "-splice", f"{right_margin}x0",
+        "-gravity", "NorthWest",
+        "-pointsize", str(pointsize),
+        "-stroke", "#000000",
+        "-strokewidth", "1",
+    ]
+    
+    # Add disc labels on left side
+    for y, name, rgb_fill in disc_adjusted:
+        cmd.extend([
+            "-fill", rgb_fill,
+            "-annotate", f"+10+{max(0, y - pointsize // 2)}",
+            name,
+        ])
+    
+    # Add vertebral labels on right side
+    total_width = left_margin + target_width + right_margin
+    for y, name, rgb_fill in vert_adjusted:
+        cmd.extend([
+            "-fill", rgb_fill,
+            "-annotate", f"+{left_margin + target_width + 10}+{max(0, y - pointsize // 2)}",
+            name,
+        ])
+    
+    cmd.append(str(output))
+    
+    ok, _ = _run_command(cmd)
     return output if ok else None
 
 

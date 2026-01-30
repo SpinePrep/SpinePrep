@@ -17,11 +17,10 @@ from typing import Optional
 REPORTLET_ORDER: dict[str, list[str]] = {
     "S2_anat_cordref": [
         "crop_box_sagittal",        # S2.1 - Discovery + Crop
-        "centerline_montage",       # S2.2 - Center Line
-        "cordmask_montage",         # S2.2 - Cord Mask
-        "vertebral_labels_montage", # S2.3 - Vertebral labeling
-        "rootlets_montage",         # S2.4 - Rootlets segmentation
-        "pam50_reg_overlay",        # S2.5 - PAM50 registration
+        "cordmask_montage",         # S2.2 - Cord Segmentation (sct_deepseg spinalcord)
+        "totalspineseg_montage",    # S2.2 - Spine Anatomy (TotalSpineSeg: vertebrae + discs + canal)
+        "rootlets_montage",         # S2.3 - Rootlets segmentation
+        "pam50_reg_overlay",        # S2.4 - PAM50 registration
     ],
     "S3_func_init_and_crop": [
         "func_localization_crop",   # S3.1 - Discovery + Crop
@@ -35,11 +34,10 @@ REPORTLET_ORDER: dict[str, list[str]] = {
 REPORTLET_LABELS: dict[str, dict[str, str]] = {
     "S2_anat_cordref": {
         "crop_box_sagittal": "S2.1 - Discovery + Crop",
-        "centerline_montage": "S2.2 - Center Line",
-        "cordmask_montage": "S2.2 - Cord Mask",
-        "vertebral_labels_montage": "S2.3 - Vertebral labeling",
-        "rootlets_montage": "S2.4 - Rootlets segmentation",
-        "pam50_reg_overlay": "S2.5 - PAM50 registration",
+        "cordmask_montage": "S2.2 - Cord Segmentation",
+        "totalspineseg_montage": "S2.2 - Spine Anatomy (TSS)",
+        "rootlets_montage": "S2.3 - Rootlets Segmentation",
+        "pam50_reg_overlay": "S2.4 - PAM50 Registration",
     },
     "S3_func_init_and_crop": {
         "func_localization_crop": "S3.1 - Discovery + Crop",
@@ -265,10 +263,19 @@ def generate_dashboard(out_dir: Path) -> DashboardResult:
                     qc_files.append((qc_path, step_code, dataset_key, out_dir))
         
         # Legacy structure: logs/<STEP>_qc.json
+        # Skip aggregate files if per-dataset QC files exist for this step
         for qc_file in logs_dir.glob("*_qc.json"):
             if qc_file.is_file():
                 # Extract step code from filename: S1_input_verify_qc.json -> S1_input_verify
                 step_code = qc_file.stem.replace("_qc", "")
+                
+                # Check if per-dataset QC files exist for this step (preferred)
+                step_subdir = logs_dir / step_code
+                if step_subdir.exists() and step_subdir.is_dir():
+                    # Per-dataset QC files exist; skip the aggregate file
+                    # (they will be picked up by the new structure scan above)
+                    continue
+                
                 # Try to extract dataset_key from QC JSON content
                 try:
                     with open(qc_file, "r", encoding="utf-8") as f:
@@ -481,7 +488,7 @@ def _generate_reportlet_gallery_html(
     images: list[dict],
     workfolder_name: Optional[str],
 ) -> None:
-    """Generate a gallery page for a specific reportlet type."""
+    """Generate a gallery page for a specific reportlet type, grouped by dataset."""
     gallery_dir = dashboard_dir / "reportlets" / step_code
     gallery_dir.mkdir(parents=True, exist_ok=True)
     gallery_file = gallery_dir / f"{reportlet_key}.html"
@@ -490,6 +497,18 @@ def _generate_reportlet_gallery_html(
     
     # Get dropdown CSS, HTML, and JS
     dropdown_css, dropdown_html, dropdown_js = _generate_workfolder_dropdown_html(workfolder_name, False)
+    
+    # Group images by dataset
+    images_by_dataset: dict[str, list[dict]] = {}
+    for img_info in images:
+        dataset = img_info["dataset"]
+        if dataset not in images_by_dataset:
+            images_by_dataset[dataset] = []
+        images_by_dataset[dataset].append(img_info)
+    
+    # Sort datasets alphabetically
+    sorted_datasets = sorted(images_by_dataset.keys())
+    num_datasets = len(sorted_datasets)
     
     lines = [
         "<!DOCTYPE html>",
@@ -501,6 +520,8 @@ def _generate_reportlet_gallery_html(
         "body { background: #1a1a1a; color: #e6e6e6; font-family: Arial, sans-serif; margin: 20px; }",
         "a { color: #7dcfff; text-decoration: none; }",
         "a:hover { text-decoration: underline; }",
+        ".dataset-section { margin: 24px 0; padding: 16px; border: 1px solid #444; border-radius: 6px; background: #222; }",
+        ".dataset-header { font-size: 1.1em; font-weight: bold; margin-bottom: 12px; color: #7dcfff; border-bottom: 1px solid #444; padding-bottom: 8px; }",
         ".gallery { display: flex; flex-wrap: wrap; gap: 20px; }",
         ".card { border: 1px solid #333; padding: 12px; border-radius: 4px; background: #2a2a2a; max-width: 400px; }",
         ".card img { width: 100%; height: auto; border: 1px solid #222; }",
@@ -509,6 +530,7 @@ def _generate_reportlet_gallery_html(
         ".status-PASS { background: #14532d; }",
         ".status-FAIL { background: #7f1d1d; }",
         ".status-UNKNOWN { background: #333; }",
+        ".summary-bar { background: #2a2a2a; padding: 12px; border-radius: 4px; margin-bottom: 16px; }",
     ]
     lines.extend(dropdown_css)
     lines.append("</style>")
@@ -519,42 +541,50 @@ def _generate_reportlet_gallery_html(
     
     lines.extend([
         "<p><a href=\"../../index.html\">Back to index</a></p>",
-        f"<p>Showing {len(images)} image(s)</p>",
-        "<div class=\"gallery\">",
+        f"<div class=\"summary-bar\">Showing {len(images)} image(s) from {num_datasets} dataset(s)</div>",
     ])
     
-    for img_info in images:
-        dataset = img_info["dataset"]
-        subject = img_info["subject"]
-        session = img_info.get("session")
-        path_abs = Path(img_info["path_abs"])
-        path_rel_display = img_info.get("path_rel", "")
-        status = img_info.get("status", "UNKNOWN")
+    # Render each dataset section
+    for dataset in sorted_datasets:
+        dataset_images = images_by_dataset[dataset]
         
-        # Compute relative path from gallery file's parent directory to reportlet
-        reportlet_rel = _relpath(path_abs, gallery_file.parent)
-        # Ensure forward slashes for web compatibility
-        reportlet_rel = reportlet_rel.replace("\\", "/")
+        lines.append(f"<div class=\"dataset-section\">")
+        lines.append(f"<div class=\"dataset-header\">{dataset} ({len(dataset_images)} images)</div>")
+        lines.append("<div class=\"gallery\">")
         
-        session_str = f" / {session}" if session else ""
-        label_str = f"{dataset} / {subject}{session_str}"
+        for img_info in dataset_images:
+            subject = img_info["subject"]
+            session = img_info.get("session")
+            path_abs = Path(img_info["path_abs"])
+            path_rel_display = img_info.get("path_rel", "")
+            status = img_info.get("status", "UNKNOWN")
+            
+            # Compute relative path from gallery file's parent directory to reportlet
+            reportlet_rel = _relpath(path_abs, gallery_file.parent)
+            # Ensure forward slashes for web compatibility
+            reportlet_rel = reportlet_rel.replace("\\", "/")
+            
+            session_str = f" / {session}" if session else ""
+            label_str = f"{subject}{session_str}"
+            
+            lines.append("<div class=\"card\">")
+            # Get mtime for cache busting
+            try:
+                 mtime = int(path_abs.stat().st_mtime)
+            except OSError:
+                 mtime = 0
+                 
+            lines.append(f"<img src=\"{reportlet_rel}?v={mtime}\" alt=\"{dataset} / {label_str}\" />")
+            lines.append("<div class=\"card-info\">")
+            lines.append(f"<span class=\"status-badge status-{status}\">{status}</span>")
+            lines.append(f"<span>{label_str}</span><br/>")
+            lines.append(f"<span style=\"color: #999; font-size: 0.85em;\">{path_rel_display}</span>")
+            lines.append("</div>")
+            lines.append("</div>")
         
-        lines.append("<div class=\"card\">")
-        # Get mtime for cache busting
-        try:
-             mtime = int(path_abs.stat().st_mtime)
-        except OSError:
-             mtime = 0
-             
-        lines.append(f"<img src=\"{reportlet_rel}?v={mtime}\" alt=\"{label_str}\" />")
-        lines.append("<div class=\"card-info\">")
-        lines.append(f"<span class=\"status-badge status-{status}\">{status}</span>")
-        lines.append(f"<span>{label_str}</span><br/>")
-        lines.append(f"<span style=\"color: #999; font-size: 0.85em;\">{path_rel_display}</span>")
-        lines.append("</div>")
-        lines.append("</div>")
+        lines.append("</div>")  # Close gallery
+        lines.append("</div>")  # Close dataset-section
     
-    lines.extend(["</div>"])
     lines.extend(dropdown_js)
     lines.extend(["</body>", "</html>"])
     

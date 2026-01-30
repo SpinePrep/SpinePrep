@@ -59,6 +59,12 @@ def _add_S1_arguments(subparser: argparse.ArgumentParser) -> None:
         help="Multiple dataset keys for batch processing (S2_anat_cordref only)",
     )
     subparser.add_argument(
+        "--scope",
+        help="Process datasets by scope: 'reg'/'regression' (5 subsets, 5 subjects), "
+             "'full'/'v1_validation' (5 datasets, 146 subjects), or comma-separated keys. "
+             "See SPEC/HEADER.md for definitions.",
+    )
+    subparser.add_argument(
         "--datasets-local",
         type=Path,
         help="Path to datasets_local.yaml mapping dataset keys to local BIDS roots (S1_input_verify/S2_anat_cordref)",
@@ -146,14 +152,57 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _run_S1(args):
-    from spinalfmriprep.S1_input_verify import run_S1_input_verify
+    # Resolve dataset keys from --scope if provided
+    dataset_keys = args.dataset_keys or []
+    if args.scope:
+        resolved_keys = _resolve_scope_to_dataset_keys(args.scope)
+        if not resolved_keys:
+            return StepResult(
+                status="FAIL",
+                failure_message=f"No datasets found for scope: {args.scope}",
+            )
+        dataset_keys = resolved_keys
+    
+    if dataset_keys:
+        # Batch mode: process multiple datasets
+        from spinalfmriprep.S1_input_verify import run_S1_input_verify_batch
 
-    return run_S1_input_verify(
-        dataset_key=args.dataset_key,
-        datasets_local=args.datasets_local,
-        bids_root=args.bids_root,
-        out=args.out,
-    )
+        if args.out is None:
+            return StepResult(status="FAIL", failure_message="--out is required for batch processing")
+
+        results = run_S1_input_verify_batch(
+            dataset_keys=dataset_keys,
+            datasets_local=args.datasets_local,
+            out_base=args.out,
+        )
+
+        # Summarize results
+        passed = sum(1 for r in results.values() if r.status == "PASS")
+        failed = sum(1 for r in results.values() if r.status == "FAIL")
+        total = len(results)
+
+        # Return a combined result
+        if failed == 0:
+            return StepResult(
+                status="PASS",
+                failure_message=None,
+            )
+        else:
+            failed_keys = [k for k, r in results.items() if r.status == "FAIL"]
+            return StepResult(
+                status="FAIL",
+                failure_message=f"Batch processing: {failed}/{total} datasets failed. Failed: {', '.join(failed_keys[:5])}{'...' if len(failed_keys) > 5 else ''}",
+            )
+    else:
+        # Single dataset mode
+        from spinalfmriprep.S1_input_verify import run_S1_input_verify
+
+        return run_S1_input_verify(
+            dataset_key=args.dataset_key,
+            datasets_local=args.datasets_local,
+            bids_root=args.bids_root,
+            out=args.out,
+        )
 
 
 def _check_S1(args):
@@ -168,27 +217,79 @@ def _check_S1(args):
 
 
 def _run_S2(args):
+    # Resolve dataset keys from --scope if provided
+    dataset_keys = args.dataset_keys or []
+    if args.scope:
+        resolved_keys = _resolve_scope_to_dataset_keys(args.scope)
+        if not resolved_keys:
+            return StepResult(
+                status="FAIL",
+                failure_message=f"No datasets found for scope: {args.scope}",
+            )
+        dataset_keys = resolved_keys
+    
+    # Handle --reportlets-only mode
     if args.reportlets_only:
-        from spinalfmriprep.S2_anat_cordref import run_S2_anat_cordref_reportlets_only
+        if args.out is None:
+            return StepResult(status="FAIL", failure_message="--out is required for --reportlets-only")
+        
+        if dataset_keys:
+            # Batch mode reportlets-only: regenerate for multiple datasets
+            from spinalfmriprep.S2_anat_cordref import run_S2_anat_cordref_reportlets_only_batch
+            
+            results = run_S2_anat_cordref_reportlets_only_batch(
+                dataset_keys=dataset_keys,
+                out_base=args.out,
+            )
+            
+            # Summarize results
+            passed = sum(1 for r in results.values() if r.status == "PASS")
+            failed = sum(1 for r in results.values() if r.status == "FAIL")
+            total = len(results)
+            
+            if failed == 0:
+                return StepResult(status="PASS", failure_message=None)
+            else:
+                failed_keys = [k for k, r in results.items() if r.status == "FAIL"]
+                return StepResult(
+                    status="FAIL",
+                    failure_message=f"Reportlets-only batch: {failed}/{total} datasets failed. Failed: {', '.join(failed_keys[:5])}",
+                )
+        else:
+            # Single dataset reportlets-only
+            from spinalfmriprep.S2_anat_cordref import run_S2_anat_cordref_reportlets_only
 
-        return run_S2_anat_cordref_reportlets_only(
-            dataset_key=args.dataset_key,
-            datasets_local=args.datasets_local,
-            bids_root=args.bids_root,
-            out=args.out,
-        )
-    elif args.dataset_keys:
-        # Batch mode: process multiple datasets in parallel
+            return run_S2_anat_cordref_reportlets_only(
+                dataset_key=args.dataset_key,
+                datasets_local=args.datasets_local,
+                bids_root=args.bids_root,
+                out=args.out,
+            )
+    
+    if dataset_keys:
+        # Batch mode: process multiple datasets
         from spinalfmriprep.S2_anat_cordref import run_S2_anat_cordref_batch
 
         if args.out is None:
             return StepResult(status="FAIL", failure_message="--out is required for batch processing")
 
+        # Chain model: detect S1 done path based on scope
+        s1_base = None
+        if args.scope:
+            scope_aliases = {"full": "v1_validation", "reg": "regression"}
+            resolved_scope = scope_aliases.get(args.scope, args.scope)
+            # Map scope to chain name
+            chain_name = {"regression": "reg", "v1_validation": "full"}.get(resolved_scope, args.scope)
+            s1_done_path = Path("work") / "done" / chain_name / "S1"
+            if s1_done_path.exists() or s1_done_path.is_symlink():
+                s1_base = s1_done_path.resolve()
+
         results = run_S2_anat_cordref_batch(
-            dataset_keys=args.dataset_keys,
+            dataset_keys=dataset_keys,
             datasets_local=args.datasets_local,
             out_base=args.out,
             max_workers=args.batch_workers,
+            s1_base=s1_base,
         )
 
         # Summarize results
@@ -218,6 +319,49 @@ def _run_S2(args):
             bids_root=args.bids_root,
             out=args.out,
         )
+
+
+def _resolve_scope_to_dataset_keys(scope: str) -> list[str]:
+    """
+    Resolve a scope value to a list of dataset keys.
+    
+    Scope can be:
+    - 'regression' or 'reg': all datasets with intended_use containing 'regression'
+    - 'full' or 'v1_validation': all datasets with intended_use containing 'v1_validation'
+    - Comma-separated list of dataset keys
+    
+    See private/SPEC/HEADER.md § Development Scopes for canonical definitions:
+    - smoke: 1 subject (handled by smoke scripts, not this function)
+    - reg: 5 subjects (1 per dataset, regression subsets)
+    - full: 146 subjects (all subjects in v1_validation datasets)
+    """
+    from spinalfmriprep.policy.datasets import load_dataset_policy
+    
+    # Scope aliases
+    scope_aliases = {
+        "full": "v1_validation",
+        "reg": "regression",
+    }
+    resolved_scope = scope_aliases.get(scope, scope)
+    
+    # Check if scope is a known intended_use value
+    known_scopes = {"regression", "v1_validation", "extended", "private", "requested"}
+    
+    if resolved_scope in known_scopes:
+        # Load policy and filter by intended_use
+        policy_path = Path("policy") / "datasets.yaml"
+        if not policy_path.exists():
+            return []
+        
+        policy = load_dataset_policy(policy_path)
+        return [
+            entry.key
+            for entry in policy.datasets
+            if resolved_scope in entry.intended_use
+        ]
+    else:
+        # Treat as comma-separated list of dataset keys
+        return [k.strip() for k in scope.split(",") if k.strip()]
 
 
 def _check_S2(args):

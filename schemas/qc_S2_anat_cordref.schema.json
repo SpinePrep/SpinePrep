@@ -2,16 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "S2_anat_cordref_qc",
   "type": "object",
-  "required": ["dataset_key", "bids_root", "status", "counts", "runs"],
+  "required": ["runs"],
   "properties": {
-    "dataset_key": {"type": "string"},
-    "bids_root": {"type": "string"},
+    "dataset_key": {"type": "string", "description": "Single-dataset mode"},
+    "bids_root": {"type": "string", "description": "Single-dataset mode"},
     "status": {"type": "string", "enum": ["PASS", "WARN", "FAIL"]},
     "failure_message": {"type": ["string", "null"]},
     "policy_path": {"type": "string"},
+    "step": {"type": "string", "description": "Multi-dataset mode: step name"},
+    "datasets": {"type": "array", "items": {"type": "string"}, "description": "Multi-dataset mode: list of dataset keys"},
+    "total_runs": {"type": "integer", "description": "Multi-dataset mode: total run count"},
+    "passed": {"type": "integer", "description": "Multi-dataset mode: passed count"},
+    "failed": {"type": "integer", "description": "Multi-dataset mode: failed count"},
     "counts": {
       "type": "object",
-      "required": ["runs", "passed", "failed"],
+      "description": "Single-dataset mode",
       "properties": {
         "runs": {"type": "integer"},
         "passed": {"type": "integer"},
@@ -24,6 +29,7 @@
         "type": "object",
         "required": ["subject", "session", "status", "run_id"],
         "properties": {
+          "dataset_key": {"type": ["string", "null"], "description": "Dataset key for multi-dataset workflows"},
           "subject": {"type": ["string", "null"]},
           "session": {"type": ["string", "null"]},
           "status": {"type": "string", "enum": ["PASS", "FAIL"]},
@@ -31,8 +37,9 @@
           "run_id": {"type": "string"},
           "cordref_path": {"type": ["string", "null"]},
           "cordmask_path": {"type": ["string", "null"]},
-          "centerline_path": {"type": ["string", "null"]},
           "vertebral_labels_path": {"type": ["string", "null"]},
+          "cord_segmentation_method": {"type": ["string", "null"], "enum": ["contrast_agnostic", "totalspineseg", null]},
+          "labeling_method": {"type": ["string", "null"], "enum": ["totalspineseg", "sct_label_vertebrae", null]},
           "rootlets_path": {"type": ["string", "null"]},
           "disc_labels_path": {"type": ["string", "null"]},
           "xfm": {
@@ -65,10 +72,47 @@
             "type": "object",
             "properties": {
               "cordmask_montage": {"type": ["string", "null"]},
-              "centerline_montage": {"type": ["string", "null"]},
+              "totalspineseg_montage": {"type": ["string", "null"]},
               "vertebral_labels_montage": {"type": ["string", "null"]},
+              "crop_box_sagittal": {"type": ["string", "null"]},
               "pam50_reg_overlay": {"type": ["string", "null"]},
               "rootlets_montage": {"type": ["string", "null"]}
+            }
+          },
+          "tss_metrics": {
+            "type": ["object", "null"],
+            "description": "TotalSpineSeg-specific metrics (when labeling_method=totalspineseg)",
+            "properties": {
+              "vertebral_coverage": {
+                "type": "object",
+                "properties": {
+                  "levels_detected": {"type": "array", "items": {"type": "string"}},
+                  "range": {"type": ["string", "null"]},
+                  "count": {"type": "integer"}
+                }
+              },
+              "confidence_scores": {
+                "type": "object",
+                "properties": {
+                  "per_level": {"type": "object"},
+                  "mean": {"type": "number"},
+                  "min": {"type": "number"}
+                }
+              },
+              "volume_consistency": {
+                "type": "object",
+                "properties": {
+                  "vertebrae_volumes_mm3": {"type": "array", "items": {"type": "number"}},
+                  "cv_percent": {"type": "number"}
+                }
+              },
+              "inter_level_gaps": {
+                "type": "object",
+                "properties": {
+                  "max_gap_mm": {"type": "number"},
+                  "gaps": {"type": "array"}
+                }
+              }
             }
           }
         }
