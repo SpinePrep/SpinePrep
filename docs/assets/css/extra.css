@@ -14,8 +14,8 @@
   --md-shadow-z2: none;
 
   /* SpinalfMRIprep Brand Colors */
-  /* Option A: Light Slate Blue for Spinal */
-  --tx-brand-spinal: rgb(120, 150, 200);
+  /* Option B: Off-White for Spinal */
+  --tx-brand-spinal: rgb(245, 245, 250);
   --tx-brand-fmri: rgb(231, 130, 49);
   --tx-brand-prep: rgb(70, 130, 150);
 }
