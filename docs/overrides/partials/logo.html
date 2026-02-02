@@ -1,5 +1,4 @@
 <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-header__button md-logo" aria-label="{{ config.site_name }}">
-  {% include ".icons/logo.svg" ignore missing %}
   {% if config.theme.logo %}
     <img src="{{ config.theme.logo | url }}" alt="logo">
   {% endif %}
