@@ -6,17 +6,24 @@
 
 {% block content %}
 <div class="tx-hero">
-  <h1><span class="tx-brand-spinal">Spinal</span><span class="tx-brand-fmri">fMRI</span><span class="tx-brand-prep">prep</span></h1>
-  <p>Robust, automated preprocessing<br>for spinal cord fMRI.</p>
+  <div class="tx-hero__container">
+    <div class="tx-hero__logo">
+      <img src="{{ 'assets/images/logo.png' | url }}" alt="SpinalfMRIprep logo">
+    </div>
+    <div class="tx-hero__content">
+      <h1><span class="tx-brand-spinal">Spinal</span><span class="tx-brand-fmri">fMRI</span><span class="tx-brand-prep">prep</span></h1>
+      <p>Robust, automated preprocessing<br>for spinal cord fMRI.</p>
 
-  <div class="tx-badges">
-    <span class="tx-badge tx-badge--primary">BIDS-App</span>
-    <span class="tx-badge tx-badge--secondary">Validating on 5 datasets</span>
-  </div>
+      <div class="tx-badges">
+        <span class="tx-badge tx-badge--primary">BIDS-App</span>
+        <span class="tx-badge tx-badge--secondary">Validating on 5 datasets</span>
+      </div>
 
-  <div class="tx-cta-buttons">
-    <a href="methods/overview/" class="tx-btn tx-btn-primary">View Methods</a>
-    <a href="validation/" class="tx-btn tx-btn-secondary">See Validation</a>
+      <div class="tx-cta-buttons">
+        <a href="methods/overview/" class="tx-btn tx-btn-primary">View Methods</a>
+        <a href="validation/" class="tx-btn tx-btn-secondary">See Validation</a>
+      </div>
+    </div>
   </div>
 </div>
 
