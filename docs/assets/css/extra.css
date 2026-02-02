@@ -54,8 +54,15 @@
 
 /* Hide the default center header title (we have custom branded one in logo.html) */
 /* Target only the standalone title, not the one inside .md-logo */
-nav.md-header__inner > .md-header__title {
+.md-header__title:not(.tx-header__title--custom) {
   display: none;
+}
+
+/* Show and style our custom branded title */
+.tx-header__title--custom {
+  display: flex !important;
+  align-items: center;
+  margin-left: 0.4rem;
 }
 
 /* Ensure brand colors work in dark mode (same colors) */
