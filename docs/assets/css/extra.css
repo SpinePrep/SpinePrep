@@ -12,6 +12,47 @@
   /* Card Styling - Technical/Bordered */
   --md-shadow-z1: none;
   --md-shadow-z2: none;
+
+  /* SpinalfMRIprep Brand Colors */
+  --tx-brand-spinal: rgb(23, 38, 71);
+  --tx-brand-fmri: rgb(231, 130, 49);
+  --tx-brand-prep: rgb(70, 130, 150);
+}
+
+/* ==========================================================================
+   SpinalfMRIprep 3-Color Branding
+   ========================================================================== */
+
+.tx-brand-spinal {
+  color: var(--tx-brand-spinal);
+}
+
+.tx-brand-fmri {
+  color: var(--tx-brand-fmri);
+}
+
+.tx-brand-prep {
+  color: var(--tx-brand-prep);
+}
+
+/* Header/Nav branding */
+.md-header__title .tx-brand-spinal,
+.md-header__title .tx-brand-fmri,
+.md-header__title .tx-brand-prep {
+  font-weight: 700;
+}
+
+/* Ensure brand colors work in dark mode (same colors) */
+[data-md-color-scheme="slate"] .tx-brand-spinal {
+  color: var(--tx-brand-spinal);
+}
+
+[data-md-color-scheme="slate"] .tx-brand-fmri {
+  color: var(--tx-brand-fmri);
+}
+
+[data-md-color-scheme="slate"] .tx-brand-prep {
+  color: var(--tx-brand-prep);
 }
 
 /* ==========================================================================
@@ -40,13 +81,10 @@
   font-weight: 800;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
-  color: var(--md-primary-fg-color);
   z-index: 2;
 }
 
-[data-md-color-scheme="slate"] .tx-hero h1 {
-  color: #f8fafc;
-}
+/* Hero title uses brand colors via spans, no override needed */
 
 .tx-hero p {
   font-size: 1.25rem;
