@@ -52,6 +52,12 @@
   width: auto;
 }
 
+/* Hide the default center header title (we have custom branded one in logo.html) */
+/* Target only the standalone title, not the one inside .md-logo */
+nav.md-header__inner > .md-header__title {
+  display: none;
+}
+
 /* Ensure brand colors work in dark mode (same colors) */
 [data-md-color-scheme="slate"] .tx-brand-spinal {
   color: var(--tx-brand-spinal);
