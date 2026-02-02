@@ -25,14 +25,3 @@ hide:
     Deterministic execution guarantees identical results, every time.
 
 </div>
-
-### Citation
-
-```bibtex
-@software{spinalfmriprep,
-  title = {SpinalfMRIprep: A Robust Preprocessing Pipeline for Spinal Cord fMRI},
-  author = {SpinalfMRIprep Team},
-  year = {2026},
-  url = {https://spinalfmriprep.org}
-}
-```

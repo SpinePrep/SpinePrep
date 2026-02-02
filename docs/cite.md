@@ -2,7 +2,7 @@
 
 If you use SpinalfMRIprep in your research, please cite:
 
-## Primary Citation
+## Software Citation
 
 !!! quote "BibTeX"
     ```bibtex
@@ -10,15 +10,14 @@ If you use SpinalfMRIprep in your research, please cite:
       title = {SpinalfMRIprep: A Robust Preprocessing Pipeline for Spinal Cord fMRI},
       author = {SpinalfMRIprep Team},
       year = {2026},
-      url = {https://spinalfmriprep.org},
-      note = {Preprint forthcoming}
+      url = {https://github.com/spinalfmriprep/spinalfmriprep}
     }
     ```
 
 ## DOI
 
-<!-- Replace with actual DOI when available -->
-[![DOI](https://img.shields.io/badge/DOI-Preprint%20Forthcoming-blue)](https://spinalfmriprep.org)
+<!-- DOI will be added when available via Zenodo -->
+*DOI coming soon*
 
 ## Related Publications
 

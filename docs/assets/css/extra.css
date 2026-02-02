@@ -184,6 +184,21 @@
   --md-bg-color: #020617;
 }
 
+/* Fix: Selected nav item text visibility in dark mode */
+[data-md-color-scheme="slate"] .md-nav__item--active > .md-nav__link,
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
+  color: #e2e8f0 !important;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: #f8fafc !important;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link[data-md-state="current"] {
+  color: #0ea5e9 !important;
+}
+
 /* ==========================================================================
    Typography
    ========================================================================== */
