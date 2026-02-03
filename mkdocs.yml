@@ -50,8 +50,6 @@ plugins:
       enable_creation_date: true
       exclude:
         - index.md
-      exclude:
-        - index.md
   - glightbox
   - mkdocstrings:
       handlers:

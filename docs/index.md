@@ -5,6 +5,7 @@ hide:
   - navigation
   - toc
   - footer
+  - title
 ---
 
 
