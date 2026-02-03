@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox="0 0 2048 2048">
-  <!-- Clean geometric recreation of SpinalfMRIprep logo -->
-  <!-- Background -->
-  <rect x="0" y="0" width="2048" height="2048" fill="#FCFCFC"/>
-  <!-- Shapes -->
+  <!-- Clean geometric SpinalfMRIprep logo (transparent background) -->
   <rect x="1215" y="129" width="220" height="142" fill="#152D51"/>
   <rect x="1169" y="1217" width="186" height="154" fill="#152D51"/>
   <rect x="1096" y="1026" width="186" height="154" fill="#152D51"/>
