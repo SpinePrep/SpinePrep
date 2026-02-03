@@ -358,13 +358,17 @@
    ========================================================================== */
 
 /* Hide the redundant "Home" H1 heading on homepage */
-.tx-home-content h1:first-child {
-  display: none;
+.tx-home-content > h1,
+.tx-home-content > .md-typeset > h1,
+.tx-home-content .md-content__inner > h1:first-of-type {
+  display: none !important;
 }
 
 /* Hide revision dates on homepage */
-.tx-home-content .md-source-date {
-  display: none;
+.tx-home-content .md-source-file,
+.tx-home-content .git-revision-date-localized-plugin,
+.tx-home-content small:has(span) {
+  display: none !important;
 }
 
 /* Ensure hero content doesn't overflow on mobile */
