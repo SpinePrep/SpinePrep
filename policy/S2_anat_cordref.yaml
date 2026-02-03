@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 selection:
   preference:
@@ -26,16 +26,30 @@ crop:
   min_z_slices: 20
 
 segmentation:
+  # Cord segmentation method:
+  #   contrast_agnostic: sct_deepseg spinalcord (optimized for CSA consistency)
+  #   totalspineseg: extract cord from TotalSpineSeg output (simpler, all-in-one)
+  cord_method: contrast_agnostic
+  # Legacy settings (kept for backward compat)
   method: sct_deepseg_sc
   contrast_map:
     T2w: t2
     T1w: t1
-  centerline: true
 
 labeling:
-  method: sct_label_vertebrae
+  # Labeling method:
+  #   totalspineseg: sct_deepseg -task totalspineseg (default, provides canal + vertebrae + labels)
+  #   sct_label_vertebrae: legacy method
+  method: totalspineseg
+  # Legacy settings (used when method=sct_label_vertebrae)
   clean_labels: 1
   initcenter: 3
+  # TotalSpineSeg QC thresholds
+  qc_thresholds:
+    min_vertebral_levels: 5
+    min_coverage_ratio: 0.8
+    max_inter_level_gap_mm: 15
+    min_confidence: 0.7
 
 rootlets:
   enabled: true

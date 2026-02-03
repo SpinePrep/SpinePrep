@@ -1830,8 +1830,11 @@ def run_S3_func_init_and_crop(
     if subtask_id:
         setup_subtask_context(subtask_id)
 
+    # Per-dataset paths
+    ds_key = dataset_key or "ad_hoc"
+    
     # Detect test harness mode
-    if out and not (Path(out) / "work" / "S1_input_verify" / "bids_inventory.json").exists():
+    if out and not (Path(out) / "work" / "S1_input_verify" / ds_key / "bids_inventory.json").exists():
         # Fallback to test harness if no inventory found
         return _run_s3_test_harness(out)
         
@@ -1839,7 +1842,7 @@ def run_S3_func_init_and_crop(
         return StepResult("FAIL", "--out is required")
         
     out_path = Path(out)
-    inventory_path = out_path / "work" / "S1_input_verify" / "bids_inventory.json"
+    inventory_path = out_path / "work" / "S1_input_verify" / ds_key / "bids_inventory.json"
     
     if not inventory_path.exists():
         return StepResult("FAIL", f"Missing inventory: {inventory_path}")

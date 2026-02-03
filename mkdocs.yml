@@ -48,6 +48,10 @@ plugins:
         # 'old.md': 'new.md'
   - git-revision-date-localized:
       enable_creation_date: true
+      exclude:
+        - index.md
+      exclude:
+        - index.md
   - glightbox
   - mkdocstrings:
       handlers:

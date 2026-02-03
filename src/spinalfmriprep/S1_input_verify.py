@@ -44,15 +44,18 @@ def run_S1_input_verify(
 
     policy_entry = _load_policy_entry(dataset_key)
     inventory = _build_inventory(resolved_bids_root, dataset_key or "ad_hoc", policy_entry)
-    work_dir = Path(out) / "work" / "S1_input_verify"
+    # Per-dataset work directory to support multi-dataset validation
+    ds_key = dataset_key or "ad_hoc"
+    work_dir = Path(out) / "work" / "S1_input_verify" / ds_key
     work_dir.mkdir(parents=True, exist_ok=True)
     inventory_path = work_dir / "bids_inventory.json"
     _write_json(inventory_path, inventory)
 
-    logs_dir = Path(out) / "logs"
+    # Per-dataset logs directory
+    logs_dir = Path(out) / "logs" / "S1_input_verify" / ds_key
     logs_dir.mkdir(parents=True, exist_ok=True)
-    runs_path = logs_dir / "S1_input_verify_runs.jsonl"
-    qc_path = logs_dir / "S1_input_verify_qc.json"
+    runs_path = logs_dir / "runs.jsonl"
+    qc_path = logs_dir / "qc.json"
     fix_plan_path = work_dir / "fix_plan.yaml"
 
     runs, qc_summary, fix_plan = _summarise_inventory(inventory, policy_entry)
@@ -97,10 +100,11 @@ def check_S1_input_verify(
 ) -> StepResult:
     if out is None:
         return StepResult(status="FAIL", failure_message="--out is required for S1_input_verify")
-    inventory_path = Path(out) / "work" / "S1_input_verify" / "bids_inventory.json"
-    runs_path = Path(out) / "logs" / "S1_input_verify_runs.jsonl"
-    qc_path = Path(out) / "logs" / "S1_input_verify_qc.json"
-    fix_plan_path = Path(out) / "work" / "S1_input_verify" / "fix_plan.yaml"
+    ds_key = dataset_key or "ad_hoc"
+    inventory_path = Path(out) / "work" / "S1_input_verify" / ds_key / "bids_inventory.json"
+    runs_path = Path(out) / "logs" / "S1_input_verify" / ds_key / "runs.jsonl"
+    qc_path = Path(out) / "logs" / "S1_input_verify" / ds_key / "qc.json"
+    fix_plan_path = Path(out) / "work" / "S1_input_verify" / ds_key / "fix_plan.yaml"
 
     required = (inventory_path, runs_path, qc_path, fix_plan_path)
     missing = [p for p in required if not p.exists() or p.stat().st_size == 0]
@@ -152,6 +156,35 @@ def check_S1_input_verify(
         qc_path=qc_path,
         fix_plan_path=fix_plan_path,
     )
+
+
+def run_S1_input_verify_batch(
+    dataset_keys: List[str],
+    datasets_local: Optional[Path],
+    out_base: Path,
+) -> Dict[str, StepResult]:
+    """
+    Run S1_input_verify on multiple datasets.
+    
+    All datasets write to the same out_base, with per-dataset subdirectories.
+    Dashboard is generated once at the end.
+    """
+    results: Dict[str, StepResult] = {}
+    
+    for ds_key in dataset_keys:
+        result = run_S1_input_verify(
+            dataset_key=ds_key,
+            datasets_local=datasets_local,
+            bids_root=None,
+            out=out_base,
+        )
+        results[ds_key] = result
+    
+    # Regenerate dashboard once after all datasets
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+    generate_dashboard_safe(out_base)
+    
+    return results
 
 
 def _format_command_line(
