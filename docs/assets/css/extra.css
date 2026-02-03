@@ -217,11 +217,16 @@ a:focus-visible {
 
 .tx-hero__content {
   text-align: left;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* Fluid hero title */
 .tx-hero h1 {
-  font-size: clamp(1.75rem, 5vw, 3.5rem);
+  font-size: clamp(1.5rem, 5vw, 3.5rem);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
   font-weight: 800;
   margin-bottom: var(--tx-space-md);
   letter-spacing: -0.02em;
@@ -457,7 +462,15 @@ a:focus-visible {
 /* Hide redundant elements on homepage */
 .tx-home-content > h1,
 .tx-home-content > .md-typeset > h1,
-.tx-home-content .md-content__inner > h1:first-of-type {
+.tx-home-content .md-content__inner > h1:first-of-type,
+.tx-home-content h1,
+.tx-home-content .md-typeset h1 {
+  display: none !important;
+}
+
+/* Hide sidebar on homepage */
+.tx-home-content ~ .md-sidebar,
+body:has(.tx-home-content) .md-sidebar--primary {
   display: none !important;
 }
 
