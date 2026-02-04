@@ -1,11 +1,20 @@
 # API Reference
 
-::: spinalfmriprep.cli.main
+!!! info "Coming Soon"
+    The Python API reference is under development. 
+    
+    For now, please use the [CLI Reference](cli.md) for running SpinalfMRIprep.
 
-::: spinalfmriprep.S0_setup.run_S0_setup
+## Planned API Coverage
 
-::: spinalfmriprep.S1_input_verify.run_S1_input_verify
+The following modules will be documented:
 
-::: spinalfmriprep.S2_anat_cordref.run_S2_anat_cordref
+- `spinalfmriprep.cli` - Command-line interface
+- `spinalfmriprep.S0_setup` - Environment setup
+- `spinalfmriprep.S1_input_verify` - Input validation
+- `spinalfmriprep.S2_anat_cordref` - Anatomical processing
+- `spinalfmriprep.S3_func_init_and_crop` - Functional initialization
 
-::: spinalfmriprep.S3_func_init_and_crop.run_S3_func_init_and_crop
+---
+
+*Check back soon for full API documentation.*

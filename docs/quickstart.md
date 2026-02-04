@@ -1,72 +1,67 @@
-# Quick Start
+# Try It
 
-Get SpinalfMRIprep running in 5 minutes.
+Run SpinalfMRIprep on sample data in under 5 minutes.
 
 ## Prerequisites
 
-- Docker Engine 20.10+ or Apptainer 1.0+
-- Python 3.11+
-- A BIDS-formatted spinal cord fMRI dataset
+- Docker Desktop (or Apptainer/Singularity)
+- 10 GB free disk space
 
-## Installation
+## One-Command Install
 
 ```bash
-git clone https://github.com/spinalfmriprep/spinalfmriprep.git
-cd spinalfmriprep
-pip install poetry
-poetry install
+# Clone and install
+git clone https://github.com/SpinalfMRIprep/SpinalfMRIprep.git
+cd SpinalfMRIprep
+pip install poetry && poetry install
 ```
+
+## Download Sample Data
+
+SpinalfMRIprep provides a script to download a minimal test dataset from OpenNeuro:
+
+```bash
+# Download 1 subject from ds005884 (Motor task)
+poetry run spinalfmriprep download-sample --dataset ds005884 --subjects 1
+```
+
+This downloads ~500 MB of data to `data/ds005884/`.
 
 ## Pull Container Images
 
 ```bash
 docker pull vnmd/spinalcordtoolbox_7.2:20251215
-docker pull vnmd/fsl_6.0.7.18_20250928
-docker pull vnmd/ants_2.6.0_20250424
 ```
 
-## Run the Pipeline
-
-### Step 1: Verify Environment
+## Run Preprocessing
 
 ```bash
-poetry run spinalfmriprep run S0_SETUP --project-root .
+# Run all steps on the sample data
+poetry run spinalfmriprep run all \
+  --bids-root data/ds005884 \
+  --out work/tryit
 ```
 
-### Step 2: Validate Inputs
+## View Results
+
+Open the QC dashboard in your browser:
 
 ```bash
-poetry run spinalfmriprep run S1_input_verify \
-  --bids-root /path/to/bids \
-  --out wf_test_001
+open work/tryit/derivatives/spinalfmriprep/qc_dashboard.html
 ```
 
-### Step 3: Process Anatomical
+You should see:
+- ✅ S0 Setup: PASS
+- ✅ S1 Input Verify: PASS  
+- ✅ S2 Anat Cord Ref: PASS
+- ✅ S3 Func Init: PASS
 
-```bash
-poetry run spinalfmriprep run S2_anat_cordref \
-  --bids-root /path/to/bids \
-  --out wf_test_001
-```
-
-### Step 4: Process Functional
-
-```bash
-poetry run spinalfmriprep run S3_func_init_and_crop \
-  --bids-root /path/to/bids \
-  --out wf_test_001
-```
-
-## View QC Dashboard
-
-After processing, open the QC dashboard:
-
-```bash
-open wf_test_001/derivatives/spinalfmriprep/qc_dashboard.html
-```
+---
 
 ## Next Steps
 
-- See [Full Tutorial](tutorial.md) for detailed walkthrough
-- See [Methods](methods/overview.md) for algorithm details
-- See [Reference](reference/cli.md) for CLI options
+| Goal | Page |
+|------|------|
+| Process your own data | [Install & Use](tutorial.md) |
+| Understand the algorithms | [Methods](methods/overview.md) |
+| Contribute to development | [Contribute](contributing.md) |

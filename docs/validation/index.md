@@ -2,22 +2,50 @@
 
 SpinalfMRIprep is validated on multiple public and internal datasets spanning diverse acquisition protocols and clinical populations.
 
-## Validation Datasets
+## Validation Strategy
 
-| Dataset | Source | Subjects | Task | Status |
-|---------|--------|----------|------|--------|
-| ds005884 | OpenNeuro | 20 | Motor | ✅ Regression |
-| ds005883 | OpenNeuro | 20 | Pain | ✅ Regression |
-| ds004386 | OpenNeuro | 15 | Rest | ✅ Regression |
-| ds004616 | OpenNeuro | 12 | Hand Grasp | ✅ Regression |
-| Balgrist Motor | Internal | 11 | Motor | ✅ Regression |
+SpinalfMRIprep uses a two-tier validation approach:
+
+| Tier | Description | Purpose |
+|------|-------------|---------|
+| **Benchmark** | 1 subject × all sessions per dataset | Fast cross-dataset coverage for continuous testing |
+| **Full** | All subjects × all sessions | Complete validation (in progress) |
+
+## Benchmark Datasets
+
+Benchmark validation runs 1 representative subject from each dataset with all available sessions.
+
+| Dataset | Source | Subjects | Sessions | Task | Status |
+|---------|--------|----------|----------|------|--------|
+| ds005884 | OpenNeuro | 1 | 1 | Motor | ✅ Benchmark |
+| ds005883 | OpenNeuro | 1 | 1 | Pain | ✅ Benchmark |
+| ds004386 | OpenNeuro | 1 | 2 | Rest | ✅ Benchmark |
+| ds004616 | OpenNeuro | 1 | 2 | Hand Grasp | ✅ Benchmark |
+| Balgrist Motor | Internal | 1 | 4 | Motor | ✅ Benchmark |
+
+**Benchmark totals**: 5 subjects, 10 subject-sessions
+
+## Full Validation Datasets
+
+Full validation will process all selected subjects across all sessions.
+
+| Dataset | Source | Subjects | Sessions | Task | Status |
+|---------|--------|----------|----------|------|--------|
+| ds005884 | OpenNeuro | 38 | 1 | Motor | 🔄 In Progress |
+| ds005883 | OpenNeuro | 38 | 1 | Pain | 🔄 In Progress |
+| ds004386 | OpenNeuro | 48 | 2 | Rest | 🔄 In Progress |
+| ds004616 | OpenNeuro | 24 | 2 | Hand Grasp | 🔄 In Progress |
+| Balgrist Motor | Internal | 11 | 4 | Motor | 🔄 In Progress |
+
+**Full validation totals**: 159 subjects, 264 subject-sessions
 
 ## Aggregate Metrics
 
-!!! success "Current Validation Status"
-    - **5 datasets** under continuous regression testing
-    - **78 subjects** processed end-to-end
-    - **100%** automated QC pass rate on regression suite
+!!! info "Validation In Progress"
+    - **5 datasets** under benchmark testing
+    - **5 subjects** (10 subject-sessions) in benchmark suite
+    - **159 subjects** (264 subject-sessions) planned for full validation
+    - Full validation metrics will be reported upon completion
 
 ## Quality Control Outputs
 
@@ -34,7 +62,7 @@ Every preprocessing step generates:
 
 SpinalfMRIprep guarantees deterministic outputs:
 
-- Containerized execution (Docker/Singularity)
+- Containerized execution (Docker/Apptainer)
 - Pinned dependency versions
 - Seed-controlled randomization where applicable
 

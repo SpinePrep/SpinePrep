@@ -41,7 +41,7 @@ Spinal cord MRI often includes significant non-cord tissue (e.g., brainstem, sho
 1. **Anatomy Selection** - Prefer T2w (better cord-CSF contrast), fallback to T1w
 2. **Standardization** - Reorient to RPI via `sct_image -setorient RPI`
 3. **Discovery Segmentation** - `sct_deepseg -task seg_sc_contrast_agnostic`
-4. **Drift Gate Validation** - Reject brainstem drift
+4. **FOV Validation** - Reject if cord coverage < 20 slices
 5. **Cord-Focused Cropping** - `sct_crop_image -m <crop_mask>`
 
 ### QC: Crop Box Sagittal

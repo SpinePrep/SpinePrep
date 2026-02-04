@@ -2,6 +2,30 @@
 
 SpinalfMRIprep implements an end-to-end preprocessing pipeline for spinal cord fMRI, designed for robustness against the unique challenges of spinal imaging: physiological noise, small anatomical targets, and susceptibility artifacts.
 
+## Why Spinal Cord fMRI Needs Specialized Preprocessing
+
+Spinal cord fMRI presents fundamentally different challenges compared to brain imaging:
+
+- **Small target anatomy**: The spinal cord cross-section (~50-80 mm²) is roughly 1/1000th the size of a brain slice, requiring sub-millimeter precision in registration and segmentation.
+- **Physiological noise**: Cardiac pulsation, respiration, and CSF flow cause signal fluctuations that can exceed the BOLD signal of interest.
+- **Susceptibility artifacts**: The cord's proximity to vertebral bodies, lungs, and air-tissue interfaces creates severe B0 inhomogeneities.
+- **Motion complexity**: Head, neck, and swallowing motions introduce non-rigid deformations that standard brain motion correction cannot handle.
+
+Traditional brain fMRI pipelines (including fMRIPrep) are not designed for these challenges. SpinalfMRIprep addresses them with spinal-cord-specific algorithms built on the [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/).
+
+## Comparison with fMRIPrep
+
+| Aspect | fMRIPrep | SpinalfMRIprep |
+|--------|----------|----------------|
+| **Target anatomy** | Brain | Spinal cord |
+| **Registration** | FreeSurfer + ANTs | SCT cord-specific algorithms |
+| **Template** | MNI152 | PAM50 spinal cord template |
+| **Segmentation** | Brain tissue classes | Cord, canal, vertebrae, rootlets |
+| **Motion model** | Rigid-body 6-DOF | Cord-specific with slice-wise options |
+| **Distortion correction** | TOPUP/FUGUE | Cord-optimized field mapping |
+
+SpinalfMRIprep follows fMRIPrep's design philosophy—BIDS-native, containerized, QC-first—but implements entirely different algorithms tailored for the spinal cord.
+
 ## Pipeline Architecture
 
 ```mermaid

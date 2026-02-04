@@ -97,13 +97,13 @@ nav:
     - S11 Export: methods/S11_export.md
   - Validation: validation/index.md
   - Usage:
-    - Quick Start: quickstart.md
-    - Full Tutorial: tutorial.md
+    - Try It: quickstart.md
+    - Install & Use: tutorial.md
+    - Contribute: contributing.md
   - Reference:
     - CLI: reference/cli.md
     - API: reference/api.md
     - Config: reference/config.md
     - Schemas: reference/schemas.md
-    - Vendor Cache: reference/vendor_cache.md
   - Cite: cite.md
 
