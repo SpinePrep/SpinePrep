@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="2048" height="2048" viewBox="0 0 2048 2048">
+  <!-- Clean geometric recreation of SpinalfMRIprep logo -->
+  <!-- Background -->
+  <rect x="0" y="0" width="2048" height="2048" fill="#FCFCFC"/>
+  <!-- Shapes -->
+  <rect x="1215" y="129" width="220" height="142" fill="#152D51"/>
+  <rect x="1169" y="1217" width="186" height="154" fill="#152D51"/>
+  <rect x="1096" y="1026" width="186" height="154" fill="#152D51"/>
+  <rect x="1036" y="838" width="187" height="151" fill="#152D51"/>
+  <rect x="972" y="647" width="205" height="152" fill="#152D51"/>
+  <rect x="1316" y="1024" width="158" height="155" fill="#2B8090"/>
+  <rect x="1255" y="835" width="160" height="154" fill="#F47F18"/>
+  <rect x="1211" y="645" width="158" height="155" fill="#F47F18"/>
+  <rect x="1389" y="1216" width="156" height="155" fill="#2B8090"/>
+  <rect x="1238" y="462" width="157" height="153" fill="#F47F18"/>
+  <rect x="1029" y="469" width="178" height="145" fill="#152D51"/>
+  <rect x="1388" y="1401" width="155" height="151" fill="#2B8090"/>
+  <rect x="1093" y="302" width="174" height="129" fill="#152D51"/>
+  <rect x="1298" y="297" width="136" height="135" fill="#2B8090"/>
+  <rect x="1319" y="1556" width="136" height="137" fill="#2B8090"/>
+  <rect x="1147" y="1533" width="159" height="124" fill="#152D51"/>
+  <rect x="1241" y="1407" width="123" height="119" fill="#152D51"/>
+  <rect x="1217" y="1677" width="125" height="119" fill="#2B8090"/>
+  <rect x="837" y="702" width="90" height="90" fill="#152D51"/>
+  <rect x="1032" y="1273" width="90" height="89" fill="#152D51"/>
+  <rect x="965" y="1085" width="90" height="89" fill="#152D51"/>
+  <rect x="899" y="894" width="90" height="89" fill="#152D51"/>
+  <rect x="902" y="519" width="88" height="88" fill="#152D51"/>
+  <rect x="976" y="349" width="79" height="80" fill="#152D51"/>
+  <rect x="1128" y="1417" width="80" height="84" fill="#152D51"/>
+  <rect x="1026" y="1532" width="82" height="81" fill="#152D51"/>
+  <rect x="1099" y="1779" width="87" height="90" fill="#152D51"/>
+  <rect x="1104" y="199" width="76" height="77" fill="#152D51"/>
+  <rect x="1112" y="1665" width="87" height="88" fill="#152D51"/>
+</svg>
