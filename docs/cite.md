@@ -10,7 +10,7 @@ If you use SpinalfMRIprep in your research, please cite:
       title = {SpinalfMRIprep: A Robust Preprocessing Pipeline for Spinal Cord fMRI},
       author = {SpinalfMRIprep Team},
       year = {2026},
-      url = {https://github.com/spinalfmriprep/spinalfmriprep}
+      url = {https://github.com/SpinalfMRIprep/SpinalfMRIprep}
     }
     ```
 
