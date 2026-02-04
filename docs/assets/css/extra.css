@@ -207,10 +207,10 @@ a:focus-visible {
   flex-shrink: 0;
 }
 
-/* Fluid logo sizing */
+/* Fluid logo sizing (20% larger) */
 .tx-hero__logo img,
 .tx-hero__logo svg {
-  height: clamp(120px, 25vw, 320px);
+  height: clamp(144px, 30vw, 384px);
   width: auto;
   display: block;
 }
@@ -553,7 +553,7 @@ body:has(.tx-home-content) .md-sidebar--primary {
 
   .tx-hero__logo img,
   .tx-hero__logo svg {
-    height: 100px;
+    height: 120px;
   }
 
   .tx-btn {
@@ -594,7 +594,7 @@ body:has(.tx-home-content) .md-sidebar--primary {
 
   .tx-hero__logo img,
   .tx-hero__logo svg {
-    height: 80px;
+    height: 96px;
   }
 
   .tx-cta-buttons,
