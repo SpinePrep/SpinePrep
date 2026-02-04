@@ -407,27 +407,103 @@ a:focus-visible {
 }
 
 /* ==========================================================================
-   11. Dark Mode Overrides
+   11. Navigation Active States (Orange + Left Border)
+   ========================================================================== */
+
+/* Active state color variable */
+:root {
+  --tx-nav-active: rgb(231, 130, 49); /* Brand fMRI orange */
+  --tx-nav-active-border: 3px solid rgb(231, 130, 49);
+}
+
+/* --- Sidebar Navigation --- */
+.md-nav__item--active > .md-nav__link,
+.md-nav__link--active {
+  color: var(--tx-nav-active) !important;
+  font-weight: 600;
+  border-left: var(--tx-nav-active-border);
+  margin-left: -0.6rem;
+  padding-left: calc(0.6rem - 3px);
+}
+
+/* Current page indicator */
+.md-nav__link[data-md-state="current"] {
+  color: var(--tx-nav-active) !important;
+  font-weight: 600;
+  border-left: var(--tx-nav-active-border);
+  margin-left: -0.6rem;
+  padding-left: calc(0.6rem - 3px);
+}
+
+/* Hover state */
+.md-nav__link:hover {
+  color: var(--tx-nav-active) !important;
+}
+
+/* --- Top Tabs Navigation --- */
+.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link {
+  color: var(--tx-nav-active) !important;
+  border-bottom: 3px solid var(--tx-nav-active);
+  font-weight: 600;
+}
+
+.md-tabs__link:hover {
+  color: var(--tx-nav-active) !important;
+}
+
+/* --- Table of Contents (TOC) --- */
+.md-nav--secondary .md-nav__link--active,
+.md-nav--secondary .md-nav__item--active > .md-nav__link {
+  color: var(--tx-nav-active) !important;
+  border-left: var(--tx-nav-active-border);
+  margin-left: -0.6rem;
+  padding-left: calc(0.6rem - 3px);
+}
+
+/* --- Mobile Drawer Navigation --- */
+@media (max-width: 76.1875em) {
+  .md-nav--primary .md-nav__item--active > .md-nav__link,
+  .md-nav--primary .md-nav__link--active {
+    color: var(--tx-nav-active) !important;
+    background: rgba(231, 130, 49, 0.1);
+    border-left: var(--tx-nav-active-border);
+    margin-left: 0;
+    padding-left: calc(0.6rem + 9px);
+  }
+}
+
+/* ==========================================================================
+   12. Dark Mode Overrides
    ========================================================================== */
 
 [data-md-color-scheme="slate"] {
   --md-primary-fg-color: #0f172a;
   --md-bg-color: #020617;
+  /* Orange stays the same in dark mode - good contrast */
+  --tx-nav-active: rgb(231, 130, 49);
 }
 
-/* Nav item visibility in dark mode */
-[data-md-color-scheme="slate"] .md-nav__item--active > .md-nav__link,
-[data-md-color-scheme="slate"] .md-nav__link--active,
-[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
-  color: #e2e8f0 !important;
+/* Dark mode nav text (non-active) */
+[data-md-color-scheme="slate"] .md-nav__link {
+  color: #94a3b8;
 }
 
 [data-md-color-scheme="slate"] .md-nav__link:hover {
-  color: #f8fafc !important;
+  color: var(--tx-nav-active) !important;
 }
 
+/* Dark mode active states inherit the orange */
+[data-md-color-scheme="slate"] .md-nav__item--active > .md-nav__link,
+[data-md-color-scheme="slate"] .md-nav__link--active,
 [data-md-color-scheme="slate"] .md-nav__link[data-md-state="current"] {
-  color: #0ea5e9 !important;
+  color: var(--tx-nav-active) !important;
+}
+
+/* Dark mode tabs */
+[data-md-color-scheme="slate"] .md-tabs__link--active,
+[data-md-color-scheme="slate"] .md-tabs__item--active .md-tabs__link {
+  color: var(--tx-nav-active) !important;
 }
 
 /* ==========================================================================
