@@ -13,7 +13,7 @@ hide:
 
 -   :material-robot: **Automated**
 
-    End-to-end S0-S11 pipeline automation for spinal cord fMRI.
+    End-to-end pipeline automation for spinal cord fMRI.
 
 -   :material-shield-check: **Robust**
 
