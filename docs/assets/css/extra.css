@@ -153,6 +153,24 @@ a:focus-visible {
   width: auto;
 }
 
+/* Custom SpinalfMRIprep logo for GitHub/source link */
+.md-source__icon--spinalfmriprep {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.md-source__icon--spinalfmriprep img {
+  height: 1.2rem;
+  width: auto;
+  filter: brightness(0) invert(1); /* Make logo white for dark header */
+}
+
+/* Ensure source icon container is properly sized */
+.md-source__icon--spinalfmriprep svg {
+  display: none; /* Hide any default SVG icons */
+}
+
 /* Hide default Material theme title (using custom branded one) */
 .md-header__title:not(.tx-header__title--custom) {
   display: none;
@@ -685,4 +703,22 @@ body:has(.tx-home-content) .md-sidebar--primary {
   .md-typeset .grid.cards > ul {
     grid-template-columns: 1fr;
   }
+}
+
+/* ==========================================================================
+   16. Announcement Bar (Warning Style)
+   ========================================================================== */
+
+.md-banner {
+  background-color: #f59e0b;
+  color: #000000;
+}
+
+.md-banner a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.md-banner a:hover {
+  color: #1a202c;
 }
