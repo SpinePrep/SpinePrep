@@ -123,7 +123,7 @@ Processing the full field-of-view (FOV) is unnecessary and computationally expen
 
 ### QC: Functional Reference Montage
 
-![Func Ref Montage](../assets/qc/S3_funcref_montage_example.png)
+![Func Ref Montage](../assets/qc/S3_funcref_montage_example.png){ width="500" }
 
 **What to look for:**
 
