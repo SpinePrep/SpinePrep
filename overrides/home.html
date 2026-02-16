@@ -1,94 +1,34 @@
 {% extends "main.html" %}
 
 {% block tabs %}
-  {{ super() }}
+{{ super() }}
 {% endblock %}
 
 {% block content %}
-<style>
-  .md-content {
-    max-width: none;
-    padding: 0;
-  }
-  .tx-hero {
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(circle at center, #1a202c 0%, #000 100%);
-    text-align: center;
-    padding: 2rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .tx-hero h1 {
-    font-size: 4rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    background: linear-gradient(to right, #00BCD4, #fff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .tx-hero p {
-    font-size: 1.5rem;
-    max-width: 800px;
-    margin-bottom: 2rem;
-    color: #a0aec0;
-  }
-  .tx-cta-buttons {
-    display: flex;
-    gap: 1rem;
-  }
-  .tx-btn {
-    padding: 0.8rem 2rem;
-    border-radius: 50px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: transform 0.2s;
-  }
-  .tx-btn-primary {
-    background: #00BCD4;
-    color: #000;
-  }
-  .tx-btn-secondary {
-    border: 2px solid #00BCD4;
-    color: #00BCD4;
-  }
-  .tx-btn:hover {
-    transform: scale(1.05);
-  }
-  .tx-spine-scroller {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 0;
-    width: 2px;
-    height: 100px;
-    background: linear-gradient(to bottom, #00BCD4, transparent);
-    animation: scroll-pulse 2s infinite;
-  }
-  @keyframes scroll-pulse {
-    0% { height: 0; opacity: 0; }
-    50% { height: 100px; opacity: 1; }
-    100% { height: 0; opacity: 0; transform: translate(-50%, 100px); }
-  }
-</style>
+<div id="main-content" class="tx-hero">
+  <div class="tx-hero__container">
+    <div class="tx-hero__logo">
+      <img src="{{ 'assets/images/logo.svg' | url }}" alt="SpinalfMRIprep logo">
+    </div>
+    <div class="tx-hero__content">
+      <h1><span class="tx-brand-spinal">Spinal</span><span class="tx-brand-fmri">fMRI</span><span class="tx-brand-prep">prep</span></h1>
+      <p>Robust, automated preprocessing<br>for spinal cord fMRI.</p>
 
-<div class="tx-hero">
-  <h1>SpinePrep</h1>
-  <p>Robust, automated preprocessing for spinal cord fMRI.</p>
-  
-  <div class="tx-cta-buttons">
-    <a href="setup/" class="tx-btn tx-btn-primary">Get Started</a>
-    <a href="pipeline/overview/" class="tx-btn tx-btn-secondary">View Pipeline</a>
+      <div class="tx-badges">
+        <span class="tx-badge tx-badge--primary">BIDS-App</span>
+        <span class="tx-badge tx-badge--secondary">Validating on 5 datasets</span>
+      </div>
+
+      <div class="tx-cta-buttons">
+        <a href="methods/overview/" class="tx-btn tx-btn-primary">View Methods</a>
+        <a href="validation/" class="tx-btn tx-btn-secondary">See Validation</a>
+      </div>
+    </div>
   </div>
-
-  <div class="tx-spine-scroller"></div>
 </div>
 
-<div class="md-grid">
-  <div class="md-main__inner md-grid" style="margin-top: 4rem;">
+<div class="md-container">
+  <div class="md-grid md-typeset tx-home-content">
     {{ super() }}
   </div>
 </div>

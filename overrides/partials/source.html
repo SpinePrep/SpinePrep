@@ -1,0 +1,25 @@
+{% import "partials/language.html" as lang with context %}
+
+{% set platform = config.extra.source | d(config.repo_url) %}
+{% if platform %}
+  {% if "github" in platform %}
+    {% set platform = "github" %}
+  {% elif "gitlab" in platform %}
+    {% set platform = "gitlab" %}
+  {% elif "gitea" in platform %}
+    {% set platform = "gitea" %}
+  {% elif "bitbucket" in platform %}
+    {% set platform = "bitbucket" %}
+  {% elif "codeberg" in platform %}
+    {% set platform = "codeberg" %}
+  {% endif %}
+{% endif %}
+
+<a href="{{ config.repo_url }}" title="{{ lang.t('source.link.title') }}" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon md-source__icon--spinalfmriprep">
+    <img src="{{ 'assets/images/logo.svg' | url }}" alt="{{ config.site_name }}">
+  </div>
+  <div class="md-source__repository">
+    {{ config.repo_name }}
+  </div>
+</a>

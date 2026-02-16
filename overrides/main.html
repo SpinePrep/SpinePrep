@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block body %}
+<!-- Skip to content link for accessibility -->
+<a href="#main-content" class="tx-skip-link">Skip to main content</a>
+
+{{ super() }}
+{% endblock %}
+
+
+{% block content %}
+<div id="main-content">
+  {{ super() }}
+</div>
+{% endblock %}
+
+{% block announcement %}
+<div class="md-banner">
+  <div class="md-banner__inner md-grid md-typeset">
+    {% include "partials/announcement.html" %}
+  </div>
+</div>
+{% endblock %}

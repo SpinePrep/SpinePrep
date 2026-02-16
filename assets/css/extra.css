@@ -1,18 +1,724 @@
+/* ==========================================================================
+   SpinalfMRIprep Documentation Styles
+   Best practices: responsive, accessible, performant
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CSS Custom Properties (Design Tokens)
+   ========================================================================== */
+
 :root {
+  /* Primary Colors */
   --md-primary-fg-color: #0f172a;
-  /* Slate 900 */
-  --md-accent-fg-color: #06b6d4;
-  /* Cyan 500 */
+  --md-accent-fg-color: #0e7490;
+
+  /* Hero Section */
+  --tx-hero-bg-light: #ffffff;
+  --tx-hero-bg-dark: #020617;
+  --tx-hero-text-light: #0f172a;
+
+  /* Card Styling */
+  --md-shadow-z1: none;
+  --md-shadow-z2: none;
+
+  /* SpinalfMRIprep Brand Colors */
+  --tx-brand-spinal: rgb(120, 150, 200);
+  --tx-brand-fmri: rgb(231, 130, 49);
+  --tx-brand-prep: rgb(70, 130, 150);
+
+  /* Focus Ring */
+  --tx-focus-ring: 0 0 0 3px rgba(14, 116, 144, 0.5);
+
+  /* Spacing */
+  --tx-space-xs: 0.25rem;
+  --tx-space-sm: 0.5rem;
+  --tx-space-md: 1rem;
+  --tx-space-lg: 2rem;
+  --tx-space-xl: 3rem;
 }
 
-/* Dark mode overrides for specific elements */
+/* ==========================================================================
+   2. Base Styles & Resets
+   ========================================================================== */
+
+/* Smooth scrolling (respects reduced motion) */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Prevent horizontal overflow */
+html, body {
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   3. Skip Link (Accessibility)
+   ========================================================================== */
+
+.tx-skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--md-primary-fg-color);
+  color: #fff !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0 0 6px 6px;
+  z-index: 9999;
+  text-decoration: none;
+  font-weight: 600;
+  transition: top 0.2s ease;
+}
+
+.tx-skip-link:focus {
+  top: 0;
+  outline: none;
+}
+
+/* ==========================================================================
+   4. Focus Styles (Accessibility)
+   ========================================================================== */
+
+/* Visible focus for keyboard navigation */
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--tx-focus-ring);
+}
+
+/* Links focus */
+a:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Buttons focus */
+.tx-btn:focus-visible,
+.md-button:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+  box-shadow: var(--tx-focus-ring);
+}
+
+/* ==========================================================================
+   5. SpinalfMRIprep 3-Color Branding
+   ========================================================================== */
+
+.tx-brand-spinal {
+  color: var(--tx-brand-spinal);
+}
+
+.tx-brand-fmri {
+  color: var(--tx-brand-fmri);
+}
+
+.tx-brand-prep {
+  color: var(--tx-brand-prep);
+}
+
+/* Header/Nav branding */
+.md-header__title .tx-brand-spinal,
+.md-header__title .tx-brand-fmri,
+.md-header__title .tx-brand-prep {
+  font-weight: 700;
+}
+
+/* Dark mode brand colors */
+[data-md-color-scheme="slate"] .tx-brand-spinal {
+  color: var(--tx-brand-spinal);
+}
+
+[data-md-color-scheme="slate"] .tx-brand-fmri {
+  color: var(--tx-brand-fmri);
+}
+
+[data-md-color-scheme="slate"] .tx-brand-prep {
+  color: var(--tx-brand-prep);
+}
+
+/* ==========================================================================
+   6. Header Customizations
+   ========================================================================== */
+
+/* Logo sizing */
+.md-header__button.md-logo {
+  margin-right: 0.2rem;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 2.4rem;
+  width: auto;
+}
+
+/* Custom SpinalfMRIprep logo for GitHub/source link */
+.md-source__icon--spinalfmriprep {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.md-source__icon--spinalfmriprep img {
+  height: 1.2rem;
+  width: auto;
+  filter: brightness(0) invert(1); /* Make logo white for dark header */
+}
+
+/* Ensure source icon container is properly sized */
+.md-source__icon--spinalfmriprep svg {
+  display: none; /* Hide any default SVG icons */
+}
+
+/* Hide default Material theme title (using custom branded one) */
+.md-header__title:not(.tx-header__title--custom) {
+  display: none;
+}
+
+/* Custom branded title */
+.tx-header__title--custom {
+  display: flex !important;
+  align-items: center;
+  margin-left: 0.4rem;
+}
+
+/* Hide header title on small screens (keep logo only) */
+@media (max-width: 480px) {
+  .tx-header__title--custom {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   7. Hero Section
+   ========================================================================== */
+
+.tx-hero {
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--tx-hero-bg-light);
+  padding: clamp(2rem, 5vw, 4rem) var(--tx-space-md);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-md-color-scheme="slate"] .tx-hero {
+  background: var(--tx-hero-bg-dark);
+}
+
+/* Hero container: side-by-side on desktop, stacked on mobile */
+.tx-hero__container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  max-width: 1200px;
+  width: 100%;
+}
+
+.tx-hero__logo {
+  flex-shrink: 0;
+}
+
+/* Fluid logo sizing (20% larger) */
+.tx-hero__logo img,
+.tx-hero__logo svg {
+  height: clamp(144px, 30vw, 384px);
+  width: auto;
+  display: block;
+}
+
+.tx-hero__content {
+  text-align: left;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Fluid hero title */
+.tx-hero h1 {
+  font-size: clamp(1.5rem, 5vw, 3.5rem);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  font-weight: 800;
+  margin-bottom: var(--tx-space-md);
+  letter-spacing: -0.02em;
+  z-index: 2;
+}
+
+/* Hero subtitle */
+.tx-hero p {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  max-width: 600px;
+  margin-bottom: var(--tx-space-lg);
+  color: #475569;
+  line-height: 1.6;
+  z-index: 2;
+}
+
+[data-md-color-scheme="slate"] .tx-hero p {
+  color: #94a3b8;
+}
+
+/* ==========================================================================
+   8. CTA Buttons
+   ========================================================================== */
+
+.tx-cta-buttons {
+  display: flex;
+  gap: var(--tx-space-md);
+  z-index: 2;
+  flex-wrap: wrap;
+}
+
+.tx-btn {
+  padding: 0.875rem 2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  min-height: 44px; /* Touch target */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Reduced motion: disable transforms */
+@media (prefers-reduced-motion: no-preference) {
+  .tx-btn {
+    transition: all 0.2s ease;
+  }
+  
+  .tx-btn:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.tx-btn-primary {
+  background: #0f172a;
+  color: #fff !important;
+}
+
+.tx-btn-primary:hover {
+  background: #1e293b;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+[data-md-color-scheme="slate"] .tx-btn-primary {
+  background: #e2e8f0;
+  color: #0f172a !important;
+}
+
+[data-md-color-scheme="slate"] .tx-btn-primary:hover {
+  background: #f8fafc;
+}
+
+.tx-btn-secondary {
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  background: white;
+}
+
+.tx-btn-secondary:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+[data-md-color-scheme="slate"] .tx-btn-secondary {
+  background: transparent;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+[data-md-color-scheme="slate"] .tx-btn-secondary:hover {
+  border-color: #475569;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================================================
+   9. Hero Badges
+   ========================================================================== */
+
+.tx-badges {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.tx-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+}
+
+.tx-badge--primary {
+  background: #0e7490;
+}
+
+.tx-badge--secondary {
+  background: #475569;
+}
+
+/* ==========================================================================
+   10. Feature Cards Grid
+   ========================================================================== */
+
+.md-typeset .grid.cards > ul {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--tx-space-md);
+}
+
+.md-typeset .grid.cards > ul > li {
+  margin: 0;
+  height: 100%;
+}
+
+/* Card styling */
+.md-typeset .grid > ul > li,
+.md-typeset .grid > .card {
+  border: 1px solid #e2e8f0;
+  box-shadow: none !important;
+  border-radius: 6px;
+}
+
+/* Card hover with reduced motion support */
+@media (prefers-reduced-motion: no-preference) {
+  .md-typeset .grid > ul > li,
+  .md-typeset .grid > .card {
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .md-typeset .grid > ul > li:hover,
+  .md-typeset .grid > .card:hover {
+    border-color: #0e7490;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset .grid > ul > li:hover,
+  .md-typeset .grid > .card:hover {
+    border-color: #0e7490;
+  }
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid > ul > li,
+[data-md-color-scheme="slate"] .md-typeset .grid > .card {
+  border-color: #1e293b;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid > ul > li:hover,
+[data-md-color-scheme="slate"] .md-typeset .grid > .card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   11. Navigation Active States (Orange + Left Border)
+   ========================================================================== */
+
+/* Active state color variable */
+:root {
+  --tx-nav-active: rgb(231, 130, 49); /* Brand fMRI orange */
+  --tx-nav-active-border: 3px solid rgb(231, 130, 49);
+}
+
+/* --- Sidebar Navigation --- */
+.md-nav__item--active > .md-nav__link,
+.md-nav__link--active {
+  color: var(--tx-nav-active) !important;
+  font-weight: 600;
+  border-left: var(--tx-nav-active-border);
+  margin-left: -0.6rem;
+  padding-left: calc(0.6rem - 3px);
+}
+
+/* Current page indicator */
+.md-nav__link[data-md-state="current"] {
+  color: var(--tx-nav-active) !important;
+  font-weight: 600;
+  border-left: var(--tx-nav-active-border);
+  margin-left: -0.6rem;
+  padding-left: calc(0.6rem - 3px);
+}
+
+/* Hover state */
+.md-nav__link:hover {
+  color: var(--tx-nav-active) !important;
+}
+
+/* --- Top Tabs Navigation --- */
+.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link {
+  color: var(--tx-nav-active) !important;
+  border-bottom: 3px solid var(--tx-nav-active);
+  font-weight: 600;
+}
+
+.md-tabs__link:hover {
+  color: var(--tx-nav-active) !important;
+}
+
+/* --- Table of Contents (TOC) --- */
+.md-nav--secondary .md-nav__link--active,
+.md-nav--secondary .md-nav__item--active > .md-nav__link {
+  color: var(--tx-nav-active) !important;
+  border-left: var(--tx-nav-active-border);
+  margin-left: -0.6rem;
+  padding-left: calc(0.6rem - 3px);
+}
+
+/* --- Mobile Drawer Navigation --- */
+@media (max-width: 76.1875em) {
+  .md-nav--primary .md-nav__item--active > .md-nav__link,
+  .md-nav--primary .md-nav__link--active {
+    color: var(--tx-nav-active) !important;
+    background: rgba(231, 130, 49, 0.1);
+    border-left: var(--tx-nav-active-border);
+    margin-left: 0;
+    padding-left: calc(0.6rem + 9px);
+  }
+}
+
+/* ==========================================================================
+   12. Dark Mode Overrides
+   ========================================================================== */
+
 [data-md-color-scheme="slate"] {
   --md-primary-fg-color: #0f172a;
   --md-bg-color: #020617;
-  /* Slate 950 */
+  /* Orange stays the same in dark mode - good contrast */
+  --tx-nav-active: rgb(231, 130, 49);
 }
+
+/* Dark mode nav text (non-active) */
+[data-md-color-scheme="slate"] .md-nav__link {
+  color: #94a3b8;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: var(--tx-nav-active) !important;
+}
+
+/* Dark mode active states inherit the orange */
+[data-md-color-scheme="slate"] .md-nav__item--active > .md-nav__link,
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__link[data-md-state="current"] {
+  color: var(--tx-nav-active) !important;
+}
+
+/* Dark mode tabs */
+[data-md-color-scheme="slate"] .md-tabs__link--active,
+[data-md-color-scheme="slate"] .md-tabs__item--active .md-tabs__link {
+  color: var(--tx-nav-active) !important;
+}
+
+/* ==========================================================================
+   12. Typography
+   ========================================================================== */
 
 .md-typeset h1,
 .md-typeset h2 {
   font-weight: 700;
+}
+
+/* Ensure readable body text on mobile */
+.md-typeset {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+/* ==========================================================================
+   13. Homepage Specific Styles
+   ========================================================================== */
+
+.md-content--home {
+  max-width: none;
+  padding: 0;
+}
+
+.tx-home-content {
+  max-width: 800px;
+  margin: clamp(2rem, 5vw, 4rem) auto;
+  padding: 0 var(--tx-space-md);
+}
+
+/* Hide redundant elements on homepage */
+.tx-home-content > h1,
+.tx-home-content > .md-typeset > h1,
+.tx-home-content .md-content__inner > h1:first-of-type,
+.tx-home-content h1,
+.tx-home-content .md-typeset h1 {
+  display: none !important;
+}
+
+/* Hide sidebar on homepage */
+.tx-home-content ~ .md-sidebar,
+body:has(.tx-home-content) .md-sidebar--primary {
+  display: none !important;
+}
+
+.tx-home-content .md-source-file,
+.tx-home-content .git-revision-date-localized-plugin,
+.tx-home-content small:has(span) {
+  display: none !important;
+}
+
+/* Hide edit icon on homepage */
+.tx-home-content .md-content__button {
+  display: none !important;
+}
+
+/* ==========================================================================
+   14. Responsive Breakpoints
+   ========================================================================== */
+
+/* Large tablets and small desktops (≤1200px) */
+@media (max-width: 1200px) {
+  .tx-hero__container {
+    max-width: 960px;
+  }
+}
+
+/* Tablets (≤960px) - Stack hero */
+@media (max-width: 960px) {
+  .tx-hero__container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .tx-hero__content {
+    text-align: center;
+  }
+
+  .tx-cta-buttons {
+    justify-content: center;
+  }
+
+  .tx-badges {
+    justify-content: center;
+  }
+}
+
+/* Small tablets (≤768px) */
+@media (max-width: 768px) {
+  .tx-hero {
+    min-height: auto;
+  }
+
+  .tx-cta-buttons {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .tx-btn {
+    width: 100%;
+  }
+
+  .tx-badges {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Mobile (≤600px) - Single column cards */
+@media (max-width: 600px) {
+  .md-typeset .grid.cards > ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small mobile (≤480px) */
+@media (max-width: 480px) {
+  .tx-hero {
+    padding: var(--tx-space-lg) var(--tx-space-md);
+  }
+
+  .tx-hero__logo img,
+  .tx-hero__logo svg {
+    height: 120px;
+  }
+
+  .tx-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  .tx-home-content {
+    padding: 0 var(--tx-space-sm);
+  }
+}
+
+/* Very small mobile (≤320px) */
+@media (max-width: 320px) {
+  .tx-hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .tx-hero p {
+    font-size: 0.875rem;
+  }
+
+  .tx-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+/* ==========================================================================
+   15. Print Styles
+   ========================================================================== */
+
+@media print {
+  .tx-hero {
+    min-height: auto;
+    padding: 1rem;
+  }
+
+  .tx-hero__logo img,
+  .tx-hero__logo svg {
+    height: 96px;
+  }
+
+  .tx-cta-buttons,
+  .tx-badges,
+  .md-header,
+  .md-tabs,
+  .md-sidebar,
+  .md-footer {
+    display: none !important;
+  }
+
+  .md-typeset .grid.cards > ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   16. Announcement Bar (Warning Style)
+   ========================================================================== */
+
+.md-banner {
+  background-color: #f59e0b;
+  color: #000000;
+}
+
+.md-banner a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.md-banner a:hover {
+  color: #1a202c;
 }
