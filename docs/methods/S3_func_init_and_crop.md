@@ -5,195 +5,182 @@ search:
 
 # S3: Functional Initialization & Crop
 
-Dummy volume drop, cord localization in functional space, outlier gating, and cord-focused cropping.
+**Step Code:** `S3_func_init_and_crop`  
+**Depends on:** S2 (Anatomical Cord Reference), BIDS Functional Data  
+**Required by:** S4 (Motion Correction)
+
+---
 
 ## Purpose
 
-S3 prepares functional data for motion correction by:
+S3 prepares raw functional data for motion correction and downstream processing. Functional MRI of the spinal cord suffers from physiological noise, variable field of view, and susceptibility artifacts. This step ensures a clean starting point by:
 
-1. **Dropping dummy volumes** (initial unstable frames)
-2. **Localizing the cord** in functional space
-3. **Gating outlier frames** using cord-centric metrics
-4. **Cropping** to cord-focused field of view
+1.  ** stabilizing the time series** (dropping dummy volumes)
+2.  **Locating the cord** directly in functional space
+3.  **Identifing and gating outlier frames** to create a robust reference
+4.  **Cropping the FOV** to the spinal cord to reduce computational load and improve registration
 
-## Subtasks
+---
 
-S3 is divided into three subtasks:
+## Algorithm Overview
+
+The S3 step consists of three sequential subtasks:
 
 | Subtask | Name | Description |
 |---------|------|-------------|
-| S3.1 | Dummy Drop & Localization | Remove dummies, compute fast reference, localize cord |
-| S3.2 | Outlier Gating | Compute DVARS/RefRMS, identify bad frames, create robust reference |
-| S3.3 | Crop & QC | Apply cord-focused crop, generate reportlets |
+| S3.1 | Dummy Drop & Localization | Remove initial unstable frames, compute fast reference, localize cord |
+| S3.2 | Outlier Gating | Compute DVARS/RefRMS metrics, identify bad frames, create robust reference |
+| S3.3 | Crop & QC | Apply cord-focused crop, generate quality control reportlets |
 
-## Inputs
+---
 
-| Input | Source | Required |
-|-------|--------|----------|
-| BOLD images | BIDS `/func/*_bold.nii.gz` | Yes |
-| S2 cord reference | `work/S2_anat_cordref/{run_id}/cordref_std.nii.gz` | Yes |
-| S2 cord mask | `derivatives/.../anat/*_desc-cordmask_dseg.nii.gz` | Yes |
-| Policy | `policy/S3_func_init_and_crop.yaml` | Yes |
+## S3.1: Dummy Drop & Localization
+
+### Rationale
+
+MRI scanners require a few TRs to reach steady-state magnetization. These initial "dummy" volumes have inconsistent contrast and should be discarded. Subsequent processing requires an approximate location of the spinal cord to focus analysis.
+
+### Algorithm
+
+1.  **Dummy Volume Drop** - Remove first $N$ volumes (default: 4)
+    ```python
+    bold_data = bold_data[..., dummy_count:]
+    ```
+2.  **Fast Reference** - Compute median of all remaining frames
+3.  **Cord Localization** - Segment cord on fast reference using `sct_deepseg`
+    ```bash
+    sct_deepseg spinalcord -i func_ref_fast.nii.gz -o func_cord_seg.nii.gz -largest 1
+    ```
+
+### QC: Functional Localization
+
+![Func Localization](../assets/qc/S3_func_localization_crop_box_sagittal_example.png)
+
+**What to look for:**
+
+-   ✅ Blue contour (cord mask) accurately follows the spinal cord in the functional image.
+-   ✅ Red box centers on the cord and includes sufficient margin.
+-   ❌ FAIL: Mask is empty or tracks non-cord structure (e.g., ghosting artifacts).
+
+---
+
+## S3.2: Outlier Gating
+
+### Rationale
+
+Subject motion and physiological noise can corrupt specific frames. Using a simple mean/median of all frames as a reference for motion correction can bake in these artifacts. Outlier gating ensures the reference image is constructed only from stable, high-quality frames.
+
+### Algorithm
+
+1.  **Metric Computation** (within cord mask):
+    *   **DVARS**: Derivative of variance (frame-to-frame change)
+    *   **RefRMS**: Root mean square error vs. fast reference
+2.  **Outlier Detection**:
+    *   Threshold = $P_{75} + 1.5 \times IQR$
+    *   Frame is outlier if DVARS *or* RefRMS exceeds threshold
+3.  **Robust Reference**:
+    *   Compute median of only **non-outlier** frames
+
+### QC: Frame Metrics
+
+![Frame Metrics](../assets/qc/S3_frame_metrics_example.png)
+
+**What to look for:**
+
+-   ✅ Metrics (blue/orange lines) vary but stay mostly below thresholds (dashed lines).
+-   ✅ Outliers (if any) correspond to visible spikes in the plot.
+-   ❌ FAIL: Majority of frames exceed thresholds (suggests severe artifact or bad mask).
+-   ❌ FAIL: Periodic spikes aligned with respiration (if TR is aliased with breathing).
+
+---
+
+## S3.3: Crop & QC
+
+### Rationale
+
+Processing the full field-of-view (FOV) is unnecessary and computationally expensive. A tight crop around the spinal cord improves the robustness of subsequent motion correction (S4) by excluding moving structures like the throat and chest.
+
+### Algorithm
+
+1.  **Cylindrical Crop Mask** - Create dynamic mask around centerline
+    ```bash
+    sct_create_mask -i func_ref.nii.gz -p centerline,cord_seg.nii.gz -size 40mm
+    ```
+2.  **Apply Crop** - Cut 4D dataset to crop mask extent
+    ```bash
+    sct_crop_image -i bold.nii.gz -m crop_mask.nii.gz -o funccrop_bold.nii.gz
+    ```
+
+### QC: Crop Box Sagittal
+
+![Crop Box](../assets/qc/S3_crop_box_sagittal_example.png)
+
+**What to look for:**
+
+-   ✅ Red box captures the entire spinal cord segment of interest.
+-   ✅ Box is not excessively large (should be ~40mm wide).
+-   ❌ FAIL: Cord leaves the crop box at top or bottom.
+
+### QC: Functional Reference Montage
+
+![Func Ref Montage](../assets/qc/S3_funcref_montage_example.png)
+
+**What to look for:**
+
+-   ✅ Clear definition of spinal cord against CSF (bright CSF, dark cord in T2*-weighted).
+-   ✅ No severe blurring (indicates robust reference construction worked).
+-   ❌ FAIL: "Ghosting" or double-images of the cord.
+
+---
 
 ## Outputs
 
-| Output | Path | Description |
-|--------|------|-------------|
-| Fast reference | `work/.../init/func_ref_fast.nii.gz` | Median of all frames |
-| Robust reference | `work/.../func_ref.nii.gz` | Median of non-outlier frames |
-| Cropped BOLD | `work/.../funccrop_bold.nii.gz` | Cord-focused 4D data |
-| Crop mask | `work/.../funccrop_mask.nii.gz` | Cylindrical crop ROI |
-| Frame metrics | `work/.../metrics/frame_metrics.tsv` | Per-frame DVARS, RefRMS |
-| Outlier mask | `work/.../metrics/outlier_mask.json` | Flagged frame indices |
-| QC reportlets | `derivatives/.../figures/` | Visual QC images |
+### Derivatives
 
-## Algorithm
+```
+derivatives/spinalfmriprep/{dataset}/sub-{id}/func/
+├── sub-{id}_task-{task}_desc-funcref.nii.gz          # Robust reference
+├── sub-{id}_task-{task}_desc-funccrop_bold.nii.gz    # Cropped 4D data
+├── sub-{id}_task-{task}_desc-funccrop_mask.nii.gz    # Binary crop mask
+├── sub-{id}_task-{task}_desc-confounds_timeseries.tsv # Frame metrics (DVARS, etc.)
+└── sub-{id}_task-{task}_desc-outliers.json           # List of outlier indices
 
-### S3.1: Dummy Drop & Localization
-
-#### Dummy Volume Drop
-
-Removes initial frames that haven't reached steady-state:
-
-```python
-dummy_count = policy["dummy"]["drop_count"]  # default: 4
-bold_data = bold_data[..., dummy_count:]
+derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
+├── sub-{id}_..._desc-S3_func_localization_crop_box_sagittal.png
+├── sub-{id}_..._desc-S3_frame_metrics.png
+├── sub-{id}_..._desc-S3_crop_box_sagittal.png
+└── sub-{id}_..._desc-S3_funcref_montage.png
 ```
 
-#### Fast Reference
-
-Computes initial reference as median across all remaining frames:
-
-```python
-func_ref_fast = np.median(bold_data, axis=3)
-```
-
-#### Cord Localization
-
-Segments cord directly in functional space:
-
-```bash
-sct_deepseg spinalcord -i func_ref_fast.nii.gz -o func_cord_seg.nii.gz -largest 1
-```
-
-This provides an independent cord detection without relying on anatomical registration.
-
-### S3.2: Outlier Gating
-
-#### Metric Computation
-
-Within the cord mask, computes:
-
-**DVARS** (Derivative of RMS Variance):
-```python
-dvars[t] = sqrt(mean((vol[t] - vol[t-1])^2))  # within mask
-```
-
-**RefRMS** (Reference RMS):
-```python
-refrms[t] = sqrt(mean((vol[t] - ref)^2))  # within mask
-```
-
-#### Outlier Detection
-
-Uses boxplot-based cutoff:
-
-```python
-threshold = P75 + 1.5 * IQR
-outliers = (dvars > dvars_threshold) | (refrms > refrms_threshold)
-```
-
-#### Robust Reference
-
-Computes final reference from non-outlier frames only:
-
-```python
-good_frames = ~outliers
-func_ref = np.median(bold_data[..., good_frames], axis=3)
-```
-
-### S3.3: Crop & QC
-
-#### Cylindrical Crop Mask
-
-Creates a cylindrical mask around the cord centerline:
-
-```bash
-sct_create_mask -i func_ref.nii.gz -p centerline,cord_seg.nii.gz -size 40mm
-```
-
-#### Apply Crop
-
-Crops 4D BOLD to the cord-focused region:
-
-```bash
-sct_crop_image -i bold.nii.gz -m crop_mask.nii.gz -o funccrop_bold.nii.gz
-```
-
-## Policy Configuration
-
-```yaml
-version: 1
-
-dummy:
-  drop_count: 4
-
-coarse_reference:
-  method: median
-
-func_localization:
-  enabled: true
-  method: deepseg
-  task: spinalcord
-
-outlier_gating:
-  iqr_multiplier: 1.5
-  metrics: [dvars, refrms]
-  outlier_fraction_warn: 0.30
-  outlier_fraction_fail: 0.50
-  min_good_frames: 10
-
-robust_reference:
-  method: median
-
-crop:
-  mask_diameter_mm: 40
-  dilate_xyz: [2, 2, 0]
-  min_z_slices: 10
-```
-
-## QC Reportlets
-
-| Reportlet | Description |
-|-----------|-------------|
-| `*_desc-S3_func_localization_crop_box_sagittal.png` | Cord localization with crop box overlay |
-| `*_desc-S3_frame_metrics.png` | DVARS and RefRMS time series with thresholds |
-| `*_desc-S3_crop_box_sagittal.png` | Final crop region visualization |
-| `*_desc-S3_funcref_montage.png` | Axial slice montage of robust reference |
+---
 
 ## CLI Usage
 
 ```bash
-# Run S3 for a dataset
-spinalfmriprep run S3_func_init_and_crop \
-  --dataset-key ds005884 \
+# Run S3 for a single dataset
+poetry run spinalfmriprep run S3_func_init_and_crop \
+  --dataset-key <KEY> \
   --datasets-local config/datasets_local.yaml \
-  --out wf_reg_001
+  --out work/wf_reg_001
 
-# Parallel processing
-spinalfmriprep run S3_func_init_and_crop \
-  --dataset-key ds005884 \
-  --out wf_reg_001 \
+# Run S3 with parallel workers
+poetry run spinalfmriprep run S3_func_init_and_crop \
+  --scope reg \
+  --out work/wf_reg_001 \
   --batch-workers 8
 ```
 
+---
+
 ## QC Status Logic
+
+Automated status determination based on metrics:
 
 ```
 status = FAIL if:
-  - Cord localization fails
-  - Outlier fraction > 50%
-  - Fewer than 10 good frames
+  - Cord localization fails (no mask generated)
+  - Outlier fraction > 50% (data too noisy)
+  - Fewer than 10 good frames remain
   - Crop produces < 10 Z slices
 
 status = WARN if:
@@ -202,18 +189,13 @@ status = WARN if:
 status = PASS otherwise
 ```
 
-## Edge Cases
+---
 
-| Condition | Behavior |
-|-----------|----------|
-| Very short run (< 15 frames) | WARN, may fail outlier gating |
-| Cord not detected in func | FAIL: "Cord localization failed" |
-| All frames are outliers | FAIL: "No good frames for reference" |
-| Crop too small | FAIL: "Insufficient Z coverage" |
-| Missing S2 outputs | FAIL: "Missing S2 cordref_std" |
+## References
 
-## Performance
+1.  **SCT DeepSeg:** Gros et al. *NeuroImage* 184:901-915 (2019). [DOI](https://doi.org/10.1016/j.neuroimage.2018.09.081)
+2.  **DVARS:** Power et al. *NeuroImage* 59(3):2142-2154 (2012). [DOI](https://doi.org/10.1016/j.neuroimage.2011.10.018)
 
-- ~30-60 seconds per run (depending on run length)
-- Parallelization at session level
-- Memory usage scales with 4D volume size
+---
+
+*Last updated: February 2026*
