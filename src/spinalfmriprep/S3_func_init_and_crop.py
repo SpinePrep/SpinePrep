@@ -2327,6 +2327,153 @@ def run_S3_func_init_and_crop_batch(
     return results
 
 
+def run_S3_func_init_and_crop_reportlets_only(
+    dataset_key: Optional[str] = None,
+    datasets_local: Optional[str] = None,
+    out: Optional[str] = None,
+) -> StepResult:
+    """Regenerate only QC reportlets from existing S3 outputs, skipping all processing."""
+    if out is None:
+        return StepResult(status="FAIL", failure_message="--out is required for --reportlets-only")
+
+    out_path = Path(out).resolve()
+    ds_key = dataset_key or "ad_hoc"
+
+    # Find per-dataset QC JSON
+    qc_dir = out_path / "logs" / "S3_func_init_and_crop" / ds_key
+    qc_path = qc_dir / "qc.json"
+    if not qc_path.exists():
+        return StepResult(status="FAIL", failure_message=f"Missing qc.json: {qc_path}. Run the full step first.")
+
+    try:
+        qc = json.loads(qc_path.read_text(encoding="utf-8"))
+    except Exception as err:
+        return StepResult(status="FAIL", failure_message=f"Failed to read QC JSON: {err}")
+
+    runs = qc.get("runs", [])
+    if not runs:
+        return StepResult(status="FAIL", failure_message="QC JSON has no runs")
+
+    # Re-render reportlets for each run
+    for run in runs:
+        if run.get("status") != "PASS":
+            continue
+
+        subject = run.get("subject")
+        session = run.get("session")
+        run_id = run.get("run_id")
+        if not subject or not run_id:
+            continue
+
+        # Locate work dir and outputs
+        work_dir = out_path / "runs" / "S3_func_init_and_crop" / run_id
+
+        # Determine figures directory
+        if session:
+            figures_dir = out_path / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "figures"
+        else:
+            figures_dir = out_path / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
+        figures_dir.mkdir(parents=True, exist_ok=True)
+
+        prefix = run_id
+
+        # Find existing intermediate files for re-rendering
+        func_ref_fast_path = work_dir / "init" / "func_ref_fast.nii.gz"
+        discovery_seg_path = work_dir / "init" / "localize" / "func_ref_fast_seg.nii.gz"
+        func_ref_path = work_dir / "func_ref.nii.gz"
+        cordmask_func_path = work_dir / "init" / "localize" / "func_ref_fast_seg.nii.gz"
+
+        # Find S2 cordref_std
+        cordref_std_path = _find_s2_cordref_std(out_path, subject, session)
+
+        # Re-render S3.1 localization figure
+        if func_ref_fast_path.exists() and discovery_seg_path.exists():
+            try:
+                policy_path = Path("policy") / "S3_func_init_and_crop.yaml"
+                policy = yaml.safe_load(policy_path.read_text()) if policy_path.exists() else {}
+                fig_path = figures_dir / f"{prefix}_desc-S3_func_localization_crop_box_sagittal.png"
+                _render_s3_1_simple_func_with_mask(
+                    func_path=func_ref_fast_path,
+                    mask_path=discovery_seg_path,
+                    output_path=fig_path,
+                    policy=policy,
+                    crop_box=None,
+                    padding_mm=10.0,
+                )
+            except Exception:
+                pass
+
+        # Re-render S3.3 funcref montage
+        if func_ref_path.exists() and discovery_seg_path.exists():
+            try:
+                import nibabel.processing
+                fig2_path = figures_dir / f"{prefix}_desc-S3_funcref_montage.png"
+                ref_img = nib.as_closest_canonical(nib.load(func_ref_path))
+                ref_data = ref_img.get_fdata()
+                zooms = ref_img.header.get_zooms()
+                mask_raw = nib.as_closest_canonical(nib.load(discovery_seg_path))
+                mask_img = nibabel.processing.resample_from_to(mask_raw, ref_img, order=0)
+                mask_data = mask_img.get_fdata()
+
+                z_indices = np.unique(np.where(mask_data > 0)[2])
+                z_min = int(z_indices.min()) if len(z_indices) > 0 else 0
+                z_max = int(z_indices.max()) if len(z_indices) > 0 else ref_data.shape[2] - 1
+                z_min = max(0, z_min)
+                z_max = min(ref_data.shape[2] - 1, z_max)
+                slices = np.linspace(z_min, z_max, 11)[1:-1].astype(int)
+
+                tile_size_px = 128
+                grid_img = Image.new("RGB", (tile_size_px * 3, tile_size_px * 3))
+                for i, z in enumerate(slices[:9]):
+                    row, col = i // 3, i % 3
+                    sl = ref_data[:, :, z]
+                    vmin, vmax = np.percentile(sl, [1, 99])
+                    if vmax > vmin:
+                        sl_norm = np.clip((sl - vmin) / (vmax - vmin), 0, 1)
+                    else:
+                        sl_norm = sl
+                    sl_disp = np.rot90(sl_norm)
+                    rgb_sl = np.repeat((sl_disp * 255).astype(np.uint8)[..., np.newaxis], 3, axis=2)
+                    pil_sl = Image.fromarray(rgb_sl).resize((tile_size_px, tile_size_px), resample=Image.Resampling.NEAREST)
+                    grid_img.paste(pil_sl, (col * tile_size_px, row * tile_size_px))
+                grid_img.save(fig2_path)
+            except Exception:
+                pass
+
+        # Re-render T2-to-func overlay
+        if func_ref_path.exists() and cordmask_func_path.exists():
+            try:
+                fig3_path = figures_dir / f"{prefix}_desc-S3_t2_to_func_overlay.png"
+                _render_t2_to_func_overlay(
+                    func_ref_path=func_ref_path,
+                    cordref_std_path=cordref_std_path,
+                    cordmask_func_path=cordmask_func_path,
+                    output_path=fig3_path,
+                )
+            except Exception:
+                pass
+
+    # Regenerate dashboard
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+    generate_dashboard_safe(out_path)
+
+    return StepResult(status="PASS", failure_message=None)
+
+
+def run_S3_func_init_and_crop_reportlets_only_batch(
+    dataset_keys: list[str],
+    out_base: str | Path,
+) -> dict[str, StepResult]:
+    """Batch reportlets-only for multiple datasets."""
+    results = {}
+    for key in dataset_keys:
+        results[key] = run_S3_func_init_and_crop_reportlets_only(
+            dataset_key=key,
+            out=str(out_base),
+        )
+    return results
+
+
 def check_S3_func_init_and_crop(
     dataset_key: Optional[str] = None,
     datasets_local: Optional[str] = None,

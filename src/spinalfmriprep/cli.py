@@ -381,7 +381,7 @@ def _check_S2(args):
 
 def _run_S3(args):
     from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop
-    
+
     # Resolve dataset keys from --scope if provided
     dataset_keys = []
     if args.scope:
@@ -392,7 +392,34 @@ def _run_S3(args):
                 failure_message=f"No datasets found for scope: {args.scope}",
             )
         dataset_keys = resolved_keys
-    
+
+    # Handle --reportlets-only mode
+    if args.reportlets_only:
+        if args.out is None:
+            return StepResult(status="FAIL", failure_message="--out is required for --reportlets-only")
+
+        if dataset_keys:
+            from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop_reportlets_only_batch
+            results = run_S3_func_init_and_crop_reportlets_only_batch(
+                dataset_keys=dataset_keys,
+                out_base=args.out,
+            )
+            failed = sum(1 for r in results.values() if r.status == "FAIL")
+            if failed == 0:
+                return StepResult(status="PASS", failure_message=None)
+            failed_keys = [k for k, r in results.items() if r.status == "FAIL"]
+            return StepResult(
+                status="FAIL",
+                failure_message=f"S3 reportlets-only batch: {failed}/{len(results)} failed. Failed: {', '.join(failed_keys[:5])}",
+            )
+        else:
+            from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop_reportlets_only
+            return run_S3_func_init_and_crop_reportlets_only(
+                dataset_key=args.dataset_key,
+                datasets_local=args.datasets_local,
+                out=args.out,
+            )
+
     if dataset_keys:
         # Batch mode: process multiple datasets
         from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop_batch
