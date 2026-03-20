@@ -33,27 +33,27 @@ def mock_work_dir(tmp_path):
     return d
 
 def test_extract_subject_session(tmp_path):
-    # Test Case 1: Standard run structure
-    p1 = tmp_path / "work" / "runs" / "S3_func_init_and_crop" / "sub-01" / "ses-02"
-    sub, ses, root = _extract_subject_session_from_work_dir(p1)
-    # The function expects directory stricture to exist? No, acts on path parts.
-    # But code uses .trace() or similar? No, uses parts.
-    # Wait, code uses .resolve().
-    # Test extraction
-    # Since paths don't exist, resolve might fail or be weird?
-    # Actually checking code: `current = work_dir.resolve()`
-    # We should create them to be safe or mock resolve.
+    # Test Case 1: Flat run ID with session (actual production format)
+    p1 = tmp_path / "work" / "runs" / "S3_func_init_and_crop" / "sub-01_ses-02_task-rest"
     p1.mkdir(parents=True)
     sub, ses, root = _extract_subject_session_from_work_dir(p1)
     assert sub == "01"
     assert ses == "02"
     assert root == tmp_path / "work" 
 
-    # Test Case 2: ses-none
-    p2 = tmp_path / "work" / "runs" / "S3_func_init_and_crop" / "sub-03_ses-none"
+    # Test Case 2: Flat run ID without session
+    p2 = tmp_path / "work" / "runs" / "S3_func_init_and_crop" / "sub-03_task-motor"
     p2.mkdir(parents=True)
     sub, ses, root = _extract_subject_session_from_work_dir(p2)
     assert sub == "03"
+    assert ses is None
+    assert root == tmp_path / "work"
+    
+    # Test Case 3: ses-none explicit (should return None for session)
+    p3 = tmp_path / "work" / "runs" / "S3_func_init_and_crop" / "sub-04_ses-none_task-test"
+    p3.mkdir(parents=True)
+    sub, ses, root = _extract_subject_session_from_work_dir(p3)
+    assert sub == "04"
     assert ses is None
 
 
@@ -112,8 +112,8 @@ def test_s3_3_crop_command_generation(mock_work_dir):
     
     policy = {"crop": {"mask_diameter_mm": 35}}
     
-    with patch("spinalfmriprep.S3_func_init_and_crop._run_command") as mock_run:
-        with patch("spinalfmriprep.S3_func_init_and_crop.Image") as mock_PIL:
+    with patch("spinalfmriprep.steps.s3.crop._run_command") as mock_run:
+        with patch("spinalfmriprep.steps.s3.crop.Image") as mock_PIL:
             # Mock success
             mock_run.return_value = (True, "Success")
             
