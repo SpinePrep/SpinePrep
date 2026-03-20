@@ -681,3 +681,157 @@ def check_S4_func_motion_correction(
         )
 
     return StepResult(status="PASS", failure_message=None)
+
+
+def run_S4_func_motion_correction_reportlets_only(
+    dataset_key: Optional[str] = None,
+    datasets_local: Optional[str] = None,
+    out: Optional[str] = None,
+) -> StepResult:
+    """Regenerate only QC reportlets from existing S4 outputs, skipping all processing."""
+    if not out:
+        return StepResult(status="FAIL", failure_message="--out is required for --reportlets-only")
+
+    out_path = Path(out).resolve()
+    ds_key = dataset_key or "ad_hoc"
+
+    # Load QC JSON
+    qc_path = out_path / "logs" / "S4_func_motion_correction" / ds_key / "qc.json"
+    if not qc_path.exists():
+        return StepResult(status="FAIL", failure_message=f"Missing qc.json: {qc_path}. Run the full step first.")
+
+    try:
+        qc = json.loads(qc_path.read_text(encoding="utf-8"))
+    except Exception as err:
+        return StepResult(status="FAIL", failure_message=f"Failed to read QC JSON: {err}")
+
+    # Load policy
+    policy_path = Path("policy/S4_func_motion_correction.yaml")
+    if policy_path.exists():
+        policy = yaml.safe_load(policy_path.read_text())
+    else:
+        return StepResult(status="FAIL", failure_message="Missing policy file")
+
+    from .lib import viz_s4
+
+    runs = qc.get("runs", [])
+    for run in runs:
+        subject = run.get("subject")
+        session = run.get("session")
+        run_id = run.get("run_id")
+        if not subject or not run_id:
+            continue
+
+        # Locate work dir
+        s4_work_dir = out_path / "work" / "S4_func_motion_correction" / run_id
+
+        # Determine prefix and figures dir
+        prefix = f"{subject}_{session}_{run_id}" if session else f"{subject}_{run_id}"
+        if session:
+            figures_dir = out_path / "derivatives" / "spinalfmriprep" / subject / session / "figures"
+            func_dir = out_path / "derivatives" / "spinalfmriprep" / subject / session / "func"
+        else:
+            figures_dir = out_path / "derivatives" / "spinalfmriprep" / subject / "figures"
+            func_dir = out_path / "derivatives" / "spinalfmriprep" / subject / "func"
+        figures_dir.mkdir(parents=True, exist_ok=True)
+
+        # Load persisted intermediates
+        tsnr_before_path = s4_work_dir / "tsnr_before.nii.gz"
+        tsnr_after_path = s4_work_dir / "tsnr_after.nii.gz"
+        params_path = func_dir / f"{prefix}_moco_params.tsv"
+
+        # Find cord mask
+        mask_path = None
+        mask_candidates = list(s4_work_dir.glob("*seg*.nii.gz")) + list(s4_work_dir.glob("*mask*.nii.gz"))
+        if mask_candidates:
+            mask_path = mask_candidates[0]
+
+        fd_threshold = policy.get("qc_thresholds", {}).get("fd_threshold_mm", 0.5)
+
+        # 1. Motion traces
+        if params_path.exists():
+            try:
+                params_df = pd.read_csv(params_path, sep="\t")
+                viz_s4.render_motion_traces(
+                    params_df,
+                    fd_threshold=fd_threshold,
+                    output_path=figures_dir / f"{prefix}_desc-S4_motion_traces.png",
+                    figsize=tuple(policy.get("qc", {}).get("motion_traces", {}).get("figsize", [10, 4])),
+                    dpi=policy.get("qc", {}).get("motion_traces", {}).get("dpi", 100),
+                    colors=policy.get("qc", {}).get("motion_traces", {}).get("colors", {}),
+                )
+            except Exception:
+                pass
+
+        # 2. tSNR comparison
+        if tsnr_before_path.exists() and tsnr_after_path.exists():
+            try:
+                tsnr_before_img = nib.load(tsnr_before_path)
+                tsnr_before_data = tsnr_before_img.get_fdata()
+                tsnr_after_data = nib.load(tsnr_after_path).get_fdata()
+                zooms = tsnr_before_img.header.get_zooms()[:3]
+                mask_data = nib.load(mask_path).get_fdata() > 0 if mask_path and mask_path.exists() else tsnr_before_data > 0
+                viz_s4.render_tsnr_comparison(
+                    tsnr_before_data,
+                    tsnr_after_data,
+                    mask_data,
+                    zooms=zooms,
+                    output_path=figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png",
+                    colormap=policy.get("qc", {}).get("tsnr_comparison", {}).get("colormap", "viridis"),
+                )
+            except Exception:
+                pass
+
+        # 3. DVARS plot
+        if params_path.exists():
+            try:
+                # Recompute DVARS from motion-corrected BOLD if available
+                moco_bold_path = func_dir / f"{prefix}_desc-mocoref_bold.nii.gz"
+                if moco_bold_path.exists() and mask_path and mask_path.exists():
+                    mask_data = nib.load(mask_path).get_fdata() > 0
+                    bold_data = nib.load(moco_bold_path).get_fdata()
+                    dvars = moco.compute_dvars(bold_data, mask_data)
+                    threshold = np.percentile(dvars, 75) + 1.5 * (np.percentile(dvars, 75) - np.percentile(dvars, 25))
+                    viz_s4.render_dvars_plot(
+                        dvars,
+                        threshold=threshold,
+                        output_path=figures_dir / f"{prefix}_desc-S4_dvars_plot.png",
+                    )
+            except Exception:
+                pass
+
+        # 4. Before/After GIF
+        try:
+            # Find original cropped BOLD (before moco)
+            bold_before_candidates = list(s4_work_dir.parent.parent.parent.rglob(f"*{run_id}*funccrop_bold.nii.gz"))
+            moco_bold_path = func_dir / f"{prefix}_desc-mocoref_bold.nii.gz"
+            if bold_before_candidates and moco_bold_path.exists():
+                viz_s4.render_moco_gif(
+                    bold_before_path=str(bold_before_candidates[0]),
+                    bold_after_path=str(moco_bold_path),
+                    output_path=str(figures_dir / f"{prefix}_desc-S4_moco_comparison.gif"),
+                    fps=policy.get("qc", {}).get("gif", {}).get("fps", 5),
+                    max_frames=policy.get("qc", {}).get("gif", {}).get("max_frames", 20),
+                )
+        except Exception:
+            pass
+
+    # Regenerate dashboard
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+    generate_dashboard_safe(out_path)
+
+    return StepResult(status="PASS", failure_message=None)
+
+
+def run_S4_func_motion_correction_reportlets_only_batch(
+    dataset_keys: list[str],
+    out_base: str | Path,
+) -> dict[str, StepResult]:
+    """Batch reportlets-only for multiple datasets."""
+    results = {}
+    for key in dataset_keys:
+        results[key] = run_S4_func_motion_correction_reportlets_only(
+            dataset_key=key,
+            out=str(out_base),
+        )
+    return results

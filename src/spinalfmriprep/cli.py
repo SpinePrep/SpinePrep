@@ -496,11 +496,34 @@ def _run_S4(args):
         dataset_keys = [args.dataset_key]
         
     if not dataset_keys:
-        # Check if batch mode implies something? S3 allows missing out if check?
         return StepResult(status="FAIL", failure_message="--dataset-key or --scope required")
-        
+
     if args.out is None:
         return StepResult(status="FAIL", failure_message="--out is required")
+
+    # Handle --reportlets-only mode
+    if args.reportlets_only:
+        if dataset_keys:
+            from spinalfmriprep.S4_func_motion_correction import run_S4_func_motion_correction_reportlets_only_batch
+            results = run_S4_func_motion_correction_reportlets_only_batch(
+                dataset_keys=dataset_keys,
+                out_base=args.out,
+            )
+            failed = sum(1 for r in results.values() if r.status == "FAIL")
+            if failed == 0:
+                return StepResult(status="PASS", failure_message=None)
+            failed_keys = [k for k, r in results.items() if r.status == "FAIL"]
+            return StepResult(
+                status="FAIL",
+                failure_message=f"S4 reportlets-only batch: {failed}/{len(results)} failed. Failed: {', '.join(failed_keys[:5])}",
+            )
+        else:
+            from spinalfmriprep.S4_func_motion_correction import run_S4_func_motion_correction_reportlets_only
+            return run_S4_func_motion_correction_reportlets_only(
+                dataset_key=args.dataset_key,
+                datasets_local=args.datasets_local,
+                out=str(args.out),
+            )
 
     failures = []
     failure_messages = []
