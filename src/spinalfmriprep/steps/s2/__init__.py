@@ -1,6 +1,7 @@
-"""S2_anat_cordref: backwards-compatible re-export from steps.s2 subpackage."""
-from spinalfmriprep.steps.s2 import (
-    StepResult,
+"""S2_anat_cordref subpackage: cord reference selection, standardization, cropping, and segmentation."""
+
+from .io import StepResult
+from .orchestrate import (
     run_S2_anat_cordref,
     check_S2_anat_cordref,
     run_S2_anat_cordref_batch,
@@ -8,8 +9,8 @@ from spinalfmriprep.steps.s2 import (
     run_S2_anat_cordref_reportlets_only_batch,
 )
 
-# Re-export private functions used by tests
-from spinalfmriprep.steps.s2.validate import (
+# Also re-export private functions used by tests
+from .validate import (
     _validate_vertebral_label_outputs,
     _estimate_initcenter_from_disc_labels,
     _check_labeling_consistency,
