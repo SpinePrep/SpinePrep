@@ -23,20 +23,8 @@ class StepResult:
 # Subprocess helpers
 # ---------------------------------------------------------------------------
 
-def _run_command(cmd: list[str]) -> tuple[bool, str]:
-    try:
-        result = subprocess.run(cmd, text=True, capture_output=True, check=True)
-    except FileNotFoundError:
-        return False, f"Command not found: {cmd[0]}"
-    except subprocess.CalledProcessError as err:
-        output = "\n".join(part for part in [err.stdout, err.stderr] if part)
-        return False, output.strip()
-    output = "\n".join(part for part in [result.stdout, result.stderr] if part)
-    return True, output.strip()
-
-
-def _is_command_not_found(message: str) -> bool:
-    return "Command not found" in message or "not found" in message.lower()
+from spinalfmriprep.lib.run import run_command as _run_command  # noqa: F401
+from spinalfmriprep.lib.run import is_command_not_found as _is_command_not_found  # noqa: F401
 
 
 def _get_sct_version() -> Optional[str]:
