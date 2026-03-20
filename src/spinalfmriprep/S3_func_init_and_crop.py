@@ -297,22 +297,7 @@ def _write_ppm(path: Path, rgb: np.ndarray) -> None:
     path.write_bytes(header + rgb.astype(np.uint8).tobytes())
 
 
-def _run_command(cmd: list[str]) -> tuple[bool, str]:
-    """Run shell command and return (success, output)."""
-    try:
-        # Enforce single-threaded execution for libraries to avoid subscription in parallel batches
-        env = os.environ.copy()
-        env["OMP_NUM_THREADS"] = "1"
-        env["NUMEXPR_MAX_THREADS"] = "1"
-        env["MKL_NUM_THREADS"] = "1"
-        result = subprocess.run(cmd, text=True, capture_output=True, check=True, env=env)
-    except FileNotFoundError:
-        return False, f"Command not found: {cmd[0]}"
-    except subprocess.CalledProcessError as err:
-        output = "\n".join(part for part in [err.stdout, err.stderr] if part)
-        return False, output.strip()
-    output = "\n".join(part for part in [result.stdout, result.stderr] if part)
-    return True, output.strip()
+from spinalfmriprep.lib.run import run_command as _run_command  # noqa: E402
 
 
 # ============================================================================
