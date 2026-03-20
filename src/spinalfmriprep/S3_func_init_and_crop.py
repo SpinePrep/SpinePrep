@@ -97,11 +97,8 @@ def _extract_subject_session_from_work_dir(work_dir: Path) -> tuple[Optional[str
                     if session == "none":
                         session = None
                 else:
-                    # Check if session information might be implied or managed differently 
-                    # but for now assume None if explicit ses- tag missing, 
-                    # unless strictly required by caller context.
-                    # Verify S3 run structure: parent of parent is work?
-                    pass
+                    # No ses- tag in directory name - session is None
+                    session = None
                     
                 # Locate out_root
                 # Structure: {out_root}/runs/S3_func_init_and_crop/{run_id}
@@ -195,10 +192,12 @@ def _find_s2_cordmask_dseg(
     if not anat_dir.exists():
         return None
 
-    # Look for any file ending in _desc-cordmask_dseg.nii.gz
-    # Should be unique per session/modality usually, but we pick the first one matching
-    # typically derived from T2w or T1w
-    candidates = list(anat_dir.glob("*_desc-cordmask_dseg.nii.gz"))
+    # Look for any file ending in _desc-cord_dseg*.nii.gz (matches S2 output naming)
+    # S2 outputs: *_desc-cord_dseg_T1w.nii.gz or *_desc-cord_dseg_T2w.nii.gz
+    candidates = list(anat_dir.glob("*_desc-cord_dseg*.nii.gz"))
+    if not candidates:
+        # Fallback: try legacy pattern
+        candidates = list(anat_dir.glob("*_desc-cordmask_dseg.nii.gz"))
     if not candidates:
         return None
     
@@ -327,6 +326,7 @@ def _render_s3_1_simple_func_with_mask(
     output_path: Path,
     policy: dict[str, Any],
     crop_box: Optional[list[int]] = None,
+    padding_mm: float = 0.0,
 ) -> Optional[Path]:
     """
     Render simple S3.1 figure: functional image with cord mask (BLUE) and crop box (RED).
@@ -426,7 +426,11 @@ def _render_s3_1_simple_func_with_mask(
             mask_img = Image.fromarray(mask_overlay, mode="RGBA")
             img = Image.alpha_composite(img, mask_img)
             
-        # Draw Red Crop Box if provided (S2.1 match)
+            
+        # Draw Red Crop Box if provided OR if padding_mm > 0 (computed from aligned mask)
+        # S2.1 match or S3.3 robust crop
+        box_to_draw = None
+        
         if crop_box:
              # crop_box = [r_min, r_max, c_min, c_max, s_min, s_max]
              # sagittal view corresponds to c (cols/y) and s (slices/z)
@@ -434,22 +438,64 @@ def _render_s3_1_simple_func_with_mask(
              s_min, s_max = crop_box[4], crop_box[5]
              
              # Map to display coordinates (flipud T)
-             # T -> axis 0 is now s (z), axis 1 is c (y)
-             # flipud -> axis 0 is flipped (height)
              height = func_slice.shape[0]
-             # Y-axis (vertical in display) maps to S-axis (Z) inverted
-             # Mask pixels use row = height - 1 - s
-             # To perfectly enclose/match, we use the same transform:
+             
              y_min_disp = height - 1 - s_max
              y_max_disp = height - 1 - s_min
-             
-             # X-axis (horizontal in display) maps to C-axis (Y)
              x_min_disp = c_min
              x_max_disp = c_max
              
+             box_to_draw = [(x_min_disp, y_min_disp), (x_max_disp, y_max_disp)]
+             
+        elif padding_mm > 0 and aligned_mask.any():
+             # Compute BBox from aligned_mask (which ensures alignment with func)
+             # aligned_mask is (row, col) = (y_disp, x_disp) approx?
+             # Wait, aligned_mask was filled using: row = height - 1 - s; col = c
+             # So row matches display row, col matches display col.
+             
+             mask_coords = np.argwhere(aligned_mask)
+             if mask_coords.size > 0:
+                 r_min, c_min = mask_coords.min(axis=0)
+                 r_max, c_max = mask_coords.max(axis=0)
+                 
+                 # Calculate padding in pixels
+                 # We need zooms. func_img.header.get_zooms()
+                 # func_slice is sagittal. 
+                 # Dim 0 is S-I (Z approx), Dim 1 is P-A (Y approx)
+                 zooms = func_img.header.get_zooms()
+                 # In RPI: x, y, z. 
+                 # sagittal slice is y-z plane? No, at fixed x.
+                 # Dim 0 of slice comes from Z (s). Dim 1 comes from Y (c).
+                 # So pixel size y (row) is z-zoom. pixel size x (col) is y-zoom.
+                 
+                 py_mm = zooms[2] # Z
+                 px_mm = zooms[1] # Y
+                 
+                 pad_y = int(padding_mm / py_mm)
+                 pad_x = int(padding_mm / px_mm)
+                 
+                 # Apply padding
+                 r_min = max(0, r_min) # Should we pad Z (up/down)? User asked "along x and y".
+                 # Usually crop box covers full z extent, so Z padding might be desired or not.
+                 # "pad along x and y". In sagittal view, we see Y (x_disp) and Z (y_disp).
+                 # User likely means "pad the cross-sectional crop".
+                 # So pad X (display col)?
+                 # Let's pad all sides for safety/aesthetic.
+                 
+                 r_min = max(0, r_min - pad_y) # Pad Top (Sup) - wait, r is row (vertical)
+                 r_max = min(aligned_mask.shape[0]-1, r_max + pad_y) # Pad Bottom (Inf)
+                 
+                 c_min = max(0, c_min - pad_x) # Pad Left (Post)
+                 c_max = min(aligned_mask.shape[1]-1, c_max + pad_x) # Pad Right (Ant)
+                 
+                 # Box coordinates [ (x0, y0), (x1, y1) ] = [ (col_min, row_min), (col_max, row_max) ]
+                 # Note: PIL rectangle is (left, top, right, bottom)
+                 box_to_draw = [(c_min, r_min), (c_max, r_max)]
+
+        if box_to_draw:
              draw = ImageDraw.Draw(img)
              draw.rectangle(
-                 [(x_min_disp, y_min_disp), (x_max_disp, y_max_disp)],
+                 box_to_draw,
                  outline=(255, 0, 0, 255),
                  width=1
              )
@@ -471,7 +517,7 @@ def _render_s3_1_simple_func_with_mask(
                if abs(ratio - 1.0) > 0.1: # Only correct if significantly anisotropic
                    w, h = img.size
                    new_h = int(h * ratio)
-                   img = img.resize((w, new_h), resample=Image.Resampling.LANCZOS)
+                   img = img.resize((w, new_h), resample=Image.Resampling.NEAREST)
         except Exception as e:
             pass # Aspect ratio correction skipped
         
@@ -481,7 +527,7 @@ def _render_s3_1_simple_func_with_mask(
         
         ok, _ = _run_command([
             "convert", str(ppm_path),
-            "-filter", "Lanczos",
+            "-filter", "Point",
             "-resize", "1200x",
             str(output_path)
         ])
@@ -605,7 +651,7 @@ def _render_s3_1_crop_box_sagittal_layered(
         if func_norm_float.shape != cordref_norm.shape:
             # Resize func to match cordref
             func_img_pil = Image.fromarray((func_norm_float * 255).astype(np.uint8), mode="L")
-            func_img_pil = func_img_pil.resize((cordref_norm.shape[1], cordref_norm.shape[0]), resample=Image.Resampling.BILINEAR)
+            func_img_pil = func_img_pil.resize((cordref_norm.shape[1], cordref_norm.shape[0]), resample=Image.Resampling.NEAREST)
             func_norm_float = np.array(func_img_pil, dtype=np.float32) / 255.0
             
             # Also resize masks
@@ -679,7 +725,7 @@ def _render_s3_1_crop_box_sagittal_layered(
                 "convert",
                 str(ppm_path),
                 "-filter",
-                "Lanczos",
+                "Point",
                 "-resize",
                 "1200x",
                 str(output_path),
@@ -1264,6 +1310,96 @@ def _process_s3_2_outlier_gating(
     return result
 
 
+def _render_t2_to_func_overlay(
+    func_ref_path: Path,
+    cordref_std_path: Optional[Path],
+    cordmask_func_path: Path,
+    output_path: Path,
+    n_slices: int = 9,
+    tile_size: int = 128,
+) -> None:
+    """Render T2-to-func overlay: side-by-side sagittal views of S2 anatomy and S3 func ref.
+
+    Left panel: mid-sagittal of S2 cordref_std (anatomical reference).
+    Right panel: mid-sagittal of S3 func_ref with cord discovery mask contour (green).
+    This lets the reviewer verify spatial coherence between anat and func spaces.
+    """
+    import nibabel.processing
+
+    func_img = nib.as_closest_canonical(nib.load(func_ref_path))
+    func_data = func_img.get_fdata()
+    if func_data.ndim > 3:
+        func_data = func_data[..., 0]
+
+    # Load cord mask and resample to func space
+    mask_raw = nib.as_closest_canonical(nib.load(cordmask_func_path))
+    mask_img = nibabel.processing.resample_from_to(mask_raw, func_img, order=0)
+    mask_data = mask_img.get_fdata() > 0
+
+    # Mid-sagittal slice index from cord mask center of mass
+    mask_coords = np.argwhere(mask_data)
+    if mask_coords.size > 0:
+        x_mid = int(np.median(mask_coords[:, 0]))
+    else:
+        x_mid = func_data.shape[0] // 2
+
+    # Extract func sagittal slice
+    func_sag = np.flipud(func_data[x_mid, :, :].T)
+    mask_sag = np.flipud(mask_data[x_mid, :, :].T)
+
+    # Normalize func
+    vmin, vmax = np.percentile(func_sag[func_sag > 0], [1, 99]) if np.any(func_sag > 0) else (0, 1)
+    if vmax <= vmin:
+        vmax = vmin + 1
+    func_norm = np.clip((func_sag - vmin) / (vmax - vmin), 0, 1)
+    func_rgb = np.repeat((func_norm * 255).astype(np.uint8)[..., np.newaxis], 3, axis=2)
+    func_pil = Image.fromarray(func_rgb).convert("RGBA")
+
+    # Draw cord mask contour in green
+    contour = _mask_contour_2d(mask_sag)
+    _draw_thick_contour(func_pil, contour, color=(0, 255, 0, 255), thickness=2)
+
+    # Left panel: S2 anatomy (if available)
+    if cordref_std_path and cordref_std_path.exists():
+        anat_img = nib.as_closest_canonical(nib.load(cordref_std_path))
+        anat_data = anat_img.get_fdata()
+        if anat_data.ndim > 3:
+            anat_data = anat_data[..., 0]
+        anat_x_mid = anat_data.shape[0] // 2
+        anat_sag = np.flipud(anat_data[anat_x_mid, :, :].T)
+
+        a_vmin, a_vmax = np.percentile(anat_sag[anat_sag > 0], [1, 99]) if np.any(anat_sag > 0) else (0, 1)
+        if a_vmax <= a_vmin:
+            a_vmax = a_vmin + 1
+        anat_norm = np.clip((anat_sag - a_vmin) / (a_vmax - a_vmin), 0, 1)
+        anat_rgb = np.repeat((anat_norm * 255).astype(np.uint8)[..., np.newaxis], 3, axis=2)
+        anat_pil = Image.fromarray(anat_rgb).convert("RGBA")
+    else:
+        # No anat available — create a black placeholder
+        anat_pil = Image.new("RGBA", func_pil.size, (0, 0, 0, 255))
+
+    # Resize both to same height for side-by-side
+    target_h = max(anat_pil.height, func_pil.height, 256)
+    anat_w = max(1, int(anat_pil.width * target_h / max(anat_pil.height, 1)))
+    func_w = max(1, int(func_pil.width * target_h / max(func_pil.height, 1)))
+
+    anat_resized = anat_pil.resize((anat_w, target_h), resample=Image.Resampling.LANCZOS)
+    func_resized = func_pil.resize((func_w, target_h), resample=Image.Resampling.LANCZOS)
+
+    # Compose side-by-side with labels
+    gap = 4
+    total_w = anat_w + gap + func_w
+    canvas = Image.new("RGBA", (total_w, target_h + 20), (0, 0, 0, 255))
+    canvas.paste(anat_resized, (0, 20))
+    canvas.paste(func_resized, (anat_w + gap, 20))
+
+    draw = ImageDraw.Draw(canvas)
+    draw.text((4, 2), "S2 Anatomy", fill=(255, 255, 255, 255))
+    draw.text((anat_w + gap + 4, 2), "S3 Func Ref + Cord (green)", fill=(0, 255, 0, 255))
+
+    canvas.convert("RGB").save(output_path)
+
+
 @subtask("S3.3")
 def _process_s3_3_crop_and_qc(
     bold_data_path: Path,
@@ -1274,6 +1410,7 @@ def _process_s3_3_crop_and_qc(
     work_dir: Path,
     policy: dict[str, Any],
     coarse_crop_bbox: list[int] | None = None, # Offset for coordinate mapping back to full FOV
+    cordref_std_path: Optional[Path] = None,   # S2 anatomical reference (for t2-to-func overlay)
 ) -> dict[str, Any]:
     """
     S3.3: Cord-focused crop + QC reportlets.
@@ -1368,42 +1505,19 @@ def _process_s3_3_crop_and_qc(
     # 
     # S3.1 uses _render_s3_1_simple_func_with_mask(func_path, mask_path, output_path, policy, crop_box)
     
-    # We need to calculate crop_box in index coordinates relative to func_ref
+    # We need to calculate crop_box. 
+    # FIX: We now let the renderer calculate it robustly from the aligned mask with explicit padding.
     try:
-         # OPTION A FIX: Use full FOV discovery_seg_path for red box calculation
-         # This ensures the red box exactly matches the blue mask extent.
-         # Since discovery_seg_path is in the same space as func_ref_fast_path (Full FOV),
-         # no offset correction is needed.
-         mask_img = nib.as_closest_canonical(nib.load(discovery_seg_path))
-         mask_data = mask_img.get_fdata() > 0
-         
-         # BBox: r_min, r_max, c_min, c_max, s_min, s_max
-         coords = np.argwhere(mask_data)
-         if coords.size > 0:
-             r_min, c_min, s_min = coords.min(axis=0)
-             r_max, c_max, s_max = coords.max(axis=0)
-             
-             # Red box = bounding box of the full discovery segmentation
-             # This matches the blue overlay exactly
-             crop_bbox = [int(r_min), int(r_max), int(c_min), int(c_max), int(s_min), int(s_max)]
-         else:
-             crop_bbox = None
-             
          fig1_path = figures_dir / f"{prefix}_desc-S3_crop_box_sagittal.png"
          
-         # Render using S3.1 logic
-         # Use matching S3.1 style: Blue mask (cylindrical here) + Red box
-         # Render using S3.1 logic
-         # Use matching S3.1 style: 
-         # Background: Full FOV func_ref_fast
-         # Overlay: Discovery Seg (Blue)
-         # Box: Final Crop Box (Red)
+         # Render using S3.1 logic with robust box calculation
          _render_s3_1_simple_func_with_mask(
              func_path=func_ref_fast_path,  # Full FOV background
              mask_path=discovery_seg_path,  # Blue overlay (S3.1 discovery)
              output_path=fig1_path,
              policy=policy,
-             crop_box=crop_bbox             # Red overlay (S3.3 fine crop)
+             crop_box=None,           # Let renderer compute from aligned mask
+             padding_mm=10.0          # Explicit padding 10mm
          )
          
     except Exception as e:
@@ -1417,47 +1531,141 @@ def _process_s3_3_crop_and_qc(
         # Simple montage: 9 slices covering the cord
         ref_img = nib.as_closest_canonical(nib.load(functional_ref_path))
         ref_data = ref_img.get_fdata()
+        zooms = ref_img.header.get_zooms()
+        
+        # Load discovery mask and RESAMPLE to ref to ensure pixel alignment
+        import nibabel.processing
+        mask_raw = nib.as_closest_canonical(nib.load(discovery_seg_path))
+        mask_img = nib.processing.resample_from_to(mask_raw, ref_img, order=0)
+        mask_data = mask_img.get_fdata()
         
         # Find Z range of cord mask
-        # We can use crop_mask_path since it's the cylinder
-        z_indices = np.unique(np.where(nib.load(crop_mask_path).get_fdata() > 0)[2])
+        z_indices = np.unique(np.where(mask_data > 0)[2])
         if len(z_indices) > 0:
             z_min, z_max = z_indices.min(), z_indices.max()
         else:
             z_min, z_max = 0, ref_data.shape[2] - 1
             
-        # Select 9 slices
+        # Select 9 slices distributed across the cord
+        # Ensure we don't go out of bounds
+        z_min = max(0, z_min)
+        z_max = min(ref_data.shape[2]-1, z_max)
+        
         slices = np.linspace(z_min, z_max, 11)[1:-1].astype(int) # 9 inner slices
         
         # Create grid 3x3
-        # Assuming ~64x64 slices
-        slice_h, slice_w = ref_data.shape[:2]
-        grid_img = Image.new('RGB', (slice_w * 3, slice_h * 3))
+        # Use existing slice dims as base
+        dataset_h, dataset_w = ref_data.shape[:2]
+        
+        # Display tile size: we will standardize to 64x64 or 128x128?
+        # Let's use 128x128 for high quality details
+        tile_size = 128
+        
+        grid_img = Image.new('RGB', (tile_size * 3, tile_size * 3))
         
         for i, z in enumerate(slices):
             if i >= 9: break
             row = i // 3
             col = i % 3
             
-            sl = np.rot90(ref_data[:, :, z])
-            vmin, vmax = np.percentile(sl, [1, 99])
+            # extract raw slice (x, y)
+            sl = ref_data[:, :, z]
+            mask_sl = mask_data[:, :, z]
+            
+            # Find center of mass of mask in this slice (in native x, y coords)
+            coords = np.argwhere(mask_sl > 0)
+            if coords.size > 0:
+                # Median is robust
+                center_x, center_y = np.median(coords, axis=0).astype(int)
+                
+                # Adaptive Zoom: 2.0 * diameter
+                x_min, y_min = coords.min(axis=0)
+                x_max, y_max = coords.max(axis=0)
+                dx_mm = (x_max - x_min + 1) * zooms[0]
+                dy_mm = (y_max - y_min + 1) * zooms[1]
+                diameter_mm = max(dx_mm, dy_mm)
+                # Avoid tiny crops for single pixels
+                diameter_mm = max(diameter_mm, 5.0) 
+                
+                target_fov_mm = 2.0 * diameter_mm
+                
+                # Convert FOV to voxels
+                fov_x = int(target_fov_mm / zooms[0])
+                fov_y = int(target_fov_mm / zooms[1])
+                
+            else:
+                center_x, center_y = dataset_h // 2, dataset_w // 2
+                fov_x, fov_y = dataset_h // 2, dataset_w // 2
+            
+            # Ensure square crop? Not strictly necessary but looks better in grid.
+            # Make it square based on max dim
+            crop_size = max(fov_x, fov_y)
+            
+            # Define crop box in native space (x, y)
+            # x is rows, y is cols
+            x_start = max(0, center_x - crop_size // 2)
+            x_end = min(dataset_h, x_start + crop_size)
+            # Adjust to keep size if possible
+            if x_end - x_start < crop_size:
+                 # Shift if hitting edge
+                 if x_start == 0:
+                     x_end = min(dataset_h, x_start + crop_size)
+                 elif x_end == dataset_h:
+                     x_start = max(0, x_end - crop_size)
+                     
+            y_start = max(0, center_y - crop_size // 2)
+            y_end = min(dataset_w, y_start + crop_size)
+            if y_end - y_start < crop_size:
+                 if y_start == 0:
+                     y_end = min(dataset_w, y_start + crop_size)
+                 elif y_end == dataset_w:
+                     y_start = max(0, y_end - crop_size)
+                
+            # Crop in native space
+            sl_crop = sl[x_start:x_end, y_start:y_end]
+            
+            # Safely rotate for display (Anterior up convention)
+            # Standard: rot90 puts X on vertical, Y on horizontal?
+            # Assuming standard orientation: x=Left-Right, y=Ant-Post
+            sl_disp = np.rot90(sl_crop)
+            
+            # Normalize
+            vmin, vmax = np.percentile(sl_disp, [1, 99])
             if vmax > vmin:
-                sl = np.clip((sl - vmin) / (vmax - vmin), 0, 1)
-            rgb_sl = np.repeat((sl * 255).astype(np.uint8)[..., np.newaxis], 3, axis=2)
+                sl_norm = np.clip((sl_disp - vmin) / (vmax - vmin), 0, 1)
+            else:
+                sl_norm = sl_disp
+                
+            rgb_sl = np.repeat((sl_norm * 255).astype(np.uint8)[..., np.newaxis], 3, axis=2)
             pil_sl = Image.fromarray(rgb_sl)
             
-            grid_img.paste(pil_sl, (col * slice_w, row * slice_h))
+            # Resize to target tile size using NEAREST (Pixel Perfect)
+            pil_sl = pil_sl.resize((tile_size, tile_size), resample=Image.Resampling.NEAREST)
+            
+            grid_img.paste(pil_sl, (col * tile_size, row * tile_size))
             
         grid_img.save(fig2_path)
         
     except Exception as e:
         print(f"Fig2 render fail: {e}")
 
+    # Figure 3: T2-to-Func Overlay (anat vs func spatial coherence)
+    fig3_path = figures_dir / f"{prefix}_desc-S3_t2_to_func_overlay.png"
+    try:
+        _render_t2_to_func_overlay(
+            func_ref_path=functional_ref_path,
+            cordref_std_path=cordref_std_path,
+            cordmask_func_path=cordmask_func_path,
+            output_path=fig3_path,
+        )
+    except Exception as e:
+        print(f"Fig3 (t2_to_func_overlay) render fail: {e}")
+
     result = {
         "bold_crop_path": bold_crop_path,
         "crop_mask_path": crop_mask_path,
         "qc_status": "PASS",
-        "figures": [fig1_path, fig2_path]
+        "figures": [fig1_path, fig2_path, fig3_path]
     }
 
     # S3.4 is the last subtask, check exit logic handled by wrapper or here?
@@ -1597,12 +1805,14 @@ def _process_session_s3(
     bids_root: Path,
     out_root: Path,
     policy: dict[str, Any],
+    s2_root: Optional[Path] = None,
 ) -> list[dict]:
     session_runs = []
     
-    # Locate S2 outputs (common for session)
-    cordref_std_path = _find_s2_cordref_std(out_root, subject, session)
-    cordmask_dseg_path = _find_s2_cordmask_dseg(out_root, subject, session)
+    # Locate S2 outputs - use s2_root if provided (chain model), else use out_root
+    s2_lookup_root = s2_root if s2_root else out_root
+    cordref_std_path = _find_s2_cordref_std(s2_lookup_root, subject, session)
+    cordmask_dseg_path = _find_s2_cordmask_dseg(s2_lookup_root, subject, session)
     
     if not cordref_std_path:
         # Cannot run S3 without S2 cord reference
@@ -1692,7 +1902,8 @@ def _process_session_s3(
                 s3_1_res["func_ref_fast_path"],
                 s3_1_res["discovery_seg_path"],
                 work_dir,
-                policy
+                policy,
+                cordref_std_path=cordref_std_path,
             )
             run_result["results"].append(("S3.3", s3_3_res))
             
@@ -1715,16 +1926,22 @@ def _process_session_s3(
                         if not name.startswith(run_id):
                              name = f"{run_id}_{name}"
                         dest = figs_out / name
-                        import shutil
-                        shutil.copy2(src_path, dest)
+                        # Only copy if source and destination are different
+                        src_resolved = Path(src_path).resolve()
+                        dest_resolved = dest.resolve()
+                        if src_resolved != dest_resolved:
+                            import shutil
+                            shutil.copy2(src_path, dest)
                         reportlets[reportlet_key] = str(dest.relative_to(out_root))
 
-                # Assuming order: crop_box, funcref_montage
+                # Order: crop_box, funcref_montage, t2_to_func_overlay
                 figures = s3_3_res["figures"]
                 if len(figures) > 0:
                     _copy_and_record(figures[0], "crop_box_sagittal", "crop_box_sagittal")
                 if len(figures) > 1:
                     _copy_and_record(figures[1], "funcref_montage", "funcref_montage")
+                if len(figures) > 2:
+                    _copy_and_record(figures[2], "t2_to_func_overlay", "t2_to_func_overlay")
 
             run_result["reportlets"] = reportlets
             run_result["status"] = "PASS"
@@ -1821,10 +2038,24 @@ def run_S3_func_init_and_crop(
     out: Optional[str] = None,
     only_missing: bool = False,
     batch_workers: int = 1,
+    s1_base: Optional[Path] = None,
+    s2_base: Optional[Path] = None,
 ) -> StepResult:
     """
     Run S3 functional initialization and cropping step.
     Orchestrates processing for all functional runs found in BIDS inventory.
+    
+    Args:
+        subtask_id: Optional subtask ID for layout context
+        dataset_key: Dataset key from policy/datasets.yaml
+        datasets_local: Path to datasets_local.yaml
+        out: Output directory for S3 artifacts
+        only_missing: Only process missing outputs
+        batch_workers: Number of parallel workers
+        s1_base: Base path for S1 outputs (chain model). If None, uses out.
+                 For chain model, pass work/done/{scope}/S1/ to read S1 outputs.
+        s2_base: Base path for S2 outputs (chain model). If None, uses out.
+                 For chain model, pass work/done/{scope}/S2/ to read S2 outputs.
     """
     from spinalfmriprep.run_layout import setup_subtask_context
     if subtask_id:
@@ -1833,22 +2064,28 @@ def run_S3_func_init_and_crop(
     # Per-dataset paths
     ds_key = dataset_key or "ad_hoc"
     
-    # Detect test harness mode
-    if out and not (Path(out) / "work" / "S1_input_verify" / ds_key / "bids_inventory.json").exists():
+    # Chain model: read S1 outputs from s1_base if provided, else from out
+    inventory_base = Path(s1_base) if s1_base else (Path(out) if out else None)
+    
+    # Detect test harness mode (check inventory_base, not out)
+    if inventory_base and not (inventory_base / "work" / "S1_input_verify" / ds_key / "bids_inventory.json").exists():
         # Fallback to test harness if no inventory found
         return _run_s3_test_harness(out)
         
     if not out:
         return StepResult("FAIL", "--out is required")
         
-    out_path = Path(out)
-    inventory_path = out_path / "work" / "S1_input_verify" / ds_key / "bids_inventory.json"
+    out_path = Path(out).resolve()  # Resolve to absolute path for consistent path handling
+    inventory_path = inventory_base / "work" / "S1_input_verify" / ds_key / "bids_inventory.json"
     
     if not inventory_path.exists():
         return StepResult("FAIL", f"Missing inventory: {inventory_path}")
         
     inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
     bids_root = Path(inventory["bids_root"])
+    
+    # Chain model: use s2_base for S2 outputs if provided
+    s2_out_root = Path(s2_base) if s2_base else out_path
     
     policy_path = Path("policy") / "S3_func_init_and_crop.yaml"
     try:
@@ -1877,7 +2114,7 @@ def run_S3_func_init_and_crop(
     if batch_workers > 1:
         with ProcessPoolExecutor(max_workers=batch_workers) as executor:
             futures = {
-                executor.submit(_process_session_s3, sub, ses, cands, bids_root, out_path, policy): (sub, ses)
+                executor.submit(_process_session_s3, sub, ses, cands, bids_root, out_path, policy, s2_out_root): (sub, ses)
                 for sub, ses, cands in session_items
             }
             
@@ -1900,7 +2137,7 @@ def run_S3_func_init_and_crop(
     else:
         # Sequential
         for sub, ses, cands in session_items:
-            runs = _process_session_s3(sub, ses, cands, bids_root, out_path, policy)
+            runs = _process_session_s3(sub, ses, cands, bids_root, out_path, policy, s2_out_root)
             all_runs.extend(runs)
         
     # Write artifacts
@@ -1920,6 +2157,174 @@ def run_S3_func_init_and_crop(
     
     return StepResult(qc_summary["status"], qc_summary["failure_message"], runs_path=runs_path, qc_path=qc_path)
 
+
+def run_S3_func_init_and_crop_batch(
+    dataset_keys: list[str],
+    datasets_local: Optional[str],
+    out_base: Path,
+    batch_workers: int = 1,
+    s1_base: Optional[Path] = None,
+    s2_base: Optional[Path] = None,
+) -> dict[str, StepResult]:
+    """
+    Run S3 functional initialization and cropping on multiple datasets.
+    
+    Follows S2 discipline:
+    - Shared runs.jsonl (all datasets together)
+    - Per-dataset qc.json in logs/S3_func_init_and_crop/{dataset_key}/
+    - Combined qc.json at logs/S3_func_init_and_crop_qc.json
+    
+    Args:
+        dataset_keys: List of dataset keys to process
+        datasets_local: Path to datasets_local.yaml
+        out_base: Base output directory
+        batch_workers: Number of parallel workers per dataset
+        s1_base: Base path for S1 outputs (chain model). If None, uses out_base.
+        s2_base: Base path for S2 outputs (chain model). If None, uses out_base.
+        
+    Returns:
+        Dictionary mapping dataset_key to StepResult
+    """
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+    
+    results: dict[str, StepResult] = {}
+    out_path = Path(out_base) if isinstance(out_base, str) else out_base
+    
+    # Chain model: read S1 outputs from s1_base if provided
+    inventory_base = Path(s1_base) if s1_base else out_path
+    s2_out_root = Path(s2_base) if s2_base else out_path
+    
+    print(f"Starting S3 processing for {len(dataset_keys)} datasets with {batch_workers} workers...")
+    
+    # Collect all sessions from all datasets
+    all_sessions = []
+    dataset_inventories = {}
+    
+    for ds_key in dataset_keys:
+        inventory_path = inventory_base / "work" / "S1_input_verify" / ds_key / "bids_inventory.json"
+        
+        if not inventory_path.exists():
+            print(f"  {ds_key}: Missing inventory at {inventory_path}")
+            results[ds_key] = StepResult("FAIL", f"Missing inventory: {inventory_path}")
+            continue
+        
+        inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+        dataset_inventories[ds_key] = inventory
+        
+        bids_root = Path(inventory["bids_root"])
+        candidates = _collect_func_candidates(inventory)
+        
+        for (sub, ses), cands in candidates.items():
+            all_sessions.append({
+                "dataset_key": ds_key,
+                "subject": sub,
+                "session": ses,
+                "bids_root": str(bids_root),
+                "out_root": str(out_path),
+                "s2_root": str(s2_out_root),
+                "candidates": cands,
+            })
+    
+    if not all_sessions:
+        for ds_key in dataset_keys:
+            if ds_key not in results:
+                results[ds_key] = StepResult("FAIL", "No sessions found")
+        return results
+    
+    # Load policy
+    policy_path = Path("policy") / "S3_func_init_and_crop.yaml"
+    try:
+        if policy_path.exists():
+            policy = yaml.safe_load(policy_path.read_text()) or {}
+        else:
+            policy = {}
+    except Exception as e:
+        for ds_key in dataset_keys:
+            results[ds_key] = StepResult("FAIL", f"Policy error: {e}")
+        return results
+    
+    # Process all sessions (currently sequential per session, parallelism within)
+    all_runs: dict[str, list] = {}  # dataset_key -> list of runs
+    all_runs_flat: list = []
+    
+    for sess in all_sessions:
+        ds_key = sess["dataset_key"]
+        runs = _process_session_s3(
+            subject=sess["subject"],
+            session=sess["session"],
+            candidates=sess["candidates"],
+            bids_root=Path(sess["bids_root"]),
+            out_root=Path(sess["out_root"]),
+            policy=policy,
+            s2_root=Path(sess["s2_root"]),
+        )
+        
+        # Tag runs with dataset_key
+        for run in runs:
+            run["dataset_key"] = ds_key
+        
+        if ds_key not in all_runs:
+            all_runs[ds_key] = []
+        all_runs[ds_key].extend(runs)
+        all_runs_flat.extend(runs)
+    
+    # Write shared runs.jsonl (all datasets together) - S2 discipline
+    runs_path = out_path / "logs" / "S3_func_init_and_crop_runs.jsonl"
+    runs_path.parent.mkdir(parents=True, exist_ok=True)
+    _write_s3_runs_jsonl(runs_path, all_runs_flat)
+    
+    # Generate per-dataset QC files and results - S2 discipline
+    for ds_key in dataset_keys:
+        if ds_key in results:  # Already failed (missing inventory)
+            continue
+        
+        if ds_key not in all_runs:
+            results[ds_key] = StepResult("FAIL", "No sessions processed for this dataset")
+            continue
+        
+        runs = all_runs[ds_key]
+        inventory = dataset_inventories.get(ds_key, {"dataset_key": ds_key, "bids_root": "unknown"})
+        
+        # Write per-dataset QC file - S2 discipline
+        qc_dir = out_path / "logs" / "S3_func_init_and_crop" / ds_key
+        qc_dir.mkdir(parents=True, exist_ok=True)
+        qc_path = qc_dir / "qc.json"
+        
+        qc = _summarise_s3_runs(inventory, policy, runs, out_path=out_path)
+        qc["dataset_key"] = ds_key
+        
+        with qc_path.open("w", encoding="utf-8") as f:
+            json.dump(qc, f, indent=2)
+        
+        status = qc.get("status", "FAIL")
+        failure_message = qc.get("failure_message")
+        
+        results[ds_key] = StepResult(
+            status=status,
+            failure_message=failure_message,
+            runs_path=runs_path,
+            qc_path=qc_path,
+        )
+    
+    # Write combined QC summary - S2 discipline
+    combined_qc_path = out_path / "logs" / "S3_func_init_and_crop_qc.json"
+    combined_qc = {
+        "step": "S3_func_init_and_crop",
+        "datasets": list(dataset_keys),
+        "total_runs": len(all_runs_flat),
+        "passed": sum(1 for r in all_runs_flat if r.get("status") == "PASS"),
+        "failed": sum(1 for r in all_runs_flat if r.get("status") == "FAIL"),
+        "runs": all_runs_flat,
+    }
+    with combined_qc_path.open("w", encoding="utf-8") as f:
+        json.dump(combined_qc, f, indent=2, default=str)
+    
+    # Generate unified dashboard at the end, including chain done dirs for S1/S2 visibility
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+    chain_done_dirs = [d for d in [s1_base, s2_base] if d]
+    generate_dashboard_safe(out_path, chain_done_dirs=chain_done_dirs if chain_done_dirs else None)
+    
+    return results
 
 
 def check_S3_func_init_and_crop(
