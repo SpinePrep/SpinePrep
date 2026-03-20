@@ -37,7 +37,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _add_S0_arguments(subparser: argparse.ArgumentParser) -> None:
     subparser.add_argument(
         "step",
-        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop"],
+        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop", "S4_func_motion_correction"],
         help="Pipeline step code",
     )
     subparser.add_argument(
@@ -122,6 +122,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _run_S2(args)
         elif step == "S3_func_init_and_crop":
             result = _run_S3(args)
+        elif step == "S4_func_motion_correction":
+            result = _run_S4(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -137,6 +139,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _check_S2(args)
         elif step == "S3_func_init_and_crop":
             result = _check_S3(args)
+        elif step == "S4_func_motion_correction":
+            result = _check_S4(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -377,7 +381,62 @@ def _check_S2(args):
 
 def _run_S3(args):
     from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop
-
+    
+    # Resolve dataset keys from --scope if provided
+    dataset_keys = []
+    if args.scope:
+        resolved_keys = _resolve_scope_to_dataset_keys(args.scope)
+        if not resolved_keys:
+            return StepResult(
+                status="FAIL",
+                failure_message=f"No datasets found for scope: {args.scope}",
+            )
+        dataset_keys = resolved_keys
+    
+    if dataset_keys:
+        # Batch mode: process multiple datasets
+        from spinalfmriprep.S3_func_init_and_crop import run_S3_func_init_and_crop_batch
+        
+        if args.out is None:
+            return StepResult(status="FAIL", failure_message="--out is required for batch processing")
+        
+        # Chain model: detect S1/S2 done paths based on scope
+        s1_base = None
+        s2_base = None
+        if args.scope:
+            scope_aliases = {"full": "v1_validation", "reg": "regression"}
+            resolved_scope = scope_aliases.get(args.scope, args.scope)
+            # Map scope to chain name
+            chain_name = {"regression": "reg", "v1_validation": "full"}.get(resolved_scope, args.scope)
+            s1_done_path = Path("work") / "done" / chain_name / "S1"
+            s2_done_path = Path("work") / "done" / chain_name / "S2"
+            if s1_done_path.exists() or s1_done_path.is_symlink():
+                s1_base = s1_done_path.resolve()
+            if s2_done_path.exists() or s2_done_path.is_symlink():
+                s2_base = s2_done_path.resolve()
+        
+        results = run_S3_func_init_and_crop_batch(
+            dataset_keys=dataset_keys,
+            datasets_local=args.datasets_local,
+            out_base=args.out,
+            batch_workers=args.batch_workers,
+            s1_base=s1_base,
+            s2_base=s2_base,
+        )
+        
+        passed = sum(1 for r in results.values() if r.status == "PASS")
+        failed = sum(1 for r in results.values() if r.status == "FAIL")
+        total = len(results)
+        
+        if failed == 0:
+            return StepResult(status="PASS", failure_message=None)
+        else:
+            failed_keys = [k for k, r in results.items() if r.status == "FAIL"]
+            return StepResult(
+                status="FAIL",
+                failure_message=f"S3 batch: {failed}/{total} datasets failed. Failed: {', '.join(failed_keys[:5])}",
+            )
+    
     return run_S3_func_init_and_crop(
         dataset_key=args.dataset_key,
         datasets_local=args.datasets_local,
@@ -393,6 +452,62 @@ def _check_S3(args):
         dataset_key=args.dataset_key,
         datasets_local=args.datasets_local,
         out=args.out,
+    )
+
+
+def _run_S4(args):
+    from spinalfmriprep.S4_func_motion_correction import run_S4, StepResult
+    
+    # Resolve dataset keys
+    dataset_keys = []
+    if args.scope:
+        resolved_keys = _resolve_scope_to_dataset_keys(args.scope)
+        if not resolved_keys:
+            return StepResult(status="FAIL", failure_message=f"No datasets found for scope: {args.scope}")
+        dataset_keys = resolved_keys
+    elif args.dataset_key:
+        dataset_keys = [args.dataset_key]
+        
+    if not dataset_keys:
+        # Check if batch mode implies something? S3 allows missing out if check?
+        return StepResult(status="FAIL", failure_message="--dataset-key or --scope required")
+        
+    if args.out is None:
+        return StepResult(status="FAIL", failure_message="--out is required")
+
+    failures = []
+    failure_messages = []
+    for key in dataset_keys:
+        # Run S4 for this dataset
+        res = run_S4(
+            dataset_key=key,
+            datasets_local=args.datasets_local,
+            out=str(args.out), # Expects str or Path? run_S4 signature says Optional[str]
+            batch_workers=args.batch_workers
+        )
+        if res.status == "FAIL":
+            failures.append(key)
+            if res.failure_message:
+                failure_messages.append(f"{key}: {res.failure_message}")
+            elif res.failure_reasons: # if StepResult has failure_reasons list?
+                 # StepResult definition: status, failure_message.
+                 pass
+            
+    if failures:
+        msg = f"S4 failed for: {', '.join(failures)}"
+        if failure_messages:
+            msg += f". Details: {'; '.join(failure_messages)}"
+        return StepResult(status="FAIL", failure_message=msg)
+        
+    return StepResult(status="PASS")
+
+
+def _check_S4(args):
+    from spinalfmriprep.S4_func_motion_correction import check_S4_func_motion_correction
+    return check_S4_func_motion_correction(
+        dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
+        datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
+        out=args.out if hasattr(args, "out") else None,
     )
 
 
