@@ -21,27 +21,6 @@ import yaml
 from jsonschema import Draft7Validator
 from PIL import Image, ImageDraw
 
-DEBUG_LOG_PATH = Path("/tmp/debug.log")
-DEBUG_SESSION = "debug-session"
-
-def _dbg_log(run_id: str, context_id: str, location: str, message: str, data: dict) -> None:
-    """Minimal NDJSON logger for debug-mode instrumentation."""
-    try:
-        payload = {
-            "sessionId": DEBUG_SESSION,
-            "runId": run_id,
-            "contextId": context_id,
-            "location": location,
-            "message": message,
-            "data": data,
-            "timestamp": int(np.floor(1000 * np.float64(np.datetime64("now").astype(float)))),
-        }
-        with DEBUG_LOG_PATH.open("a", encoding="utf-8") as f:
-            json.dump(payload, f, default=str)
-            f.write("\n")
-    except Exception:
-        pass
-
 
 @dataclass
 class StepResult:
@@ -4375,39 +4354,17 @@ def _render_rootlets_montage(
         return None
     root_mask = root_data > 0
 
-    # Clean label islands; use these labels to define level tiles.
-    lab_mask = _largest_connected_component(lab_data > 0)
+    # Use all vertebral labels without LCC filtering.
+    # The labels may be in disconnected components (e.g., if FOV doesn't cover full spine),
+    # and we want to show tiles for ALL levels present in the data.
+    lab_mask = lab_data > 0
     if not lab_mask.any():
         return None
-    lab_data = lab_data * lab_mask
     # Debug overall extents
     root_coords = np.argwhere(root_mask)
     lab_coords = np.argwhere(lab_data > 0)
     cord_coords = np.argwhere(cord_mask)
     root_vals = np.unique(root_data.astype(int))
-    shapes = {
-        "img": img_data.shape,
-        "root": root_data.shape,
-        "lab": lab_data.shape,
-        "cord": cord_data.shape,
-    }
-    _dbg_log(
-        run_id,
-        "H0",
-        "rootlets_montage:extents",
-        "extents",
-        {
-            "root_vox": int(root_coords.shape[0]),
-            "root_z_minmax": [int(root_coords[:, 2].min()) if root_coords.size else None, int(root_coords[:, 2].max()) if root_coords.size else None],
-            "lab_vox": int(lab_coords.shape[0]),
-            "lab_z_minmax": [int(lab_coords[:, 2].min()) if lab_coords.size else None, int(lab_coords[:, 2].max()) if lab_coords.size else None],
-            "cord_vox": int(cord_coords.shape[0]),
-            "cord_z_minmax": [int(cord_coords[:, 2].min()) if cord_coords.size else None, int(cord_coords[:, 2].max()) if cord_coords.size else None],
-            "root_vals": root_vals.tolist(),
-            "shapes": shapes,
-        },
-    )
-
     def _level_name(label_value: int) -> str:
         if label_value <= 0:
             return str(label_value)
@@ -4435,15 +4392,6 @@ def _render_rootlets_montage(
     present_levels = sorted({int(v) for v in np.unique(lab_data.astype(int)) if v > 0})
     if not present_levels:
         return None
-    # #region agent log
-    _dbg_log(
-        run_id,
-        "H1",
-        "rootlets_montage:present_levels",
-        "present_levels",
-        {"levels": present_levels, "tile_size": tile_size},
-    )
-    # #endregion
 
     z_dim = img_data.shape[2]
     y_dim = img_data.shape[1]
@@ -4467,15 +4415,6 @@ def _render_rootlets_montage(
         level_infos.append({"lab": lab, "z": z_idx})
     if not level_infos:
         return None
-    # #region agent log
-    _dbg_log(
-        run_id,
-        "H1",
-        "rootlets_montage:level_infos",
-        "level_infos",
-        {"level_infos": level_infos, "scale": scale},
-    )
-    # #endregion
 
     tiles_dir = qc_root / "tiles"
     tiles_dir.mkdir(parents=True, exist_ok=True)
@@ -4490,36 +4429,16 @@ def _render_rootlets_montage(
         z_level = [int(z) for z in np.where(level_mask.any(axis=(0, 1)))[0].tolist()]
         z_root = [int(z) for z in np.where(level_root_mask.any(axis=(0, 1)))[0].tolist()]
         z_candidates_root = sorted(set(z_level).intersection(z_root))
-        _dbg_log(
-            run_id,
-            "H2",
-            "rootlets_montage:z_sets",
-            "z_sets",
-            {"lab": lab, "z_level_len": len(z_level), "z_root_len": len(z_root), "z_candidates_len": len(z_candidates_root)},
-        )
+        # Show only levels where rootlets are detected.
+        # Skip levels with no rootlet z-overlap to keep montage focused on actual rootlets.
         if not z_candidates_root:
-            _dbg_log(
-                run_id,
-                "H2",
-                "rootlets_montage:z_candidates",
-                "skip_level_no_rootlets",
-                {"lab": lab},
-            )
             continue
+        # Sample from z_candidates_root (slices with rootlets), not z_level.
         if len(z_candidates_root) > 10:
             idxs = np.linspace(0, len(z_candidates_root) - 1, num=10, dtype=int)
             z_samples = [z_candidates_root[i] for i in idxs]
         else:
             z_samples = z_candidates_root
-        # #region agent log
-        _dbg_log(
-            run_id,
-            "H2",
-            "rootlets_montage:z_candidates",
-            "z_candidates",
-            {"lab": lab, "z_candidates_root_len": len(z_candidates_root), "z_samples": z_samples},
-        )
-        # #endregion
 
         frame_paths: list[Path] = []
         for z in z_samples:
@@ -4545,15 +4464,6 @@ def _render_rootlets_montage(
             continue
         max_frames = max(max_frames, len(frame_paths))
         tile_frames.append({"lab": lab, "z": int(info["z"]), "color": color, "frames": frame_paths})
-        # #region agent log
-        _dbg_log(
-            run_id,
-            "H3",
-            "rootlets_montage:frames_per_level",
-            "frames_per_level",
-            {"lab": lab, "frames": len(frame_paths), "z_samples": z_samples},
-        )
-        # #endregion
     if not tile_frames:
         return None
 
@@ -4572,18 +4482,6 @@ def _render_rootlets_montage(
         target = int(round(row - tile_size / 2))
         target = max(0, min(target, max_y))
         targets.append((target, tile_path, z_index))
-    # #region agent log
-    _dbg_log(
-        run_id,
-        "H4",
-        "rootlets_montage:targets",
-        "target_positions",
-        {
-            "targets_count": len(targets),
-            "targets_preview": [(t[0], t[2]) for t in targets],
-        },
-    )
-    # #endregion
 
     targets.sort(key=lambda item: item[0])
     positions = [t[0] for t in targets]
@@ -4646,15 +4544,6 @@ def _render_rootlets_montage(
             except Exception:
                 continue
             column_img.paste(tile_img, (0, y_offset))
-        # #region agent log
-        _dbg_log(
-            run_id,
-            "H5",
-            "rootlets_montage:frame_assembly",
-            "frame_assembly",
-            {"frame_idx": frame_idx, "max_frames": max_frames, "tile_count": len(targets)},
-        )
-        # #endregion
         montage_img = Image.new(
             "RGB", (sag_img.width + column_img.width, max(sag_img.height, column_img.height)), (0, 0, 0)  # type: ignore[arg-type]
         )
