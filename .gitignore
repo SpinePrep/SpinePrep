@@ -141,3 +141,18 @@ site/
 *.key
 secrets.yaml
 secrets.yml
+
+# -----------------------------------------------------------------------------
+# Dev/debug artifacts
+# -----------------------------------------------------------------------------
+tmp/
+tmp_test.mat
+*.bak
+mcflirt_help.txt
+mcflirt_man.txt
+current_sch2D_3dof.sch
+sch2D_2dof.sch
+test_sch2D_2dof.sch
+test_flirt_params.py
+test_flirt_speed.py
+test_flirt_z_proj.py
