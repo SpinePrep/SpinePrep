@@ -1,0 +1,169 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "qc_S4_func_motion_correction.schema.json",
+  "title": "S4_func_motion_correction QC Status",
+  "description": "QC status schema for S4_func_motion_correction step (aggregated per dataset key)",
+  "type": "object",
+  "required": ["dataset_key", "step_code", "runs"],
+  "properties": {
+    "dataset_key": {
+      "type": "string",
+      "description": "Dataset key identifying the regression dataset"
+    },
+    "step_code": {
+      "type": "string",
+      "const": "S4_func_motion_correction",
+      "description": "Step identifier"
+    },
+    "runs": {
+      "type": "array",
+      "description": "Per-run QC results",
+      "items": {
+        "type": "object",
+        "required": [
+          "status",
+          "step_code",
+          "dataset_key",
+          "subject",
+          "session",
+          "run_id",
+          "metrics",
+          "failure_reasons",
+          "reportlets"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["PASS", "WARN", "FAIL"],
+            "description": "QC status for this run"
+          },
+          "step_code": {
+            "type": "string",
+            "const": "S4_func_motion_correction",
+            "description": "Step identifier"
+          },
+          "dataset_key": {
+            "type": "string",
+            "description": "Dataset key"
+          },
+          "subject": {
+            "type": ["string", "null"],
+            "description": "Subject ID (e.g. sub-01)"
+          },
+          "session": {
+            "type": ["string", "null"],
+            "description": "Session ID (e.g. ses-01) or null"
+          },
+          "run_id": {
+            "type": ["string", "null"],
+            "description": "Run entity (e.g. run-01) or null"
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Motion correction metrics for this run",
+            "required": [
+              "z_shift_detected_mm",
+              "z_shift_corrected",
+              "max_fd_mm",
+              "mean_fd_mm",
+              "high_motion_frame_count",
+              "high_motion_fraction",
+              "tsnr_before_mean",
+              "tsnr_after_mean",
+              "tsnr_improvement_pct",
+              "dvars_mean",
+              "dvars_max"
+            ],
+            "properties": {
+              "z_shift_detected_mm": {
+                "type": "number",
+                "description": "Detected inter-run Z-shift in mm (0.0 if not applicable)"
+              },
+              "z_shift_corrected": {
+                "type": "boolean",
+                "description": "Whether Z-shift correction was applied"
+              },
+              "max_fd_mm": {
+                "type": "number",
+                "description": "Maximum framewise displacement in mm"
+              },
+              "mean_fd_mm": {
+                "type": "number",
+                "description": "Mean framewise displacement in mm"
+              },
+              "high_motion_frame_count": {
+                "type": "integer",
+                "description": "Number of frames exceeding FD threshold"
+              },
+              "high_motion_fraction": {
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 1.0,
+                "description": "Fraction of frames exceeding FD threshold"
+              },
+              "tsnr_before_mean": {
+                "type": "number",
+                "description": "Mean tSNR within cord mask before motion correction"
+              },
+              "tsnr_after_mean": {
+                "type": "number",
+                "description": "Mean tSNR within cord mask after motion correction"
+              },
+              "tsnr_improvement_pct": {
+                "type": "number",
+                "description": "Percentage improvement in tSNR after motion correction"
+              },
+              "dvars_mean": {
+                "type": "number",
+                "description": "Mean DVARS across frames"
+              },
+              "dvars_max": {
+                "type": "number",
+                "description": "Maximum DVARS across frames"
+              }
+            }
+          },
+          "failure_reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of failure/warning reasons (empty if PASS)"
+          },
+          "reportlets": {
+            "type": "object",
+            "description": "Paths to QC reportlet files",
+            "required": [
+              "S4_motion_traces",
+              "S4_tsnr_comparison",
+              "S4_dvars_plot",
+              "S4_moco_comparison"
+            ],
+            "properties": {
+              "S4_motion_traces": {
+                "type": "string",
+                "description": "Path to motion traces PNG (XY translation time series)"
+              },
+              "S4_tsnr_comparison": {
+                "type": "string",
+                "description": "Path to before/after tSNR comparison PNG"
+              },
+              "S4_dvars_plot": {
+                "type": "string",
+                "description": "Path to DVARS time series PNG"
+              },
+              "S4_moco_comparison": {
+                "type": "string",
+                "description": "Path to before/after motion correction comparison GIF"
+              }
+            }
+          },
+          "reason": {
+            "type": "string",
+            "description": "Short failure reason (present on FAIL runs)"
+          }
+        }
+      }
+    }
+  }
+}

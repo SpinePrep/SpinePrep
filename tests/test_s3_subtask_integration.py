@@ -165,14 +165,14 @@ def test_s3_all_subtasks_without_target(tmp_path):
     try:
         out_dir = tmp_path / "test_output_all"
         out_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # 1. Setup minimal S2 outputs (Required Dependency)
         s2_work = out_dir / "work" / "S2_anat_cordref" / "sub-test_ses-none"
         s2_work.mkdir(parents=True, exist_ok=True)
-        
+
         import nibabel as nib
         import numpy as np
-        
+
         # Create dummy S2 cordref
         affine = np.eye(4)
         nib.save(nib.Nifti1Image(np.random.rand(64,64,30).astype(np.float32), affine), s2_work / "cordref_std.nii.gz")
@@ -183,28 +183,72 @@ def test_s3_all_subtasks_without_target(tmp_path):
         func_dir.mkdir(parents=True, exist_ok=True)
         bold_path = func_dir / "sub-test_ses-none_task-rest_bold.nii.gz"
         # 4D bold: 64x64x30x10 volumes
-        nib.save(nib.Nifti1Image(np.random.rand(64,64,30,10).astype(np.float32), affine), bold_path)
-        
+        bold_data = np.random.rand(64,64,30,10).astype(np.float32)
+        nib.save(nib.Nifti1Image(bold_data, affine), bold_path)
+
         import json
-        
+
         inventory = {
             "files": [
                 {
-                    "path": str(bold_path.relative_to(out_dir)), 
-                    "subject": "test", 
+                    "path": str(bold_path.relative_to(out_dir)),
+                    "subject": "test",
                     "session": "none"
                 }
             ],
             "bids_root": str(out_dir),
             "dataset_key": "test_ds"
         }
-        
-        inv_dir = out_dir / "work" / "S1_input_verify"
+
+        # Place inventory at the correct path for ds_key="ad_hoc" (no dataset_key passed)
+        inv_dir = out_dir / "work" / "S1_input_verify" / "ad_hoc"
         inv_dir.mkdir(parents=True, exist_ok=True)
         (inv_dir / "bids_inventory.json").write_text(json.dumps(inventory))
 
+        # 3. Pre-create S3.1 outputs with a synthetic non-empty cord mask
+        #    so that the optimization cache in _process_s3_1_dummy_drop_and_localization
+        #    skips sct_deepseg (which would fail on random noise data).
+        run_id = "sub-test_ses-none_task-rest"
+        run_work_dir = out_dir / "runs" / "S3_func_init_and_crop" / run_id
+        init_dir = run_work_dir / "init"
+        localize_dir = init_dir / "localize"
+        localize_dir.mkdir(parents=True, exist_ok=True)
+
+        # Dummy-drop the first 4 volumes, compute median ref
+        dummy_count = 4
+        bold_dropped = bold_data[:, :, :, dummy_count:]
+        func_ref_fast_data = np.median(bold_dropped, axis=3)
+        nib.save(nib.Nifti1Image(func_ref_fast_data, affine), init_dir / "func_ref_fast.nii.gz")
+
+        # Create synthetic non-empty cord segmentation (central column)
+        seg_data = np.zeros((64, 64, 30), dtype=np.uint8)
+        seg_data[28:36, 28:36, 5:25] = 1
+        nib.save(nib.Nifti1Image(seg_data, affine), localize_dir / "func_ref_fast_seg.nii.gz")
+
+        # Crop bbox from segmentation (matches S3.1 logic: pad_xy=10, pad_z=0)
+        pad_xy = 10
+        r_min, c_min, s_min = max(0, 28 - pad_xy), max(0, 28 - pad_xy), 5
+        r_max, c_max, s_max = min(64, 36 + pad_xy), min(64, 36 + pad_xy), 25
+
+        # Cropped BOLD (coarse crop)
+        bold_cropped = bold_dropped[r_min:r_max, c_min:c_max, s_min:s_max, :]
+        crop_affine = affine.copy()
+        crop_affine[:3, 3] = nib.affines.apply_affine(affine, [r_min, c_min, s_min])
+        nib.save(nib.Nifti1Image(bold_cropped, crop_affine), init_dir / "func_bold_coarse.nii.gz")
+
+        # Cropped func_ref0
+        func_ref0_data = np.median(bold_cropped, axis=3)
+        nib.save(nib.Nifti1Image(func_ref0_data, crop_affine), init_dir / "func_ref0.nii.gz")
+
+        # Cropped discovery seg
+        seg_cropped = seg_data[r_min:r_max, c_min:c_max, s_min:s_max]
+        nib.save(nib.Nifti1Image(seg_cropped, crop_affine), localize_dir / "func_ref_fast_seg_crop.nii.gz")
+
+        # Cropped func_ref_fast
+        func_ref_fast_crop = func_ref_fast_data[r_min:r_max, c_min:c_max, s_min:s_max]
+        nib.save(nib.Nifti1Image(func_ref_fast_crop, crop_affine), localize_dir / "func_ref_fast_crop.nii.gz")
+
         # Run without subtask_id
-        # run_S3 will load inventory from out_dir/work/S1_input_verify/bids_inventory.json
         result = run_S3_func_init_and_crop(
             subtask_id=None,
             out=str(out_dir),
@@ -212,16 +256,11 @@ def test_s3_all_subtasks_without_target(tmp_path):
 
         # Verify all subtasks executed
         assert result.status == "PASS", f"Run failed with: {result.failure_message}"
-        
+
         # Check byproducts
-        # Note: run_id will be derived from filename 'sub-test_ses-none_task-rest'
-        run_id = "sub-test_ses-none_task-rest"
-        run_work_dir = out_dir / "runs" / "S3_func_init_and_crop" / run_id
-        
-        assert (run_work_dir / "init" / "func_ref0.nii.gz").exists() # S3.1
-        # S3.2 (Registration) removed
-        assert (run_work_dir / "metrics" / "frame_metrics.tsv").exists() # S3.2 (Outlier gating)
-        assert (run_work_dir / "funccrop_bold.nii.gz").exists() # S3.3 (Crop)
+        assert (run_work_dir / "init" / "func_ref0.nii.gz").exists()  # S3.1
+        assert (run_work_dir / "metrics" / "frame_metrics.tsv").exists()  # S3.2 (Outlier gating)
+        assert (run_work_dir / "funccrop_bold.nii.gz").exists()  # S3.3 (Crop)
 
     finally:
         set_execution_context(None)
