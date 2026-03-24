@@ -13,82 +13,11 @@ from spinalfmriprep.lib.run import run_command as _run_command
 
 
 # ---------------------------------------------------------------------------
-# Low-level drawing utilities
+# Low-level drawing utilities — delegated to lib/image.py
 # ---------------------------------------------------------------------------
-
-
-def _binary_erode_2d(mask: np.ndarray) -> np.ndarray:
-    """3x3 erosion without scipy; edges are treated as False."""
-    if mask.ndim != 2:
-        raise ValueError("mask must be 2D")
-    h, w = mask.shape
-    if h < 3 or w < 3:
-        return np.zeros_like(mask, dtype=bool)
-    eroded = np.ones_like(mask, dtype=bool)
-    core = mask[1:-1, 1:-1]
-    eroded[1:-1, 1:-1] = core.copy()
-    for dy in (-1, 0, 1):
-        for dx in (-1, 0, 1):
-            if dx == 0 and dy == 0:
-                continue
-            eroded[1:-1, 1:-1] &= mask[1 + dy : h - 1 + dy, 1 + dx : w - 1 + dx]
-    eroded[0, :] = False
-    eroded[-1, :] = False
-    eroded[:, 0] = False
-    eroded[:, -1] = False
-    return eroded
-
-
-def _mask_contour_2d(mask: np.ndarray) -> np.ndarray:
-    """Return a thin contour mask from a 2D boolean mask."""
-    mask = mask.astype(bool)
-    eroded = _binary_erode_2d(mask)
-    return mask & (~eroded)
-
-
-def _draw_thick_contour(
-    overlay: Image.Image,
-    contour_mask: np.ndarray,
-    color: tuple[int, int, int, int],
-    x_offset: int = 0,
-    y_offset: int = 0,
-    thickness: int = 2,
-    outline_color: Optional[tuple[int, int, int, int]] = (0, 0, 0, 255),
-) -> None:
-    """Draw a thick contour on an RGBA overlay image with optional dark outline for contrast.
-
-    Args:
-        overlay: RGBA Image to draw on
-        contour_mask: 2D boolean mask of contour pixels
-        color: RGBA color tuple for main border
-        x_offset: X offset for drawing position
-        y_offset: Y offset for drawing position
-        thickness: Border thickness in pixels (default 2)
-        outline_color: Optional RGBA color for outline (default black). If None, no outline.
-    """
-    yy, xx = np.where(contour_mask)
-    if outline_color is not None:
-        # Draw outline first (1px wider on all sides)
-        for y, x in zip(yy.tolist(), xx.tolist()):
-            for dy in range(-thickness - 1, thickness + 2):
-                for dx in range(-thickness - 1, thickness + 2):
-                    if dx * dx + dy * dy > (thickness + 1) ** 2:
-                        continue
-                    px = x_offset + x + dx
-                    py = y_offset + y + dy
-                    if 0 <= px < overlay.width and 0 <= py < overlay.height:
-                        overlay.putpixel((px, py), outline_color)
-
-    # Draw main border
-    for y, x in zip(yy.tolist(), xx.tolist()):
-        for dy in range(-thickness, thickness + 1):
-            for dx in range(-thickness, thickness + 1):
-                if dx * dx + dy * dy > thickness ** 2:
-                    continue
-                px = x_offset + x + dx
-                py = y_offset + y + dy
-                if 0 <= px < overlay.width and 0 <= py < overlay.height:
-                    overlay.putpixel((px, py), color)
+from spinalfmriprep.lib.image import binary_erode_2d as _binary_erode_2d  # noqa: E402, F401
+from spinalfmriprep.lib.image import mask_contour_2d as _mask_contour_2d  # noqa: E402, F401
+from spinalfmriprep.lib.image import draw_thick_contour as _draw_thick_contour  # noqa: E402, F401
 
 
 def _write_ppm(path: Path, rgb: np.ndarray) -> None:
