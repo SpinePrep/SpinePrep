@@ -1,0 +1,87 @@
+version: 1
+
+# Motion Correction Strategy
+# mode: "3d+2d" (default) | "3d" | "2d"
+# "3d+2d": two-stage correction (coarse bulk XY -> slice-wise)
+# "3d": only coarse bulk XY
+# "2d": only slice-wise (sct_fmri_moco)
+motion_correction:
+  mode: "3d+2d"
+  
+  # Stage 1: Coarse Bulk XY Correction
+  stage1_coarse:
+    method: "phase_cross_correlation"
+    upsample_factor: 10  # Subpixel precision for shift estimation
+    interpolation_order: 1  # Bilinear interpolation for applying shifts
+    
+  # Stage 2: Slice-wise Correction (sct_fmri_moco)
+  stage2_slicereg:
+    poly_order: 2  # Polynomial z-regularization order
+    metric: "MeanSquares"  # Registration metric (MeanSquares | MI)
+    iterations: 10  # Max iterations per slice
+    smooth: 0  # Smoothing kernel (mm)
+
+  # Inter-run Z-shift Correction (Optional)
+  z_shift_correction:
+    enabled: false  # Disabled by default
+    threshold_mm: 2.0  # Threshold for detecting significant z-shifts
+
+# Quality Control Thresholds
+qc_thresholds:
+  # FAIL thresholds (hard stop/fail status)
+  max_fd_mm: 3.0
+  min_tsnr: 3.0
+  max_high_motion_fraction: 0.50
+  
+  # WARN thresholds (warning status)
+  warn_fd_mm: 2.0
+  warn_tsnr: 5.0
+  warn_high_motion_fraction: 0.30
+  
+  # Definition of "High Motion" frame
+  fd_threshold_mm: 0.5
+
+# QC Reportlet Visual Configuration
+qc:
+  # Motion traces plot (S4_motion_traces.png)
+  motion_traces:
+    figsize: [10, 4]
+    dpi: 100
+    colors:
+      tx: "#1f77b4"  # blue
+      ty: "#ff7f0e"  # orange
+      tz: "#2ca02c"  # green (future)
+      threshold: "red"
+    grid_alpha: 0.3
+
+  # tSNR comparison montage (S4_tsnr_comparison.png)
+  tsnr_comparison:
+    figsize: [12, 6]
+    dpi: 100
+    n_slices: 9  # 3x3 grid
+    colormap: "viridis"
+    background: "black"
+
+  # DVARS plot (S4_dvars_plot.png)
+  dvars_plot:
+    figsize: [10, 4]
+    dpi: 100
+    line_color: "#1f77b4"
+    threshold_color: "red"
+    outlier_marker_size: 20
+    grid_alpha: 0.3
+
+  # Before/After GIF (S4_moco_comparison.gif)
+  gif:
+    fps: 5
+    max_frames: 20
+    width_px: 512
+    view: "sagittal"
+    label_color: [255, 255, 255]
+    normalization_percentile: [1, 99]
+
+# Cost controls
+cost_controls:
+  estimate_per_run_minutes: 5.0
+  skip_existing_pass: true
+  check_code_hash: true
