@@ -1,11 +1,14 @@
-"""S1_input_verify: backwards-compatible re-export from steps.s1 subpackage."""
-from spinalfmriprep.steps.s1 import (
+"""S1_input_verify subpackage: dataset-key resolution, deterministic run inventory, and input checks."""
+
+from .orchestrate import (
+    StepResult,
     run_S1_input_verify,
     check_S1_input_verify,
     run_S1_input_verify_batch,
 )
 
 __all__ = [
+    "StepResult",
     "run_S1_input_verify",
     "check_S1_input_verify",
     "run_S1_input_verify_batch",
