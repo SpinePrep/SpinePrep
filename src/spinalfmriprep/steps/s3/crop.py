@@ -16,7 +16,7 @@ from spinalfmriprep.subtask import (
 )
 
 from .io import _extract_subject_session_from_work_dir
-from .localize import _render_s3_1_simple_func_with_mask
+from .localize_viz import _render_s3_1_simple_func_with_mask
 from .reportlets import _render_t2_to_func_overlay
 
 
