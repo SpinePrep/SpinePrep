@@ -48,7 +48,7 @@ robust_reference:
 # Cord-focused crop: reduce FOV to cord region
 crop:
   # Crop mask diameter (mm) around cord centerline
-  mask_diameter_mm: 40
+  mask_diameter_mm: 60
   # Dilation of crop box in voxels (x, y, z) for safety margin
   dilate_xyz: [2, 2, 0]
   # Minimum z-slices required in cropped output (fail if fewer)
