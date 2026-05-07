@@ -1,0 +1,5 @@
+# Subject-derived data — keep local, do not commit.
+fsl_pcs_*.txt
+physio_slice*.txt
+physio_slice*.mat
+matlab*.log
