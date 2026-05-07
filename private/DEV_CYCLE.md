@@ -1,7 +1,6 @@
 # SpinalfMRIprep Development Cycle Contract
 
 > **Authority**: This document is the single source of truth for the SpinalfMRIprep development cycle.
-> The slash command at `.claude/commands/dev-cycle.md` implements this contract.
 > Scope definitions are canonical in `private/SPEC/HEADER.md`.
 
 ---
