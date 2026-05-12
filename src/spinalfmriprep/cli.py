@@ -37,7 +37,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _add_S0_arguments(subparser: argparse.ArgumentParser) -> None:
     subparser.add_argument(
         "step",
-        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop", "S4_func_motion_correction"],
+        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction"],
         help="Pipeline step code",
     )
     subparser.add_argument(
@@ -124,6 +124,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _run_S3(args)
         elif step == "S4_func_motion_correction":
             result = _run_S4(args)
+        elif step == "S5_func_distortion_correction":
+            result = _run_S5(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -141,6 +143,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _check_S3(args)
         elif step == "S4_func_motion_correction":
             result = _check_S4(args)
+        elif step == "S5_func_distortion_correction":
+            result = _check_S5(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -555,6 +559,63 @@ def _run_S4(args):
 def _check_S4(args):
     from spinalfmriprep.S4_func_motion_correction import check_S4_func_motion_correction
     return check_S4_func_motion_correction(
+        dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
+        datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
+        out=args.out if hasattr(args, "out") else None,
+    )
+
+
+def _run_S5(args):
+    from spinalfmriprep.S5_func_distortion_correction import (
+        run_S5, StepResult,
+        run_S5_func_distortion_correction_reportlets_only,
+        run_S5_func_distortion_correction_reportlets_only_batch,
+    )
+
+    dataset_keys = []
+    if args.scope:
+        resolved = _resolve_scope_to_dataset_keys(args.scope)
+        if not resolved:
+            return StepResult("FAIL", f"No datasets for scope: {args.scope}")
+        dataset_keys = resolved
+    elif args.dataset_key:
+        dataset_keys = [args.dataset_key]
+    if not dataset_keys:
+        return StepResult("FAIL", "--dataset-key or --scope required")
+    if args.out is None:
+        return StepResult("FAIL", "--out is required")
+
+    if args.reportlets_only:
+        results = run_S5_func_distortion_correction_reportlets_only_batch(
+            dataset_keys=dataset_keys, out_base=args.out,
+        )
+        failed = [k for k, r in results.items() if r.status == "FAIL"]
+        if failed:
+            return StepResult("FAIL", f"S5 reportlets-only failed: {failed}")
+        return StepResult("PASS")
+
+    failures = []
+    failure_messages = []
+    for key in dataset_keys:
+        res = run_S5(dataset_key=key,
+                     datasets_local=args.datasets_local,
+                     out=str(args.out),
+                     batch_workers=args.batch_workers)
+        if res.status == "FAIL":
+            failures.append(key)
+            if res.failure_message:
+                failure_messages.append(f"{key}: {res.failure_message}")
+    if failures:
+        msg = f"S5 failed for: {', '.join(failures)}"
+        if failure_messages:
+            msg += f". Details: {'; '.join(failure_messages)}"
+        return StepResult("FAIL", msg)
+    return StepResult("PASS")
+
+
+def _check_S5(args):
+    from spinalfmriprep.S5_func_distortion_correction import check_S5_func_distortion_correction
+    return check_S5_func_distortion_correction(
         dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
         datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
         out=args.out if hasattr(args, "out") else None,
