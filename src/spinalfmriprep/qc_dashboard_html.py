@@ -28,8 +28,7 @@ REPORTLET_ORDER: dict[str, list[str]] = {
     "S4_func_motion_correction": [
         "S4_motion_traces",         # S4 - Motion parameter traces
         "S4_dvars_plot",            # S4 - DVARS timeseries
-        "S4_tsnr_comparison",       # S4 - tSNR before/after
-        "S4_moco_comparison",       # S4 - Before/after animation
+        "S4_tsnr_comparison",       # S4 - tSNR before/after (THE moco-quality reportlet)
     ],
 }
 
@@ -52,7 +51,6 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "S4_motion_traces": "S4 - Motion Parameter Traces",
         "S4_dvars_plot": "S4 - DVARS Timeseries",
         "S4_tsnr_comparison": "S4 - tSNR Before/After",
-        "S4_moco_comparison": "S4 - Motion Correction Comparison",
     },
 }
 

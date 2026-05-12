@@ -139,44 +139,6 @@ def test_metrics_fd():
     assert fd[3] == 2.0
 
 
-def _make_moco_inputs(tmp_path):
-    import nibabel as nib
-
-    shape4d = (32, 32, 6, 10)
-    rng = np.random.default_rng(0)
-    bold_before = rng.normal(100.0, 5.0, size=shape4d).astype(np.float32)
-    bold_after = rng.normal(100.0, 2.0, size=shape4d).astype(np.float32)
-    mask = np.zeros(shape4d[:3], dtype=np.float32)
-    mask[12:20, 12:20, 1:5] = 1
-    affine = np.eye(4)
-
-    before_path = tmp_path / "bold_before.nii.gz"
-    after_path = tmp_path / "bold_after.nii.gz"
-    mask_path = tmp_path / "mask.nii.gz"
-    nib.save(nib.Nifti1Image(bold_before, affine), before_path)
-    nib.save(nib.Nifti1Image(bold_after, affine), after_path)
-    nib.save(nib.Nifti1Image(mask, affine), mask_path)
-    return before_path, after_path, mask_path, mask
-
-
-def test_render_moco_axial_comparison_static_png(tmp_path):
-    """animate=False -> static PNG of the axial montage."""
-    from PIL import Image
-    from spinalfmriprep.lib.viz_s4 import render_moco_axial_comparison
-
-    before, after, maskp, mask = _make_moco_inputs(tmp_path)
-    output_path = tmp_path / "moco_comparison.png"
-    render_moco_axial_comparison(
-        before, after, output_path,
-        mask_path=maskp, mask_data=mask,
-        max_slices=12, margin_mm=2.0, animate=False,
-    )
-    assert output_path.exists()
-    img = Image.open(output_path)
-    assert img.size[0] > 400
-    assert img.size[1] > 200
-
-
 def test_run_S4_filters_runs_by_dataset_via_s3_qc(tmp_path, monkeypatch):
     """Regression: S4 must process only the runs S3 attributes to its
     dataset_key. Without the filter, batching across N datasets ends up
@@ -234,21 +196,3 @@ def test_run_S4_filters_runs_by_dataset_via_s3_qc(tmp_path, monkeypatch):
     )
 
 
-def test_render_moco_axial_comparison_animated_gif(tmp_path):
-    """animate=True -> multi-frame GIF cycling through timepoints."""
-    from PIL import Image
-    from spinalfmriprep.lib.viz_s4 import render_moco_axial_comparison
-
-    before, after, maskp, mask = _make_moco_inputs(tmp_path)
-    output_path = tmp_path / "moco_comparison.gif"
-    render_moco_axial_comparison(
-        before, after, output_path,
-        mask_path=maskp, mask_data=mask,
-        max_slices=12, margin_mm=2.0,
-        animate=True, max_frames=4, fps=2,
-    )
-    assert output_path.exists()
-    img = Image.open(output_path)
-    assert img.format == "GIF"
-    n_frames = getattr(img, "n_frames", 1)
-    assert n_frames == 4, f"expected 4 frames, got {n_frames}"
