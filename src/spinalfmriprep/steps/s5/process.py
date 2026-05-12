@@ -6,6 +6,7 @@ Spec: private/SPEC/S5_func_distortion_correction.md
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -15,6 +16,37 @@ import nibabel as nib
 import numpy as np
 
 from spinalfmriprep.lib.run import run_command as _run_command
+
+
+_ANTS_DOCKER_IMAGE = "vnmd/ants_2.6.0:20250424"
+_ANTS_LOCAL_AVAILABLE: Optional[bool] = None
+
+
+def _ants_local_available() -> bool:
+    """Cache the result of looking up antsRegistration on PATH."""
+    global _ANTS_LOCAL_AVAILABLE
+    if _ANTS_LOCAL_AVAILABLE is None:
+        _ANTS_LOCAL_AVAILABLE = shutil.which("antsRegistration") is not None
+    return _ANTS_LOCAL_AVAILABLE
+
+
+def _ants_command(cmd: list[str]) -> list[str]:
+    """Wrap an ANTs command in a Docker invocation if no local install.
+
+    Mounts the SpinalfMRIprep project root so absolute paths inside cmd
+    resolve identically inside the container. The S0_SETUP spec already
+    pins the image; this just makes S5 use it when needed.
+    """
+    if _ants_local_available():
+        return cmd
+    project_root = Path(__file__).resolve().parents[4]
+    return [
+        "docker", "run", "--rm",
+        "-v", f"{project_root}:{project_root}",
+        "-w", str(Path.cwd()),
+        _ANTS_DOCKER_IMAGE,
+        *cmd,
+    ]
 
 
 # BIDS PE direction -> FSL acqparams first-three-columns row.
@@ -252,7 +284,7 @@ def _run_syn(
     )
     out_prefix = work_dir / "syn_"
 
-    cmd_reg = [
+    cmd_reg = _ants_command([
         "antsRegistration",
         "--float",
         "--dimensionality", "3",
@@ -263,7 +295,7 @@ def _run_syn(
         "--smoothing-sigmas", smoothing,
         "--masks", f"[{cord_mask_path},{cord_mask_path}]",
         "--output", str(out_prefix),
-    ]
+    ])
     ok, out = _run_command(cmd_reg)
     if not ok:
         return {"status": "FAIL", "mode": "syn",
@@ -271,7 +303,7 @@ def _run_syn(
 
     # Apply the warp to the 4D BOLD
     warp = f"{out_prefix}0Warp.nii.gz"
-    cmd_apply = [
+    cmd_apply = _ants_command([
         "antsApplyTransforms",
         "-d", "3", "-e", "3",
         "-i", str(bold_path),
@@ -279,7 +311,7 @@ def _run_syn(
         "-t", warp,
         "-o", str(out_undistorted),
         "-n", "LanczosWindowedSinc",
-    ]
+    ])
     ok, out = _run_command(cmd_apply)
     if not ok:
         return {"status": "FAIL", "mode": "syn",
