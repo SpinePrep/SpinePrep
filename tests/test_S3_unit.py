@@ -157,4 +157,67 @@ def test_s3_3_crop_command_generation(mock_work_dir):
             assert len(mask_calls) == 1
             assert "-size" in mask_calls[0]
             assert "35mm" in mask_calls[0]
+
+
+# ---------------------------------------------------------------------------
+# S3.1 drift gate
+# ---------------------------------------------------------------------------
+
+
+def test_drift_gate_passes_cord_like_segmentation():
+    """Cord-sized segmentation (~50 mm² per slice) passes the gate."""
+    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+
+    # 1mm isotropic, axial; Z axis is superior. Build a thin cord (5x5 voxels = 25 mm²)
+    # over 30 slices.
+    data = np.zeros((40, 40, 40), dtype=np.float32)
+    data[18:23, 18:23, 5:35] = 1
+    affine = np.diag([1.0, 1.0, 1.0, 1.0])  # RAS
+
+    policy = {"func_localization": {"discover": {"drift_gate": {
+        "enabled": True,
+        "superior_slices_check": 5,
+        "area_spike_threshold": 4.0,
+        "absolute_area_cap_mm2": 200.0,
+    }}}}
+
+    passed, msg, info = _check_drift_gate(data, affine, policy)
+    assert passed, f"expected PASS, got {msg}"
+    assert info["thresholds"]["absolute_area_cap_mm2"] == 200.0
+
+
+def test_drift_gate_rejects_brain_blob():
+    """A segmentation that opens up into a brain-sized cross-section is rejected."""
+    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+
+    data = np.zeros((60, 60, 40), dtype=np.float32)
+    # Cord-sized portion at slices 5-25 (~25 mm² per slice)
+    data[18:23, 18:23, 5:25] = 1
+    # Brain-sized blob at slices 30-35 (~625 mm² per slice >> 200 cap)
+    data[10:35, 10:35, 30:36] = 1
+    affine = np.diag([1.0, 1.0, 1.0, 1.0])
+
+    policy = {"func_localization": {"discover": {"drift_gate": {
+        "enabled": True,
+        "superior_slices_check": 5,
+        "area_spike_threshold": 4.0,
+        "absolute_area_cap_mm2": 200.0,
+    }}}}
+
+    passed, msg, _ = _check_drift_gate(data, affine, policy)
+    assert not passed
+    assert "brain detected" in msg
+
+
+def test_drift_gate_disabled_returns_pass():
+    """When the policy disables the gate it never fails, even on obvious brain."""
+    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+
+    data = np.zeros((60, 60, 40), dtype=np.float32)
+    data[5:55, 5:55, 30:36] = 1  # huge blob
+    affine = np.diag([1.0, 1.0, 1.0, 1.0])
+
+    policy = {"func_localization": {"discover": {"drift_gate": {"enabled": False}}}}
+    passed, _, _ = _check_drift_gate(data, affine, policy)
+    assert passed
             
