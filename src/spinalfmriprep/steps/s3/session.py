@@ -93,6 +93,24 @@ def _process_session_s3(
                 session_runs.append(run_result)
                 continue
 
+            # S3.1 drift gate: stop the run here when the cord discovery has
+            # leaked into the brain. Keep the rendered figure so the user can
+            # see *why* in the dashboard reportlet.
+            if s3_1_res.get("localization_status") == "FAIL":
+                run_result["status"] = "FAIL"
+                run_result["failure_message"] = s3_1_res.get(
+                    "failure_message", "S3.1 localization failed"
+                )
+                reportlets = {}
+                if s3_1_res.get("figure_path"):
+                    fp = Path(s3_1_res["figure_path"])
+                    reportlets["func_localization_crop"] = (
+                        str(fp.relative_to(out_root)) if fp.is_absolute() else str(fp)
+                    )
+                run_result["reportlets"] = reportlets
+                session_runs.append(run_result)
+                continue
+
             # S3.2
             s3_2_res = _process_s3_2_outlier_gating(
                 s3_1_res["func_bold_coarse_path"],

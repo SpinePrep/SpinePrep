@@ -58,6 +58,10 @@ def test_s3_1_subtask_execution(tmp_path):
                 "enabled": True,
                 "method": "deepseg",
                 "task": "spinalcord",
+                # Disable the drift gate: this test feeds random noise to
+                # sct_deepseg and only verifies the subtask plumbing, not
+                # the validity of the discovered cord.
+                "discover": {"drift_gate": {"enabled": False}},
             },
             "qc": {
                 "overlay_contour_width": 2,

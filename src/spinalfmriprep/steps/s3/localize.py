@@ -23,6 +23,111 @@ from .localize_viz import _render_s3_1_simple_func_with_mask  # noqa: F401
 # ---------------------------------------------------------------------------
 
 
+def _check_drift_gate(
+    disc_data: np.ndarray,
+    affine: np.ndarray,
+    policy: dict[str, Any],
+) -> tuple[bool, str, dict]:
+    """Detect brain contamination in a cord segmentation.
+
+    Spinal cord cross-sectional area is ~50-80 mm² cervical; once a segmentation
+    leaks into the brain the per-slice area jumps by an order of magnitude. Two
+    cheap checks on the most-superior `n_check` cord slices catch this:
+
+    - absolute cap: any of those slices exceeds `absolute_area_cap_mm2`
+    - spike ratio: top slice area / immediately-inferior slice area > `area_spike_threshold`
+
+    Returns (passed, message, info-dict). `info` carries per-slice areas so
+    the QC log can show why a run was rejected.
+    """
+    drift_cfg = (
+        policy.get("func_localization", {})
+        .get("discover", {})
+        .get("drift_gate", {})
+    )
+    if not drift_cfg.get("enabled", True):
+        return True, "drift_gate disabled", {}
+
+    n_check = int(drift_cfg.get("superior_slices_check", 5))
+    spike_ratio = float(drift_cfg.get("area_spike_threshold", 4.0))
+    abs_cap_mm2 = float(drift_cfg.get("absolute_area_cap_mm2", 200.0))
+
+    # Find the inferior-superior axis from the affine
+    try:
+        axcodes = nib.orientations.aff2axcodes(affine)
+    except Exception:
+        return True, "could not read orientation; drift_gate skipped", {}
+
+    is_axis = None
+    s_is_positive = None
+    for i, c in enumerate(axcodes):
+        if c == "S":
+            is_axis, s_is_positive = i, True
+            break
+        if c == "I":
+            is_axis, s_is_positive = i, False
+            break
+    if is_axis is None:
+        return True, "no IS axis; drift_gate skipped", {}
+
+    # Per-slice (along IS axis) area in mm²
+    voxel_sizes = np.sqrt((affine[:3, :3] ** 2).sum(axis=0))
+    in_plane = [i for i in (0, 1, 2) if i != is_axis]
+    voxel_area_mm2 = float(voxel_sizes[in_plane[0]] * voxel_sizes[in_plane[1]])
+
+    sum_axes = tuple(in_plane)
+    slice_areas_mm2 = ((disc_data > 0).sum(axis=sum_axes) * voxel_area_mm2).astype(float)
+
+    nonzero = np.where(slice_areas_mm2 > 0)[0]
+    if nonzero.size == 0:
+        return False, "empty segmentation", {"slice_areas_mm2": slice_areas_mm2.tolist()}
+
+    # Order superior-to-inferior
+    if s_is_positive:
+        superior_zs = nonzero[-n_check:][::-1].tolist()
+    else:
+        superior_zs = nonzero[:n_check].tolist()
+
+    info = {
+        "slice_areas_mm2": slice_areas_mm2.tolist(),
+        "is_axis": int(is_axis),
+        "s_is_positive": bool(s_is_positive),
+        "thresholds": {
+            "absolute_area_cap_mm2": abs_cap_mm2,
+            "area_spike_threshold": spike_ratio,
+            "superior_slices_check": n_check,
+        },
+        "checked_slices": [int(z) for z in superior_zs],
+    }
+
+    # Absolute cap: any superior slice with area > cap is brain
+    for z in superior_zs:
+        a = slice_areas_mm2[z]
+        if a > abs_cap_mm2:
+            return (
+                False,
+                f"brain detected: slice z={int(z)} area {a:.1f} mm² > cap {abs_cap_mm2:.0f} mm²",
+                info,
+            )
+
+    # Spike: top slice vs the slice immediately inferior to it
+    if len(superior_zs) >= 1:
+        for z in superior_zs:
+            below_z = z - 1 if s_is_positive else z + 1
+            if 0 <= below_z < slice_areas_mm2.size:
+                below = slice_areas_mm2[below_z]
+                top = slice_areas_mm2[z]
+                if below > 0 and top / below > spike_ratio:
+                    return (
+                        False,
+                        f"brain detected: area spike at z={int(z)} "
+                        f"({top:.1f}/{below:.1f} = {top / below:.2f}× > {spike_ratio:.1f}×)",
+                        info,
+                    )
+
+    return True, "ok", info
+
+
 def _create_dummy_discovery(data: np.ndarray, affine: np.ndarray, seg_path: Path, roi_path: Path) -> None:
     """Fallback: Center-of-image dummy discovery."""
     discovery_seg_data = np.zeros_like(data)
@@ -100,6 +205,10 @@ def _process_s3_1_dummy_drop_and_localization(
          # Re-calculate bbox from discovery seg (fast, robust)
          disc_img = nib.load(discovery_seg_path)
          disc_data = disc_img.get_fdata()
+
+         # Drift gate: reject runs where the segmentation has leaked into the brain.
+         gate_ok, gate_msg, gate_info = _check_drift_gate(disc_data, disc_img.affine, policy)
+
          coords = np.argwhere(disc_data > 0)
          if coords.size > 0:
              pad_xy = 10
@@ -128,10 +237,11 @@ def _process_s3_1_dummy_drop_and_localization(
               "func_ref_fast_crop_path": func_ref_fast_crop_path,
               "func_bold_coarse_path": func_bold_coarse_path,
               "discovery_seg_crop_path": localize_dir / "func_ref_fast_seg_crop.nii.gz",
-              "localization_status": "PASS",
-              "failure_message": None,
+              "localization_status": "PASS" if gate_ok else "FAIL",
+              "failure_message": None if gate_ok else f"S3.1 drift gate: {gate_msg}",
               "figure_path": fig_path,
               "crop_bbox": crop_bbox,
+              "drift_gate_info": gate_info,
          }
 
     # ELSE: Heavy Computation - Restore Logic
@@ -318,6 +428,9 @@ def _process_s3_1_dummy_drop_and_localization(
         }
 
 
+    # Drift gate: reject runs where the discovery has leaked into the brain.
+    gate_ok, gate_msg, gate_info = _check_drift_gate(disc_data, disc_img.affine, policy)
+
     result = {
         "func_ref_fast_path": func_ref_fast_path,
         "func_ref0_path": func_ref0_path,
@@ -326,9 +439,11 @@ def _process_s3_1_dummy_drop_and_localization(
         "discovery_seg_crop_path": discovery_seg_crop_path,  # Cropped mask for S3.2/S3.3
         "func_ref_fast_crop_path": func_ref_fast_crop_path,
         "func_bold_coarse_path": func_bold_coarse_path,
-        "localization_status": "PASS",
+        "localization_status": "PASS" if gate_ok else "FAIL",
+        "failure_message": None if gate_ok else f"S3.1 drift gate: {gate_msg}",
         "figure_path": rendered_path,
         "crop_bbox": crop_bbox,
+        "drift_gate_info": gate_info,
     }
 
     # Check if we should exit after S3.1
