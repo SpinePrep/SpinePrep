@@ -248,32 +248,39 @@ def render_moco_axial_comparison(
     show_mask_contour: bool = True,
     margin_mm: float = 5.0,
     percentile: Tuple[float, float] = (2.0, 98.0),
+    animate: bool = True,
+    max_frames: int = 16,
+    fps: int = 4,
 ):
     """Render axial moco-comparison reportlet.
 
-    For every cord-bearing axial slice (capped at `max_slices`), build a row:
-    [mean BOLD before moco | mean BOLD after moco]. Stack the rows vertically
-    into a single PNG. Per the Feb 13 design decision, motion is much easier
-    to read off axial cross-sections side-by-side than off a sagittal animation.
+    Per the Feb 13 design decision, motion correction quality is most legible
+    on axial cross-sections shown side-by-side. Layout is constant across all
+    frames: every cord-bearing axial slice (capped at `max_slices`) gets a
+    row [BOLD before moco | BOLD after moco], stacked vertically.
 
-    - Temporal mean is the canonical motion QC image: motion blurs the
-      pre-moco mean, the post-moco mean sharpens.
-    - Intensity normalization is shared across before/after so observed
-      contrast differences reflect the data, not the display.
-    - Optional thin blue cord-mask contour, matching the S2 cordmask
-      reportlet convention.
+    When `animate=True` (default), output is an animated GIF cycling through
+    `max_frames` uniformly-sampled timepoints from the 4D BOLD - the eye sees
+    cord wobble on the left column and stable cord on the right. If either
+    input is already a 3D mean, that column stays static across frames.
+
+    When `animate=False`, the temporal means are stacked into a single PNG;
+    blur (before) vs sharpness (after) tells the same story without motion.
+
+    Intensity normalisation is shared across columns AND across all frames
+    so observed differences reflect the data, not display range drift. An
+    optional thin blue cord-mask contour marks the cord on every tile.
     """
     img_before = nib.load(bold_before_path)
     img_after = nib.load(bold_after_path)
     data_before = img_before.get_fdata()
     data_after = img_after.get_fdata()
 
-    # Temporal means - check each volume independently. Callers may pass a
-    # 4D timeseries for one side and a pre-computed 3D mean for the other.
-    mean_before = data_before.mean(axis=3) if data_before.ndim == 4 else data_before
-    mean_after = data_after.mean(axis=3) if data_after.ndim == 4 else data_after
+    is_4d_before = data_before.ndim == 4
+    is_4d_after = data_after.ndim == 4
+    mean_before = data_before.mean(axis=3) if is_4d_before else data_before
+    mean_after = data_after.mean(axis=3) if is_4d_after else data_after
 
-    # Mask resolution
     final_mask = None
     if mask_data is not None and mask_data.shape == mean_before.shape:
         final_mask = mask_data > 0
@@ -282,17 +289,13 @@ def render_moco_axial_comparison(
         if m.shape == mean_before.shape:
             final_mask = m > 0
     if final_mask is None:
-        # Fallback: whole-volume bbox so we still render something useful
         final_mask = np.ones_like(mean_before, dtype=bool)
 
     zooms = img_before.header.get_zooms()[:3]
     dx_mm, dy_mm, _dz_mm = float(zooms[0]), float(zooms[1]), float(zooms[2])
 
-    # Select cord-bearing Z slices (slices where the mask has any voxels)
     z_has_cord = np.where(final_mask.any(axis=(0, 1)))[0]
     if z_has_cord.size == 0:
-        # No cord found - still render a minimal placeholder so the dashboard
-        # has a file at the expected path and the user sees the failure mode.
         placeholder = Image.new("RGB", (400, 80), (40, 40, 40))
         d = ImageDraw.Draw(placeholder)
         d.text((10, 30), "no cord-bearing slices in mask", fill=(220, 220, 220))
@@ -305,22 +308,30 @@ def render_moco_axial_comparison(
     else:
         selected_z = z_has_cord
 
-    # Shared robust intensity range across both columns + all selected slices
-    vals_b = mean_before[final_mask]
-    vals_a = mean_after[final_mask]
-    pool = np.concatenate([vals_b, vals_a])
+    # Shared robust intensity range. Pool BOTH the temporal means AND a
+    # subsample of raw volumes so the gif's per-frame brightness stays
+    # consistent with the static means.
+    pool_arrays = [mean_before[final_mask], mean_after[final_mask]]
+    if animate and (is_4d_before or is_4d_after):
+        nt = max(
+            data_before.shape[3] if is_4d_before else 0,
+            data_after.shape[3] if is_4d_after else 0,
+        )
+        sample_t = np.linspace(0, nt - 1, min(nt, max_frames), dtype=int)
+        for t in sample_t[:: max(1, len(sample_t) // 4)]:  # 4 sample times for percentile
+            if is_4d_before:
+                pool_arrays.append(data_before[..., t][final_mask])
+            if is_4d_after:
+                pool_arrays.append(data_after[..., t][final_mask])
+    pool = np.concatenate(pool_arrays)
     pool = pool[pool > 1e-5]
-    if pool.size > 0:
-        vmin, vmax = np.percentile(pool, list(percentile))
-    else:
-        vmin, vmax = 0.0, 1.0
+    vmin, vmax = (np.percentile(pool, list(percentile)) if pool.size > 0 else (0.0, 1.0))
     if vmax <= vmin:
         vmax = vmin + 1e-5
 
-    # Crop bbox in plane (across all slices, fixed per run so rows align)
-    if final_mask.any():
-        plane_mask = final_mask.any(axis=2)
-        coords = np.argwhere(plane_mask)
+    plane_mask = final_mask.any(axis=2)
+    coords = np.argwhere(plane_mask)
+    if coords.size:
         r_min, c_min = coords.min(axis=0)
         r_max, c_max = coords.max(axis=0)
     else:
@@ -333,11 +344,9 @@ def render_moco_axial_comparison(
     c0 = max(0, c_min - pad_c)
     c1 = min(mean_before.shape[1], c_max + pad_c + 1)
 
-    # Tile size: scale to a stable display dimension (240 px wide tile)
     crop_w = c1 - c0
     crop_h = r1 - r0
-    tile_w = 240
-    # Preserve in-plane aspect (voxel sizes already equal-ish for axial)
+    tile_w = 200 if animate else 240  # slightly smaller tiles to keep GIF size sane
     asp = (crop_h * dx_mm) / (crop_w * dy_mm) if crop_w > 0 else 1.0
     tile_h = max(32, int(round(tile_w * asp)))
 
@@ -347,47 +356,69 @@ def render_moco_axial_comparison(
     panel_w = label_w + 2 * tile_w + gutter
     panel_h = header_h + len(selected_z) * tile_h
 
-    canvas = Image.new("RGB", (panel_w, panel_h), (10, 10, 10))
-    draw = ImageDraw.Draw(canvas)
-
-    # Column headers
     font = _load_compact_font()
-    draw.text((label_w + tile_w // 2 - 36, 6), "Before moco", fill=(220, 220, 220), font=font)
-    draw.text((label_w + tile_w + gutter + tile_w // 2 - 30, 6), "After moco", fill=(220, 220, 220), font=font)
 
-    def _to_uint8(arr2d: np.ndarray) -> np.ndarray:
-        norm = np.clip((arr2d - vmin) / (vmax - vmin), 0.0, 1.0)
-        return (norm * 255).astype(np.uint8)
+    # Pre-compute the mask contour per slice once (same overlay every frame)
+    contour_overlays = {}
+    if show_mask_contour:
+        for z in selected_z:
+            sl_mask = final_mask[r0:r1, c0:c1, int(z)]
+            if sl_mask.any():
+                contour_overlays[int(z)] = _make_contour_overlay(sl_mask, tile_w, tile_h)
 
     def _tile_image(slab2d: np.ndarray) -> Image.Image:
-        # Match the medical-anatomical convention used elsewhere: rot90 so
-        # the displayed columns/rows feel like the radiologist view.
         rotated = np.rot90(slab2d)
-        u8 = _to_uint8(rotated)
-        im = Image.fromarray(u8).convert("RGB")
-        return im.resize((tile_w, tile_h), resample=Image.Resampling.NEAREST)
+        norm = np.clip((rotated - vmin) / (vmax - vmin), 0.0, 1.0)
+        u8 = (norm * 255).astype(np.uint8)
+        return Image.fromarray(u8).convert("RGB").resize(
+            (tile_w, tile_h), resample=Image.Resampling.NEAREST
+        )
 
-    for row_idx, z in enumerate(selected_z):
-        y0 = header_h + row_idx * tile_h
-        # Slice label on the left
-        draw.text((6, y0 + tile_h // 2 - 8), f"z={int(z)}", fill=(180, 180, 180), font=font)
+    def _build_frame(vol_before: np.ndarray, vol_after: np.ndarray,
+                     frame_label: Optional[str] = None) -> Image.Image:
+        canvas = Image.new("RGB", (panel_w, panel_h), (10, 10, 10))
+        draw = ImageDraw.Draw(canvas)
+        draw.text((label_w + tile_w // 2 - 36, 6), "Before moco",
+                  fill=(220, 220, 220), font=font)
+        draw.text((label_w + tile_w + gutter + tile_w // 2 - 30, 6),
+                  "After moco", fill=(220, 220, 220), font=font)
+        if frame_label:
+            draw.text((panel_w - 80, 6), frame_label, fill=(180, 180, 180), font=font)
+        for row_idx, z in enumerate(selected_z):
+            y0 = header_h + row_idx * tile_h
+            draw.text((6, y0 + tile_h // 2 - 8), f"z={int(z)}",
+                      fill=(180, 180, 180), font=font)
+            tile_before = _tile_image(vol_before[r0:r1, c0:c1, int(z)])
+            tile_after = _tile_image(vol_after[r0:r1, c0:c1, int(z)])
+            canvas.paste(tile_before, (label_w, y0))
+            canvas.paste(tile_after, (label_w + tile_w + gutter, y0))
+            ov = contour_overlays.get(int(z))
+            if ov is not None:
+                canvas.paste(ov, (label_w, y0), ov)
+                canvas.paste(ov, (label_w + tile_w + gutter, y0), ov)
+        return canvas
 
-        crop_before = mean_before[r0:r1, c0:c1, z]
-        crop_after = mean_after[r0:r1, c0:c1, z]
-        tile_before = _tile_image(crop_before)
-        tile_after = _tile_image(crop_after)
-        canvas.paste(tile_before, (label_w, y0))
-        canvas.paste(tile_after, (label_w + tile_w + gutter, y0))
+    if not animate or not (is_4d_before or is_4d_after):
+        # Static mean-vs-mean PNG fallback
+        _build_frame(mean_before, mean_after).save(output_path)
+        return
 
-        if show_mask_contour and final_mask[r0:r1, c0:c1, z].any():
-            contour_b = _make_contour_overlay(
-                final_mask[r0:r1, c0:c1, z], tile_w, tile_h
-            )
-            contour_a = contour_b  # same mask both columns
-            canvas.paste(contour_b, (label_w, y0), contour_b)
-            canvas.paste(contour_a, (label_w + tile_w + gutter, y0), contour_a)
+    # Animated GIF: sample timepoints uniformly across the longer 4D BOLD.
+    nt = max(
+        data_before.shape[3] if is_4d_before else 0,
+        data_after.shape[3] if is_4d_after else 0,
+    )
+    sample_t = np.linspace(0, nt - 1, min(nt, max_frames), dtype=int)
+    frames = []
+    for t in sample_t:
+        vb = data_before[..., t] if is_4d_before else mean_before
+        va = data_after[..., t] if is_4d_after else mean_after
+        frames.append(np.array(_build_frame(vb, va, frame_label=f"vol {int(t)}")))
 
-    canvas.save(output_path)
+    # Write as animated GIF. Use `duration` (ms) to dodge the imageio `fps`
+    # deprecation warning we saw on the old renderer.
+    duration_ms = max(50, int(round(1000.0 / max(1, fps))))
+    imageio.imwrite(output_path, frames, duration=duration_ms, loop=0)
 
 
 def _load_compact_font():

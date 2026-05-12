@@ -364,19 +364,26 @@ def run_S4_func_motion_correction(
         output_path=figures_dir / f"{prefix}_desc-S4_dvars_plot.png"
     )
 
-    # 4. Axial Before/After moco comparison (static PNG; replaces the older
-    # sagittal GIF per the Feb 13 design decision).
+    # 4. Axial Before/After moco comparison.
+    # Per Feb 13 design: axial slices stacked vertically, before/after side-by-side.
+    # Animated GIF cycles through sampled timepoints so the cord visibly
+    # wobbles on the left column and stays put on the right.
     comparison_cfg = policy["qc"].get("comparison", policy["qc"].get("gif", {}))
+    animate = bool(comparison_cfg.get("animate", True))
+    ext = "gif" if animate else "png"
     viz_s4.render_moco_axial_comparison(
         bold_crop_path,
         stage2_bold_path,
-        output_path=figures_dir / f"{prefix}_desc-S4_moco_comparison.png",
+        output_path=figures_dir / f"{prefix}_desc-S4_moco_comparison.{ext}",
         mask_path=moco_mask_path,
         mask_data=mask,
         max_slices=int(comparison_cfg.get("max_slices", 12)),
         show_mask_contour=bool(comparison_cfg.get("show_mask_contour", True)),
         margin_mm=float(comparison_cfg.get("margin_mm", 5.0)),
         percentile=tuple(comparison_cfg.get("percentile", (2.0, 98.0))),
+        animate=animate,
+        max_frames=int(comparison_cfg.get("max_frames", 16)),
+        fps=int(comparison_cfg.get("fps", 4)),
     )
 
     # -------------------------------------------------------------------------
@@ -413,7 +420,7 @@ def run_S4_func_motion_correction(
             "S4_motion_traces": str((figures_dir / f"{prefix}_desc-S4_motion_traces.png").relative_to(out_dir)),
             "S4_tsnr_comparison": str((figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png").relative_to(out_dir)),
             "S4_dvars_plot": str((figures_dir / f"{prefix}_desc-S4_dvars_plot.png").relative_to(out_dir)),
-            "S4_moco_comparison": str((figures_dir / f"{prefix}_desc-S4_moco_comparison.png").relative_to(out_dir)),
+            "S4_moco_comparison": str((figures_dir / f"{prefix}_desc-S4_moco_comparison.{ext}").relative_to(out_dir)),
         }
     }
 

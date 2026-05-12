@@ -71,14 +71,19 @@ qc:
     outlier_marker_size: 20
     grid_alpha: 0.3
 
-  # Axial Before/After moco comparison (S4_moco_comparison.png)
-  # Per Feb 13 design: static axial montage replaces the sagittal GIF so
-  # motion correction quality is legible at a glance.
+  # Axial Before/After moco comparison (S4_moco_comparison.gif).
+  # Per Feb 13 design: axial slices stacked vertically, before/after side-by-
+  # side. Animated GIF cycles through sampled timepoints so the user sees
+  # cord wobble on the left and stability on the right. Set animate: false
+  # to fall back to a static mean-vs-mean PNG.
   comparison:
+    animate: true               # true => GIF; false => static PNG
     max_slices: 12              # cap rows; uses all cord-bearing slices if fewer
+    max_frames: 16              # GIF only: number of sampled timepoints
+    fps: 4                      # GIF only: playback rate
     show_mask_contour: true     # thin blue cord-mask contour overlay
     margin_mm: 5.0              # in-plane padding around the mask bbox
-    percentile: [2, 98]         # robust shared intensity range across before/after
+    percentile: [2, 98]         # robust shared intensity range across frames/columns
 
 # Cost controls
 cost_controls:

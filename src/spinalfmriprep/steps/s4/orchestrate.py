@@ -368,20 +368,25 @@ def run_S4_func_motion_correction_reportlets_only(
             except Exception:
                 pass
 
-        # 4. Axial Before/After PNG (Feb 13 design: switched from sagittal GIF)
+        # 4. Axial Before/After moco comparison (animated GIF by default).
         try:
             bold_before_candidates = list(s4_work_dir.parent.parent.parent.rglob(f"*{run_id}*funccrop_bold.nii.gz"))
             moco_bold_path = func_dir / f"{prefix}_desc-mocoref_bold.nii.gz"
             if bold_before_candidates and moco_bold_path.exists():
                 comparison_cfg = policy.get("qc", {}).get("comparison", policy.get("qc", {}).get("gif", {}))
+                animate = bool(comparison_cfg.get("animate", True))
+                ext = "gif" if animate else "png"
                 viz_s4.render_moco_axial_comparison(
                     bold_before_path=str(bold_before_candidates[0]),
                     bold_after_path=str(moco_bold_path),
-                    output_path=str(figures_dir / f"{prefix}_desc-S4_moco_comparison.png"),
+                    output_path=str(figures_dir / f"{prefix}_desc-S4_moco_comparison.{ext}"),
                     max_slices=int(comparison_cfg.get("max_slices", 12)),
                     show_mask_contour=bool(comparison_cfg.get("show_mask_contour", True)),
                     margin_mm=float(comparison_cfg.get("margin_mm", 5.0)),
                     percentile=tuple(comparison_cfg.get("percentile", (2.0, 98.0))),
+                    animate=animate,
+                    max_frames=int(comparison_cfg.get("max_frames", 16)),
+                    fps=int(comparison_cfg.get("fps", 4)),
                 )
         except Exception:
             pass
