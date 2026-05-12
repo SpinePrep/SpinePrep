@@ -81,7 +81,9 @@ def _guess_media_type(path: Path) -> str:
 
 @app.get("/")
 async def root():
-    return RedirectResponse(url="/dashboard/index.html")
+    # Relative target so the redirect resolves correctly when the server
+    # is mounted under a reverse-proxy prefix (e.g. 271828.space/p2/).
+    return RedirectResponse(url="dashboard/index.html")
 
 
 @app.get("/__spinalfmriprep__/workfolders.json")
