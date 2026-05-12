@@ -139,19 +139,43 @@ def run_S4(
     qc_dir.mkdir(parents=True, exist_ok=True)
     qc_path = qc_dir / "qc.json"
 
+    # Aggregate top-level status from per-run results so consumers
+    # (mark_done, dashboard step cards, downstream chain) don't see
+    # UNKNOWN. Conventions match S3:
+    #   PASS  all runs PASS
+    #   WARN  some FAIL or WARN but at least one PASS - partial success
+    #   FAIL  no PASS, or no runs at all
+    n_pass = sum(1 for r in results if r.get("status") == "PASS")
+    n_warn = sum(1 for r in results if r.get("status") == "WARN")
+    n_fail = sum(1 for r in results if r.get("status") == "FAIL")
+    if results and n_pass == len(results):
+        top_status = "PASS"
+        top_msg = None
+    elif n_pass > 0:
+        top_status = "WARN"
+        parts = []
+        if n_fail: parts.append(f"{n_fail} failed")
+        if n_warn: parts.append(f"{n_warn} warned")
+        top_msg = ", ".join(parts) + f" out of {len(results)} runs"
+    else:
+        top_status = "FAIL"
+        top_msg = f"all {len(results)} runs failed" if results else "no runs processed"
+
     aggregated_qc = {
         "dataset_key": dataset_key,
         "step_code": "S4_func_motion_correction",
+        "status": top_status,
+        "failure_message": top_msg,
         "runs": results,
     }
 
     with open(qc_path, "w") as f:
         json.dump(aggregated_qc, f, indent=2)
 
-    # Aggregate status
-    failures = [r for r in results if r.get("status") == "FAIL"]
-    if failures:
-        return StepResult("FAIL", f"{len(failures)}/{len(results)} runs failed")
+    # Return value mirrors the top-level status so the orchestrator's caller
+    # sees the same verdict that landed in qc.json.
+    if top_status == "FAIL":
+        return StepResult("FAIL", top_msg)
 
     # Build dashboard (matches S1/S2/S3 pattern)
     from spinalfmriprep.qc_dashboard import generate_dashboard_safe

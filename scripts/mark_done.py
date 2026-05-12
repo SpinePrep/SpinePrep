@@ -56,38 +56,48 @@ def find_qc_files(workfolder: Path, step: str) -> list[Path]:
 
 def validate_qc(workfolder: Path, step: str) -> tuple[bool, str]:
     """
-    Validate that QC status is PASS for the step.
-    
+    Validate that QC status is acceptable for "done".
+
+    Accepts both PASS and WARN as valid "done" statuses. WARN reflects an
+    intentional partial-success state (e.g. the S3.1 drift gate dropping
+    brain-shim runs while others pass) and should not block chain progress.
+    Only FAIL and UNKNOWN block; use --force to override.
+
     Returns (passed, message).
     """
     qc_files = find_qc_files(workfolder, step)
-    
+
     if not qc_files:
         return False, f"No QC files found for {step} in {workfolder}"
-    
-    all_pass = True
+
+    all_ok = True
     messages = []
-    
+
     for qc_file in qc_files:
         try:
             with open(qc_file, "r", encoding="utf-8") as f:
                 qc_data = json.load(f)
-            
+
             status = qc_data.get("status", "UNKNOWN")
             dataset_key = qc_data.get("dataset_key", qc_file.parent.name)
-            
+            failure_msg = qc_data.get("failure_message", "")
+
             if status == "PASS":
                 messages.append(f"  ✓ {dataset_key}: PASS")
+            elif status == "WARN":
+                # WARN is acceptable for "done" - partial-success completion
+                tail = f" - {failure_msg}" if failure_msg else ""
+                messages.append(f"  ~ {dataset_key}: WARN (accepted){tail}")
             else:
-                all_pass = False
-                failure_msg = qc_data.get("failure_message", "unknown reason")
-                messages.append(f"  ✗ {dataset_key}: {status} - {failure_msg}")
+                all_ok = False
+                tail = failure_msg or "unknown reason"
+                messages.append(f"  ✗ {dataset_key}: {status} - {tail}")
         except Exception as e:
-            all_pass = False
+            all_ok = False
             messages.append(f"  ✗ {qc_file}: Failed to read - {e}")
-    
+
     summary = "\n".join(messages)
-    return all_pass, summary
+    return all_ok, summary
 
 
 def create_symlink(done_dir: Path, workfolder: Path) -> tuple[bool, str]:
