@@ -404,10 +404,12 @@ def run_S4_func_motion_correction(
         "metrics": qc_metrics,
         "failure_reasons": failure_reasons,
         "reportlets": {
-            "S4_motion_traces": str(figures_dir / f"{prefix}_desc-S4_motion_traces.png"),
-            "S4_tsnr_comparison": str(figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png"),
-            "S4_dvars_plot": str(figures_dir / f"{prefix}_desc-S4_dvars_plot.png"),
-            "S4_moco_comparison": str(figures_dir / f"{prefix}_desc-S4_moco_comparison.gif")
+            # Store paths RELATIVE to out_dir so the dashboard can resolve them
+            # in chain workfolders (S2/S3 already follow this convention).
+            "S4_motion_traces": str((figures_dir / f"{prefix}_desc-S4_motion_traces.png").relative_to(out_dir)),
+            "S4_tsnr_comparison": str((figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png").relative_to(out_dir)),
+            "S4_dvars_plot": str((figures_dir / f"{prefix}_desc-S4_dvars_plot.png").relative_to(out_dir)),
+            "S4_moco_comparison": str((figures_dir / f"{prefix}_desc-S4_moco_comparison.gif").relative_to(out_dir)),
         }
     }
 
