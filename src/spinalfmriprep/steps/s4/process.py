@@ -364,15 +364,19 @@ def run_S4_func_motion_correction(
         output_path=figures_dir / f"{prefix}_desc-S4_dvars_plot.png"
     )
 
-    # 4. Before/After GIF
-    viz_s4.render_moco_gif(
+    # 4. Axial Before/After moco comparison (static PNG; replaces the older
+    # sagittal GIF per the Feb 13 design decision).
+    comparison_cfg = policy["qc"].get("comparison", policy["qc"].get("gif", {}))
+    viz_s4.render_moco_axial_comparison(
         bold_crop_path,
         stage2_bold_path,
-        output_path=figures_dir / f"{prefix}_desc-S4_moco_comparison.gif",
+        output_path=figures_dir / f"{prefix}_desc-S4_moco_comparison.png",
         mask_path=moco_mask_path,
         mask_data=mask,
-        fps=policy["qc"]["gif"].get("fps", 5),
-        max_frames=policy["qc"]["gif"].get("max_frames", 20)
+        max_slices=int(comparison_cfg.get("max_slices", 12)),
+        show_mask_contour=bool(comparison_cfg.get("show_mask_contour", True)),
+        margin_mm=float(comparison_cfg.get("margin_mm", 5.0)),
+        percentile=tuple(comparison_cfg.get("percentile", (2.0, 98.0))),
     )
 
     # -------------------------------------------------------------------------
@@ -409,7 +413,7 @@ def run_S4_func_motion_correction(
             "S4_motion_traces": str((figures_dir / f"{prefix}_desc-S4_motion_traces.png").relative_to(out_dir)),
             "S4_tsnr_comparison": str((figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png").relative_to(out_dir)),
             "S4_dvars_plot": str((figures_dir / f"{prefix}_desc-S4_dvars_plot.png").relative_to(out_dir)),
-            "S4_moco_comparison": str((figures_dir / f"{prefix}_desc-S4_moco_comparison.gif").relative_to(out_dir)),
+            "S4_moco_comparison": str((figures_dir / f"{prefix}_desc-S4_moco_comparison.png").relative_to(out_dir)),
         }
     }
 

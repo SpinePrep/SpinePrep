@@ -238,6 +238,193 @@ def extract_sagittal(data_3d, x_idx):
     # Rotate for display (SI vertical, AP horizontal)
     return np.rot90(slice_data)
 
+def render_moco_axial_comparison(
+    bold_before_path: Path,
+    bold_after_path: Path,
+    output_path: Path,
+    mask_path: Optional[Path] = None,
+    mask_data: Optional[np.ndarray] = None,
+    max_slices: int = 12,
+    show_mask_contour: bool = True,
+    margin_mm: float = 5.0,
+    percentile: Tuple[float, float] = (2.0, 98.0),
+):
+    """Render axial moco-comparison reportlet.
+
+    For every cord-bearing axial slice (capped at `max_slices`), build a row:
+    [mean BOLD before moco | mean BOLD after moco]. Stack the rows vertically
+    into a single PNG. Per the Feb 13 design decision, motion is much easier
+    to read off axial cross-sections side-by-side than off a sagittal animation.
+
+    - Temporal mean is the canonical motion QC image: motion blurs the
+      pre-moco mean, the post-moco mean sharpens.
+    - Intensity normalization is shared across before/after so observed
+      contrast differences reflect the data, not the display.
+    - Optional thin blue cord-mask contour, matching the S2 cordmask
+      reportlet convention.
+    """
+    img_before = nib.load(bold_before_path)
+    img_after = nib.load(bold_after_path)
+    data_before = img_before.get_fdata()
+    data_after = img_after.get_fdata()
+
+    # Temporal means - check each volume independently. Callers may pass a
+    # 4D timeseries for one side and a pre-computed 3D mean for the other.
+    mean_before = data_before.mean(axis=3) if data_before.ndim == 4 else data_before
+    mean_after = data_after.mean(axis=3) if data_after.ndim == 4 else data_after
+
+    # Mask resolution
+    final_mask = None
+    if mask_data is not None and mask_data.shape == mean_before.shape:
+        final_mask = mask_data > 0
+    elif mask_path and Path(mask_path).exists():
+        m = nib.load(mask_path).get_fdata()
+        if m.shape == mean_before.shape:
+            final_mask = m > 0
+    if final_mask is None:
+        # Fallback: whole-volume bbox so we still render something useful
+        final_mask = np.ones_like(mean_before, dtype=bool)
+
+    zooms = img_before.header.get_zooms()[:3]
+    dx_mm, dy_mm, _dz_mm = float(zooms[0]), float(zooms[1]), float(zooms[2])
+
+    # Select cord-bearing Z slices (slices where the mask has any voxels)
+    z_has_cord = np.where(final_mask.any(axis=(0, 1)))[0]
+    if z_has_cord.size == 0:
+        # No cord found - still render a minimal placeholder so the dashboard
+        # has a file at the expected path and the user sees the failure mode.
+        placeholder = Image.new("RGB", (400, 80), (40, 40, 40))
+        d = ImageDraw.Draw(placeholder)
+        d.text((10, 30), "no cord-bearing slices in mask", fill=(220, 220, 220))
+        placeholder.save(output_path)
+        return
+
+    if z_has_cord.size > max_slices:
+        idx = np.linspace(0, z_has_cord.size - 1, max_slices).round().astype(int)
+        selected_z = z_has_cord[idx]
+    else:
+        selected_z = z_has_cord
+
+    # Shared robust intensity range across both columns + all selected slices
+    vals_b = mean_before[final_mask]
+    vals_a = mean_after[final_mask]
+    pool = np.concatenate([vals_b, vals_a])
+    pool = pool[pool > 1e-5]
+    if pool.size > 0:
+        vmin, vmax = np.percentile(pool, list(percentile))
+    else:
+        vmin, vmax = 0.0, 1.0
+    if vmax <= vmin:
+        vmax = vmin + 1e-5
+
+    # Crop bbox in plane (across all slices, fixed per run so rows align)
+    if final_mask.any():
+        plane_mask = final_mask.any(axis=2)
+        coords = np.argwhere(plane_mask)
+        r_min, c_min = coords.min(axis=0)
+        r_max, c_max = coords.max(axis=0)
+    else:
+        r_min, c_min = 0, 0
+        r_max, c_max = mean_before.shape[0] - 1, mean_before.shape[1] - 1
+    pad_r = int(np.ceil(margin_mm / dx_mm))
+    pad_c = int(np.ceil(margin_mm / dy_mm))
+    r0 = max(0, r_min - pad_r)
+    r1 = min(mean_before.shape[0], r_max + pad_r + 1)
+    c0 = max(0, c_min - pad_c)
+    c1 = min(mean_before.shape[1], c_max + pad_c + 1)
+
+    # Tile size: scale to a stable display dimension (240 px wide tile)
+    crop_w = c1 - c0
+    crop_h = r1 - r0
+    tile_w = 240
+    # Preserve in-plane aspect (voxel sizes already equal-ish for axial)
+    asp = (crop_h * dx_mm) / (crop_w * dy_mm) if crop_w > 0 else 1.0
+    tile_h = max(32, int(round(tile_w * asp)))
+
+    header_h = 28
+    label_w = 56
+    gutter = 4
+    panel_w = label_w + 2 * tile_w + gutter
+    panel_h = header_h + len(selected_z) * tile_h
+
+    canvas = Image.new("RGB", (panel_w, panel_h), (10, 10, 10))
+    draw = ImageDraw.Draw(canvas)
+
+    # Column headers
+    font = _load_compact_font()
+    draw.text((label_w + tile_w // 2 - 36, 6), "Before moco", fill=(220, 220, 220), font=font)
+    draw.text((label_w + tile_w + gutter + tile_w // 2 - 30, 6), "After moco", fill=(220, 220, 220), font=font)
+
+    def _to_uint8(arr2d: np.ndarray) -> np.ndarray:
+        norm = np.clip((arr2d - vmin) / (vmax - vmin), 0.0, 1.0)
+        return (norm * 255).astype(np.uint8)
+
+    def _tile_image(slab2d: np.ndarray) -> Image.Image:
+        # Match the medical-anatomical convention used elsewhere: rot90 so
+        # the displayed columns/rows feel like the radiologist view.
+        rotated = np.rot90(slab2d)
+        u8 = _to_uint8(rotated)
+        im = Image.fromarray(u8).convert("RGB")
+        return im.resize((tile_w, tile_h), resample=Image.Resampling.NEAREST)
+
+    for row_idx, z in enumerate(selected_z):
+        y0 = header_h + row_idx * tile_h
+        # Slice label on the left
+        draw.text((6, y0 + tile_h // 2 - 8), f"z={int(z)}", fill=(180, 180, 180), font=font)
+
+        crop_before = mean_before[r0:r1, c0:c1, z]
+        crop_after = mean_after[r0:r1, c0:c1, z]
+        tile_before = _tile_image(crop_before)
+        tile_after = _tile_image(crop_after)
+        canvas.paste(tile_before, (label_w, y0))
+        canvas.paste(tile_after, (label_w + tile_w + gutter, y0))
+
+        if show_mask_contour and final_mask[r0:r1, c0:c1, z].any():
+            contour_b = _make_contour_overlay(
+                final_mask[r0:r1, c0:c1, z], tile_w, tile_h
+            )
+            contour_a = contour_b  # same mask both columns
+            canvas.paste(contour_b, (label_w, y0), contour_b)
+            canvas.paste(contour_a, (label_w + tile_w + gutter, y0), contour_a)
+
+    canvas.save(output_path)
+
+
+def _load_compact_font():
+    """Small TTF if available, else PIL bitmap fallback."""
+    try:
+        from PIL import ImageFont
+        for candidate in (
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        ):
+            try:
+                return ImageFont.truetype(candidate, 13)
+            except Exception:
+                continue
+        return ImageFont.load_default()
+    except Exception:
+        return None
+
+
+def _make_contour_overlay(mask_2d: np.ndarray, tile_w: int, tile_h: int) -> Image.Image:
+    """Return an RGBA tile with a thin blue cord-mask contour, sized to tile."""
+    # Rotate to match the tile orientation
+    m = np.rot90(mask_2d).astype(bool)
+    # Edge = mask XOR its 1-px erosion (no scipy dependency: shift each axis)
+    pad = np.zeros((m.shape[0] + 2, m.shape[1] + 2), dtype=bool)
+    pad[1:-1, 1:-1] = m
+    eroded = pad[0:-2, 1:-1] & pad[2:, 1:-1] & pad[1:-1, 0:-2] & pad[1:-1, 2:] & m
+    edge = m & ~eroded
+    rgba = np.zeros((*edge.shape, 4), dtype=np.uint8)
+    rgba[..., 0] = 0
+    rgba[..., 1] = 130
+    rgba[..., 2] = 230
+    rgba[..., 3] = edge.astype(np.uint8) * 220
+    overlay = Image.fromarray(rgba, mode="RGBA")
+    return overlay.resize((tile_w, tile_h), resample=Image.Resampling.NEAREST)
+
+
 def render_moco_gif(
     bold_before_path: Path,
     bold_after_path: Path,
@@ -247,7 +434,12 @@ def render_moco_gif(
     fps: int = 5,
     max_frames: int = 20
 ):
-    """Generate Before/After GIF comparison."""
+    """DEPRECATED sagittal GIF moco comparison.
+
+    Kept as a thin shim only because external callers may import it. New
+    code should call render_moco_axial_comparison(). The current pipeline
+    no longer calls this function (Feb 13 design: switched to axial PNG).
+    """
     
     # Load data
     img_before = nib.load(bold_before_path)

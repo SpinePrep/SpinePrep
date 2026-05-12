@@ -73,7 +73,7 @@ def test_S4_integration_flow(s4_test_env):
         "qc": {
             "motion_traces": {"figsize": [10, 4], "dpi": 50, "colors": {"tx": "b", "ty": "r", "threshold": "k"}},
             "tsnr_comparison": {"figsize": [10, 4], "dpi": 50, "colormap": "gray"},
-            "gif": {"fps": 1, "max_frames": 2}
+            "comparison": {"max_slices": 4, "show_mask_contour": False, "margin_mm": 2.0, "percentile": [2, 98]}
         }
     }
     
