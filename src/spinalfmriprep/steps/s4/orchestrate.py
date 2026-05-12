@@ -319,11 +319,13 @@ def run_S4_func_motion_correction_reportlets_only(
         if not subject or not run_id:
             continue
 
-        # Locate work dir
+        # Locate work dir. run_id is the full S3 run-dir name (qc.json schema
+        # since the run_id-mismatch fix), e.g. "sub-02_task-motor_run-01".
         s4_work_dir = out_path / "work" / "S4_func_motion_correction" / run_id
 
-        # Determine prefix and figures dir
-        prefix = f"{subject}_{session}_{run_id}" if session else f"{subject}_{run_id}"
+        # Prefix used for figure / param filenames is the same as run_id by
+        # convention (matches S3 and the work-dir name).
+        prefix = run_id
         if session:
             figures_dir = out_path / "derivatives" / "spinalfmriprep" / subject / session / "figures"
             func_dir = out_path / "derivatives" / "spinalfmriprep" / subject / session / "func"

@@ -66,12 +66,20 @@ def run_S4_func_motion_correction(
     parts = run_name.split("_")
     subject = parts[0] if parts[0].startswith("sub-") else None
     session = None
-    run_id = None
+    run_entity = None  # the BIDS run-XX token only (used to decide is_run1)
     for p in parts[1:]:
         if p.startswith("ses-"):
             session = p
         if p.startswith("run-"):
-            run_id = p
+            run_entity = p
+
+    # run_id stored in qc.json must equal the work-dir name so downstream
+    # consumers (mark_done, --reportlets-only, dashboards) can locate the
+    # run's artifacts. S3 follows the same convention. Earlier S4 stored
+    # only the BIDS run token (e.g. "run-01"), which silently broke
+    # reportlets-only because work/<step>/run-01 doesn't exist - the real
+    # dir is work/<step>/sub-02_task-..._run-01.
+    run_id = run_name
 
     # Use the run_name as a filename prefix for output BIDS naming
     prefix = run_name
@@ -114,8 +122,13 @@ def run_S4_func_motion_correction(
     z_shift_slices = 0
     z_shift_corrected = False
 
-    # Only applicable if this run has a run entity and is not run-1/run-01
-    is_run1 = (run_id is None or run_id == "run-1" or run_id == "run-01")
+    # Only applicable if this run has a run entity and is not the first run.
+    # run_entity is the BIDS run-XX token only (or None for single-run datasets).
+    is_run1 = (
+        run_entity is None
+        or run_entity == "run-1"
+        or run_entity == "run-01"
+    )
 
     correction_enabled = policy.get("motion_correction", {}).get("z_shift_correction", {}).get("enabled", False)
     threshold_mm = policy.get("motion_correction", {}).get("z_shift_correction", {}).get("threshold_mm", 2.0)
