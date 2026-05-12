@@ -138,3 +138,40 @@ def test_inventory_is_deterministic(tmp_path):
         out=out,
     )
     assert check_res.status == "PASS"
+
+
+def test_inventory_records_func_acquisition_metadata(tmp_path):
+    """S1 must extract BIDS sidecar timing fields for cord_likely func runs
+    so a future opt-in slice-timing correction has data ready."""
+    import json
+    from spinalfmriprep.steps.s1.inventory import _build_inventory
+
+    bids = tmp_path / "ds_X"
+    func = bids / "sub-01" / "func"
+    func.mkdir(parents=True)
+    _make_nifti(func / "sub-01_task-rest_bold.nii.gz", (4, 4, 3, 5))
+    (func / "sub-01_task-rest_bold.json").write_text(json.dumps({
+        "RepetitionTime": 1.0,
+        "SliceTiming": [0.0, 0.5, 0.25],
+        "SliceEncodingDirection": "k",
+        "PhaseEncodingDirection": "j-",
+        "EchoTime": 0.030,
+        "RandomKeyWeShouldIgnore": "foo",
+    }), encoding="utf-8")
+    # Dataset-level inheritance: S1 should fold this in alongside the run sidecar
+    (bids / "task-rest_bold.json").write_text(json.dumps({
+        "EffectiveEchoSpacing": 0.0005,
+    }), encoding="utf-8")
+
+    inv = _build_inventory(bids, "ds_X", policy_entry=None)
+    func_runs = [r for r in inv["runs"] if r["modality"] == "func"]
+    assert len(func_runs) == 1
+    acq = func_runs[0].get("acquisition")
+    assert acq is not None
+    assert acq.get("RepetitionTime") == 1.0
+    assert acq.get("SliceTiming") == [0.0, 0.5, 0.25]
+    assert acq.get("SliceEncodingDirection") == "k"
+    assert acq.get("PhaseEncodingDirection") == "j-"
+    assert acq.get("EchoTime") == 0.030
+    assert acq.get("EffectiveEchoSpacing") == 0.0005
+    assert "RandomKeyWeShouldIgnore" not in acq
