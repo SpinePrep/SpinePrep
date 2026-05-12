@@ -259,9 +259,17 @@ def _run_syn(
     work_dir: Path,
     out_undistorted: Path,
     policy: dict,
+    bold_space_cord_mask: Optional[Path] = None,
 ) -> dict[str, Any]:
     """Mode = SyN fallback. Light cord-mask-restricted SyN of mean(BOLD)
-    to T2w anat. Spec §S5.4."""
+    to T2w anat. Spec §S5.4.
+
+    Operates entirely in BOLD geometry so the output preserves BOLD shape
+    for downstream consumers (S6+) and reportlets. Anat is resampled into
+    BOLD space with flirt's sform-driven transform, then SyN runs between
+    mean_BOLD (moving) and anat_in_bold (fixed). The warp is applied to
+    the 4D BOLD with BOLD as reference, leaving geometry untouched.
+    """
     work_dir.mkdir(parents=True, exist_ok=True)
 
     # Compute temporal mean BOLD
@@ -275,12 +283,44 @@ def _run_syn(
     nib.save(nib.Nifti1Image(mean_bold.astype(np.float32), bold_img.affine,
                              bold_img.header), mean_path)
 
+    # Resample anat onto BOLD geometry so SyN runs in BOLD space.
+    anat_in_bold = work_dir / "anat_in_bold.nii.gz"
+    ok, out = _run_command([
+        "flirt",
+        "-in", str(anat_path),
+        "-ref", str(mean_path),
+        "-applyxfm", "-usesqform",
+        "-interp", "trilinear",
+        "-out", str(anat_in_bold),
+    ])
+    if not ok:
+        return {"status": "FAIL", "mode": "syn",
+                "failure_message": f"flirt anat->bold failed: {out[:240]}"}
+
+    # Prefer a BOLD-space cord mask. Fall back to resampling the anat-space
+    # cord mask onto BOLD geometry (nearest-neighbour to keep it binary).
+    if bold_space_cord_mask is not None and bold_space_cord_mask.exists():
+        syn_mask = bold_space_cord_mask
+    else:
+        syn_mask = work_dir / "cord_mask_in_bold.nii.gz"
+        ok, out = _run_command([
+            "flirt",
+            "-in", str(cord_mask_path),
+            "-ref", str(mean_path),
+            "-applyxfm", "-usesqform",
+            "-interp", "nearestneighbour",
+            "-out", str(syn_mask),
+        ])
+        if not ok:
+            return {"status": "FAIL", "mode": "syn",
+                    "failure_message": f"flirt mask->bold failed: {out[:240]}"}
+
     syn_cfg = policy.get("distortion_correction", {}).get("syn", {})
     transform = syn_cfg.get("transform", "SyN[0.1,3,0]")
     shrink = syn_cfg.get("shrink", "4x2x1")
     smoothing = syn_cfg.get("smoothing", "2x1x0vox")
     metric_args = (
-        f"MI[{anat_path},{mean_path},1,{syn_cfg.get('bin_count', 32)}]"
+        f"MI[{anat_in_bold},{mean_path},1,{syn_cfg.get('bin_count', 32)}]"
     )
     out_prefix = work_dir / "syn_"
 
@@ -293,7 +333,7 @@ def _run_syn(
         "--convergence", "[40x20x0,1e-6,10]",
         "--shrink-factors", shrink,
         "--smoothing-sigmas", smoothing,
-        "--masks", f"[{cord_mask_path},{cord_mask_path}]",
+        "--masks", f"[{syn_mask},{syn_mask}]",
         "--output", str(out_prefix),
     ])
     ok, out = _run_command(cmd_reg)
@@ -301,13 +341,13 @@ def _run_syn(
         return {"status": "FAIL", "mode": "syn",
                 "failure_message": f"antsRegistration failed: {out[:240]}"}
 
-    # Apply the warp to the 4D BOLD
+    # Apply the warp to the 4D BOLD, keeping BOLD geometry as output grid.
     warp = f"{out_prefix}0Warp.nii.gz"
     cmd_apply = _ants_command([
         "antsApplyTransforms",
         "-d", "3", "-e", "3",
         "-i", str(bold_path),
-        "-r", str(anat_path),
+        "-r", str(mean_path),
         "-t", warp,
         "-o", str(out_undistorted),
         "-n", "LanczosWindowedSinc",
@@ -433,6 +473,23 @@ def run_S5_func_distortion_correction(
 
     s5_work_dir = work_dir / step_code / run_id
 
+    # Locate a BOLD-space cord mask (S3.1's funccrop_mask) — used by SyN and
+    # by the reportlet. The anat-space cord_mask_path from S2 is the wrong
+    # geometry for both. Search local work first, then the chained
+    # workfolder, then the project-relative chain.
+    bold_space_cord_mask = None
+    project_root = out_dir.parent.parent if out_dir.name.startswith("wf_") \
+        else Path.cwd()
+    rel = Path("runs") / "S3_func_init_and_crop" / run_id / "funccrop_mask.nii.gz"
+    for cand in (
+        out_dir / "work" / "S3_func_init_and_crop" / run_id / "funccrop_mask.nii.gz",
+        project_root / "work" / "done" / "reg" / "S3" / rel,
+        Path("work") / "done" / "reg" / "S3" / rel,
+    ):
+        if cand.exists():
+            bold_space_cord_mask = cand
+            break
+
     # Mode selection (orchestrator already passes filtered fmap_runs)
     from .mode import select_mode
     mode, eligible_fmaps = select_mode(bold_run, fmap_runs)
@@ -475,6 +532,7 @@ def run_S5_func_distortion_correction(
             work_dir=s5_work_dir,
             out_undistorted=out_undistorted,
             policy=policy,
+            bold_space_cord_mask=bold_space_cord_mask,
         )
 
     if modeinfo.get("status") != "OK":
@@ -513,7 +571,7 @@ def run_S5_func_distortion_correction(
     mi_summary_path = figures_dir / f"{prefix}_desc-S5_mi_summary.png"
     try:
         render_s5_before_after(
-            bold_path, out_undistorted, cord_mask_path, crop_box_path,
+            bold_path, out_undistorted, bold_space_cord_mask, crop_box_path,
         )
     except Exception as e:
         # Don't fail the whole run on a viz hiccup; status still reflects metrics
