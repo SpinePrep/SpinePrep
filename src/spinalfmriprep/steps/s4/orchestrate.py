@@ -64,10 +64,39 @@ def run_S4(
     if not s3_runs_dir.exists():
         return StepResult("FAIL", f"Missing S3 runs directory: {s3_runs_dir}")
 
-    # Collect all run directories that have the required output
+    # CRITICAL: filter by dataset_key. S3's per-dataset qc.json is the truth
+    # for "this run belongs to dataset X". Without this filter, S4 reprocesses
+    # every run in the (chain-merged) S3 runs directory for every dataset
+    # it is invoked for, inflating the dashboard count and tagging the same
+    # physical run under multiple dataset_keys.
+    s3_qc_path = (
+        out_path / "logs" / "S3_func_init_and_crop" / dataset_key / "qc.json"
+    )
+    allowed_run_ids: Optional[set[str]] = None
+    if s3_qc_path.exists():
+        try:
+            s3_qc = json.loads(s3_qc_path.read_text(encoding="utf-8"))
+            allowed_run_ids = {
+                r["run_id"]
+                for r in s3_qc.get("runs", [])
+                # Only process runs that survived S3 (PASS or WARN). FAIL
+                # means S3 dropped them (e.g. via the S3.1 drift gate).
+                if r.get("run_id") and r.get("status") != "FAIL"
+            }
+            logger.info(
+                f"S4 dataset_key={dataset_key}: S3 qc.json restricts to "
+                f"{len(allowed_run_ids)} run_ids"
+            )
+        except Exception as e:
+            logger.warning(f"Could not read S3 qc.json at {s3_qc_path}: {e}")
+
+    # Collect run directories: must exist, must have funccrop_bold, and (when
+    # an S3-qc restriction exists) must belong to this dataset.
     runs_to_process = []
     for run_dir in sorted(s3_runs_dir.iterdir()):
         if not run_dir.is_dir():
+            continue
+        if allowed_run_ids is not None and run_dir.name not in allowed_run_ids:
             continue
         bold_path = run_dir / "funccrop_bold.nii.gz"
         if bold_path.exists():
