@@ -1,0 +1,15 @@
+[Unit]
+Description=SpinalfMRIprep QC Dashboard (port 9002)
+After=network.target
+
+[Service]
+Type=simple
+User=kiomars
+WorkingDirectory=/mnt/ssd1/SpinalfMRIprep
+Environment=SFMRI_WORK_ROOT=/mnt/ssd1/SpinalfMRIprep/work
+ExecStart=/home/kiomars/.cache/pypoetry/virtualenvs/spinalfmriprep-amBcnVRj-py3.12/bin/uvicorn spinalfmriprep.dashboard_server:app --host 127.0.0.1 --port 9002
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
