@@ -7,6 +7,7 @@ Scans QC JSON files and generates HTML dashboard with reportlet galleries.
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -132,6 +133,10 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
     # Also scan subdirectories: <DATASET_KEY>/logs/<STEP>_qc.json or <DATASET_KEY>/logs/<STEP>/<DATASET>/qc.json
     qc_files: list[tuple[Path, str, str, Path]] = []  # (qc_path, step_code, dataset_key, base_dir_for_paths)
 
+    # Track dangling chain symlinks so we can surface them as warnings instead
+    # of silently skipping upstream step cards.
+    dangling_chain_links: list[str] = []
+
     # Scan each directory (out_dir + chain_done_dirs)
     for scan_dir in dirs_to_scan:
         # First, scan top-level logs directory
@@ -139,6 +144,14 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
         if logs_dir.exists():
             # New structure: logs/<STEP>/<DATASET>/qc.json
             for step_dir in logs_dir.iterdir():
+                # Loud warning when an S{N}_* chain symlink fails to resolve - that
+                # silently hides an entire upstream step from the dashboard otherwise.
+                if step_dir.is_symlink() and not step_dir.exists():
+                    if step_dir.name.startswith("S") and "_" in step_dir.name:
+                        dangling_chain_links.append(
+                            f"{step_dir} -> {os.readlink(step_dir)} (target missing)"
+                        )
+                    continue
                 if not step_dir.is_dir():
                     continue
                 # Skip evidence bundles (internal debugging, not for dashboard display)
@@ -225,7 +238,7 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
         return DashboardResult(
             indexed_qc_files=0,
             dashboard_dir=dashboard_dir,
-            errors=[],
+            errors=[f"Dangling chain symlink: {d}" for d in dangling_chain_links],
         )
 
     # Collect QC data: step -> dataset -> runs -> reportlets
@@ -314,6 +327,9 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
             _generate_reportlet_gallery_html(
                 dashboard_dir, step_code, reportlet_key, images, workfolder_name
             )
+
+    for d in dangling_chain_links:
+        errors.append(f"Dangling chain symlink: {d}")
 
     return DashboardResult(
         indexed_qc_files=len(qc_files),

@@ -90,6 +90,32 @@ def test_generate_dashboard_without_workfolder(tmp_path: Path) -> None:
     assert "Workfolder: other" not in index_html
 
 
+def test_dangling_chain_symlink_surfaces_as_warning(tmp_path: Path) -> None:
+    """A broken upstream chain symlink must not silently hide a step card.
+
+    Reproduces the bug where wf_reg_032 had a dangling relative symlink to
+    wf_reg_023's logs/S2_anat_cordref, so S2 silently dropped off the
+    dashboard. The fix emits a clear "Dangling chain symlink" warning.
+    """
+    work = tmp_path / "work"
+    wf = work / "wf_smoke_001"
+    wf.mkdir(parents=True)
+    (wf / "logs").mkdir()
+
+    # Real local S3 with a qc.json so the dashboard has something to render
+    s3_qc = wf / "logs" / "S3_func_init_and_crop" / "ds_test" / "qc.json"
+    s3_qc.parent.mkdir(parents=True)
+    s3_qc.write_text(json.dumps({"status": "PASS", "runs": []}), encoding="utf-8")
+
+    # Dangling chain symlink for S2 (points nowhere)
+    (wf / "logs" / "S2_anat_cordref").symlink_to(work / "wf_reg_missing" / "logs" / "S2_anat_cordref")
+
+    res = generate_dashboard(wf)
+
+    assert any("Dangling chain symlink" in e and "S2_anat_cordref" in e for e in res.errors), \
+        f"expected a dangling-chain-symlink warning in res.errors, got: {res.errors}"
+
+
 def test_chain_workfolder_materialises_upstream_reportlets(tmp_path: Path) -> None:
     """A downstream workfolder that symlinks an upstream qc.json gets per-figure
     symlinks created automatically so the dashboard resolves all reportlets."""
