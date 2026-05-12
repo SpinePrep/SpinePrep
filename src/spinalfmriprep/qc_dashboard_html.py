@@ -30,6 +30,10 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "S4_dvars_plot",            # S4 - DVARS timeseries
         "S4_tsnr_comparison",       # S4 - tSNR before/after (THE moco-quality reportlet)
     ],
+    "S5_func_distortion_correction": [
+        "bold_before_after",        # S5 - undistorted BOLD output (v1.0 minimal)
+        "funcref",                  # S5 - post-distortion temporal mean
+    ],
 }
 
 # Human-readable labels for reportlets (matching ROADMAP milestones)
@@ -51,6 +55,10 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "S4_motion_traces": "S4 - Motion Parameter Traces",
         "S4_dvars_plot": "S4 - DVARS Timeseries",
         "S4_tsnr_comparison": "S4 - tSNR Before/After",
+    },
+    "S5_func_distortion_correction": {
+        "bold_before_after": "S5 - Undistorted BOLD",
+        "funcref": "S5 - Undistorted Functional Reference",
     },
 }
 
