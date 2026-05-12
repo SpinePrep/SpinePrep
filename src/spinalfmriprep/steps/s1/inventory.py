@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional
 
 
 def _build_inventory(bids_root: Path, dataset_key: str, policy_entry) -> dict:
@@ -25,18 +26,83 @@ def _build_inventory(bids_root: Path, dataset_key: str, policy_entry) -> dict:
         modality, classification = _classify_path(rel)
         if modality is None:
             continue
-        runs.append(
-            {
-                "path": str(rel),
-                "subject": subject,
-                "session": session,
-                "modality": modality,
-                "classification": classification,
-            }
-        )
+        entry: dict[str, Any] = {
+            "path": str(rel),
+            "subject": subject,
+            "session": session,
+            "modality": modality,
+            "classification": classification,
+        }
+        # For functional BOLD: pull acquisition timing metadata from the BIDS
+        # JSON sidecar so downstream steps can opt into slice-timing correction
+        # (HEADER.md "Slice-timing correction (deliberately skipped in v1)")
+        # without re-parsing BIDS. Missing sidecar is not a failure here -
+        # S1 only collects what's there.
+        if modality == "func" and classification == "cord_likely":
+            meta = _read_bold_sidecar(bids_root, path)
+            if meta:
+                entry["acquisition"] = meta
+        runs.append(entry)
     files.sort(key=lambda x: (x["subject"] or "", x["session"] or "", x["path"]))
     runs.sort(key=lambda x: (x["subject"] or "", x["session"] or "", x["path"]))
     return {"dataset_key": dataset_key, "bids_root": str(bids_root), "files": files, "runs": runs}
+
+
+def _read_bold_sidecar(bids_root: Path, bold_path: Path) -> dict[str, Any]:
+    """Return BIDS acquisition fields relevant to fMRI preprocessing.
+
+    Walks BIDS inheritance: checks the same-directory sidecar first, then
+    each parent directory up to bids_root for a sidecar whose stem matches
+    the BOLD filename's task/run entities. Only extracts a small allowlist
+    of fields so the inventory file stays small.
+    """
+    wanted = {
+        "RepetitionTime",
+        "SliceTiming",
+        "SliceEncodingDirection",
+        "PhaseEncodingDirection",
+        "EffectiveEchoSpacing",
+        "EchoTime",
+        "MultibandAccelerationFactor",
+    }
+    merged: dict[str, Any] = {}
+    # Build the BIDS stem and its progressively-stripped variants. At deeper
+    # ancestor levels, sub-/ses- entities are dropped (a dataset-root sidecar
+    # named "task-rest_bold.json" applies to all sub-XX_task-rest_bold runs).
+    stem = bold_path.name
+    for suffix in (".nii.gz", ".nii"):
+        if stem.endswith(suffix):
+            stem = stem[: -len(suffix)]
+            break
+    stem_no_ses = "_".join(p for p in stem.split("_") if not p.startswith("ses-"))
+    stem_no_sub = "_".join(p for p in stem_no_ses.split("_") if not p.startswith("sub-"))
+
+    # Walk from bold_path.parent up to bids_root. At each level try the most
+    # specific stem first, then stripped variants. Apply in root-down order
+    # so deeper levels override.
+    levels: list[Path] = []
+    cur = bold_path.parent
+    while True:
+        levels.append(cur)
+        if cur == bids_root:
+            break
+        cur = cur.parent
+        if not str(cur).startswith(str(bids_root)):
+            break
+
+    for level in reversed(levels):
+        for candidate_stem in (stem_no_sub, stem_no_ses, stem):
+            cand = level / f"{candidate_stem}.json"
+            if not cand.exists():
+                continue
+            try:
+                data = json.loads(cand.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            for k in wanted:
+                if k in data:
+                    merged[k] = data[k]
+    return merged
 
 
 def _classify_path(rel_path: Path) -> tuple[Optional[str], Optional[str]]:
