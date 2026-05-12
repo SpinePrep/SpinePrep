@@ -76,9 +76,22 @@ def run_S4_func_motion_correction(
     # Use the run_name as a filename prefix for output BIDS naming
     prefix = run_name
 
-    # Moco mask (cord segmentation or crop mask)
+    # Moco mask: must be in the SAME space as the cropped BOLD input passed to
+    # sct_fmri_moco. The non-cropped S3.1 discovery seg (func_ref_fast_seg)
+    # has the FULL EPI dims (e.g. 128x128x12); using it silently produces zero
+    # slice-wise shifts because the SCT-internal mask resample collapses to a
+    # near-empty mask. Prefer the cropped variant; then funccrop_mask; never
+    # the uncropped seg.
+    cord_seg_path_cropped = s3_run_dir / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz"
     cord_seg_path = s3_run_dir / "init" / "localize" / "func_ref_fast_seg.nii.gz"
-    moco_mask_path = cord_seg_path if cord_seg_path.exists() else crop_mask_path
+    if cord_seg_path_cropped.exists():
+        moco_mask_path = cord_seg_path_cropped
+    elif crop_mask_path.exists():
+        moco_mask_path = crop_mask_path
+    else:
+        # Last resort - the uncropped seg. Will warn downstream if shape
+        # doesn't match the BOLD.
+        moco_mask_path = cord_seg_path
 
     # Work and Output setup
     s4_work_dir = work_dir / step_code / run_name
@@ -219,6 +232,19 @@ def run_S4_func_motion_correction(
         sct_mask_path = s4_work_dir / "sct_mask.nii.gz"
         if sct_mask_path.exists(): sct_mask_path.unlink()
         sct_mask_path.symlink_to(moco_mask_path.resolve())
+
+        # Defensive: mask must share the in-plane dims with the input BOLD or
+        # sct_fmri_moco silently returns all-zero shifts. Fail loudly instead.
+        try:
+            _bold_shape = nib.load(current_bold_path).shape[:3]
+            _mask_shape = nib.load(moco_mask_path).shape[:3]
+            if _bold_shape != _mask_shape:
+                msg = (f"Moco mask shape {_mask_shape} != BOLD shape {_bold_shape}. "
+                       f"sct_fmri_moco would emit zero shifts. Mask file: {moco_mask_path}")
+                logger.error(msg)
+                return {"status": "FAIL", "reason": msg}
+        except Exception as _e:
+            logger.warning(f"Could not validate moco mask shape: {_e}")
 
         sct_ref_path = s4_work_dir / "sct_ref.nii.gz"
         if sct_ref_path.exists(): sct_ref_path.unlink()
