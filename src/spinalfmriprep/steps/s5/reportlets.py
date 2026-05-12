@@ -13,33 +13,53 @@ import numpy as np
 
 
 def _slice_montage(
-    vol: np.ndarray, mask: Optional[np.ndarray], n_slices: int = 9
+    vol: np.ndarray, mask: Optional[np.ndarray], n_slices: int = 9,
+    crop_margin_vox: int = 4,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Return (data_montage, mask_montage) as 2D arrays.
 
-    Picks `n_slices` axial slices uniformly within the cord-bearing Z range
-    (or full Z if no mask). Stacks them in a square-ish grid.
+    When a mask is provided, picks `n_slices` slices uniformly across the
+    cord-bearing Z range only, AND in-plane crops to the cord bbox plus
+    `crop_margin_vox` voxels. This focuses the reportlet on the cord region
+    and discards distant FOV (e.g. brain in cospine acquisitions) where
+    distortion correction is expected to be large but irrelevant to cord QC.
+
+    Falls back to full-FOV uniform sampling when no usable mask is given.
     """
     if mask is not None and mask.any():
+        # Cord-bearing Z slices only
         z_idx = np.where(mask.any(axis=(0, 1)))[0]
-        z_pick = np.linspace(z_idx.min(), z_idx.max(), n_slices,
-                             dtype=int)
+        z_pick = np.linspace(z_idx.min(), z_idx.max(),
+                             min(n_slices, max(1, z_idx.size)), dtype=int)
+        # In-plane bbox
+        plane = mask.any(axis=2)
+        coords = np.argwhere(plane)
+        x_min, y_min = coords.min(axis=0)
+        x_max, y_max = coords.max(axis=0)
+        x0 = max(0, x_min - crop_margin_vox)
+        x1 = min(vol.shape[0], x_max + crop_margin_vox + 1)
+        y0 = max(0, y_min - crop_margin_vox)
+        y1 = min(vol.shape[1], y_max + crop_margin_vox + 1)
+        cropped = vol[x0:x1, y0:y1, :]
+        cropped_mask = mask[x0:x1, y0:y1, :]
     else:
         z_pick = np.linspace(0, vol.shape[2] - 1, n_slices, dtype=int)
+        cropped = vol
+        cropped_mask = None
 
-    rows = int(np.ceil(np.sqrt(n_slices)))
-    cols = int(np.ceil(n_slices / rows))
-    # np.rot90 swaps the in-plane axes - the tile shape after rotation is
-    # (original_y, original_x). Use the post-rotation shape for the grid so
-    # broadcast works for non-square slices.
-    th, tw = vol.shape[1], vol.shape[0]
+    rows = int(np.ceil(np.sqrt(len(z_pick))))
+    cols = int(np.ceil(len(z_pick) / rows))
+    # np.rot90 swaps the in-plane axes - use post-rotation shape so the grid
+    # broadcasts for non-square slices.
+    th, tw = cropped.shape[1], cropped.shape[0]
     data_grid = np.zeros((rows * th, cols * tw), dtype=np.float32)
-    mask_grid = np.zeros_like(data_grid, dtype=bool) if mask is not None else None
+    mask_grid = (np.zeros_like(data_grid, dtype=bool)
+                 if cropped_mask is not None else None)
     for i, z in enumerate(z_pick):
         r, c = i // cols, i % cols
-        data_grid[r * th:(r + 1) * th, c * tw:(c + 1) * tw] = np.rot90(vol[:, :, z])
+        data_grid[r * th:(r + 1) * th, c * tw:(c + 1) * tw] = np.rot90(cropped[:, :, z])
         if mask_grid is not None:
-            mask_grid[r * th:(r + 1) * th, c * tw:(c + 1) * tw] = np.rot90(mask[:, :, z]).astype(bool)
+            mask_grid[r * th:(r + 1) * th, c * tw:(c + 1) * tw] = np.rot90(cropped_mask[:, :, z]).astype(bool)
     return data_grid, mask_grid
 
 
