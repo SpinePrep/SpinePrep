@@ -423,10 +423,30 @@ def run_S5_func_distortion_correction(
     mean = data.mean(axis=3) if data.ndim == 4 else data
     nib.save(nib.Nifti1Image(mean.astype(np.float32), img.affine, img.header), mean_path)
 
+    # Render reportlets (PNG figures) per S5 spec §Reportlets
+    figures_dir = func_dir.parent / "figures"
+    figures_dir.mkdir(parents=True, exist_ok=True)
+
+    from .reportlets import render_s5_before_after, render_s5_mi_summary
+
+    crop_box_path = figures_dir / f"{prefix}_desc-S5_crop_box_sagittal.png"
+    mi_summary_path = figures_dir / f"{prefix}_desc-S5_mi_summary.png"
+    try:
+        render_s5_before_after(
+            bold_path, out_undistorted, cord_mask_path, crop_box_path,
+        )
+    except Exception as e:
+        # Don't fail the whole run on a viz hiccup; status still reflects metrics
+        reasons.append(f"reportlet render failed: {e}")
+    try:
+        render_s5_mi_summary(metrics, mi_summary_path, mode)
+    except Exception as e:
+        reasons.append(f"mi summary render failed: {e}")
+
     # qc.json reportlet paths must be RELATIVE to out_dir (HEADER convention)
     reportlets = {
-        "bold_before_after": str(out_undistorted.relative_to(out_dir)),
-        "funcref": str(mean_path.relative_to(out_dir)),
+        "crop_box_sagittal": str(crop_box_path.relative_to(out_dir)),
+        "mi_summary": str(mi_summary_path.relative_to(out_dir)),
     }
 
     qc_metrics_path = s5_work_dir / "qc_metrics.json"

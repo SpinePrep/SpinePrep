@@ -185,3 +185,35 @@ def test_fail_on_large_mi_drop():
     status, _ = _classify_run_status(metrics, "topup",
                                      {"fail_mi_max_drop_pct": 10.0})
     assert status == "FAIL"
+
+
+def test_s5_reportlet_renders_png(tmp_path):
+    """Smoke: render_s5_before_after produces a real PNG."""
+    from spinalfmriprep.steps.s5.reportlets import render_s5_before_after
+
+    shape = (16, 16, 4, 5)
+    rng = np.random.default_rng(0)
+    before = rng.normal(100, 5, shape).astype(np.float32)
+    after = rng.normal(100, 3, shape).astype(np.float32)
+    mask = np.zeros(shape[:3], dtype=np.float32)
+    mask[6:10, 6:10, 1:3] = 1
+    affine = np.eye(4)
+
+    p_before = tmp_path / "before.nii.gz"
+    p_after = tmp_path / "after.nii.gz"
+    p_mask = tmp_path / "mask.nii.gz"
+    nib.save(nib.Nifti1Image(before, affine), p_before)
+    nib.save(nib.Nifti1Image(after, affine), p_after)
+    nib.save(nib.Nifti1Image(mask, affine), p_mask)
+
+    out = tmp_path / "fig.png"
+    render_s5_before_after(p_before, p_after, p_mask, out, n_slices=4)
+    assert out.exists() and out.stat().st_size > 1000
+
+
+def test_s5_mi_summary_render(tmp_path):
+    from spinalfmriprep.steps.s5.reportlets import render_s5_mi_summary
+    out = tmp_path / "mi.png"
+    render_s5_mi_summary({"mi_before": 0.2, "mi_after": 0.25,
+                          "mi_delta_pct": 25.0}, out, "topup")
+    assert out.exists() and out.stat().st_size > 500
