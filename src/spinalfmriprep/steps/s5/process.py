@@ -260,13 +260,14 @@ def _run_syn(
     out_undistorted: Path,
     policy: dict,
     bold_space_cord_mask: Optional[Path] = None,
+    anat_in_bold: Optional[Path] = None,
 ) -> dict[str, Any]:
     """Mode = SyN fallback. Light cord-mask-restricted SyN of mean(BOLD)
     to T2w anat. Spec §S5.4.
 
     Operates entirely in BOLD geometry so the output preserves BOLD shape
-    for downstream consumers (S6+) and reportlets. Anat is resampled into
-    BOLD space with flirt's sform-driven transform, then SyN runs between
+    for downstream consumers (S6+) and reportlets. Caller passes
+    `anat_in_bold` (anat already resampled to BOLD grid); SyN runs with
     mean_BOLD (moving) and anat_in_bold (fixed). The warp is applied to
     the 4D BOLD with BOLD as reference, leaving geometry untouched.
     """
@@ -283,19 +284,9 @@ def _run_syn(
     nib.save(nib.Nifti1Image(mean_bold.astype(np.float32), bold_img.affine,
                              bold_img.header), mean_path)
 
-    # Resample anat onto BOLD geometry so SyN runs in BOLD space.
-    anat_in_bold = work_dir / "anat_in_bold.nii.gz"
-    ok, out = _run_command([
-        "flirt",
-        "-in", str(anat_path),
-        "-ref", str(mean_path),
-        "-applyxfm", "-usesqform",
-        "-interp", "trilinear",
-        "-out", str(anat_in_bold),
-    ])
-    if not ok:
+    if anat_in_bold is None or not Path(anat_in_bold).exists():
         return {"status": "FAIL", "mode": "syn",
-                "failure_message": f"flirt anat->bold failed: {out[:240]}"}
+                "failure_message": "anat_in_bold missing (caller must resample)"}
 
     # Prefer a BOLD-space cord mask. Fall back to resampling the anat-space
     # cord mask onto BOLD geometry (nearest-neighbour to keep it binary).
@@ -389,7 +380,12 @@ def _compute_qc(
     anat_path: Optional[Path],
 ) -> dict[str, Any]:
     """Mutual information before/after, plus voxel-displacement summary
-    when available."""
+    when available.
+
+    `anat_path` must be in the same geometry as the BOLDs (i.e. anat
+    already resampled to BOLD space — produced once by the caller). When
+    shapes still mismatch we skip MI rather than report a garbage value.
+    """
     a = nib.load(bold_before).get_fdata()
     b = nib.load(bold_after).get_fdata()
     mean_a = a.mean(axis=3) if a.ndim == 4 else a
@@ -401,10 +397,6 @@ def _compute_qc(
     }
     if anat_path is not None and Path(anat_path).exists():
         anat = nib.load(anat_path).get_fdata()
-        # MI vs anat is the headline number for "did distortion correction
-        # bring BOLD closer to anatomy?". Resample anat is expensive; we
-        # use min-shape voxels and trust the affine is close enough
-        # (since anat and BOLD share native space at this stage).
         if anat.shape == mean_a.shape:
             metrics["mi_before"] = _mutual_information(mean_a, anat)
             metrics["mi_after"] = _mutual_information(mean_b, anat)
@@ -472,6 +464,7 @@ def run_S5_func_distortion_correction(
     out_undistorted = func_dir / f"{prefix}_desc-undistorted_bold.nii.gz"
 
     s5_work_dir = work_dir / step_code / run_id
+    s5_work_dir.mkdir(parents=True, exist_ok=True)
 
     # Locate a BOLD-space cord mask (S3.1's funccrop_mask) — used by SyN and
     # by the reportlet. The anat-space cord_mask_path from S2 is the wrong
@@ -489,6 +482,31 @@ def run_S5_func_distortion_correction(
         if cand.exists():
             bold_space_cord_mask = cand
             break
+
+    # Resample anat into BOLD geometry once — both SyN (fixed image) and the
+    # QC MI metric need them in the same grid. Without this, _compute_qc
+    # falls through the anat.shape == mean.shape gate and reports
+    # "MI not computed" on every run. flirt -applyxfm -usesqform uses the
+    # sform/qform to compute the rigid mapping, then resamples (cheap).
+    anat_in_bold: Optional[Path] = None
+    if anat_path is not None and Path(anat_path).exists():
+        bold_mean_ref = s5_work_dir / "bold_mean_ref.nii.gz"
+        bimg = nib.load(bold_path)
+        bdat = bimg.get_fdata()
+        bmean = bdat.mean(axis=3) if bdat.ndim == 4 else bdat
+        nib.save(nib.Nifti1Image(bmean.astype(np.float32), bimg.affine,
+                                 bimg.header), bold_mean_ref)
+        anat_resampled = s5_work_dir / "anat_in_bold.nii.gz"
+        ok, _ = _run_command([
+            "flirt",
+            "-in", str(anat_path),
+            "-ref", str(bold_mean_ref),
+            "-applyxfm", "-usesqform",
+            "-interp", "trilinear",
+            "-out", str(anat_resampled),
+        ])
+        if ok and anat_resampled.exists():
+            anat_in_bold = anat_resampled
 
     # Mode selection (orchestrator already passes filtered fmap_runs)
     from .mode import select_mode
@@ -533,6 +551,7 @@ def run_S5_func_distortion_correction(
             out_undistorted=out_undistorted,
             policy=policy,
             bold_space_cord_mask=bold_space_cord_mask,
+            anat_in_bold=anat_in_bold,
         )
 
     if modeinfo.get("status") != "OK":
@@ -549,8 +568,11 @@ def run_S5_func_distortion_correction(
             "reportlets": {},
         }
 
-    # QC metrics
-    metrics = _compute_qc(bold_path, out_undistorted, anat_path)
+    # QC metrics. Use anat_in_bold so MI compares matched-geometry volumes;
+    # fall back to anat_path only as a defensive last resort (which will
+    # short-circuit inside _compute_qc on the shape check, as before).
+    qc_anat = anat_in_bold if anat_in_bold is not None else anat_path
+    metrics = _compute_qc(bold_path, out_undistorted, qc_anat)
     thresholds = policy.get("qc_thresholds", {})
     status, reasons = _classify_run_status(metrics, mode, thresholds)
 
