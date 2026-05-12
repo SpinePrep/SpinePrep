@@ -134,6 +134,50 @@ def test_metrics_fd():
     
     # Frame 2: diff tx=0, ty=1 -> abs sum = 1
     assert fd[2] == 1.0
-    
+
     # Frame 3: diff tx=-1, ty=-1 -> abs sum = 2
     assert fd[3] == 2.0
+
+
+def test_render_moco_axial_comparison_produces_png(tmp_path):
+    """Smoke test: synthetic 4D BOLD pair -> writes a PNG with rows for each
+    cord-bearing slice and two columns (before/after)."""
+    import nibabel as nib
+    from PIL import Image
+
+    from spinalfmriprep.lib.viz_s4 import render_moco_axial_comparison
+
+    shape4d = (32, 32, 6, 10)
+    rng = np.random.default_rng(0)
+    bold_before = rng.normal(100.0, 5.0, size=shape4d).astype(np.float32)
+    bold_after = rng.normal(100.0, 2.0, size=shape4d).astype(np.float32)
+
+    mask = np.zeros(shape4d[:3], dtype=np.float32)
+    mask[12:20, 12:20, 1:5] = 1  # 4 cord-bearing Z slices
+    affine = np.eye(4)
+
+    before_path = tmp_path / "bold_before.nii.gz"
+    after_path = tmp_path / "bold_after.nii.gz"
+    mask_path = tmp_path / "mask.nii.gz"
+    nib.save(nib.Nifti1Image(bold_before, affine), before_path)
+    nib.save(nib.Nifti1Image(bold_after, affine), after_path)
+    nib.save(nib.Nifti1Image(mask, affine), mask_path)
+
+    output_path = tmp_path / "moco_comparison.png"
+    render_moco_axial_comparison(
+        before_path,
+        after_path,
+        output_path,
+        mask_path=mask_path,
+        mask_data=mask,
+        max_slices=12,
+        show_mask_contour=True,
+        margin_mm=2.0,
+    )
+
+    assert output_path.exists()
+    img = Image.open(output_path)
+    # Two columns of tiles + label column should be wider than ~500 px
+    assert img.size[0] > 500
+    # Header + 4 slice rows -> taller than ~200 px
+    assert img.size[1] > 200
