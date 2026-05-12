@@ -29,20 +29,40 @@ _BIDS_PE_TO_ACQPARAMS = {
 }
 
 
-def _trt_for(run: dict) -> Optional[float]:
+def _trt_for(run: dict, bids_root: Optional[Path] = None) -> Optional[float]:
     """Pull TotalReadoutTime from S1 acquisition dict. Fallback: compute
-    from EES x (ReconMatrixPE - 1). Returns None when neither path works.
+    from EES x (ReconMatrixPE - 1). Last resort: open the BIDS JSON sidecar
+    directly (for old S1 inventories that pre-date the A5 fmap-extraction).
+    Returns None when no source works.
 
     BIDS records TRT as the unaccelerated-equivalent readout time -
     DO NOT divide by ParallelReductionFactorInPlane. (See S5 spec.)
     """
     acq = run.get("acquisition", {}) if isinstance(run, dict) else {}
-    if "TotalReadoutTime" in acq:
+    if isinstance(acq, dict) and "TotalReadoutTime" in acq:
         return float(acq["TotalReadoutTime"])
-    ees = acq.get("EffectiveEchoSpacing")
-    matrix_pe = acq.get("ReconMatrixPE") or acq.get("AcquisitionMatrixPE")
-    if ees is not None and matrix_pe is not None:
-        return float(ees) * (int(matrix_pe) - 1)
+    if isinstance(acq, dict):
+        ees = acq.get("EffectiveEchoSpacing")
+        matrix_pe = acq.get("ReconMatrixPE") or acq.get("AcquisitionMatrixPE")
+        if ees is not None and matrix_pe is not None:
+            return float(ees) * (int(matrix_pe) - 1)
+    # Last resort: parse the BIDS sidecar of this run from disk
+    if bids_root is not None and run.get("path"):
+        bids_path = Path(bids_root) / run["path"]
+        sidecar = bids_path.with_name(
+            bids_path.name.replace(".nii.gz", ".json").replace(".nii", ".json")
+        )
+        if sidecar.exists():
+            try:
+                d = json.loads(sidecar.read_text())
+                if "TotalReadoutTime" in d:
+                    return float(d["TotalReadoutTime"])
+                ees = d.get("EffectiveEchoSpacing")
+                matrix_pe = d.get("ReconMatrixPE") or d.get("AcquisitionMatrixPE")
+                if ees is not None and matrix_pe is not None:
+                    return float(ees) * (int(matrix_pe) - 1)
+            except Exception:
+                pass
     return None
 
 
@@ -108,18 +128,46 @@ def _run_topup(
     applytopup to the BOLD."""
     work_dir.mkdir(parents=True, exist_ok=True)
 
-    # Resolve TRT from any of the fmap runs (they share it with BOLD)
-    trt = _trt_for(fmap_runs[0]) or _trt_for(bold_run)
+    # Resolve TRT from any of the fmap runs (they share it with BOLD).
+    # If S1 inventory predates the A5 commit, the acquisition dict will be
+    # absent; falls through to reading the BIDS sidecar directly.
+    trt = (_trt_for(fmap_runs[0], bids_root)
+           or _trt_for(bold_run, bids_root))
     if trt is None:
         return {"status": "FAIL", "mode": "topup",
                 "failure_message": "TotalReadoutTime not in BIDS sidecar"}
 
+    from .mode import _pe_from_run
     fmap_paths = [bids_root / f["path"] for f in fmap_runs]
-    fmap_pes = [f.get("acquisition", {}).get("PhaseEncodingDirection")
-                for f in fmap_runs]
+    fmap_pes = [_pe_from_run(f) for f in fmap_runs]
+    if any(pe is None for pe in fmap_pes):
+        return {"status": "FAIL", "mode": "topup",
+                "failure_message": "could not resolve PE direction for one of the fmaps"}
+
+    # Resample each fmap onto the BOLD's geometry (typically S3-cropped, ~30x30
+    # voxels). applytopup does NOT auto-resample, and topup must be estimated in
+    # the same space as the BOLD it will unwarp. flirt -applyxfm -usesqform uses
+    # the NIfTI sform/qform to figure out the rigid transform from fmap-space
+    # to BOLD-space, then resamples. Cheap (single 3D resample per fmap).
+    resampled_fmaps: list[Path] = []
+    for i, fp in enumerate(fmap_paths):
+        out_r = work_dir / f"fmap_{i:02d}_in_bold.nii.gz"
+        cmd = [
+            "flirt",
+            "-in", str(fp),
+            "-ref", str(bold_path),
+            "-applyxfm", "-usesqform",
+            "-interp", "trilinear",
+            "-out", str(out_r),
+        ]
+        ok, out = _run_command(cmd)
+        if not ok:
+            return {"status": "FAIL", "mode": "topup",
+                    "failure_message": f"flirt resample fmap[{i}] failed: {out[:200]}"}
+        resampled_fmaps.append(out_r)
 
     merged = work_dir / "fmap_merged.nii.gz"
-    _merge_epi_fmaps(merged, fmap_paths)
+    _merge_epi_fmaps(merged, resampled_fmaps)
 
     acqparams = work_dir / "acqparams.txt"
     _write_acqparams(acqparams, fmap_pes, trt)
@@ -140,7 +188,7 @@ def _run_topup(
         return {"status": "FAIL", "mode": "topup",
                 "failure_message": f"topup failed: {out[:240]}"}
 
-    bold_pe = bold_run.get("acquisition", {}).get("PhaseEncodingDirection")
+    bold_pe = _pe_from_run(bold_run) or "j"  # safe default for cervical EPI
     inindex = _bold_pe_index_in_acqparams(bold_pe, fmap_pes)
     apply_method = policy.get("distortion_correction", {}).get(
         "topup", {}).get("apply_method", "jac")
