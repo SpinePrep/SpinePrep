@@ -31,8 +31,8 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "S4_tsnr_comparison",       # S4 - tSNR before/after (THE moco-quality reportlet)
     ],
     "S5_func_distortion_correction": [
-        "bold_before_after",        # S5 - undistorted BOLD output (v1.0 minimal)
-        "funcref",                  # S5 - post-distortion temporal mean
+        "crop_box_sagittal",        # S5 - axial montage, before/after with cord contour
+        "mi_summary",               # S5 - mutual info before/after bar
     ],
 }
 
@@ -57,8 +57,8 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "S4_tsnr_comparison": "S4 - tSNR Before/After",
     },
     "S5_func_distortion_correction": {
-        "bold_before_after": "S5 - Undistorted BOLD",
-        "funcref": "S5 - Undistorted Functional Reference",
+        "crop_box_sagittal": "S5 - Before/After Axial Montage",
+        "mi_summary": "S5 - Mutual Information Before/After",
     },
 }
 
