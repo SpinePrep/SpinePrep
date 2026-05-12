@@ -184,27 +184,6 @@ def _render_s3_1_simple_func_with_mask(
                  width=1
              )
 
-        # Drift-gate banner: when the run was rejected, stamp the reason on
-        # top of the figure so the dashboard reportlet shows *why* at a glance.
-        if drift_gate and drift_gate.get("status") == "FAIL":
-            reason = drift_gate.get("reason", "drift gate failed")
-            w, h = img.size
-            banner_h = max(24, h // 16)
-            banner = Image.new("RGBA", (w, banner_h), (180, 28, 28, 230))
-            font = _load_font(max(11, banner_h - 8))
-            text = f"REJECTED  {reason}"
-            # Truncate if too wide for the banner; favour the head of the reason.
-            draw = ImageDraw.Draw(banner)
-            while draw.textlength(text, font=font) > w - 12 and len(text) > 20:
-                text = text[:-2]
-            draw.text((6, max(2, (banner_h - font.size) // 2)), text,
-                      fill=(255, 255, 255, 255), font=font)
-            # Stack: banner on top, original figure below.
-            stacked = Image.new("RGBA", (w, h + banner_h), (0, 0, 0, 255))
-            stacked.paste(banner, (0, 0))
-            stacked.paste(img, (0, banner_h))
-            img = stacked
-
         # Convert back to RGB for saving
         img = img.convert("RGB")
 
@@ -238,9 +217,32 @@ def _render_s3_1_simple_func_with_mask(
         if ppm_path.exists():
             ppm_path.unlink()
 
-        if ok and output_path.exists():
-            return output_path
-        return None
+        if not (ok and output_path.exists()):
+            return None
+
+        # Drift-gate banner. Drawn AFTER the ImageMagick resize so the font and
+        # banner height are sized relative to the final 1200-px image, not the
+        # tiny pre-resize buffer (which would get scaled ~18x along with the
+        # figure).
+        if drift_gate and drift_gate.get("status") == "FAIL":
+            with Image.open(output_path) as base:
+                base_rgb = base.convert("RGB")
+            w, h = base_rgb.size
+            banner_h = 36
+            font_size = 18
+            font = _load_font(font_size)
+            text = f"REJECTED  {drift_gate.get('reason', 'drift gate failed')}"
+            measure = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+            while measure.textlength(text, font=font) > w - 16 and len(text) > 20:
+                text = text[:-2]
+            stacked = Image.new("RGB", (w, h + banner_h), (180, 28, 28))
+            d = ImageDraw.Draw(stacked)
+            d.text((8, (banner_h - font_size) // 2 - 1), text,
+                   fill=(255, 255, 255), font=font)
+            stacked.paste(base_rgb, (0, banner_h))
+            stacked.save(output_path)
+
+        return output_path
 
     except Exception as e:
         pass  # S3.1 figure render error
