@@ -217,3 +217,21 @@ def test_s5_mi_summary_render(tmp_path):
     render_s5_mi_summary({"mi_before": 0.2, "mi_after": 0.25,
                           "mi_delta_pct": 25.0}, out, "topup")
     assert out.exists() and out.stat().st_size > 500
+
+
+def test_s5_reportlet_handles_non_square_slices(tmp_path):
+    """Regression for the smoke-test shape bug: np.rot90 swaps axes, so
+    the grid must use post-rotation shape (h=Y_in, w=X_in)."""
+    from spinalfmriprep.steps.s5.reportlets import render_s5_before_after
+    # Non-square in-plane (30, 33) like the cospine_motor cropped BOLD
+    shape = (30, 33, 5, 4)
+    rng = np.random.default_rng(1)
+    before = rng.normal(100, 5, shape).astype(np.float32)
+    after = rng.normal(100, 3, shape).astype(np.float32)
+    affine = np.eye(4)
+    p_b = tmp_path / "b.nii.gz"; p_a = tmp_path / "a.nii.gz"
+    nib.save(nib.Nifti1Image(before, affine), p_b)
+    nib.save(nib.Nifti1Image(after, affine), p_a)
+    out = tmp_path / "fig.png"
+    render_s5_before_after(p_b, p_a, None, out, n_slices=4)
+    assert out.exists() and out.stat().st_size > 1000

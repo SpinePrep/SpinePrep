@@ -24,6 +24,32 @@ def _opposite_pe(pe_a: Optional[str], pe_b: Optional[str]) -> bool:
     return pe_a.endswith("-") != pe_b.endswith("-")
 
 
+def _pe_from_run(run: dict) -> Optional[str]:
+    """Pull PhaseEncodingDirection from the run's acquisition dict if S1
+    extracted it (post-A5 commit); else fall back to the BIDS `dir-`
+    filename entity. dir-AP -> j-, dir-PA -> j (standard cervical EPI
+    convention; LR/RL not used in our v1_validation set)."""
+    acq = run.get("acquisition") or {}
+    pe = acq.get("PhaseEncodingDirection") if isinstance(acq, dict) else None
+    if pe:
+        return pe
+    # Fall back to the BIDS `dir-XX` entity in the filename
+    path = run.get("path", "").lower()
+    import re
+    m = re.search(r"_dir-([a-z]+)_", path)
+    if not m:
+        return None
+    label = m.group(1)
+    return {
+        "ap": "j-",
+        "pa": "j",
+        "lr": "i-",
+        "rl": "i",
+        "is": "k-",
+        "si": "k",
+    }.get(label)
+
+
 def _intended_for_matches(fmap_run: dict, bold_relpath: str) -> bool:
     """True if the fmap's IntendedFor field (a string or list of strings,
     relative to subject dir per BIDS) points at this BOLD run.
@@ -78,9 +104,17 @@ def select_mode(
     ]
     for i in range(len(epi_fmaps)):
         for j in range(i + 1, len(epi_fmaps)):
-            pe_i = epi_fmaps[i].get("acquisition", {}).get("PhaseEncodingDirection")
-            pe_j = epi_fmaps[j].get("acquisition", {}).get("PhaseEncodingDirection")
+            pe_i = _pe_from_run(epi_fmaps[i])
+            pe_j = _pe_from_run(epi_fmaps[j])
             if _opposite_pe(pe_i, pe_j):
+                # Ensure each fmap has a usable PE recorded for downstream
+                # writers (acqparams.txt)
+                for ent, pe in ((epi_fmaps[i], pe_i), (epi_fmaps[j], pe_j)):
+                    acq = ent.setdefault("acquisition", {}) or {}
+                    if not isinstance(acq, dict):
+                        acq = {}
+                        ent["acquisition"] = acq
+                    acq.setdefault("PhaseEncodingDirection", pe)
                 return "topup", [epi_fmaps[i], epi_fmaps[j]]
 
     # Fugue: a GRE phasediff (or phase1+phase2) + magnitude pair.

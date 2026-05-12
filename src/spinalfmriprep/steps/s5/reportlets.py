@@ -29,14 +29,17 @@ def _slice_montage(
 
     rows = int(np.ceil(np.sqrt(n_slices)))
     cols = int(np.ceil(n_slices / rows))
-    h, w = vol.shape[0], vol.shape[1]
-    data_grid = np.zeros((rows * h, cols * w), dtype=np.float32)
+    # np.rot90 swaps the in-plane axes - the tile shape after rotation is
+    # (original_y, original_x). Use the post-rotation shape for the grid so
+    # broadcast works for non-square slices.
+    th, tw = vol.shape[1], vol.shape[0]
+    data_grid = np.zeros((rows * th, cols * tw), dtype=np.float32)
     mask_grid = np.zeros_like(data_grid, dtype=bool) if mask is not None else None
     for i, z in enumerate(z_pick):
         r, c = i // cols, i % cols
-        data_grid[r * h:(r + 1) * h, c * w:(c + 1) * w] = np.rot90(vol[:, :, z])
+        data_grid[r * th:(r + 1) * th, c * tw:(c + 1) * tw] = np.rot90(vol[:, :, z])
         if mask_grid is not None:
-            mask_grid[r * h:(r + 1) * h, c * w:(c + 1) * w] = np.rot90(mask[:, :, z]).astype(bool)
+            mask_grid[r * th:(r + 1) * th, c * tw:(c + 1) * tw] = np.rot90(mask[:, :, z]).astype(bool)
     return data_grid, mask_grid
 
 

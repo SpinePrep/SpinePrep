@@ -6,9 +6,12 @@ distortion_correction:
   prefer_mode: "auto"             # auto | topup | fugue | syn (forces a mode)
 
   topup:
-    # FSL default config for B0 maps with two-direction PE - most-tested
-    # for blip-up/blip-down BOLD. Policy-overrideable.
-    config: "b02b0.cnf"
+    # b02b0_1.cnf uses subsamp=1 throughout. We need this because the
+    # cord-cropped BOLD (and the resampled fmaps) typically have odd
+    # in-plane / Z dimensions (e.g. 30x33x35), which the default
+    # b02b0.cnf rejects (its subsamp=2 first-iteration step requires
+    # even dims). FSL ships b02b0_1.cnf as the tolerance config.
+    config: "b02b0_1.cnf"
     apply_method: "jac"           # jac | lsr (jac matches fMRIPrep default)
 
   fugue:
