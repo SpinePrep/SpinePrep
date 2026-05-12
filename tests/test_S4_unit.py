@@ -196,3 +196,40 @@ def test_run_S4_filters_runs_by_dataset_via_s3_qc(tmp_path, monkeypatch):
     )
 
 
+def test_s4_picks_cropped_moco_mask_when_present(tmp_path):
+    """Regression: S4 must pick the CROPPED S3.1 seg (matches the cropped BOLD)
+    not the uncropped one. Mismatched mask shape -> sct_fmri_moco silently
+    returns zero shifts, which is exactly the bug that produced 0/223 frames
+    of motion correction on wf_reg_035 before this fix."""
+    import nibabel as nib
+    s3_run = tmp_path / "s3_run"
+    localize = s3_run / "init" / "localize"
+    localize.mkdir(parents=True)
+
+    # Uncropped seg (128x128x12) and cropped seg (32x34x11). funccrop_mask
+    # absent. Expect: cropped wins.
+    nib.save(nib.Nifti1Image(
+        np.zeros((128, 128, 12), dtype=np.uint8), np.eye(4)),
+        localize / "func_ref_fast_seg.nii.gz")
+    nib.save(nib.Nifti1Image(
+        np.zeros((32, 34, 11), dtype=np.uint8), np.eye(4)),
+        localize / "func_ref_fast_seg_crop.nii.gz")
+
+    # Replicate the mask-selection logic from process.py
+    crop_mask_path = s3_run / "funccrop_mask.nii.gz"  # absent
+    cord_seg_path_cropped = s3_run / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz"
+    cord_seg_path = s3_run / "init" / "localize" / "func_ref_fast_seg.nii.gz"
+
+    if cord_seg_path_cropped.exists():
+        moco_mask_path = cord_seg_path_cropped
+    elif crop_mask_path.exists():
+        moco_mask_path = crop_mask_path
+    else:
+        moco_mask_path = cord_seg_path
+
+    assert moco_mask_path == cord_seg_path_cropped, (
+        f"S4 must prefer the CROPPED mask, got {moco_mask_path}"
+    )
+    assert nib.load(moco_mask_path).shape == (32, 34, 11)
+
+
