@@ -391,13 +391,19 @@ def _generate_reportlet_gallery_html(
 
 
 def _relpath(target: Path, base: Path) -> str:
-    """Compute relative path from base to target."""
+    """Compute relative path from base to target by pure path arithmetic.
+
+    Must NOT follow symlinks - chain reportlets are materialised as symlinks
+    inside the workfolder and the browser URL needs to address them at their
+    in-workfolder path, not at their resolved location in the upstream
+    workfolder.
+    """
     try:
         return str(target.relative_to(base))
     except ValueError:
-        # Fallback: compute manually
-        target_parts = target.resolve().parts
-        base_parts = base.resolve().parts
+        # Fallback: use absolute (NOT resolved) parts so symlinks stay symbolic
+        target_parts = target.absolute().parts
+        base_parts = base.absolute().parts
 
         # Find common prefix
         common_len = 0
