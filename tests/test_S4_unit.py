@@ -177,6 +177,63 @@ def test_render_moco_axial_comparison_static_png(tmp_path):
     assert img.size[1] > 200
 
 
+def test_run_S4_filters_runs_by_dataset_via_s3_qc(tmp_path, monkeypatch):
+    """Regression: S4 must process only the runs S3 attributes to its
+    dataset_key. Without the filter, batching across N datasets ends up
+    re-processing every shared run N times and the dashboard inflates."""
+    import json
+    from unittest.mock import MagicMock
+
+    out = tmp_path / "wf"
+    s3_runs = out / "runs" / "S3_func_init_and_crop"
+    s3_runs.mkdir(parents=True)
+
+    # Three S3 run directories on disk, only one of which belongs to ds_A
+    for rid in ("sub-01_task-pain", "sub-02_task-motor", "sub-99_task-rest"):
+        d = s3_runs / rid
+        d.mkdir()
+        (d / "funccrop_bold.nii.gz").write_bytes(b"stub")
+
+    # S3 per-dataset qc.json declares only sub-01_task-pain for ds_A
+    s3_qc_dir = out / "logs" / "S3_func_init_and_crop" / "ds_A"
+    s3_qc_dir.mkdir(parents=True)
+    (s3_qc_dir / "qc.json").write_text(json.dumps({
+        "dataset_key": "ds_A",
+        "runs": [
+            {"run_id": "sub-01_task-pain", "status": "PASS"},
+            {"run_id": "sub-99_task-rest", "status": "FAIL"},  # explicitly excluded
+        ],
+    }))
+
+    # Avoid touching the real ProcessPoolExecutor / processing
+    from spinalfmriprep.steps.s4 import orchestrate as orch
+
+    seen = []
+    def fake_run(*, s3_run_dir, **kwargs):
+        seen.append(s3_run_dir.name)
+        return {"status": "PASS", "run_id": s3_run_dir.name}
+
+    monkeypatch.setattr(orch, "run_S4_func_motion_correction", fake_run)
+
+    class _DummyFuture:
+        def __init__(self, val): self._val = val
+        def result(self): return self._val
+    class _DummyExecutor:
+        def __init__(self, *a, **kw): pass
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def submit(self, fn, **kw):
+            return _DummyFuture(fn(**kw))
+    monkeypatch.setattr(orch, "ProcessPoolExecutor", _DummyExecutor)
+    monkeypatch.setattr(orch, "as_completed", lambda futures: list(futures))
+
+    res = orch.run_S4(dataset_key="ds_A", out=str(out))
+    assert res.status == "PASS"
+    assert seen == ["sub-01_task-pain"], (
+        f"expected S4 to process only the run S3 attributes to ds_A, got {seen}"
+    )
+
+
 def test_render_moco_axial_comparison_animated_gif(tmp_path):
     """animate=True -> multi-frame GIF cycling through timepoints."""
     from PIL import Image
