@@ -33,12 +33,15 @@ def _build_inventory(bids_root: Path, dataset_key: str, policy_entry) -> dict:
             "modality": modality,
             "classification": classification,
         }
-        # For functional BOLD: pull acquisition timing metadata from the BIDS
-        # JSON sidecar so downstream steps can opt into slice-timing correction
-        # (HEADER.md "Slice-timing correction (deliberately skipped in v1)")
-        # without re-parsing BIDS. Missing sidecar is not a failure here -
-        # S1 only collects what's there.
-        if modality == "func" and classification == "cord_likely":
+        # Pull acquisition timing/distortion metadata from BIDS sidecars so
+        # downstream steps don't have to re-parse BIDS. Applies to both
+        # functional BOLD (for STC / motion / S5 SyN fallback eligibility) and
+        # fmap volumes (S5 topup/fugue input). HEADER.md "Slice-timing
+        # correction (deliberately skipped in v1)" + S5 spec rely on this.
+        if (
+            (modality == "func" and classification == "cord_likely")
+            or modality == "fmap"
+        ):
             meta = _read_bold_sidecar(bids_root, path)
             if meta:
                 entry["acquisition"] = meta
@@ -62,8 +65,13 @@ def _read_bold_sidecar(bids_root: Path, bold_path: Path) -> dict[str, Any]:
         "SliceEncodingDirection",
         "PhaseEncodingDirection",
         "EffectiveEchoSpacing",
+        "TotalReadoutTime",            # primary input for FSL topup acqparams
+        "ParallelReductionFactorInPlane",
+        "PartialFourier",
         "EchoTime",
         "MultibandAccelerationFactor",
+        "AcquisitionMatrixPE",
+        "ReconMatrixPE",
     }
     merged: dict[str, Any] = {}
     # Build the BIDS stem and its progressively-stripped variants. At deeper
