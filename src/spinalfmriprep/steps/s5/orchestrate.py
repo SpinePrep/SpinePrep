@@ -54,33 +54,67 @@ def _load_s1_inventory(out_path: Path, dataset_key: str) -> dict:
         return {}
 
 
-def _find_anat_for(subject: str, session: Optional[str], out_path: Path) -> Optional[Path]:
+def _anat_search_roots(
+    subject: str, session: Optional[str],
+    out_path: Path, dataset_key: str,
+) -> list[Path]:
+    """Where to look for S2 anat outputs. S2 stores anat under varying
+    layouts (with/without dataset_key prefix, with/without session) and
+    typically under a different workfolder than S4's derivatives chain.
+    Walk both the current workfolder AND the S2 chain done dir."""
+    roots: list[Path] = []
+    # Try the current workfolder first (in case S2 ran in-place or was
+    # symlinked into derivatives)
+    bases = [out_path]
+    # Also the S2 chain target
+    s2_done = out_path / "work" / "done" / "reg" / "S2"
+    # Fallback: project-relative work/done
+    project_done = Path("work") / "done" / "reg" / "S2"
+    for cand in (s2_done, project_done, out_path.parent / "done" / "reg" / "S2"):
+        if cand.exists():
+            try:
+                bases.append(cand.resolve())
+            except Exception:
+                pass
+
+    ses_part = f"ses-{session}/" if session else ""
+    for base in bases:
+        # Layout A: derivatives/spinalfmriprep/<dataset_key>/sub-XX/[ses-YY]/anat/
+        roots.append(base / "derivatives" / "spinalfmriprep" / dataset_key
+                     / f"sub-{subject}" / (f"ses-{session}" if session else "") / "anat")
+        # Layout B: derivatives/spinalfmriprep/sub-XX/[ses-YY]/anat/
+        roots.append(base / "derivatives" / "spinalfmriprep"
+                     / f"sub-{subject}" / (f"ses-{session}" if session else "") / "anat")
+    return [r for r in roots if r.exists()]
+
+
+def _find_anat_for(
+    subject: str, session: Optional[str],
+    out_path: Path, dataset_key: str = "",
+) -> Optional[Path]:
     """Best-effort lookup of the S2 anat (T2w preferred) for a subject."""
-    base = out_path / "derivatives" / "spinalfmriprep" / f"sub-{subject}"
-    if session:
-        base = base / f"ses-{session}"
-    anat = base / "anat"
-    if not anat.exists():
-        return None
-    # Prefer T2w over T1w (PAM50 is T2-based)
-    for pat in ("*_T2w.nii.gz", "*_T1w.nii.gz", "*_desc-cordref*.nii.gz"):
-        hits = sorted(anat.glob(pat))
-        if hits:
-            return hits[0]
+    for root in _anat_search_roots(subject, session, out_path, dataset_key):
+        # Prefer raw T2w > T1w > the S2 cordref reference
+        for pat in ("*_T2w.nii.gz", "*_T1w.nii.gz", "*_desc-cordref*.nii.gz"):
+            hits = sorted(p for p in root.glob(pat)
+                          if "_desc-" not in p.name or "cordref" in p.name)
+            if hits:
+                return hits[0]
     return None
 
 
-def _find_cord_mask_for(subject: str, session: Optional[str], out_path: Path) -> Optional[Path]:
-    base = out_path / "derivatives" / "spinalfmriprep" / f"sub-{subject}"
-    if session:
-        base = base / f"ses-{session}"
-    anat = base / "anat"
-    if not anat.exists():
-        return None
-    for pat in ("*_desc-cord_dseg.nii.gz",):
-        hits = sorted(anat.glob(pat))
-        if hits:
-            return hits[0]
+def _find_cord_mask_for(
+    subject: str, session: Optional[str],
+    out_path: Path, dataset_key: str = "",
+) -> Optional[Path]:
+    for root in _anat_search_roots(subject, session, out_path, dataset_key):
+        # S2 names them desc-cord_dseg with optional _T1w / _T2w suffix
+        for pat in ("*_desc-cord_dseg_T2w.nii.gz",
+                    "*_desc-cord_dseg_T1w.nii.gz",
+                    "*_desc-cord_dseg.nii.gz"):
+            hits = sorted(root.glob(pat))
+            if hits:
+                return hits[0]
     return None
 
 
@@ -161,8 +195,10 @@ def run_S5(
              "acquisition": {}}
         )
 
-        anat = _find_anat_for(s4_run.get("subject"), s4_run.get("session"), out_path)
-        cord_mask = _find_cord_mask_for(s4_run.get("subject"), s4_run.get("session"), out_path)
+        anat = _find_anat_for(s4_run.get("subject"), s4_run.get("session"),
+                              out_path, dataset_key)
+        cord_mask = _find_cord_mask_for(s4_run.get("subject"), s4_run.get("session"),
+                                        out_path, dataset_key)
 
         res = run_S5_func_distortion_correction(
             bold_path=mocoref,
