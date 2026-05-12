@@ -16,7 +16,10 @@ func_localization:
   method: deepseg
   task: spinalcord
   discover:
-    min_z_slices: 20  # Match S2 default
+    # Floor to reject "a couple of stray cord voxels" - not a coverage requirement.
+    # Narrow-FOV acquisitions (e.g. KombiShimZSpine with 12 BOLD slices) are valid
+    # and must not be dropped. The brain-contamination tests below carry the load.
+    min_z_slices: 5
     drift_gate:
       enabled: true
       superior_slices_check: 5
@@ -24,7 +27,7 @@ func_localization:
       absolute_area_cap_mm2: 200.0
   crop:
     mask_diameter_mm: 60  # Configurable, default match S2
-    min_z_slices: 20
+    min_z_slices: 5
 
 # Outlier gating: identify motion-corrupted frames using cord-centric metrics
 outlier_gating:

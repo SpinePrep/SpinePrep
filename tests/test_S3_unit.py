@@ -220,4 +220,50 @@ def test_drift_gate_disabled_returns_pass():
     policy = {"func_localization": {"discover": {"drift_gate": {"enabled": False}}}}
     passed, _, _ = _check_drift_gate(data, affine, policy)
     assert passed
+
+
+def test_drift_gate_rejects_cord_too_short():
+    """A few-slice ribbon of cord is dropped via the min_z_slices guard."""
+    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+
+    data = np.zeros((40, 40, 40), dtype=np.float32)
+    data[18:23, 18:23, 5:8] = 1  # only 3 slices, well below min
+    affine = np.diag([1.0, 1.0, 1.0, 1.0])
+
+    policy = {"func_localization": {"discover": {
+        "min_z_slices": 20,
+        "drift_gate": {
+            "enabled": True,
+            "superior_slices_check": 5,
+            "area_spike_threshold": 4.0,
+            "absolute_area_cap_mm2": 200.0,
+        },
+    }}}
+
+    passed, msg, info = _check_drift_gate(data, affine, policy)
+    assert not passed
+    assert "cord too short" in msg
+    assert info["n_cord_slices"] == 3
+
+
+def test_drift_gate_min_extent_off_when_zero():
+    """min_z_slices=0 disables only the min-extent guard, not the gate itself."""
+    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+
+    data = np.zeros((40, 40, 40), dtype=np.float32)
+    data[18:23, 18:23, 5:8] = 1  # 3 slices, cord-sized
+    affine = np.diag([1.0, 1.0, 1.0, 1.0])
+
+    policy = {"func_localization": {"discover": {
+        "min_z_slices": 0,
+        "drift_gate": {
+            "enabled": True,
+            "superior_slices_check": 5,
+            "area_spike_threshold": 4.0,
+            "absolute_area_cap_mm2": 200.0,
+        },
+    }}}
+
+    passed, _, _ = _check_drift_gate(data, affine, policy)
+    assert passed
             

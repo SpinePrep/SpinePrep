@@ -51,6 +51,10 @@ def _check_drift_gate(
     n_check = int(drift_cfg.get("superior_slices_check", 5))
     spike_ratio = float(drift_cfg.get("area_spike_threshold", 4.0))
     abs_cap_mm2 = float(drift_cfg.get("absolute_area_cap_mm2", 200.0))
+    # Minimum cord extent: discover.min_z_slices is the policy slot.
+    min_z_slices = int(
+        policy.get("func_localization", {}).get("discover", {}).get("min_z_slices", 0)
+    )
 
     # Find the inferior-superior axis from the affine
     try:
@@ -92,13 +96,24 @@ def _check_drift_gate(
         "slice_areas_mm2": slice_areas_mm2.tolist(),
         "is_axis": int(is_axis),
         "s_is_positive": bool(s_is_positive),
+        "n_cord_slices": int(nonzero.size),
         "thresholds": {
             "absolute_area_cap_mm2": abs_cap_mm2,
             "area_spike_threshold": spike_ratio,
             "superior_slices_check": n_check,
+            "min_z_slices": min_z_slices,
         },
         "checked_slices": [int(z) for z in superior_zs],
     }
+
+    # Minimum extent: discovery must span at least min_z_slices along IS.
+    if min_z_slices > 0 and nonzero.size < min_z_slices:
+        return (
+            False,
+            f"cord too short: only {int(nonzero.size)} slices of segmentation "
+            f"(< min_z_slices={min_z_slices})",
+            info,
+        )
 
     # Absolute cap: any superior slice with area > cap is brain
     for z in superior_zs:
@@ -228,6 +243,27 @@ def _process_s3_1_dummy_drop_and_localization(
              fig_path = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_func_localization_crop_box_sagittal.png"
          else:
              fig_path = None
+
+         # Re-render the reportlet so the drift-gate banner reflects the
+         # current policy (the cached run may pre-date the gate or its
+         # thresholds may have changed). Cheap: it only redraws from the
+         # already-on-disk reference and seg.
+         drift_gate_meta = {
+             "status": "PASS" if gate_ok else "FAIL",
+             "reason": gate_msg,
+             "info": gate_info,
+         }
+         if fig_path is not None:
+             rendered = _render_s3_1_simple_func_with_mask(
+                 func_ref_fast_path,
+                 discovery_seg_path,
+                 fig_path,
+                 policy,
+                 crop_box=crop_bbox,
+                 drift_gate=drift_gate_meta,
+             )
+             if rendered is not None:
+                 fig_path = rendered
 
          return {
               "func_ref_fast_path": func_ref_fast_path,
@@ -405,6 +441,15 @@ def _process_s3_1_dummy_drop_and_localization(
     figures_dir.mkdir(parents=True, exist_ok=True)
     figure_path = figures_dir / figure_name
 
+    # Drift gate verdict, used both to set the run status and to annotate
+    # the rendered figure so the dashboard reportlet shows the reason.
+    gate_ok, gate_msg, gate_info = _check_drift_gate(disc_data, disc_img.affine, policy)
+    drift_gate_meta = {
+        "status": "PASS" if gate_ok else "FAIL",
+        "reason": gate_msg,
+        "info": gate_info,
+    }
+
     # Generate S3.1 Figure immediately
     rendered_path = _render_s3_1_simple_func_with_mask(
         func_ref_fast_path,
@@ -412,6 +457,7 @@ def _process_s3_1_dummy_drop_and_localization(
         figure_path,
         policy,
         crop_box=crop_bbox,
+        drift_gate=drift_gate_meta,
     )
 
     if rendered_path is None:
@@ -428,9 +474,8 @@ def _process_s3_1_dummy_drop_and_localization(
         }
 
 
-    # Drift gate: reject runs where the discovery has leaked into the brain.
-    gate_ok, gate_msg, gate_info = _check_drift_gate(disc_data, disc_img.affine, policy)
-
+    # Drift-gate verdict was already computed above (drift_gate_meta) so the
+    # annotated reportlet stays consistent with the run status here.
     result = {
         "func_ref_fast_path": func_ref_fast_path,
         "func_ref0_path": func_ref0_path,
