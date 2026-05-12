@@ -90,8 +90,42 @@ def test_generate_dashboard_without_workfolder(tmp_path: Path) -> None:
     assert "Workfolder: other" not in index_html
 
 
+def test_chain_workfolder_materialises_upstream_reportlets(tmp_path: Path) -> None:
+    """A downstream workfolder that symlinks an upstream qc.json gets per-figure
+    symlinks created automatically so the dashboard resolves all reportlets."""
+    work = tmp_path / "work"
+    upstream = work / "wf_reg_001"
+    downstream = work / "wf_smoke_001"
+    upstream.mkdir(parents=True)
+    downstream.mkdir(parents=True)
 
+    # Upstream: real S2 qc.json + figure
+    up_qc_dir = upstream / "logs" / "S2_anat_cordref" / "ds_test"
+    up_qc_dir.mkdir(parents=True)
+    fig_rel = "derivatives/spinalfmriprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
+    (upstream / fig_rel).parent.mkdir(parents=True)
+    (upstream / fig_rel).write_bytes(b"upstream-png")
+    (up_qc_dir / "qc.json").write_text(json.dumps({
+        "status": "PASS",
+        "runs": [{"subject": "01", "session": None, "status": "PASS",
+                  "reportlets": {"cordmask_montage": fig_rel}}],
+    }), encoding="utf-8")
 
+    # Downstream: only a symlink to the upstream qc.json (no derivatives/)
+    down_qc_step = downstream / "logs" / "S2_anat_cordref"
+    down_qc_step.parent.mkdir(parents=True)
+    down_qc_step.symlink_to(upstream / "logs" / "S2_anat_cordref")
+
+    res = generate_dashboard(downstream)
+
+    # Per-figure symlink should now exist in downstream
+    materialised = downstream / fig_rel
+    assert materialised.is_symlink(), "chain reportlet was not materialised"
+    assert materialised.resolve() == (upstream / fig_rel).resolve()
+
+    # Dashboard should count the figure (not report it as missing)
+    assert res.indexed_qc_files == 1
+    assert not any("Missing reportlet" in e for e in res.errors), res.errors
 
 
 
