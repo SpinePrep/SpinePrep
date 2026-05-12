@@ -175,3 +175,69 @@ def test_inventory_records_func_acquisition_metadata(tmp_path):
     assert acq.get("EchoTime") == 0.030
     assert acq.get("EffectiveEchoSpacing") == 0.0005
     assert "RandomKeyWeShouldIgnore" not in acq
+
+
+def test_inventory_records_fmap_acquisition_metadata(tmp_path):
+    """S1 must read fmap sidecars too so S5 (distortion correction) can
+    pull PE direction + TRT without re-parsing BIDS."""
+    import json
+    from spinalfmriprep.steps.s1.inventory import _build_inventory
+
+    bids = tmp_path / "ds_Y"
+    fmap = bids / "sub-01" / "fmap"
+    fmap.mkdir(parents=True)
+    # Reversed-phase EPI pair (the topup-eligible case)
+    for d, pe in [("AP", "j-"), ("PA", "j")]:
+        _make_nifti(fmap / f"sub-01_dir-{d}_epi.nii.gz", (4, 4, 3))
+        (fmap / f"sub-01_dir-{d}_epi.json").write_text(json.dumps({
+            "PhaseEncodingDirection": pe,
+            "TotalReadoutTime": 0.0406,
+            "EffectiveEchoSpacing": 0.00032,
+            "ParallelReductionFactorInPlane": 2,
+            "PartialFourier": 0.875,
+        }), encoding="utf-8")
+    # Need a func too so the inventory is non-empty (and to exercise the
+    # both-modalities-tagged branch)
+    func = bids / "sub-01" / "func"
+    func.mkdir()
+    _make_nifti(func / "sub-01_task-rest_bold.nii.gz", (4, 4, 3, 5))
+
+    inv = _build_inventory(bids, "ds_Y", policy_entry=None)
+    fmap_runs = [r for r in inv["runs"] if r["modality"] == "fmap"]
+    assert len(fmap_runs) == 2
+    pe_dirs = {r["acquisition"]["PhaseEncodingDirection"] for r in fmap_runs}
+    assert pe_dirs == {"j", "j-"}, "S5 topup eligibility check needs both PE dirs"
+    for r in fmap_runs:
+        acq = r["acquisition"]
+        assert acq["TotalReadoutTime"] == 0.0406
+        assert acq["ParallelReductionFactorInPlane"] == 2
+
+def test_inventory_records_trt_for_func(tmp_path):
+    """A5 follow-up: TotalReadoutTime is in the func-sidecar allowlist."""
+    import json
+    from spinalfmriprep.steps.s1.inventory import _build_inventory
+
+    bids = tmp_path / "ds_Z"
+    func = bids / "sub-01" / "func"
+    func.mkdir(parents=True)
+    _make_nifti(func / "sub-01_task-rest_bold.nii.gz", (4, 4, 3, 5))
+    (func / "sub-01_task-rest_bold.json").write_text(json.dumps({
+        "RepetitionTime": 2.68,
+        "TotalReadoutTime": 0.0406401,
+        "EffectiveEchoSpacing": 0.000320001,
+        "PhaseEncodingDirection": "j",
+        "ReconMatrixPE": 128,
+        "ParallelReductionFactorInPlane": 2,
+    }), encoding="utf-8")
+    inv = _build_inventory(bids, "ds_Z", policy_entry=None)
+    func_runs = [r for r in inv["runs"] if r["modality"] == "func"]
+    assert len(func_runs) == 1
+    acq = func_runs[0]["acquisition"]
+    assert acq.get("TotalReadoutTime") == 0.0406401
+    assert acq.get("ReconMatrixPE") == 128
+    assert acq.get("ParallelReductionFactorInPlane") == 2
+    # Sanity: BIDS convention - TRT = (matrix_PE - 1) x EES (no GRAPPA division)
+    import math
+    assert math.isclose(acq["TotalReadoutTime"],
+                        (acq["ReconMatrixPE"] - 1) * acq["EffectiveEchoSpacing"],
+                        rel_tol=1e-4),         "TRT must follow BIDS convention: unaccelerated-equivalent readout time"
