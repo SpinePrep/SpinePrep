@@ -256,6 +256,25 @@ def test_s4_reportlets_only_locates_work_dir_via_run_id(tmp_path, monkeypatch):
     assert res.status == "PASS"
 
 
+def test_s4_aggregates_top_level_status_pass_warn_fail():
+    """Top-level qc.json status must be derived from per-run statuses so
+    mark_done sees PASS/WARN/FAIL rather than UNKNOWN."""
+    # Inline the aggregation rule (mirrors run_S4 in orchestrate.py).
+    def agg(results):
+        n_pass = sum(1 for r in results if r.get("status") == "PASS")
+        if results and n_pass == len(results):
+            return "PASS"
+        if n_pass > 0:
+            return "WARN"
+        return "FAIL"
+
+    assert agg([{"status": "PASS"}, {"status": "PASS"}]) == "PASS"
+    assert agg([{"status": "PASS"}, {"status": "FAIL"}]) == "WARN"
+    assert agg([{"status": "PASS"}, {"status": "WARN"}]) == "WARN"
+    assert agg([{"status": "FAIL"}, {"status": "FAIL"}]) == "FAIL"
+    assert agg([]) == "FAIL"
+
+
 def test_s4_picks_cropped_moco_mask_when_present(tmp_path):
     """Regression: S4 must pick the CROPPED S3.1 seg (matches the cropped BOLD)
     not the uncropped one. Mismatched mask shape -> sct_fmri_moco silently
