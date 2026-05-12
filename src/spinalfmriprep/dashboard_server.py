@@ -52,9 +52,22 @@ def _latest_workfolder() -> Path | None:
 
 
 def _safe_resolve(base: Path, rel: str) -> Path | None:
-    """Resolve a relative path under base, preventing traversal escapes."""
-    resolved = (base / rel).resolve()
-    if not str(resolved).startswith(str(base.resolve())):
+    """Resolve a relative path under base, preventing traversal escapes.
+
+    The starting path must live under `base`, but the resolved file may sit
+    anywhere under WORK_ROOT - chain workfolders create cross-workfolder
+    symlinks (e.g. wf_smoke/derivatives/...  ->  wf_reg/derivatives/...).
+    """
+    unresolved = (base / rel)
+    # First gate: the unresolved path must be under base (no `..` traversal)
+    try:
+        unresolved.relative_to(base)
+    except ValueError:
+        return None
+    # Second gate: after symlink resolution, the file must still live in WORK_ROOT
+    resolved = unresolved.resolve()
+    work_root = WORK_ROOT.resolve()
+    if not str(resolved).startswith(str(work_root)):
         return None
     if not resolved.is_file():
         return None
