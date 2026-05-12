@@ -47,6 +47,48 @@ def _extract_workfolder_name(out_dir: Path) -> Optional[str]:
     return None
 
 
+def _workfolder_root_of(path: Path) -> Optional[Path]:
+    """Walk up `path` until we hit a wf_* directory. Returns its absolute path or None."""
+    for parent in [path, *path.parents]:
+        if parent.name.startswith("wf_") and parent.is_dir():
+            return parent
+    return None
+
+
+def _materialize_chain_reportlet(out_dir: Path, qc_path: Path, reportlet_relpath: str) -> None:
+    """
+    If a chain qc.json (symlinked from an upstream workfolder) references a reportlet
+    that does not exist under out_dir, create a symlink at out_dir/<relpath> pointing
+    to the upstream file. Makes downstream chain dashboards self-resolvable without
+    duplicating bytes.
+
+    Silent no-op when:
+      - the reportlet already exists at out_dir/<relpath>
+      - the qc.json isn't a chain (its real workfolder is out_dir)
+      - the upstream file doesn't exist either
+    """
+    if not reportlet_relpath:
+        return
+    local_path = out_dir / reportlet_relpath
+    # Already present (real file or pre-existing symlink) - leave it alone.
+    if local_path.exists() or local_path.is_symlink():
+        return
+    # Find the real qc.json (chain qc.jsons are symlinks); its workfolder is the origin.
+    real_qc = qc_path.resolve()
+    origin_wf = _workfolder_root_of(real_qc.parent)
+    if origin_wf is None or origin_wf.resolve() == out_dir.resolve():
+        return
+    upstream_path = origin_wf / reportlet_relpath
+    if not upstream_path.exists():
+        return
+    local_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        local_path.symlink_to(upstream_path)
+    except FileExistsError:
+        # Race or pre-existing entry created concurrently - ignore.
+        pass
+
+
 @dataclass
 class DashboardResult:
     """Result of dashboard generation."""
@@ -233,6 +275,11 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
                         continue
                     if reportlet_key not in reportlet_index[step_code]:
                         reportlet_index[step_code][reportlet_key] = []
+
+                    # If this qc.json is a chain symlink to an upstream workfolder,
+                    # materialise the reportlet as a symlink under base_dir so the
+                    # existing relative-path resolution works.
+                    _materialize_chain_reportlet(base_dir, qc_path, reportlet_path)
 
                     # Resolve absolute path relative to base_dir (which may be a dataset subdirectory)
                     reportlet_abs = base_dir / reportlet_path
