@@ -127,6 +127,25 @@ def _render_crop_box_sagittal(
         if discovery_slice_2d is not None:
             discovery_slice_2d = np.flipud(discovery_slice_2d.T)
 
+        # Compute physical aspect ratio from voxel zooms so anisotropic
+        # acquisitions (e.g. MEGRE: 0.5x0.5x5mm) render with correct cord
+        # height. Without this the final convert -resize 1200x stretches
+        # an already-thin pixel slab into a flattened slat.
+        try:
+            zooms = std_img.header.get_zooms()[:3]
+            # After ".T + flipud", display rows = original Z, cols = original Y
+            zoom_disp_h = float(zooms[2])  # mm per displayed row
+            zoom_disp_w = float(zooms[1])  # mm per displayed column
+            n_rows, n_cols = img_slice.shape
+            mm_h = n_rows * zoom_disp_h
+            mm_w = n_cols * zoom_disp_w
+            target_w = 1200
+            target_h = int(round(target_w * mm_h / max(mm_w, 1e-6)))
+            target_h = max(80, min(target_h, 4000))
+            resize_spec = f"{target_w}x{target_h}!"
+        except Exception:
+            resize_spec = "1200x"
+
         vmin, vmax = np.percentile(img_slice, [1, 99])
         if vmax <= vmin:
             vmin, vmax = float(img_slice.min()), float(img_slice.max())
@@ -167,7 +186,7 @@ def _render_crop_box_sagittal(
         _write_ppm(ppm_path, final_rgb)
 
         ok, _ = _run_command(
-            ["convert", str(ppm_path), "-filter", "Lanczos", "-resize", "1200x", str(output)]
+            ["convert", str(ppm_path), "-filter", "Lanczos", "-resize", resize_spec, str(output)]
         )
         if ppm_path.exists():
             ppm_path.unlink()
