@@ -1,0 +1,59 @@
+version: 1
+
+# Per-run func->anat registration. Algorithm is the Kaptan 2023 Eippert-lab
+# verbatim chain, intensity-agnostic (type=seg), slicewise non-linear refinement.
+# Anat modality is heterogeneous across v1_validation (T1w vs T2w); the chain
+# is contrast-invariant by design (seg-driven).
+registration:
+  # step=0 is SCT's reserved initial-alignment slot (3D rigid / translation
+  # only). Required when anat and BOLD have different world-Z positions —
+  # centermass works in slice-INDEX space, so without a prior world-coord
+  # rigid the slicewise correspondences are anatomically meaningless.
+  # metric=MI is contrast-invariant (handles T1w-anat ↔ T2*-EPI inversion).
+  step0:
+    type: "im"
+    algo: "rigid"
+    metric: "MI"
+    iter: 10
+  step1:
+    type: "seg"
+    algo: "centermass"
+  step2:
+    type: "seg"
+    algo: "bsplinesyn"
+    metric: "MeanSquares"     # moot on type=seg (segmentation-driven)
+    smooth: 1
+    slicewise: 1
+    iter: 3
+  cylindric_mask:
+    radius_mm: 30
+    centerline_method: "optic"
+    centerline_fallback: ["fitseg", "dilate_2vox"]
+  interpolation: "spline"     # SCT -x flag; never linear for BOLD
+  zmin_zmax_trim: false       # set true to auto-restrict to cord-bearing Z
+
+reproducibility:
+  strict: false               # when true: ANTS_RANDOM_SEED=1, ITK_THREADS=1
+  capture_provenance: true
+
+qc_thresholds:
+  pass_dice_min: 0.85
+  pass_dice_min_syn_fallback: 0.80   # lower bar for S5 SyN-fallback runs
+  warn_dice_min: 0.65
+  fail_dice_below: 0.65
+  # HD95 in mm: registration on cord-cropped EPI (~1mm in-plane, ~3-4mm Z)
+  # routinely has 3-4mm HD95 at Dice 0.9+; EPISeg baseline 1.28±0.73 is
+  # for seg-vs-truth on same image, not via a warp. Realistic thresholds:
+  pass_hd95_mm_max: 4.0
+  warn_hd95_mm_max: 8.0
+  # COM-based round-trip drift is observability-only in v1 (bsplinesyn's
+  # forward + inverse are separately optimized → non-zero intrinsic drift
+  # even at Dice 0.95). Setting permissive thresholds so it does not gate.
+  pass_centerline_med_vox_max: 3.0
+  warn_centerline_med_vox_max: 6.0
+  pass_centerline_max_vox_max: 5.0
+  warn_centerline_max_vox_max: 10.0
+
+cost_controls:
+  estimate_per_run_minutes: 3.0
+  skip_existing_pass: true

@@ -34,6 +34,11 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "crop_box_sagittal",        # S5 - axial montage, before/after with cord contour
         "mi_summary",               # S5 - mutual info before/after bar
     ],
+    "S6_func_to_anat_registration": [
+        "bold_on_anat_axial",       # S6 - axial overlay BOLD + anat contour + cord seg
+        "bold_on_anat_sagittal",    # S6 - mid-sagittal overlay
+        "cord_dice_per_slice",      # S6 - per-slice cord Dice bars
+    ],
 }
 
 # Human-readable labels for reportlets (matching ROADMAP milestones)
@@ -59,6 +64,11 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
     "S5_func_distortion_correction": {
         "crop_box_sagittal": "S5 - Before/After Axial Montage",
         "mi_summary": "S5 - Mutual Information Before/After",
+    },
+    "S6_func_to_anat_registration": {
+        "bold_on_anat_axial": "S6 - BOLD on Anat (Axial)",
+        "bold_on_anat_sagittal": "S6 - BOLD on Anat (Sagittal)",
+        "cord_dice_per_slice": "S6 - Cord Dice per Slice",
     },
 }
 
