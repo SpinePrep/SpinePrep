@@ -247,7 +247,15 @@ def _process_session(
             "run_id": run_id,
         }
 
-    work_dir = out_root / "work" / "S2_anat_cordref" / run_id
+    # When the same (subject, session) appears in multiple datasets (e.g.
+    # sub-02 lives in internal_balgrist, ds005883_pain, ds005884_motor),
+    # they must not share a work dir or the LAST S2 run overwrites the
+    # others' cordref_std/cordmask_discovery files. Key the work dir by
+    # dataset_key when available.
+    if dataset_key:
+        work_dir = out_root / "work" / "S2_anat_cordref" / dataset_key / run_id
+    else:
+        work_dir = out_root / "work" / "S2_anat_cordref" / run_id
     work_dir.mkdir(parents=True, exist_ok=True)
 
     # MEGRE synthesis (T2star modality with multiple echo paths): combine
