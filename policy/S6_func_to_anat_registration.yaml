@@ -5,32 +5,38 @@ version: 1
 # Anat modality is heterogeneous across v1_validation (T1w vs T2w); the chain
 # is contrast-invariant by design (seg-driven).
 registration:
-  # step=0 is SCT's reserved initial-alignment slot (3D rigid / translation
-  # only). Required when anat and BOLD have different world-Z positions —
-  # centermass works in slice-INDEX space, so without a prior world-coord
-  # rigid the slicewise correspondences are anatomically meaningless.
-  # metric=MI is contrast-invariant (handles T1w-anat ↔ T2*-EPI inversion).
-  step0:
-    type: "im"
-    algo: "rigid"
-    metric: "MI"
-    iter: 10
+  # CoSpi 1FOV/2FOV recipe (Kiomars 2025; methods.md). Direction:
+  # `-i funcref -d anat` (func is moving, anat is destination — cropped
+  # to dilated cord region). Three slicewise seg-driven steps:
+  #   1. centermassrot — COM alignment + slicewise rotation; required
+  #      for oblique cord BOLDs (e.g. KombiShimZSpine 12° tilt).
+  #   2. columnwise — R-L scaling + A-P columnwise deformation; handles
+  #      cross-section variation along the cord axis.
+  #   3. bsplinesyn iter=20 — non-linear B-spline refinement.
+  # Tested on 11 subjects × 4 runs of KombiShimZSpine (2FOV) and a
+  # 1FOV pilot; works on 11/12-slice partial-coverage acquisitions.
   step1:
     type: "seg"
-    algo: "centermass"
+    algo: "centermassrot"
+    metric: "MeanSquares"
+    slicewise: 1
+    smooth: 1
   step2:
     type: "seg"
-    algo: "bsplinesyn"
-    metric: "MeanSquares"     # moot on type=seg (segmentation-driven)
-    smooth: 1
+    algo: "columnwise"
+    metric: "MeanSquares"
     slicewise: 1
-    iter: 3
-  cylindric_mask:
-    radius_mm: 30
-    centerline_method: "optic"
-    centerline_fallback: ["fitseg", "dilate_2vox"]
-  interpolation: "spline"     # SCT -x flag; never linear for BOLD
-  zmin_zmax_trim: false       # set true to auto-restrict to cord-bearing Z
+    smooth: 1
+  step3:
+    type: "seg"
+    algo: "bsplinesyn"
+    metric: "MeanSquares"
+    slicewise: 1
+    iter: 20
+  anat_crop:
+    enable: true
+    dilate: "10x10x10"        # sct_crop_image -m anat_seg -dilate ...
+  interpolation: "spline"     # SCT -x flag
 
 reproducibility:
   strict: false               # when true: ANTS_RANDOM_SEED=1, ITK_THREADS=1

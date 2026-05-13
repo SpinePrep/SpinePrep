@@ -224,26 +224,54 @@ def _make_cylindric_mask(
 
 
 def _build_param_string(reg_cfg: dict) -> str:
-    parts: list[str] = []
-    step0 = reg_cfg.get("step0")
-    if step0:
-        parts.append(
-            f"step=0,type={step0.get('type', 'im')},algo={step0.get('algo', 'rigid')}"
-            f",metric={step0.get('metric', 'MI')},iter={step0.get('iter', 10)}"
-        )
-    step1 = reg_cfg.get("step1", {})
-    parts.append(
-        f"step=1,type={step1.get('type', 'seg')},algo={step1.get('algo', 'centermass')}"
-    )
-    step2 = reg_cfg.get("step2", {})
-    parts.append(
-        f"step=2,type={step2.get('type', 'seg')},algo={step2.get('algo', 'bsplinesyn')}"
-        f",metric={step2.get('metric', 'MeanSquares')}"
-        f",smooth={step2.get('smooth', 1)}"
-        f",slicewise={step2.get('slicewise', 1)}"
-        f",iter={step2.get('iter', 3)}"
-    )
-    return ":".join(parts)
+    """CoSpi recipe: centermassrot -> columnwise -> bsplinesyn,iter=20.
+
+    All three steps are slicewise=1, type=seg, MeanSquares. centermassrot
+    handles oblique cord (slicewise COM + rotation); columnwise handles
+    cord cross-section variation along the axis; bsplinesyn iter=20 is
+    the final non-linear refinement.
+    """
+    def _step(step_id: int, step_cfg: dict, defaults: dict) -> str:
+        parts = [f"step={step_id}"]
+        for key in ("type", "algo", "metric", "slicewise", "smooth", "iter"):
+            val = step_cfg.get(key, defaults.get(key))
+            if val is not None:
+                parts.append(f"{key}={val}")
+        return ",".join(parts)
+
+    pieces = []
+    pieces.append(_step(1, reg_cfg.get("step1", {}),
+                        {"type": "seg", "algo": "centermassrot",
+                         "metric": "MeanSquares", "slicewise": 1, "smooth": 1}))
+    pieces.append(_step(2, reg_cfg.get("step2", {}),
+                        {"type": "seg", "algo": "columnwise",
+                         "metric": "MeanSquares", "slicewise": 1, "smooth": 1}))
+    pieces.append(_step(3, reg_cfg.get("step3", {}),
+                        {"type": "seg", "algo": "bsplinesyn",
+                         "metric": "MeanSquares", "slicewise": 1, "iter": 20}))
+    return ":".join(pieces)
+
+
+def _maybe_crop_anat(
+    anat: Path, anat_dseg: Path, work_dir: Path, dilate: str = "10x10x10",
+) -> tuple[Path, Path]:
+    """sct_crop_image -m anat_dseg -dilate ... (CoSpi pre-flight).
+
+    Crops anat (and its dseg) to a dilated cord region. This is what the
+    CoSpi 1FOV pipeline does instead of any world-Z prealign or our
+    earlier extent-ratio gating.
+    """
+    cropped_anat = work_dir / "anat_cr.nii.gz"
+    cropped_dseg = work_dir / "anat_cr_seg.nii.gz"
+    for src, dst in [(anat, cropped_anat), (anat_dseg, cropped_dseg)]:
+        ok, _ = _run_command([
+            "sct_crop_image", "-i", str(src),
+            "-m", str(anat_dseg), "-dilate", dilate,
+            "-o", str(dst),
+        ])
+        if not ok or not dst.exists():
+            return anat, anat_dseg
+    return cropped_anat, cropped_dseg
 
 
 def _run_registration(
@@ -251,31 +279,35 @@ def _run_registration(
     funccrop_mask: Path,
     anat: Path,
     anat_dseg: Path,
-    mask_func: Optional[Path],
     work_dir: Path,
     policy: dict,
     reproducibility_strict: bool,
 ) -> dict[str, Any]:
-    """Register anat (moving) -> funcref (destination); produce forward
-    warp (funcref->anat space) and inverse warp (anat->funcref space)."""
+    """CoSpi-style func->anat registration.
+
+    Direction: `-i funcref -d anat` (func is moving, anat is destination,
+    cropped to dilated cord). The forward warp (`warp_func2anat.nii.gz`)
+    is the `from-bold_to-anat` direction we save. SCT writes both
+    forward and inverse; we keep both via `-owarp/-owarpinv`.
+    """
     reg_cfg = policy.get("registration", {})
     param = _build_param_string(reg_cfg)
 
-    warp_anat2func = work_dir / "warp_anat2func.nii.gz"
-    warp_func2anat = work_dir / "warp_func2anat.nii.gz"
+    warp_func2anat = work_dir / "warp_func2anat.nii.gz"     # forward, from-bold_to-anat
+    warp_anat2func = work_dir / "warp_anat2func.nii.gz"     # inverse, from-anat_to-bold
 
     cmd = [
         "sct_register_multimodal",
-        "-i", str(anat),
-        "-iseg", str(anat_dseg),
-        "-d", str(funcref),
-        "-dseg", str(funccrop_mask),
+        "-i", str(funcref),
+        "-iseg", str(funccrop_mask),
+        "-d", str(anat),
+        "-dseg", str(anat_dseg),
         "-param", param,
         "-x", reg_cfg.get("interpolation", "spline"),
         "-ofolder", str(work_dir),
+        "-owarp", str(warp_func2anat),
+        "-owarpinv", str(warp_anat2func),
     ]
-    if mask_func is not None:
-        cmd.extend(["-m", str(mask_func)])
 
     env = os.environ.copy()
     if reproducibility_strict:
@@ -289,25 +321,16 @@ def _run_registration(
             "failure_message": f"sct_register_multimodal: {proc.stderr[-240:]}",
             "param_string": param,
         }
-
-    # SCT writes warps as warp_<i>2<d>.nii.gz / warp_<d>2<i>.nii.gz. Locate them.
-    anat_stem = anat.name.replace(".nii.gz", "").replace(".nii", "")
-    func_stem = funcref.name.replace(".nii.gz", "").replace(".nii", "")
-    src_forward = work_dir / f"warp_{anat_stem}2{func_stem}.nii.gz"
-    src_inverse = work_dir / f"warp_{func_stem}2{anat_stem}.nii.gz"
-    if not src_forward.exists() or not src_inverse.exists():
-        # SCT >=7 sometimes drops shorter names; pick anything matching warp_*
-        warps = sorted(work_dir.glob("warp_*.nii.gz"))
-        if len(warps) >= 2:
-            src_forward = next((w for w in warps if "2" + func_stem in w.name), warps[0])
-            src_inverse = next((w for w in warps if "2" + anat_stem in w.name), warps[1])
-
-    shutil.copy(src_forward, warp_anat2func)
-    shutil.copy(src_inverse, warp_func2anat)
+    if not warp_func2anat.exists() or not warp_anat2func.exists():
+        return {
+            "status": "FAIL",
+            "failure_message": "SCT did not produce expected warp files",
+            "param_string": param,
+        }
     return {
         "status": "OK",
-        "warp_anat2func": warp_anat2func,
         "warp_func2anat": warp_func2anat,
+        "warp_anat2func": warp_anat2func,
         "param_string": param,
     }
 
@@ -522,36 +545,23 @@ def run_S6_func_to_anat_registration(
         except Exception as e:
             failure_reasons.append(f"sform/qform sync failed for {dst.name}: {e}")
 
-    # 1a. World-Z header pre-align (centermass operates slicewise-by-index
-    # and rigid step=0 MI can fail to find the Z-shift on T1w-anat vs
-    # T2*-EPI; this guarantees Z-aligned input).
-    anat_pre, anat_dseg_pre, prealign_flags = _world_align_anat_z(
-        anat_local, anat_dseg_local, funcref_local, funccrop_local, s6_work_dir,
-    )
-    failure_reasons.extend(prealign_flags)
+    # 1. Crop anat to dilated cord region (CoSpi pre-flight)
+    anat_crop_cfg = policy.get("registration", {}).get("anat_crop", {})
+    if anat_crop_cfg.get("enable", True):
+        anat_for_reg, anat_dseg_for_reg = _maybe_crop_anat(
+            anat_local, anat_dseg_local, s6_work_dir,
+            dilate=anat_crop_cfg.get("dilate", "10x10x10"),
+        )
+    else:
+        anat_for_reg, anat_dseg_for_reg = anat_local, anat_dseg_local
 
-    # 1b. Optional anat Z-crop for partial-coverage acquisitions
-    anat_for_reg, anat_dseg_for_reg, zcrop_flags = _maybe_z_crop_anat(
-        anat_pre, anat_dseg_pre, funcref_local, funccrop_local, s6_work_dir,
-    )
-    failure_reasons.extend(zcrop_flags)
-
-    # 2. Cylindric cord mask
-    mask_radius = policy.get("registration", {}).get(
-        "cylindric_mask", {}).get("radius_mm", 30)
-    mask_func, mask_flags = _make_cylindric_mask(
-        funcref_local, funccrop_local, s6_work_dir, radius_mm=mask_radius,
-    )
-    failure_reasons.extend(mask_flags)
-
-    # 3. Registration (anat may be Z-cropped)
+    # 2. Registration: func->anat (CoSpi recipe)
     repro_strict = bool(policy.get("reproducibility", {}).get("strict", False))
     reg = _run_registration(
         funcref=funcref_local,
         funccrop_mask=funccrop_local,
         anat=anat_for_reg,
         anat_dseg=anat_dseg_for_reg,
-        mask_func=mask_func,
         work_dir=s6_work_dir,
         policy=policy,
         reproducibility_strict=repro_strict,
