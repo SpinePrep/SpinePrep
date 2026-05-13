@@ -1,9 +1,23 @@
 version: 2
 
 selection:
+  # T2star (MEGRE multi-echo magnitude, RMS-across-echoes + mean-across-runs)
+  # is the canonical cervical anat reference when available: T2*-weighted
+  # contrast matches T2*-EPI (CSF bright, cord dark), so func->anat
+  # registration uses same-contrast cord segmentations rather than fighting
+  # an inverted T1w. Fall back to T2w then T1w.
   preference:
+    - T2star
     - T2w
     - T1w
+
+# MEGRE synthesis: when a candidate is detected as multi-echo MEGRE
+# (BIDS: sub-XX_acq-MEGRE_run-NN_echo-EE_part-mag_T2star.nii.gz), build a
+# single 3D T2* image by RMS across echoes per run, then mean across runs.
+# Recipe verbatim from CoSpi/spi03_anat_preproc.sh.
+megre_synthesis:
+  echo_combine: rms          # rms | mean | first_echo
+  run_combine: mean          # mean | rms | first_run
 
 standardize:
   orientation: RPI
@@ -11,11 +25,14 @@ standardize:
 discover:
   method: deepseg
   task: spinalcord
-  # Legacy propseg settings (kept for backward compat but ignored when method=deepseg)
   contrast_map:
+    T2star: t2s
     T2w: t2
     T1w: t1
-  min_z_slices: 20
+  # Sanity-floor to catch "cord seg returned empty"; 10 slices is enough
+  # cord coverage to be useful. MEGRE-style cervical-only acquisitions
+  # typically have 12 slices.
+  min_z_slices: 10
 
 crop:
   # Deprecated: size_vox, z_full (kept for backward compat but ignored)
@@ -23,7 +40,7 @@ crop:
   z_full: true
   mask_diameter_mm: 60
   dilate_xyz: [0, 0, 0]
-  min_z_slices: 20
+  min_z_slices: 10
 
 segmentation:
   # Cord segmentation method:
@@ -33,6 +50,7 @@ segmentation:
   # Legacy settings (kept for backward compat)
   method: sct_deepseg_sc
   contrast_map:
+    T2star: t2s
     T2w: t2
     T1w: t1
 

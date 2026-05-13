@@ -95,6 +95,13 @@ def _load_policy(path: Path) -> dict:
         raise ValueError("S2_anat_cordref policy rootlets.eligible_modalities must be a list of strings.")
     registration = raw.get("registration", {})
     prefer_rootlets = bool(registration.get("prefer_rootlets", True))
+    megre = raw.get("megre_synthesis", {})
+    echo_combine = megre.get("echo_combine", "rms")
+    run_combine = megre.get("run_combine", "mean")
+    if echo_combine not in ("rms", "mean", "first_echo"):
+        raise ValueError("megre_synthesis.echo_combine must be rms|mean|first_echo")
+    if run_combine not in ("rms", "mean", "first_run"):
+        raise ValueError("megre_synthesis.run_combine must be rms|mean|first_run")
     return {
         "version": version,
         "preference": preference,
@@ -127,4 +134,7 @@ def _load_policy(path: Path) -> dict:
         "rootlets_modalities": eligible_modalities,
         # Registration parameters
         "prefer_rootlets": prefer_rootlets,
+        # MEGRE synthesis
+        "megre_echo_combine": echo_combine,
+        "megre_run_combine": run_combine,
     }

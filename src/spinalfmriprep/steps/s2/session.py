@@ -27,7 +27,19 @@ from .register import _run_register_to_template
 
 
 def _collect_anat_candidates(inventory: dict) -> dict[tuple[str, Optional[str]], list[dict]]:
+    """Build per-(subject, session) anat candidate list.
+
+    Modalities detected:
+      - T2star: MEGRE multi-echo magnitude (`_acq-MEGRE_..._echo-NN_part-mag_T2star.nii.gz`).
+        All matching files for the (subject, session) are bundled into a SINGLE
+        candidate with `echo_paths` list — they will be combined later via
+        RMS-across-echoes + mean-across-runs to synthesize one 3D T2* image.
+        Phase files (`_part-phase`) are skipped.
+      - T2w / T1w: standard single-file candidates.
+    """
     candidates: dict[tuple[str, Optional[str]], list[dict]] = {}
+    megre_groups: dict[tuple[str, Optional[str]], list[str]] = {}
+
     for entry in inventory.get("files", []):
         path = entry.get("path")
         if not path or not isinstance(path, str):
@@ -37,21 +49,96 @@ def _collect_anat_candidates(inventory: dict) -> dict[tuple[str, Optional[str]],
             continue
         if not (path_lower.endswith(".nii") or path_lower.endswith(".nii.gz")):
             continue
-        if "t1w" not in path_lower and "t2w" not in path_lower:
-            continue
-        modality = "T2w" if "t2w" in path_lower else "T1w"
         subject = entry.get("subject")
         session = entry.get("session")
         if not subject:
             continue
         key = (subject, session)
-        candidates.setdefault(key, []).append(
-            {
-                "path": path,
-                "modality": modality,
-            }
-        )
+
+        # MEGRE magnitude detection: BIDS uses acq-MEGRE + part-mag + T2star suffix.
+        # Skip phase files.
+        is_megre = ("acq-megre" in path_lower
+                    and "_t2star.nii" in path_lower
+                    and ("_part-mag" in path_lower or "_part-phase" not in path_lower))
+        if is_megre and "_part-phase" not in path_lower:
+            megre_groups.setdefault(key, []).append(path)
+            continue
+
+        if "t1w" not in path_lower and "t2w" not in path_lower:
+            continue
+        modality = "T2w" if "t2w" in path_lower else "T1w"
+        candidates.setdefault(key, []).append({"path": path, "modality": modality})
+
+    for key, paths in megre_groups.items():
+        # Use the first magnitude file's path as the canonical "path" for
+        # ordering / display; carry the full echo list separately.
+        sorted_paths = sorted(paths)
+        candidates.setdefault(key, []).append({
+            "path": sorted_paths[0],
+            "modality": "T2star",
+            "echo_paths": sorted_paths,
+        })
     return candidates
+
+
+def _synthesize_t2star(
+    echo_paths: list[Path],
+    out_path: Path,
+    work_dir: Path,
+    echo_combine: str = "rms",
+    run_combine: str = "mean",
+) -> tuple[bool, str]:
+    """Combine MEGRE magnitude echoes into a single 3D T2* image.
+
+    Recipe (CoSpi spi03_anat_preproc.sh): per run, concat all echoes along
+    time and take RMS -> per-run T2*. Concat per-run images along time and
+    take mean -> final 3D anat.
+
+    Falls back to a single concat+combine if run grouping fails.
+    """
+    work_dir.mkdir(parents=True, exist_ok=True)
+    import re
+    by_run: dict[str, list[Path]] = {}
+    for p in echo_paths:
+        m = re.search(r"_run-(\d+)_", p.name)
+        run_id = m.group(1) if m else "01"
+        by_run.setdefault(run_id, []).append(p)
+
+    per_run_imgs: list[Path] = []
+    for run_id, paths in sorted(by_run.items()):
+        paths = sorted(paths)
+        concat_path = work_dir / f"megre_run-{run_id}_4d.nii.gz"
+        ok, msg = _run_command(["sct_image", "-i", *[str(p) for p in paths],
+                                "-concat", "t", "-o", str(concat_path)])
+        if not ok or not concat_path.exists():
+            return False, f"sct_image concat failed (run {run_id}): {msg[:160]}"
+        combined_path = work_dir / f"megre_run-{run_id}_{echo_combine}.nii.gz"
+        ok, msg = _run_command(["sct_maths", "-i", str(concat_path),
+                                f"-{echo_combine}", "t", "-o", str(combined_path)])
+        if not ok or not combined_path.exists():
+            return False, f"sct_maths {echo_combine} failed (run {run_id}): {msg[:160]}"
+        per_run_imgs.append(combined_path)
+
+    if len(per_run_imgs) == 1:
+        # Single run — copy through.
+        _copy_file(per_run_imgs[0], out_path)
+        return True, ""
+
+    if run_combine == "first_run":
+        _copy_file(per_run_imgs[0], out_path)
+        return True, ""
+
+    concat_runs = work_dir / "megre_runs_concat.nii.gz"
+    ok, msg = _run_command(["sct_image", "-i", *[str(p) for p in per_run_imgs],
+                            "-concat", "t", "-o", str(concat_runs)])
+    if not ok or not concat_runs.exists():
+        return False, f"sct_image run-concat failed: {msg[:160]}"
+    op = "rms" if run_combine == "rms" else "mean"
+    ok, msg = _run_command(["sct_maths", "-i", str(concat_runs),
+                            f"-{op}", "t", "-o", str(out_path)])
+    if not ok or not out_path.exists():
+        return False, f"sct_maths {op} (runs) failed: {msg[:160]}"
+    return True, ""
 
 
 def _collect_subject_sessions(inventory: dict) -> set[tuple[str, Optional[str]]]:
@@ -162,6 +249,23 @@ def _process_session(
 
     work_dir = out_root / "work" / "S2_anat_cordref" / run_id
     work_dir.mkdir(parents=True, exist_ok=True)
+
+    # MEGRE synthesis (T2star modality with multiple echo paths): combine
+    # echoes/runs into a single 3D T2* image and use that as the source.
+    if selection.get("modality") == "T2star" and selection.get("echo_paths"):
+        synthesized = work_dir / "anat_T2star_synthesized.nii.gz"
+        echo_paths_abs = [bids_root / p for p in selection["echo_paths"]]
+        ok, message = _synthesize_t2star(
+            echo_paths=echo_paths_abs,
+            out_path=synthesized,
+            work_dir=work_dir / "megre",
+            echo_combine=policy.get("megre_echo_combine", "rms"),
+            run_combine=policy.get("megre_run_combine", "mean"),
+        )
+        if not ok or not synthesized.exists():
+            return _fail_run(subject, session, run_id,
+                             f"MEGRE T2* synthesis failed: {message}")
+        source_path = synthesized
 
     standard_path = work_dir / "cordref_std.nii.gz"
     ok, message = _standardize_orientation(source_path, standard_path, policy["orientation"])
