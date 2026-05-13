@@ -23,7 +23,15 @@ app = FastAPI(title="SpinalfMRIprep QC Dashboard", docs_url=None, redoc_url=None
 
 
 def _list_workfolders() -> list[dict]:
-    """Return workfolders sorted by modification time (newest first)."""
+    """Return workfolders sorted by modification time (newest first).
+
+    `is_latest` prefers non-smoke (reg/full) workfolders over smoke.
+    Smoke runs are sanity checks that often follow a reg pass; without
+    this preference the dashboard's latest view flips to the smoke and
+    hides the full reg set (recurring user-reported "only N images"
+    symptom). Smoke can still be selected explicitly via the workfolder
+    picker; it only loses the default-latest tiebreaker.
+    """
     dirs = [d for d in WORK_ROOT.glob("wf_*") if d.is_dir()]
     dirs.sort(key=lambda d: d.stat().st_mtime, reverse=True)
     wfs = []
@@ -35,7 +43,16 @@ def _list_workfolders() -> list[dict]:
             "has_dashboard": has_dashboard,
             "is_latest": False,
         })
-    # Mark newest with a dashboard as latest
+
+    def _is_smoke(name: str) -> bool:
+        return name.startswith("wf_smoke_")
+
+    # First pass: latest non-smoke with a dashboard.
+    for wf in wfs:
+        if wf["has_dashboard"] and not _is_smoke(wf["name"]):
+            wf["is_latest"] = True
+            return wfs
+    # Fallback: latest smoke if no reg/full has a dashboard.
     for wf in wfs:
         if wf["has_dashboard"]:
             wf["is_latest"] = True
