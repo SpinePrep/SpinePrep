@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "qc_S5_func_distortion_correction.schema.json",
+  "title": "S5_func_distortion_correction QC Status",
+  "description": "QC status schema for S5_func_distortion_correction step (aggregated per dataset key)",
+  "type": "object",
+  "required": ["dataset_key", "step_code", "status", "runs"],
+  "properties": {
+    "dataset_key": {
+      "type": "string",
+      "description": "Dataset key identifying the regression dataset"
+    },
+    "step_code": {
+      "type": "string",
+      "const": "S5_func_distortion_correction",
+      "description": "Step identifier"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"],
+      "description": "Aggregate status across all runs in this dataset"
+    },
+    "failure_message": {
+      "type": ["string", "null"],
+      "description": "Aggregate failure / warning summary (null if PASS)"
+    },
+    "runs": {
+      "type": "array",
+      "description": "Per-run QC results",
+      "items": {
+        "type": "object",
+        "required": [
+          "status",
+          "mode",
+          "step_code",
+          "dataset_key",
+          "subject",
+          "session",
+          "run_id",
+          "metrics",
+          "failure_reasons",
+          "reportlets",
+          "distortion_correction_mode"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["PASS", "WARN", "FAIL"],
+            "description": "QC status for this run"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["topup", "fugue", "syn"],
+            "description": "Distortion correction mode actually executed"
+          },
+          "step_code": {
+            "type": "string",
+            "const": "S5_func_distortion_correction"
+          },
+          "dataset_key": {
+            "type": "string"
+          },
+          "subject": {
+            "type": ["string", "null"],
+            "description": "Subject ID (e.g. sub-01) or null"
+          },
+          "session": {
+            "type": ["string", "null"],
+            "description": "Session ID (e.g. ses-01) or null"
+          },
+          "run_id": {
+            "type": ["string", "null"],
+            "description": "BIDS run filename stem (without _bold.nii.gz) or null"
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Distortion correction metrics for this run",
+            "required": [
+              "mean_before_voxels",
+              "mean_after_voxels"
+            ],
+            "properties": {
+              "mean_before_voxels": {
+                "type": "integer",
+                "description": "Number of finite voxels in the temporal mean of the pre-S5 BOLD"
+              },
+              "mean_after_voxels": {
+                "type": "integer",
+                "description": "Number of finite voxels in the temporal mean of the post-S5 BOLD"
+              },
+              "mi_before": {
+                "type": ["number", "null"],
+                "description": "Mutual information between pre-S5 mean BOLD and anat (in BOLD geometry); null when anat resampling failed"
+              },
+              "mi_after": {
+                "type": ["number", "null"],
+                "description": "Mutual information between post-S5 mean BOLD and anat (in BOLD geometry)"
+              },
+              "mi_delta_pct": {
+                "type": ["number", "null"],
+                "description": "Percentage change in MI (after vs before)"
+              }
+            }
+          },
+          "failure_reasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of failure / warning reasons (empty if PASS)"
+          },
+          "failure_message": {
+            "type": ["string", "null"],
+            "description": "Semicolon-joined failure_reasons or null when none"
+          },
+          "reportlets": {
+            "type": "object",
+            "description": "Paths (relative to out_dir) to QC reportlet files",
+            "required": [
+              "crop_box_sagittal",
+              "mi_summary"
+            ],
+            "properties": {
+              "crop_box_sagittal": {
+                "type": "string",
+                "description": "Path to the before/after axial montage PNG (cord-region focused)"
+              },
+              "mi_summary": {
+                "type": "string",
+                "description": "Path to the MI before/after bar chart PNG"
+              }
+            }
+          },
+          "distortion_correction_mode": {
+            "type": "string",
+            "enum": ["topup", "fugue", "syn"],
+            "description": "Mode actually executed; downstream (S6) reads this to handle SyN-fallback runs differently"
+          }
+        }
+      }
+    }
+  }
+}
