@@ -158,6 +158,7 @@ def _process_session_worker(
     bids_root: str,
     out_root: str,
     policy: dict,
+    dataset_key: Optional[str] = None,
 ) -> dict:
     """Worker function for parallel processing - unpacks candidates dict and converts strings to Paths."""
     key = (subject, session)
@@ -176,6 +177,7 @@ def _process_session_worker(
         bids_root=Path(bids_root),
         out_root=Path(out_root),
         policy=policy,
+        dataset_key=dataset_key,
     )
 
 

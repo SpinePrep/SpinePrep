@@ -63,9 +63,14 @@ def run_S2_anat_cordref(
     if bids_root and bids_root_path.resolve() != bids_root.resolve():
         return StepResult(status="FAIL", failure_message="Inventory bids_root mismatch.")
 
-    runs_path = Path(out) / "logs" / "S2_anat_cordref_runs.jsonl"
-    qc_path = Path(out) / "logs" / "S2_anat_cordref_qc.json"
-    runs_path.parent.mkdir(parents=True, exist_ok=True)
+    # Per-dataset qc/runs paths (primary). Also keep the legacy aggregate
+    # filenames in sync at the end of the run for back-compat with
+    # `check_S2_anat_cordref` and historical consumers.
+    per_dataset_runs_path = Path(out) / "logs" / "S2_anat_cordref" / ds_key / "runs.jsonl"
+    per_dataset_qc_path = Path(out) / "logs" / "S2_anat_cordref" / ds_key / "qc.json"
+    per_dataset_runs_path.parent.mkdir(parents=True, exist_ok=True)
+    runs_path = per_dataset_runs_path
+    qc_path = per_dataset_qc_path
 
     candidates = _collect_anat_candidates(inventory)
     sessions = _collect_subject_sessions(inventory)
@@ -81,6 +86,7 @@ def run_S2_anat_cordref(
                 subject=subject, session=session,
                 candidates=candidates.get(key, []),
                 bids_root=bids_root_path, out_root=Path(out), policy=policy,
+                dataset_key=dataset_key,
             )
             run["command_line"] = command_line
             runs.append(run)
@@ -100,6 +106,7 @@ def run_S2_anat_cordref(
             bids_root=str(bids_root_path),
             out_root=str(Path(out)),
             policy=policy,
+            dataset_key=dataset_key,
         )
 
         future_to_key = {}
@@ -139,6 +146,14 @@ def run_S2_anat_cordref(
 
     qc = _summarise_runs(inventory, policy_path, runs)
     _write_json(qc_path, qc)
+
+    # Back-compat: keep the legacy aggregate file in sync with this dataset's
+    # latest content so `check_S2_anat_cordref` and any historical consumers
+    # still resolve. Per-dataset is the source of truth.
+    legacy_runs = Path(out) / "logs" / "S2_anat_cordref_runs.jsonl"
+    legacy_qc = Path(out) / "logs" / "S2_anat_cordref_qc.json"
+    _write_runs_jsonl(legacy_runs, runs)
+    _write_json(legacy_qc, qc)
 
     status = qc.get("status", "FAIL")
     failure_message = qc.get("failure_message")
