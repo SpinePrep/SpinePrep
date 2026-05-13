@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "qc_S6_func_to_anat_registration.schema.json",
+  "title": "S6_func_to_anat_registration QC Status",
+  "description": "QC status schema for S6_func_to_anat_registration step (aggregated per dataset key)",
+  "type": "object",
+  "required": ["dataset_key", "step_code", "status", "runs"],
+  "properties": {
+    "dataset_key": { "type": "string" },
+    "step_code": {
+      "type": "string",
+      "const": "S6_func_to_anat_registration"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"]
+    },
+    "failure_message": { "type": ["string", "null"] },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "status", "step_code", "dataset_key",
+          "subject", "session", "run_id",
+          "metrics", "failure_reasons", "reportlets"
+        ],
+        "properties": {
+          "status": { "type": "string", "enum": ["PASS", "WARN", "FAIL"] },
+          "step_code": {
+            "type": "string",
+            "const": "S6_func_to_anat_registration"
+          },
+          "dataset_key": { "type": "string" },
+          "subject": { "type": ["string", "null"] },
+          "session": { "type": ["string", "null"] },
+          "run_id": { "type": ["string", "null"] },
+          "anat_modality": {
+            "type": ["string", "null"],
+            "enum": ["T1w", "T2w", null],
+            "description": "Anatomical modality used as moving image"
+          },
+          "distortion_correction_mode_inherited": {
+            "type": ["string", "null"],
+            "enum": ["topup", "fugue", "syn", null],
+            "description": "S5 mode for this run (used to gate Dice PASS bar)"
+          },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "cord_dice": { "type": ["number", "null"] },
+              "cord_hd95_mm": { "type": ["number", "null"] },
+              "cord_asd_mm": { "type": ["number", "null"] },
+              "centerline_round_trip_med_vox": { "type": ["number", "null"] },
+              "centerline_round_trip_max_vox": { "type": ["number", "null"] },
+              "mi_before": { "type": ["number", "null"] },
+              "mi_after": { "type": ["number", "null"] },
+              "mi_delta_pct": { "type": ["number", "null"] }
+            }
+          },
+          "failure_reasons": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "failure_message": { "type": ["string", "null"] },
+          "reportlets": {
+            "type": "object",
+            "properties": {
+              "bold_on_anat_axial": { "type": "string" },
+              "bold_on_anat_sagittal": { "type": "string" },
+              "cord_dice_per_slice": { "type": "string" }
+            }
+          },
+          "xfm_paths": {
+            "type": "object",
+            "description": "Relative paths to forward + inverse warp + sidecar",
+            "properties": {
+              "from_bold_to_anat": { "type": "string" },
+              "from_anat_to_bold": { "type": "string" },
+              "sidecar": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
