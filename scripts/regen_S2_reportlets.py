@@ -180,6 +180,26 @@ def main() -> int:
                 total += 1
 
     print(f"\n=== {total} sagittal reportlets refreshed ===")
+
+    # Refresh the dashboard HTML for every workfolder so the ?v=<mtime>
+    # cachebusters update. Without this, the browser keeps showing the
+    # previous PNGs because the URLs in HTML still embed the OLD mtime.
+    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+    work_root = PROJECT_ROOT / "work"
+    refreshed_dashboards = 0
+    for wf in sorted(work_root.glob("wf_*"), key=lambda p: p.stat().st_mtime,
+                     reverse=True):
+        if not (wf / "dashboard" / "index.html").exists():
+            continue
+        try:
+            generate_dashboard_safe(wf)
+            refreshed_dashboards += 1
+            # Only refresh the latest few; older ones rarely matter.
+            if refreshed_dashboards >= 6:
+                break
+        except Exception:
+            pass
+    print(f"=== {refreshed_dashboards} dashboards' HTML refreshed ===")
     return 0
 
 
