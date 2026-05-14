@@ -1,15 +1,23 @@
 version: 2
 
 selection:
-  # T2star (MEGRE multi-echo magnitude, RMS-across-echoes + mean-across-runs)
-  # is the canonical cervical anat reference when available: T2*-weighted
-  # contrast matches T2*-EPI (CSF bright, cord dark), so func->anat
-  # registration uses same-contrast cord segmentations rather than fighting
-  # an inverted T1w. Fall back to T2w then T1w.
+  # Dual-role anat selection:
+  #
+  # PRIMARY anat (this `preference` list) drives labeling (sct_label_vertebrae,
+  # TotalSpineSeg), rootlets, PAM50 registration, and visualization
+  # reportlets. Must be full-FOV — T2* / MEGRE (typically cord-only ~60mm Z)
+  # is excluded because sct_label_vertebrae requires C2/C3 disc detection
+  # and only accepts -c t1/-c t2.
   preference:
-    - T2star
     - T2w
     - T1w
+  # SECONDARY cordref (only used by S5/S6 func->anat registration) — when
+  # T2star/MEGRE is available alongside the primary anat, S2 produces a
+  # second cordref + cord_dseg in the matched contrast. T2*-anat <-> T2*-EPI
+  # gives the cleanest seg-driven registration. When only the primary
+  # modality is available, S5/S6 fall back to it automatically.
+  secondary_cordref_preference:
+    - T2star
 
 # MEGRE synthesis: when a candidate is detected as multi-echo MEGRE
 # (BIDS: sub-XX_acq-MEGRE_run-NN_echo-EE_part-mag_T2star.nii.gz), build a

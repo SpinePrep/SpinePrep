@@ -218,6 +218,136 @@ def _process_single_session_batch_worker(session_info: dict) -> tuple[str, str, 
     )
 
 
+def _process_secondary_cordref(
+    candidates: list[dict],
+    primary_modality: Optional[str],
+    subject: str,
+    session: Optional[str],
+    run_id: str,
+    bids_root: Path,
+    out_root: Path,
+    policy: dict,
+    dataset_key: Optional[str] = None,
+) -> Optional[dict]:
+    """Produce a SECONDARY cordref + cord_dseg in a contrast that matches
+    T2*-EPI (for S5/S6 func->anat registration). Runs ONLY when a T2star
+    (or whatever `secondary_cordref_preference` lists) candidate exists
+    that differs from the primary modality. Skips labeling, TotalSpineSeg,
+    rootlets, and PAM50 registration — those need full-FOV primary anats.
+
+    Returns a small info dict {modality, cordref_path, cordmask_path} or
+    None when the secondary role is not applicable / fails.
+    """
+    sec_pref = policy.get("secondary_cordref_preference", [])
+    if not sec_pref:
+        return None
+    sec_sel = _select_cordref(candidates, sec_pref)
+    if sec_sel is None or sec_sel.get("modality") == primary_modality:
+        return None
+
+    sec_mod = sec_sel["modality"]
+    if dataset_key:
+        sec_work_dir = (out_root / "work" / "S2_anat_cordref"
+                        / dataset_key / run_id / f"_secondary_{sec_mod}")
+    else:
+        sec_work_dir = (out_root / "work" / "S2_anat_cordref"
+                        / run_id / f"_secondary_{sec_mod}")
+    sec_work_dir.mkdir(parents=True, exist_ok=True)
+
+    sec_source = bids_root / sec_sel["path"]
+    if sec_mod == "T2star" and sec_sel.get("echo_paths"):
+        synthesized = sec_work_dir / "anat_T2star_synthesized.nii.gz"
+        echo_paths_abs = [bids_root / p for p in sec_sel["echo_paths"]]
+        ok, message = _synthesize_t2star(
+            echo_paths=echo_paths_abs,
+            out_path=synthesized,
+            work_dir=sec_work_dir / "megre",
+            echo_combine=policy.get("megre_echo_combine", "rms"),
+            run_combine=policy.get("megre_run_combine", "mean"),
+        )
+        if not ok or not synthesized.exists():
+            return {"status": "FAIL",
+                    "failure_message": f"secondary MEGRE synth failed: {message}",
+                    "modality": sec_mod}
+        sec_source = synthesized
+    elif not sec_source.exists():
+        return None
+
+    standard_path = sec_work_dir / "cordref_std.nii.gz"
+    ok, message = _standardize_orientation(sec_source, standard_path,
+                                           policy["orientation"])
+    if not ok:
+        return {"status": "FAIL",
+                "failure_message": f"secondary standardize failed: {message}",
+                "modality": sec_mod}
+
+    discovery_seg_path = sec_work_dir / "cordmask_discovery.nii.gz"
+    discover_contrast = policy["discover_contrast_map"].get(sec_mod, "t2")
+    ok, message = _run_discovery_segmentation(
+        standard_path=standard_path,
+        discovery_seg_path=discovery_seg_path,
+        contrast=discover_contrast,
+        min_z_slices=policy["discover_min_z_slices"],
+        method=policy["discover_method"],
+        task=policy.get("discover_task"),
+    )
+    if not ok:
+        return {"status": "FAIL",
+                "failure_message": f"secondary discovery failed: {message}",
+                "modality": sec_mod}
+
+    cropped_path = sec_work_dir / "cordref_crop.nii.gz"
+    crop_mask_path = sec_work_dir / "crop_mask.nii.gz"
+    ok, message = _crop_based_on_mask(
+        standard_path=standard_path,
+        discovery_seg_path=discovery_seg_path,
+        cropped_path=cropped_path,
+        crop_mask_path=crop_mask_path,
+        mask_diameter_mm=policy["mask_diameter_mm"],
+        dilate_xyz=policy["dilate_xyz"],
+        min_z_slices=policy["crop_min_z_slices"],
+    )
+    if not ok:
+        return {"status": "FAIL",
+                "failure_message": f"secondary crop failed: {message}",
+                "modality": sec_mod}
+
+    derivatives_dir = _derivatives_anat_dir(out_root, subject, session,
+                                            dataset_key)
+    derivatives_dir.mkdir(parents=True, exist_ok=True)
+    cordref_name = _format_derivative_name(subject, session, "desc-cordref", sec_mod)
+    cordref_path = derivatives_dir / cordref_name
+    _copy_nifti(cropped_path, cordref_path)
+
+    seg_path = derivatives_dir / _format_derivative_name(
+        subject, session, "desc-cord_dseg", sec_mod
+    )
+    cord_method = policy.get("cord_method", "contrast_agnostic")
+    if cord_method == "contrast_agnostic":
+        ok, message = _run_command(
+            ["sct_deepseg", "spinalcord", "-i", str(cordref_path), "-o", str(seg_path)]
+        )
+    else:
+        contrast = policy["contrast_map"].get(sec_mod, "t2")
+        ok, message = _run_command(
+            ["sct_deepseg_sc", "-i", str(cordref_path),
+             "-c", str(contrast), "-o", str(seg_path)]
+        )
+    if not ok or not seg_path.exists():
+        return {"status": "FAIL",
+                "failure_message": f"secondary cord seg failed: {message}",
+                "modality": sec_mod}
+
+    return {
+        "status": "PASS",
+        "modality": sec_mod,
+        "cordref_path": _relpath(cordref_path, out_root),
+        "cordmask_path": _relpath(seg_path, out_root),
+        "source_path": sec_sel["path"] if isinstance(sec_sel.get("path"), str)
+                         else str(sec_sel["path"]),
+    }
+
+
 def _process_session(
     subject: str,
     session: Optional[str],
@@ -448,6 +578,18 @@ def _process_session(
 
     sct_version = _get_sct_version()
 
+    # Secondary cordref (T2*/MEGRE) — runs only when available and distinct
+    # from the primary modality. Produces only desc-cordref_<mod>.nii.gz +
+    # desc-cord_dseg_<mod>.nii.gz; downstream S5/S6 prefer T2star when
+    # globbing for cordref/cord_dseg.
+    secondary_info = _process_secondary_cordref(
+        candidates=candidates,
+        primary_modality=selection["modality"],
+        subject=subject, session=session, run_id=run_id,
+        bids_root=bids_root, out_root=out_root, policy=policy,
+        dataset_key=dataset_key,
+    )
+
     return {
         "subject": subject,
         "session": session,
@@ -457,6 +599,7 @@ def _process_session(
         "dataset_key": dataset_key,
         "source_path": source_rel,
         "cordref_modality": selection["modality"],
+        "cordref_secondary": secondary_info,
         "cordref_path": _relpath(cordref_path, out_root),
         "cordmask_path": _relpath(seg_path, out_root),
         "vertebral_labels_path": _relpath(vertebral_labels_path, out_root),
