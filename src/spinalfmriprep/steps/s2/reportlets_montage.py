@@ -127,46 +127,15 @@ def _render_crop_box_sagittal(
         if discovery_slice_2d is not None:
             discovery_slice_2d = np.flipud(discovery_slice_2d.T)
 
-        # In-plane (Y-direction) crop around the cord region. Without this,
-        # cord-only anats (e.g. MEGRE T2*) render the cord as a thin vertical
-        # sliver lost in 80%+ non-cord background, and the figure looks
-        # collapsed even though the mm-aspect ratio is mathematically correct.
-        # Use discovery seg first, then crop mask, then leave full.
+        # Keep the FULL raw FOV as the background (no in-plane crop). The red
+        # rectangle drawn later from `crop_slice` indicates where the cord
+        # crop was extracted relative to the original acquisition. Aspect is
+        # corrected from voxel zooms so anisotropic data (e.g. MEGRE
+        # 0.5x0.5x5mm) doesn't render as a flattened slat.
         try:
             zooms = std_img.header.get_zooms()[:3]
-        except Exception:
-            zooms = (1.0, 1.0, 1.0)
-        col_margin_mm = 30.0
-        try:
-            zoom_y_mm = float(zooms[1])
-            col_margin_vox = max(8, int(round(col_margin_mm / max(zoom_y_mm, 1e-6))))
-        except Exception:
-            col_margin_vox = 16
-        cord_cols_mask = None
-        if discovery_slice_2d is not None and discovery_slice_2d.any():
-            cord_cols_mask = discovery_slice_2d.any(axis=0)
-        elif crop_slice is not None and crop_slice.any():
-            cord_cols_mask = crop_slice.any(axis=0)
-        if cord_cols_mask is not None and cord_cols_mask.any():
-            col_ix = np.where(cord_cols_mask)[0]
-            c0 = max(0, int(col_ix.min()) - col_margin_vox)
-            c1 = min(img_slice.shape[1], int(col_ix.max()) + col_margin_vox + 1)
-            if c1 - c0 >= 16:
-                img_slice = img_slice[:, c0:c1]
-                if crop_slice is not None:
-                    crop_slice = crop_slice[:, c0:c1]
-                if discovery_slice_2d is not None:
-                    discovery_slice_2d = discovery_slice_2d[:, c0:c1]
-
-        # Compute physical aspect ratio from voxel zooms so anisotropic
-        # acquisitions (e.g. MEGRE: 0.5x0.5x5mm) render with correct cord
-        # height. Without this the final convert -resize 1200x stretches
-        # an already-thin pixel slab into a flattened slat.
-        try:
-            zooms = std_img.header.get_zooms()[:3]
-            # After ".T + flipud", display rows = original Z, cols = original Y
-            zoom_disp_h = float(zooms[2])  # mm per displayed row
-            zoom_disp_w = float(zooms[1])  # mm per displayed column
+            zoom_disp_h = float(zooms[2])  # mm per displayed row (Z)
+            zoom_disp_w = float(zooms[1])  # mm per displayed column (Y)
             n_rows, n_cols = img_slice.shape
             mm_h = n_rows * zoom_disp_h
             mm_w = n_cols * zoom_disp_w
