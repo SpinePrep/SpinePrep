@@ -35,6 +35,8 @@
           "status": {"type": "string", "enum": ["PASS", "FAIL"]},
           "failure_message": {"type": ["string", "null"]},
           "run_id": {"type": "string"},
+          "cordref_modality": {"type": ["string", "null"], "enum": ["T1w", "T2w", "T2star", null]},
+          "source_path": {"type": ["string", "null"]},
           "cordref_path": {"type": ["string", "null"]},
           "cordmask_path": {"type": ["string", "null"]},
           "vertebral_labels_path": {"type": ["string", "null"]},

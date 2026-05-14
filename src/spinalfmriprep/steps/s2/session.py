@@ -234,8 +234,9 @@ def _process_session(
             "subject": subject,
             "session": session,
             "status": "FAIL",
-            "failure_message": "No eligible T1w/T2w anatomy found for cordref selection.",
+            "failure_message": "No eligible T1w/T2w/T2star anatomy found for cordref selection.",
             "run_id": run_id,
+            "dataset_key": dataset_key,
         }
 
     source_rel = selection["path"]
@@ -247,6 +248,7 @@ def _process_session(
             "status": "FAIL",
             "failure_message": f"Selected anatomy not found: {source_path}",
             "run_id": run_id,
+            "dataset_key": dataset_key,
         }
 
     # When the same (subject, session) appears in multiple datasets (e.g.
@@ -273,14 +275,13 @@ def _process_session(
             run_combine=policy.get("megre_run_combine", "mean"),
         )
         if not ok or not synthesized.exists():
-            return _fail_run(subject, session, run_id,
-                             f"MEGRE T2* synthesis failed: {message}")
+            return _fail_run(subject, session, run_id, f"MEGRE T2* synthesis failed: {message}", dataset_key=dataset_key)
         source_path = synthesized
 
     standard_path = work_dir / "cordref_std.nii.gz"
     ok, message = _standardize_orientation(source_path, standard_path, policy["orientation"])
     if not ok:
-        return _fail_run(subject, session, run_id, f"Header standardization failed: {message}")
+        return _fail_run(subject, session, run_id, f"Header standardization failed: {message}", dataset_key=dataset_key)
 
     discovery_seg_path = work_dir / "cordmask_discovery.nii.gz"
     discover_contrast = policy["discover_contrast_map"].get(selection["modality"], "t2")
@@ -293,7 +294,7 @@ def _process_session(
         task=policy.get("discover_task"),
     )
     if not ok:
-        return _fail_run(subject, session, run_id, f"Discovery segmentation failed: {message}")
+        return _fail_run(subject, session, run_id, f"Discovery segmentation failed: {message}", dataset_key=dataset_key)
 
     cropped_path = work_dir / "cordref_crop.nii.gz"
     crop_mask_path = work_dir / "crop_mask.nii.gz"
@@ -307,7 +308,7 @@ def _process_session(
         min_z_slices=policy["crop_min_z_slices"],
     )
     if not ok:
-        return _fail_run(subject, session, run_id, f"Cropping failed: {message}")
+        return _fail_run(subject, session, run_id, f"Cropping failed: {message}", dataset_key=dataset_key)
 
     derivatives_dir = _derivatives_anat_dir(out_root, subject, session, dataset_key)
     derivatives_dir.mkdir(parents=True, exist_ok=True)
@@ -331,16 +332,16 @@ def _process_session(
             ["sct_deepseg_sc", "-i", str(cordref_path), "-c", str(contrast), "-o", str(seg_path)]
         )
     if not ok:
-        return _fail_run(subject, session, run_id, f"Cord segmentation failed: {message}")
+        return _fail_run(subject, session, run_id, f"Cord segmentation failed: {message}", dataset_key=dataset_key)
 
     try:
         metrics = _compute_segmentation_metrics(seg_path)
     except ValueError as err:
-        return _fail_run(subject, session, run_id, f"Metric computation failed: {err}")
+        return _fail_run(subject, session, run_id, f"Metric computation failed: {err}", dataset_key=dataset_key)
 
     tss_info = _run_totalspineseg(cordref_path=cordref_path, work_dir=work_dir)
     if tss_info["status"] == "FAIL":
-        return _fail_run(subject, session, run_id, tss_info["failure_message"])
+        return _fail_run(subject, session, run_id, tss_info["failure_message"], dataset_key=dataset_key)
 
     vertebral_labels_path = None
     disc_labels_path = None
@@ -432,13 +433,13 @@ def _process_session(
     else:
         if reg_rootlet and reg_rootlet.get("status") == "FAIL":
             msg = reg_rootlet.get("failure_message") or "rootlet registration failed."
-            return _fail_run(subject, session, run_id, str(msg))
+            return _fail_run(subject, session, run_id, str(msg, dataset_key=dataset_key))
         return _fail_run(
             subject, session, run_id,
             str(reg_disc.get("failure_message") or "Registration failed."),
         )
 
-    xfm_dir = _derivatives_xfm_dir(out_root, subject, session)
+    xfm_dir = _derivatives_xfm_dir(out_root, subject, session, dataset_key)
     xfm_dir.mkdir(parents=True, exist_ok=True)
     warp_to_template = xfm_dir / _format_xfm_name(subject, session, "from-cordref_to-PAM50_warp")
     warp_to_cordref = xfm_dir / _format_xfm_name(subject, session, "from-PAM50_to-cordref_warp")
@@ -453,6 +454,7 @@ def _process_session(
         "status": "PASS",
         "failure_message": None,
         "run_id": run_id,
+        "dataset_key": dataset_key,
         "source_path": source_rel,
         "cordref_modality": selection["modality"],
         "cordref_path": _relpath(cordref_path, out_root),

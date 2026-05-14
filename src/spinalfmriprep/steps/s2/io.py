@@ -117,13 +117,15 @@ def _copy_file(source: Path, dest: Path) -> None:
 # Failure record helper
 # ---------------------------------------------------------------------------
 
-def _fail_run(subject: str, session: Optional[str], run_id: str, message: str) -> dict:
+def _fail_run(subject: str, session: Optional[str], run_id: str, message: str,
+              dataset_key: Optional[str] = None) -> dict:
     return {
         "subject": subject,
         "session": session,
         "status": "FAIL",
         "failure_message": message,
         "run_id": run_id,
+        "dataset_key": dataset_key,
     }
 
 
@@ -234,10 +236,22 @@ def _abs_path(out_root: Path, rel: Optional[str]) -> Optional[Path]:
     return out_root / rel
 
 
-def _derivatives_xfm_dir(out_root: Path, subject: str, session: Optional[str]) -> Path:
+def _derivatives_xfm_dir(out_root: Path, subject: str, session: Optional[str],
+                         dataset_key: Optional[str] = None) -> Path:
+    """Return derivatives xfm dir; keyed by dataset when given.
+
+    Without dataset_key, 3 datasets sharing (subject, session) all write
+    PAM50 warp files (`*_from-cordref_to-PAM50_warp.nii.gz`) to the same
+    path. Last writer wins; the other 2 datasets get warps that don't
+    correspond to their own anat. Match `_derivatives_anat_dir` shape.
+    """
+    if dataset_key:
+        base = out_root / "derivatives" / "spinalfmriprep" / dataset_key / f"sub-{subject}"
+    else:
+        base = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}"
     if session:
-        return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / f"ses-{session}" / "xfm"
-    return out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "xfm"
+        return base / f"ses-{session}" / "xfm"
+    return base / "xfm"
 
 
 def _format_xfm_name(subject: str, session: Optional[str], suffix: str) -> str:
