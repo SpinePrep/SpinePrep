@@ -69,8 +69,20 @@ def _render_reportlets(run: dict, out_root: Path, dataset_key: str) -> tuple[dic
         warp_template2anat = Path(warp_template2anat)
 
     reportlets: dict[str, Optional[str]] = {}
-    qc_root = out_root / "work" / "S2_anat_cordref" / run.get("run_id", "unknown") / "qc"
-    work_dir = out_root / "work" / "S2_anat_cordref" / run.get("run_id", "unknown")
+    # Reportlets read the same work_dir the session writer used. session.py
+    # keys by dataset_key when present (work/S2_anat_cordref/<dk>/<run_id>/);
+    # fall back to the legacy unkeyed path for older runs.
+    run_id = run.get("run_id", "unknown")
+    if run_dataset_key:
+        keyed_dir = out_root / "work" / "S2_anat_cordref" / run_dataset_key / run_id
+    else:
+        keyed_dir = None
+    unkeyed_dir = out_root / "work" / "S2_anat_cordref" / run_id
+    if keyed_dir is not None and (keyed_dir / "cordref_std.nii.gz").exists():
+        work_dir = keyed_dir
+    else:
+        work_dir = unkeyed_dir
+    qc_root = work_dir / "qc"
 
     # S2.1: Discovery + Crop sagittal figure
     cordref_std_path = work_dir / "cordref_std.nii.gz"

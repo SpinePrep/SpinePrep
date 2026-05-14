@@ -182,8 +182,21 @@ def check_S2_anat_cordref(
     if out is None:
         return StepResult(status="FAIL", failure_message="--out is required for S2_anat_cordref")
 
-    runs_path = Path(out) / "logs" / "S2_anat_cordref_runs.jsonl"
-    qc_path = Path(out) / "logs" / "S2_anat_cordref_qc.json"
+    # Prefer per-dataset qc.json + runs.jsonl over the legacy aggregate.
+    # The aggregate is overwritten by whichever dataset ran last, so reading
+    # it for a different dataset_key gives wrong results (and fails the
+    # `qc.dataset_key != dataset_key` gate below).
+    ds_key = dataset_key or "ad_hoc"
+    per_dataset_runs = Path(out) / "logs" / "S2_anat_cordref" / ds_key / "runs.jsonl"
+    per_dataset_qc = Path(out) / "logs" / "S2_anat_cordref" / ds_key / "qc.json"
+    aggregate_runs = Path(out) / "logs" / "S2_anat_cordref_runs.jsonl"
+    aggregate_qc = Path(out) / "logs" / "S2_anat_cordref_qc.json"
+    if per_dataset_qc.exists() and per_dataset_runs.exists():
+        runs_path = per_dataset_runs
+        qc_path = per_dataset_qc
+    else:
+        runs_path = aggregate_runs
+        qc_path = aggregate_qc
 
     required = (runs_path, qc_path)
     missing = [p for p in required if not p.exists() or p.stat().st_size == 0]
