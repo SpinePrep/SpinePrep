@@ -19,6 +19,12 @@ def _load_policy(path: Path) -> dict:
     preference = selection.get("preference", ["T2w", "T1w"])
     if not isinstance(preference, list) or not all(isinstance(p, str) for p in preference):
         raise ValueError("S2_anat_cordref policy selection.preference must be a list of strings.")
+    # Secondary role: cordref-for-func-registration. Used by S5/S6 only.
+    # Runs alongside the primary anat when T2star/MEGRE is available;
+    # produces just desc-cordref_<mod>.nii.gz + desc-cord_dseg_<mod>.nii.gz.
+    secondary_pref = selection.get("secondary_cordref_preference", ["T2star"])
+    if not isinstance(secondary_pref, list) or not all(isinstance(p, str) for p in secondary_pref):
+        raise ValueError("S2_anat_cordref policy selection.secondary_cordref_preference must be a list of strings.")
     standardize = raw.get("standardize", {})
     orientation = standardize.get("orientation", "RPI")
 
@@ -105,6 +111,7 @@ def _load_policy(path: Path) -> dict:
     return {
         "version": version,
         "preference": preference,
+        "secondary_cordref_preference": secondary_pref,
         "orientation": orientation,
         # Discovery parameters
         "discover_method": discover_method,
