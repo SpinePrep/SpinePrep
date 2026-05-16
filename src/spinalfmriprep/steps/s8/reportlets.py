@@ -101,9 +101,12 @@ def render_s8_csf_variance(
 def render_s8_pnm_peaks(
     work_dir: Path, physio_present: bool, output_path: Path,
 ) -> None:
-    """Cardiac + respiratory traces with detected peaks (from FSL popp).
+    """Cardiac peaks (from popp_card.txt) + respiratory phase (from
+    popp_resp.txt, 2-col time/phase) on a shared time axis.
 
-    When physio is absent, render an explanatory placeholder.
+    FSL popp output convention:
+      popp_card.txt — cardiac peak times (one per line, seconds)
+      popp_resp.txt — per-sample respiratory phase (time, phase) cols
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if not physio_present:
@@ -114,31 +117,60 @@ def render_s8_pnm_peaks(
         fig.savefig(output_path, dpi=120, bbox_inches="tight")
         plt.close(fig)
         return
-    # Try to load popp output (.card and .resp are peak-time text files)
     pnm = work_dir / "pnm"
-    card_files = sorted(pnm.glob("popp*.card")) if pnm.exists() else []
-    resp_files = sorted(pnm.glob("popp*.resp")) if pnm.exists() else []
+    card_path = pnm / "popp_card.txt"
+    resp_path = pnm / "popp_resp.txt"
+
     fig, axes = plt.subplots(2, 1, figsize=(10, 4), sharex=True)
-    for ax, files, label in zip(
-        axes, [card_files, resp_files], ["Cardiac peaks (s)", "Respiratory peaks (s)"]
-    ):
-        if not files:
-            ax.text(0.5, 0.5, f"{label} unavailable", transform=ax.transAxes, ha="center")
-            ax.axis("off")
-            continue
+
+    # Cardiac: peak times as vertical ticks
+    ax = axes[0]
+    if card_path.exists():
         try:
-            arr = np.loadtxt(files[0])
-            ax.vlines(arr, 0, 1, color="#cc2222" if "Cardiac" in label else "#0086e6",
-                      lw=0.5)
+            card_times = np.loadtxt(card_path)
+            if card_times.size > 1:
+                bpm = 60.0 / float(np.median(np.diff(card_times)))
+                ax.vlines(card_times, 0, 1, color="#cc2222", lw=0.4)
+                ax.set_ylabel(f"Cardiac peaks\n({card_times.size} peaks, ~{bpm:.0f} bpm)",
+                              fontsize=9)
+            else:
+                ax.text(0.5, 0.5, "Cardiac: <2 peaks detected",
+                        transform=ax.transAxes, ha="center")
         except Exception as e:
-            ax.text(0.5, 0.5, f"load failed: {e}", transform=ax.transAxes, ha="center")
-            ax.axis("off")
-            continue
-        ax.set_ylabel(label, fontsize=9)
-        ax.set_yticks([])
-        ax.grid(axis="x", alpha=0.3)
+            ax.text(0.5, 0.5, f"cardiac load failed: {e}",
+                    transform=ax.transAxes, ha="center")
+    else:
+        ax.text(0.5, 0.5, "popp_card.txt missing", transform=ax.transAxes, ha="center")
+    ax.set_yticks([])
+    ax.grid(axis="x", alpha=0.3)
+
+    # Respiratory: plot phase trace
+    ax = axes[1]
+    if resp_path.exists():
+        try:
+            arr = np.loadtxt(resp_path)
+            if arr.ndim == 2 and arr.shape[1] == 2:
+                t = arr[:, 0]; ph = arr[:, 1]
+            else:
+                t = np.arange(arr.size) * 0.0025  # 400Hz default
+                ph = arr
+            # Detect respiratory cycles via phase wraps (phase resets ~every breath)
+            from scipy.signal import find_peaks
+            # Phase is unwrapped (monotonically increasing-ish); wrap-modulo for cycle detection
+            phw = np.mod(ph + np.pi, 2 * np.pi) - np.pi
+            n_breaths = int(((np.diff(phw) < -np.pi).sum()))
+            duration_s = float(t[-1] - t[0]) if t.size > 1 else 1.0
+            cpm = 60.0 * n_breaths / max(duration_s, 1e-6)
+            ax.plot(t, phw, color="#0086e6", lw=0.3)
+            ax.set_ylabel(f"Respiratory phase\n(~{cpm:.0f} cpm)", fontsize=9)
+        except Exception as e:
+            ax.text(0.5, 0.5, f"respiratory load failed: {e}",
+                    transform=ax.transAxes, ha="center")
+    else:
+        ax.text(0.5, 0.5, "popp_resp.txt missing", transform=ax.transAxes, ha="center")
+    ax.grid(axis="x", alpha=0.3)
     axes[-1].set_xlabel("Time (s)")
-    fig.suptitle("FSL PNM peak detection", fontsize=11)
+    fig.suptitle("FSL PNM physio: cardiac peaks + respiratory phase", fontsize=11)
     fig.tight_layout()
     fig.savefig(output_path, dpi=120, bbox_inches="tight")
     plt.close(fig)
