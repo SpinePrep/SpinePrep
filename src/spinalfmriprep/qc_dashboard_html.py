@@ -51,6 +51,12 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "pnm_peaks",                # S8 - FSL PNM cardiac/respiratory peak detection
         "correlation_heatmap",      # S8 - confound correlation matrix
     ],
+    "S9_primary_functional_derivatives": [
+        "smoothed_vs_unsmoothed_axial",  # S9 - axial montage before/after smoothing
+        "tsnr_map_axial",                # S9 - tSNR map montage
+        "tsnr_per_level",                # S9 - per-vertebral-level tSNR bars
+        "smoothness_summary",            # S9 - requested vs measured FWHM
+    ],
 }
 
 # Human-readable labels for reportlets (matching ROADMAP milestones)
@@ -93,6 +99,12 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "csf_variance":        "S8 - CSF Voxel Count per Slice",
         "pnm_peaks":           "S8 - PNM Cardiac/Respiratory Peaks",
         "correlation_heatmap": "S8 - Confound Correlation Heatmap",
+    },
+    "S9_primary_functional_derivatives": {
+        "smoothed_vs_unsmoothed_axial": "S9 - Smoothed vs Unsmoothed (Axial)",
+        "tsnr_map_axial":               "S9 - Native tSNR Map (Axial)",
+        "tsnr_per_level":               "S9 - tSNR per Vertebral Level",
+        "smoothness_summary":           "S9 - Requested vs Measured FWHM",
     },
 }
 

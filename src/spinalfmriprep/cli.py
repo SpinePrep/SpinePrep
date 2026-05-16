@@ -37,7 +37,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _add_S0_arguments(subparser: argparse.ArgumentParser) -> None:
     subparser.add_argument(
         "step",
-        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors"],
+        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives"],
         help="Pipeline step code",
     )
     subparser.add_argument(
@@ -132,6 +132,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _run_S7(args)
         elif step == "S8_confounds_and_physio_regressors":
             result = _run_S8(args)
+        elif step == "S9_primary_functional_derivatives":
+            result = _run_S9(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -157,6 +159,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _check_S7(args)
         elif step == "S8_confounds_and_physio_regressors":
             result = _check_S8(args)
+        elif step == "S9_primary_functional_derivatives":
+            result = _check_S9(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -796,6 +800,62 @@ def _run_S8(args):
 def _check_S8(args):
     from spinalfmriprep.S8_confounds_and_physio_regressors import check_S8_confounds_and_physio_regressors
     return check_S8_confounds_and_physio_regressors(
+        dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
+        datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
+        out=args.out if hasattr(args, "out") else None,
+    )
+
+
+def _run_S9(args):
+    from spinalfmriprep.S9_primary_functional_derivatives import (
+        run_S9, StepResult,
+        run_S9_primary_functional_derivatives_reportlets_only_batch,
+    )
+
+    dataset_keys: list[str] = []
+    if args.scope:
+        resolved = _resolve_scope_to_dataset_keys(args.scope)
+        if not resolved:
+            return StepResult("FAIL", f"No datasets for scope: {args.scope}")
+        dataset_keys = resolved
+    elif args.dataset_key:
+        dataset_keys = [args.dataset_key]
+    if not dataset_keys:
+        return StepResult("FAIL", "--dataset-key or --scope required")
+    if args.out is None:
+        return StepResult("FAIL", "--out is required")
+
+    if args.reportlets_only:
+        results = run_S9_primary_functional_derivatives_reportlets_only_batch(
+            dataset_keys=dataset_keys, out_base=args.out,
+        )
+        failed = [k for k, r in results.items() if r.status == "FAIL"]
+        if failed:
+            return StepResult("FAIL", f"S9 reportlets-only failed: {failed}")
+        return StepResult("PASS")
+
+    failures = []
+    failure_messages = []
+    for key in dataset_keys:
+        res = run_S9(dataset_key=key,
+                     datasets_local=args.datasets_local,
+                     out=str(args.out),
+                     batch_workers=args.batch_workers)
+        if res.status == "FAIL":
+            failures.append(key)
+            if res.failure_message:
+                failure_messages.append(f"{key}: {res.failure_message}")
+    if failures:
+        msg = f"S9 failed for: {', '.join(failures)}"
+        if failure_messages:
+            msg += f". Details: {'; '.join(failure_messages)}"
+        return StepResult("FAIL", msg)
+    return StepResult("PASS")
+
+
+def _check_S9(args):
+    from spinalfmriprep.S9_primary_functional_derivatives import check_S9_primary_functional_derivatives
+    return check_S9_primary_functional_derivatives(
         dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
         datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
         out=args.out if hasattr(args, "out") else None,
