@@ -77,14 +77,19 @@ def _anat_search_roots(
             except Exception:
                 pass
 
-    ses_part = f"ses-{session}/" if session else ""
+    # Normalize subject/session: callers occasionally pass "sub-02" / "ses-01"
+    # already prefixed; without stripping we'd build paths like "sub-sub-02".
+    sub_norm = subject[4:] if subject and subject.startswith("sub-") else subject
+    ses_norm = (session[4:] if session and str(session).startswith("ses-")
+                else session)
+    ses_part = f"ses-{ses_norm}/" if ses_norm else ""
     for base in bases:
         # Layout A: derivatives/spinalfmriprep/<dataset_key>/sub-XX/[ses-YY]/anat/
         roots.append(base / "derivatives" / "spinalfmriprep" / dataset_key
-                     / f"sub-{subject}" / (f"ses-{session}" if session else "") / "anat")
+                     / f"sub-{sub_norm}" / (f"ses-{ses_norm}" if ses_norm else "") / "anat")
         # Layout B: derivatives/spinalfmriprep/sub-XX/[ses-YY]/anat/
         roots.append(base / "derivatives" / "spinalfmriprep"
-                     / f"sub-{subject}" / (f"ses-{session}" if session else "") / "anat")
+                     / f"sub-{sub_norm}" / (f"ses-{ses_norm}" if ses_norm else "") / "anat")
     return [r for r in roots if r.exists()]
 
 
@@ -92,10 +97,22 @@ def _find_anat_for(
     subject: str, session: Optional[str],
     out_path: Path, dataset_key: str = "",
 ) -> Optional[Path]:
-    """Best-effort lookup of the S2 anat (T2w preferred) for a subject."""
+    """Best-effort lookup of the S2 anat (T2star -> T2w -> T1w preferred).
+
+    Match the same-contrast-as-EPI rule: T2*-weighted EPI registers
+    cleanly against T2*/T2 anats; inverted-contrast T1w hurts SyN
+    convergence. Prefer S2 cordref outputs (already cropped to cord)
+    over raw BIDS anats.
+    """
     for root in _anat_search_roots(subject, session, out_path, dataset_key):
-        # Prefer raw T2w > T1w > the S2 cordref reference
-        for pat in ("*_T2w.nii.gz", "*_T1w.nii.gz", "*_desc-cordref*.nii.gz"):
+        for pat in (
+            "*_desc-cordref_T2star.nii.gz",
+            "*_desc-cordref_T2w.nii.gz",
+            "*_desc-cordref_T1w.nii.gz",
+            "*_T2star.nii.gz",
+            "*_T2w.nii.gz",
+            "*_T1w.nii.gz",
+        ):
             hits = sorted(p for p in root.glob(pat)
                           if "_desc-" not in p.name or "cordref" in p.name)
             if hits:
@@ -108,8 +125,10 @@ def _find_cord_mask_for(
     out_path: Path, dataset_key: str = "",
 ) -> Optional[Path]:
     for root in _anat_search_roots(subject, session, out_path, dataset_key):
-        # S2 names them desc-cord_dseg with optional _T1w / _T2w suffix
-        for pat in ("*_desc-cord_dseg_T2w.nii.gz",
+        # S2 names them desc-cord_dseg with modality suffix. Prefer T2star
+        # to match the EPI contrast direction.
+        for pat in ("*_desc-cord_dseg_T2star.nii.gz",
+                    "*_desc-cord_dseg_T2w.nii.gz",
                     "*_desc-cord_dseg_T1w.nii.gz",
                     "*_desc-cord_dseg.nii.gz"):
             hits = sorted(root.glob(pat))
@@ -157,17 +176,27 @@ def run_S5(
     results: list[dict] = []
     for s4_run in s4_runs:
         run_id = s4_run.get("run_id")
+        # subject field is sometimes "02" (bare) and sometimes "sub-02"
+        # (already prefixed). Normalize before building the path.
+        subj_raw = str(s4_run.get("subject") or "")
+        subj = subj_raw[4:] if subj_raw.startswith("sub-") else subj_raw
+        ses_raw = s4_run.get("session")
+        if ses_raw:
+            ses = str(ses_raw)
+            ses = ses[4:] if ses.startswith("ses-") else ses
+        else:
+            ses = None
         # The S4 run_id equals the S3 run dir name. Recover the original
         # BOLD via S1 inventory + funccrop_bold for the cropped input,
         # but for S5 we operate on the S4 mocoref output (already cropped).
-        if s4_run.get("session"):
+        if ses:
             mocoref = (out_path / "derivatives" / "spinalfmriprep"
-                       / f"sub-{s4_run['subject']}"
-                       / f"ses-{s4_run['session']}" / "func"
+                       / f"sub-{subj}"
+                       / f"ses-{ses}" / "func"
                        / f"{run_id}_desc-mocoref_bold.nii.gz")
         else:
             mocoref = (out_path / "derivatives" / "spinalfmriprep"
-                       / f"sub-{s4_run['subject']}" / "func"
+                       / f"sub-{subj}" / "func"
                        / f"{run_id}_desc-mocoref_bold.nii.gz")
         if not mocoref.exists():
             results.append({

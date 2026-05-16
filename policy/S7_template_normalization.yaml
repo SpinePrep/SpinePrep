@@ -1,0 +1,74 @@
+version: 1
+
+# Per-run template normalization. CoSpi-validated pattern: pure compose
+# of S2 anat<->PAM50 with S6 bold<->anat warps. Never resamples 4D BOLD
+# into PAM50 (Eippert 2017 lineage). Only S9 will push cope/zstat to PAM50.
+#
+# Refinement (SCT batch_processing.sh fMRI block second pass with
+# bsplinesyn iter=5) is supported but DISABLED by default because:
+#   1. S6 already does a thorough cord-driven func<->anat registration
+#      (centermassrot -> columnwise -> bsplinesyn iter=20, slicewise).
+#      Further refinement adds noise without information gain.
+#   2. SCT's fMRI block uses MeanSquares on full PAM50_T2s vs EPI; this
+#      can drift on T1w-init / T2*-EPI cases where the anatomical FOV
+#      mismatch is large.
+#   3. Validated on the pain dataset: refinement dropped Dice from 0.82
+#      (compose-only) to 0.68. The CoSpi reference pipeline does NOT
+#      refine and matches its published Balgrist results.
+# Set refinement.enable=true to opt in for experimentation.
+
+template:
+  name: "PAM50"
+  reference_modality: "T2s"     # PAM50_t2s — best contrast match for T2*-EPI
+  data_dir: null                # null -> use $SCT_DIR/data/PAM50
+
+refinement:
+  enable: false                 # off by default (see header)
+  step1:
+    type: "seg"
+    algo: "slicereg"
+    metric: "MeanSquares"
+    smooth: 2
+  step2:
+    type: "im"
+    algo: "bsplinesyn"
+    metric: "MeanSquares"
+    iter: 5
+    gradStep: 0.5
+  interpolation: "spline"
+
+atlas:
+  warp_full_atlas: true         # -a 1 (full PAM50 atlas + masks in native func)
+  masks_to_emit:
+    - "PAM50_cord"
+    - "PAM50_csf"
+    - "PAM50_wm"
+    - "PAM50_gm"
+    - "PAM50_spinal_levels"
+
+interpolation:
+  bold:  "LanczosWindowedSinc"  # funcref-in-PAM50 (QC only)
+  mask:  "NearestNeighbor"
+  label: "NearestNeighbor"
+  anat:  "Linear"
+
+qc_thresholds:
+  # Cord Dice in NATIVE func space: PAM50_cord warped to func vs S3 func
+  # cord_seg. Compose-only typically lands at 0.80-0.85 (limited by S6's
+  # native Dice cap + the additional PAM50<->anat composition step).
+  pass_dice_min: 0.80
+  warn_dice_min: 0.65
+  fail_dice_below: 0.65
+  # Round-trip is observability-only — intensity-weighted COM over full
+  # funcref FOV is noisy (background dominates).
+  # Label offset is observability-only — PAM50_spinal_levels (segmental
+  # 1-20) and S2's vertebral_labels (vertebral bodies 1-7) use different
+  # label schemes, so per-label centroid match is not meaningful.
+
+reproducibility:
+  strict: false                 # ANTS_RANDOM_SEED=1 + ITK_THREADS=1 when true
+  capture_provenance: true
+
+cost_controls:
+  estimate_per_run_minutes: 1.0
+  skip_existing_pass: true

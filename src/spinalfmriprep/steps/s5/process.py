@@ -450,8 +450,15 @@ def run_S5_func_distortion_correction(
     reportlets (relative-to-out_dir paths).
     """
     step_code = "S5_func_distortion_correction"
-    subject = bold_run.get("subject")
-    session = bold_run.get("session")
+    subject_raw = bold_run.get("subject") or ""
+    session_raw = bold_run.get("session")
+    # subject sometimes arrives bare ("02") and sometimes already prefixed
+    # ("sub-02") depending on which orchestrator produced bold_run.
+    subject = subject_raw[4:] if str(subject_raw).startswith("sub-") else subject_raw
+    session = None
+    if session_raw:
+        session = (str(session_raw)[4:] if str(session_raw).startswith("ses-")
+                   else session_raw)
     run_id = Path(bold_run["path"]).name.replace("_bold.nii.gz", "").replace("_bold.nii", "")
 
     # Output paths

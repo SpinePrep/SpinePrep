@@ -505,8 +505,13 @@ def run_S6_func_to_anat_registration(
     reportlets (relative paths), xfm_paths (relative paths).
     """
     step_code = "S6_func_to_anat_registration"
-    subject = bold_run.get("subject")
-    session = bold_run.get("session")
+    subject_raw = bold_run.get("subject") or ""
+    session_raw = bold_run.get("session")
+    subject = subject_raw[4:] if str(subject_raw).startswith("sub-") else subject_raw
+    session = None
+    if session_raw:
+        session = (str(session_raw)[4:] if str(session_raw).startswith("ses-")
+                   else session_raw)
     run_id = bold_run.get("run_id") or Path(bold_run.get("path", "")).name.replace(
         "_bold.nii.gz", "").replace("_bold.nii", "")
 

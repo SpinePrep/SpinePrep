@@ -133,15 +133,34 @@ def run_S3_func_init_and_crop(
             runs = _process_session_s3(sub, ses, cands, bids_root, out_path, policy, s2_out_root)
             all_runs.extend(runs)
 
-    # Write artifacts
-    runs_path = out_path / "logs" / "S3_func_init_and_crop_runs.jsonl"
-    qc_path = out_path / "logs" / "S3_func_init_and_crop_qc.json"
+    # Write artifacts: per-dataset qc.json + runs.jsonl is the source of truth
+    # for downstream filtering (S4 reads logs/S3_func_init_and_crop/<ds>/qc.json
+    # to determine which runs belong to this dataset). Without per-dataset
+    # write, S4 falls through to processing every run in runs/ for every
+    # dataset_key — cross-dataset run contamination.
+    runs_path = (out_path / "logs" / "S3_func_init_and_crop" / ds_key
+                 / "runs.jsonl")
+    qc_path = (out_path / "logs" / "S3_func_init_and_crop" / ds_key
+               / "qc.json")
+    runs_path.parent.mkdir(parents=True, exist_ok=True)
 
     _write_s3_runs_jsonl(runs_path, all_runs)
     qc_summary = _summarise_s3_runs(inventory, policy, all_runs, out_path=out_path)
+    # Stamp dataset_key into the qc summary so consumers can verify ownership.
+    qc_summary["dataset_key"] = ds_key
 
-    qc_path.parent.mkdir(parents=True, exist_ok=True)
     with qc_path.open("w", encoding="utf-8") as f:
+        json.dump(qc_summary, f, indent=2)
+
+    # Back-compat: keep the legacy aggregate filenames in sync with this
+    # dataset's latest content so historical consumers (test harness,
+    # earlier dashboard versions) still resolve. Per-dataset is the source
+    # of truth.
+    legacy_runs = out_path / "logs" / "S3_func_init_and_crop_runs.jsonl"
+    legacy_qc = out_path / "logs" / "S3_func_init_and_crop_qc.json"
+    _write_s3_runs_jsonl(legacy_runs, all_runs)
+    legacy_qc.parent.mkdir(parents=True, exist_ok=True)
+    with legacy_qc.open("w", encoding="utf-8") as f:
         json.dump(qc_summary, f, indent=2)
 
     # Dashboard
