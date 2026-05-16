@@ -1,0 +1,67 @@
+version: 1
+
+# Per-run final preprocessed 4D BOLD outputs in native + PAM50, plus
+# tSNR refs and per-vertebral-level tSNR. Cord-aware smoothing via
+# sct_smooth_spinalcord (CoSpi spi14_2 lineage). No high-pass on BOLD
+# (cosine basis from S8 handles it). No confound regression (S10/GLM).
+#
+# Sigma values are in mm, order R-L, A-P, S-I (SCT convention).
+# σ = 1,1,5 → FWHM ≈ 2.35×2.35×11.8 mm. Heavy S-I emphasis exploits
+# cord-axis signal repetition; minimal in-plane preserves cord
+# cross-section.
+
+smoothing:
+  method: "sct_cord"               # sct_smooth_spinalcord (cord-aware)
+                                   # alternative: "gaussian_inplane" (scipy)
+  sigma_mm: [1.0, 1.0, 5.0]        # R-L, A-P, S-I  (CoSpi spi14_2)
+  # When method == "gaussian_inplane", only the first 2 sigmas are used
+  # (in-plane Gaussian) and σ_z is forced to 0 (no through-slice blur).
+
+# PAM50-space outputs:
+#  - PAM50 funcref (temporal mean, 3D ~5 MB) — always emitted
+#  - PAM50 tSNR (3D ~5 MB) — always emitted
+#  - PAM50 4D BOLD (smoothed) — OFF by default (~17 GB per run at PAM50's
+#    0.5mm isotropic 141×141×991 grid × ~200 volumes). When needed, the
+#    analyst can apply S7's from-bold_to-PAM50_xfm to the native smoothed
+#    BOLD themselves.
+pam50_4d_output:
+  enabled: false                   # full 4D BOLD in PAM50 (huge disk cost)
+  emit_unsmoothed: false           # also warp the unsmoothed native (huge)
+
+# Output of per-vertebral-level tSNR — uses S7's
+# *_desc-PAM50spinallevels.nii.gz (already in native func grid). Emits
+# a TSV with (level, mean_tsnr, std_tsnr, n_voxels) for each unique
+# label value found in the cord mask.
+per_level_tsnr:
+  enabled: true
+
+# Residual smoothness verification via voxelwise autocorrelation in cord
+# mask. Reports per-axis FWHM_x/y/z; expect to match requested ± tolerance.
+fwhm_estimate:
+  enabled: true
+  tolerance_mm_xy: 0.5             # PASS bar in-plane
+  tolerance_mm_xy_warn: 1.0
+  tolerance_mm_z: 1.0              # PASS bar S-I (heavier smoothing)
+  tolerance_mm_z_warn: 2.0
+
+qc_thresholds:
+  # tSNR ratio post/pre, median in cord mask. Cord-aware σ=1,1,5 should
+  # raise tSNR by 1.5-2.5× on typical 1×1×5 acquisitions.
+  pass_tsnr_ratio_min: 1.5
+  warn_tsnr_ratio_min: 1.2
+  fail_tsnr_ratio_below: 1.0       # < 1.0 means smoothing hurt — upstream issue
+  # CoSpine 2025 baseline median in-cord tSNR
+  pass_median_in_cord_tsnr: 5.0
+  warn_median_in_cord_tsnr: 3.0
+  # Cord-mask Dice between pre- and post-smoothed cord seg
+  pass_cord_dice: 0.95
+  warn_cord_dice: 0.85
+
+reproducibility:
+  strict: false
+  capture_provenance: true
+
+cost_controls:
+  # sct_smooth_spinalcord straightens cord per volume; 200 vol ≈ 10 min
+  estimate_per_run_minutes: 10.0
+  skip_existing_pass: true

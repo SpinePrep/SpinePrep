@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "qc_S9_primary_functional_derivatives.schema.json",
+  "title": "S9_primary_functional_derivatives QC Status",
+  "description": "QC status schema for S9 step (aggregated per dataset key)",
+  "type": "object",
+  "required": ["dataset_key", "step_code", "status", "runs"],
+  "properties": {
+    "dataset_key": { "type": "string" },
+    "step_code": {
+      "type": "string",
+      "const": "S9_primary_functional_derivatives"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"]
+    },
+    "failure_message": { "type": ["string", "null"] },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "status", "step_code", "dataset_key",
+          "subject", "session", "run_id",
+          "metrics", "failure_reasons", "reportlets"
+        ],
+        "properties": {
+          "status": { "type": "string", "enum": ["PASS", "WARN", "FAIL"] },
+          "step_code": {
+            "type": "string",
+            "const": "S9_primary_functional_derivatives"
+          },
+          "dataset_key": { "type": "string" },
+          "subject": { "type": ["string", "null"] },
+          "session": { "type": ["string", "null"] },
+          "run_id": { "type": ["string", "null"] },
+          "smoothing_method": { "type": ["string", "null"] },
+          "sigma_mm": {
+            "type": "array",
+            "items": { "type": "number" }
+          },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "n_volumes": { "type": ["integer", "null"] },
+              "tsnr_pre_median": { "type": ["number", "null"] },
+              "tsnr_post_median": { "type": ["number", "null"] },
+              "tsnr_ratio_median": { "type": ["number", "null"] },
+              "fwhm_x_measured_mm": { "type": ["number", "null"] },
+              "fwhm_y_measured_mm": { "type": ["number", "null"] },
+              "fwhm_z_measured_mm": { "type": ["number", "null"] },
+              "fwhm_x_requested_mm": { "type": ["number", "null"] },
+              "fwhm_y_requested_mm": { "type": ["number", "null"] },
+              "fwhm_z_requested_mm": { "type": ["number", "null"] },
+              "cord_dice_pre_post": { "type": ["number", "null"] },
+              "n_levels_with_tsnr": { "type": ["integer", "null"] },
+              "smoothing_runtime_s": { "type": ["number", "null"] }
+            }
+          },
+          "failure_reasons": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "failure_message": { "type": ["string", "null"] },
+          "reportlets": {
+            "type": "object",
+            "properties": {
+              "smoothed_vs_unsmoothed_axial": { "type": "string" },
+              "tsnr_map_axial": { "type": "string" },
+              "tsnr_per_level": { "type": "string" },
+              "smoothness_summary": { "type": "string" }
+            }
+          },
+          "output_paths": {
+            "type": "object",
+            "properties": {
+              "preproc_bold_native": { "type": "string" },
+              "preproc_bold_pam50": { "type": "string" },
+              "tsnr_native": { "type": "string" },
+              "tsnr_pam50": { "type": "string" },
+              "tsnr_per_level_tsv": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
