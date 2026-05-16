@@ -39,6 +39,18 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "bold_on_anat_sagittal",    # S6 - mid-sagittal overlay
         "cord_dice_per_slice",      # S6 - per-slice cord Dice bars
     ],
+    "S7_template_normalization": [
+        "pam50_overlay_sagittal",   # S7 - funcref + PAM50 cord contour (mid-sagittal)
+        "pam50_overlay_axial",      # S7 - funcref + PAM50 cord contour (axial montage)
+        "vertebral_alignment",      # S7 - vertebral level overlay
+    ],
+    "S8_confounds_and_physio_regressors": [
+        "confound_columns",         # S8 - column counts per family
+        "fd_dvars_outliers",        # S8 - FD/DVARS/refRMS with outlier highlights
+        "csf_variance",             # S8 - per-slice CSF voxel count
+        "pnm_peaks",                # S8 - FSL PNM cardiac/respiratory peak detection
+        "correlation_heatmap",      # S8 - confound correlation matrix
+    ],
 }
 
 # Human-readable labels for reportlets (matching ROADMAP milestones)
@@ -69,6 +81,18 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "bold_on_anat_axial": "S6 - BOLD on Anat (Axial)",
         "bold_on_anat_sagittal": "S6 - BOLD on Anat (Sagittal)",
         "cord_dice_per_slice": "S6 - Cord Dice per Slice",
+    },
+    "S7_template_normalization": {
+        "pam50_overlay_sagittal": "S7 - PAM50 Overlay (Sagittal)",
+        "pam50_overlay_axial": "S7 - PAM50 Overlay (Axial)",
+        "vertebral_alignment": "S7 - Vertebral Level Alignment",
+    },
+    "S8_confounds_and_physio_regressors": {
+        "confound_columns":    "S8 - Confound Column Counts",
+        "fd_dvars_outliers":   "S8 - FD / DVARS / refRMS with Outliers",
+        "csf_variance":        "S8 - CSF Voxel Count per Slice",
+        "pnm_peaks":           "S8 - PNM Cardiac/Respiratory Peaks",
+        "correlation_heatmap": "S8 - Confound Correlation Heatmap",
     },
 }
 

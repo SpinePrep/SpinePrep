@@ -42,7 +42,20 @@ def _load_s5_qc(out_path: Path, dataset_key: str) -> dict:
         return {}
 
 
+def _norm_sub(subject: str) -> str:
+    s = str(subject or "")
+    return s[4:] if s.startswith("sub-") else s
+
+
+def _norm_ses(session: Optional[str]) -> Optional[str]:
+    if not session:
+        return None
+    s = str(session)
+    return s[4:] if s.startswith("ses-") else s
+
+
 def _find_funcref(out_dir: Path, subject: str, session: Optional[str], run_id: str) -> Optional[Path]:
+    subject = _norm_sub(subject); session = _norm_ses(session)
     ses_part = f"/ses-{session}" if session else ""
     p = (out_dir / "derivatives" / "spinalfmriprep" / f"sub-{subject}{ses_part}"
          / "func" / f"{run_id}_desc-undistorted_funcref.nii.gz")
@@ -50,6 +63,7 @@ def _find_funcref(out_dir: Path, subject: str, session: Optional[str], run_id: s
 
 
 def _find_bold(out_dir: Path, subject: str, session: Optional[str], run_id: str) -> Optional[Path]:
+    subject = _norm_sub(subject); session = _norm_ses(session)
     ses_part = f"/ses-{session}" if session else ""
     p = (out_dir / "derivatives" / "spinalfmriprep" / f"sub-{subject}{ses_part}"
          / "func" / f"{run_id}_desc-undistorted_bold.nii.gz")
@@ -81,6 +95,7 @@ def _find_funccrop_mask(out_dir: Path, run_id: str) -> Optional[Path]:
 def _anat_search_roots(subject: str, session: Optional[str],
                        out_path: Path, dataset_key: str) -> list[Path]:
     """S6 reuses the S5 anat-search pattern."""
+    subject = _norm_sub(subject); session = _norm_ses(session)
     roots: list[Path] = []
     bases = [out_path]
     s2_done = out_path / "work" / "done" / "reg" / "S2"
@@ -105,9 +120,12 @@ def _anat_search_roots(subject: str, session: Optional[str],
 def _find_anat_and_dseg(subject: str, session: Optional[str],
                         out_path: Path, dataset_key: str
                         ) -> tuple[Optional[Path], Optional[Path]]:
-    """Find S2 cordref + cord_dseg (T1w preferred, then T2w)."""
+    """Find S2 cordref + cord_dseg. Prefer T2star (MEGRE) -> T2w -> T1w
+    to match the same-contrast-as-EPI rule (and S2's selection preference).
+    Without this, S6 picks the legacy T1w even when S2 produced a T2star
+    cordref alongside it (inverted contrast hurts cord registration)."""
     for root in _anat_search_roots(subject, session, out_path, dataset_key):
-        for mod in ("T1w", "T2w"):
+        for mod in ("T2star", "T2w", "T1w"):
             cordref_hits = sorted(root.glob(f"*_desc-cordref_{mod}.nii.gz"))
             dseg_hits = sorted(root.glob(f"*_desc-cord_dseg_{mod}.nii.gz"))
             if cordref_hits and dseg_hits:
