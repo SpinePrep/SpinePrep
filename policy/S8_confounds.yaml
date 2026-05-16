@@ -1,0 +1,121 @@
+version: 1
+
+# Per-run confound + physio regressor extraction. Emits BIDS-Derivatives
+# `*_desc-confounds_timeseries.tsv` + JSON sidecar. Five families, mixed
+# scalar + slicewise. Native func space only; no BOLD resampling; no
+# regression (analyst owns that at S9). See round-3 audit
+# (.claude/specs/s8-confounds-and-physio-regressors.md) for full
+# justification of each parameter and citation trail.
+
+# ----------------------------------------------------------------------
+# 1. Motion (always present, S4-derived)
+# trans_x, trans_y: slicewise-mean translation per volume from S4 NIfTI
+# params. derivative1 via np.diff(prepend=0). FD = |Δtrans_x| + |Δtrans_y|
+# (Power 2-D adapted for cord 2-D moco). DVARS + refRMS already computed
+# by S3.2 (frame_metrics.tsv); we just repack with outlier flags.
+motion:
+  fd_outlier_threshold_mm: 0.2     # cord 3σ (Mohammed 2020 / Kaptan 2023)
+  dvars_outlier_n_sd: 3.0          # Kaptan 2023 / Dabbagh 2024
+  refrms_outlier_n_sd: 3.0         # same — dual criterion (OR)
+
+# ----------------------------------------------------------------------
+# 2. CSF slicewise (always present when S7 PAM50csf_mask exists)
+# For each slice z: voxels in S7 PAM50csf_mask ranked by temporal variance;
+# mean of top 20% = 1 column per slice. Hemmerling 2025 Base model convention.
+# erode_voxels: 0 (NO erosion). The cord CSF mask is thin (often 1-2 voxels
+# wide); 1-vox erosion kills most slices. The "top-20% variance" voxel
+# selection already filters to pulsatile CSF — no need to erode away the
+# cord-CSF boundary. Hemmerling 2025 doesn't erode. Min voxel count
+# per slice: 5; otherwise slice's CSF column is omitted with a flag.
+csf_slicewise:
+  enabled: true
+  # mask_source: "S2_canal_minus_cord" (default, subject-specific) builds
+  # CSF mask from S2's anat-space canal_dseg minus cord_dseg, warped to
+  # native func via S6's from-anat_to-bold xfm. Falls back to
+  # "S7_pam50csf" (PAM50 template CSF warped to native) when S2 outputs
+  # or S6 warp are unavailable.
+  mask_source: "S2_canal_minus_cord"
+  erode_voxels: 0                  # no erosion (cord-CSF too thin)
+  top_variance_fraction: 0.20      # Hemmerling 2025
+  min_voxels_per_slice: 5          # numerical-stability floor
+
+# ----------------------------------------------------------------------
+# 3. RETROICOR slicewise via FSL PNM (when BIDS physio readable)
+# popp -> pnm_evs. Cardiac order 4 + respiratory order 4 + interaction
+# order 4×4 = 16 → 32 slicewise regressors per slice. Cord-mean each EV
+# within S3 funccrop_mask per slice for the TSV row. Dabbagh 2024 recipe.
+retroicor:
+  enabled: true                    # auto-disable when physio absent
+  cardiac_order: 4                 # 8 regressors (sin + cos × 4)
+  respiratory_order: 4             # 8 regressors
+  interaction_order: 16            # 4 × 4 cross-terms
+  # TSV aggregation. Slicewise pnm_evs EVs (constant within slice) are
+  # aggregated to one column per EV for the BIDS-style flat TSV.
+  #   slice_mean  — mean across cord-bearing slices (Kaptan/Dabbagh:
+  #                 ~32 RETROICOR cols per run; recommended)
+  #   central_slice — just the middle cord slice
+  #   slicewise   — per-slice columns (~32 × N_slices; only when N_slices
+  #                 is small and you need slicewise GLM)
+  aggregation: "slice_mean"
+  use_csf_regressor_from_pnm: false  # we compute CSF separately (csf_slicewise)
+  hr_rvt_enabled: true             # heart rate + RVT slow regressors (2 cols; popp --rvt --heartrate)
+
+# ----------------------------------------------------------------------
+# 4. Cosine basis (always present)
+# DCT high-pass equivalent. Default 1/100 s = 0.01 Hz (Kaptan 2023 /
+# Dabbagh 2024 cord standard). fMRIPrep brain default is 1/128 s.
+cosine:
+  cutoff_hz: 0.01                  # = 1/100 s
+
+# ----------------------------------------------------------------------
+# 5. SpinalCompCor (opt-in for v1; Hemmerling 2025)
+# Dilate (cord ∪ CSF) mask by 18 mm rounded to voxels, subtract original,
+# remove up to 3 edge voxels in slice FOV → noise ROI. Per-slice SVD on
+# voxel × time matrix (mean-center + DCT-detrend per voxel first).
+# Component count via parallel analysis: 50 IAAFT surrogates per voxel,
+# eigenvalue-intersection cutoff. Off by default v1; default ON for v2
+# pending validation on the 5 reg datasets.
+spinalcompcor:
+  enabled: true                    # ON by default
+  dilation_mm: 18.0                # Hemmerling 2025 noise ROI (rounded to voxels)
+  edge_voxel_remove: 3             # up to 3 voxels at slice FOV edge
+  pre_pca_mean_center: true        # fMRIPrep convention (paper omits; safer)
+  pre_pca_dct_detrend_hz: 0.01     # match cosine HP cutoff
+  min_voxels_per_slice: 10         # PCA stability floor for small ROIs
+  min_volumes: 100                 # IAAFT needs reasonable timeseries length
+  # Aggregation:
+  #   global_3d — single 3D PCA over all noise-ROI voxels (default).
+  #               K columns total. fMRIPrep brain a_comp_cor convention;
+  #               viable for any run length.
+  #   slicewise — per-slice PCA (Hemmerling 2025 reference layout).
+  #               K × N_slices columns; only fits long runs.
+  aggregation: "global_3d"
+  # Component selection:
+  #   fixed_n  — top-K PCs (Behzadi 2007 / fMRIPrep). Fast; default.
+  #   iaaft    — Hemmerling 2025 parallel analysis with IAAFT surrogates.
+  #              Validated but slow (~30 min/run); use for research only.
+  #   kaiser   — eigenvalue > mean. Lightweight middle ground.
+  component_selection: "fixed_n"
+  fixed_n_components: 5            # top-5 PCs (CompCor default; matches fMRIPrep)
+  # Below only used when component_selection: "iaaft"
+  n_iaaft_surrogates: 50           # Hemmerling 2025 reference
+  iaaft_max_iter: 500              # convergence cap per Hemmerling
+
+# ----------------------------------------------------------------------
+# QC thresholds
+qc_thresholds:
+  # Matrix condition number — brain heuristic; calibrate on cord empirically
+  pass_condition_number: 1000.0
+  warn_condition_number: 10000.0
+  # Outlier fraction (volumes flagged as DVARS or refRMS outliers)
+  pass_outlier_fraction_max: 0.20
+  warn_outlier_fraction_max: 0.40
+
+# ----------------------------------------------------------------------
+reproducibility:
+  strict: false                    # numpy seed for IAAFT when true
+  capture_provenance: true
+
+cost_controls:
+  estimate_per_run_minutes: 2.0    # 3.0 with SpinalCompCor enabled
+  skip_existing_pass: true
