@@ -1,0 +1,129 @@
+version: 1
+
+# Per-run ROI timeseries + connectivity + per-subject reliability.
+# Native func extraction via Nilearn NiftiLabelsMasker / NiftiMapsMasker.
+# Three ROI catalogs (vertebral levels, spinal segmental levels,
+# hemicord × segmental). Pearson + partial connectivity. ICC(3,1) +
+# spatial Dice reliability across sessions. See round-3 audit
+# (.claude/specs/s10-roi-timeseries-and-connectivity.md) for design
+# justification.
+
+bold_source: "S5_undistorted"        # S5 undistorted_bold (default)
+                                     # alt: "S9_preproc" (smoothed)
+
+# --------------------------------------------------------------------
+# ROI catalogs
+roi_catalogs:
+  # 1. Vertebral levels — PAM50_levels.nii.gz (1..20, C1..L1)
+  vertlvl:
+    enabled: true
+    source: "PAM50_levels"
+    label_range: [1, 8]              # cervical-focus default (C1..T1 vertebra)
+    label_names_prefix: "vert"       # cols: vert01, vert02, ...
+
+  # 2. Spinal segmental levels — PAM50_spinal_levels.nii.gz (1..30)
+  spinalseg:
+    enabled: true
+    source: "PAM50_spinal_levels"
+    label_range: [1, 8]              # cervical spinal segments C1..C8
+    label_names_prefix: "seg"        # cols: segC1, segC2, ..., segC8
+
+  # 3. Hemicord × spinal segmental — PAM50_atlas_{30,31,34,35} × spinal_levels
+  hemicord:
+    enabled: true
+    horn_atlas_labels: [30, 31, 34, 35]   # VL, VR, DL, DR (intermediate 32/33 excluded by default)
+    horn_short_names: ["VL", "VR", "DL", "DR"]
+    # Probability threshold for binarizing the warped horn maps. Cord
+    # acquisitions are anisotropic (1×1×5 mm typical) and the warp from
+    # 0.5mm PAM50 to native dilutes probabilities — 0.5 is too strict
+    # (yields ~5 voxels per horn segment). 0.3 gives ~10-15 vox/horn/seg,
+    # adequate for mean timeseries. Hemmerling 2023 used 70%; Kaptan 2023
+    # used 50% × 30% (horn × segment) intersection.
+    horn_prob_threshold: 0.3
+    segmental_range: [1, 8]          # restrict to cervical spinal segments C1-C8
+    # column names like VL_segC5, VR_segC5, DL_segC5, DR_segC5
+
+# --------------------------------------------------------------------
+# Confound modes — emit a TSV per (catalog × mode) combination.
+#   none      — raw ROI timeseries (after bandpass + detrend if enabled)
+#   s8_default — regress all S8 columns except dvars/ref_rms (those are
+#                informational, not regressors)
+confound_modes:
+  - "none"
+  - "s8_default"
+
+# Columns from S8 confounds.tsv to REGRESS in s8_default mode.
+# Excluded columns: dvars + ref_rms (observability only — don't regress them).
+s8_default_include_prefixes:
+  - "trans_"
+  - "framewise_displacement"
+  - "motion_outlier_"
+  - "csf_slice"
+  - "retroicor_"
+  - "cosine_"
+  - "spinalcompcor_"
+  - "heart_rate"
+  - "rvt"
+
+# --------------------------------------------------------------------
+# Nilearn masker config
+masker:
+  standardize: "zscore_sample"       # z-score along time per voxel
+  detrend: true                       # linear detrend
+  high_pass: 0.01                    # Hz; rsFC convention since Eippert 2014
+  low_pass: 0.1                      # Hz
+  # t_r read from BIDS bold.json automatically
+
+# --------------------------------------------------------------------
+# Connectivity
+connectivity:
+  enabled: true
+  kinds: ["correlation", "partial correlation"]
+  # Both via Nilearn ConnectivityMeasure with Ledoit-Wolf shrinkage when
+  # n_volumes < n_ROIs for partial.
+  fisher_z: true                      # always emit Fisher-z transform of r
+
+# --------------------------------------------------------------------
+# Min voxel guards
+min_voxels:
+  # Cord hemicord×segment ROIs are intrinsically small (~3-15 voxels
+  # at typical 1.5mm in-plane × 5mm slice acquisitions). 5 voxels is the
+  # practical floor; below that the mean is dominated by single-voxel
+  # noise. Whole-segment / hemicord-only ROIs are much larger (50-200 vox).
+  per_roi_total: 5
+  per_slice: 3                       # for per-slice metrics (not used in v1)
+
+# --------------------------------------------------------------------
+# Reliability (per-subject, multi-session only, same task)
+reliability:
+  min_sessions: 2
+  icc_type: "3,1"                    # Kaptan 2023; Shrout & Fleiss 1979
+  cicchetti_bands:
+    poor: 0.40
+    fair: 0.59
+    good: 0.74
+    # > good = excellent
+  dice_seed_to_voxel:
+    enabled: true
+    seed_z_threshold: 2.3            # ~p<0.01 one-tailed; Kaptan-style
+    # Dice of binarized (z > thr) seed-to-voxel maps across sessions
+  bland_altman:
+    enabled: true
+
+# --------------------------------------------------------------------
+qc_thresholds:
+  # Per-run gating
+  fail_dropped_rois_max: 2           # > 2 ROIs dropped for low voxels = FAIL
+  warn_dropped_rois_max: 0           # > 0 but ≤ 2 = WARN
+  pass_max_condition_number: 1000.0  # Pearson matrix condition number
+  warn_max_condition_number: 10000.0
+  fail_max_nan_fraction: 0.10        # > 10% NaN cells in any TSV = FAIL
+
+# --------------------------------------------------------------------
+reproducibility:
+  strict: false
+  capture_provenance: true
+
+cost_controls:
+  estimate_per_run_minutes: 0.5      # Nilearn extraction + connectivity ~30s
+  skip_existing_pass: true

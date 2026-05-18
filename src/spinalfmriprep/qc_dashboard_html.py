@@ -57,6 +57,13 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "tsnr_per_level",                # S9 - per-vertebral-level tSNR bars
         "smoothness_summary",            # S9 - requested vs measured FWHM
     ],
+    "S10_roi_timeseries_and_connectivity": [
+        "hemicord_timeseries",           # S10 - hemicord×seg ROI timeseries panels
+        "hemicord_connectivity",         # S10 - Fisher-z connectivity heatmap
+        "vertlvl_tsnr",                  # S10 - per-vertebral-level tSNR bars
+        "reliability_icc",               # S10 - cross-session agreement bars
+        "reliability_dice",              # S10 - spatial Dice per seed
+    ],
 }
 
 # Human-readable labels for reportlets (matching ROADMAP milestones)
@@ -105,6 +112,13 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "tsnr_map_axial":               "S9 - Native tSNR Map (Axial)",
         "tsnr_per_level":               "S9 - tSNR per Vertebral Level",
         "smoothness_summary":           "S9 - Requested vs Measured FWHM",
+    },
+    "S10_roi_timeseries_and_connectivity": {
+        "hemicord_timeseries":   "S10 - Hemicord ROI Timeseries",
+        "hemicord_connectivity": "S10 - Hemicord Fisher-z Connectivity",
+        "vertlvl_tsnr":          "S10 - Per-Vertebral-Level tSNR",
+        "reliability_icc":       "S10 - Cross-Session ICC (multi-session)",
+        "reliability_dice":      "S10 - Spatial Dice (multi-session)",
     },
 }
 
