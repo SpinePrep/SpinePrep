@@ -383,12 +383,28 @@ def _generate_index_html(
                 sum(1 for r in runs if r.get("status") == "PASS")
                 for runs in datasets.values()
             )
-            failed = total_runs - passed
+            warned = sum(
+                sum(1 for r in runs if r.get("status") == "WARN")
+                for runs in datasets.values()
+            )
+            failed = sum(
+                sum(1 for r in runs if r.get("status") == "FAIL")
+                for runs in datasets.values()
+            )
+            other = total_runs - passed - warned - failed
+
+            parts = [f"{total_runs} total", f"{passed} passed"]
+            if warned:
+                parts.append(f"{warned} warned")
+            if failed:
+                parts.append(f"{failed} failed")
+            if other:
+                parts.append(f"{other} unknown")
 
             lines.append(f"<div class=\"step-card\">")
             lines.append(f"<h2>{step_code}</h2>")
             lines.append(f"<div class=\"status-summary\">")
-            lines.append(f"Runs: {total_runs} total, {passed} passed, {failed} failed")
+            lines.append("Runs: " + ", ".join(parts))
             lines.append(f"</div>")
 
             reportlets = reportlet_index.get(step_code, {})
