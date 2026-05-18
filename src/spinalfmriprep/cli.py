@@ -37,7 +37,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _add_S0_arguments(subparser: argparse.ArgumentParser) -> None:
     subparser.add_argument(
         "step",
-        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives", "S10_roi_timeseries_and_connectivity"],
+        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives", "S10_roi_timeseries_and_connectivity", "S11_qc_aggregation_and_release"],
         help="Pipeline step code",
     )
     subparser.add_argument(
@@ -136,6 +136,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _run_S9(args)
         elif step == "S10_roi_timeseries_and_connectivity":
             result = _run_S10(args)
+        elif step == "S11_qc_aggregation_and_release":
+            result = _run_S11(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -165,6 +167,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _check_S9(args)
         elif step == "S10_roi_timeseries_and_connectivity":
             result = _check_S10(args)
+        elif step == "S11_qc_aggregation_and_release":
+            result = _check_S11(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -918,6 +922,33 @@ def _check_S10(args):
         check_S10_roi_timeseries_and_connectivity,
     )
     return check_S10_roi_timeseries_and_connectivity(
+        dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
+        datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
+        out=args.out if hasattr(args, "out") else None,
+    )
+
+
+def _run_S11(args):
+    """S11 is global (cross-dataset). dataset_key + scope are accepted
+    for CLI uniformity but ignored — S11 always aggregates the entire
+    chain at out_dir/logs.
+    """
+    from spinalfmriprep.S11_qc_aggregation_and_release import run_S11, StepResult
+    if args.out is None:
+        return StepResult("FAIL", "--out is required")
+    return run_S11(
+        dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
+        datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
+        out=str(args.out),
+        batch_workers=args.batch_workers,
+    )
+
+
+def _check_S11(args):
+    from spinalfmriprep.S11_qc_aggregation_and_release import (
+        check_S11_qc_aggregation_and_release,
+    )
+    return check_S11_qc_aggregation_and_release(
         dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
         datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
         out=args.out if hasattr(args, "out") else None,

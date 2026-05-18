@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "qc_S11_qc_aggregation_and_release.schema.json",
+  "title": "S11_qc_aggregation_and_release QC Status",
+  "type": "object",
+  "required": ["step_code", "status", "deliverables", "metrics"],
+  "properties": {
+    "step_code": {
+      "type": "string",
+      "const": "S11_qc_aggregation_and_release"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"]
+    },
+    "failure_message": { "type": ["string", "null"] },
+    "deliverables": {
+      "type": "object",
+      "description": "Map of deliverable name → emitted path (relative to derivatives/)",
+      "additionalProperties": { "type": ["string", "null"] }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "n_subjects_aggregated": { "type": ["integer", "null"] },
+        "n_runs_aggregated":     { "type": ["integer", "null"] },
+        "n_datasets":             { "type": ["integer", "null"] },
+        "n_subject_reports":      { "type": ["integer", "null"] },
+        "subject_report_fraction": { "type": ["number", "null"] },
+        "missing_step_qc_count":  { "type": ["integer", "null"] },
+        "sidecar_audit_issues":   { "type": ["integer", "null"] },
+        "cohort_fc_n_common_rois": { "type": ["integer", "null"] }
+      }
+    },
+    "failure_reasons": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
