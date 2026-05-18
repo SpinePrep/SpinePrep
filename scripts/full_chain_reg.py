@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Full chain reg runner: S2 -> S3 -> S4 -> S5 -> S6 -> S7 -> S8 -> S9 on all reg datasets.
+"""Full chain reg runner: S2 -> S3 -> S4 -> S5 -> S6 -> S7 -> S8 -> S9 -> S10 on all reg datasets.
 
 For each step:
   1. Allocate a fresh wf_reg_NNN.
@@ -37,6 +37,7 @@ ALL_CHAIN_STEPS = [
     ("S7", "S7_template_normalization"),
     ("S8", "S8_confounds_and_physio_regressors"),
     ("S9", "S9_primary_functional_derivatives"),
+    ("S10", "S10_roi_timeseries_and_connectivity"),
 ]
 
 
@@ -92,7 +93,7 @@ def link_chain(wf: Path, predecessors: list[str], current_code: str) -> None:
         if deriv.exists() and not (wf / "derivatives").exists():
             (wf / "derivatives").symlink_to(deriv)
     # runs/ is S3-specific. Only link for downstream consumers (S4+).
-    if current_code in ("S4", "S5", "S6", "S7", "S8", "S9"):
+    if current_code in ("S4", "S5", "S6", "S7", "S8", "S9", "S10"):
         s3 = (PROJECT_ROOT / "work" / "done" / "reg" / "S3").resolve()
         s3_runs = s3 / "runs"
         if s3_runs.exists() and not (wf / "runs").exists():
@@ -123,7 +124,7 @@ def mark_done(code: str, wf: Path) -> None:
 def main() -> int:
     import argparse
     p = argparse.ArgumentParser()
-    p.add_argument("--start", default="S2", help="First step to run (S2..S9)")
+    p.add_argument("--start", default="S2", help="First step to run (S2..S10)")
     args = p.parse_args()
     keys = reg_keys()
     print(f"Reg datasets: {len(keys)}")
