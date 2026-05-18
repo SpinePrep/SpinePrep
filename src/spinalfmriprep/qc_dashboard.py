@@ -319,7 +319,7 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
             errors.append(f"Failed to process {qc_path}: {e}")
 
     # Generate index.html
-    _generate_index_html(dashboard_dir, step_data, reportlet_index, workfolder_name)
+    _generate_index_html(dashboard_dir, step_data, reportlet_index, workfolder_name, out_dir=out_dir)
 
     # Generate reportlet gallery pages
     for step_code, reportlets in reportlet_index.items():

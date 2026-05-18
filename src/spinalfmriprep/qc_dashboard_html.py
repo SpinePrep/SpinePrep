@@ -6,6 +6,7 @@ Separated from qc_dashboard.py to keep each module under 500 lines.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Optional
 
@@ -277,8 +278,14 @@ def _generate_index_html(
     step_data: dict[str, dict[str, list[dict]]],
     reportlet_index: dict[str, dict[str, list[dict]]],
     workfolder_name: Optional[str],
+    out_dir: Optional[Path] = None,
 ) -> None:
-    """Generate main index.html listing all steps and their reportlets."""
+    """Generate main index.html listing all steps and their reportlets.
+
+    If `out_dir` is provided and S11 has produced a release report, a banner
+    is prepended linking to it (S11 emits no per-run reportlets so it would
+    otherwise not appear).
+    """
     # Get dropdown CSS, HTML, and JS
     dropdown_css, dropdown_html, dropdown_js = _generate_workfolder_dropdown_html(workfolder_name, True)
 
@@ -299,6 +306,14 @@ def _generate_index_html(
         ".reportlet-list a { display: inline-block; padding: 4px 8px; background: #2a2a2a; border-radius: 3px; }",
         ".reportlet-list a:hover { background: #3a3a3a; }",
         ".status-summary { color: #999; font-size: 0.9em; margin-top: 8px; }",
+        ".release-banner { border: 1px solid #2a623d; background: #14301e; padding: 16px; margin: 16px 0; border-radius: 6px; }",
+        ".release-banner h2 { margin: 0 0 8px 0; color: #7dcfff; }",
+        ".release-banner .release-status { display: inline-block; padding: 2px 10px; border-radius: 3px; font-weight: bold; margin-right: 8px; }",
+        ".release-banner .status-PASS { background: #14532d; }",
+        ".release-banner .status-WARN { background: #7c5e00; }",
+        ".release-banner .status-FAIL { background: #7f1d1d; }",
+        ".release-banner ul { margin: 12px 0 0 0; padding-left: 20px; }",
+        ".release-banner code { background: #222; padding: 1px 4px; border-radius: 2px; }",
     ]
     lines.extend(dropdown_css)
     lines.append("</style>")
@@ -306,6 +321,57 @@ def _generate_index_html(
     lines.append("<body>")
     lines.append("<h1>SpinalfMRIprep QC Dashboard</h1>")
     lines.extend(dropdown_html)
+
+    # S11 release banner — only when S11 has produced artifacts.
+    if out_dir is not None:
+        s11_qc_path = out_dir / "logs" / "S11_qc_aggregation_and_release" / "qc.json"
+        rel_report = out_dir / "derivatives" / "spinalfmriprep" / "release_report.html"
+        if s11_qc_path.exists() and rel_report.exists():
+            try:
+                s11_qc = json.loads(s11_qc_path.read_text(encoding="utf-8"))
+            except Exception:
+                s11_qc = {}
+            status = s11_qc.get("status", "UNKNOWN")
+            metrics = s11_qc.get("metrics", {}) or {}
+            rel_link = _relpath(rel_report, dashboard_dir).replace("\\", "/")
+            deliv = s11_qc.get("deliverables", {}) or {}
+            group_link = deliv.get("group_dashboard")
+            group_html = ""
+            if group_link:
+                gd_abs = out_dir / group_link
+                if gd_abs.exists():
+                    group_html = (
+                        f" &middot; <a href=\"{_relpath(gd_abs, dashboard_dir).replace(chr(92), '/')}\">"
+                        "Group QC dashboard</a>"
+                    )
+            lines.append("<div class=\"release-banner\">")
+            lines.append("<h2>S11 — Release Readiness</h2>")
+            lines.append(
+                f"<span class=\"release-status status-{status}\">{status}</span> "
+                f"<a href=\"{rel_link}\">Open release_report.html</a>{group_html}"
+            )
+            n_sub = metrics.get("n_subjects_aggregated")
+            n_runs = metrics.get("n_runs_aggregated")
+            n_ds = metrics.get("n_datasets")
+            frac = metrics.get("subject_report_fraction")
+            issues = metrics.get("sidecar_audit_issues")
+            parts = []
+            if n_sub is not None:
+                parts.append(f"<code>{n_sub}</code> subject(s)")
+            if n_runs is not None:
+                parts.append(f"<code>{n_runs}</code> run(s)")
+            if n_ds is not None:
+                parts.append(f"<code>{n_ds}</code> dataset(s)")
+            if frac is not None:
+                parts.append(f"per-subject reports: <code>{frac * 100:.0f}%</code>")
+            if issues is not None:
+                parts.append(f"sidecar issues: <code>{issues}</code>")
+            if parts:
+                lines.append("<ul>")
+                for p in parts:
+                    lines.append(f"<li>{p}</li>")
+                lines.append("</ul>")
+            lines.append("</div>")
 
     if not step_data:
         lines.append("<p>No QC data found.</p>")
