@@ -1,0 +1,138 @@
+version: 1
+
+# S11 aggregates S1-S10 outputs into release-readiness deliverables.
+# 14 items across 4 tiers: aggregation core, cord-novel cohort views,
+# publication/reproducibility, compliance/navigation.
+# See .claude/specs/s11-qc-aggregation-and-release.md for design rationale.
+
+# ----------------------------------------------------------------------
+# Tier 1: aggregation core
+aggregation:
+  per_subject_html:
+    enabled: true
+    thumbnail_link_only: true        # link to PNGs (smaller HTML); base64 = v1.1
+    thumbnail_per_step:
+      S2_anat_cordref: "cordmask_montage"
+      S3_func_init_and_crop: "func_localization_crop"
+      S4_func_motion_correction: "S4_tsnr_comparison"
+      S5_func_distortion_correction: "crop_box_sagittal"
+      S6_func_to_anat_registration: "bold_on_anat_axial"
+      S7_template_normalization: "pam50_overlay_axial"
+      S8_confounds_and_physio_regressors: "confound_columns"
+      S9_primary_functional_derivatives: "tsnr_map_axial"
+      S10_roi_timeseries_and_connectivity: "hemicord_connectivity"
+
+  group_dashboard:
+    enabled: true
+    metric_distributions:            # which fields to boxplot
+      - "S4.metrics.fd_max_mm"
+      - "S6.metrics.cord_dice"
+      - "S7.metrics.cord_dice_native_func"
+      - "S9.metrics.tsnr_post_median"
+      - "S10.metrics.condition_number_pearson_hemicord"
+
+  metrics_index:
+    enabled: true
+
+  run_inventory:
+    enabled: true
+
+# ----------------------------------------------------------------------
+# Tier 2: cord-novel cohort transparency
+cohort_views:
+  coverage_matrix:
+    enabled: true
+    # rows: subject; cols: vertebral levels 1..N
+    n_levels: 8                      # cervical focus (C1..T1 vertebrae)
+
+  tsnr_heatmap:
+    enabled: true
+    # Source: S9 *_desc-tsnr_per_level.tsv (mean_tsnr column per level)
+    color_range: [0, 50]             # tSNR display range
+
+  fc_summary:
+    enabled: true
+    # Source: S10 *_desc-hemicord_pearson_connectivity.tsv per run
+    # Emit (a) group-mean Fisher-z matrix, (b) consistency map (fraction
+    # of subjects with |z| > consistency_threshold per connection)
+    consistency_z_threshold: 0.3     # connections with |z|>0.3 count as "present"
+
+# ----------------------------------------------------------------------
+# Tier 3: publication & reproducibility
+publication:
+  reproducibility_receipt:
+    enabled: true
+    capture_packages:
+      - "nilearn"
+      - "nibabel"
+      - "scipy"
+      - "numpy"
+      - "pandas"
+      - "matplotlib"
+      - "scikit-image"
+      - "scikit-learn"
+      - "joblib"
+
+  citation_cff:
+    enabled: true
+    # Self-citation template — fill at runtime
+    name: "SpinalfMRIprep"
+    description: "Cervical spinal cord fMRI preprocessing pipeline"
+
+  references_bib:
+    enabled: true
+    # Auto-bibliography of every methods reference the chain uses
+
+  dataset_description:
+    enabled: true
+    # BIDS-Derivatives manifest; DatasetType=derivative + GeneratedBy
+
+  participants_tsv:
+    enabled: true
+    columns:
+      - "participant_id"
+      - "dataset_key"
+      - "n_runs"
+      - "n_sessions"
+      - "n_passed"
+      - "n_warn"
+      - "n_failed"
+      - "mean_fd_mm"
+      - "median_in_cord_tsnr"
+      - "max_condition_number"
+      - "included_recommendation"
+    include_threshold_fd: 0.5        # FD > 0.5 mm mean → flag exclusion candidate
+    include_threshold_tsnr: 5.0      # tSNR < 5 → flag exclusion candidate
+
+  methods_manifest:
+    enabled: true
+    formats: ["markdown", "latex", "html"]
+
+# ----------------------------------------------------------------------
+# Tier 4: compliance + navigation
+compliance:
+  sidecar_audit:
+    enabled: true
+    # Verify every emitted .nii.gz has matching .json (per family);
+    # every .tsv has matching .json sidecar OR documented schema.
+    # NIfTI dtype + shape + affine validity check.
+    non_blocking: true               # informational; doesn't gate PASS
+
+  release_report:
+    enabled: true                    # top-level release_report.html index
+
+# ----------------------------------------------------------------------
+qc_thresholds:
+  pass_min_subject_report_fraction: 0.80
+  warn_min_subject_report_fraction: 0.50
+  pass_max_missing_qc_fraction: 0.05
+  warn_max_missing_sidecar_fraction: 0.10
+
+# ----------------------------------------------------------------------
+reproducibility:
+  strict: false
+  capture_provenance: true
+
+cost_controls:
+  estimate_per_run_minutes: 0.2      # S11 is fast; walks finished QC files
+  skip_existing_pass: false          # always re-aggregate (cheap)
