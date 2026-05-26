@@ -39,6 +39,10 @@ qc_thresholds:
   # Legacy MI: catastrophic-drop fail still applies as sanity check.
   # MI is no longer the primary gate.
   fail_mi_max_drop_pct: 10.0
+  # CoSpine pipeline knobs
+  cospine_min_voxels_per_slice: 3  # drop slices with thinner cord — centroid
+                                   # noise dominates below this
+  cospine_smooth_window: 5         # Savitzky-Golay window (odd) on Y(z)
 
 cost_controls:
   estimate_per_run_minutes: 2.5
