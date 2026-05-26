@@ -432,17 +432,24 @@ def _compute_qc(
 # ---------------------------------------------------------------------------
 
 
-def _centroid_y(slice2d: np.ndarray) -> Optional[float]:
-    """Voxel-coord Y centroid of a binary 2D slice. Returns None when empty."""
+def _centroid_along(slice2d: np.ndarray, axis_in_3d: int) -> Optional[float]:
+    """Voxel-coord centroid of a binary 2D slice along the given 3D axis.
+
+    The 2D slice is ``mask[:, :, z]``, so for a 3D ``axis_in_3d``:
+      - 0 → axis 0 of the 2D slice
+      - 1 → axis 1 of the 2D slice
+      - 2 → not applicable (this axis is sliced away)
+    """
     if slice2d.sum() <= 0:
         return None
-    ys, xs = np.nonzero(slice2d > 0)
-    if ys.size == 0:
+    if axis_in_3d not in (0, 1):
+        # Slice was already taken along Z; AP must be axis 0 or 1.
         return None
-    # convention: first array axis is X (RL), second is Y (AP) for RPI/RAS.
-    # _slice2d here is mask[:, :, z], so axis 0 = X, axis 1 = Y.
-    # np.nonzero returns (axis0, axis1) ⇒ axis1 indices are Y.
-    return float(xs.mean())
+    idx = np.nonzero(slice2d > 0)
+    target = idx[axis_in_3d]
+    if target.size == 0:
+        return None
+    return float(target.mean())
 
 
 def _dice_2d(a: np.ndarray, b: np.ndarray) -> Optional[float]:
@@ -454,20 +461,91 @@ def _dice_2d(a: np.ndarray, b: np.ndarray) -> Optional[float]:
     return float(2.0 * inter / (sa + sb))
 
 
-def _resample_mask_to_bold(
-    mask_path: Path, bold_ref: Path, out_path: Path,
-) -> bool:
-    """Resample a binary mask to BOLD geometry using FLIRT sform-applyxfm
-    with nearest-neighbour interpolation. Returns True on success."""
+def _sct_register_rigid(
+    anat_intensity: Path,
+    bold_mean: Path,
+    anat_cord_seg: Path,
+    bold_cord_seg: Path,
+    work_dir: Path,
+) -> Optional[Path]:
+    """Cord-aware rigid registration via SCT (CoSpine-equivalent T1→EPI).
+
+    CoSpine §Registration uses ``FLIRT`` 6-DOF for the T1→EPI step. With
+    cord-cropped inputs FLIRT's intensity cost is dominated by the air
+    around the cord and frequently converges to a wildly rotated
+    solution. SCT's ``sct_register_multimodal`` with
+    ``-param step=1,type=seg,algo=rigid`` uses the cord segs themselves
+    as the registration cost — robust on cord-cropped data and matches
+    the registration recipe S6 already uses for func→anat.
+
+    Outputs are emitted in ``work_dir``:
+      - ``anat_in_bold.nii.gz``: warped anat intensity
+      - ``warp_anat2bold.nii.gz``: forward warp (anat → bold space)
+
+    Returns the warp path on success, else None.
+    """
+    work_dir.mkdir(parents=True, exist_ok=True)
+    warp = (work_dir / "warp_anat2bold.nii.gz").resolve()
     ok, _ = _run_command([
-        "flirt",
-        "-in", str(mask_path),
-        "-ref", str(bold_ref),
-        "-applyxfm", "-usesqform",
-        "-interp", "nearestneighbour",
-        "-out", str(out_path),
+        "sct_register_multimodal",
+        "-i", str(anat_intensity),
+        "-d", str(bold_mean),
+        "-iseg", str(anat_cord_seg),
+        "-dseg", str(bold_cord_seg),
+        "-param", "step=1,type=seg,algo=rigid,metric=MeanSquares,iter=20",
+        "-ofolder", str(work_dir),
+        "-o", str((work_dir / "anat_in_bold.nii.gz").resolve()),
+        # sct's -owarp writes to CWD when given a bare filename; pass an
+        # absolute path so the warp lands inside ``work_dir``.
+        "-owarp", str(warp),
+        "-x", "linear",
     ])
-    return ok and out_path.exists()
+    return warp if (ok and warp.exists()) else None
+
+
+def _sct_apply_warp_nn(
+    src: Path, ref: Path, warp: Path, out: Path,
+) -> bool:
+    """Apply an SCT warp to a binary mask with nearest-neighbour interp."""
+    ok, _ = _run_command([
+        "sct_apply_transfo",
+        "-i", str(src),
+        "-d", str(ref),
+        "-w", str(warp),
+        "-x", "nn",
+        "-o", str(out),
+    ])
+    return ok and out.exists()
+
+
+def _smooth_trace(y: list[float], window: int = 5, poly: int = 2) -> list[float]:
+    """Savitzky-Golay smoothing of a 1-D per-slice trace.
+
+    Per-slice cord-centroid Y(z) carries ~0.3 mm sampling jitter from
+    finite voxels in the cord disc (cord is ~5 mm diameter, in-plane
+    ~1 mm → 12–20 voxels per slice, centroid stddev ≈
+    diameter/√(12·N) ≈ 0.3 mm). Polynomial smoothing across z removes
+    this without flattening real distortion variation, which has a
+    spatial scale of ~5–10 slices (the B0 field varies smoothly with
+    Z). NaN-preserving: only finite entries are smoothed; gaps stay NaN.
+    """
+    arr = np.asarray(y, dtype=float)
+    valid = np.isfinite(arr)
+    if valid.sum() < max(window, poly + 2):
+        return arr.tolist()
+    try:
+        from scipy.signal import savgol_filter
+    except Exception:
+        return arr.tolist()
+    n = int(valid.sum())
+    w = min(window if window % 2 else window + 1, n)
+    if w % 2 == 0:
+        w -= 1
+    if w <= poly:
+        return arr.tolist()
+    smoothed = arr.copy()
+    smoothed[valid] = savgol_filter(arr[valid], w, poly)
+    return smoothed.tolist()
 
 
 def _sct_deepseg_cord(
@@ -509,58 +587,57 @@ def _sct_deepseg_cord(
 def _compute_cospine_metrics(
     bold_before: Path,
     bold_after: Path,
+    anat_intensity_path: Optional[Path],
     anat_cord_mask_path: Optional[Path],
-    bold_mean_ref: Optional[Path],
     work_dir: Path,
+    min_voxels_per_slice: int = 3,
+    smooth_window: int = 5,
 ) -> dict[str, Any]:
-    """Per-Z A–P displacement and 2D cord-Dice between EPI cord seg and
-    anat cord mask, Before and After distortion correction.
+    """Per-Z A–P cord-centerline displacement and 2D cord-Dice, Before
+    and After distortion correction. Closely follows CoSpine
+    (Wei et al., Sci Data 2025): real FLIRT 6-DOF rigid registration of
+    the anat to mean-BOLD-after using normmi cost, sct_deepseg_sc for
+    EPI cord segs on both Mean BOLD Before and After, and per-slice
+    centroid comparisons after polynomial smoothing of the Y(z) traces
+    to suppress finite-sampling jitter (cord disc is only ~12–20 voxels
+    per slice, so raw centroids carry ~0.3 mm shot noise).
+
+    The 3D pooled Dice matches CoSpine's ``sct_dice_coefficient`` use
+    (which is what they report in Figure 3 / Table 1); the per-slice 2D
+    Dice we add is supplementary diagnostic and shown only in the plot.
 
     Returns a flat dict ready to merge into qc.json metrics. When inputs
-    are missing or sct_deepseg_sc fails, the dict carries a single
-    ``cospine_skip_reason`` key and nothing else.
+    are missing or sct_deepseg_sc / FLIRT fails, the dict carries a
+    single ``cospine_skip_reason`` key.
     """
     out: dict[str, Any] = {}
     work_dir.mkdir(parents=True, exist_ok=True)
     if anat_cord_mask_path is None or not Path(anat_cord_mask_path).exists():
         out["cospine_skip_reason"] = "anat cord mask unavailable"
         return out
-    if bold_mean_ref is None or not bold_mean_ref.exists():
-        # Build it from bold_after as a last-resort fallback.
-        img = nib.load(bold_after)
-        d = img.get_fdata()
-        m = d.mean(axis=3) if d.ndim == 4 else d
-        bold_mean_ref = work_dir / "bold_after_mean.nii.gz"
-        nib.save(nib.Nifti1Image(m.astype(np.float32), img.affine, img.header),
-                 bold_mean_ref)
-
-    # 1. anat cord mask → BOLD grid (NN)
-    anat_in_bold = work_dir / "anat_cord_dseg_in_bold.nii.gz"
-    if not _resample_mask_to_bold(Path(anat_cord_mask_path),
-                                   bold_mean_ref, anat_in_bold):
-        out["cospine_skip_reason"] = "flirt resample of anat cord mask failed"
-        return out
-    anat_arr = nib.load(anat_in_bold).get_fdata() > 0
-    if anat_arr.sum() == 0:
-        out["cospine_skip_reason"] = "resampled anat cord mask is empty"
+    if anat_intensity_path is None or not Path(anat_intensity_path).exists():
+        out["cospine_skip_reason"] = "anat intensity image unavailable"
         return out
 
-    # 2. mean BOLDs in BOLD geometry
-    mean_b_path = work_dir / "bold_before_mean.nii.gz"
-    img_b = nib.load(bold_before)
-    db = img_b.get_fdata()
-    mean_b = db.mean(axis=3) if db.ndim == 4 else db
-    nib.save(nib.Nifti1Image(mean_b.astype(np.float32),
-                              img_b.affine, img_b.header), mean_b_path)
-
-    mean_a_path = work_dir / "bold_after_mean.nii.gz"
+    # 1. Mean BOLDs in BOLD geometry (separate files for FLIRT ref and
+    # for the Before/After deepsegs).
     img_a = nib.load(bold_after)
     da = img_a.get_fdata()
     mean_a = da.mean(axis=3) if da.ndim == 4 else da
+    mean_a_path = work_dir / "bold_after_mean.nii.gz"
     nib.save(nib.Nifti1Image(mean_a.astype(np.float32),
                               img_a.affine, img_a.header), mean_a_path)
 
-    # 3. EPI cord segs via sct_deepseg_sc (CoSpine recipe)
+    img_b = nib.load(bold_before)
+    db = img_b.get_fdata()
+    mean_b = db.mean(axis=3) if db.ndim == 4 else db
+    mean_b_path = work_dir / "bold_before_mean.nii.gz"
+    nib.save(nib.Nifti1Image(mean_b.astype(np.float32),
+                              img_b.affine, img_b.header), mean_b_path)
+
+    # 2. EPI cord segs via sct_deepseg_sc on both Mean BOLD Before and After.
+    #    BOLD-after seg is also the destination cord seg for the
+    #    SCT rigid registration below.
     bold_cord_b = work_dir / "bold_before_cord_seg.nii.gz"
     bold_cord_a = work_dir / "bold_after_cord_seg.nii.gz"
     seg_work = work_dir / "deepseg"
@@ -573,59 +650,109 @@ def _compute_cospine_metrics(
     epi_b = nib.load(bold_cord_b).get_fdata() > 0
     epi_a = nib.load(bold_cord_a).get_fdata() > 0
 
-    # Voxel size along Y (AP) from BOLD header
-    zooms = img_a.header.get_zooms()[:3]
-    voxsize_y_mm = float(zooms[1]) if len(zooms) >= 2 else 1.0
-
-    # 4. Per-slice metrics on the Z range where the anat reference has cord.
-    anat_z_with_cord = np.where(anat_arr.any(axis=(0, 1)))[0]
-    if anat_z_with_cord.size == 0:
-        out["cospine_skip_reason"] = "anat cord mask has no Z coverage"
+    # 3. Cord-aware rigid registration: anat → BOLD-after, driven by
+    # cord-seg cost. The corrected mean BOLD is the geometrically
+    # faithful reference. The resulting warp is applied to anat cord_dseg
+    # with NN to land the ground-truth cord mask in BOLD voxel grid.
+    warp = _sct_register_rigid(
+        anat_intensity=Path(anat_intensity_path),
+        bold_mean=mean_a_path,
+        anat_cord_seg=Path(anat_cord_mask_path),
+        bold_cord_seg=bold_cord_a,
+        work_dir=work_dir / "register",
+    )
+    if warp is None:
+        out["cospine_skip_reason"] = (
+            "sct_register_multimodal (anat→BOLD rigid) failed")
         return out
 
+    anat_cord_in_bold = work_dir / "anat_cord_dseg_in_bold.nii.gz"
+    if not _sct_apply_warp_nn(Path(anat_cord_mask_path), mean_a_path,
+                               warp, anat_cord_in_bold):
+        out["cospine_skip_reason"] = (
+            "sct_apply_transfo on anat cord_dseg failed")
+        return out
+    anat_arr = nib.load(anat_cord_in_bold).get_fdata() > 0
+    if anat_arr.sum() == 0:
+        out["cospine_skip_reason"] = "registered anat cord mask is empty"
+        return out
+
+    # Voxel size along Y (AP) from BOLD header. Assumption: data is in
+    # RPI/RAS (axis 1 = AP). The pipeline standardizes to RPI in S2; we
+    # log a warning if the BOLD affine indicates otherwise.
+    try:
+        axcodes = nib.orientations.aff2axcodes(img_a.affine)
+        ap_axis = next((i for i, c in enumerate(axcodes) if c in ("A", "P")), 1)
+    except Exception:
+        ap_axis = 1
+        axcodes = ("R", "P", "I")
+    zooms = img_a.header.get_zooms()[:3]
+    voxsize_y_mm = float(zooms[ap_axis]) if len(zooms) > ap_axis else 1.0
+
+    # 4. Per-Z centroid traces. Restrict to Z indices where the anat
+    # reference has ≥ min_voxels_per_slice cord voxels; otherwise the
+    # centroid is sampling-dominated.
+    n_z = anat_arr.shape[2]
+    y_anat = np.full(n_z, np.nan, dtype=float)
+    y_b = np.full(n_z, np.nan, dtype=float)
+    y_a = np.full(n_z, np.nan, dtype=float)
+    for z in range(n_z):
+        a_sl = anat_arr[:, :, z]
+        b_sl = epi_b[:, :, z]
+        a2_sl = epi_a[:, :, z]
+        if int(a_sl.sum()) >= min_voxels_per_slice:
+            y_anat[z] = _centroid_along(a_sl, ap_axis)
+        if int(b_sl.sum()) >= min_voxels_per_slice:
+            y_b[z] = _centroid_along(b_sl, ap_axis)
+        if int(a2_sl.sum()) >= min_voxels_per_slice:
+            y_a[z] = _centroid_along(a2_sl, ap_axis)
+
+    # Polynomial smoothing along Z, NaN-preserving. This removes finite-
+    # voxel sampling jitter while preserving distortion variation, which
+    # has a spatial scale of several slices.
+    y_anat_s = np.asarray(_smooth_trace(y_anat.tolist(), smooth_window))
+    y_b_s = np.asarray(_smooth_trace(y_b.tolist(), smooth_window))
+    y_a_s = np.asarray(_smooth_trace(y_a.tolist(), smooth_window))
+
+    # 5. Per-slice displacement + Dice on the Z range where the anat
+    # reference and at least one of the EPI segs is valid.
     per_z: list[int] = []
     disp_b: list[float] = []
     disp_a: list[float] = []
     dice_b: list[float] = []
     dice_a: list[float] = []
-    valid_voxels_b = 0
-    valid_voxels_a = 0
     inter_b = 0
     inter_a = 0
     sum_anat = 0
-    for z in anat_z_with_cord.tolist():
+    sum_b = 0
+    sum_a = 0
+    for z in range(n_z):
+        if not np.isfinite(y_anat_s[z]):
+            continue
+        if not (np.isfinite(y_b_s[z]) or np.isfinite(y_a_s[z])):
+            continue
+        per_z.append(int(z))
+        disp_b.append(abs(y_b_s[z] - y_anat_s[z]) * voxsize_y_mm
+                      if np.isfinite(y_b_s[z]) else float("nan"))
+        disp_a.append(abs(y_a_s[z] - y_anat_s[z]) * voxsize_y_mm
+                      if np.isfinite(y_a_s[z]) else float("nan"))
         a_sl = anat_arr[:, :, z]
         b_sl = epi_b[:, :, z]
         a2_sl = epi_a[:, :, z]
-        cy_ref = _centroid_y(a_sl)
-        cy_b = _centroid_y(b_sl)
-        cy_a = _centroid_y(a2_sl)
-        if cy_ref is None:
-            continue
-        # Need at least one EPI mask on this slice to score it. If a
-        # slice has no EPI cord on either side, skip — that's a coverage
-        # gap, not a distortion measurement.
-        if cy_b is None and cy_a is None:
-            continue
-        per_z.append(int(z))
-        disp_b.append(abs(cy_b - cy_ref) * voxsize_y_mm
-                      if cy_b is not None else float("nan"))
-        disp_a.append(abs(cy_a - cy_ref) * voxsize_y_mm
-                      if cy_a is not None else float("nan"))
         d2_b = _dice_2d(a_sl, b_sl)
         d2_a = _dice_2d(a_sl, a2_sl)
         dice_b.append(d2_b if d2_b is not None else 0.0)
         dice_a.append(d2_a if d2_a is not None else 0.0)
-        # 3D pooled accumulators over the same Z range
         sum_anat += int(a_sl.sum())
-        valid_voxels_b += int(b_sl.sum())
-        valid_voxels_a += int(a2_sl.sum())
+        sum_b += int(b_sl.sum())
+        sum_a += int(a2_sl.sum())
         inter_b += int((a_sl & b_sl).sum())
         inter_a += int((a_sl & a2_sl).sum())
 
     if not per_z:
         out["cospine_skip_reason"] = (
-            "no Z slices with both anat and EPI cord coverage")
+            "no Z slices with both anat and EPI cord coverage above the "
+            f"{min_voxels_per_slice}-voxel-per-slice floor")
         return out
 
     db_arr = np.asarray(disp_b, dtype=float)
@@ -645,10 +772,10 @@ def _compute_cospine_metrics(
         v = a[np.isfinite(a)]
         return float(v.min()) if v.size else None
 
-    d3b = (2.0 * inter_b / (sum_anat + valid_voxels_b)
-           if (sum_anat + valid_voxels_b) > 0 else None)
-    d3a = (2.0 * inter_a / (sum_anat + valid_voxels_a)
-           if (sum_anat + valid_voxels_a) > 0 else None)
+    d3b = (2.0 * inter_b / (sum_anat + sum_b)
+           if (sum_anat + sum_b) > 0 else None)
+    d3a = (2.0 * inter_a / (sum_anat + sum_a)
+           if (sum_anat + sum_a) > 0 else None)
 
     out["per_slice_z"] = per_z
     out["displacement_before_mm"] = db_arr.tolist()
@@ -677,6 +804,10 @@ def _compute_cospine_metrics(
     )
     out["voxsize_y_mm"] = voxsize_y_mm
     out["n_slices_evaluated"] = len(per_z)
+    out["orient_axcodes"] = "".join(axcodes)
+    out["ap_axis_index"] = int(ap_axis)
+    out["smooth_window"] = int(smooth_window)
+    out["min_voxels_per_slice"] = int(min_voxels_per_slice)
     return out
 
 
@@ -906,21 +1037,22 @@ def run_S5_func_distortion_correction(
     metrics = _compute_qc(bold_path, out_undistorted, qc_anat)
 
     # CoSpine-style geometric effectiveness metrics (cord-Dice + per-slice
-    # A–P cord-centerline displacement). cord_mask_path is anat-space
-    # cord_dseg from S2 — we resample it to BOLD voxel grid inside
-    # `_compute_cospine_metrics`. The bold_mean_ref we already built
-    # above (used by the MI path) is reused as the FLIRT reference.
-    bold_mean_ref_path: Optional[Path] = None
-    if anat_in_bold is not None:
-        bold_mean_ref_path = s5_work_dir / "bold_mean_ref.nii.gz"
-        if not bold_mean_ref_path.exists():
-            bold_mean_ref_path = None
+    # A–P cord-centerline displacement). Recipe v2: real FLIRT 6-DOF
+    # rigid registration of anat (intensity) → mean-BOLD-after (cost
+    # normmi); apply the .mat to anat cord_dseg with NN. v1 used
+    # `-applyxfm -usesqform` (header only), which left 1–3 mm sform
+    # offset as common-mode noise on per-slice Y(z) traces.
+    cospine_thresholds = policy.get("qc_thresholds", {})
     cospine = _compute_cospine_metrics(
         bold_before=bold_path,
         bold_after=out_undistorted,
+        anat_intensity_path=anat_path,
         anat_cord_mask_path=cord_mask_path,
-        bold_mean_ref=bold_mean_ref_path,
         work_dir=s5_work_dir / "cospine",
+        min_voxels_per_slice=int(cospine_thresholds.get(
+            "cospine_min_voxels_per_slice", 3)),
+        smooth_window=int(cospine_thresholds.get(
+            "cospine_smooth_window", 5)),
     )
     metrics.update(cospine)
 
