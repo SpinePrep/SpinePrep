@@ -99,7 +99,56 @@
               "mi_delta_pct": {
                 "type": ["number", "null"],
                 "description": "Percentage change in MI (after vs before)"
-              }
+              },
+              "cospine_skip_reason": {
+                "type": ["string", "null"],
+                "description": "When CoSpine-style metrics could not be computed, this records why (anat unavailable, deepseg failure, no Z coverage). Absent when metrics computed normally."
+              },
+              "per_slice_z": {
+                "type": ["array", "null"],
+                "items": {"type": "integer"},
+                "description": "BOLD Z-indices that were scored (intersection of anat cord coverage and EPI cord coverage)"
+              },
+              "displacement_before_mm": {
+                "type": ["array", "null"],
+                "items": {"type": ["number", "null"]},
+                "description": "Per-slice |Y-centroid(EPI cord) − Y-centroid(anat cord)| in mm, before distortion correction"
+              },
+              "displacement_after_mm": {
+                "type": ["array", "null"],
+                "items": {"type": ["number", "null"]},
+                "description": "Per-slice A–P cord-centerline displacement in mm, after correction"
+              },
+              "displacement_mean_before_mm": {"type": ["number", "null"]},
+              "displacement_mean_after_mm": {"type": ["number", "null"]},
+              "displacement_max_after_mm": {"type": ["number", "null"]},
+              "displacement_delta_mm": {
+                "type": ["number", "null"],
+                "description": "displacement_mean_after_mm − displacement_mean_before_mm (negative = improvement)"
+              },
+              "dice_per_slice_before": {
+                "type": ["array", "null"],
+                "items": {"type": "number"},
+                "description": "Per-slice 2D Dice (EPI cord ∩ anat cord), before correction"
+              },
+              "dice_per_slice_after": {
+                "type": ["array", "null"],
+                "items": {"type": "number"}
+              },
+              "dice_mean_before": {"type": ["number", "null"]},
+              "dice_mean_after": {"type": ["number", "null"]},
+              "dice_min_after": {"type": ["number", "null"]},
+              "dice_3d_before": {
+                "type": ["number", "null"],
+                "description": "3D Dice pooled over all evaluated slices (CoSpine-style)"
+              },
+              "dice_3d_after": {"type": ["number", "null"]},
+              "dice_delta": {
+                "type": ["number", "null"],
+                "description": "dice_mean_after − dice_mean_before (positive = improvement)"
+              },
+              "voxsize_y_mm": {"type": ["number", "null"]},
+              "n_slices_evaluated": {"type": ["integer", "null"]}
             }
           },
           "failure_reasons": {
@@ -117,17 +166,17 @@
             "type": "object",
             "description": "Paths (relative to out_dir) to QC reportlet files",
             "required": [
-              "crop_box_sagittal",
-              "mi_summary"
+              "slice_displacement",
+              "cord_dice_per_slice"
             ],
             "properties": {
-              "crop_box_sagittal": {
+              "slice_displacement": {
                 "type": "string",
-                "description": "Path to the before/after axial montage PNG (cord-region focused)"
+                "description": "Path to per-slice A–P cord-centerline displacement PNG (CoSpine-style)"
               },
-              "mi_summary": {
+              "cord_dice_per_slice": {
                 "type": "string",
-                "description": "Path to the MI before/after bar chart PNG"
+                "description": "Path to per-slice 2D cord-Dice (EPI ∩ anat) PNG (CoSpine-style)"
               }
             }
           },

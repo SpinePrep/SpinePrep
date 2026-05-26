@@ -25,13 +25,20 @@ distortion_correction:
     smoothing: "2x1x0vox"
 
 qc_thresholds:
-  # Initial values per spec; retune on reg-scope run before v1.0 lock.
-  pass_dice_min: 0.80              # fmap modes
-  warn_dice_min: 0.65              # SyN fallback floor
-  fail_dice_below: 0.65
-  pass_mi_min_delta_pct: 0.0       # require improvement for PASS
+  # CoSpine-style geometric gates (Wei et al., Sci Data 2025). Headline
+  # measures: per-slice 2D cord Dice (EPI ∩ anat) and per-slice A–P
+  # cord-centerline displacement. Initial bands set from the CoSpine
+  # table (post-TOPUP mean A–P displacement 0.13 mm; uncorrected 2.73
+  # mm). Retune on reg-scope run before v1.0 lock.
+  pass_dice_min: 0.50              # cord seg agreement after correction
+  warn_dice_min: 0.30              # below this on After: FAIL
+  pass_displacement_max_mm: 1.0    # post-correction A–P offset, mean
+  warn_displacement_max_mm: 2.0    # above this on After: FAIL
+  epsilon_dice: 0.02               # tolerance for "did not degrade"
+  epsilon_displacement_mm: 0.2     # tolerance for "did not worsen"
+  # Legacy MI: catastrophic-drop fail still applies as sanity check.
+  # MI is no longer the primary gate.
   fail_mi_max_drop_pct: 10.0
-  warn_displacement_max_mm: 8.0
 
 cost_controls:
   estimate_per_run_minutes: 2.5
