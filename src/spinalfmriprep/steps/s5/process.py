@@ -379,8 +379,10 @@ def _compute_qc(
     bold_after: Path,
     anat_path: Optional[Path],
 ) -> dict[str, Any]:
-    """Mutual information before/after, plus voxel-displacement summary
-    when available.
+    """Mutual information before/after, retained as a secondary metric
+    on qc.json (no longer plotted as the primary reportlet). The CoSpine
+    geometric metrics (cord-Dice, A–P displacement) are the headline
+    measures; see ``_compute_cospine_metrics``.
 
     `anat_path` must be in the same geometry as the BOLDs (i.e. anat
     already resampled to BOLD space — produced once by the caller). When
@@ -408,16 +410,338 @@ def _compute_qc(
     return metrics
 
 
+# ---------------------------------------------------------------------------
+# CoSpine-style effectiveness metrics: per-slice A–P cord-centerline
+# displacement and per-slice 2D cord-Dice (EPI ∩ anat), both Before and
+# After distortion correction. See Wei et al., Sci Data 2025
+# (CoSpine database) §"Slice-by-slice Y-axis displacement" and
+# §"Spinal cord DSC".
+#
+# Pipeline (geometry-faithful, mode-agnostic):
+#   1. Resample S2 anat cord_dseg → BOLD voxel grid via
+#      `flirt -applyxfm -usesqform -interp nearestneighbour`. The header
+#      sforms encode the rigid scanner→world mapping; this gives the
+#      same anat-cord reference for both Before and After (S5 is in-grid,
+#      so BOLD-before and BOLD-after share the voxel lattice).
+#   2. Save mean BOLD Before/After, write them to disk.
+#   3. Run `sct_deepseg_sc -c t2s` on each mean BOLD → EPI cord seg in
+#      BOLD geometry. Matches CoSpine §Methods.
+#   4. Per Z-slice intersecting all three masks: compute Y-centroid of
+#      each binary slice and the 2D Dice (EPI ∩ anat). Aggregate into
+#      mean/std and a 3D Dice pooled across all evaluated voxels.
+# ---------------------------------------------------------------------------
+
+
+def _centroid_y(slice2d: np.ndarray) -> Optional[float]:
+    """Voxel-coord Y centroid of a binary 2D slice. Returns None when empty."""
+    if slice2d.sum() <= 0:
+        return None
+    ys, xs = np.nonzero(slice2d > 0)
+    if ys.size == 0:
+        return None
+    # convention: first array axis is X (RL), second is Y (AP) for RPI/RAS.
+    # _slice2d here is mask[:, :, z], so axis 0 = X, axis 1 = Y.
+    # np.nonzero returns (axis0, axis1) ⇒ axis1 indices are Y.
+    return float(xs.mean())
+
+
+def _dice_2d(a: np.ndarray, b: np.ndarray) -> Optional[float]:
+    sa = int((a > 0).sum())
+    sb = int((b > 0).sum())
+    if sa + sb == 0:
+        return None
+    inter = int(((a > 0) & (b > 0)).sum())
+    return float(2.0 * inter / (sa + sb))
+
+
+def _resample_mask_to_bold(
+    mask_path: Path, bold_ref: Path, out_path: Path,
+) -> bool:
+    """Resample a binary mask to BOLD geometry using FLIRT sform-applyxfm
+    with nearest-neighbour interpolation. Returns True on success."""
+    ok, _ = _run_command([
+        "flirt",
+        "-in", str(mask_path),
+        "-ref", str(bold_ref),
+        "-applyxfm", "-usesqform",
+        "-interp", "nearestneighbour",
+        "-out", str(out_path),
+    ])
+    return ok and out_path.exists()
+
+
+def _sct_deepseg_cord(
+    mean_path: Path, out_seg: Path, work_dir: Path,
+) -> bool:
+    """Run sct_deepseg_sc on a 3D mean BOLD to produce a cord mask in the
+    same geometry. Returns True on success.
+
+    Output path of sct_deepseg_sc is derived from -i (suffix _seg);
+    we run inside ``work_dir`` and move the result to ``out_seg``.
+    """
+    work_dir.mkdir(parents=True, exist_ok=True)
+    # sct_deepseg_sc writes to the input's directory with _seg suffix.
+    local_in = work_dir / mean_path.name
+    if local_in.resolve() != mean_path.resolve():
+        if local_in.exists():
+            local_in.unlink()
+        local_in.symlink_to(mean_path.resolve())
+    ok, _ = _run_command([
+        "sct_deepseg_sc",
+        "-i", str(local_in),
+        "-c", "t2s",
+        "-ofolder", str(work_dir),
+    ])
+    if not ok:
+        return False
+    produced = work_dir / f"{local_in.stem.replace('.nii', '')}_seg.nii.gz"
+    if not produced.exists():
+        # Some SCT versions emit alongside .nii (no .gz). Try both.
+        alt = work_dir / f"{local_in.stem}_seg.nii.gz"
+        if alt.exists():
+            produced = alt
+        else:
+            return False
+    shutil.copy(produced, out_seg)
+    return out_seg.exists()
+
+
+def _compute_cospine_metrics(
+    bold_before: Path,
+    bold_after: Path,
+    anat_cord_mask_path: Optional[Path],
+    bold_mean_ref: Optional[Path],
+    work_dir: Path,
+) -> dict[str, Any]:
+    """Per-Z A–P displacement and 2D cord-Dice between EPI cord seg and
+    anat cord mask, Before and After distortion correction.
+
+    Returns a flat dict ready to merge into qc.json metrics. When inputs
+    are missing or sct_deepseg_sc fails, the dict carries a single
+    ``cospine_skip_reason`` key and nothing else.
+    """
+    out: dict[str, Any] = {}
+    work_dir.mkdir(parents=True, exist_ok=True)
+    if anat_cord_mask_path is None or not Path(anat_cord_mask_path).exists():
+        out["cospine_skip_reason"] = "anat cord mask unavailable"
+        return out
+    if bold_mean_ref is None or not bold_mean_ref.exists():
+        # Build it from bold_after as a last-resort fallback.
+        img = nib.load(bold_after)
+        d = img.get_fdata()
+        m = d.mean(axis=3) if d.ndim == 4 else d
+        bold_mean_ref = work_dir / "bold_after_mean.nii.gz"
+        nib.save(nib.Nifti1Image(m.astype(np.float32), img.affine, img.header),
+                 bold_mean_ref)
+
+    # 1. anat cord mask → BOLD grid (NN)
+    anat_in_bold = work_dir / "anat_cord_dseg_in_bold.nii.gz"
+    if not _resample_mask_to_bold(Path(anat_cord_mask_path),
+                                   bold_mean_ref, anat_in_bold):
+        out["cospine_skip_reason"] = "flirt resample of anat cord mask failed"
+        return out
+    anat_arr = nib.load(anat_in_bold).get_fdata() > 0
+    if anat_arr.sum() == 0:
+        out["cospine_skip_reason"] = "resampled anat cord mask is empty"
+        return out
+
+    # 2. mean BOLDs in BOLD geometry
+    mean_b_path = work_dir / "bold_before_mean.nii.gz"
+    img_b = nib.load(bold_before)
+    db = img_b.get_fdata()
+    mean_b = db.mean(axis=3) if db.ndim == 4 else db
+    nib.save(nib.Nifti1Image(mean_b.astype(np.float32),
+                              img_b.affine, img_b.header), mean_b_path)
+
+    mean_a_path = work_dir / "bold_after_mean.nii.gz"
+    img_a = nib.load(bold_after)
+    da = img_a.get_fdata()
+    mean_a = da.mean(axis=3) if da.ndim == 4 else da
+    nib.save(nib.Nifti1Image(mean_a.astype(np.float32),
+                              img_a.affine, img_a.header), mean_a_path)
+
+    # 3. EPI cord segs via sct_deepseg_sc (CoSpine recipe)
+    bold_cord_b = work_dir / "bold_before_cord_seg.nii.gz"
+    bold_cord_a = work_dir / "bold_after_cord_seg.nii.gz"
+    seg_work = work_dir / "deepseg"
+    if not _sct_deepseg_cord(mean_b_path, bold_cord_b, seg_work / "before"):
+        out["cospine_skip_reason"] = "sct_deepseg_sc failed on BOLD-before"
+        return out
+    if not _sct_deepseg_cord(mean_a_path, bold_cord_a, seg_work / "after"):
+        out["cospine_skip_reason"] = "sct_deepseg_sc failed on BOLD-after"
+        return out
+    epi_b = nib.load(bold_cord_b).get_fdata() > 0
+    epi_a = nib.load(bold_cord_a).get_fdata() > 0
+
+    # Voxel size along Y (AP) from BOLD header
+    zooms = img_a.header.get_zooms()[:3]
+    voxsize_y_mm = float(zooms[1]) if len(zooms) >= 2 else 1.0
+
+    # 4. Per-slice metrics on the Z range where the anat reference has cord.
+    anat_z_with_cord = np.where(anat_arr.any(axis=(0, 1)))[0]
+    if anat_z_with_cord.size == 0:
+        out["cospine_skip_reason"] = "anat cord mask has no Z coverage"
+        return out
+
+    per_z: list[int] = []
+    disp_b: list[float] = []
+    disp_a: list[float] = []
+    dice_b: list[float] = []
+    dice_a: list[float] = []
+    valid_voxels_b = 0
+    valid_voxels_a = 0
+    inter_b = 0
+    inter_a = 0
+    sum_anat = 0
+    for z in anat_z_with_cord.tolist():
+        a_sl = anat_arr[:, :, z]
+        b_sl = epi_b[:, :, z]
+        a2_sl = epi_a[:, :, z]
+        cy_ref = _centroid_y(a_sl)
+        cy_b = _centroid_y(b_sl)
+        cy_a = _centroid_y(a2_sl)
+        if cy_ref is None:
+            continue
+        # Need at least one EPI mask on this slice to score it. If a
+        # slice has no EPI cord on either side, skip — that's a coverage
+        # gap, not a distortion measurement.
+        if cy_b is None and cy_a is None:
+            continue
+        per_z.append(int(z))
+        disp_b.append(abs(cy_b - cy_ref) * voxsize_y_mm
+                      if cy_b is not None else float("nan"))
+        disp_a.append(abs(cy_a - cy_ref) * voxsize_y_mm
+                      if cy_a is not None else float("nan"))
+        d2_b = _dice_2d(a_sl, b_sl)
+        d2_a = _dice_2d(a_sl, a2_sl)
+        dice_b.append(d2_b if d2_b is not None else 0.0)
+        dice_a.append(d2_a if d2_a is not None else 0.0)
+        # 3D pooled accumulators over the same Z range
+        sum_anat += int(a_sl.sum())
+        valid_voxels_b += int(b_sl.sum())
+        valid_voxels_a += int(a2_sl.sum())
+        inter_b += int((a_sl & b_sl).sum())
+        inter_a += int((a_sl & a2_sl).sum())
+
+    if not per_z:
+        out["cospine_skip_reason"] = (
+            "no Z slices with both anat and EPI cord coverage")
+        return out
+
+    db_arr = np.asarray(disp_b, dtype=float)
+    da_arr = np.asarray(disp_a, dtype=float)
+    dice_b_arr = np.asarray(dice_b, dtype=float)
+    dice_a_arr = np.asarray(dice_a, dtype=float)
+
+    def _fmean(a: np.ndarray) -> Optional[float]:
+        v = a[np.isfinite(a)]
+        return float(v.mean()) if v.size else None
+
+    def _fmax(a: np.ndarray) -> Optional[float]:
+        v = a[np.isfinite(a)]
+        return float(v.max()) if v.size else None
+
+    def _fmin(a: np.ndarray) -> Optional[float]:
+        v = a[np.isfinite(a)]
+        return float(v.min()) if v.size else None
+
+    d3b = (2.0 * inter_b / (sum_anat + valid_voxels_b)
+           if (sum_anat + valid_voxels_b) > 0 else None)
+    d3a = (2.0 * inter_a / (sum_anat + valid_voxels_a)
+           if (sum_anat + valid_voxels_a) > 0 else None)
+
+    out["per_slice_z"] = per_z
+    out["displacement_before_mm"] = db_arr.tolist()
+    out["displacement_after_mm"] = da_arr.tolist()
+    out["displacement_mean_before_mm"] = _fmean(db_arr)
+    out["displacement_mean_after_mm"] = _fmean(da_arr)
+    out["displacement_max_after_mm"] = _fmax(da_arr)
+    out["displacement_delta_mm"] = (
+        out["displacement_mean_after_mm"] - out["displacement_mean_before_mm"]
+        if (out["displacement_mean_after_mm"] is not None
+            and out["displacement_mean_before_mm"] is not None)
+        else None
+    )
+    out["dice_per_slice_before"] = dice_b_arr.tolist()
+    out["dice_per_slice_after"] = dice_a_arr.tolist()
+    out["dice_mean_before"] = _fmean(dice_b_arr)
+    out["dice_mean_after"] = _fmean(dice_a_arr)
+    out["dice_min_after"] = _fmin(dice_a_arr)
+    out["dice_3d_before"] = d3b
+    out["dice_3d_after"] = d3a
+    out["dice_delta"] = (
+        out["dice_mean_after"] - out["dice_mean_before"]
+        if (out["dice_mean_after"] is not None
+            and out["dice_mean_before"] is not None)
+        else None
+    )
+    out["voxsize_y_mm"] = voxsize_y_mm
+    out["n_slices_evaluated"] = len(per_z)
+    return out
+
+
 def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[str, list[str]]:
-    """PASS / WARN / FAIL per spec §QC Contract."""
+    """PASS / WARN / FAIL on the CoSpine-style geometric metrics.
+
+    Headline gates (After distortion correction):
+      - cord ``dice_mean_after`` ≥ ``pass_dice_min`` and ≥ Before − ε
+      - per-slice ``displacement_mean_after_mm`` ≤
+        ``pass_displacement_max_mm`` and ≤ Before + ε
+    Plus the legacy MI sanity check (PASS requires Δ ≥ 0%, but a
+    catastrophic drop fails outright). SyN always degrades to WARN
+    (no fmap = inherently weaker correction).
+
+    When the CoSpine metrics could not be computed (anat unavailable),
+    fall back to MI gating alone so the step still meaningfully runs.
+    """
     reasons: list[str] = []
 
+    # Catastrophic MI drop: fail outright regardless of mode.
     mi_delta = metrics.get("mi_delta_pct")
-    if mi_delta is not None:
-        if mi_delta < -thresholds.get("fail_mi_max_drop_pct", 10.0):
-            return "FAIL", [f"MI dropped {mi_delta:.1f}% > 10%"]
-        if mi_delta < 0:
+    if mi_delta is not None and mi_delta < -thresholds.get(
+            "fail_mi_max_drop_pct", 10.0):
+        return "FAIL", [f"MI dropped {mi_delta:.1f}% > 10%"]
+
+    skip = metrics.get("cospine_skip_reason")
+    if skip:
+        reasons.append(f"CoSpine metrics skipped: {skip}")
+        if mi_delta is not None and mi_delta < 0:
             reasons.append(f"MI did not improve ({mi_delta:+.1f}%)")
+    else:
+        dice_a = metrics.get("dice_mean_after")
+        dice_b = metrics.get("dice_mean_before")
+        disp_a = metrics.get("displacement_mean_after_mm")
+        disp_b = metrics.get("displacement_mean_before_mm")
+        pass_dice = float(thresholds.get("pass_dice_min", 0.50))
+        warn_dice = float(thresholds.get("warn_dice_min", 0.30))
+        pass_disp = float(thresholds.get("pass_displacement_max_mm", 1.0))
+        warn_disp = float(thresholds.get("warn_displacement_max_mm", 2.0))
+        eps_dice = float(thresholds.get("epsilon_dice", 0.02))
+        eps_disp = float(thresholds.get("epsilon_displacement_mm", 0.2))
+
+        if dice_a is None or disp_a is None:
+            reasons.append("CoSpine metrics incomplete")
+        else:
+            if dice_a < warn_dice:
+                return "FAIL", [f"cord Dice after = {dice_a:.2f} < "
+                                f"warn floor {warn_dice:.2f}"]
+            if disp_a > warn_disp:
+                return "FAIL", [f"cord A–P displacement after = "
+                                f"{disp_a:.2f} mm > warn ceiling "
+                                f"{warn_disp:.2f} mm"]
+            if dice_a < pass_dice:
+                reasons.append(f"cord Dice after = {dice_a:.2f} < pass "
+                               f"floor {pass_dice:.2f}")
+            if disp_a > pass_disp:
+                reasons.append(f"cord A–P displacement after = "
+                               f"{disp_a:.2f} mm > pass ceiling "
+                               f"{pass_disp:.2f} mm")
+            if dice_b is not None and dice_a < dice_b - eps_dice:
+                reasons.append(f"cord Dice degraded ({dice_b:.2f} → "
+                               f"{dice_a:.2f})")
+            if disp_b is not None and disp_a > disp_b + eps_disp:
+                reasons.append(f"cord A–P displacement increased "
+                               f"({disp_b:.2f} → {disp_a:.2f} mm)")
 
     if mode == "syn":
         # SyN always marked WARN per spec (no fmap = degraded capability)
@@ -580,6 +904,26 @@ def run_S5_func_distortion_correction(
     # short-circuit inside _compute_qc on the shape check, as before).
     qc_anat = anat_in_bold if anat_in_bold is not None else anat_path
     metrics = _compute_qc(bold_path, out_undistorted, qc_anat)
+
+    # CoSpine-style geometric effectiveness metrics (cord-Dice + per-slice
+    # A–P cord-centerline displacement). cord_mask_path is anat-space
+    # cord_dseg from S2 — we resample it to BOLD voxel grid inside
+    # `_compute_cospine_metrics`. The bold_mean_ref we already built
+    # above (used by the MI path) is reused as the FLIRT reference.
+    bold_mean_ref_path: Optional[Path] = None
+    if anat_in_bold is not None:
+        bold_mean_ref_path = s5_work_dir / "bold_mean_ref.nii.gz"
+        if not bold_mean_ref_path.exists():
+            bold_mean_ref_path = None
+    cospine = _compute_cospine_metrics(
+        bold_before=bold_path,
+        bold_after=out_undistorted,
+        anat_cord_mask_path=cord_mask_path,
+        bold_mean_ref=bold_mean_ref_path,
+        work_dir=s5_work_dir / "cospine",
+    )
+    metrics.update(cospine)
+
     thresholds = policy.get("qc_thresholds", {})
     status, reasons = _classify_run_status(metrics, mode, thresholds)
 
@@ -590,30 +934,33 @@ def run_S5_func_distortion_correction(
     mean = data.mean(axis=3) if data.ndim == 4 else data
     nib.save(nib.Nifti1Image(mean.astype(np.float32), img.affine, img.header), mean_path)
 
-    # Render reportlets (PNG figures) per S5 spec §Reportlets
+    # Render reportlets (PNG figures) — CoSpine recipe (Sci Data 2025):
+    # per-slice A–P displacement + per-slice 2D cord-Dice. Replaces the
+    # earlier qualitative axial montage + MI bar.
     figures_dir = func_dir.parent / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
 
-    from .reportlets import render_s5_before_after, render_s5_mi_summary
+    from .reportlets import (
+        render_s5_cord_dice_per_slice,
+        render_s5_slice_displacement,
+    )
 
-    crop_box_path = figures_dir / f"{prefix}_desc-S5_crop_box_sagittal.png"
-    mi_summary_path = figures_dir / f"{prefix}_desc-S5_mi_summary.png"
+    disp_path = figures_dir / f"{prefix}_desc-S5_slice_displacement.png"
+    dice_path = figures_dir / f"{prefix}_desc-S5_cord_dice_per_slice.png"
     try:
-        render_s5_before_after(
-            bold_path, out_undistorted, bold_space_cord_mask, crop_box_path,
-        )
+        render_s5_slice_displacement(metrics, disp_path, mode)
     except Exception as e:
         # Don't fail the whole run on a viz hiccup; status still reflects metrics
-        reasons.append(f"reportlet render failed: {e}")
+        reasons.append(f"slice_displacement render failed: {e}")
     try:
-        render_s5_mi_summary(metrics, mi_summary_path, mode)
+        render_s5_cord_dice_per_slice(metrics, dice_path, mode)
     except Exception as e:
-        reasons.append(f"mi summary render failed: {e}")
+        reasons.append(f"cord_dice_per_slice render failed: {e}")
 
     # qc.json reportlet paths must be RELATIVE to out_dir (HEADER convention)
     reportlets = {
-        "crop_box_sagittal": str(crop_box_path.relative_to(out_dir)),
-        "mi_summary": str(mi_summary_path.relative_to(out_dir)),
+        "slice_displacement": str(disp_path.relative_to(out_dir)),
+        "cord_dice_per_slice": str(dice_path.relative_to(out_dir)),
     }
 
     qc_metrics_path = s5_work_dir / "qc_metrics.json"
