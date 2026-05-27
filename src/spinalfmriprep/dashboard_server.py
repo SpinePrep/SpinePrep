@@ -129,27 +129,18 @@ def _file_response(path: Path, media_type: str | None = None) -> FileResponse:
 
 @app.get("/")
 async def root():
-    """Project-root entry — serve the cross-workfolder latest landing
-    page if it exists; otherwise fall through to the latest wf's
-    dashboard index."""
-    landing = WORK_ROOT / "dashboard.html"
-    if landing.is_file():
-        return _file_response(landing, media_type="text/html")
-    # Relative target so the redirect resolves correctly when the server
-    # is mounted under a reverse-proxy prefix (e.g. 271828.space/p2/).
+    """Unified entry point — serves the latest workfolder's
+    dashboard/index.html, which carries the scope banner *and* the
+    full per-step dashboard in one page."""
     return RedirectResponse(url="dashboard/index.html",
                             headers=_NO_CACHE_HEADERS)
 
 
 @app.get("/dashboard.html")
 async def landing_page():
-    """Explicit landing-page URL — same as `/` but addressable as a
-    file name so curl/wget pick the right mimetype."""
-    landing = WORK_ROOT / "dashboard.html"
-    if not landing.is_file():
-        return RedirectResponse(url="dashboard/index.html",
-                                headers=_NO_CACHE_HEADERS)
-    return _file_response(landing, media_type="text/html")
+    """Legacy landing-page URL — redirect to the unified dashboard."""
+    return RedirectResponse(url="dashboard/index.html",
+                            headers=_NO_CACHE_HEADERS)
 
 
 @app.get("/__spinalfmriprep__/workfolders.json")
