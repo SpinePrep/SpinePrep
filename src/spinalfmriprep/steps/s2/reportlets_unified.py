@@ -1,6 +1,12 @@
-"""S2 unified reportlets — standardized, normalized, literature-backed.
+"""S2 unified reportlets — implements the chain-wide visual standard.
 
-One visual language for all five S2 reportlets:
+Uses shared helpers from `spinalfmriprep.reportlets_common`. The
+standard (.claude/specs/reportlet-visual-standard.md) is the single
+source of truth for layout, palette, and overlay conventions; this
+module just supplies the S2-specific overlay factories and metric
+extraction.
+
+Five S2 reportlets:
   S2.1  crop_box_sagittal         Discovery + crop bbox sanity
   S2.2a cordmask_montage          Cord seg quality
   S2.2b totalspineseg_montage     Vertebrae + discs + canal labeling
