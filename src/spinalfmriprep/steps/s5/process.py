@@ -37,12 +37,24 @@ def _ants_command(cmd: list[str]) -> list[str]:
     Mounts the SpinalfMRIprep project root so absolute paths inside cmd
     resolve identically inside the container. The S0_SETUP spec already
     pins the image; this just makes S5 use it when needed.
+
+    Pass ``--user $(id -u):$(id -g)`` so files created inside the
+    container are owned by the host user — not root. Without this
+    flag, subsequent non-Docker tools (FSL applytopup, Python nibabel)
+    fail with "cant open file" when they try to overwrite a root-
+    owned output from an earlier SyN run, which silently flips the
+    dispatcher from topup back to SyN. (Diagnosed 2026-05-27 after
+    every cospine_pain / cospine_motor run was collapsing to SyN
+    even with a valid topup-eligible reversed-PE pair available.)
     """
     if _ants_local_available():
         return cmd
     project_root = Path(__file__).resolve().parents[4]
+    uid = os.getuid() if hasattr(os, "getuid") else 0
+    gid = os.getgid() if hasattr(os, "getgid") else 0
     return [
         "docker", "run", "--rm",
+        "--user", f"{uid}:{gid}",
         "-v", f"{project_root}:{project_root}",
         "-w", str(Path.cwd()),
         _ANTS_DOCKER_IMAGE,
@@ -1023,8 +1035,13 @@ def run_S5_func_distortion_correction(
         )
         # Topup may legitimately fail when BOLD PE doesn't match fmap
         # axis (audit-v2 Finding 5). Fall through to SyN rather than
-        # leaving the run un-corrected.
+        # leaving the run un-corrected. Preserve the original topup
+        # error message in the dispatch trail so downstream debugging
+        # isn't blind.
         if modeinfo.get("status") != "OK":
+            print(f"[S5 dispatcher] topup FAILED on {run_id}, falling to SyN: "
+                  f"{modeinfo.get('failure_message', '<no message>')}",
+                  flush=True)
             mode = "syn"
     elif mode == "fugue":
         modeinfo = _run_fugue()
