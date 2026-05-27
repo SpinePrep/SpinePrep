@@ -312,11 +312,14 @@ def render_s5_distortion_effectiveness(
     Layout (figsize 16x9, BG dark per visual standard):
       - HEADER: title + subtitle "mode=... · 3D Dice=... · disp=..."
         + status pill (PASS when geometry improved, else WARN).
-      - SAGITTAL PAIR (top): Before (left) | After (right) at midcord X,
-        yellow anat-cord contour overlay on both.
-      - AXIAL GRID (bottom): 3 cord-bearing Z columns × 2 rows
-        (Before / After), yellow contour, per-slice 22×22-vox crop.
-      - FOOTER: anat-cord legend, intensity-window note, Z-pick list.
+      - LEFT (~25% width): Sagittal Before (far left) and Sagittal After
+        (next to it), each tall-narrow strip matching the cord's 1:~3.4
+        aspect so the panel is filled instead of black-bar padded.
+      - RIGHT (~70% width): Axial grid, 3 cord-bearing Z columns × 2 rows
+        (Before / After) with square tiles. Z column headers above the
+        grid; "Before"/"After" labels at the left edge of each row.
+      - FOOTER: anat-cord legend, sagittal X, axial Z picks, intensity-
+        window note.
 
     Inputs (from ``work_dir/cospine/``):
       - ``bold_before_mean.nii.gz``         mean BOLD Before correction
@@ -422,10 +425,18 @@ def render_s5_distortion_effectiveness(
     fig.patch.set_facecolor(BG)
     add_header(fig, title, subtitle, status, None)
 
-    # Sagittal pair
-    sag_y0, sag_h = 0.50, 0.34
-    ax_sag_b = fig.add_axes((0.06, sag_y0, 0.42, sag_h))
-    ax_sag_a = fig.add_axes((0.52, sag_y0, 0.42, sag_h))
+    # --- Left block: two tall-narrow sagittal strips side-by-side ---
+    # Cord sagittal data is ~1:3.4 (W:H). Putting it in a square-ish
+    # panel wasted ~70% of the canvas in v1; matching the panel aspect
+    # lets the actual image fill the slot.
+    sag_y0, sag_h = 0.07, 0.79
+    sag_w_each = 0.085           # ~11% of figure width per sagittal
+    sag_gap = 0.014
+    sag_x_b = 0.040
+    sag_x_a = sag_x_b + sag_w_each + sag_gap
+
+    ax_sag_b = fig.add_axes((sag_x_b, sag_y0, sag_w_each, sag_h))
+    ax_sag_a = fig.add_axes((sag_x_a, sag_y0, sag_w_each, sag_h))
     ax_sag_b.set_facecolor(BG)
     ax_sag_a.set_facecolor(BG)
 
@@ -438,29 +449,56 @@ def render_s5_distortion_effectiveness(
                     pixel_aspect=sag_aspect)
     render_sagittal(ax_sag_a, sag_a, sag_overlays, vmin, vmax,
                     pixel_aspect=sag_aspect)
-    ax_sag_b.set_title("Before", color=TEXT, fontsize=14,
-                       fontweight="bold", pad=6)
-    ax_sag_a.set_title("After", color=TEXT, fontsize=14,
-                       fontweight="bold", pad=6)
+    # Place "Before"/"After" titles above the sagittals via fig.text
+    # (ax.set_title's pad was overlapping the header in v1).
+    sag_label_y = sag_y0 + sag_h + 0.012
+    fig.text(sag_x_b + sag_w_each / 2, sag_label_y, "Before",
+             color=TEXT, fontsize=13, fontweight="bold",
+             ha="center", va="bottom")
+    fig.text(sag_x_a + sag_w_each / 2, sag_label_y, "After",
+             color=TEXT, fontsize=13, fontweight="bold",
+             ha="center", va="bottom")
 
-    # Axial grid: 3 cols × 2 rows
-    ax_y0, ax_h = 0.08, 0.36
-    row_h = ax_h / 2
+    # --- Right block: axial grid (3 cols × 2 rows, square tiles) ---
+    grid_x0 = sag_x_a + sag_w_each + 0.05       # leave breathing room
+    grid_x1 = 0.985
+    grid_w = grid_x1 - grid_x0
+    grid_y0 = sag_y0
+    grid_y1 = sag_y0 + sag_h - 0.06             # reserve space for col headers
+    grid_h = grid_y1 - grid_y0
+
     n_cols = len(z_picks)
-    grid_x0, grid_w = 0.06, 0.88
     col_w = grid_w / n_cols
+    row_h = grid_h / 2
+
+    # Column headers (z=...) above each column
+    for col, z in enumerate(z_picks):
+        cx = grid_x0 + col * col_w + col_w / 2
+        fig.text(cx, grid_y1 + 0.012, f"z = {z}",
+                 color=TEXT, fontsize=12, fontweight="bold",
+                 ha="center", va="bottom", family="monospace")
+
+    # Row labels ("Before" / "After") to the left of the grid
+    fig.text(grid_x0 - 0.012, grid_y0 + row_h * 1.5, "Before",
+             color=TEXT, fontsize=12, fontweight="bold",
+             rotation=90, ha="right", va="center")
+    fig.text(grid_x0 - 0.012, grid_y0 + row_h * 0.5, "After",
+             color=TEXT, fontsize=12, fontweight="bold",
+             rotation=90, ha="right", va="center")
 
     for col, z in enumerate(z_picks):
         cell_x = grid_x0 + col * col_w
+        # Before row (top)
         ax_b = fig.add_axes((
-            cell_x + col_w * 0.06,
-            ax_y0 + row_h + row_h * 0.10,
-            col_w * 0.88, row_h * 0.80,
+            cell_x + col_w * 0.03,
+            grid_y0 + row_h + row_h * 0.03,
+            col_w * 0.94, row_h * 0.94,
         ))
+        # After row (bottom)
         ax_a = fig.add_axes((
-            cell_x + col_w * 0.06,
-            ax_y0 + row_h * 0.10,
-            col_w * 0.88, row_h * 0.80,
+            cell_x + col_w * 0.03,
+            grid_y0 + row_h * 0.03,
+            col_w * 0.94, row_h * 0.94,
         ))
         ax_b.set_facecolor(BG)
         ax_a.set_facecolor(BG)
@@ -476,13 +514,6 @@ def render_s5_distortion_effectiveness(
         render_axial_tile(ax_a, after[:, :, z], overlays,
                           vmin, vmax, z, first=False,
                           crop=tile_crop, pixel_aspect=ax_aspect)
-
-    fig.text(0.025, ax_y0 + row_h * 1.5, "Before",
-             color=TEXT, fontsize=12, fontweight="bold",
-             rotation=90, ha="center", va="center")
-    fig.text(0.025, ax_y0 + row_h * 0.5, "After",
-             color=TEXT, fontsize=12, fontweight="bold",
-             rotation=90, ha="center", va="center")
 
     add_footer(
         fig,
