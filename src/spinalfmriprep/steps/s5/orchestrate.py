@@ -211,18 +211,56 @@ def run_S5(
 
         # Build a stub "bold_run" dict carrying acquisition metadata if we
         # can find it in the inventory.
+        #
+        # CRITICAL: S4's qc.json stores subject as "sub-02" (BIDS-prefixed)
+        # but the S1 inventory uses the bare label "02". The orchestrator
+        # has already stripped both in `subj` / `ses`. Match the inventory
+        # using those bare labels — previously this comparison used the
+        # raw `s4_run` value and failed for every run, falling through
+        # to a stub with empty `acquisition`; downstream select_mode
+        # then filtered every fmap out (subject mismatch) and silently
+        # collapsed mode to SyN for datasets that DO have topup-eligible
+        # reversed-PE fmaps (ds005883_cospine_pain, ds005884_cospine_motor).
+        def _bare_sub(r):
+            v = str(r.get("subject") or "")
+            return v[4:] if v.startswith("sub-") else v
+
+        def _bare_ses(r):
+            v = r.get("session")
+            if v is None or v == "":
+                return None
+            s = str(v)
+            return s[4:] if s.startswith("ses-") else s
+
         bold_run = next(
             (r for r in inv.get("runs", [])
              if r.get("modality") == "func"
-             and r.get("subject") == s4_run.get("subject")
-             and r.get("session") == s4_run.get("session")
+             and _bare_sub(r) == subj
+             and _bare_ses(r) == ses
              and Path(r["path"]).name.replace("_bold.nii.gz", "")
                  .replace("_bold.nii", "") == run_id),
-            {"subject": s4_run.get("subject"),
-             "session": s4_run.get("session"),
-             "path": f"{run_id}_bold.nii.gz",
-             "acquisition": {}}
+            None,
         )
+        if bold_run is None:
+            # Last-resort stub: empty acquisition means topup gets
+            # skipped, fall through to SyN. Use bare subject/session
+            # so any downstream filter operating on bare ids works.
+            bold_run = {
+                "subject": subj,
+                "session": ses,
+                "path": f"sub-{subj}/func/{run_id}_bold.nii.gz",
+                "acquisition": {},
+            }
+
+        # Same normalization for the fmap pool — restrict to fmaps that
+        # belong to THIS run's bare subject/session before handing them
+        # to select_mode. (select_mode does its own sub/ses filter too,
+        # but it compares against bold_run's subject/session; pre-filtering
+        # by the canonical bare id makes the chain robust.)
+        sub_fmaps = [
+            f for f in fmap_runs
+            if _bare_sub(f) == subj and _bare_ses(f) == ses
+        ]
 
         anat = _find_anat_for(s4_run.get("subject"), s4_run.get("session"),
                               out_path, dataset_key)
@@ -232,7 +270,7 @@ def run_S5(
         res = run_S5_func_distortion_correction(
             bold_path=mocoref,
             bold_run=bold_run,
-            fmap_runs=fmap_runs,
+            fmap_runs=sub_fmaps,
             bids_root=bids_root or out_path,
             cord_mask_path=cord_mask,
             anat_path=anat,
