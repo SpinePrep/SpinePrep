@@ -54,7 +54,7 @@ def verify_s3():
     # Check Figures
     figures_dir = out_dir / "derivatives" / "spinalfmriprep" / "sub-test" / "ses-none" / "figures"
     expected_figs = [
-        "sub-test_ses-none_desc-S3_func_localization_crop_box_sagittal.png", # S3.1
+        "sub-test_ses-none_desc-S3_func_localization.png", # S3.1
         "sub-test_ses-none_desc-S3_t2_to_func_overlay.png", # S3.2
         "sub-test_ses-none_desc-S3_frame_metrics.png", # S3.3
         "sub-test_ses-none_desc-S3_crop_box_sagittal.png", # S3.4

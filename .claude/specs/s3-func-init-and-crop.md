@@ -53,9 +53,9 @@ already-computed `outlier_mask.json` and S3.1 / S3.3 sub-step returns):
 
 | Reportlet | What it shows | What failure looks like |
 |---|---|---|
-| `func_localization_crop` | S3.1 cord localization + crop bbox | Cord drift into brain ⇒ S3.1 FAIL |
-| `frame_metrics` | DVARS + refRMS timeseries with outlier markers | High outlier_fraction visible |
-| `crop_box_sagittal` | Crop ROI on funcref sagittal | Misaligned crop ⇒ wrong localization |
+| `func_localization` | S3.1 cord localization on coarse functional reference | Cord drift into brain ⇒ S3.1 FAIL |
+| `frame_metrics` | DVARS + DVARS-ref timeseries with outlier markers | High outlier_fraction visible |
+| `crop_box_sagittal` | Crop ROI on funcref sagittal (S3.3) | Misaligned crop ⇒ wrong localization |
 | `funcref_montage` | Axial montage of the robust funcref | Low signal / banding in cord = bad acquisition |
 
 ## Decision log

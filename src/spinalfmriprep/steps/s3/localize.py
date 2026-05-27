@@ -240,7 +240,7 @@ def _process_s3_1_dummy_drop_and_localization(
          # Reconstruct figure path for dashboard consistency
          figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
          if out_root:
-             fig_path = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_func_localization_crop_box_sagittal.png"
+             fig_path = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_func_localization.png"
          else:
              fig_path = None
 
@@ -432,11 +432,11 @@ def _process_s3_1_dummy_drop_and_localization(
             figures_dir = out_root / "derivatives" / "spinalfmriprep" / f"sub-{subject}" / "figures"
         # Use run_id for unique filenames per functional run
         figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
-        figure_name = f"{figure_prefix}_desc-S3_func_localization_crop_box_sagittal.png"
+        figure_name = f"{figure_prefix}_desc-S3_func_localization.png"
     else:
         # Fallback for test cases
         figures_dir = work_dir.parent.parent / "derivatives" / "spinalfmriprep" / "sub-test" / "ses-none" / "figures"
-        figure_name = "test_desc-S3_func_localization_crop_box_sagittal.png"
+        figure_name = "test_desc-S3_func_localization.png"
 
     figures_dir.mkdir(parents=True, exist_ok=True)
     figure_path = figures_dir / figure_name
