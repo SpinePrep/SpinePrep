@@ -292,64 +292,98 @@ def _generate_index_html(
     is prepended linking to it (S11 emits no per-run reportlets so it would
     otherwise not appear).
     """
-    # Get dropdown CSS, HTML, and JS
-    dropdown_css, dropdown_html, dropdown_js = _generate_workfolder_dropdown_html(workfolder_name, True)
-
     lines = [
         "<!DOCTYPE html>",
         "<html>",
         "<head>",
         "<meta charset=\"utf-8\" />",
-        # Force the browser to never cache the dashboard HTML — image
-        # cache-bust (?v=mtime) alone is useless if the HTML referencing
-        # them is itself served from cache.
         "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />",
         "<meta http-equiv=\"Pragma\" content=\"no-cache\" />",
         "<meta http-equiv=\"Expires\" content=\"0\" />",
-        "<title>SpinalfMRIprep QC Dashboard</title>",
+        "<title>SpinalfMRIprep QC</title>",
         "<style>",
-        "body { background: #1a1a1a; color: #e6e6e6; font-family: Arial, sans-serif; margin: 20px; }",
+        # Page base
+        "body { background: #0f1115; color: #e6e8ec;"
+        " font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;"
+        " margin: 0; padding: 18px 24px; font-size: 13px; }",
         "a { color: #7dcfff; text-decoration: none; }",
         "a:hover { text-decoration: underline; }",
-        ".step-card { border: 1px solid #333; padding: 16px; margin: 16px 0; border-radius: 4px; }",
-        ".step-card h2 { margin-top: 0; }",
-        ".reportlet-list { list-style: none; padding-left: 0; }",
-        ".reportlet-list li { margin: 8px 0; }",
-        ".reportlet-list a { display: inline-block; padding: 4px 8px; background: #2a2a2a; border-radius: 3px; }",
-        ".reportlet-list a:hover { background: #3a3a3a; }",
-        ".status-summary { color: #999; font-size: 0.9em; margin-top: 8px; }",
-        ".release-banner { border: 1px solid #2a623d; background: #14301e; padding: 16px; margin: 16px 0; border-radius: 6px; }",
-        ".release-banner h2 { margin: 0 0 8px 0; color: #7dcfff; }",
-        ".release-banner .release-status { display: inline-block; padding: 2px 10px; border-radius: 3px; font-weight: bold; margin-right: 8px; }",
-        ".release-banner .status-PASS { background: #14532d; }",
-        ".release-banner .status-WARN { background: #7c5e00; }",
-        ".release-banner .status-FAIL { background: #7f1d1d; }",
-        ".release-banner ul { margin: 12px 0 0 0; padding-left: 20px; }",
-        ".release-banner code { background: #222; padding: 1px 4px; border-radius: 2px; }",
+        "code { font-family: 'SF Mono', Menlo, Consolas, monospace; }",
+        # Title row
+        ".topbar { display: flex; align-items: baseline; gap: 12px;"
+        " padding-bottom: 12px; border-bottom: 1px solid #2a2e36;"
+        " margin-bottom: 14px; }",
+        ".topbar h1 { font-size: 15px; font-weight: 700; margin: 0;"
+        " color: #e6e8ec; letter-spacing: 0.3px; }",
+        ".topbar .wf { font-family: 'SF Mono', Menlo, Consolas, monospace;"
+        " background: #1a1d23; border: 1px solid #2a2e36;"
+        " padding: 2px 8px; border-radius: 3px; color: #9ca3af;"
+        " font-size: 12px; }",
+        # Step rows
+        ".step { display: grid; grid-template-columns: 220px 1fr;"
+        " gap: 16px; padding: 10px 0; border-bottom: 1px solid #1a1d23;"
+        " align-items: center; }",
+        ".step:last-child { border-bottom: 0; }",
+        ".step .name { font-family: 'SF Mono', Menlo, Consolas, monospace;"
+        " font-weight: 700; color: #e6e8ec; font-size: 13px; }",
+        ".step .badges { font-size: 11px; color: #6b7280;"
+        " margin-top: 3px; }",
+        ".badges .pill { display: inline-block; padding: 1px 7px;"
+        " border-radius: 3px; font-weight: 700; margin-right: 4px; }",
+        ".badges .pill.pass { background: #14532d; color: #22c55e; }",
+        ".badges .pill.warn { background: #3a2f00; color: #f59e0b; }",
+        ".badges .pill.fail { background: #3a1010; color: #ef4444; }",
+        ".step .links { display: flex; flex-wrap: wrap; gap: 6px; }",
+        ".step .links a { display: inline-block; padding: 3px 10px;"
+        " background: #1a1d23; border: 1px solid #2a2e36;"
+        " border-radius: 3px; font-size: 12px; }",
+        ".step .links a:hover { background: #2a2e36; }",
+        ".step .empty { color: #6b7280; font-style: italic;"
+        " font-size: 12px; }",
+        # S11 release banner (compact)
+        ".release { background: #14301e; border: 1px solid #2a623d;"
+        " border-radius: 4px; padding: 10px 14px; margin: 6px 0 14px 0;"
+        " display: flex; gap: 16px; align-items: center;"
+        " flex-wrap: wrap; }",
+        ".release b { color: #7dcfff; font-size: 13px; }",
+        ".release .stat { color: #9ca3af; font-size: 12px; }",
+        ".release .stat code { background: #1a1d23; padding: 1px 5px;"
+        " border-radius: 2px; color: #e6e8ec; }",
+        ".release-status { padding: 2px 8px; border-radius: 3px;"
+        " font-weight: 700; font-size: 11px; }",
+        ".release-status.status-PASS { background: #14532d; color: #22c55e; }",
+        ".release-status.status-WARN { background: #3a2f00; color: #f59e0b; }",
+        ".release-status.status-FAIL { background: #3a1010; color: #ef4444; }",
+        "</style>",
+        "</head>",
+        "<body>",
     ]
-    lines.extend(dropdown_css)
-    lines.append("</style>")
-    lines.append("</head>")
-    lines.append("<body>")
-    lines.append("<h1>SpinalfMRIprep QC Dashboard</h1>")
-    lines.extend(dropdown_html)
 
-    # Unified scope banner — "Latest runs" cards (was the separate
-    # work/dashboard.html landing page). Inlined at the top of every
-    # per-wf dashboard so there is ONE page with everything.
+    # Topbar: single line — "QC · <wf_name_chip>"
+    wf_chip = f"<code class=\"wf\">{workfolder_name}</code>" if workfolder_name else ""
+    lines.append(
+        f"<div class=\"topbar\"><h1>SpinalfMRIprep QC</h1>{wf_chip}</div>"
+    )
+
+    # Compact scope banner — only the current scope's card; other
+    # scopes collapse to a chip row.
     if out_dir is not None:
         try:
             from .dashboard_latest import render_scope_banner
             cursor = Path(out_dir).resolve()
             for _ in range(4):
                 if cursor.name == "work":
-                    lines.append(render_scope_banner(cursor, dashboard_dir))
+                    current_scope = _infer_scope_from_wfname(workfolder_name)
+                    lines.append(render_scope_banner(
+                        cursor, dashboard_dir,
+                        current_scope=current_scope,
+                    ))
                     break
                 cursor = cursor.parent
         except Exception:
             pass
 
-    # S11 release banner — only when S11 has produced artifacts.
+    # Compact S11 release banner — single row instead of header + list.
     if out_dir is not None:
         s11_qc_path = out_dir / "logs" / "S11_qc_aggregation_and_release" / "qc.json"
         rel_report = out_dir / "derivatives" / "spinalfmriprep" / "release_report.html"
@@ -368,44 +402,37 @@ def _generate_index_html(
                 gd_abs = out_dir / group_link
                 if gd_abs.exists():
                     group_html = (
-                        f" &middot; <a href=\"{_relpath(gd_abs, dashboard_dir).replace(chr(92), '/')}\">"
-                        "Group QC dashboard</a>"
+                        f"&nbsp;·&nbsp;<a href=\"{_relpath(gd_abs, dashboard_dir).replace(chr(92), '/')}\">"
+                        "group</a>"
                     )
-            lines.append("<div class=\"release-banner\">")
-            lines.append("<h2>S11 — Release Readiness</h2>")
-            lines.append(
-                f"<span class=\"release-status status-{status}\">{status}</span> "
-                f"<a href=\"{rel_link}\">Open release_report.html</a>{group_html}"
-            )
+            stats = []
             n_sub = metrics.get("n_subjects_aggregated")
             n_runs = metrics.get("n_runs_aggregated")
             n_ds = metrics.get("n_datasets")
             frac = metrics.get("subject_report_fraction")
-            issues = metrics.get("sidecar_audit_issues")
-            parts = []
-            if n_sub is not None:
-                parts.append(f"<code>{n_sub}</code> subject(s)")
-            if n_runs is not None:
-                parts.append(f"<code>{n_runs}</code> run(s)")
-            if n_ds is not None:
-                parts.append(f"<code>{n_ds}</code> dataset(s)")
+            if n_sub is not None and n_runs is not None and n_ds is not None:
+                stats.append(
+                    f"<span class=\"stat\"><code>{n_sub}</code> subj &middot; "
+                    f"<code>{n_runs}</code> runs &middot; <code>{n_ds}</code> ds</span>"
+                )
             if frac is not None:
-                parts.append(f"per-subject reports: <code>{frac * 100:.0f}%</code>")
-            if issues is not None:
-                parts.append(f"sidecar issues: <code>{issues}</code>")
-            if parts:
-                lines.append("<ul>")
-                for p in parts:
-                    lines.append(f"<li>{p}</li>")
-                lines.append("</ul>")
-            lines.append("</div>")
+                stats.append(
+                    f"<span class=\"stat\">reports <code>{frac * 100:.0f}%</code></span>"
+                )
+            lines.append(
+                f"<div class=\"release\">"
+                f"<b>S11 release</b>"
+                f"<span class=\"release-status status-{status}\">{status}</span>"
+                f"<a href=\"{rel_link}\">open report</a>{group_html}"
+                f"{''.join(stats)}"
+                f"</div>"
+            )
 
     if not step_data:
-        lines.append("<p>No QC data found.</p>")
+        lines.append("<p style=\"color:#6b7280;\">No QC data found.</p>")
     else:
         for step_code in sorted(step_data.keys()):
             datasets = step_data[step_code]
-            total_runs = sum(len(runs) for runs in datasets.values())
             passed = sum(
                 sum(1 for r in runs if r.get("status") == "PASS")
                 for runs in datasets.values()
@@ -418,47 +445,47 @@ def _generate_index_html(
                 sum(1 for r in runs if r.get("status") == "FAIL")
                 for runs in datasets.values()
             )
-            other = total_runs - passed - warned - failed
 
-            parts = [f"{total_runs} total", f"{passed} passed"]
+            badges = []
+            if passed:
+                badges.append(f"<span class=\"pill pass\">{passed}</span>")
             if warned:
-                parts.append(f"{warned} warned")
+                badges.append(f"<span class=\"pill warn\">{warned}</span>")
             if failed:
-                parts.append(f"{failed} failed")
-            if other:
-                parts.append(f"{other} unknown")
-
-            lines.append(f"<div class=\"step-card\">")
-            lines.append(f"<h2>{step_code}</h2>")
-            lines.append(f"<div class=\"status-summary\">")
-            lines.append("Runs: " + ", ".join(parts))
-            lines.append(f"</div>")
+                badges.append(f"<span class=\"pill fail\">{failed}</span>")
 
             reportlets = reportlet_index.get(step_code, {})
-            if reportlets:
-                lines.append("<ul class=\"reportlet-list\">")
-                for reportlet_key in _sort_reportlets(step_code, list(reportlets.keys())):
-                    gallery_path = f"reportlets/{step_code}/{reportlet_key}.html"
-                    label = _get_reportlet_label(step_code, reportlet_key)
-                    items = reportlets[reportlet_key]
-                    count = len(items)
-                    # Detect HTML vs image reportlets for accurate label
-                    any_html = any(
-                        str(it.get("path_abs", "")).lower().endswith((".html", ".htm"))
-                        for it in items
-                    )
-                    noun = "reports" if any_html else "images"
-                    lines.append(
-                        f"<li><a href=\"{gallery_path}\">{label}</a> ({count} {noun})</li>"
-                    )
-                lines.append("</ul>")
+            links_html: list[str] = []
+            for reportlet_key in _sort_reportlets(step_code, list(reportlets.keys())):
+                gallery_path = f"reportlets/{step_code}/{reportlet_key}.html"
+                label = _get_reportlet_label(step_code, reportlet_key)
+                links_html.append(f"<a href=\"{gallery_path}\">{label}</a>")
+
+            lines.append("<div class=\"step\">")
+            lines.append(
+                f"<div><div class=\"name\">{step_code}</div>"
+                f"<div class=\"badges\">{''.join(badges) if badges else '<span class=\"empty\">—</span>'}</div></div>"
+            )
+            if links_html:
+                lines.append(
+                    f"<div class=\"links\">{''.join(links_html)}</div>"
+                )
             else:
-                lines.append("<p style=\"color: #999;\">No reportlets available.</p>")
+                lines.append("<div class=\"empty\">no reportlets</div>")
             lines.append("</div>")
 
-    lines.extend(dropdown_js)
     lines.extend(["</body>", "</html>"])
     (dashboard_dir / "index.html").write_text("\n".join(lines), encoding="utf-8")
+
+
+def _infer_scope_from_wfname(workfolder_name: Optional[str]) -> Optional[str]:
+    """Map `wf_reg_071` → "reg", `wf_smoke_045` → "smoke", etc."""
+    if not workfolder_name or not workfolder_name.startswith("wf_"):
+        return None
+    rest = workfolder_name[3:]
+    if "_" in rest:
+        return rest.split("_", 1)[0]
+    return None
 
 
 def _generate_reportlet_gallery_html(
