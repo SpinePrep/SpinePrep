@@ -869,11 +869,26 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
     """
     reasons: list[str] = []
 
-    # Catastrophic MI drop: fail outright regardless of mode.
+    # Catastrophic MI drop: fail outright regardless of mode, BUT only
+    # when the CoSpine geometric metrics also agree the correction
+    # hurt. MI on cord-cropped data is dominated by background air and
+    # can drop spuriously when distortion correction is in fact
+    # geometrically correct (observed on ds005883_cospine_pain topup:
+    # MI −12.9% while Dice +0.07 and displacement 1.90 → 0.60 mm).
+    # The geometric metrics are the ground truth; MI is a backup
+    # signal only when geometry isn't available.
     mi_delta = metrics.get("mi_delta_pct")
-    if mi_delta is not None and mi_delta < -thresholds.get(
-            "fail_mi_max_drop_pct", 10.0):
-        return "FAIL", [f"MI dropped {mi_delta:.1f}% > 10%"]
+    dice_delta = metrics.get("dice_delta")
+    disp_delta = metrics.get("displacement_delta_mm")
+    mi_drop_threshold = -thresholds.get("fail_mi_max_drop_pct", 10.0)
+    geometry_improved = (
+        (dice_delta is not None and dice_delta > 0)
+        or (disp_delta is not None and disp_delta < 0)
+    )
+    if (mi_delta is not None and mi_delta < mi_drop_threshold
+            and not geometry_improved):
+        return "FAIL", [f"MI dropped {mi_delta:.1f}% > 10% and "
+                        f"geometric metrics did not improve"]
 
     skip = metrics.get("cospine_skip_reason")
     if skip:
