@@ -18,10 +18,28 @@ group-level analysis (S10) can consume.
 
 ## Engine
 
-- **Stage 1**: build a robust registration target from the de-outliered
-  funcref (S3.2 output).
-- **Stage 2**: `sct_fmri_moco` slice-wise rigid alignment with the cord
-  mask as the registration ROI.
+The S4 motion correction chain runs **three** rigid-realignment stages
+(not two — see `.claude/specs/s4-algorithm-audit.md` for the
+literature audit):
+
+- **Stage 0 (target build)**: take the robust de-outliered funcref from
+  S3.2 as the registration target.
+- **Stage 1 (custom coarse 3D bulk XY)**: per-volume subpixel
+  `phase_cross_correlation` (`lib/moco.py`, scikit-image upsample=10;
+  Foroosh 2002 / Guizar-Sicairos 2008) applied as bulk XY shifts.
+  Active when `motion_correction.mode` contains `"3d"` (default).
+- **Stage 2 (SCT slice-wise)**: `sct_fmri_moco` with
+  `-param poly=2,metric=MeanSquares,iter=10 -x spline` and the cord
+  mask as registration ROI. **Note**: SCT's internal pipeline is itself
+  2-stage (3D rigid + 2D SliceReg); since we don't pass `-r 0` (or
+  equivalent), SCT's 3D rigid step runs in addition to its SliceReg.
+  Active when `motion_correction.mode` contains `"2d"` (default).
+
+The three-stage pipeline is functionally correct but documented in the
+algorithm audit as a candidate for simplification at next S4 touch —
+either drop our custom Stage 1 (rely on SCT's built-in 3D + 2D, matching
+Kaptan 2023 / CoSpine 2025 exactly) or disable SCT's internal 3D step.
+Deferred per principle §6 (lock and ship); not bug-fixable urgency.
 
 ## Literature backing
 

@@ -5,6 +5,14 @@ version: 1
 # "3d+2d": two-stage correction (coarse bulk XY -> slice-wise)
 # "3d": only coarse bulk XY
 # "2d": only slice-wise (sct_fmri_moco)
+#
+# IMPORTANT (.claude/specs/s4-algorithm-audit.md): sct_fmri_moco
+# itself runs an internal 3D rigid stage before SliceReg. So
+# mode="3d+2d" effectively runs THREE stages: our custom phase-cross-
+# correlation XY, SCT's built-in 3D rigid, and SCT's SliceReg 2D. The
+# extra stage is harmless (already-aligned volumes converge in 1 iter)
+# but doubles bulk-stage compute. Candidate for simplification at next
+# S4 touch — drop the custom stage1 or pass -r 0 to suppress SCT's 3D.
 motion_correction:
   mode: "3d+2d"
   
