@@ -64,11 +64,11 @@ def render_func_localization_crop(
 
         x_mid = midcord_sagittal_slice(disc_mask)
         sag_overlays: list[tuple[np.ndarray, str, float, float]] = [
-            (disc_mask[x_mid, :, :], SEMANTIC["discovery"], 0.0, 1.6),
+            (disc_mask[x_mid, :, :], SEMANTIC["discovery"], 0.0, 2.6),
         ]
 
         def axial_overlays(z):
-            return [(disc_mask[:, :, z], SEMANTIC["discovery"], 1.6, 0.0)]
+            return [(disc_mask[:, :, z], SEMANTIC["discovery"], 2.6, 0.0)]
 
         z_with = np.where(disc_mask.any(axis=(0, 1)))[0]
         metric = f"{z_with.size} cord slices" if z_with.size else ""
@@ -85,7 +85,7 @@ def render_func_localization_crop(
             metric_lines=[],
             axial_window_vox=(28, 28),
             zooms=zooms,
-            intensity_pct=(5.0, 95.0),  # tighter for funcref (bright fat else dominates)
+            intensity_pct=(1.0, 99.0),  # tighter for funcref (bright fat else dominates)
         )
     except Exception as e:
         stub_figure(output_path, f"func_localization render failed: {e}")
@@ -281,14 +281,14 @@ def render_crop_box_sagittal_s3(
 
         x_mid = midcord_sagittal_slice(disc_mask)
         sag_overlays: list[tuple[np.ndarray, str, float, float]] = [
-            (disc_mask[x_mid, :, :], SEMANTIC["discovery"], 0.0, 1.4),
-            (crop_mask[x_mid, :, :], SEMANTIC["crop_box"], 0.15, 1.8),
+            (disc_mask[x_mid, :, :], SEMANTIC["discovery"], 0.0, 2.4),
+            (crop_mask[x_mid, :, :], SEMANTIC["crop_box"], 0.15, 2.8),
         ]
 
         def axial_overlays(z):
             return [
-                (crop_mask[:, :, z], SEMANTIC["crop_box"], 1.6, 0.0),
-                (disc_mask[:, :, z], SEMANTIC["discovery"], 1.4, 0.0),
+                (crop_mask[:, :, z], SEMANTIC["crop_box"], 2.6, 0.0),
+                (disc_mask[:, :, z], SEMANTIC["discovery"], 2.4, 0.0),
             ]
 
         dx_mm = (x1 - x0) * float(zooms[0])
@@ -311,7 +311,7 @@ def render_crop_box_sagittal_s3(
             metric_lines=[],
             axial_window_vox=(40, 40),
             zooms=zooms,
-            intensity_pct=(5.0, 95.0),
+            intensity_pct=(1.0, 99.0),
         )
     except Exception as e:
         stub_figure(output_path, f"crop_box_sagittal render failed: {e}")
@@ -379,7 +379,7 @@ def render_funcref_montage(
             metric_lines=metric_lines,
             axial_window_vox=None,
             zooms=zooms,
-            intensity_pct=(5.0, 95.0),
+            intensity_pct=(1.0, 99.0),
         )
     except Exception as e:
         stub_figure(output_path, f"funcref_montage render failed: {e}")
