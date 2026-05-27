@@ -29,6 +29,13 @@ distortion_correction:
     transform: "SyN[0.1,3,0]"      # light SyN; cord-mask-restricted
     shrink: "4x2x1"
     smoothing: "2x1x0vox"
+    # Convergence `40x20x0` runs effectively as a 2-level SyN — coarsest
+    # (shrink 4×) and middle (shrink 2×) levels, with zero iterations at
+    # the finest (shrink 1×) level. Adequate for the cord-mask-restricted
+    # ROI; A-P distortion is low spatial frequency and converges at the
+    # coarser levels. fMRIPrep brain SyN uses `100x70x50` for comparison.
+    # Deformation is restricted to the PE axis (derived per-run from
+    # BIDS PhaseEncodingDirection); see s5-algorithm-audit-v2.md Finding 1.
 
 qc_thresholds:
   # CoSpine-style geometric gates (Wei et al., Sci Data 2025). Headline
@@ -45,10 +52,15 @@ qc_thresholds:
   # Legacy MI: catastrophic-drop fail still applies as sanity check.
   # MI is no longer the primary gate.
   fail_mi_max_drop_pct: 10.0
-  # CoSpine pipeline knobs
-  cospine_min_voxels_per_slice: 3  # drop slices with thinner cord — centroid
-                                   # noise dominates below this
+  # CoSpine pipeline knobs.
+  # min_voxels_per_slice: at 1 mm in-plane resolution, a 5 mm cord has
+  # ~20 voxels per slice (centroid stddev ≈ d/√(12·N) ≈ 0.3 mm). A floor
+  # of 5 admits cord slices at resolutions up to ~1.6 mm × 1.6 mm while
+  # rejecting slices where centroid is sampling-dominated. Raised from
+  # 3 → 5 per s5-algorithm-audit-v2.md Finding 7.
+  cospine_min_voxels_per_slice: 5
   cospine_smooth_window: 5         # Savitzky-Golay window (odd) on Y(z)
+  cospine_smooth_poly_order: 2     # SG polynomial order on Y(z)
 
 cost_controls:
   estimate_per_run_minutes: 2.5
