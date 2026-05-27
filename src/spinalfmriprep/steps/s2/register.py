@@ -88,6 +88,55 @@ def _find_pam50_cord_mask(pam50_dir: Path) -> Optional[Path]:
     return None
 
 
+def compute_pam50_cord_dice(
+    native_cord_seg: Path,
+    warp_template2anat: Path,
+    work_dir: Path,
+) -> Optional[float]:
+    """3D Dice between native cord_dseg and PAM50_cord warped into the
+    native anat geometry. This is S2's step-local registration-quality
+    metric (SpinalfMRIprep dev principle §3): a high Dice means the
+    PAM50 cord landed exactly where the native cord seg places the
+    cord. Low Dice flags a registration that visually looks fine but
+    is geometrically off, which the existing PAM50 overlay reportlet
+    cannot quantify.
+
+    Returns None on any sub-step failure; never raises.
+    """
+    try:
+        import nibabel as nib  # local import: keeps register.py importable without nib
+
+        pam50_dir = _resolve_pam50_dir()
+        if pam50_dir is None:
+            return None
+        pam50_cord = _find_pam50_cord_mask(pam50_dir)
+        if pam50_cord is None or not warp_template2anat.exists():
+            return None
+        work_dir.mkdir(parents=True, exist_ok=True)
+        pam50_in_native = work_dir / "pam50_cord_in_native.nii.gz"
+        ok, _ = _run_command([
+            "sct_apply_transfo",
+            "-i", str(pam50_cord),
+            "-d", str(native_cord_seg),
+            "-w", str(warp_template2anat),
+            "-x", "nn",
+            "-o", str(pam50_in_native),
+        ])
+        if not ok or not pam50_in_native.exists():
+            return None
+        a = nib.load(native_cord_seg).get_fdata() > 0
+        b = nib.load(pam50_in_native).get_fdata() > 0
+        if a.shape != b.shape:
+            return None
+        sa, sb = int(a.sum()), int(b.sum())
+        if sa + sb == 0:
+            return None
+        inter = int((a & b).sum())
+        return float(2.0 * inter / (sa + sb))
+    except Exception:
+        return None
+
+
 def _ensure_rpi_orientation(image_path: Path, work_dir: Path) -> Optional[Path]:
     """Ensure image is in RPI orientation using sct_image.
 

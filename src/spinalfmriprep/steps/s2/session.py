@@ -576,6 +576,41 @@ def _process_session(
     _copy_file(Path(selected_reg["warp_anat2template"]), warp_to_template)
     _copy_file(Path(selected_reg["warp_template2anat"]), warp_to_cordref)
 
+    # Step-local truth metric (CLAUDE.md dev principle §3): 3D Dice
+    # between PAM50 cord warped to native anat space and the native
+    # cord_dseg. Quantifies PAM50 registration quality; complements
+    # the visual pam50_reg_overlay reportlet.
+    from .register import compute_pam50_cord_dice
+    pam50_cord_dice = compute_pam50_cord_dice(
+        native_cord_seg=seg_path,
+        warp_template2anat=Path(selected_reg["warp_template2anat"]),
+        work_dir=work_dir / "pam50_dice",
+    )
+    if pam50_cord_dice is not None:
+        metrics["pam50_cord_dice"] = pam50_cord_dice
+
+    # Vertebral / rootlets coverage gauges — count how many distinct
+    # levels were detected. Easy to compute, hard to fake.
+    try:
+        labels_metrics = (label_info or {}).get("metrics", {}) if "label_info" in dir() else {}
+    except Exception:
+        labels_metrics = {}
+    if isinstance(labels_metrics, dict):
+        if "n_vertebrae" in labels_metrics:
+            metrics["n_vertebral_levels"] = int(labels_metrics["n_vertebrae"])
+        if "n_discs" in labels_metrics:
+            metrics["n_disc_levels"] = int(labels_metrics["n_discs"])
+    rootlets_meta = rootlets_info if isinstance(rootlets_info, dict) else {}
+    if rootlets_meta.get("status") == "PASS" and rootlets_meta.get("rootlets_path"):
+        try:
+            import nibabel as nib
+            import numpy as _np
+            rdata = nib.load(rootlets_meta["rootlets_path"]).get_fdata()
+            uniq = [v for v in _np.unique(rdata) if v > 0]
+            metrics["n_rootlet_labels"] = int(len(uniq))
+        except Exception:
+            pass
+
     sct_version = _get_sct_version()
 
     # Secondary cordref (T2*/MEGRE) — runs only when available and distinct
