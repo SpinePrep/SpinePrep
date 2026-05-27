@@ -162,13 +162,27 @@ def _per_slice_centered_crop(
     return x0, x1, y0, y1
 
 
-def _uniform_z_picks(z0: int, z1: int, n: int = 9) -> list[int]:
-    """n uniformly-spaced Z indices in [z0, z1] inclusive."""
-    if z1 < z0:
+def _uniform_z_picks(z0: int, z1: int, n: int = 9,
+                      edge_skip_frac: float = 0.08) -> list[int]:
+    """n uniformly-spaced Z indices, with a margin from each end.
+
+    Cord segs at the first/last cord-bearing Z slice are typically
+    partial (the cord is entering/exiting the FOV), so they're poor
+    QC samples. `edge_skip_frac` is the fraction of the total cord-Z
+    range trimmed from each side before picking. Defaults to 8 %,
+    which keeps endpoints in the cord-body region.
+    """
+    if z1 <= z0:
         return [z0]
-    if z1 == z0:
-        return [z0]
-    return np.linspace(z0, z1, num=min(n, z1 - z0 + 1), dtype=int).tolist()
+    span = z1 - z0
+    skip = int(round(edge_skip_frac * span))
+    skip = max(1, skip)
+    z_lo = min(z0 + skip, z1)
+    z_hi = max(z1 - skip, z_lo)
+    if z_hi < z_lo:
+        z_lo, z_hi = z0, z1
+    return np.linspace(z_lo, z_hi, num=min(n, z_hi - z_lo + 1),
+                       dtype=int).tolist()
 
 
 def _draw_pill(ax, x: float, y: float, w: float, h: float, label: str,
@@ -497,7 +511,7 @@ def _render_sagittal_plus_montage(
     margin_vox: int = 6,
     z_label_levels: Optional[dict[int, str]] = None,
     sag_slab_halfwidth_x: int = 0,
-    axial_window_vox: Optional[tuple[int, int]] = (16, 16),
+    axial_window_vox: Optional[tuple[int, int]] = (22, 22),
 ) -> None:
     """Generic 2-panel layout: sagittal on left, axial grid montage on right.
 
