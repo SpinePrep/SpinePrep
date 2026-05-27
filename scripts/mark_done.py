@@ -216,14 +216,22 @@ def main() -> int:
 
     # Auto-refresh dashboards (CLAUDE.md dev §4: dashboard always
     # reflects the latest run). Refreshes the promoted workfolder's
-    # dashboard + the project-root "latest" landing page.
+    # per-wf dashboard, the legacy latest landing, AND the stitched
+    # per-scope view at work/done/<scope>/_view/. The stitched view is
+    # what the user sees by default; the others are kept for legacy
+    # bookmarks.
     try:
         import sys as _sys
         _sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
         from spinalfmriprep.qc_dashboard import generate_dashboard_safe
         from spinalfmriprep.dashboard_latest import write_latest_landing
+        from spinalfmriprep.dashboard_stitched import render_view
         generate_dashboard_safe(workfolder.resolve())
         write_latest_landing(work_root.resolve())
+        if args.scope in ("reg", "full"):
+            stitched_index = render_view(args.scope, work_root.resolve())
+            if stitched_index is not None:
+                print(f"  Stitched view:       {stitched_index}")
         print(f"  Dashboard refreshed: {workfolder}/dashboard/index.html")
         print(f"  Latest landing:      {work_root}/dashboard.html")
     except Exception as e:

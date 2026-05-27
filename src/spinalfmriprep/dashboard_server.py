@@ -18,6 +18,8 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 
 WORK_ROOT = Path(os.environ.get("SFMRI_WORK_ROOT", "/mnt/ssd1/SpinalfMRIprep/work"))
+VISIBLE_SCOPES: tuple[str, ...] = ("reg", "full")
+DEFAULT_SCOPE = "reg"
 
 # `redirect_slashes=False` is critical: Starlette's default trailing-
 # slash auto-redirect emits an absolute `Location: /dashboard/` that
@@ -137,48 +139,52 @@ def _file_response(path: Path, media_type: str | None = None) -> FileResponse:
 # --- Routes ---
 
 
-def _latest_dashboard_relative_url() -> str:
-    """The URL to redirect to from `/`: a wf-name-prefixed path.
+def _build_stitched_view(scope: str) -> Path | None:
+    """Rebuild the stitched view for ``scope`` and return its index.html
+    path, or None if no steps are available.
 
-    Critical: the scope-banner chip hrefs in each dashboard are
-    relative paths computed from the wf-specific location
-    `work/<wf_name>/dashboard/index.html`. If we serve the latest
-    dashboard at a shorter URL like `/dashboard/index.html`, the
-    chip hrefs `../../wf_full_009/...` resolve UP one level too far
-    and drop the `/p2` reverse-proxy prefix entirely — sending the
-    browser to `271828.space/wf_full_009/...` which hits the 401
-    catch-all. Always redirect to the wf-specific path so the
-    relative-link depth matches.
+    Called from each ``/{scope}/dashboard*`` route so the view is always
+    fresh — the build is cheap (symlink creation + dashboard render of
+    pre-existing qc.json files), and this avoids any "stale dashboard
+    after a new mark_done" problem without a polling/inotify daemon.
     """
-    wf = _latest_workfolder()
-    if wf is None:
-        return "dashboard/index.html"  # fallback (no wf found)
-    return f"{wf.name}/dashboard/index.html"
+    from .dashboard_stitched import render_view
+    try:
+        return render_view(scope, WORK_ROOT)
+    except Exception:
+        # Don't let a stitched-view build error bring down the per-wf
+        # routes; surface the failure as a 404 instead.
+        return None
 
 
 @app.get("/")
 async def root():
-    """Unified entry point — redirects to the latest workfolder's
-    wf-prefixed dashboard URL so the chip-link depth math is correct."""
-    return RedirectResponse(url=_latest_dashboard_relative_url(),
-                            headers=_NO_CACHE_HEADERS)
+    """Unified entry point — redirect to the default scope's stitched
+    dashboard. The stitched view pulls each step from its approved
+    (work/done/<scope>/Sn) wf, falling back to latest-wf-with-step for
+    unapproved steps. One URL, always shows the latest meaningful
+    state."""
+    return RedirectResponse(
+        url=f"{DEFAULT_SCOPE}/dashboard/index.html",
+        headers=_NO_CACHE_HEADERS,
+    )
 
 
 @app.get("/dashboard.html")
-async def landing_page():
-    """Legacy landing-page URL — redirect to the unified dashboard."""
-    return RedirectResponse(url=_latest_dashboard_relative_url(),
-                            headers=_NO_CACHE_HEADERS)
-
-
 @app.get("/dashboard")
 @app.get("/dashboard/")
-async def latest_dashboard_index_redirect():
-    """The old `/dashboard` shortcut now redirects to the wf-prefixed
-    path (was serving the latest wf's index directly, which broke
-    chip-link relative-path resolution under the /p2 reverse proxy)."""
-    return RedirectResponse(url="../" + _latest_dashboard_relative_url(),
-                            headers=_NO_CACHE_HEADERS)
+async def landing_page_legacy():
+    """Legacy landing-page URLs — redirect to the default scope's
+    stitched dashboard."""
+    return RedirectResponse(
+        url=f"../{DEFAULT_SCOPE}/dashboard/index.html",
+        headers=_NO_CACHE_HEADERS,
+    )
+
+
+# Removed individual stitched routes — they collide with the wf routes
+# below for the URL pattern /{prefix}/dashboard/{path}. The dispatcher
+# at /{prefix}/dashboard/{path:path} handles both cases.
 
 
 @app.get("/__spinalfmriprep__/workfolders.json")
@@ -201,62 +207,62 @@ async def tutorial_page():
     )
 
 
-@app.get("/{wf_name}/dashboard")
-@app.get("/{wf_name}/dashboard/")
-async def serve_wf_dashboard_index(wf_name: str):
-    """Bare `/{wf}/dashboard` or `/{wf}/dashboard/` — serve index.html."""
-    if not wf_name.startswith("wf_"):
-        return Response(status_code=404)
-    index = WORK_ROOT / wf_name / "dashboard" / "index.html"
-    if not index.is_file():
-        return Response(status_code=404)
-    return _file_response(index)
+@app.get("/{prefix}/dashboard")
+@app.get("/{prefix}/dashboard/")
+async def serve_dashboard_index(prefix: str):
+    """Bare `/{prefix}/dashboard` — serves either a wf's per-wf
+    dashboard (when prefix starts with ``wf_``) or the stitched
+    per-scope dashboard (when prefix in VISIBLE_SCOPES). 404 otherwise."""
+    if prefix.startswith("wf_"):
+        index = WORK_ROOT / prefix / "dashboard" / "index.html"
+        if not index.is_file():
+            return Response(status_code=404)
+        return _file_response(index)
+    if prefix in VISIBLE_SCOPES:
+        index = _build_stitched_view(prefix)
+        if index is None or not index.is_file():
+            return Response(
+                "Scope has no done steps yet (run scripts/mark_done.py first).",
+                status_code=404, media_type="text/plain")
+        return _file_response(index)
+    return Response(status_code=404)
 
 
-@app.get("/{wf_name}/dashboard/{path:path}")
-async def serve_wf_dashboard(wf_name: str, path: str):
-    """Serve dashboard files from a specific workfolder."""
-    if not wf_name.startswith("wf_"):
+@app.get("/{prefix}/dashboard/{path:path}")
+async def serve_dashboard_file(prefix: str, path: str):
+    """Static dashboard sub-resources for both wf and stitched views.
+
+    Sub-resource fetches don't rebuild the stitched view (just serve
+    from disk), since the bare-index hit already triggered a rebuild
+    and the index references reportlet paths that already exist.
+    """
+    if prefix.startswith("wf_"):
+        base = WORK_ROOT / prefix / "dashboard"
+    elif prefix in VISIBLE_SCOPES:
+        base = WORK_ROOT / "done" / prefix / "_view" / "dashboard"
+    else:
         return Response(status_code=404)
-    wf_dir = WORK_ROOT / wf_name
-    resolved = _safe_resolve(wf_dir / "dashboard", path)
+    resolved = _safe_resolve(base, path)
     if resolved is None:
         return Response(status_code=404)
     return _file_response(resolved)
 
 
-@app.get("/{wf_name}/derivatives/{path:path}")
-async def serve_wf_derivatives(wf_name: str, path: str):
-    """Serve derivative files (images) from a specific workfolder."""
-    if not wf_name.startswith("wf_"):
+@app.get("/{prefix}/derivatives/{path:path}")
+async def serve_derivatives(prefix: str, path: str):
+    """Reportlet PNGs etc. Routes through wf derivatives or the
+    stitched view's derivatives dir (which resolves via per-step
+    symlinks into the source wf)."""
+    if prefix.startswith("wf_"):
+        base = WORK_ROOT / prefix / "derivatives"
+    elif prefix in VISIBLE_SCOPES:
+        base = WORK_ROOT / "done" / prefix / "_view" / "derivatives"
+    else:
         return Response(status_code=404)
-    wf_dir = WORK_ROOT / wf_name
-    resolved = _safe_resolve(wf_dir / "derivatives", path)
+    resolved = _safe_resolve(base, path)
     if resolved is None:
         return Response(status_code=404)
     return _file_response(resolved)
-
-
-@app.get("/dashboard/{path:path}")
-async def latest_dashboard_passthrough(path: str):
-    """`/dashboard/<file>` shortcut — redirect to the wf-prefixed
-    equivalent so the chip-link relative-path math is correct under
-    the `/p2` reverse proxy."""
-    wf = _latest_workfolder()
-    if wf is None:
-        return Response("No workfolder with dashboard found", status_code=404)
-    return RedirectResponse(
-        url=f"../{wf.name}/dashboard/{path}", headers=_NO_CACHE_HEADERS)
-
-
-@app.get("/derivatives/{path:path}")
-async def latest_derivatives_passthrough(path: str):
-    """Same redirect for the `/derivatives/<file>` shortcut."""
-    wf = _latest_workfolder()
-    if wf is None:
-        return Response(status_code=404)
-    return RedirectResponse(
-        url=f"../{wf.name}/derivatives/{path}", headers=_NO_CACHE_HEADERS)
 
 
 if __name__ == "__main__":
