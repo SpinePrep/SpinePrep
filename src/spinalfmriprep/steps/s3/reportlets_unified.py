@@ -6,8 +6,8 @@ language is documented in
 PIL+ImageMagick renderers (`reportlets.py`, `localize_viz.py`).
 
 Four S3 reportlets:
-  S3.1 func_localization_crop  Discovery cord + crop bbox on funcref
-  S3.2 frame_metrics           DVARS + refRMS + outlier markers
+  S3.1 func_localization       Discovery cord on coarse functional reference
+  S3.2 frame_metrics           DVARS + DVARS-ref + outlier markers
   S3.3 crop_box_sagittal       Cord-cropped funcref sagittal + montage
   S3.3 funcref_montage         Robust funcref with cord contour overlay
 """
@@ -33,10 +33,10 @@ from spinalfmriprep.reportlets_common import (
 
 
 # ---------------------------------------------------------------------------
-# S3.1 — func_localization_crop
+# S3.1 — func_localization
 # ---------------------------------------------------------------------------
 
-def render_func_localization_crop(
+def render_func_localization(
     output_path: Path,
     func_ref_fast_path: Path,      # quick mean BOLD (S3.1, full FOV)
     discovery_seg_path: Path,      # cord seg in func_ref_fast geometry
@@ -417,14 +417,14 @@ def regenerate_s3_reportlets(
     figures_dir.mkdir(parents=True, exist_ok=True)
     out: dict[str, Path] = {}
 
-    # S3.1 — func_localization_crop (full-FOV func space)
+    # S3.1 — func_localization (full-FOV func space, coarse reference)
     if func_ref_fast_path and discovery_seg_path:
-        p = figures_dir / f"{run_id}_desc-S3_func_localization_crop_box_sagittal.png"
-        render_func_localization_crop(
+        p = figures_dir / f"{run_id}_desc-S3_func_localization.png"
+        render_func_localization(
             p, func_ref_fast_path, discovery_seg_path,
             subject=subject, dataset_key=dataset_key, status=status,
         )
-        out["func_localization_crop"] = p
+        out["func_localization"] = p
 
     # S3.2 — frame_metrics
     if frame_metrics_tsv:

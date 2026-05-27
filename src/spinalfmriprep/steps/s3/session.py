@@ -104,7 +104,7 @@ def _process_session_s3(
                 reportlets = {}
                 if s3_1_res.get("figure_path"):
                     fp = Path(s3_1_res["figure_path"])
-                    reportlets["func_localization_crop"] = (
+                    reportlets["func_localization"] = (
                         str(fp.relative_to(out_root)) if fp.is_absolute() else str(fp)
                     )
                 run_result["reportlets"] = reportlets
@@ -147,7 +147,7 @@ def _process_session_s3(
             # Copy final figures to derivatives/figures
             reportlets = {}
             if "figure_path" in s3_1_res and s3_1_res["figure_path"]:
-                 reportlets["func_localization_crop"] = str(Path(s3_1_res["figure_path"]).relative_to(out_root)) if Path(s3_1_res["figure_path"]).is_absolute() else str(s3_1_res["figure_path"])
+                 reportlets["func_localization"] = str(Path(s3_1_res["figure_path"]).relative_to(out_root)) if Path(s3_1_res["figure_path"]).is_absolute() else str(s3_1_res["figure_path"])
 
             if "figure_path" in s3_2_res and s3_2_res["figure_path"]:
                  reportlets["frame_metrics"] = str(Path(s3_2_res["figure_path"]).relative_to(out_root)) if Path(s3_2_res["figure_path"]).is_absolute() else str(s3_2_res["figure_path"])

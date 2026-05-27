@@ -24,7 +24,7 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "pam50_reg_overlay",        # S2.4 - PAM50 registration
     ],
     "S3_func_init_and_crop": [
-        "func_localization_crop",   # S3.1 - Discovery + Crop
+        "func_localization",        # S3.1 - Func localization (coarse ref + cord seg)
         "frame_metrics",            # S3.2 - Outlier gating
         "crop_box_sagittal",        # S3.3 - Cord-focused crop
         "funcref_montage",          # S3.3 - Robust funcref
@@ -83,7 +83,7 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "pam50_reg_overlay": "S2.4 - PAM50 Registration",
     },
     "S3_func_init_and_crop": {
-        "func_localization_crop": "S3.1 - Discovery + Crop",
+        "func_localization": "S3.1 - Func Localization",
         "frame_metrics": "S3.2 - Frame Metrics (Outlier Gating)",
         "crop_box_sagittal": "S3.3 - Cord-focused Crop",
         "funcref_montage": "S3.3 - Robust Functional Reference",

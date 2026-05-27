@@ -401,7 +401,7 @@ def run_S3_func_init_and_crop_reportlets_only(
             try:
                 policy_path = Path("policy") / "S3_func_init_and_crop.yaml"
                 policy = yaml.safe_load(policy_path.read_text()) if policy_path.exists() else {}
-                fig_path = figures_dir / f"{prefix}_desc-S3_func_localization_crop_box_sagittal.png"
+                fig_path = figures_dir / f"{prefix}_desc-S3_func_localization.png"
                 _render_s3_1_simple_func_with_mask(
                     func_path=func_ref_fast_path,
                     mask_path=discovery_seg_path,

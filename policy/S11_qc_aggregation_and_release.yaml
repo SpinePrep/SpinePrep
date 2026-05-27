@@ -13,7 +13,7 @@ aggregation:
     thumbnail_link_only: true        # link to PNGs (smaller HTML); base64 = v1.1
     thumbnail_per_step:
       S2_anat_cordref: "cordmask_montage"
-      S3_func_init_and_crop: "func_localization_crop"
+      S3_func_init_and_crop: "func_localization"
       S4_func_motion_correction: "S4_tsnr_comparison"
       S5_func_distortion_correction: "crop_box_sagittal"
       S6_func_to_anat_registration: "bold_on_anat_axial"

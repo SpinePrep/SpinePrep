@@ -242,9 +242,9 @@ def _summarise_s3_runs(inventory: dict, policy: dict, runs: list[dict], out_path
         s3_3_figs = s3_3.get("figures", [])
         crop_box_fig = next((f for f in s3_3_figs if "crop_box" in str(f)), None)
 
-        # S3.1 figure (always func_localization_crop)
+        # S3.1 figure (always func_localization)
         if s3_1.get("figure_path"):
-            reportlets["func_localization_crop"] = s3_1["figure_path"]
+            reportlets["func_localization"] = s3_1["figure_path"]
 
         if crop_box_fig:
             reportlets["crop_box_sagittal"] = crop_box_fig
