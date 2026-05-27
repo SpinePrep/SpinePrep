@@ -276,7 +276,8 @@ def _summarise_s3_runs(inventory: dict, policy: dict, runs: list[dict], out_path
             "run_id": run.get("run_id"),
             "status": run.get("status"),
             "failure_message": run.get("failure_message"),
-            "reportlets": reportlets
+            "reportlets": reportlets,
+            "metrics": run.get("metrics") or {},
         }
         summary_runs.append(summary_run)
 

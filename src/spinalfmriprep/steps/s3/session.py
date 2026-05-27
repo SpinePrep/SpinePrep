@@ -180,6 +180,57 @@ def _process_session_s3(
                     _copy_and_record(figures[2], "t2_to_func_overlay", "t2_to_func_overlay")
 
             run_result["reportlets"] = reportlets
+
+            # Step-local truth metrics (CLAUDE.md dev principle §3).
+            # Aggregate what the sub-steps already computed but never
+            # surfaced into qc.json. Frame-metric outlier counts are
+            # the headline truth gauge: a cord-fMRI run with > ~20%
+            # outliers is unusable downstream.
+            metrics: dict = {}
+            try:
+                om_path = s3_2_res.get("outlier_mask_path")
+                if om_path and Path(om_path).exists():
+                    import json as _json
+                    om = _json.loads(Path(om_path).read_text(encoding="utf-8"))
+                    metrics["n_frames_total"] = int(om.get("total_frames", 0))
+                    metrics["n_dummy_dropped"] = int(om.get("dummy_dropped", 0))
+                    metrics["n_outliers"] = int(om.get("outlier_count", 0))
+                    metrics["outlier_fraction"] = float(om.get("outlier_fraction", 0.0))
+                    thresholds = om.get("thresholds") or {}
+                    if "dvars" in thresholds:
+                        metrics["dvars_threshold"] = float(thresholds["dvars"])
+                    if "ref_rms" in thresholds:
+                        metrics["refrms_threshold"] = float(thresholds["ref_rms"])
+            except Exception:
+                pass
+            # Localization gauges. drift_gate_info has `info.n_cord_slices`.
+            try:
+                gi = s3_1_res.get("drift_gate_info") or {}
+                info = gi.get("info") if isinstance(gi, dict) else {}
+                if isinstance(info, dict) and "n_cord_slices" in info:
+                    metrics["n_cord_slices_localization"] = int(info["n_cord_slices"])
+            except Exception:
+                pass
+            # Cord-tSNR estimate on the cropped funcref (cheap; uses
+            # frame_metrics signal pooled across cord voxels via the
+            # funcref + cord mask saved by S3.3).
+            try:
+                fr = s3_2_res.get("func_ref_path")
+                cm = s3_3_res.get("crop_mask_path")
+                if fr and cm and Path(fr).exists() and Path(cm).exists():
+                    import nibabel as _nib
+                    import numpy as _np
+                    ref = _nib.load(fr).get_fdata()
+                    mask = _nib.load(cm).get_fdata() > 0
+                    if ref.shape[:3] == mask.shape and mask.any():
+                        vals = ref[mask]
+                        finite = vals[_np.isfinite(vals)]
+                        if finite.size and finite.std() > 0:
+                            metrics["funcref_in_cord_mean"] = float(finite.mean())
+                            metrics["funcref_in_cord_std"] = float(finite.std())
+            except Exception:
+                pass
+            run_result["metrics"] = metrics
             run_result["status"] = "PASS"
 
         except Exception as e:

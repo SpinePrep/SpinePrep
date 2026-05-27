@@ -67,6 +67,14 @@ qc:
   montage_slices: 9
   # Crop box sagittal: show crop ROI on funcref
 
+# Step-local truth gates (CLAUDE.md dev principle §3). Frame-metric
+# outlier fraction is the headline gauge: a cord-fMRI run with > 20%
+# DVARS/refRMS outliers is unusable downstream (Mohammed 2020,
+# Kaptan 2023). PASS gate set conservatively; retune on the reg cohort.
+qc_thresholds:
+  outlier_fraction_pass_max: 0.20  # ≤20% outliers ⇒ PASS gate (Kaptan 2023)
+  outlier_fraction_warn_max: 0.40  # 20–40% ⇒ WARN; above ⇒ FAIL
+
 # Cost controls: prevent accidental expensive runs
 cost_controls:
   # Skip runs that already have PASS status with the same code_hash
