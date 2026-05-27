@@ -133,10 +133,15 @@ def _scope_card_html(work_root: Path, scope: str, links_from: Path) -> str:
     latest_step = _latest_step_name(work_root, scope)
     n_steps = len({t for t in all_targets})
 
+    def _step_num(p: Path) -> int:
+        if p.name.startswith("S") and p.name[1:].isdigit():
+            return int(p.name[1:])
+        return 10**6
+
     seen = set()
     step_links_html: list[str] = []
     done_root = work_root / "done" / scope
-    for entry in sorted(done_root.iterdir(), key=lambda p: p.name):
+    for entry in sorted(done_root.iterdir(), key=_step_num):
         if not entry.is_symlink():
             continue
         if not (entry.name.startswith("S") and entry.name[1:].isdigit()):
