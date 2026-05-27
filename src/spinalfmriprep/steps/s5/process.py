@@ -1144,11 +1144,13 @@ def run_S5_func_distortion_correction(
 
     from .reportlets import (
         render_s5_cord_dice_per_slice,
+        render_s5_distortion_effectiveness,
         render_s5_slice_displacement,
     )
 
     disp_path = figures_dir / f"{prefix}_desc-S5_slice_displacement.png"
     dice_path = figures_dir / f"{prefix}_desc-S5_cord_dice_per_slice.png"
+    effect_path = figures_dir / f"{prefix}_desc-S5_distortion_effectiveness.png"
     try:
         render_s5_slice_displacement(metrics, disp_path, mode)
     except Exception as e:
@@ -1158,11 +1160,29 @@ def run_S5_func_distortion_correction(
         render_s5_cord_dice_per_slice(metrics, dice_path, mode)
     except Exception as e:
         reasons.append(f"cord_dice_per_slice render failed: {e}")
+    try:
+        # The third reportlet reads cached mean BOLDs + warped anat cord
+        # from s5_work_dir/cospine/ — no pipeline rerun, just visualization.
+        render_s5_distortion_effectiveness(
+            metrics, effect_path, mode, s5_work_dir,
+            n_axial_tiles=int(policy.get("qc", {})
+                              .get("distortion_effectiveness", {})
+                              .get("n_axial_tiles", 3)),
+            contour_lw=float(policy.get("qc", {})
+                             .get("distortion_effectiveness", {})
+                             .get("contour_lw", 2.0)),
+            dpi=int(policy.get("qc", {})
+                    .get("distortion_effectiveness", {})
+                    .get("dpi", 120)),
+        )
+    except Exception as e:
+        reasons.append(f"distortion_effectiveness render failed: {e}")
 
     # qc.json reportlet paths must be RELATIVE to out_dir (HEADER convention)
     reportlets = {
         "slice_displacement": str(disp_path.relative_to(out_dir)),
         "cord_dice_per_slice": str(dice_path.relative_to(out_dir)),
+        "distortion_effectiveness": str(effect_path.relative_to(out_dir)),
     }
 
     qc_metrics_path = s5_work_dir / "qc_metrics.json"

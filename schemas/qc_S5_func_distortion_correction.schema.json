@@ -187,7 +187,8 @@
             "description": "Paths (relative to out_dir) to QC reportlet files",
             "required": [
               "slice_displacement",
-              "cord_dice_per_slice"
+              "cord_dice_per_slice",
+              "distortion_effectiveness"
             ],
             "properties": {
               "slice_displacement": {
@@ -197,6 +198,10 @@
               "cord_dice_per_slice": {
                 "type": "string",
                 "description": "Path to per-slice 2D cord-Dice (EPI ∩ anat) PNG (CoSpine-style)"
+              },
+              "distortion_effectiveness": {
+                "type": "string",
+                "description": "Path to Before-vs-After mean BOLD visualization PNG with anat cord-contour overlay (sagittal pair + 3×2 axial grid)"
               }
             }
           },
