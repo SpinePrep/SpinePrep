@@ -232,7 +232,10 @@ def _process_session_s3(
                     if "dvars" in thresholds:
                         metrics["dvars_threshold"] = float(thresholds["dvars"])
                     if "ref_rms" in thresholds:
-                        metrics["refrms_threshold"] = float(thresholds["ref_rms"])
+                        # On-disk key "ref_rms" (downstream contract) ⇒
+                        # surfaced in qc.json as "dvars_ref_threshold" to
+                        # match the literature-standard "DVARS-ref" name.
+                        metrics["dvars_ref_threshold"] = float(thresholds["ref_rms"])
             except Exception:
                 pass
             # Localization gauges. drift_gate_info has `info.n_cord_slices`.

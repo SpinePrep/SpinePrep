@@ -79,9 +79,9 @@
       "type": ["number", "null"],
       "description": "Mean DVARS threshold across runs"
     },
-    "refrms_threshold_mean": {
+    "dvars_ref_threshold_mean": {
       "type": ["number", "null"],
-      "description": "Mean ref-RMS threshold across runs"
+      "description": "Mean DVARS-ref threshold across runs (DVARS-ref = RMS of (frame - reference) within cord mask; equivalent to refRMS in Kaptan 2023 / Dabbagh 2024; on-disk TSV column name remains 'ref_rms' for the downstream S8 contract)"
     },
     "t2_to_func_metric_mean": {
       "type": ["number", "null"],

@@ -1,4 +1,18 @@
-"""S3.3: Cord-focused crop, QC reportlets."""
+"""S3.3: Cord-focused crop, QC reportlets.
+
+Writes two artefacts named with the SCT batch_processing-derived
+on-disk contract that S4-S10 read directly:
+
+  - ``funccrop_bold.nii.gz``  — 4D BOLD cropped to the cord cylinder
+    (i.e. ``bold_cropped`` in literature terminology; SCT and CoSpine
+    keep the ``*_crop`` suffix convention so we follow it on disk).
+  - ``funccrop_mask.nii.gz``  — the cylindrical crop / FOV mask in the
+    same cropped geometry.
+
+The "cord-in-BOLD" segmentation (~3% of voxels, distinct from this
+FOV mask which is ~94%) is the discovery seg from S3.1 cropped to
+the same geometry: ``init/localize/func_ref_fast_seg_crop.nii.gz``.
+"""
 from __future__ import annotations
 
 from pathlib import Path
