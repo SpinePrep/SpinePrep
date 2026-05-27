@@ -390,6 +390,62 @@ improving.
 way brain-wide SDC-SyN does. Worth a sentence in the methods
 discussion as a non-obvious finding.
 
+## Update 2026-05-27 — WARN/FAIL truthfulness audit
+
+After the topup-fallthrough and Docker-ownership fixes landed
+(wf_reg_079: 3 PASS topup, 6 WARN SyN, 2 FAIL handgrasp), an
+investigation into whether the residual WARN/FAILs were truthful or
+hiding bugs surfaced **one more real bug**.
+
+### 6 WARN (SyN-fallback rule) — truthful
+
+All three SyN-mode datasets (balgrist, ds004386_rest, handgrasp) ship
+**no fmaps in source BIDS** (verified by `find datasets/*/fmap`). The
+SyN-fallback ladder is correct. The `SyN-always-WARN` rule is
+justified on theoretical grounds: SyN is an anat-driven nonlinear
+warp without an independent physical field measurement, and the dice
+metric is partly circular for SyN (it minimizes the very alignment
+the metric measures). Documented as truthful; rule is kept.
+
+### 2 FAIL on ds004616_handgrasp — bug, not a real dataset issue
+
+Originally documented as "real anat/EPI geometric mismatch in that
+dataset" (audit-v1 + audit-v2 §empirics). **This was wrong.** The
+underlying BOLD has perfectly normal cord visibility (cord-vs-
+background SNR 6.01 — actually *higher* than the passing datasets at
+3.43–3.48). The cord is in FOV and well-contrasted.
+
+The bug: `_sct_deepseg_cord` was calling the legacy
+`sct_deepseg_sc -c t2s` model. A/B test on the failing handgrasp BOLD:
+
+| Model | Cord voxels | Ratio to anat-cord-in-BOLD (1778) |
+|---|---|---|
+| `sct_deepseg_sc -c t2s` (old) | **219** | 0.12 — severe undersegmentation |
+| `sct_deepseg sc_epi` (EPISeg, Valošek 2025) | **1081** | 0.61 — matches passing cohort |
+| `sct_deepseg spinalcord` (contrast-agnostic) | 2985 | 1.68 — over-segments |
+
+Across the cohort the legacy model gave EPI-vs-anat ratios of:
+- 0.07–0.11 on handgrasp (failing)
+- 0.59–1.06 on every other dataset (passing)
+
+Switched to `sct_deepseg sc_epi` (purpose-built EPI cord segmentation,
+SCT 7.0+ default). Handgrasp now passes the Dice gate cleanly: Dice
+0.69–0.70 → 0.72–0.76, displacement 0.83 → 0.46–0.61 mm. **Both runs
+are WARN (SyN-fallback rule) instead of FAIL.**
+
+### Final cohort after the WARN/FAIL audit (wf_reg_080)
+
+| Mode | n | Status | Range |
+|---|---|---|---|
+| topup | 3 | **3 PASS** | Dice 0.27–0.63 → 0.76–0.81 |
+| syn | 8 | **8 WARN** (SyN-rule) | Dice 0.63–0.76 → 0.72–0.87 |
+| — | — | **0 FAIL** | — |
+
+The cohort no longer has any "real algorithmic failure" — every run
+produces geometrically improved alignment under its respective mode.
+The methods paper can drop the previous "handgrasp = real mismatch"
+caveat.
+
 ## Sources (additional to v1)
 
 - Treiber et al. 2016 — "Characterization and Correction of Geometric
