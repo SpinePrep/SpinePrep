@@ -148,3 +148,62 @@ Bring the PAM50 template, cord/WM/GM/CSF masks, and white-matter atlas into nati
 - [De Leener et al. 2018 — PAM50 template](https://www.sciencedirect.com/science/article/abs/pii/S1053811917308686)
 - [Eippert et al. 2017 — Spinal fMRI preprocessing](https://pmc.ncbi.nlm.nih.gov/articles/PMC10623605/)
 - CoSpi reference: `/mnt/hdd2/P1_CoSpi/scripts_pilot_motor/spi08_10_registration.sh`, `spi17_stat_standard.sh`.
+
+---
+
+# Principles audit (May 2026)
+
+Post-implementation audit of S7 against the `CLAUDE.md` dev principles.
+The scope spec above is the *redesign* rationale; this section is the
+principles-alignment check.
+
+## Audit verdict per principle
+
+| # | Principle | Verdict |
+|---|---|---|
+| 1 | Small dev cohort | ✅ 11-run reg set |
+| 2 | Literature defaults | ✅ Eippert 2017 + SCT batch_processing + CoSpi `spi08_10` ⇒ atlas→native, never push 4D BOLD into PAM50 |
+| 3 | Step-local truth metric | ✅ `cord_dice_native_func` (Dice of PAM50_cord warped to native func vs S6 cord seg), `label_offset_pam50_mean_mm`/`_max_mm` (per-vertebra label position offset), `round_trip_func_med_mm`/`_max_mm` (forward∘inverse warp drift) |
+| 4 | Diagnostic reportlet | ✅ 3 PNGs: `pam50_overlay_sagittal`, `pam50_overlay_axial`, `vertebral_alignment` |
+| 5 | Visual QC validator | ✅ |
+| 6 | Lock and ship | ✅ policy + schema + spec all versioned |
+| 7 | No chain backtracking | ✅ consumes S2 warps + S6 inverse warp; S7 metrics are self-contained |
+| 8 | Full cohort = deliverable | ✅ ≤ 2 min/run |
+| 9 | Reproducible | ✅ |
+| 10 | Heterogeneity is the test | ✅ 10/11 PASS; 1 WARN on cospine_motor sub-02 motorL (cord_dice_native_func = 0.797, just below 0.80 PASS gate) — real-data borderline correctly surfaced |
+
+## Step-local truth metric rationale
+
+| Metric | Source / role |
+|---|---|
+| `cord_dice_native_func` | The headline gate: PAM50_cord warped to native func vs the native cord seg from S6. Tests whether the **composite** S2∘S6∘S7-refine warp actually lands the template cord on the BOLD cord. Cohen-Adad 2014 convention. |
+| `label_offset_pam50_mean_mm` / `_max_mm` | Per-vertebral-label position offset in PAM50 space — observability metric for "did vertebrae line up". Tens-of-mm values reflect cord-only anatomy variability + the fact that S2's anat→PAM50 was rootlet- or disc-driven (label centers vs vertebra body centers); **not gating** in v1 (no threshold in policy). Documented here so a future contributor knows it's diagnostic, not a regression. |
+| `round_trip_func_med_mm` / `_max_mm` | Forward∘inverse warp drift on funcref. Like S6's centerline round-trip — bsplinesyn intrinsic drift, observability-only. |
+
+## Threshold rationale (`policy/S7_template_normalization.yaml`)
+
+| Gate | Value | Source |
+|---|---|---|
+| `pass_dice_min` | 0.80 | Cohen-Adad 2014 cord registration validation; matches S6 SyN-fallback bar |
+| `warn_dice_min` | 0.65 | Below this ⇒ FAIL |
+
+Only the Dice gate is enforced; label offset and round-trip are
+observability-only (intentionally; see "step-local truth metric
+rationale" above).
+
+## Decision: no code change
+
+S7 already satisfies all 10 principles. The redesign captured by the
+scope spec above shipped (`status: approved` in the frontmatter). The
+1 WARN on the reg-set is a real borderline (0.797 vs 0.80 gate) — the
+metric is calibrated correctly.
+
+## Remaining gaps (acceptable / deferred)
+
+- A label-offset threshold could be added once we have a defensible
+  bound across cord modalities (some datasets show 17 mm offsets that
+  are genuine anatomy variability, not registration failure — gating
+  on this would create false alarms).
+- Per-vertebral-segment Dice (C1, C2, … C8, T1) instead of one global
+  Dice. Deferred — the global Dice + per-slice S6 Dice cover most
+  diagnostic needs.
