@@ -431,7 +431,7 @@ def _generate_index_html(
     if not step_data:
         lines.append("<p style=\"color:#6b7280;\">No QC data found.</p>")
     else:
-        for step_code in sorted(step_data.keys()):
+        for step_code in sorted(step_data.keys(), key=_step_sort_key):
             datasets = step_data[step_code]
             passed = sum(
                 sum(1 for r in runs if r.get("status") == "PASS")
@@ -486,6 +486,16 @@ def _infer_scope_from_wfname(workfolder_name: Optional[str]) -> Optional[str]:
     if "_" in rest:
         return rest.split("_", 1)[0]
     return None
+
+
+def _step_sort_key(step_code: str) -> tuple[int, str]:
+    """Numeric-aware sort: S1 < S2 < … < S9 < S10 < S11. Falls back to
+    a high sentinel + lexicographic for unrecognised codes."""
+    if step_code.startswith("S") and len(step_code) > 1:
+        head = step_code[1:].split("_", 1)[0]
+        if head.isdigit():
+            return (int(head), step_code)
+    return (10**6, step_code)
 
 
 def _generate_reportlet_gallery_html(
