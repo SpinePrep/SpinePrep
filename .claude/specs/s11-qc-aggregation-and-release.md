@@ -182,3 +182,68 @@ Aggregate S1–S10 per-step outputs into the v1 release-readiness deliverables: 
 - [nipreps `__desc__` workflow boilerplate convention](https://www.nipreps.org/intro/transparency/)
 - [bids-validator — BIDS-Derivatives support is incomplete (rationale for internal audit)](https://github.com/bids-standard/bids-validator)
 - Round-1 + Round-2 audit (above), all cited.
+
+---
+
+# Principles audit (May 2026)
+
+Post-implementation audit of S11 against the `CLAUDE.md` dev principles.
+The scope spec above is the *3-round design audit* (opportunity menu →
+14-item sweet spot → verification); this section is the
+principles-alignment check.
+
+## Audit verdict per principle
+
+| # | Principle | Verdict |
+|---|---|---|
+| 1 | Small dev cohort | ✅ runs on 11-run reg set (5 subjects × {1–4} runs) |
+| 2 | Literature defaults | ✅ BIDS-Derivatives spec, CFF v1.2.0, fMRIPrep CC0 boilerplate, Citation File Format v1.2.0, Kaptan / Hemmerling / Eippert / Brooks / De Leener / Cicchetti / Shrout-&-Fleiss bibliography |
+| 3 | Step-local truth metric | ✅ `n_subjects_aggregated`, `n_runs_aggregated`, `n_datasets`, `n_subject_reports`, `subject_report_fraction` (headline gate), `missing_step_qc_count`, `sidecar_audit_issues`, `cohort_fc_n_common_rois` |
+| 4 | Diagnostic reportlet | ✅ **dashboard banner** (not per-run reportlet — S11 is global). Banner shows status badge + links to `release_report.html` and `group_qc_dashboard.html` + headline metrics. Plus 23 release-grade deliverables under `derivatives/spinalfmriprep/` (per-subject HTML reports, cohort coverage matrix, tSNR heatmap, FC summary, methods manifest, CITATION.cff, references.bib, reproducibility receipt, …). |
+| 5 | Visual QC validator | ✅ The release_report.html is the single-page index linking all 23 artifacts. A human opens it and eyeballs everything. |
+| 6 | Lock and ship | ✅ policy + schema + 3-round-audited spec |
+| 7 | No chain backtracking | ✅ S11 *consumes* the entire chain's qc.json files but emits self-contained release artifacts; nothing downstream of S11 |
+| 8 | Full cohort = deliverable | ✅ **S11 is the release deliverable itself** by design. The CITATION.cff, methods_manifest.tex, dataset_description.json are all paper-time outputs. |
+| 9 | Reproducible | ✅ S11 *emits* the reproducibility receipt (SCT/FSL/Python tool versions + policy SHA256 + git SHA). The whole step exists to make the pipeline reproducible by third parties. |
+| 10 | Heterogeneity is the test | ✅ **`cohort_fc_n_common_rois: 1`** is itself the heterogeneity finding — across the 5 reg datasets, only 1 hemicord ROI has consistent coverage. S11's cohort coverage matrix surfaces this directly so the analyst stratifies rather than pools blindly. |
+
+## Why S11 doesn't have per-run reportlets
+
+S11 is **global / cross-dataset**, not per-run. The dashboard layer
+(qc_dashboard_html.py:331+) adds a top-of-index "S11 — Release
+Readiness" banner with status + links rather than trying to fit S11
+into the per-run reportlet gallery. The per-subject HTML reports
+under `derivatives/spinalfmriprep/<ds>/sub-XX/sub-XX_qc_report.html`
+ARE the per-subject views; release_report.html is the cohort index.
+
+## Step-local truth metric rationale
+
+| Metric | What it answers |
+|---|---|
+| `subject_report_fraction` | **Headline gate.** Of the (dataset, subject) pairs that have qc data on the chain, what fraction got a successful per-subject HTML report rendered? PASS gate 0.80. |
+| `missing_step_qc_count` | How many (step, dataset) qc.json files couldn't be parsed. 0 expected; > 0 ⇒ chain integrity issue. |
+| `sidecar_audit_issues` | Internal reportlet PNG existence check (bids-validator's derivatives support is incomplete, so we audit ourselves). 0 expected. |
+| `cohort_fc_n_common_rois` | Number of hemicord ROIs with usable timeseries across all aggregated runs — the cohort-level FC summary's usable axis. **Encodes heterogeneity.** |
+| `n_subjects_aggregated` / `n_runs_aggregated` / `n_datasets` | Cohort scale at this run; reproducibility receipt. |
+
+## Decision: no code change
+
+S11 received the deepest design audit in this cycle (3 rounds:
+opportunity menu → 14-item sweet spot → verification). The
+implementation matches the spec; the dashboard banner is the
+principle §4 surface; the release_report.html is the principle §5
+visual validator; the entire step *is* the principle §8 deliverable.
+
+This audit doc records the verdict for completeness — every other
+step in the pipeline now has a principles audit, S11 should too.
+
+## Remaining gaps (acceptable / deferred)
+
+- `cohort_fc_n_common_rois: 1` flags a real limitation: hemicord FC
+  summary across the 5 reg datasets is not informative because
+  coverage doesn't overlap enough. A *stratified* FC summary (per
+  dataset, or per coverage tier) would be more useful. Tracked as
+  v2; the cohort coverage matrix surfaces the underlying limitation.
+- `cospine_fc_n_common_rois` would be a more meaningful gate (e.g.,
+  require ≥ 4 common ROIs for the cohort FC to be informative). Not
+  currently gated; analyst inspects the value on the release banner.
