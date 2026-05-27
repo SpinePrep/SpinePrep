@@ -347,6 +347,49 @@ Actions 1-2 are real implementation upgrades; the rest are
 documentation, defensive guards, or empirical follow-ups deferred to
 the next reg cohort calibration.
 
+## Update 2026-05-27 — empirical reversion of Findings 1 + 2
+
+After applying all 8 fixes and rerunning S5 on the full reg cohort
+(`wf_reg_075`), the per-run dice **delta** (After − Before)
+**regressed** vs the pre-fix baseline (`wf_reg_072`):
+
+| Dataset | OLD ΔDice (range) | NEW ΔDice (range) |
+|---|---|---|
+| balgrist_motor | +0.06 to +0.08 | −0.08 to 0.00 |
+| ds004386_rest | +0.10 to +0.11 | −0.06 to −0.03 |
+| ds005883_cospine_pain | +0.30 | −0.09 |
+| ds005884_cospine_motor | +0.33 to +0.38 | −0.10 to +0.16 |
+| ds004616_handgrasp | +0.01 to +0.04 | −0.04 to 0.00 |
+
+The "fixes" actively **degraded** SyN's ability to correct distortion.
+
+**Root cause**: Findings 1 (`--restrict-deformation` to PE axis) and
+2 (prefer cord-seg mask over funccrop cylinder) **starve SyN of
+signal**. Inside the ~20-voxel-per-slice cord-only ROI with the
+warp constrained to a single axis, the cost function has too few
+degrees of freedom × too few sampling points to converge on the
+correct A-P warp. The published Treiber 2016 / fMRIPrep SDC-SyN
+recipe **assumes brain-wide cost** — restricting both signal AND
+deformation to a cord-only ROI is signal-starved.
+
+**Reverted**: Findings 1 and 2 reverted to original code on
+2026-05-27 (commit `<fill-after-commit>`). The wider funccrop
+cylinder mask + 3-D deformation are now confirmed as the correct
+configuration for this pipeline — the original recipe was right;
+the theoretical "fixes" derived from brain-SDC literature don't
+transfer to cord-only SyN.
+
+**Kept**: Findings 3–8 (defensive PE-mismatch FAIL, force-WARN on
+missing CoSpine, policy `cospine_smooth_poly_order`, schema
+documentation, `min_voxels_per_slice` 3→5, comment cleanup). None
+of these affect SyN convergence; all empirically benign or
+improving.
+
+**Lesson learned for the methods paper**: cord-only SyN does
+**NOT** benefit from PE-restriction or tight cord-seg masking the
+way brain-wide SDC-SyN does. Worth a sentence in the methods
+discussion as a non-obvious finding.
+
 ## Sources (additional to v1)
 
 - Treiber et al. 2016 — "Characterization and Correction of Geometric
