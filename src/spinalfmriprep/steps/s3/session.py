@@ -179,6 +179,38 @@ def _process_session_s3(
                 if len(figures) > 2:
                     _copy_and_record(figures[2], "t2_to_func_overlay", "t2_to_func_overlay")
 
+            # Regenerate the four S3 reportlets via the unified renderer
+            # so they match the chain-wide visual standard (S2 conventions).
+            try:
+                from .reportlets_unified import regenerate_s3_reportlets
+                figs_out_dir = out_root / "derivatives" / "spinalfmriprep" / (
+                    f"sub-{subject}/ses-{session}/figures"
+                    if session else f"sub-{subject}/figures"
+                )
+                figs_out_dir.mkdir(parents=True, exist_ok=True)
+                rendered = regenerate_s3_reportlets(
+                    run_id=run_id,
+                    subject=subject, session=session,
+                    dataset_key=dataset_key,
+                    status="PASS",
+                    metrics={},  # populated below; renderer ignores when empty
+                    figures_dir=figs_out_dir,
+                    cordref_std_path=cordref_std_path,
+                    func_ref_fast_path=Path(s3_1_res.get("func_ref_fast_path")) if s3_1_res.get("func_ref_fast_path") else None,
+                    func_ref_path=Path(s3_2_res.get("func_ref_path")) if s3_2_res.get("func_ref_path") else None,
+                    discovery_seg_path=Path(s3_1_res.get("discovery_seg_path")) if s3_1_res.get("discovery_seg_path") else None,
+                    cord_mask_path=Path(s3_1_res.get("discovery_seg_crop_path")) if s3_1_res.get("discovery_seg_crop_path") else None,
+                    crop_mask_path=Path(s3_3_res.get("crop_mask_path")) if s3_3_res.get("crop_mask_path") else None,
+                    frame_metrics_tsv=Path(s3_2_res.get("frame_metrics_path")) if s3_2_res.get("frame_metrics_path") else None,
+                    outlier_mask_json=Path(s3_2_res.get("outlier_mask_path")) if s3_2_res.get("outlier_mask_path") else None,
+                )
+                # Overwrite reportlet paths with the unified outputs
+                for key, p in rendered.items():
+                    reportlets[key] = str(p.relative_to(out_root))
+            except Exception:
+                # Don't fail the run on a viz hiccup
+                import traceback; traceback.print_exc()
+
             run_result["reportlets"] = reportlets
 
             # Step-local truth metrics (CLAUDE.md dev principle §3).

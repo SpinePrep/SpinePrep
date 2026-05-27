@@ -273,28 +273,41 @@ def _orient_axial(ax) -> None:
 
 def render_axial_tile(
     ax, slice_xy: np.ndarray,
-    overlays: list[tuple[np.ndarray, str, float]],
+    overlays: list,  # 3-tuple (mask, color, lw) or 4-tuple (mask, color, lw, fill_alpha)
     vmin: float, vmax: float, z_idx: int,
     first: bool = False,
     crop: Optional[tuple[int, int, int, int]] = None,
 ) -> None:
-    """Render one axial tile: anat slice in grayscale + contour overlays.
+    """Render one axial tile: anat slice in grayscale + overlays.
 
-    overlays = list of (binary_mask_2d, color_hex, linewidth).
-    crop = (x0, x1, y0, y1) per-slice cord-centered crop bbox.
+    overlay tuple = (mask, color, linewidth) — contour only;
+    or (mask, color, linewidth, fill_alpha) — fill_alpha > 0 ⇒
+    alpha-blended fill in addition to the contour. fill_alpha=0
+    behaves identically to the 3-tuple form. lw=0 ⇒ no contour
+    (rare: fill-only).
     """
     if crop is not None:
         x0, x1, y0, y1 = crop
         slice_xy = slice_xy[x0:x1, y0:y1]
-        overlays_c = [(m[x0:x1, y0:y1], c, lw) for m, c, lw in overlays]
+        overlays_c = [(ov[0][x0:x1, y0:y1], *ov[1:]) for ov in overlays]
     else:
         overlays_c = overlays
     disp = np.rot90(slice_xy)
     ax.imshow(disp, cmap="gray", vmin=vmin, vmax=vmax,
               interpolation="bilinear", aspect="equal")
-    for m, color, lw in overlays_c:
+    for ov in overlays_c:
+        m, color, lw = ov[0], ov[1], ov[2]
+        fill_alpha = ov[3] if len(ov) > 3 else 0.0
         m_rot = np.rot90(m.astype(bool))
-        if m_rot.any():
+        if not m_rot.any():
+            continue
+        if fill_alpha > 0:
+            rgba = np.zeros((*m_rot.shape, 4))
+            rgb = matplotlib.colors.to_rgb(color)
+            rgba[..., 0] = rgb[0]; rgba[..., 1] = rgb[1]; rgba[..., 2] = rgb[2]
+            rgba[..., 3] = m_rot.astype(float) * fill_alpha
+            ax.imshow(rgba, interpolation="nearest", aspect="equal")
+        if lw > 0:
             ax.contour(m_rot, levels=[0.5], colors=[color],
                        linewidths=lw, alpha=0.95)
     ax.set_xticks([]); ax.set_yticks([])
