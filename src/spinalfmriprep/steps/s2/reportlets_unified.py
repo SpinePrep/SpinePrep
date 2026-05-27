@@ -173,11 +173,15 @@ def _uniform_z_picks(z0: int, z1: int, n: int = 9) -> list[int]:
 
 def _draw_pill(ax, x: float, y: float, w: float, h: float, label: str,
                status: str, fontsize: int = 13, transform=None) -> None:
+    """Status pill — simple rectangle with text. The previous
+    FancyBboxPatch implementation used `rounding_size=0.10` in axes
+    coords which exceeded h/2 in the narrow header strip and produced
+    a visible "double line" artifact above and below the pill."""
     pal = _STATUS.get(status, _STATUS["UNKNOWN"])
     if transform is None:
         transform = ax.transAxes
-    box = mpatches.FancyBboxPatch(
-        (x, y), w, h, boxstyle="round,pad=0.003,rounding_size=0.10",
+    box = mpatches.Rectangle(
+        (x, y), w, h,
         facecolor=pal["fill"], edgecolor=pal["edge"], linewidth=1.2,
         transform=transform, zorder=5,
     )
@@ -404,18 +408,33 @@ def render_crop_box_sagittal(
             dz = (z1 - z0 + 1) * zooms[2]
             bbox_extent = f"bbox {dx:.0f}×{dy:.0f}×{dz:.0f} mm"
 
-        fig = _layout_figure(13.0, 7.0)
+        # Aspect-match: sagittal after rot90 is `n_z × n_y` (rows × cols).
+        # Pick figure dims so the image fills the body without empty
+        # margins. Header 0.6", footer 0.4". Cap height at 11".
+        n_y, n_z = sag.shape
+        img_w_in = max(1, n_y) * float(zooms[1])  # AP extent (mm)
+        img_h_in = max(1, n_z) * float(zooms[2])  # S-I extent (mm)
+        # Mid-cord sagittal is typically taller than wide for cervical
+        # acquisitions; scale to ~5 in height for the image body.
+        target_h = 6.5
+        body_w = max(2.5, target_h * (img_w_in / img_h_in))
+        fig_w = max(8.0, body_w + 1.5)  # padding for axis margins
+        fig_h = target_h + 1.0          # header + footer
+        fig = _layout_figure(fig_w, fig_h)
         _add_header(fig, "S2.1 — Discovery + Crop",
                      f"sub-{subject} • {dataset_key}", status, bbox_extent)
 
-        # Single big sagittal panel
-        ax = fig.add_axes((0.04, 0.08, 0.92, 0.84))
+        # Single sagittal panel centered horizontally, sized to image aspect
+        body_h_frac = 0.84
+        body_w_frac = body_w / fig_w
+        body_x0 = (1.0 - body_w_frac) / 2.0
+        ax = fig.add_axes((body_x0, 0.08, body_w_frac, body_h_frac))
         ax.set_facecolor(_BG)
         overlays = []
         if discovery is not None:
-            overlays.append((discovery[x_mid, :, :], _C_DISCOVERY, 0.0, 1.2))
+            overlays.append((discovery[x_mid, :, :], _C_DISCOVERY, 0.0, 1.4))
         if crop_mask is not None:
-            overlays.append((crop_mask[x_mid, :, :], _C_CROP_BOX, 0.15, 1.6))
+            overlays.append((crop_mask[x_mid, :, :], _C_CROP_BOX, 0.15, 1.8))
         _render_sagittal(ax, sag, overlays, vmin, vmax)
 
         _add_footer(fig, [
