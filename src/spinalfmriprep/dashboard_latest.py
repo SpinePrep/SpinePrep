@@ -49,6 +49,15 @@ _SCOPE_CSS = """
                                        font-weight: 700; }
 .sfp-card .sfp-links a.sfp-primary:hover { background: #1a6638; }
 .sfp-empty { color: #6b7280; font-style: italic; }
+.sfp-chip-row { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.sfp-chip { display: inline-block; padding: 3px 10px;
+            background: #1a1d23; border: 1px solid #2a2e36;
+            border-radius: 3px; color: #9ca3af; font-size: 12px;
+            text-decoration: none; }
+.sfp-chip:hover { background: #2a2e36; color: #e6e8ec; text-decoration: none; }
+.sfp-chip b { color: #e6e8ec; font-weight: 700; margin-right: 6px; }
+.sfp-chip-empty { display: inline-block; padding: 3px 10px;
+                  color: #6b7280; font-style: italic; font-size: 12px; }
 """
 
 _CSS = _SCOPE_CSS + """
@@ -157,10 +166,27 @@ def _scope_card_html(work_root: Path, scope: str, links_from: Path) -> str:
 """.strip()
 
 
-def render_scope_banner(work_root: Path, links_from: Path) -> str:
-    """Return the unified scope-summary banner as an HTML fragment with
-    inline <style>. Embed at the top of a dashboard page; links resolve
-    relative to ``links_from``."""
+def _scope_chip_html(work_root: Path, scope: str, links_from: Path) -> str:
+    """Compact single-line chip pointing at this scope's latest dashboard."""
+    latest_wf, _ = _latest_wf_for_scope(work_root, scope)
+    if latest_wf is None:
+        return f'<span class="sfp-chip-empty">{scope}: none</span>'
+    rel = os.path.relpath(
+        latest_wf / "dashboard" / "index.html", links_from)
+    return (
+        f'<a class="sfp-chip" href="{rel}">'
+        f'<b>{scope}</b> <span>{latest_wf.name}</span></a>'
+    )
+
+
+def render_scope_banner(
+    work_root: Path,
+    links_from: Path,
+    current_scope: Optional[str] = None,
+) -> str:
+    """Compact scope banner. When ``current_scope`` is provided, that
+    scope's full card is shown; other scopes collapse to a single-line
+    chip row. When not provided, all scopes render as cards (legacy)."""
     work_root = Path(work_root).resolve()
     links_from = Path(links_from).resolve()
     done_root = work_root / "done"
@@ -169,15 +195,32 @@ def render_scope_banner(work_root: Path, links_from: Path) -> str:
     ) if done_root.exists() else ["reg"]
     if not scopes:
         scopes = ["reg"]
+
+    if current_scope and current_scope in scopes:
+        primary_html = _scope_card_html(work_root, current_scope, links_from)
+        other_scopes = [s for s in scopes if s != current_scope]
+        chips = " ".join(
+            _scope_chip_html(work_root, s, links_from) for s in other_scopes
+        )
+        chips_block = (
+            f'<div class="sfp-chip-row">{chips}</div>' if chips else ""
+        )
+        return f"""
+<style>{_SCOPE_CSS}</style>
+<div class="sfp-scope-banner">
+  {primary_html}
+  {chips_block}
+</div>
+""".strip()
+
+    # Legacy / no current scope: render all as cards (used by standalone
+    # work/dashboard.html fallback).
     cards = "\n".join(
         _scope_card_html(work_root, s, links_from) for s in scopes)
     return f"""
 <style>{_SCOPE_CSS}</style>
 <div class="sfp-scope-banner">
-  <h2>Latest runs</h2>
-  <div class="sfp-scopes">
-{cards}
-  </div>
+  <div class="sfp-scopes">{cards}</div>
 </div>
 """.strip()
 
