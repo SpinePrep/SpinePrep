@@ -334,6 +334,21 @@ def _generate_index_html(
     lines.append("<h1>SpinalfMRIprep QC Dashboard</h1>")
     lines.extend(dropdown_html)
 
+    # Unified scope banner — "Latest runs" cards (was the separate
+    # work/dashboard.html landing page). Inlined at the top of every
+    # per-wf dashboard so there is ONE page with everything.
+    if out_dir is not None:
+        try:
+            from .dashboard_latest import render_scope_banner
+            cursor = Path(out_dir).resolve()
+            for _ in range(4):
+                if cursor.name == "work":
+                    lines.append(render_scope_banner(cursor, dashboard_dir))
+                    break
+                cursor = cursor.parent
+        except Exception:
+            pass
+
     # S11 release banner — only when S11 has produced artifacts.
     if out_dir is not None:
         s11_qc_path = out_dir / "logs" / "S11_qc_aggregation_and_release" / "qc.json"

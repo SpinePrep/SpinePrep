@@ -24,27 +24,39 @@ _NO_CACHE = (
     '<meta http-equiv="Expires" content="0" />'
 )
 
-_CSS = """
+_SCOPE_CSS = """
+.sfp-scope-banner { margin-bottom: 24px; }
+.sfp-scope-banner h2 { font-size: 13px; font-weight: 700; margin: 0 0 10px 0;
+                       letter-spacing: 1px; text-transform: uppercase;
+                       color: #9ca3af; }
+.sfp-scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+              gap: 12px; }
+.sfp-card { background: #1a1d23; border: 1px solid #2a2e36; border-radius: 8px;
+            padding: 14px 16px; }
+.sfp-card .sfp-scope-name { font-size: 11px; letter-spacing: 1px;
+                             text-transform: uppercase; color: #9ca3af;
+                             margin-bottom: 4px; font-weight: 700; }
+.sfp-card .sfp-wf { font-family: "SF Mono", Menlo, Consolas, monospace;
+                     font-weight: 700; font-size: 15px; color: #e6e8ec; }
+.sfp-card .sfp-meta { color: #9ca3af; font-size: 11px; margin: 4px 0 10px 0; }
+.sfp-card .sfp-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.sfp-card .sfp-links a { display: inline-block; padding: 4px 10px;
+                          background: #2a2e36; color: #7dcfff;
+                          text-decoration: none; border-radius: 3px;
+                          font-size: 12px; }
+.sfp-card .sfp-links a:hover { background: #3a3e46; }
+.sfp-card .sfp-links a.sfp-primary { background: #14532d; color: #22c55e;
+                                       font-weight: 700; }
+.sfp-card .sfp-links a.sfp-primary:hover { background: #1a6638; }
+.sfp-empty { color: #6b7280; font-style: italic; }
+"""
+
+_CSS = _SCOPE_CSS + """
 body { background: #0f1115; color: #e6e8ec;
        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
        margin: 0; padding: 32px; }
 h1 { font-size: 22px; margin: 0 0 6px 0; }
 .muted { color: #9ca3af; font-size: 12px; }
-.scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-          gap: 16px; margin-top: 24px; }
-.card { background: #1a1d23; border: 1px solid #2a2e36; border-radius: 8px;
-        padding: 18px; }
-.card h2 { margin: 0 0 8px 0; font-size: 14px; letter-spacing: 0.5px;
-           text-transform: uppercase; color: #9ca3af; }
-.card .wf { font-family: "SF Mono", Menlo, Consolas, monospace;
-            font-weight: 700; font-size: 16px; color: #e6e8ec; }
-.card .meta { color: #9ca3af; font-size: 12px; margin: 6px 0 14px 0; }
-.card .links { display: flex; flex-wrap: wrap; gap: 8px; }
-.card .links a { display: inline-block; padding: 6px 12px;
-                 background: #2a2e36; color: #7dcfff;
-                 text-decoration: none; border-radius: 4px; font-size: 13px; }
-.card .links a:hover { background: #3a3e46; }
-.empty { color: #6b7280; font-style: italic; }
 .footer { color: #6b7280; font-size: 11px; margin-top: 32px; text-align: right; }
 """
 
@@ -97,19 +109,21 @@ def _latest_step_name(work_root: Path, scope: str) -> str:
     return steps[-1] if steps else "—"
 
 
-def _scope_card_html(work_root: Path, scope: str) -> str:
+def _scope_card_html(work_root: Path, scope: str, links_from: Path) -> str:
+    """Render one scope card. Links are computed relative to `links_from`."""
     latest_wf, all_targets = _latest_wf_for_scope(work_root, scope)
     if latest_wf is None:
         return (
-            f'<div class="card"><h2>{scope}</h2>'
-            f'<div class="empty">No done steps yet.</div></div>'
+            f'<div class="sfp-card">'
+            f'<div class="sfp-scope-name">{scope}</div>'
+            f'<div class="sfp-empty">No done steps yet.</div></div>'
         )
-    rel_wf = os.path.relpath(latest_wf, work_root)
-    rel_dashboard = f"{rel_wf}/dashboard/index.html"
+    rel_to_latest = os.path.relpath(
+        latest_wf / "dashboard" / "index.html", links_from)
     mtime = _fmt_mtime(latest_wf)
     latest_step = _latest_step_name(work_root, scope)
     n_steps = len({t for t in all_targets})
-    # Build links to each step's dashboard (deduped by target wf)
+
     seen = set()
     step_links_html: list[str] = []
     done_root = work_root / "done" / scope
@@ -125,61 +139,94 @@ def _scope_card_html(work_root: Path, scope: str) -> str:
         if tgt in seen:
             continue
         seen.add(tgt)
-        rel = os.path.relpath(tgt, work_root)
-        step_links_html.append(
-            f'<a href="{rel}/dashboard/index.html">{entry.name}</a>'
-        )
+        rel = os.path.relpath(tgt / "dashboard" / "index.html", links_from)
+        step_links_html.append(f'<a href="{rel}">{entry.name}</a>')
 
+    latest_wf_name = latest_wf.name
     return f"""
-<div class="card">
-  <h2>{scope}</h2>
-  <div class="wf">{rel_wf}</div>
-  <div class="meta">latest step: <b>{latest_step}</b>  •
-                    {n_steps} done  •  {mtime}</div>
-  <div class="links">
-    <a href="{rel_dashboard}"><b>Open latest dashboard →</b></a>
+<div class="sfp-card">
+  <div class="sfp-scope-name">{scope}</div>
+  <div class="sfp-wf">{latest_wf_name}</div>
+  <div class="sfp-meta">latest step: <b>{latest_step}</b>  •
+                        {n_steps} done  •  {mtime}</div>
+  <div class="sfp-links">
+    <a class="sfp-primary" href="{rel_to_latest}">Open latest →</a>
     {" ".join(step_links_html)}
   </div>
 </div>
 """.strip()
 
 
-def write_latest_landing(work_root: Path) -> Path:
-    """Write `<work_root>/dashboard.html` linking to the latest chain
-    dashboards. Returns the written path."""
-    work_root = Path(work_root)
-    scope_dirs = []
+def render_scope_banner(work_root: Path, links_from: Path) -> str:
+    """Return the unified scope-summary banner as an HTML fragment with
+    inline <style>. Embed at the top of a dashboard page; links resolve
+    relative to ``links_from``."""
+    work_root = Path(work_root).resolve()
+    links_from = Path(links_from).resolve()
     done_root = work_root / "done"
-    if done_root.exists():
-        scope_dirs = sorted(
-            d.name for d in done_root.iterdir() if d.is_dir()
-        )
-    if not scope_dirs:
-        scope_dirs = ["reg"]
+    scopes = sorted(
+        d.name for d in done_root.iterdir() if d.is_dir()
+    ) if done_root.exists() else ["reg"]
+    if not scopes:
+        scopes = ["reg"]
+    cards = "\n".join(
+        _scope_card_html(work_root, s, links_from) for s in scopes)
+    return f"""
+<style>{_SCOPE_CSS}</style>
+<div class="sfp-scope-banner">
+  <h2>Latest runs</h2>
+  <div class="sfp-scopes">
+{cards}
+  </div>
+</div>
+""".strip()
 
-    scope_cards = "\n".join(_scope_card_html(work_root, s) for s in scope_dirs)
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    html = f"""<!DOCTYPE html>
+def write_latest_landing(work_root: Path) -> Path:
+    """Write `<work_root>/dashboard.html` — a minimal standalone landing
+    page that redirects to the latest dashboard. Kept as a fallback for
+    cases where no wf dashboard exists yet (e.g. fresh repo)."""
+    work_root = Path(work_root).resolve()
+    done_root = work_root / "done"
+    scopes = sorted(
+        d.name for d in done_root.iterdir() if d.is_dir()
+    ) if done_root.exists() else ["reg"]
+    if not scopes:
+        scopes = ["reg"]
+
+    # Find any latest wf (across all scopes) to redirect to
+    target = None
+    for s in scopes:
+        wf, _ = _latest_wf_for_scope(work_root, s)
+        if wf is not None:
+            target = wf
+            break
+    out = work_root / "dashboard.html"
+    if target is not None:
+        rel = os.path.relpath(target / "dashboard" / "index.html", work_root)
+        html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 {_NO_CACHE}
-<title>SpinalfMRIprep — Latest dashboards</title>
-<style>{_CSS}</style>
+<meta http-equiv="refresh" content="0; url={rel}" />
+<title>SpinalfMRIprep dashboard</title>
 </head>
 <body>
-<h1>SpinalfMRIprep — Latest dashboards</h1>
-<div class="muted">Project-root entry point. Bookmark this URL — each
-card auto-refreshes after every chain promotion and links to the
-latest workfolder per scope.</div>
-<div class="scopes">
-{scope_cards}
-</div>
-<div class="footer">generated {now}</div>
+<p>Redirecting to <a href="{rel}">{rel}</a>…</p>
 </body>
-</html>
-"""
-    out = work_root / "dashboard.html"
+</html>"""
+    else:
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+{_NO_CACHE}
+<title>SpinalfMRIprep dashboard</title>
+</head>
+<body>
+<p>No workfolder dashboards available yet.</p>
+</body>
+</html>"""
     out.write_text(html, encoding="utf-8")
     return out
