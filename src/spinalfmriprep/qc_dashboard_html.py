@@ -285,13 +285,25 @@ def _generate_index_html(
     reportlet_index: dict[str, dict[str, list[dict]]],
     workfolder_name: Optional[str],
     out_dir: Optional[Path] = None,
+    locked_step_codes: Optional[set[str]] = None,
+    source_wf_per_step: Optional[dict[str, str]] = None,
+    view_label: Optional[str] = None,
 ) -> None:
     """Generate main index.html listing all steps and their reportlets.
 
     If `out_dir` is provided and S11 has produced a release report, a banner
     is prepended linking to it (S11 emits no per-run reportlets so it would
     otherwise not appear).
+
+    ``locked_step_codes`` marks steps whose source was pinned via the
+    work/done/<scope>/Sn symlink — renders a LOCKED pill on the step card.
+    ``source_wf_per_step`` puts a small "src: wf_..." caption under each
+    step card so the user can see which wf each step came from.
+    ``view_label`` overrides the topbar wf chip with a scope-view label
+    (e.g. "reg view"); used by the stitched dashboard.
     """
+    locked_step_codes = locked_step_codes or set()
+    source_wf_per_step = source_wf_per_step or {}
     lines = [
         "<!DOCTYPE html>",
         "<html>",
@@ -339,6 +351,11 @@ def _generate_index_html(
         ".badges .pill.pass { background: #14532d; color: #22c55e; }",
         ".badges .pill.warn { background: #3a2f00; color: #f59e0b; }",
         ".badges .pill.fail { background: #3a1010; color: #ef4444; }",
+        ".badges .pill.lock { background: #1f2a3f; color: #93c5fd;"
+        " border: 1px solid #3b4a6a; font-size: 10px;"
+        " padding: 1px 6px; margin-right: 4px; }",
+        ".step .src { font-family: 'SF Mono', Menlo, Consolas, monospace;"
+        " color: #6b7280; font-size: 10px; margin-top: 2px; }",
         ".step .links { display: flex; flex-wrap: wrap; gap: 6px; }",
         ".step .links a { display: inline-block; padding: 3px 10px;"
         " background: #1a1d23; border: 1px solid #2a2e36;"
@@ -371,7 +388,10 @@ def _generate_index_html(
     # we compute it from window.location at click time via a tiny
     # inline onclick so the same generated HTML works when opened
     # directly off disk (file://...) too.
-    wf_chip = f"<code class=\"wf\">{workfolder_name}</code>" if workfolder_name else ""
+    if view_label:
+        wf_chip = f"<code class=\"wf\">{view_label}</code>"
+    else:
+        wf_chip = f"<code class=\"wf\">{workfolder_name}</code>" if workfolder_name else ""
     tutorial_link = (
         "<a href=\"#\" class=\"tutorial-link\""
         " onclick=\"event.preventDefault();"
@@ -387,21 +407,32 @@ def _generate_index_html(
 
     # Compact scope banner — only the current scope's card; other
     # scopes collapse to a chip row.
+    #
+    # Two cases:
+    # (a) stitched view  (out_dir = work/done/<scope>/_view/) — emit
+    #     URL-relative scope buttons that work under the FastAPI
+    #     ``/{scope}/dashboard/`` routes.
+    # (b) per-wf dashboard (out_dir = work/wf_*/) — fall back to the
+    #     legacy filesystem-relative banner from dashboard_latest.
     if out_dir is not None:
-        try:
-            from .dashboard_latest import render_scope_banner
-            cursor = Path(out_dir).resolve()
-            for _ in range(4):
-                if cursor.name == "work":
-                    current_scope = _infer_scope_from_wfname(workfolder_name)
-                    lines.append(render_scope_banner(
-                        cursor, dashboard_dir,
-                        current_scope=current_scope,
-                    ))
-                    break
-                cursor = cursor.parent
-        except Exception:
-            pass
+        stitched_scope = _stitched_scope_of(out_dir)
+        if stitched_scope is not None:
+            lines.append(_render_stitched_scope_buttons(stitched_scope))
+        else:
+            try:
+                from .dashboard_latest import render_scope_banner
+                cursor = Path(out_dir).resolve()
+                for _ in range(4):
+                    if cursor.name == "work":
+                        current_scope = _infer_scope_from_wfname(workfolder_name)
+                        lines.append(render_scope_banner(
+                            cursor, dashboard_dir,
+                            current_scope=current_scope,
+                        ))
+                        break
+                    cursor = cursor.parent
+            except Exception:
+                pass
 
     # Compact S11 release banner — single row instead of header + list.
     if out_dir is not None:
@@ -467,6 +498,11 @@ def _generate_index_html(
             )
 
             badges = []
+            if step_code in locked_step_codes:
+                badges.append(
+                    "<span class=\"pill lock\" title=\"Approved via "
+                    "scripts/mark_done.py; source wf is pinned\">LOCKED</span>"
+                )
             if passed:
                 badges.append(f"<span class=\"pill pass\">{passed}</span>")
             if warned:
@@ -481,10 +517,15 @@ def _generate_index_html(
                 label = _get_reportlet_label(step_code, reportlet_key)
                 links_html.append(f"<a href=\"{gallery_path}\">{label}</a>")
 
+            src_wf = source_wf_per_step.get(step_code)
+            src_html = (f"<div class=\"src\">src: {src_wf}</div>"
+                        if src_wf else "")
+
             lines.append("<div class=\"step\">")
             lines.append(
                 f"<div><div class=\"name\">{step_code}</div>"
-                f"<div class=\"badges\">{''.join(badges) if badges else '<span class=\"empty\">—</span>'}</div></div>"
+                f"<div class=\"badges\">{''.join(badges) if badges else '<span class=\"empty\">—</span>'}</div>"
+                f"{src_html}</div>"
             )
             if links_html:
                 lines.append(
@@ -496,6 +537,57 @@ def _generate_index_html(
 
     lines.extend(["</body>", "</html>"])
     (dashboard_dir / "index.html").write_text("\n".join(lines), encoding="utf-8")
+
+
+def _stitched_scope_of(out_dir: Path) -> Optional[str]:
+    """If ``out_dir`` is a stitched scope view (``work/done/<scope>/_view``),
+    return the scope name; else None."""
+    try:
+        parts = Path(out_dir).resolve().parts
+    except Exception:
+        return None
+    if "done" in parts and "_view" in parts:
+        i = parts.index("done")
+        if i + 1 < len(parts) and parts[i + 1] in ("reg", "full"):
+            return parts[i + 1]
+    return None
+
+
+def _render_stitched_scope_buttons(current_scope: str) -> str:
+    """Two-button scope row (reg / full) for the stitched dashboard.
+
+    Emits URL-relative hrefs that resolve correctly under the
+    ``/{scope}/dashboard/`` FastAPI routes (and under the ``/p2/``
+    Caddy reverse proxy). The current scope is highlighted; the
+    other scope links to its stitched view."""
+    css = (
+        "<style>"
+        ".sfp-scope-buttons { display: flex; gap: 8px; margin: 0 0 14px 0; }"
+        ".sfp-scope-buttons a, .sfp-scope-buttons span {"
+        " display: inline-block; padding: 4px 14px; border-radius: 4px;"
+        " font-family: 'SF Mono', Menlo, Consolas, monospace;"
+        " font-size: 12px; font-weight: 700; letter-spacing: 1px;"
+        " text-transform: uppercase; }"
+        ".sfp-scope-buttons a {"
+        " background: #1a1d23; border: 1px solid #2a2e36;"
+        " color: #9ca3af; text-decoration: none; }"
+        ".sfp-scope-buttons a:hover { background: #2a2e36; color: #e6e8ec; }"
+        ".sfp-scope-buttons .active {"
+        " background: #14532d; color: #22c55e;"
+        " border: 1px solid #2a623d; }"
+        "</style>"
+    )
+    cells: list[str] = []
+    for scope in ("reg", "full"):
+        if scope == current_scope:
+            cells.append(f'<span class="active">{scope}</span>')
+        else:
+            cells.append(
+                f'<a href="../../{scope}/dashboard/index.html">{scope}</a>'
+            )
+    return css + (
+        f'<div class="sfp-scope-buttons">{"".join(cells)}</div>'
+    )
 
 
 def _infer_scope_from_wfname(workfolder_name: Optional[str]) -> Optional[str]:

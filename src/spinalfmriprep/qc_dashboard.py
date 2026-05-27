@@ -98,7 +98,13 @@ class DashboardResult:
     errors: list[str]
 
 
-def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = None) -> DashboardResult:
+def generate_dashboard(
+    out_dir: Path,
+    chain_done_dirs: Optional[list[Path]] = None,
+    locked_step_codes: Optional[set[str]] = None,
+    source_wf_per_step: Optional[dict[str, str]] = None,
+    view_label: Optional[str] = None,
+) -> DashboardResult:
     """
     Generate QC dashboard HTML from QC JSON files under out_dir/logs.
 
@@ -110,6 +116,13 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
         out_dir: Output directory containing logs/ with QC JSON files
         chain_done_dirs: Optional list of additional directories to scan for QC files.
                          Used in chain model to include S1/S2 outputs from done paths.
+        locked_step_codes: Step codes (e.g. {"S5_func_distortion_correction"})
+                           whose source wf is pinned via the done symlink. Used to
+                           render a LOCKED pill in the dashboard.
+        source_wf_per_step: step_code → source wf name. Surfaced as a small
+                            "src: wf_reg_NNN" caption under each step card.
+        view_label: Label shown in the topbar in place of the wf name when this
+                    dashboard is a stitched view (e.g. "reg (stitched view)").
 
     Returns DashboardResult with counts and any errors.
     """
@@ -323,7 +336,13 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
             errors.append(f"Failed to process {qc_path}: {e}")
 
     # Generate index.html
-    _generate_index_html(dashboard_dir, step_data, reportlet_index, workfolder_name, out_dir=out_dir)
+    _generate_index_html(
+        dashboard_dir, step_data, reportlet_index, workfolder_name,
+        out_dir=out_dir,
+        locked_step_codes=locked_step_codes or set(),
+        source_wf_per_step=source_wf_per_step or {},
+        view_label=view_label,
+    )
 
     # Generate reportlet gallery pages
     for step_code, reportlets in reportlet_index.items():

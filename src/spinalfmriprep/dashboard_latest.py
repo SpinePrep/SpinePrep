@@ -191,13 +191,21 @@ def render_scope_banner(
 ) -> str:
     """Compact scope banner. When ``current_scope`` is provided, that
     scope's full card is shown; other scopes collapse to a single-line
-    chip row. When not provided, all scopes render as cards (legacy)."""
+    chip row. When not provided, all scopes render as cards (legacy).
+
+    Only ``reg`` and ``full`` scopes are exposed in the UI — smoke runs
+    are sanity checks not meant for the dashboard surface and are
+    filtered out here. (``mark_done.py`` still accepts ``smoke`` as a CLI
+    arg, so the existing chain works.)
+    """
     work_root = Path(work_root).resolve()
     links_from = Path(links_from).resolve()
     done_root = work_root / "done"
-    scopes = sorted(
-        d.name for d in done_root.iterdir() if d.is_dir()
-    ) if done_root.exists() else ["reg"]
+    _VISIBLE = ("reg", "full")
+    scopes = [
+        s for s in _VISIBLE
+        if (done_root / s).is_dir()
+    ] if done_root.exists() else list(_VISIBLE)
     if not scopes:
         scopes = ["reg"]
 
