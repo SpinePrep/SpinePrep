@@ -137,19 +137,47 @@ def _file_response(path: Path, media_type: str | None = None) -> FileResponse:
 # --- Routes ---
 
 
+def _latest_dashboard_relative_url() -> str:
+    """The URL to redirect to from `/`: a wf-name-prefixed path.
+
+    Critical: the scope-banner chip hrefs in each dashboard are
+    relative paths computed from the wf-specific location
+    `work/<wf_name>/dashboard/index.html`. If we serve the latest
+    dashboard at a shorter URL like `/dashboard/index.html`, the
+    chip hrefs `../../wf_full_009/...` resolve UP one level too far
+    and drop the `/p2` reverse-proxy prefix entirely — sending the
+    browser to `271828.space/wf_full_009/...` which hits the 401
+    catch-all. Always redirect to the wf-specific path so the
+    relative-link depth matches.
+    """
+    wf = _latest_workfolder()
+    if wf is None:
+        return "dashboard/index.html"  # fallback (no wf found)
+    return f"{wf.name}/dashboard/index.html"
+
+
 @app.get("/")
 async def root():
-    """Unified entry point — serves the latest workfolder's
-    dashboard/index.html, which carries the scope banner *and* the
-    full per-step dashboard in one page."""
-    return RedirectResponse(url="dashboard/index.html",
+    """Unified entry point — redirects to the latest workfolder's
+    wf-prefixed dashboard URL so the chip-link depth math is correct."""
+    return RedirectResponse(url=_latest_dashboard_relative_url(),
                             headers=_NO_CACHE_HEADERS)
 
 
 @app.get("/dashboard.html")
 async def landing_page():
     """Legacy landing-page URL — redirect to the unified dashboard."""
-    return RedirectResponse(url="dashboard/index.html",
+    return RedirectResponse(url=_latest_dashboard_relative_url(),
+                            headers=_NO_CACHE_HEADERS)
+
+
+@app.get("/dashboard")
+@app.get("/dashboard/")
+async def latest_dashboard_index_redirect():
+    """The old `/dashboard` shortcut now redirects to the wf-prefixed
+    path (was serving the latest wf's index directly, which broke
+    chip-link relative-path resolution under the /p2 reverse proxy)."""
+    return RedirectResponse(url="../" + _latest_dashboard_relative_url(),
                             headers=_NO_CACHE_HEADERS)
 
 
@@ -194,46 +222,26 @@ async def serve_wf_derivatives(wf_name: str, path: str):
     return _file_response(resolved)
 
 
-@app.get("/dashboard")
-@app.get("/dashboard/")
-async def serve_latest_dashboard_index():
-    """Bare `/dashboard` or `/dashboard/` — serve index.html directly.
-
-    Avoids Starlette's auto-slash redirect (which leaks the localhost
-    URL and drops the `/p2` reverse-proxy prefix, sending the browser
-    to a 401-returning catch-all on 271828.space).
-    """
-    wf = _latest_workfolder()
-    if wf is None:
-        return Response("No workfolder with dashboard found", status_code=404)
-    index = wf / "dashboard" / "index.html"
-    if not index.is_file():
-        return Response(status_code=404)
-    return _file_response(index)
-
-
 @app.get("/dashboard/{path:path}")
-async def serve_latest_dashboard(path: str):
-    """Serve dashboard files from the latest workfolder."""
+async def latest_dashboard_passthrough(path: str):
+    """`/dashboard/<file>` shortcut — redirect to the wf-prefixed
+    equivalent so the chip-link relative-path math is correct under
+    the `/p2` reverse proxy."""
     wf = _latest_workfolder()
     if wf is None:
         return Response("No workfolder with dashboard found", status_code=404)
-    resolved = _safe_resolve(wf / "dashboard", path)
-    if resolved is None:
-        return Response(status_code=404)
-    return _file_response(resolved)
+    return RedirectResponse(
+        url=f"../{wf.name}/dashboard/{path}", headers=_NO_CACHE_HEADERS)
 
 
 @app.get("/derivatives/{path:path}")
-async def serve_latest_derivatives(path: str):
-    """Serve derivative files from the latest workfolder."""
+async def latest_derivatives_passthrough(path: str):
+    """Same redirect for the `/derivatives/<file>` shortcut."""
     wf = _latest_workfolder()
     if wf is None:
         return Response(status_code=404)
-    resolved = _safe_resolve(wf / "derivatives", path)
-    if resolved is None:
-        return Response(status_code=404)
-    return _file_response(resolved)
+    return RedirectResponse(
+        url=f"../{wf.name}/derivatives/{path}", headers=_NO_CACHE_HEADERS)
 
 
 if __name__ == "__main__":
