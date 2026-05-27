@@ -464,8 +464,12 @@ def _compute_qc(
 #      same anat-cord reference for both Before and After (S5 is in-grid,
 #      so BOLD-before and BOLD-after share the voxel lattice).
 #   2. Save mean BOLD Before/After, write them to disk.
-#   3. Run `sct_deepseg_sc -c t2s` on each mean BOLD → EPI cord seg in
-#      BOLD geometry. Matches CoSpine §Methods.
+#   3. Run `sct_deepseg sc_epi` on each mean BOLD → EPI cord seg in
+#      BOLD geometry. (Valošek 2025 EPISeg, packaged in SCT 7.0+.)
+#      CoSpine §Methods originally used sct_deepseg_sc -c t2s, but
+#      that model undersegments certain cord-EPI sequences by ~8×.
+#      sc_epi is the purpose-built EPI cord segmentation model and
+#      matches anat-cord-mask ratios across the reg cohort.
 #   4. Per Z-slice intersecting all three masks: compute Y-centroid of
 #      each binary slice and the 2D Dice (EPI ∩ anat). Aggregate into
 #      mean/std and a 3D Dice pooled across all evaluated voxels.
@@ -591,37 +595,27 @@ def _smooth_trace(y: list[float], window: int = 5, poly: int = 2) -> list[float]
 def _sct_deepseg_cord(
     mean_path: Path, out_seg: Path, work_dir: Path,
 ) -> bool:
-    """Run sct_deepseg_sc on a 3D mean BOLD to produce a cord mask in the
-    same geometry. Returns True on success.
+    """Run sct_deepseg with the EPI-specific model on a 3D mean BOLD
+    to produce a cord mask in the same geometry. Returns True on success.
 
-    Output path of sct_deepseg_sc is derived from -i (suffix _seg);
-    we run inside ``work_dir`` and move the result to ``out_seg``.
+    We use ``sct_deepseg sc_epi`` (EPISeg, Valošek 2025) rather than
+    the older ``sct_deepseg_sc -c t2s``. On the reg cohort the old
+    model severely undersegments the cord on certain EPIs
+    (ds004616_handgrasp had only ~200 cord voxels vs ~1800 from the
+    anat reference — 8× too few — driving cohort FAILs from
+    spuriously low Dice values). sc_epi was trained specifically on
+    cord-EPI data and matches the anat ratio across the cohort
+    (handgrasp goes from 219 → 1081 cord voxels with the new model;
+    other datasets are unaffected). Audit reference: S5 WARN/FAIL
+    investigation 2026-05-27.
     """
     work_dir.mkdir(parents=True, exist_ok=True)
-    # sct_deepseg_sc writes to the input's directory with _seg suffix.
-    local_in = work_dir / mean_path.name
-    if local_in.resolve() != mean_path.resolve():
-        if local_in.exists():
-            local_in.unlink()
-        local_in.symlink_to(mean_path.resolve())
-    ok, _ = _run_command([
-        "sct_deepseg_sc",
-        "-i", str(local_in),
-        "-c", "t2s",
-        "-ofolder", str(work_dir),
+    ok, out = _run_command([
+        "sct_deepseg", "sc_epi",
+        "-i", str(mean_path),
+        "-o", str(out_seg),
     ])
-    if not ok:
-        return False
-    produced = work_dir / f"{local_in.stem.replace('.nii', '')}_seg.nii.gz"
-    if not produced.exists():
-        # Some SCT versions emit alongside .nii (no .gz). Try both.
-        alt = work_dir / f"{local_in.stem}_seg.nii.gz"
-        if alt.exists():
-            produced = alt
-        else:
-            return False
-    shutil.copy(produced, out_seg)
-    return out_seg.exists()
+    return ok and out_seg.exists()
 
 
 def _compute_cospine_metrics(
