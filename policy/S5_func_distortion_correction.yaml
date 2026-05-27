@@ -67,6 +67,17 @@ qc_thresholds:
   cospine_smooth_window: 5         # Savitzky-Golay window (odd) on Y(z)
   cospine_smooth_poly_order: 2     # SG polynomial order on Y(z)
 
+# Reportlet rendering knobs (visual standard inherited from
+# .claude/specs/reportlet-visual-standard.md). distortion_effectiveness
+# is the third S5 reportlet — Before vs After mean BOLD with anat
+# cord-contour overlay. See spec:
+# .claude/specs/s5-distortion-effectiveness-reportlet.md
+qc:
+  distortion_effectiveness:
+    n_axial_tiles: 3               # number of cord-bearing Z columns
+    contour_lw: 2.0                # anat cord contour line width
+    dpi: 120                       # output PNG dpi
+
 cost_controls:
   estimate_per_run_minutes: 2.5
   skip_existing_pass: true

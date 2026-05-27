@@ -1,6 +1,7 @@
 """S5 reportlet rendering — CoSpine (Sci Data 2025) effectiveness metrics.
 
-Two reportlets per run, both quantitative and per-slice:
+Three reportlets per run; the first two are quantitative and per-slice,
+the third is a direct visual Before/After A/B:
 
 1. ``slice_displacement`` — per-Z anteroposterior (Y-axis) cord-centerline
    displacement (mm) of the EPI cord vs the anat reference cord, Before
@@ -11,6 +12,12 @@ Two reportlets per run, both quantitative and per-slice:
 2. ``cord_dice_per_slice`` — per-Z 2D Dice between the EPI cord seg and
    the anat reference cord seg, Before and After. Matches CoSpine
    §"Spinal cord DSC". The 3D pooled Dice is also reported in the title.
+3. ``distortion_effectiveness`` — mean BOLD Before vs mean BOLD After,
+   sagittal pair on top + axial 3-tile-by-2-row grid below, with the
+   anat-cord boundary overlaid as a yellow contour on every panel.
+   Matches the fMRIPrep / qsiprep / CoSpine / SCT-QC consensus
+   visualization (Esteban 2019, Wei 2025 Fig 3, De Leener 2017).
+   Audit reference: .claude/specs/s5-distortion-effectiveness-reportlet.md.
 
 Inputs are all in shared BOLD voxel geometry (S5 distortion correction
 is in-grid). The anat reference is the S2 cord_dseg resampled into
@@ -284,4 +291,210 @@ def render_s5_cord_dice_per_slice(
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=120, facecolor="black", bbox_inches="tight")
+    plt.close(fig)
+
+
+# ---------------------------------------------------------------------------
+# Reportlet 3: distortion_effectiveness — visual Before/After A/B
+# ---------------------------------------------------------------------------
+
+def render_s5_distortion_effectiveness(
+    metrics: dict[str, Any],
+    output_path: Path,
+    mode: str,
+    work_dir: Path,
+    n_axial_tiles: int = 3,
+    contour_lw: float = 2.0,
+    dpi: int = 120,
+) -> None:
+    """Mean BOLD Before vs After with anat-cord contour overlay.
+
+    Layout (figsize 16x9, BG dark per visual standard):
+      - HEADER: title + subtitle "mode=... · 3D Dice=... · disp=..."
+        + status pill (PASS when geometry improved, else WARN).
+      - SAGITTAL PAIR (top): Before (left) | After (right) at midcord X,
+        yellow anat-cord contour overlay on both.
+      - AXIAL GRID (bottom): 3 cord-bearing Z columns × 2 rows
+        (Before / After), yellow contour, per-slice 22×22-vox crop.
+      - FOOTER: anat-cord legend, intensity-window note, Z-pick list.
+
+    Inputs (from ``work_dir/cospine/``):
+      - ``bold_before_mean.nii.gz``         mean BOLD Before correction
+      - ``bold_after_mean.nii.gz``          mean BOLD After correction
+      - ``anat_cord_dseg_in_bold.nii.gz``   anat cord seg in BOLD geom
+
+    Missing inputs / ``cospine_skip_reason`` ⇒ placeholder PNG, never raises.
+
+    Spec: ``.claude/specs/s5-distortion-effectiveness-reportlet.md``.
+    Standard: ``.claude/specs/reportlet-visual-standard.md``.
+    """
+    title = "S5 — Distortion Correction (Before vs After)"
+
+    if (skip := metrics.get("cospine_skip_reason")):
+        _placeholder(output_path, f"{title} — mode={mode}",
+                     f"CoSpine pipeline skipped: {skip}")
+        return
+
+    cospine_dir = Path(work_dir) / "cospine"
+    paths = {
+        "before": cospine_dir / "bold_before_mean.nii.gz",
+        "after":  cospine_dir / "bold_after_mean.nii.gz",
+        "anat":   cospine_dir / "anat_cord_dseg_in_bold.nii.gz",
+    }
+    missing = [k for k, p in paths.items() if not p.exists()]
+    if missing:
+        _placeholder(output_path, f"{title} — mode={mode}",
+                     "Missing CoSpine inputs: " + ", ".join(missing))
+        return
+
+    import nibabel as nib
+    try:
+        before_img = nib.load(paths["before"])
+        before = before_img.get_fdata().astype(np.float32)
+        after = nib.load(paths["after"]).get_fdata().astype(np.float32)
+        anat_cord = nib.load(paths["anat"]).get_fdata() > 0
+    except Exception as e:
+        _placeholder(output_path, f"{title} — mode={mode}",
+                     f"Failed to load CoSpine inputs: {e}")
+        return
+
+    if before.shape != after.shape or before.shape != anat_cord.shape:
+        _placeholder(output_path, f"{title} — mode={mode}",
+                     f"Shape mismatch: before={before.shape} "
+                     f"after={after.shape} anat={anat_cord.shape}")
+        return
+    if not anat_cord.any():
+        _placeholder(output_path, f"{title} — mode={mode}",
+                     "anat cord mask is empty in BOLD geometry")
+        return
+
+    from spinalfmriprep.reportlets_common import (
+        BG, TEXT, MARKER_YELLOW,
+        intensity_window, cord_bbox_xy, cord_zrange, uniform_z_picks,
+        midcord_sagittal_slice, per_slice_centered_crop,
+        add_header, add_footer, render_sagittal, render_axial_tile,
+    )
+
+    zooms = list(before_img.header.get_zooms()[:3]) + [1.0, 1.0, 1.0]
+    zx, zy, zz = float(zooms[0]), float(zooms[1]), float(zooms[2])
+    sag_aspect = zz / zy if zy > 0 else 1.0
+    ax_aspect = zy / zx if zx > 0 else 1.0
+
+    z0, z1 = cord_zrange(anat_cord)
+    n_tiles = max(1, int(n_axial_tiles))
+    z_picks = uniform_z_picks(z0, z1, n_tiles)
+    if not z_picks:
+        _placeholder(output_path, f"{title} — mode={mode}",
+                     "No cord-bearing Z slices found in anat mask")
+        return
+
+    x_mid = midcord_sagittal_slice(anat_cord)
+    global_bbox = cord_bbox_xy(anat_cord, margin=6)
+
+    # Pooled intensity window so Before/After share the same scale.
+    pooled = np.concatenate([
+        before[np.isfinite(before)].ravel(),
+        after[np.isfinite(after)].ravel(),
+    ])
+    if pooled.size == 0:
+        _placeholder(output_path, f"{title} — mode={mode}",
+                     "Mean BOLD has no finite voxels")
+        return
+    vmin, vmax = intensity_window(pooled, 2.0, 98.0)
+
+    dice_after = metrics.get("dice_3d_after")
+    disp_after = metrics.get("displacement_mean_after_mm")
+    dice_delta = metrics.get("dice_delta")
+    disp_delta = metrics.get("displacement_delta_mm")
+    subtitle_parts = [f"mode={mode}"]
+    if dice_after is not None:
+        subtitle_parts.append(f"3D Dice={dice_after:.2f}")
+    if disp_after is not None:
+        subtitle_parts.append(f"disp={disp_after:.2f}mm")
+    subtitle = "  ·  ".join(subtitle_parts)
+    geometry_improved = (
+        (dice_delta is not None and dice_delta > 0)
+        or (disp_delta is not None and disp_delta < 0)
+    )
+    status = "PASS" if geometry_improved else "WARN"
+
+    fig = plt.figure(figsize=(16.0, 9.0), facecolor=BG)
+    fig.patch.set_facecolor(BG)
+    add_header(fig, title, subtitle, status, None)
+
+    # Sagittal pair
+    sag_y0, sag_h = 0.50, 0.34
+    ax_sag_b = fig.add_axes((0.06, sag_y0, 0.42, sag_h))
+    ax_sag_a = fig.add_axes((0.52, sag_y0, 0.42, sag_h))
+    ax_sag_b.set_facecolor(BG)
+    ax_sag_a.set_facecolor(BG)
+
+    sag_b = before[x_mid, :, :]
+    sag_a = after[x_mid, :, :]
+    sag_anat = anat_cord[x_mid, :, :]
+    sag_overlays = [(sag_anat, MARKER_YELLOW, 0.0, contour_lw)]
+
+    render_sagittal(ax_sag_b, sag_b, sag_overlays, vmin, vmax,
+                    pixel_aspect=sag_aspect)
+    render_sagittal(ax_sag_a, sag_a, sag_overlays, vmin, vmax,
+                    pixel_aspect=sag_aspect)
+    ax_sag_b.set_title("Before", color=TEXT, fontsize=14,
+                       fontweight="bold", pad=6)
+    ax_sag_a.set_title("After", color=TEXT, fontsize=14,
+                       fontweight="bold", pad=6)
+
+    # Axial grid: 3 cols × 2 rows
+    ax_y0, ax_h = 0.08, 0.36
+    row_h = ax_h / 2
+    n_cols = len(z_picks)
+    grid_x0, grid_w = 0.06, 0.88
+    col_w = grid_w / n_cols
+
+    for col, z in enumerate(z_picks):
+        cell_x = grid_x0 + col * col_w
+        ax_b = fig.add_axes((
+            cell_x + col_w * 0.06,
+            ax_y0 + row_h + row_h * 0.10,
+            col_w * 0.88, row_h * 0.80,
+        ))
+        ax_a = fig.add_axes((
+            cell_x + col_w * 0.06,
+            ax_y0 + row_h * 0.10,
+            col_w * 0.88, row_h * 0.80,
+        ))
+        ax_b.set_facecolor(BG)
+        ax_a.set_facecolor(BG)
+
+        tile_crop = per_slice_centered_crop(
+            anat_cord, z, window_vox=(22, 22), fallback_bbox=global_bbox,
+        )
+        overlays = [(anat_cord[:, :, z], MARKER_YELLOW, contour_lw)]
+
+        render_axial_tile(ax_b, before[:, :, z], overlays,
+                          vmin, vmax, z, first=(col == 0),
+                          crop=tile_crop, pixel_aspect=ax_aspect)
+        render_axial_tile(ax_a, after[:, :, z], overlays,
+                          vmin, vmax, z, first=False,
+                          crop=tile_crop, pixel_aspect=ax_aspect)
+
+    fig.text(0.025, ax_y0 + row_h * 1.5, "Before",
+             color=TEXT, fontsize=12, fontweight="bold",
+             rotation=90, ha="center", va="center")
+    fig.text(0.025, ax_y0 + row_h * 0.5, "After",
+             color=TEXT, fontsize=12, fontweight="bold",
+             rotation=90, ha="center", va="center")
+
+    add_footer(
+        fig,
+        legend_items=[(MARKER_YELLOW, "anat cord boundary")],
+        metric_lines=[
+            f"sagittal: midcord X={x_mid}",
+            f"axial Z picks: {list(z_picks)}",
+            "intensity window: 2–98% of pooled Before+After",
+        ],
+    )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=dpi, facecolor=BG,
+                bbox_inches="tight", pad_inches=0.05)
     plt.close(fig)

@@ -37,6 +37,7 @@ REPORTLET_ORDER: dict[str, list[str]] = {
     "S5_func_distortion_correction": [
         "slice_displacement",       # S5 - per-slice A–P cord displacement (CoSpine)
         "cord_dice_per_slice",      # S5 - per-slice 2D cord-Dice (CoSpine)
+        "distortion_effectiveness", # S5 - visual Before/After + anat overlay
     ],
     "S6_func_to_anat_registration": [
         "bold_on_anat_axial",       # S6 - axial overlay BOLD + anat contour + cord seg
@@ -96,6 +97,7 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
     "S5_func_distortion_correction": {
         "slice_displacement": "S5 - Cord A-P Displacement per Slice",
         "cord_dice_per_slice": "S5 - Cord Dice per Slice (EPI ∩ anat)",
+        "distortion_effectiveness": "S5 - Distortion Correction (Before vs After)",
     },
     "S6_func_to_anat_registration": {
         "bold_on_anat_axial": "S6 - BOLD on Anat (Axial)",
