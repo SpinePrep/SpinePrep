@@ -131,6 +131,37 @@ def _cord_zrange(mask: np.ndarray) -> tuple[int, int]:
     return int(z_idx.min()), int(z_idx.max())
 
 
+def _per_slice_centered_crop(
+    cord_mask: np.ndarray, z: int, window_vox: tuple[int, int] = (20, 20),
+    fallback_bbox: Optional[tuple[int, int, int, int]] = None,
+) -> tuple[int, int, int, int]:
+    """Return (x0, x1, y0, y1) centered on the cord centroid in axial slice z.
+
+    Each axial tile centers on the cord at that Z, so the cord stays in
+    the middle of every tile regardless of cord curvature along S-I.
+    Falls back to ``fallback_bbox`` (typically the global cord bbox) when
+    the slice has no cord voxels.
+    """
+    sl = cord_mask[:, :, z]
+    nx, ny = cord_mask.shape[0], cord_mask.shape[1]
+    hx, hy = window_vox
+    if not sl.any():
+        if fallback_bbox is not None:
+            return fallback_bbox
+        cx, cy = nx // 2, ny // 2
+    else:
+        xs, ys = np.nonzero(sl)
+        cx = int(round(float(xs.mean())))
+        cy = int(round(float(ys.mean())))
+    x0 = max(0, cx - hx // 2)
+    x1 = min(nx, x0 + hx)
+    x0 = max(0, x1 - hx)
+    y0 = max(0, cy - hy // 2)
+    y1 = min(ny, y0 + hy)
+    y0 = max(0, y1 - hy)
+    return x0, x1, y0, y1
+
+
 def _uniform_z_picks(z0: int, z1: int, n: int = 9) -> list[int]:
     """n uniformly-spaced Z indices in [z0, z1] inclusive."""
     if z1 < z0:
@@ -409,11 +440,12 @@ def _render_sagittal_plus_montage(
     axial_overlays_factory,  # callable: z -> list[(mask_xy, color, lw)]
     legend_items: list[tuple[str, str]],
     metric_lines: list[str],
-    n_axial: int = 8,
+    n_axial: int = 6,
     n_axial_cols: int = 2,
     margin_vox: int = 6,
     z_label_levels: Optional[dict[int, str]] = None,
     sag_slab_halfwidth_x: int = 0,
+    axial_window_vox: Optional[tuple[int, int]] = (16, 16),
 ) -> None:
     """Generic 2-panel layout: sagittal on left, axial grid montage on right.
 
@@ -466,7 +498,7 @@ def _render_sagittal_plus_montage(
     grid_y1 = 0.92
     cell_w = (grid_x1 - grid_x0) / n_cols
     cell_h = (grid_y1 - grid_y0) / n_rows
-    crop = (x0, x1, y0, y1)
+    global_bbox = (x0, x1, y0, y1)
 
     # Order tiles top-to-bottom = superior-to-inferior, left-to-right within row
     z_top_first = list(reversed(z_picks))
@@ -480,9 +512,19 @@ def _render_sagittal_plus_montage(
         ))
         ax.set_facecolor(_BG)
         overlays = axial_overlays_factory(z)
+        # Per-slice cord-centered crop — keeps the cord in the middle
+        # of every tile regardless of cord curvature along S-I. Falls
+        # back to the global cord bbox when this slice has no cord.
+        if axial_window_vox is not None:
+            tile_crop = _per_slice_centered_crop(
+                cord_mask, z, window_vox=axial_window_vox,
+                fallback_bbox=global_bbox,
+            )
+        else:
+            tile_crop = global_bbox
         _render_axial_tile(ax, anat[:, :, z], overlays,
                             vmin_ax, vmax_ax, z, first=(i == 0),
-                            crop=crop)
+                            crop=tile_crop)
 
     _add_footer(fig, legend_items, metric_lines)
     output_path.parent.mkdir(parents=True, exist_ok=True)
