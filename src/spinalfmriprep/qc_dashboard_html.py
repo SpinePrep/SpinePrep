@@ -419,9 +419,16 @@ def _generate_index_html(
                 for reportlet_key in _sort_reportlets(step_code, list(reportlets.keys())):
                     gallery_path = f"reportlets/{step_code}/{reportlet_key}.html"
                     label = _get_reportlet_label(step_code, reportlet_key)
-                    count = len(reportlets[reportlet_key])
+                    items = reportlets[reportlet_key]
+                    count = len(items)
+                    # Detect HTML vs image reportlets for accurate label
+                    any_html = any(
+                        str(it.get("path_abs", "")).lower().endswith((".html", ".htm"))
+                        for it in items
+                    )
+                    noun = "reports" if any_html else "images"
                     lines.append(
-                        f"<li><a href=\"{gallery_path}\">{label}</a> ({count} images)</li>"
+                        f"<li><a href=\"{gallery_path}\">{label}</a> ({count} {noun})</li>"
                     )
                 lines.append("</ul>")
             else:
@@ -526,7 +533,21 @@ def _generate_reportlet_gallery_html(
             except OSError:
                  mtime = 0
 
-            lines.append(f"<img src=\"{reportlet_rel}?v={mtime}\" alt=\"{dataset} / {label_str}\" />")
+            # HTML reportlets (e.g. S1 dataset_summary) render as a link
+            # card, not an <img>. Rasterizing tabular reports is wrong;
+            # we show a header + "open report" link instead.
+            is_html = str(path_abs).lower().endswith((".html", ".htm"))
+            if is_html:
+                lines.append(
+                    f"<a href=\"{reportlet_rel}?v={mtime}\" "
+                    f"target=\"_blank\" "
+                    f"style=\"display:block;padding:24px;text-align:center;"
+                    f"background:#1a1d23;border:1px solid #2a2e36;"
+                    f"border-radius:4px;color:#7dcfff;text-decoration:none;\">"
+                    f"📄 Open report &rarr;</a>"
+                )
+            else:
+                lines.append(f"<img src=\"{reportlet_rel}?v={mtime}\" alt=\"{dataset} / {label_str}\" />")
             lines.append("<div class=\"card-info\">")
             lines.append(f"<span class=\"status-badge status-{status}\">{status}</span>")
             lines.append(f"<span>{label_str}</span><br/>")

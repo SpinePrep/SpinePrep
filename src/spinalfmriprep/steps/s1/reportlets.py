@@ -1,61 +1,50 @@
-"""S1 reportlet rendering — one polished diagnostic PNG per dataset.
+"""S1 reportlet rendering — one self-contained HTML report per dataset.
 
-A single figure that a human can absorb in 5 seconds. Layout:
+S1 emits **pure tabular data**: file counts, PASS/WARN/FAIL check
+statuses, subject×modality presence. There is no imaging visualization
+to render, so PNG is the wrong format — rasterized text is
+unsearchable, uncopyable, and locked to a single zoom level. This
+matches the convention from fMRIPrep / MRIQC / nipreps: HTML for
+tabular content, SVG/PNG only when the human is actually looking at
+images.
+
+The report is one self-contained ``.html`` file per dataset (inline
+CSS, no external dependencies). Layout:
 
   ┌──────────────────────────────────────────────────────────────┐
-  │  S1 INPUT VERIFY  •  <dataset_key>             [STATUS PILL] │
+  │  S1 input verify  •  <dataset_key>             [STATUS PILL] │
   ├──────────────────────────────────────────────────────────────┤
-  │  [Subjects]  [Sessions]  [Func cord]  [Anat]  [FMaps]        │  ← stat cards
+  │  [Subjects]  [Sessions]  [Cord func]  [Anat]  [FMaps]        │
   ├──────────────────────────────────────────────────────────────┤
-  │                                                              │
-  │       SUBJECT × MODALITY                  CHECKS             │
-  │   ┌─────┬─────┬─────┬─────┐         PASS  any_runs_present   │
-  │   │anat │func │fmap │physi│         PASS  fmap_expected      │
-  │   ●  1  │  9  │  -  │  -  │  sub-02  WARN  physio_expected   │
-  │   ●  1  │  3  │  -  │  -  │  sub-ZS  ...                     │
-  │                                                              │
+  │  SUBJECT × MODALITY              │  CHECKS                   │
+  │  ● sub-02  anat 1  func 9  ···   │  PASS  any_runs_present   │
+  │  ● sub-…   …                     │  PASS  fmap_expected      │
+  │                                  │  …                        │
   └──────────────────────────────────────────────────────────────┘
 
-Design notes (CLAUDE.md principles §4 + §5):
-- Status pill in the top-right is the single most important visual
-  element — a human glances there first.
-- Per-subject "health dot" (green/amber/red) on the left of each row
-  encodes "does this subject have the minimum (anat + cord func)?" so
-  a row of zeros is impossible to miss.
-- Modality matrix shows actual counts, with zeros rendered as a
-  desaturated "—" so positive cells pop visually.
-- Check list is right-justified to the matrix and uses the same
-  badge style as the status pill.
+The same color palette as the dashboard so navigation feels seamless.
 """
 
 from __future__ import annotations
 
+import html
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Status palette — pairs of (fill, text). Matches the dashboard CSS
-# so banners across the chain are visually consistent.
-_STATUS = {
-    "PASS":    {"fill": "#14532d", "edge": "#22c55e", "text": "#22c55e"},
-    "WARN":    {"fill": "#3a2f00", "edge": "#f59e0b", "text": "#f59e0b"},
-    "FAIL":    {"fill": "#3a1010", "edge": "#ef4444", "text": "#ef4444"},
-    "UNKNOWN": {"fill": "#1a1d23", "edge": "#666666", "text": "#cccccc"},
-}
-_BG = "#0f1115"
-_CARD_BG = "#1a1d23"
-_MUTED = "#9ca3af"
-_TEXT = "#e6e8ec"
-_BORDER = "#2a2e36"
-
 _MODALITIES = ["anat", "func", "fmap", "physio"]
+
+# Status palette — mirrors the dashboard CSS so banners and reports
+# stay visually consistent across the chain.
+_STATUS_CLASS = {
+    "PASS": "pass",
+    "WARN": "warn",
+    "FAIL": "fail",
+    "UNKNOWN": "unknown",
+}
 
 
 def _modality_grid(inventory: dict) -> tuple[list[str], np.ndarray]:
@@ -64,16 +53,12 @@ def _modality_grid(inventory: dict) -> tuple[list[str], np.ndarray]:
     runs = inventory.get("runs", [])
     counts: dict[tuple[str, str], int] = defaultdict(int)
     subjects = set()
-    # Use runs (already classified by modality) when available; fall back
-    # to a path-based heuristic for orphan files.
     for r in runs:
         sub = r.get("subject") or "unknown"
         mod = r.get("modality") or "other"
         subjects.add(sub)
         if mod in _MODALITIES:
             counts[(sub, mod)] += 1
-    # Capture physio coverage even though it lives in `files` not `runs`
-    # for some datasets.
     for f in files:
         sub = f.get("subject") or "unknown"
         path = str(f.get("path", "")).lower()
@@ -93,11 +78,7 @@ def _modality_grid(inventory: dict) -> tuple[list[str], np.ndarray]:
 
 def _subject_health(mat_row: np.ndarray) -> str:
     """Per-subject health: PASS if anat ≥ 1 and func ≥ 1, WARN if one
-    missing, FAIL if both missing. Matches the per-subject check logic
-    in `validate._apply_session_requirements`.
-
-    mat_row columns are ordered per `_MODALITIES` = anat, func, fmap, physio.
-    """
+    missing, FAIL if both missing."""
     anat_ok = mat_row[0] > 0
     func_ok = mat_row[1] > 0
     if anat_ok and func_ok:
@@ -107,44 +88,117 @@ def _subject_health(mat_row: np.ndarray) -> str:
     return "WARN"
 
 
-def _draw_pill(
-    ax, x: float, y: float, w: float, h: float, label: str, status: str,
-    fontsize: int = 9, transform=None,
-) -> None:
-    """Rounded status pill drawn via FancyBboxPatch."""
-    pal = _STATUS.get(status, _STATUS["UNKNOWN"])
-    if transform is None:
-        transform = ax.transAxes
-    box = mpatches.FancyBboxPatch(
-        (x, y), w, h, boxstyle="round,pad=0.005,rounding_size=0.012",
-        facecolor=pal["fill"], edgecolor=pal["edge"], linewidth=1.0,
-        transform=transform, zorder=2,
-    )
-    ax.add_patch(box)
-    ax.text(x + w / 2, y + h / 2, label, ha="center", va="center",
-            color=pal["text"], fontsize=fontsize, fontweight="bold",
-            transform=transform, zorder=3)
+_CSS = """
+:root {
+  --bg: #0f1115; --card-bg: #1a1d23; --border: #2a2e36;
+  --text: #e6e8ec; --muted: #9ca3af;
+  --pass-bg: #14532d; --pass-fg: #22c55e;
+  --warn-bg: #3a2f00; --warn-fg: #f59e0b;
+  --fail-bg: #3a1010; --fail-fg: #ef4444;
+  --unknown-bg: #1a1d23; --unknown-fg: #cccccc;
+  --cell-bg: #1e3a5f; --cell-fg: #3b82f6;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 24px;
+  background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+               sans-serif;
+  font-size: 14px;
+}
+code, .mono { font-family: "SF Mono", Menlo, Consolas, monospace; }
+h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px 0; }
+h2 { font-size: 13px; font-weight: 700; margin: 0 0 12px 0;
+     letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted); }
+.dataset-key { color: var(--muted); font-size: 13px; }
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 18px; border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.pill {
+  display: inline-block; padding: 5px 14px; border-radius: 999px;
+  font-weight: 700; font-size: 11px; letter-spacing: 0.5px;
+}
+.pill-lg { padding: 8px 22px; font-size: 14px; }
+.pill-pass    { background: var(--pass-bg); color: var(--pass-fg);
+                border: 1px solid var(--pass-fg); }
+.pill-warn    { background: var(--warn-bg); color: var(--warn-fg);
+                border: 1px solid var(--warn-fg); }
+.pill-fail    { background: var(--fail-bg); color: var(--fail-fg);
+                border: 1px solid var(--fail-fg); }
+.pill-unknown { background: var(--unknown-bg); color: var(--unknown-fg);
+                border: 1px solid #666; }
+
+.stats {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 12px; text-align: center;
+}
+.stat-card .value { font-size: 28px; font-weight: 700; color: var(--text); }
+.stat-card.empty .value { color: var(--muted); }
+.stat-card.warn  .value { color: var(--warn-fg); }
+.stat-card.fail  .value { color: var(--fail-fg); }
+.stat-card .label { font-size: 10px; font-weight: 700;
+                    letter-spacing: 1px; color: var(--muted);
+                    text-transform: uppercase; margin-top: 6px; }
+
+.body { display: grid; grid-template-columns: 6fr 5fr; gap: 24px; }
+
+table.matrix {
+  width: 100%; border-collapse: separate; border-spacing: 6px;
+  font-size: 13px;
+}
+table.matrix th {
+  font-weight: 700; color: var(--muted); padding: 4px 8px;
+  text-align: center; border-bottom: 1px solid var(--border);
+}
+table.matrix th.left { text-align: left; }
+table.matrix td { padding: 4px 8px; text-align: center; }
+table.matrix td.subj { text-align: left; color: var(--text); font-weight: 500; }
+.dot {
+  display: inline-block; width: 11px; height: 11px; border-radius: 50%;
+  margin-right: 8px; vertical-align: middle;
+}
+.dot-pass { background: var(--pass-fg); }
+.dot-warn { background: var(--warn-fg); }
+.dot-fail { background: var(--fail-fg); }
+.cell-pos {
+  display: inline-block; min-width: 36px; padding: 4px 10px;
+  background: var(--cell-bg); color: var(--text);
+  border: 1px solid var(--cell-fg); border-radius: 6px;
+  font-weight: 700;
+}
+.cell-zero { color: #4b5563; }
+
+ul.checks { list-style: none; padding: 0; margin: 0; }
+ul.checks li {
+  display: grid; grid-template-columns: 64px 1fr;
+  gap: 12px; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+ul.checks li:last-child { border-bottom: 0; }
+ul.checks .check-name { font-weight: 700; color: var(--text); font-size: 13px; }
+ul.checks .check-msg { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+.footer {
+  margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);
+  color: var(--muted); font-size: 11px; text-align: right;
+}
+""".strip()
 
 
-def _draw_stat_card(
-    ax, x: float, y: float, w: float, h: float,
-    label: str, value: str, accent: str = _MUTED,
-) -> None:
-    """Card with a big number on top and a small caption below."""
-    card = mpatches.FancyBboxPatch(
-        (x, y), w, h, boxstyle="round,pad=0.003,rounding_size=0.012",
-        facecolor=_CARD_BG, edgecolor=_BORDER, linewidth=1.0,
-        transform=ax.transAxes, zorder=1,
-    )
-    ax.add_patch(card)
-    ax.text(x + w / 2, y + h * 0.62, value, ha="center", va="center",
-            color=accent, fontsize=22, fontweight="bold",
-            transform=ax.transAxes, zorder=2)
-    # matplotlib has no letter-spacing; emulate with spaces between chars.
-    spaced = " ".join(label.upper())
-    ax.text(x + w / 2, y + h * 0.20, spaced, ha="center", va="center",
-            color=_MUTED, fontsize=8, fontweight="bold",
-            transform=ax.transAxes, zorder=2)
+def _esc(s: Any) -> str:
+    return html.escape(str(s), quote=True)
+
+
+def _pill(label: str, status: str, large: bool = False) -> str:
+    cls = _STATUS_CLASS.get(status, "unknown")
+    extra = " pill-lg" if large else ""
+    return f'<span class="pill pill-{cls}{extra}">{_esc(label)}</span>'
 
 
 def render_s1_dataset_summary(
@@ -152,7 +206,7 @@ def render_s1_dataset_summary(
     qc_summary: dict,
     output_path: Path,
 ) -> None:
-    """Render the per-dataset S1 reportlet PNG. Never raises."""
+    """Render the per-dataset S1 HTML report. Never raises."""
     try:
         subjects, mat = _modality_grid(inventory)
         checks = qc_summary.get("checks", []) or []
@@ -160,188 +214,140 @@ def render_s1_dataset_summary(
         metrics = qc_summary.get("metrics", {}) or {}
         dataset_key = qc_summary.get("dataset_key") or "(unknown)"
         status = qc_summary.get("status", "UNKNOWN")
+        bids_root = qc_summary.get("bids_root", "")
 
-        # Figure dimensions scale with whichever is taller — the matrix
-        # (1 row per subject, plus header row) or the checks list (~0.5"
-        # per check including padding).
-        n_sub = max(len(subjects), 1)
-        n_chk = max(len(checks), 1)
-        matrix_h = 0.45 * (n_sub + 1) + 0.4   # header + rows + title pad
-        checks_h = 0.50 * n_chk + 0.4         # rows + title pad
-        body_h_inches = max(matrix_h, checks_h, 1.6)
-        fig_h = 0.55 + 1.0 + body_h_inches + 0.3
-        fig_w = 13.0
-        fig = plt.figure(figsize=(fig_w, fig_h), facecolor=_BG)
-        fig.patch.set_facecolor(_BG)
-
-        # ---- Master grid ----
-        gs = fig.add_gridspec(
-            3, 2,
-            height_ratios=[0.55, 1.0, body_h_inches],
-            width_ratios=[6, 5],
-            hspace=0.15, wspace=0.08,
-            left=0.04, right=0.97, top=0.97, bottom=0.05,
-        )
-
-        # ---- Header bar ----
-        ax = fig.add_subplot(gs[0, :])
-        ax.set_facecolor(_BG); ax.axis("off")
-        ax.text(0.0, 0.65, "S1 input verify",
-                color=_TEXT, fontsize=15, fontweight="bold",
-                transform=ax.transAxes)
-        ax.text(0.0, 0.20, dataset_key,
-                color=_MUTED, fontsize=10, family="monospace",
-                transform=ax.transAxes)
-        _draw_pill(ax, 0.88, 0.30, 0.11, 0.55, status, status,
-                   fontsize=13)
-
-        # ---- Stat cards ----
-        ax = fig.add_subplot(gs[1, :])
-        ax.set_facecolor(_BG); ax.axis("off")
         cls = counts.get("classification", {}) or {}
         cards = [
-            ("Subjects", counts.get("subjects", 0)),
-            ("Sessions", counts.get("sessions", 0)),
-            ("Cord func", metrics.get("n_func_cord_runs",
-                                       cls.get("cord_likely", 0))),
-            ("Anat", metrics.get("n_anat_runs", 0)),
-            ("FMaps", metrics.get("n_fmap_runs", 0)),
+            ("Subjects", counts.get("subjects", 0), None),
+            ("Sessions", counts.get("sessions", 0), None),
+            ("Cord func",
+             metrics.get("n_func_cord_runs", cls.get("cord_likely", 0)),
+             "fail"),  # zero ⇒ FAIL accent
+            ("Anat", metrics.get("n_anat_runs", 0), "warn"),
+            ("FMaps", metrics.get("n_fmap_runs", 0), None),
         ]
-        n_cards = len(cards)
-        card_w = 0.96 / n_cards - 0.012
-        for i, (label, value) in enumerate(cards):
-            x = 0.02 + i * (card_w + 0.012)
-            accent = _TEXT
-            # Highlight "Cord func" red when zero — it's load-bearing.
-            if label == "Cord func" and value == 0:
-                accent = _STATUS["FAIL"]["text"]
-            elif label == "Anat" and value == 0:
-                accent = _STATUS["WARN"]["text"]
-            _draw_stat_card(ax, x, 0.0, card_w, 1.0, label, str(value), accent)
+        card_html_parts = []
+        for label, value, zero_class in cards:
+            card_cls = "stat-card"
+            if value == 0:
+                if zero_class:
+                    card_cls += f" {zero_class}"
+                else:
+                    card_cls += " empty"
+            card_html_parts.append(
+                f'<div class="{card_cls}">'
+                f'<div class="value">{_esc(value)}</div>'
+                f'<div class="label">{_esc(label)}</div></div>'
+            )
+        stats_html = "\n      ".join(card_html_parts)
 
-        # ---- Modality matrix (subject × modality) ----
-        ax_grid = fig.add_subplot(gs[2, 0])
-        ax_grid.set_facecolor(_BG)
-        ax_grid.set_title("Subject × modality (file count)",
-                          color=_TEXT, fontsize=11, loc="left", pad=6)
-
+        # Subject × modality matrix
         if subjects:
-            n_rows = len(subjects)
-            n_cols = len(_MODALITIES) + 1  # +1 for the health dot column
-            ax_grid.set_xlim(-0.55, n_cols - 0.45)
-            # Include header row at y=-1 inside the visible range.
-            ax_grid.set_ylim(n_rows - 0.45, -1.55)  # invert Y
-
-            # Header row at y=-1
-            for j, mod in enumerate(_MODALITIES):
-                ax_grid.text(j + 1, -1.0, mod, ha="center", va="center",
-                             color=_MUTED, fontsize=10, fontweight="bold")
-            ax_grid.text(0, -1.0, "OK", ha="center", va="center",
-                         color=_MUTED, fontsize=9, fontweight="bold")
-            # Thin separator under the header
-            ax_grid.plot([-0.45, n_cols - 0.55], [-0.55, -0.55],
-                         color=_BORDER, linewidth=0.8, zorder=1)
-
-            # Per-row health dot + per-cell counts
+            matrix_rows = []
             for i, sub in enumerate(subjects):
                 row = mat[i]
                 health = _subject_health(row)
-                pal = _STATUS[health]
-                # Health dot
-                ax_grid.scatter([0], [i], s=160, c=pal["edge"],
-                                edgecolors=pal["edge"], linewidths=1.5,
-                                zorder=3)
-                # Subject label, just left of the dot
-                ax_grid.annotate(
-                    sub, xy=(0, i), xycoords="data",
-                    xytext=(-10, 0), textcoords="offset points",
-                    ha="right", va="center", color=_TEXT, fontsize=9,
-                )
-                # Modality cells
+                dot_cls = _STATUS_CLASS[health]
+                cells = []
                 for j, mod in enumerate(_MODALITIES):
-                    v = row[j]
-                    cx = j + 1
+                    v = int(row[j])
                     if v > 0:
-                        ax_grid.add_patch(mpatches.FancyBboxPatch(
-                            (cx - 0.40, i - 0.32), 0.80, 0.64,
-                            boxstyle="round,pad=0.005,rounding_size=0.08",
-                            facecolor="#1e3a5f", edgecolor="#3b82f6",
-                            linewidth=0.9, zorder=2,
-                        ))
-                        ax_grid.text(cx, i, str(v), ha="center", va="center",
-                                     color=_TEXT, fontsize=10,
-                                     fontweight="bold", zorder=3)
+                        cells.append(f'<td><span class="cell-pos">{v}</span></td>')
                     else:
-                        ax_grid.text(cx, i, "·", ha="center", va="center",
-                                     color="#4b5563", fontsize=18, zorder=2)
-
-            ax_grid.set_xticks([])
-            ax_grid.set_yticks([])
-            for s in ax_grid.spines.values():
-                s.set_visible(False)
+                        cells.append('<td><span class="cell-zero">·</span></td>')
+                matrix_rows.append(
+                    f'<tr><td class="subj">'
+                    f'<span class="dot dot-{dot_cls}"></span>'
+                    f'<span class="mono">sub-{_esc(sub)}</span></td>'
+                    + "".join(cells) + "</tr>"
+                )
+            matrix_html = (
+                '<table class="matrix">'
+                '<thead><tr>'
+                '<th class="left">Subject</th>'
+                + "".join(f'<th>{m}</th>' for m in _MODALITIES) +
+                '</tr></thead>'
+                '<tbody>' + "".join(matrix_rows) + '</tbody>'
+                '</table>'
+            )
         else:
-            ax_grid.axis("off")
-            ax_grid.text(0.5, 0.5, "no subjects detected",
-                         ha="center", va="center", color=_STATUS["FAIL"]["text"],
-                         fontsize=12, transform=ax_grid.transAxes)
+            matrix_html = (
+                '<p style="color: var(--fail-fg); font-weight: 700;">'
+                'No subjects detected in the BIDS root.</p>'
+            )
 
-        # ---- Checks list ----
-        ax_chk = fig.add_subplot(gs[2, 1])
-        ax_chk.set_facecolor(_BG); ax_chk.axis("off")
-        ax_chk.set_title("Checks", color=_TEXT, fontsize=11, loc="left",
-                         pad=6)
+        # Checks list
         if checks:
-            # Each check row gets a fixed slice of the axes — generous
-            # enough for two text lines without overlap.
-            n_chk_actual = len(checks)
-            usable_top = 0.92
-            usable_bottom = 0.04
-            row_h = (usable_top - usable_bottom) / n_chk_actual
-            row_h = min(row_h, 0.22)  # cap so badges don't get huge
-            badge_h = min(0.6 * row_h, 0.10)
-            for i, c in enumerate(checks):
+            check_items = []
+            for c in checks:
                 sev = c.get("severity", "UNKNOWN")
                 passed = c.get("passed", False)
                 badge = "PASS" if passed else sev
-                # Top of row i (0 = top)
-                y_top = usable_top - i * row_h
-                y_center = y_top - row_h / 2.0
-                _draw_pill(ax_chk, 0.0, y_center - badge_h / 2.0,
-                           0.10, badge_h, badge, badge, fontsize=8)
                 name = c.get("name", "?")
                 msg = c.get("message", "")
-                if len(name) > 30:
-                    name = name[:28] + "…"
-                if len(msg) > 80:
-                    msg = msg[:78] + "…"
-                # Name above message
-                ax_chk.text(0.12, y_center + row_h * 0.20, name,
-                            ha="left", va="center", color=_TEXT,
-                            fontsize=9, fontweight="bold",
-                            family="monospace",
-                            transform=ax_chk.transAxes)
-                ax_chk.text(0.12, y_center - row_h * 0.20, msg,
-                            ha="left", va="center", color=_MUTED,
-                            fontsize=8, transform=ax_chk.transAxes)
+                check_items.append(
+                    f'<li>'
+                    f'<div>{_pill(badge, badge)}</div>'
+                    f'<div>'
+                    f'<div class="check-name mono">{_esc(name)}</div>'
+                    f'<div class="check-msg">{_esc(msg)}</div>'
+                    f'</div>'
+                    f'</li>'
+                )
+            checks_html = '<ul class="checks">' + "".join(check_items) + '</ul>'
         else:
-            ax_chk.text(0.5, 0.5, "no checks recorded",
-                        ha="center", va="center", color=_MUTED,
-                        fontsize=10, transform=ax_chk.transAxes)
+            checks_html = (
+                '<p style="color: var(--muted);">No checks recorded.</p>'
+            )
 
+        body = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>S1 input verify — {_esc(dataset_key)}</title>
+<style>{_CSS}</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>S1 input verify</h1>
+      <code class="dataset-key">{_esc(dataset_key)}</code>
+    </div>
+    {_pill(status, status, large=True)}
+  </div>
+
+  <div class="stats">
+      {stats_html}
+  </div>
+
+  <div class="body">
+    <section>
+      <h2>Subject × modality (file count)</h2>
+      {matrix_html}
+    </section>
+    <section>
+      <h2>Checks</h2>
+      {checks_html}
+    </section>
+  </div>
+
+  <div class="footer">
+    BIDS root: <code class="mono">{_esc(bids_root)}</code>
+  </div>
+</body>
+</html>
+"""
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(output_path, dpi=130, facecolor=_BG,
-                    bbox_inches="tight", pad_inches=0.15)
-        plt.close(fig)
+        output_path.write_text(body, encoding="utf-8")
     except Exception:
-        # Never let the reportlet fail S1; emit a stub.
+        # Stub fallback — never let the reportlet fail S1.
         try:
-            fig, ax = plt.subplots(figsize=(8, 3), facecolor=_BG)
-            ax.set_facecolor(_BG); ax.axis("off")
-            ax.text(0.5, 0.5, "S1 reportlet render failed",
-                    ha="center", va="center", color=_TEXT, fontsize=12)
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            fig.savefig(output_path, dpi=100, facecolor=_BG,
-                        bbox_inches="tight")
-            plt.close(fig)
+            output_path.write_text(
+                "<!DOCTYPE html><html><body>"
+                "<p>S1 reportlet render failed.</p>"
+                "</body></html>",
+                encoding="utf-8",
+            )
         except Exception:
             pass
