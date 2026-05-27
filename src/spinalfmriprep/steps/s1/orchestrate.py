@@ -58,6 +58,35 @@ def run_S1_input_verify(
 
     runs, qc_summary, fix_plan = _summarise_inventory(inventory, policy_entry)
     _write_runs_jsonl(runs_path, runs)
+
+    # Diagnostic reportlet — one PNG per dataset (SpinalfMRIprep
+    # dev principle §4). Path is recorded in qc.json under
+    # ``reportlets`` so the dashboard discovers it like every other step.
+    out_resolved = Path(out).resolve()
+    figures_dir = (out_resolved / "derivatives" / "spinalfmriprep" / "_S1"
+                   / ds_key / "figures")
+    figures_dir.mkdir(parents=True, exist_ok=True)
+    reportlet_path = figures_dir / f"{ds_key}_desc-S1_dataset_summary.png"
+    try:
+        from .reportlets import render_s1_dataset_summary
+        render_s1_dataset_summary(inventory, qc_summary, reportlet_path)
+    except Exception:
+        pass
+
+    # S1 has no per-run reportlet array; the dashboard scans the
+    # top-level ``reportlets`` plus a synthetic "summary" entry under
+    # ``runs`` so the dataset-level PNG shows up in the gallery.
+    rel_path = str(reportlet_path.relative_to(out_resolved)) \
+        if reportlet_path.exists() else None
+    if rel_path:
+        qc_summary["reportlets"] = {"dataset_summary": rel_path}
+        qc_summary["runs"] = [{
+            "subject": "all",
+            "session": None,
+            "run_id": ds_key,
+            "status": qc_summary.get("status", "UNKNOWN"),
+            "reportlets": {"dataset_summary": rel_path},
+        }]
     _write_json(qc_path, qc_summary)
     _write_fix_plan(fix_plan_path, fix_plan)
 
