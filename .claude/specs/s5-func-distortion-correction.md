@@ -117,3 +117,28 @@ After the v2 rework on the 11-run reg set:
 
 - Per-vertebral-level breakdown of displacement/Dice (CoSpine's "C1–T1 segments" framing). Defer until a vertebral-level mapping is available in BOLD geometry (S7 emits this for PAM50 space; would need to backproject).
 - No "topup-on-the-only-reg-dataset-that-has-fmaps" test — all 5 reg datasets are SyN-fallback because none ship reversed-PE pairs. The topup code path is therefore exercised only by unit tests, not by the reg-set. Acceptable for now; the unit tests assert command-line construction and warp-file existence.
+
+## v1.1 work items (from `.claude/specs/s5-algorithm-audit.md`)
+
+The audit-and-rework cycle surfaced three deferrable items, none of
+which affect v1.0 correctness:
+
+1. **Implement FUGUE mode.** The `_run_fugue()` stub returns FAIL,
+   forcing fall-through to SyN. fMRIPrep SDCFlows ships GRE-based
+   unwarping; we don't, but no reg-cohort run has a GRE phasediff +
+   magnitude pair so the gap is currently untested. When a cohort
+   ships GRE data, implement using `fugue` + the GRE-derived field map
+   in rad/s. See FSL `fugue` user guide.
+
+2. **Head-to-head SCT-vs-FLIRT-6DOF reg comparison.** Our anat→BOLD-
+   after rigid uses `sct_register_multimodal -param type=seg,algo=rigid`
+   instead of CoSpine's `FLIRT -dof 6 -cost normmi`. The deviation is
+   defensible (FLIRT intensity-only cost on cord-cropped inputs is
+   air-dominated and diverges), but it would be cleaner to record an
+   empirical comparison rather than only a theoretical justification.
+
+3. **Integration test on fmap-equipped public dataset.** Find a public
+   cord-fMRI dataset with reversed-PE fmaps (CoSpine itself ships some;
+   `ds-fmripreptests` has brain analogues but not cord). Run S5 topup
+   path end-to-end on at least one subject so the topup branch is
+   exercised by something more than unit tests.

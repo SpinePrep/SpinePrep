@@ -15,7 +15,13 @@ distortion_correction:
     apply_method: "jac"           # jac | lsr (jac matches fMRIPrep default)
 
   fugue:
-    median_filter: true            # GRE-based; v1.0 falls back to syn
+    # NOT IMPLEMENTED in v1.0 — _run_fugue() always returns FAIL and the
+    # mode dispatcher falls through to SyN. The reg cohort ships no GRE
+    # phasediff/magnitude pairs, so this gap is currently untested.
+    # Tracked in .claude/specs/s5-algorithm-audit.md (remediation #1) +
+    # .claude/specs/s5-func-distortion-correction.md (v1.1 work items).
+    not_implemented_in_v1: true
+    median_filter: true            # would apply to magnitude image if implemented
 
   syn:
     metric: "MI"
