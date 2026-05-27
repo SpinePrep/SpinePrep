@@ -63,10 +63,13 @@ def run_S1_input_verify(
     # dev principle §4). Path is recorded in qc.json under
     # ``reportlets`` so the dashboard discovers it like every other step.
     out_resolved = Path(out).resolve()
-    figures_dir = (out_resolved / "derivatives" / "spinalfmriprep" / "_S1"
-                   / ds_key / "figures")
-    figures_dir.mkdir(parents=True, exist_ok=True)
-    reportlet_path = figures_dir / f"{ds_key}_desc-S1_dataset_summary.png"
+    # S1 emits an HTML report (pure tabular data — no imaging viz to
+    # rasterize). Lives under derivatives/.../_S1/.../reports/ to keep
+    # `figures/` reserved for actual PNG/SVG imaging reportlets.
+    reports_dir = (out_resolved / "derivatives" / "spinalfmriprep" / "_S1"
+                   / ds_key / "reports")
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    reportlet_path = reports_dir / f"{ds_key}_desc-S1_dataset_summary.html"
     try:
         from .reportlets import render_s1_dataset_summary
         render_s1_dataset_summary(inventory, qc_summary, reportlet_path)
