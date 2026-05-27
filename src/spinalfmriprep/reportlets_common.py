@@ -295,7 +295,7 @@ def render_axial_tile(
         overlays_c = overlays
     disp = np.rot90(slice_xy)
     ax.imshow(disp, cmap="gray", vmin=vmin, vmax=vmax,
-              interpolation="bilinear", aspect=pixel_aspect)
+              interpolation="nearest", aspect=pixel_aspect)
     for ov in overlays_c:
         m, color, lw = ov[0], ov[1], ov[2]
         fill_alpha = ov[3] if len(ov) > 3 else 0.0
@@ -310,7 +310,7 @@ def render_axial_tile(
             ax.imshow(rgba, interpolation="nearest", aspect=pixel_aspect)
         if lw > 0:
             ax.contour(m_rot, levels=[0.5], colors=[color],
-                       linewidths=lw, alpha=0.95)
+                       linewidths=lw, alpha=1.0)
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values():
         s.set_color(BORDER); s.set_linewidth(0.8)
@@ -339,14 +339,14 @@ def render_sagittal(
     """
     disp = np.rot90(sag_yz)
     ax.imshow(disp, cmap="gray", vmin=vmin, vmax=vmax,
-              interpolation="bilinear", aspect=pixel_aspect)
+              interpolation="nearest", aspect=pixel_aspect)
     for m, color, alpha, lw in overlays:
         m_rot = np.rot90(m.astype(bool))
         if not m_rot.any():
             continue
         if lw > 0:
             ax.contour(m_rot, levels=[0.5], colors=[color],
-                       linewidths=lw, alpha=0.95)
+                       linewidths=lw, alpha=1.0)
         elif alpha > 0:
             rgba = np.zeros((*m_rot.shape, 4))
             rgb = matplotlib.colors.to_rgb(color)
