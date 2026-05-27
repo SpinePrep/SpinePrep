@@ -13,6 +13,9 @@ from typing import Optional
 
 # Explicit reportlet ordering per step (matching ROADMAP milestones)
 REPORTLET_ORDER: dict[str, list[str]] = {
+    "S1_input_verify": [
+        "dataset_summary",          # S1 - per-dataset inventory + check summary
+    ],
     "S2_anat_cordref": [
         "crop_box_sagittal",        # S2.1 - Discovery + Crop
         "cordmask_montage",         # S2.2 - Cord Segmentation (sct_deepseg spinalcord)
@@ -69,6 +72,9 @@ REPORTLET_ORDER: dict[str, list[str]] = {
 
 # Human-readable labels for reportlets (matching ROADMAP milestones)
 REPORTLET_LABELS: dict[str, dict[str, str]] = {
+    "S1_input_verify": {
+        "dataset_summary": "S1 - Inventory + Checks Summary",
+    },
     "S2_anat_cordref": {
         "crop_box_sagittal": "S2.1 - Discovery + Crop",
         "cordmask_montage": "S2.2 - Cord Segmentation",

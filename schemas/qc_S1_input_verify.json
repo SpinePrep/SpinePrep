@@ -55,6 +55,34 @@
         }
       }
     },
-    "heuristics": {"type": "object"}
+    "heuristics": {"type": "object"},
+    "metrics": {
+      "type": "object",
+      "description": "Quantitative aggregate gauges (SpinalfMRIprep dev principle §3)",
+      "properties": {
+        "n_checks_total": {"type": "integer"},
+        "n_checks_passed": {"type": "integer"},
+        "n_checks_warned": {"type": "integer"},
+        "n_checks_failed": {"type": "integer"},
+        "n_runs_total": {"type": "integer"},
+        "n_runs_ok": {"type": "integer"},
+        "n_runs_with_issues": {"type": "integer"},
+        "n_func_cord_runs": {"type": "integer"},
+        "n_anat_runs": {"type": "integer"},
+        "n_fmap_runs": {"type": "integer"}
+      }
+    },
+    "reportlets": {
+      "type": "object",
+      "description": "Paths (relative to out_dir) to diagnostic PNGs (principle §4)",
+      "properties": {
+        "dataset_summary": {"type": "string"}
+      }
+    },
+    "runs": {
+      "type": "array",
+      "description": "S1 has no per-run reportlets; emits a single synthetic 'summary' entry per dataset so the dashboard gallery picks up the dataset-level reportlet.",
+      "items": {"type": "object"}
+    }
   }
 }

@@ -64,6 +64,22 @@ def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dic
     status = _overall_status(checks, runs, issues)
     failure_message = _failure_message(status, checks, issues)
 
+    # Aggregate quantitative metrics — give the step a step-local
+    # truth gauge that's comparable across datasets without re-reading
+    # the full check list (SpinalfMRIprep dev principle §3).
+    n_checks_passed = sum(1 for c in checks if c.get("passed"))
+    n_checks_failed = sum(1 for c in checks
+                          if not c.get("passed") and c.get("severity") == "FAIL")
+    n_checks_warned = sum(1 for c in checks
+                          if not c.get("passed") and c.get("severity") == "WARN")
+    n_runs_total = len(runs)
+    n_runs_ok = sum(1 for r in runs if r.get("status") == "PASS")
+    n_func_cord = sum(1 for r in runs
+                      if r.get("modality") == "func"
+                      and r.get("classification") == "cord_likely")
+    n_anat = sum(1 for r in runs if r.get("modality") == "anat")
+    n_fmap = sum(1 for r in runs if r.get("modality") == "fmap")
+
     qc_summary = {
         "dataset_key": inventory["dataset_key"],
         "bids_root": inventory["bids_root"],
@@ -77,6 +93,18 @@ def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dic
             "subjects": len(subjects),
             "sessions": len(sessions),
             "classification": _classification_counts(runs),
+        },
+        "metrics": {
+            "n_checks_total": len(checks),
+            "n_checks_passed": n_checks_passed,
+            "n_checks_warned": n_checks_warned,
+            "n_checks_failed": n_checks_failed,
+            "n_runs_total": n_runs_total,
+            "n_runs_ok": n_runs_ok,
+            "n_runs_with_issues": n_runs_total - n_runs_ok,
+            "n_func_cord_runs": n_func_cord,
+            "n_anat_runs": n_anat,
+            "n_fmap_runs": n_fmap,
         },
         "checks": checks,
         "issues": _dedupe_issues(issues),
