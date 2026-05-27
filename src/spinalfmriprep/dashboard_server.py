@@ -15,7 +15,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import FileResponse, RedirectResponse, Response
 
 WORK_ROOT = Path(os.environ.get("SFMRI_WORK_ROOT", "/mnt/ssd1/SpinalfMRIprep/work"))
 VISIBLE_SCOPES: tuple[str, ...] = ("reg", "full")
@@ -32,52 +32,6 @@ app = FastAPI(
     docs_url=None, redoc_url=None,
     redirect_slashes=False,
 )
-
-
-def _list_workfolders() -> list[dict]:
-    """Return workfolders sorted by modification time (newest first).
-
-    `is_latest` prefers non-smoke (reg/full) workfolders over smoke.
-    Smoke runs are sanity checks that often follow a reg pass; without
-    this preference the dashboard's latest view flips to the smoke and
-    hides the full reg set (recurring user-reported "only N images"
-    symptom). Smoke can still be selected explicitly via the workfolder
-    picker; it only loses the default-latest tiebreaker.
-    """
-    dirs = [d for d in WORK_ROOT.glob("wf_*") if d.is_dir()]
-    dirs.sort(key=lambda d: d.stat().st_mtime, reverse=True)
-    wfs = []
-    for d in dirs:
-        has_dashboard = (d / "dashboard" / "index.html").exists()
-        wfs.append({
-            "name": d.name,
-            "path": d.name,
-            "has_dashboard": has_dashboard,
-            "is_latest": False,
-        })
-
-    def _is_smoke(name: str) -> bool:
-        return name.startswith("wf_smoke_")
-
-    # First pass: latest non-smoke with a dashboard.
-    for wf in wfs:
-        if wf["has_dashboard"] and not _is_smoke(wf["name"]):
-            wf["is_latest"] = True
-            return wfs
-    # Fallback: latest smoke if no reg/full has a dashboard.
-    for wf in wfs:
-        if wf["has_dashboard"]:
-            wf["is_latest"] = True
-            break
-    return wfs
-
-
-def _latest_workfolder() -> Path | None:
-    """Return path to the latest workfolder that has a dashboard."""
-    for wf in _list_workfolders():
-        if wf["is_latest"]:
-            return WORK_ROOT / wf["name"]
-    return None
 
 
 def _safe_resolve(base: Path, rel: str) -> Path | None:
@@ -185,11 +139,6 @@ async def landing_page_legacy():
 # Removed individual stitched routes — they collide with the wf routes
 # below for the URL pattern /{prefix}/dashboard/{path}. The dispatcher
 # at /{prefix}/dashboard/{path:path} handles both cases.
-
-
-@app.get("/__spinalfmriprep__/workfolders.json")
-async def workfolders_json():
-    return JSONResponse(_list_workfolders(), headers=_NO_CACHE_HEADERS)
 
 
 @app.get("/tutorial")

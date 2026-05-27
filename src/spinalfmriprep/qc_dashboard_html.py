@@ -151,134 +151,6 @@ def _get_reportlet_label(step_code: str, reportlet_key: str) -> str:
     return reportlet_key.replace("_", " ").title()
 
 
-def _generate_workfolder_dropdown_html(workfolder_name: Optional[str], is_index_page: bool) -> tuple[list[str], list[str], list[str]]:
-    """
-    Generate HTML, CSS, and JavaScript for workfolder dropdown selector.
-
-    Args:
-        workfolder_name: Current workfolder name (if known)
-        is_index_page: True if generating for index page, False for gallery pages
-
-    Returns:
-        Tuple of (css_lines, html_lines, js_lines)
-    """
-    # CSS styles
-    css_lines = [
-        ".workfolder-selector { margin: 16px 0; display: flex; align-items: center; gap: 12px; }",
-        ".workfolder-selector label { color: #999; font-size: 0.9em; }",
-        ".workfolder-selector select {",
-        "  background: #2a2a2a;",
-        "  color: #e6e6e6;",
-        "  border: 1px solid #555;",
-        "  padding: 6px 12px;",
-        "  border-radius: 4px;",
-        "  font-size: 0.9em;",
-        "  cursor: pointer;",
-        "}",
-        ".workfolder-selector select:hover { border-color: #7dcfff; }",
-        ".workfolder-selector select:focus { outline: none; border-color: #7dcfff; }",
-    ]
-
-    # HTML dropdown markup
-    workfolder_label = f"Workfolder: {workfolder_name}" if workfolder_name else "Workfolder:"
-    html_lines = [
-        "<div class=\"workfolder-selector\">",
-        f"<label for=\"workfolder-select\">{workfolder_label}</label>",
-        "<select id=\"workfolder-select\">",
-        "<option value=\"\" disabled selected>Loading...</option>",
-        "</select>",
-        "</div>",
-    ]
-
-    # JavaScript for dropdown functionality
-    js_lines = [
-        "<script>",
-        "(function() {",
-        "  const select = document.getElementById('workfolder-select');",
-        "  const currentWf = " + (f"'{workfolder_name}'" if workfolder_name else "null") + ";",
-        "",
-        "  // Detect mount prefix (e.g. '' on :9002, '/p2' behind a reverse proxy)",
-        "  function getMountPrefix() {",
-        "    const m = window.location.pathname.match(/^(.*?)(?:\\/wf_[^/]+)?\\/dashboard(?:\\/|$)/);",
-        "    return m ? m[1] : '';",
-        "  }",
-        "  const BASE = getMountPrefix();",
-        "",
-        "  // Detect current workfolder from URL if not provided",
-        "  let detectedWf = currentWf;",
-        "  if (!detectedWf) {",
-        "    const sub = window.location.pathname.slice(BASE.length);",
-        "    const urlMatch = sub.match(/^\\/(wf_[^/]+)\\//);",
-        "    if (urlMatch) detectedWf = urlMatch[1];",
-        "  }",
-        "",
-        "  // Determine current page path relative to dashboard root (no BASE)",
-        "  function getCurrentPagePath() {",
-        "    const sub = window.location.pathname.slice(BASE.length);",
-        "    const wfMatch = sub.match(/^\\/(wf_[^/]+)(\\/.*)$/);",
-        "    if (wfMatch) {",
-        "      // Already has workfolder prefix, extract dashboard path",
-        "      return wfMatch[2];",
-        "    }",
-        "    // No workfolder prefix - should be /dashboard/...",
-        "    // If path is just /, default to index",
-        "    return sub === '/' || sub === '' ? '/dashboard/index.html' : sub;",
-        "  }",
-        "",
-        "  // Fetch workfolder list",
-        "  fetch(BASE + '/__spinalfmriprep__/workfolders.json')",
-        "    .then(response => response.json())",
-        "    .then(workfolders => {",
-        "      select.innerHTML = '';",
-        "",
-      "      // Add 'Latest' option first",
-      "      const latestWf = workfolders.find(wf => wf.is_latest);",
-      "      if (latestWf) {",
-      "        const option = document.createElement('option');",
-      "        option.value = ''; // Empty value means latest (no prefix)",
-      "        option.textContent = latestWf.name + ' (latest)';",
-      "        if (!detectedWf || detectedWf === latestWf.name) option.selected = true;",
-      "        select.appendChild(option);",
-      "      }",
-      "",
-      "      // Add all workfolders (excluding the latest one to avoid duplication)",
-      "      workfolders.forEach(wf => {",
-      "        if (wf.is_latest) return; // Skip latest - already shown as special option",
-      "        const option = document.createElement('option');",
-      "        option.value = wf.path;",
-      "        option.textContent = wf.name;",
-      "        if (detectedWf === wf.name) option.selected = true;",
-      "        select.appendChild(option);",
-      "      });",
-        "    })",
-        "    .catch(err => {",
-        "      select.innerHTML = '<option value=\"\">Error loading workfolders</option>';",
-        "      console.error('Failed to load workfolders:', err);",
-        "    });",
-        "",
-        "  // Handle selection change",
-        "  select.addEventListener('change', function() {",
-        "    const selectedPath = this.value;",
-        "    const currentPagePath = getCurrentPagePath();",
-        "",
-        "    let targetUrl;",
-        "    if (selectedPath) {",
-        "      // Specific workfolder selected - prefix the path with BASE + wf name",
-        "      targetUrl = BASE + '/' + selectedPath + currentPagePath;",
-        "    } else {",
-        "      // Latest selected - keep BASE but drop any wf segment",
-        "      targetUrl = BASE + currentPagePath;",
-        "    }",
-        "",
-        "    window.location.href = targetUrl;",
-        "  });",
-        "})();",
-        "</script>",
-    ]
-
-    return (css_lines, html_lines, js_lines)
-
-
 def _generate_index_html(
     dashboard_dir: Path,
     step_data: dict[str, dict[str, list[dict]]],
@@ -624,9 +496,6 @@ def _generate_reportlet_gallery_html(
 
     label = _get_reportlet_label(step_code, reportlet_key)
 
-    # Get dropdown CSS, HTML, and JS
-    dropdown_css, dropdown_html, dropdown_js = _generate_workfolder_dropdown_html(workfolder_name, False)
-
     # Group images by dataset
     images_by_dataset: dict[str, list[dict]] = {}
     for img_info in images:
@@ -667,12 +536,10 @@ def _generate_reportlet_gallery_html(
         ".status-UNKNOWN { background: #333; }",
         ".summary-bar { background: #2a2a2a; padding: 12px; border-radius: 4px; margin-bottom: 16px; }",
     ]
-    lines.extend(dropdown_css)
     lines.append("</style>")
     lines.append("</head>")
     lines.append("<body>")
     lines.append(f"<h1>{step_code} / {label}</h1>")
-    lines.extend(dropdown_html)
 
     lines.extend([
         "<p><a href=\"../../index.html\">Back to index</a></p>",
@@ -732,7 +599,6 @@ def _generate_reportlet_gallery_html(
         lines.append("</div>")  # Close gallery
         lines.append("</div>")  # Close dataset-section
 
-    lines.extend(dropdown_js)
     lines.extend(["</body>", "</html>"])
 
     gallery_file = gallery_dir / f"{reportlet_key}.html"

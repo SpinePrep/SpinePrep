@@ -18,7 +18,6 @@ from spinalfmriprep.qc_dashboard_html import (
     REPORTLET_ORDER,
     _generate_index_html,
     _generate_reportlet_gallery_html,
-    _generate_workfolder_dropdown_html,
     _get_reportlet_label,
     _relpath,
     _sort_reportlets,
