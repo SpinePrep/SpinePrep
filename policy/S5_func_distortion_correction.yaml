@@ -34,8 +34,13 @@ distortion_correction:
     # the finest (shrink 1×) level. Adequate for the cord-mask-restricted
     # ROI; A-P distortion is low spatial frequency and converges at the
     # coarser levels. fMRIPrep brain SyN uses `100x70x50` for comparison.
-    # Deformation is restricted to the PE axis (derived per-run from
-    # BIDS PhaseEncodingDirection); see s5-algorithm-audit-v2.md Finding 1.
+    #
+    # Deformation is NOT PE-restricted (audit-v2 Findings 1/2 attempted
+    # this on 2026-05-27 and were reverted after empirical regression
+    # on the reg cohort — see s5-algorithm-audit-v2.md "Update
+    # 2026-05-27"). The wider funccrop cylinder gives SyN enough signal
+    # to converge, and 3-D deformation finds the correct A-P warp
+    # incidentally; cord-only + PE-restricted starves SyN of signal.
 
 qc_thresholds:
   # CoSpine-style geometric gates (Wei et al., Sci Data 2025). Headline

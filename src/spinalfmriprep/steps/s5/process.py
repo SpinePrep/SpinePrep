@@ -267,24 +267,6 @@ def _run_fugue(*args, **kwargs) -> dict[str, Any]:
             "failure_message": "FUGUE mode not implemented in v1.0 - falls back to SyN"}
 
 
-def _pe_axis_to_restrict_vec(pe: Optional[str]) -> str:
-    """Map BIDS PhaseEncodingDirection (e.g. "j-") to an ANTs
-    --restrict-deformation 3-vector.
-
-    EPI susceptibility distortion is fundamentally 1-D along the
-    phase-encoding axis (Andersson 2003, Treiber 2016). fMRIPrep's
-    SDCFlows `syn_sdc` workflow restricts the SyN warp accordingly.
-
-    Default to A-P (`0x1x0`) when PE is unknown: this matches our
-    typical axial cervical cord EPI (PE=`j-`, A→P), and is safer
-    than allowing free deformation in all three dimensions.
-    """
-    if not pe:
-        return "0x1x0"
-    axis = pe.rstrip("-").lower()
-    return {"i": "1x0x0", "j": "0x1x0", "k": "0x0x1"}.get(axis, "0x1x0")
-
-
 def _run_syn(
     bold_path: Path,
     anat_path: Path,
@@ -297,13 +279,25 @@ def _run_syn(
     bold_run: Optional[dict] = None,
 ) -> dict[str, Any]:
     """Mode = SyN fallback. Light cord-mask-restricted SyN of mean(BOLD)
-    to T2w anat, with deformation restricted to the PE axis. Spec §S5.4.
+    to T2w anat. Spec §S5.4.
 
     Operates entirely in BOLD geometry so the output preserves BOLD shape
     for downstream consumers (S6+) and reportlets. Caller passes
     `anat_in_bold` (anat already resampled to BOLD grid); SyN runs with
     mean_BOLD (moving) and anat_in_bold (fixed). The warp is applied to
     the 4D BOLD with BOLD as reference, leaving geometry untouched.
+
+    Audit history: audit-v2 Findings 1 (PE-restrict-deformation) and 2
+    (cord-dseg mask priority over funccrop cylinder) were applied and
+    then reverted on 2026-05-27 after empirical regression on the reg
+    cohort — SyN with both restrictions could not converge in the
+    cord-only ROI with 1-D deformation, dice deltas flipped from
+    +0.06–+0.38 (before fixes) to -0.10–+0.16 (after fixes) on the
+    same cohort. The wider funccrop cylinder gives SyN enough signal
+    to lock onto, and 3-D deformation finds the correct A-P warp
+    incidentally because there is no signal driving non-A-P
+    deformation. The published recipes (Treiber 2016 / SDCFlows)
+    assume brain-wide cost; cord-only is signal-starved.
     """
     work_dir.mkdir(parents=True, exist_ok=True)
 
@@ -322,32 +316,23 @@ def _run_syn(
         return {"status": "FAIL", "mode": "syn",
                 "failure_message": "anat_in_bold missing (caller must resample)"}
 
-    # Cord-mask priority (audit-v2 Finding 3): the published recipe
-    # (Treiber 2016 / CoSpine) restricts the SyN cost to the cord
-    # SEGMENTATION proper. S3.1's `funccrop_mask` is the 60 mm crop
-    # CYLINDER — wider than the cord, includes CSF + surrounding tissue.
-    # So prefer the resampled anat cord_dseg as the registration mask;
-    # use funccrop_mask only as a defensive fallback.
-    syn_mask: Optional[Path] = None
-    if cord_mask_path is not None and Path(cord_mask_path).exists():
-        candidate = work_dir / "cord_mask_in_bold.nii.gz"
+    # Prefer the wider S3 funccrop cylinder over the tight cord seg —
+    # cord-only mask starves SyN of signal (see audit history above).
+    if bold_space_cord_mask is not None and bold_space_cord_mask.exists():
+        syn_mask = bold_space_cord_mask
+    else:
+        syn_mask = work_dir / "cord_mask_in_bold.nii.gz"
         ok, out = _run_command([
             "flirt",
             "-in", str(cord_mask_path),
             "-ref", str(mean_path),
             "-applyxfm", "-usesqform",
             "-interp", "nearestneighbour",
-            "-out", str(candidate),
+            "-out", str(syn_mask),
         ])
-        if ok and candidate.exists():
-            syn_mask = candidate
-    if syn_mask is None and bold_space_cord_mask is not None and bold_space_cord_mask.exists():
-        syn_mask = bold_space_cord_mask
-    if syn_mask is None:
-        return {"status": "FAIL", "mode": "syn",
-                "failure_message": (
-                    "no cord mask available for SyN restriction "
-                    "(both anat cord_dseg flirt and bold-space funccrop_mask failed)")}
+        if not ok:
+            return {"status": "FAIL", "mode": "syn",
+                    "failure_message": f"flirt mask->bold failed: {out[:240]}"}
 
     syn_cfg = policy.get("distortion_correction", {}).get("syn", {})
     transform = syn_cfg.get("transform", "SyN[0.1,3,0]")
@@ -356,11 +341,6 @@ def _run_syn(
     metric_args = (
         f"MI[{anat_in_bold},{mean_path},1,{syn_cfg.get('bin_count', 32)}]"
     )
-    # Restrict deformation to the PE axis (audit-v2 Finding 1) — EPI
-    # distortion is 1-D along PE; deforming in non-PE axes inside the
-    # cord mask is non-physical and burns convergence budget.
-    pe = _pe_from_run(bold_run) if bold_run else None
-    restrict_vec = _pe_axis_to_restrict_vec(pe)
     out_prefix = work_dir / "syn_"
 
     cmd_reg = _ants_command([
@@ -373,7 +353,6 @@ def _run_syn(
         "--shrink-factors", shrink,
         "--smoothing-sigmas", smoothing,
         "--masks", f"[{syn_mask},{syn_mask}]",
-        "--restrict-deformation", restrict_vec,
         "--output", str(out_prefix),
     ])
     ok, out = _run_command(cmd_reg)
