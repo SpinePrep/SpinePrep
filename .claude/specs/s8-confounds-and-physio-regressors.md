@@ -83,3 +83,81 @@ Emit a BIDS-Derivatives `*_desc-confounds_timeseries.tsv` + JSON sidecar per BOL
 | Q7 | SpinalCompCor off by default v1 | Hemmerling says augments not replaces; needs validation; MATLAB-only ref impl forces Python port. |
 | Q8 | Pre-PCA mean-center + DCT-detrend | fMRIPrep convention; guards against trivial drift PCs. |
 | Q9 | CSF mask = S7 PAM50csf in native | Already produced; S2 canal-cord requires extra warp (v2). |
+
+---
+
+# Principles audit (May 2026)
+
+Post-implementation audit of S8 against the `CLAUDE.md` dev principles.
+The scope spec above is the *redesign rationale*; this section is the
+principles-alignment check.
+
+## Audit verdict per principle
+
+| # | Principle | Verdict |
+|---|---|---|
+| 1 | Small dev cohort | ✅ 11-run reg set |
+| 2 | Literature defaults | ✅ Kaptan 2023, Dabbagh 2024, Hemmerling 2025, Behzadi 2007, Power 2014, Eippert 2017 (each policy knob cites its source in `policy/S8_confounds.yaml`) |
+| 3 | Step-local truth metric | ✅ rich: per-family column counts (`n_columns_motion`/`csf`/`retroicor`/`cosine`/`spinalcompcor`/`outliers`), `n_columns_total`, `outlier_fraction`, `condition_number`, `fd_mean_mm`/`fd_max_mm`, `dvars_mean`, `cardiac_bpm_estimate`, `spinalcompcor_median_pcs`, `n_slices_with_csf`, `n_volumes` |
+| 4 | Diagnostic reportlet | ✅ 5 PNGs (`confound_columns`, `fd_dvars_outliers`, `csf_variance`, `pnm_peaks`, `correlation_heatmap`) — each covers a distinct family's failure mode |
+| 5 | Visual QC validator | ✅ |
+| 6 | Lock and ship | ✅ policy w/ documented thresholds + scope spec above |
+| 7 | No chain backtracking | ✅ S8's gauges are derived from S5 BOLD + S7 PAM50csf + S3 frame metrics; nothing depends on what S9 does with them |
+| 8 | Full cohort = deliverable | ✅ ~2 min/run (+ 1 min with SpinalCompCor on) |
+| 9 | Reproducible | ✅ schema + policy + scope spec all versioned |
+| 10 | Heterogeneity is the test | ✅ **10/11 WARN, 1/11 PASS** across 5 datasets — the WARN bias is **real**: outlier_fraction routinely 0.2–0.4 on cord-fMRI at this resolution, reflecting the Kaptan 2023 threshold's tightness, not a bug in S8. |
+
+## Step-local truth metric rationale
+
+The headline gauges are all **about the confound matrix itself**, not
+the BOLD it regresses (which would be downstream).
+
+| Metric | What it answers |
+|---|---|
+| `n_columns_total` + per-family breakdown | Did each family produce columns? E.g., `n_columns_retroicor=0` ⇒ physio missing or PNM failed silently. |
+| `outlier_fraction` | What fraction of volumes were flagged (DVARS OR refRMS)? This is the S8 confound layer's mirror of S3's headline gauge. |
+| `condition_number` | Matrix conditioning — high κ ⇒ near-singular design ⇒ regression unstable. Brain heuristic (10⁴) used as initial gate; cord-specific recalibration tracked in scope spec Q1. |
+| `fd_*` / `dvars_mean` | Pass-through context: was the motion / volatility regime expected? |
+| `cardiac_bpm_estimate` | Sanity of FSL PNM peak detection (50–110 bpm physiological); None when physio absent. |
+| `spinalcompcor_median_pcs` | When SpinalCompCor on, median per-slice PC count from parallel analysis. |
+
+## Threshold rationale (`policy/S8_confounds.yaml`)
+
+| Gate | Value | Source |
+|---|---|---|
+| PASS `pass_condition_number` | 1000.0 | fMRIPrep brain heuristic; cord recalibration tracked |
+| WARN `warn_condition_number` | 10000.0 | Above ⇒ FAIL |
+| PASS `pass_outlier_fraction_max` | 0.20 | Kaptan 2023 cord-fMRI |
+| WARN `warn_outlier_fraction_max` | 0.40 | Above ⇒ FAIL |
+
+The intentional split between S4's `fd_threshold_mm = 0.5` (coarse
+run-usability gate) and S8's `motion.fd_outlier_threshold_mm = 0.2`
+(per-frame scrubbing gate) is documented in
+`.claude/specs/s4-func-motion-correction.md`.
+
+## Why 10/11 WARN is acceptable
+
+The reg cohort spans 5 heterogeneous datasets at cord-fMRI typical
+resolutions (~1×1×4 mm, TR 2–3 s, low cord SNR). Outlier fractions
+in the 0.20–0.40 range are common per Kaptan 2023 / Dabbagh 2024,
+which set the threshold at 0.20 specifically to flag the upper end
+of acceptable. **The WARN bias is the metric working as designed**;
+the runs are still usable (would be a FAIL at >0.40). The 1 PASS
+(balgrist_motor sub-02 run-01) had outlier_fraction = 0.18.
+
+## Decision: no code change
+
+S8 already satisfies all 10 principles. The metric coverage is the
+densest in the pipeline (≥15 per-run gauges spanning 5 families) and
+the 5 reportlets cover each family's failure mode independently. The
+heterogeneity test (principle §10) is exactly the kind of "different
+algorithm tells different story per dataset" signal the principles
+expect — the WARN/PASS pattern carries information.
+
+## Remaining gaps (acceptable / deferred)
+
+- Cord-specific `condition_number` thresholds (the 10³/10⁴ brain bands
+  may be too lenient for cord with high collinearity among RETROICOR
+  + cosine columns). Tracked in scope spec Q1.
+- SpinalCompCor validation on full cohort before flipping the default
+  to ON. Scope spec Q7 marks this as v2 work.
