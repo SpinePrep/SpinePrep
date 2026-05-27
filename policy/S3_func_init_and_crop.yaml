@@ -29,18 +29,28 @@ func_localization:
     mask_diameter_mm: 60  # Configurable, default match S2
     min_z_slices: 5
 
-# Outlier gating: identify motion-corrupted frames using cord-centric metrics
+# Outlier gating: identify motion-corrupted frames using cord-centric metrics.
+# Definitions: Power 2014 DVARS (RMS of temporal derivative) restricted to the
+# cord mask (Smyser 2019 / Kaptan 2023 cord adaptation) + refRMS (RMS of
+# (frame - reference) within mask, fMRIPrep / MRIQC convention).
 outlier_gating:
-  # IQR multiplier for upper boxplot cutoff (P75 + multiplier*IQR)
+  # Tukey 1977 boxplot cutoff: P75 + 1.5*IQR. NOTE: this is a deviation from
+  # Kaptan 2023 / Dabbagh 2024, which use 3σ above the time-series mean. We
+  # chose Tukey because it is parameter-free, robust to non-Gaussian heavy-
+  # tailed cord DVARS distributions, and adaptive to per-run scanner
+  # variability without a group-mean calibration. Audit:
+  # .claude/specs/s3-algorithm-audit.md
   iqr_multiplier: 1.5
-  # Metrics to use for outlier detection
+  # Dual criterion (DVARS OR refRMS above threshold) — Power 2014 / Kaptan 2023.
   metrics:
     - dvars   # RMS of frame-to-frame intensity difference within mask
     - refrms  # RMS of frame-to-reference intensity difference within mask
-  # Fraction thresholds for QC status
-  outlier_fraction_warn: 0.30  # WARN if outlier_fraction > this
-  outlier_fraction_fail: 0.50  # FAIL if outlier_fraction > this
-  # Minimum good frames required to compute robust reference
+  # Fraction thresholds for QC status. Kaptan 2023 reports typical 2% (range
+  # 0.6-5.6%) on healthy cord rest; warn at 30%, fail at 50% — conservative
+  # upper end of "still usable".
+  outlier_fraction_warn: 0.30
+  outlier_fraction_fail: 0.50
+  # Minimum good (non-outlier) frames to build the robust median funcref.
   min_good_frames: 10
 
 # Robust reference: final reference from non-outlier frames
@@ -48,13 +58,18 @@ robust_reference:
   # Aggregation method: median (recommended) or mean
   method: median
 
-# Cord-focused crop: reduce FOV to cord region
+# Cord-focused crop: reduce FOV to cord region.
 crop:
-  # Crop mask diameter (mm) around cord centerline
+  # Crop mask diameter (mm) around cord centerline. CoSpine 2025 uses 35 mm
+  # (tighter, cord-only). 60 mm gives extra anatomical context for S6 func-
+  # to-anat registration (more landmarks) at the cost of ~70% more in-plane
+  # voxels in downstream BOLD. Tune per cohort; cord-only acquisitions
+  # should consider 35-40 mm.
   mask_diameter_mm: 60
-  # Dilation of crop box in voxels (x, y, z) for safety margin
+  # 2-voxel in-plane dilation (SCT convention) for safety margin against
+  # localization jitter between dummy-drop coarse ref and final funcref.
   dilate_xyz: [2, 2, 0]
-  # Minimum z-slices required in cropped output (fail if fewer)
+  # Minimum z-slices in cropped output. Cord-fMRI typical 12-24 BOLD slices.
   min_z_slices: 10
 
 # QC and reportlets
