@@ -296,6 +296,34 @@ def render_crop_box_sagittal_s3(
         dz_mm = (z1 - z0 + 1) * float(zooms[2])
         metric = f"crop {dx_mm:.0f}×{dy_mm:.0f}×{dz_mm:.0f} mm"
 
+        # Dynamic axial window: the crop bbox spans cw×ch voxels in XY.
+        # The standard 40-vox window clipped the bbox edges when the
+        # crop diameter exceeded ~30 voxels in either axis. We also need
+        # to account for per-slice cord-centroid drift relative to the
+        # global cord centroid (the window is centered per-slice on the
+        # cord centroid, but the bbox is fixed in space at the global
+        # centroid), otherwise tile edges can clip when a slice's cord
+        # is offset. Pad by max(6, drift) + 6 on each side so the amber
+        # rectangle stays fully inside with visible margin; clamp to FOV.
+        per_slice_cx = []
+        per_slice_cy = []
+        for zi in range(disc_mask.shape[2]):
+            sl = disc_mask[:, :, zi]
+            if sl.any():
+                xs_sl, ys_sl = np.nonzero(sl)
+                per_slice_cx.append(float(xs_sl.mean()))
+                per_slice_cy.append(float(ys_sl.mean()))
+        if per_slice_cx:
+            drift_x = int(np.ceil(max(abs(c - cx) for c in per_slice_cx)))
+            drift_y = int(np.ceil(max(abs(c - cy) for c in per_slice_cy)))
+        else:
+            drift_x = drift_y = 0
+        pad_x = max(6, drift_x) + 6
+        pad_y = max(6, drift_y) + 6
+        win_x = min(nx, cw + 2 * pad_x)
+        win_y = min(ny, ch + 2 * pad_y)
+        axial_window_vox = (int(win_x), int(win_y))
+
         render_sagittal_plus_montage(
             output_path=output_path,
             title="S3.3 — Cord-focused crop",
@@ -309,7 +337,7 @@ def render_crop_box_sagittal_s3(
                 (SEMANTIC["crop_box"], "crop bbox"),
             ],
             metric_lines=[],
-            axial_window_vox=(40, 40),
+            axial_window_vox=axial_window_vox,
             zooms=zooms,
             intensity_pct=(1.0, 99.0),
         )
