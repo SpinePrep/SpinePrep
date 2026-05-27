@@ -277,6 +277,7 @@ def render_axial_tile(
     vmin: float, vmax: float, z_idx: int,
     first: bool = False,
     crop: Optional[tuple[int, int, int, int]] = None,
+    pixel_aspect: float = 1.0,  # = (y_voxel_mm / x_voxel_mm), set from header zooms
 ) -> None:
     """Render one axial tile: anat slice in grayscale + overlays.
 
@@ -294,7 +295,7 @@ def render_axial_tile(
         overlays_c = overlays
     disp = np.rot90(slice_xy)
     ax.imshow(disp, cmap="gray", vmin=vmin, vmax=vmax,
-              interpolation="bilinear", aspect="equal")
+              interpolation="bilinear", aspect=pixel_aspect)
     for ov in overlays_c:
         m, color, lw = ov[0], ov[1], ov[2]
         fill_alpha = ov[3] if len(ov) > 3 else 0.0
@@ -306,7 +307,7 @@ def render_axial_tile(
             rgb = matplotlib.colors.to_rgb(color)
             rgba[..., 0] = rgb[0]; rgba[..., 1] = rgb[1]; rgba[..., 2] = rgb[2]
             rgba[..., 3] = m_rot.astype(float) * fill_alpha
-            ax.imshow(rgba, interpolation="nearest", aspect="equal")
+            ax.imshow(rgba, interpolation="nearest", aspect=pixel_aspect)
         if lw > 0:
             ax.contour(m_rot, levels=[0.5], colors=[color],
                        linewidths=lw, alpha=0.95)
@@ -327,6 +328,7 @@ def render_sagittal(
     overlays: list[tuple[np.ndarray, str, float, float]],
     vmin: float, vmax: float,
     z_label_levels: Optional[dict[int, str]] = None,
+    pixel_aspect: float = 1.0,  # = (y_voxel_mm / z_voxel_mm) AFTER rot90
 ) -> None:
     """Sagittal panel: anat with semi-transparent overlays + contours.
 
@@ -337,7 +339,7 @@ def render_sagittal(
     """
     disp = np.rot90(sag_yz)
     ax.imshow(disp, cmap="gray", vmin=vmin, vmax=vmax,
-              interpolation="bilinear", aspect="equal")
+              interpolation="bilinear", aspect=pixel_aspect)
     for m, color, alpha, lw in overlays:
         m_rot = np.rot90(m.astype(bool))
         if not m_rot.any():
@@ -350,7 +352,7 @@ def render_sagittal(
             rgb = matplotlib.colors.to_rgb(color)
             rgba[..., 0] = rgb[0]; rgba[..., 1] = rgb[1]; rgba[..., 2] = rgb[2]
             rgba[..., 3] = m_rot.astype(float) * alpha
-            ax.imshow(rgba, interpolation="nearest", aspect="equal")
+            ax.imshow(rgba, interpolation="nearest", aspect=pixel_aspect)
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values():
         s.set_color(BORDER); s.set_linewidth(0.8)
@@ -392,6 +394,8 @@ def render_sagittal_plus_montage(
     z_label_levels: Optional[dict[int, str]] = None,
     sag_slab_halfwidth_x: int = 0,
     axial_window_vox: Optional[tuple[int, int]] = (22, 22),
+    zooms: Optional[tuple[float, float, float]] = None,
+    intensity_pct: tuple[float, float] = (2.0, 98.0),
 ) -> None:
     """Standard 2-panel reportlet: sagittal (~36%) + axial grid (~58%).
 
@@ -416,9 +420,23 @@ def render_sagittal_plus_montage(
         else:
             sag_overlays_slab.append(
                 (m[x_lo:x_hi, :, :].any(axis=0), color, alpha, lw))
-    vmin_sag, vmax_sag = intensity_window(sag)
+    lo_pct, hi_pct = intensity_pct
+    vmin_sag, vmax_sag = intensity_window(sag, lo_pct, hi_pct)
     mid_z = (z0 + z1) // 2
-    vmin_ax, vmax_ax = intensity_window(anat[:, :, mid_z])
+    vmin_ax, vmax_ax = intensity_window(anat[:, :, mid_z], lo_pct, hi_pct)
+
+    # Pixel aspects from voxel zooms — keeps anisotropic data
+    # geometrically faithful instead of squishing it square.
+    if zooms is not None and len(zooms) >= 3:
+        zx, zy, zz = float(zooms[0]), float(zooms[1]), float(zooms[2])
+    else:
+        zx = zy = zz = 1.0
+    # Sagittal after rot90: rows = Z (S-I), cols = Y (A-P).
+    # imshow aspect = (y-data-unit-size / x-data-unit-size) so to make
+    # each ROW = zz mm and each COL = zy mm, aspect = zz / zy.
+    sag_aspect = zz / zy if zy > 0 else 1.0
+    # Axial after rot90: rows = Y (A-P), cols = X (R-L). aspect = zy / zx.
+    ax_aspect = zy / zx if zx > 0 else 1.0
 
     fig = plt.figure(figsize=(16.0, 9.0), facecolor=BG)
     fig.patch.set_facecolor(BG)
@@ -427,7 +445,7 @@ def render_sagittal_plus_montage(
     ax_sag = fig.add_axes((0.025, 0.10, 0.36, 0.80))
     ax_sag.set_facecolor(BG)
     render_sagittal(ax_sag, sag, sag_overlays_slab, vmin_sag, vmax_sag,
-                    z_label_levels=z_label_levels)
+                    z_label_levels=z_label_levels, pixel_aspect=sag_aspect)
 
     n_tiles = len(z_picks)
     n_cols = max(1, min(n_axial_cols, n_tiles))
@@ -459,7 +477,7 @@ def render_sagittal_plus_montage(
             tile_crop = global_bbox
         render_axial_tile(ax, anat[:, :, z], overlays,
                           vmin_ax, vmax_ax, z, first=(i == 0),
-                          crop=tile_crop)
+                          crop=tile_crop, pixel_aspect=ax_aspect)
 
     add_footer(fig, legend_items, metric_lines)
     output_path.parent.mkdir(parents=True, exist_ok=True)

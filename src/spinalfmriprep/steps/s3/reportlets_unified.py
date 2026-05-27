@@ -52,7 +52,7 @@ def render_func_localization_crop(
         if not func_ref_fast_path.exists() or not discovery_seg_path.exists():
             stub_figure(output_path, "funcref or discovery seg missing")
             return
-        funcref, _, _ = load_canonical(func_ref_fast_path)
+        funcref, _, zooms = load_canonical(func_ref_fast_path)
         disc, _, _ = load_canonical(discovery_seg_path)
         if funcref.shape != disc.shape:
             stub_figure(output_path, "shape mismatch funcref vs seg")
@@ -84,6 +84,8 @@ def render_func_localization_crop(
             legend_items=[(SEMANTIC["discovery"], "discovery cord")],
             metric_lines=[],
             axial_window_vox=(28, 28),
+            zooms=zooms,
+            intensity_pct=(5.0, 95.0),  # tighter for funcref (bright fat else dominates)
         )
     except Exception as e:
         stub_figure(output_path, f"func_localization render failed: {e}")
@@ -307,7 +309,9 @@ def render_crop_box_sagittal_s3(
                 (SEMANTIC["crop_box"], "crop bbox"),
             ],
             metric_lines=[],
-            axial_window_vox=(40, 40),  # wider so crop bbox + margin both fit
+            axial_window_vox=(40, 40),
+            zooms=zooms,
+            intensity_pct=(5.0, 95.0),
         )
     except Exception as e:
         stub_figure(output_path, f"crop_box_sagittal render failed: {e}")
@@ -334,7 +338,7 @@ def render_funcref_montage(
         if not func_ref_path.exists():
             stub_figure(output_path, "funcref missing")
             return
-        funcref, _, _ = load_canonical(func_ref_path)
+        funcref, _, zooms = load_canonical(func_ref_path)
 
         # Use intensity to find the cord-bearing Z range without needing
         # a per-voxel cord seg (which isn't reliably available in
@@ -373,7 +377,9 @@ def render_funcref_montage(
             axial_overlays_factory=axial_overlays,
             legend_items=[],
             metric_lines=metric_lines,
-            axial_window_vox=None,  # data is already cropped — show full FOV
+            axial_window_vox=None,
+            zooms=zooms,
+            intensity_pct=(5.0, 95.0),
         )
     except Exception as e:
         stub_figure(output_path, f"funcref_montage render failed: {e}")
