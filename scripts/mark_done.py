@@ -213,7 +213,22 @@ def main() -> int:
     print(f"✓ {step_num} marked as done in {args.scope} chain")
     print(f"  Symlink: {done_dir}")
     print(f"  Target:  {workfolder}")
-    
+
+    # Auto-refresh dashboards (CLAUDE.md dev §4: dashboard always
+    # reflects the latest run). Refreshes the promoted workfolder's
+    # dashboard + the project-root "latest" landing page.
+    try:
+        import sys as _sys
+        _sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+        from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+        from spinalfmriprep.dashboard_latest import write_latest_landing
+        generate_dashboard_safe(workfolder.resolve())
+        write_latest_landing(work_root.resolve())
+        print(f"  Dashboard refreshed: {workfolder}/dashboard/index.html")
+        print(f"  Latest landing:      {work_root}/dashboard.html")
+    except Exception as e:
+        print(f"  (dashboard refresh skipped: {e})")
+
     return 0
 
 

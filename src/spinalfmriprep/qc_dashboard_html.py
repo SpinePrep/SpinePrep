@@ -300,6 +300,12 @@ def _generate_index_html(
         "<html>",
         "<head>",
         "<meta charset=\"utf-8\" />",
+        # Force the browser to never cache the dashboard HTML — image
+        # cache-bust (?v=mtime) alone is useless if the HTML referencing
+        # them is itself served from cache.
+        "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />",
+        "<meta http-equiv=\"Pragma\" content=\"no-cache\" />",
+        "<meta http-equiv=\"Expires\" content=\"0\" />",
         "<title>SpinalfMRIprep QC Dashboard</title>",
         "<style>",
         "body { background: #1a1a1a; color: #e6e6e6; font-family: Arial, sans-serif; margin: 20px; }",
@@ -474,6 +480,12 @@ def _generate_reportlet_gallery_html(
         "<html>",
         "<head>",
         "<meta charset=\"utf-8\" />",
+        # Force the browser to never cache the dashboard HTML — image
+        # cache-bust (?v=mtime) alone is useless if the HTML referencing
+        # them is itself served from cache.
+        "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />",
+        "<meta http-equiv=\"Pragma\" content=\"no-cache\" />",
+        "<meta http-equiv=\"Expires\" content=\"0\" />",
         f"<title>{step_code} / {label}</title>",
         "<style>",
         "body { background: #1a1a1a; color: #e6e6e6; font-family: Arial, sans-serif; margin: 20px; }",

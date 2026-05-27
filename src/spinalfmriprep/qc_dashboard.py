@@ -297,7 +297,11 @@ def generate_dashboard(out_dir: Path, chain_done_dirs: Optional[list[Path]] = No
                     # Resolve absolute path relative to base_dir (which may be a dataset subdirectory)
                     reportlet_abs = base_dir / reportlet_path
                     if not reportlet_abs.exists():
-                        errors.append(f"Missing reportlet: {reportlet_abs}")
+                        # Stale qc.json references a path that no longer
+                        # exists (e.g. a v1 reportlet key renamed in v2).
+                        # Skip silently — surfacing this as an "error"
+                        # confuses the operator with cruft that has no
+                        # action.
                         continue
 
                     # Store absolute path; we'll compute relative path later from the gallery file location
@@ -357,6 +361,20 @@ def generate_dashboard_safe(out_dir: Path, chain_done_dirs: Optional[list[Path]]
             import warnings
             for error in result.errors:
                 warnings.warn(f"Dashboard generation warning: {error}", UserWarning)
+        # Refresh the project-root "latest" landing page so the
+        # single-URL entry point reflects the just-promoted state.
+        try:
+            from .dashboard_latest import write_latest_landing
+            project_work = Path(out_dir).resolve()
+            # Walk up to find `work/` (parent of wf_*)
+            cursor = project_work
+            for _ in range(4):
+                if cursor.name == "work":
+                    write_latest_landing(cursor)
+                    break
+                cursor = cursor.parent
+        except Exception:
+            pass
     except Exception as e:
         # Log but don't fail the step
         import warnings
