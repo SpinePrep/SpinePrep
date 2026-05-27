@@ -106,19 +106,55 @@ def _guess_media_type(path: Path) -> str:
     }.get(suffix, "application/octet-stream")
 
 
+# Cache-control headers applied to every response. The dashboard
+# content can update at any moment (chain promotion, reportlet
+# regen) and the user must always see the latest version.
+_NO_CACHE_HEADERS = {
+    "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+    "Pragma": "no-cache",
+    "Expires": "0",
+}
+
+
+def _file_response(path: Path, media_type: str | None = None) -> FileResponse:
+    return FileResponse(
+        path,
+        media_type=media_type or _guess_media_type(path),
+        headers=_NO_CACHE_HEADERS,
+    )
+
+
 # --- Routes ---
 
 
 @app.get("/")
 async def root():
+    """Project-root entry — serve the cross-workfolder latest landing
+    page if it exists; otherwise fall through to the latest wf's
+    dashboard index."""
+    landing = WORK_ROOT / "dashboard.html"
+    if landing.is_file():
+        return _file_response(landing, media_type="text/html")
     # Relative target so the redirect resolves correctly when the server
     # is mounted under a reverse-proxy prefix (e.g. 271828.space/p2/).
-    return RedirectResponse(url="dashboard/index.html")
+    return RedirectResponse(url="dashboard/index.html",
+                            headers=_NO_CACHE_HEADERS)
+
+
+@app.get("/dashboard.html")
+async def landing_page():
+    """Explicit landing-page URL — same as `/` but addressable as a
+    file name so curl/wget pick the right mimetype."""
+    landing = WORK_ROOT / "dashboard.html"
+    if not landing.is_file():
+        return RedirectResponse(url="dashboard/index.html",
+                                headers=_NO_CACHE_HEADERS)
+    return _file_response(landing, media_type="text/html")
 
 
 @app.get("/__spinalfmriprep__/workfolders.json")
 async def workfolders_json():
-    return JSONResponse(_list_workfolders())
+    return JSONResponse(_list_workfolders(), headers=_NO_CACHE_HEADERS)
 
 
 @app.get("/{wf_name}/dashboard/{path:path}")
@@ -130,7 +166,7 @@ async def serve_wf_dashboard(wf_name: str, path: str):
     resolved = _safe_resolve(wf_dir / "dashboard", path)
     if resolved is None:
         return Response(status_code=404)
-    return FileResponse(resolved, media_type=_guess_media_type(resolved))
+    return _file_response(resolved)
 
 
 @app.get("/{wf_name}/derivatives/{path:path}")
@@ -142,7 +178,7 @@ async def serve_wf_derivatives(wf_name: str, path: str):
     resolved = _safe_resolve(wf_dir / "derivatives", path)
     if resolved is None:
         return Response(status_code=404)
-    return FileResponse(resolved, media_type=_guess_media_type(resolved))
+    return _file_response(resolved)
 
 
 @app.get("/dashboard/{path:path}")
@@ -154,7 +190,7 @@ async def serve_latest_dashboard(path: str):
     resolved = _safe_resolve(wf / "dashboard", path)
     if resolved is None:
         return Response(status_code=404)
-    return FileResponse(resolved, media_type=_guess_media_type(resolved))
+    return _file_response(resolved)
 
 
 @app.get("/derivatives/{path:path}")
@@ -166,7 +202,7 @@ async def serve_latest_derivatives(path: str):
     resolved = _safe_resolve(wf / "derivatives", path)
     if resolved is None:
         return Response(status_code=404)
-    return FileResponse(resolved, media_type=_guess_media_type(resolved))
+    return _file_response(resolved)
 
 
 if __name__ == "__main__":
