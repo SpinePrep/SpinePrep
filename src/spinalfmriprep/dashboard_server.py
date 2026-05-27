@@ -186,6 +186,21 @@ async def workfolders_json():
     return JSONResponse(_list_workfolders(), headers=_NO_CACHE_HEADERS)
 
 
+@app.get("/tutorial")
+@app.get("/tutorial/")
+async def tutorial_page():
+    """Self-contained tutorial: one section per step + core concept
+    reference (DVARS, DVARS-ref, Tukey rule, robust funcref, etc).
+    The page is plain HTML using the dashboard's dark palette; no
+    MathJax so it serves cleanly without external dependencies."""
+    from .tutorial import render_tutorial_html
+    return Response(
+        content=render_tutorial_html(),
+        media_type="text/html",
+        headers=_NO_CACHE_HEADERS,
+    )
+
+
 @app.get("/{wf_name}/dashboard")
 @app.get("/{wf_name}/dashboard/")
 async def serve_wf_dashboard_index(wf_name: str):

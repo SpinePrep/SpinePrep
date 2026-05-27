@@ -319,6 +319,12 @@ def _generate_index_html(
         " background: #1a1d23; border: 1px solid #2a2e36;"
         " padding: 2px 8px; border-radius: 3px; color: #9ca3af;"
         " font-size: 12px; }",
+        ".topbar .tutorial-chip { margin-left: auto; }",
+        ".topbar .tutorial-link { background: #1a1d23;"
+        " border: 1px solid #2a2e36; padding: 2px 10px;"
+        " border-radius: 3px; color: #7dcfff; font-size: 12px; }",
+        ".topbar .tutorial-link:hover { background: #2a2e36;"
+        " text-decoration: none; }",
         # Step rows
         ".step { display: grid; grid-template-columns: 220px 1fr;"
         " gap: 16px; padding: 10px 0; border-bottom: 1px solid #1a1d23;"
@@ -359,10 +365,24 @@ def _generate_index_html(
         "<body>",
     ]
 
-    # Topbar: single line — "QC · <wf_name_chip>"
+    # Topbar: single line — "QC · <wf_name_chip> · tutorial link".
+    # The tutorial link is mounted-prefix-aware: when served via the
+    # /p2 reverse proxy the absolute /p2/tutorial path is required;
+    # we compute it from window.location at click time via a tiny
+    # inline onclick so the same generated HTML works when opened
+    # directly off disk (file://...) too.
     wf_chip = f"<code class=\"wf\">{workfolder_name}</code>" if workfolder_name else ""
+    tutorial_link = (
+        "<a href=\"#\" class=\"tutorial-link\""
+        " onclick=\"event.preventDefault();"
+        " var m = window.location.pathname.match(/^(.*?)(?:\\/wf_[^/]+)?\\/dashboard/);"
+        " window.location.href = (m ? m[1] : '') + '/tutorial';\""
+        " title=\"Algorithms + metrics reference\">tutorial</a>"
+    )
     lines.append(
-        f"<div class=\"topbar\"><h1>SpinalfMRIprep QC</h1>{wf_chip}</div>"
+        f"<div class=\"topbar\"><h1>SpinalfMRIprep QC</h1>"
+        f"{wf_chip}<span class=\"tutorial-chip\">{tutorial_link}</span>"
+        f"</div>"
     )
 
     # Compact scope banner — only the current scope's card; other
