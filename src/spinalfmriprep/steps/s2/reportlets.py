@@ -1,36 +1,26 @@
-"""Reportlet orchestration: _render_reportlets_for_runs and _render_reportlets."""
+"""S2 reportlet orchestration — dispatches to the unified matplotlib
+renderer in `reportlets_unified.py`. Each per-run reportlet is one PNG:
+crop_box_sagittal, cordmask_montage, totalspineseg_montage,
+rootlets_montage, pam50_reg_overlay.
+"""
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Optional
 
-from .io import (
-    _abs_path,
-    _derivatives_figures_dir,
-    _format_reportlet_name,
-    _run_command,
-)
-from .reportlets_core import (
-    _copy_reportlet,
-    _write_not_available_panel,
-    _find_qc_overlay,
-    _find_qc_background,
-    _compose_overlay,
-)
-from .reportlets_montage import (
-    _render_crop_box_sagittal,
-    _render_cordmask_montage,
-)
-from .reportlets_tss import (
-    _render_totalspineseg_montage,
-    _render_rootlets_montage,
-)
-from .reportlets_pam50 import (
-    _render_pam50_reg_overlay_gif,
+from .io import _abs_path, _derivatives_figures_dir, _format_reportlet_name
+from .reportlets_unified import (
+    render_cordmask_montage,
+    render_crop_box_sagittal,
+    render_pam50_reg_overlay,
+    render_rootlets_montage,
+    render_totalspineseg_montage,
+    _warp_pam50_cord_to_anat,
 )
 
 
-def _render_reportlets_for_runs(runs: list[dict], out_root: Path, dataset_key: str) -> list[dict]:
+def _render_reportlets_for_runs(runs: list[dict], out_root: Path,
+                                  dataset_key: str) -> list[dict]:
     updated = []
     for run in runs:
         if run.get("status") != "PASS":
@@ -45,152 +35,132 @@ def _render_reportlets_for_runs(runs: list[dict], out_root: Path, dataset_key: s
     return updated
 
 
-def _render_reportlets(run: dict, out_root: Path, dataset_key: str) -> tuple[dict, Optional[str]]:
-    subject = run.get("subject")
+def _render_reportlets(run: dict, out_root: Path,
+                       dataset_key: str) -> tuple[dict, Optional[str]]:
+    subject = run.get("subject") or "?"
     session = run.get("session")
-    # Use dataset_key from run record if present, otherwise use passed dataset_key
     run_dataset_key = run.get("dataset_key", dataset_key)
-    figures_dir = _derivatives_figures_dir(out_root, subject, session, run_dataset_key)
+    status = run.get("status", "UNKNOWN")
+    metrics = run.get("metrics") or {}
+
+    figures_dir = _derivatives_figures_dir(out_root, subject, session,
+                                            run_dataset_key)
     figures_dir.mkdir(parents=True, exist_ok=True)
 
     cordref_path = _abs_path(out_root, run.get("cordref_path"))
     cordmask_path = _abs_path(out_root, run.get("cordmask_path"))
+    canal_path = _abs_path(out_root, run.get("canal_path"))
     vertebral_labels_path = _abs_path(out_root, run.get("vertebral_labels_path"))
     disc_labels_path = _abs_path(out_root, run.get("disc_labels_path"))
-    canal_path = _abs_path(out_root, run.get("canal_path"))
-    tss_output_path = _abs_path(out_root, run.get("tss_output_path"))
     rootlets_path = _abs_path(out_root, run.get("rootlets_path"))
-    reg_selected = run.get("registration", {}).get(run.get("registration", {}).get("selected", "disc"), {})
-    template2anat = reg_selected.get("template2anat")
-    if template2anat:
-        template2anat = Path(template2anat)
-    warp_template2anat = reg_selected.get("warp_template2anat")
-    if warp_template2anat:
-        warp_template2anat = Path(warp_template2anat)
+    tss_output_path = _abs_path(out_root, run.get("tss_output_path"))
 
-    reportlets: dict[str, Optional[str]] = {}
-    # Reportlets read the same work_dir the session writer used. session.py
-    # keys by dataset_key when present (work/S2_anat_cordref/<dk>/<run_id>/);
-    # fall back to the legacy unkeyed path for older runs.
+    reg = run.get("registration") or {}
+    selected_variant = reg.get("selected", "disc")
+    sel_reg = reg.get(selected_variant) or {}
+    warp_template2anat = sel_reg.get("warp_template2anat")
+    warp_template2anat = Path(warp_template2anat) if warp_template2anat else None
+
+    # Locate the S2 work dir for this run (carries cordref_std + discovery
+    # seg + crop_mask used by the crop_box reportlet).
     run_id = run.get("run_id", "unknown")
-    if run_dataset_key:
-        keyed_dir = out_root / "work" / "S2_anat_cordref" / run_dataset_key / run_id
-    else:
-        keyed_dir = None
-    unkeyed_dir = out_root / "work" / "S2_anat_cordref" / run_id
-    if keyed_dir is not None and (keyed_dir / "cordref_std.nii.gz").exists():
-        work_dir = keyed_dir
-    else:
-        work_dir = unkeyed_dir
-    qc_root = work_dir / "qc"
-
-    # S2.1: Discovery + Crop sagittal figure
+    keyed = out_root / "work" / "S2_anat_cordref" / run_dataset_key / run_id
+    unkeyed = out_root / "work" / "S2_anat_cordref" / run_id
+    work_dir = keyed if (keyed / "cordref_std.nii.gz").exists() else unkeyed
     cordref_std_path = work_dir / "cordref_std.nii.gz"
-    cordref_crop_path = work_dir / "cordref_crop.nii.gz"
     discovery_seg_path = work_dir / "cordmask_discovery.nii.gz"
     crop_mask_path_local = work_dir / "crop_mask.nii.gz"
-    crop_box_sagittal = _render_crop_box_sagittal(
-        qc_root=qc_root / "crop_box_sagittal",
+
+    reportlets: dict[str, Optional[str]] = {}
+
+    def _out(key: str) -> Path:
+        return figures_dir / _format_reportlet_name(subject, session, key)
+
+    def _rel(p: Path) -> str:
+        try:
+            return str(p.relative_to(out_root))
+        except ValueError:
+            return str(p)
+
+    # S2.1 — Discovery + Crop
+    p = _out("S2_crop_box_sagittal")
+    render_crop_box_sagittal(
+        output_path=p,
         cordref_std_path=cordref_std_path if cordref_std_path.exists() else None,
-        cordref_crop_path=cordref_crop_path if cordref_crop_path.exists() else None,
         discovery_seg_path=discovery_seg_path if discovery_seg_path.exists() else None,
         crop_mask_path=crop_mask_path_local if crop_mask_path_local.exists() else None,
+        subject=subject, dataset_key=run_dataset_key, status=status,
     )
-    reportlets["crop_box_sagittal"] = _copy_reportlet(
-        crop_box_sagittal,
-        figures_dir / _format_reportlet_name(subject, session, "S2_crop_box_sagittal"),
-        out_root,
-    )
+    reportlets["crop_box_sagittal"] = _rel(p) if p.exists() else None
 
-    cordmask_montage = _render_cordmask_montage(
-        qc_root=qc_root / "cordmask_montage",
-        image=cordref_path,
-        cordmask=cordmask_path,
+    # S2.2a — Cord seg
+    p = _out("S2_cordmask_montage")
+    render_cordmask_montage(
+        output_path=p,
+        cordref_path=cordref_path or cordref_std_path,
+        cordmask_path=cordmask_path,
+        subject=subject, dataset_key=run_dataset_key, status=status,
+        metrics=metrics,
     )
-    reportlets["cordmask_montage"] = _copy_reportlet(
-        cordmask_montage,
-        figures_dir / _format_reportlet_name(subject, session, "S2_cordmask_montage"),
-        out_root,
-    )
+    reportlets["cordmask_montage"] = _rel(p) if p.exists() else None
 
-    # TotalSpineSeg comprehensive visualization (vertebrae + discs + cord + canal)
+    # S2.2b — TotalSpineSeg
     tss_info = run.get("tss") or run.get("labels") or {}
-    tss_status = tss_info.get("status", "PASS")
-    if tss_status == "PASS" and tss_output_path is not None:
-        tss_montage_png = _render_totalspineseg_montage(
-            qc_root=qc_root / "totalspineseg_montage",
-            image=cordref_path,
+    if tss_info.get("status", "PASS") == "PASS":
+        p = _out("S2_totalspineseg_montage")
+        render_totalspineseg_montage(
+            output_path=p,
+            cordref_path=cordref_path or cordref_std_path,
+            cordmask_path=cordmask_path,
             tss_output_path=tss_output_path,
-            cord_path=cordmask_path,  # Use the contrast-agnostic cord segmentation
             canal_path=canal_path,
-        )
-        reportlets["totalspineseg_montage"] = _copy_reportlet(
-            tss_montage_png,
-            figures_dir / _format_reportlet_name(subject, session, "S2_totalspineseg_montage"),
-            out_root,
-        )
-    else:
-        reportlets["totalspineseg_montage"] = _write_not_available_panel(
-            figures_dir / _format_reportlet_name(subject, session, "S2_totalspineseg_montage"),
-            out_root,
-            "TotalSpineSeg not available",
-        )
-
-    reg_gif = None
-    if template2anat and warp_template2anat:
-        reg_gif = _render_pam50_reg_overlay_gif(
-            qc_root=qc_root / "pam50_reg_overlay",
-            subject_image=cordref_path,
-            pam50_in_s2=template2anat,
-            subject_cordmask=cordmask_path,
-            warp_template2anat=warp_template2anat,
-            subject_label=subject,
-            session_label=session,
             vertebral_labels_path=vertebral_labels_path,
+            disc_labels_path=disc_labels_path,
+            subject=subject, dataset_key=run_dataset_key, status=status,
+            metrics=metrics,
         )
-    reportlets["pam50_reg_overlay"] = _copy_reportlet(
-        reg_gif,
-        figures_dir / _format_reportlet_name(subject, session, "S2_pam50_reg_overlay", ext="gif"),
-        out_root,
-    )
-
-    rootlets_info = run.get("rootlets", {})
-    if rootlets_info.get("status") == "PASS" and rootlets_path:
-        rootlets_montage = _render_rootlets_montage(
-            qc_root=qc_root / "rootlets_montage",
-            image=cordref_path,
-            rootlets=rootlets_path,
-            vertebral_labels=vertebral_labels_path,
-            cordmask=cordmask_path,
-        )
-        if rootlets_montage is not None:
-            reportlets["rootlets_montage"] = _copy_reportlet(
-                rootlets_montage,
-                figures_dir / _format_reportlet_name(subject, session, "S2_rootlets_montage", ext="gif"),
-                out_root,
-            )
-        else:
-            reportlets["rootlets_montage"] = _write_not_available_panel(
-                figures_dir / _format_reportlet_name(subject, session, "S2_rootlets_montage"),
-                out_root,
-                "Rootlets montage not available",
-            )
+        reportlets["totalspineseg_montage"] = _rel(p) if p.exists() else None
     else:
-        reportlets["rootlets_montage"] = _write_not_available_panel(
-            figures_dir / _format_reportlet_name(subject, session, "S2_rootlets_montage"),
-            out_root,
-            "Rootlets not available",
-        )
+        reportlets["totalspineseg_montage"] = None
 
-    required = [
-        "cordmask_montage",
-        "totalspineseg_montage",
-        "pam50_reg_overlay",
-    ]
-    missing = [key for key in required if not reportlets.get(key)]
+    # S2.3 — Rootlets
+    rootlets_info = run.get("rootlets") or {}
+    if rootlets_info.get("status") == "PASS" and rootlets_path:
+        p = _out("S2_rootlets_montage")
+        render_rootlets_montage(
+            output_path=p,
+            cordref_path=cordref_path or cordref_std_path,
+            cordmask_path=cordmask_path,
+            rootlets_path=rootlets_path,
+            subject=subject, dataset_key=run_dataset_key, status=status,
+            metrics=metrics,
+        )
+        reportlets["rootlets_montage"] = _rel(p) if p.exists() else None
+    else:
+        reportlets["rootlets_montage"] = None
+
+    # S2.4 — PAM50 reg overlay
+    pam50_in_anat = None
+    if warp_template2anat and warp_template2anat.exists() and cordref_path:
+        pam50_in_anat = _warp_pam50_cord_to_anat(
+            warp_template2anat, cordref_path, work_dir / "pam50_overlay",
+        )
+    p = _out("S2_pam50_reg_overlay")
+    render_pam50_reg_overlay(
+        output_path=p,
+        cordref_path=cordref_path or cordref_std_path,
+        cordmask_path=cordmask_path,
+        pam50_cord_in_anat_path=pam50_in_anat,
+        subject=subject, dataset_key=run_dataset_key, status=status,
+        metrics=metrics,
+    )
+    reportlets["pam50_reg_overlay"] = _rel(p) if p.exists() else None
+
+    required = ["cordmask_montage", "totalspineseg_montage",
+                "pam50_reg_overlay"]
     if rootlets_info.get("status") == "PASS":
-        if not reportlets.get("rootlets_montage"):
-            missing.append("rootlets_montage")
+        required.append("rootlets_montage")
+    missing = [k for k in required if not reportlets.get(k)]
     if missing:
         return reportlets, f"Reportlet generation failed: {', '.join(missing)}"
     return reportlets, None
