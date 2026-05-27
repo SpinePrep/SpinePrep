@@ -86,3 +86,12 @@ rootlets:
 registration:
   template: PAM50
   prefer_rootlets: true
+
+# Step-local truth gate (CLAUDE.md dev principle §3). pam50_cord_dice
+# is 3D Dice between PAM50_cord warped to native anat space and the
+# native cord_dseg. Initial bands set conservatively; retune on the
+# 11-run reg cohort when v1 lock approaches.
+qc_thresholds:
+  pam50_cord_dice_pass_min: 0.80   # well-registered cord overlap
+  pam50_cord_dice_warn_min: 0.60   # below = WARN; below this is FAIL
+  min_vertebral_levels: 5          # already enforced in labeling.qc_thresholds
