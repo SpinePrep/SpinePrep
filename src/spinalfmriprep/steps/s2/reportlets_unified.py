@@ -211,22 +211,48 @@ def _add_header(fig, title: str, subtitle: str, status: str,
 
 def _add_footer(fig, legend_items: Iterable[tuple[str, str]],
                 metric_lines: Iterable[str] = ()) -> None:
-    """Footer strip with legend swatches (left) + metric strings (right)."""
+    """Footer strip with legend swatches (left) + metric strings (right).
+
+    Uses the matplotlib renderer to measure actual text widths so
+    legend items don't overlap — earlier per-character estimate
+    (`len(label) * 0.008`) underestimated proportional-font widths
+    and merged adjacent labels.
+    """
     ax = fig.add_axes((0.0, 0.0, 1.0, 0.06))
     ax.set_facecolor(_BG); ax.axis("off")
     ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+
+    # Pre-measure each label's rendered width in axes coords so we can
+    # advance x by the true width rather than guess from character count.
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    inv = ax.transAxes.inverted()
+    fontsize = 12
+
+    swatch_w = 0.016     # swatch rectangle width in axes coords
+    pad_after_swatch = 0.008
+    gap_between = 0.024
+
     x = 0.012
     for color, label in legend_items:
-        ax.add_patch(mpatches.Rectangle((x, 0.32), 0.016, 0.36,
-                                         facecolor=color, edgecolor="none",
-                                         transform=ax.transAxes))
-        ax.text(x + 0.022, 0.5, label, color=_TEXT, fontsize=12,
-                ha="left", va="center", transform=ax.transAxes)
-        x += 0.022 + 0.015 + len(label) * 0.008
-    # Right-side metric lines
+        ax.add_patch(mpatches.Rectangle(
+            (x, 0.32), swatch_w, 0.36,
+            facecolor=color, edgecolor="none",
+            transform=ax.transAxes,
+        ))
+        text_x = x + swatch_w + pad_after_swatch
+        t = ax.text(text_x, 0.5, label, color=_TEXT, fontsize=fontsize,
+                    ha="left", va="center", transform=ax.transAxes)
+        bbox = t.get_window_extent(renderer=renderer)
+        # Width in display coords → convert to axes coords
+        x0, _ = inv.transform((bbox.x0, 0))
+        x1, _ = inv.transform((bbox.x1, 0))
+        label_w = max(0.0, x1 - x0)
+        x = text_x + label_w + gap_between
+
     metrics_str = "    ".join(metric_lines)
     if metrics_str:
-        ax.text(0.988, 0.5, metrics_str, color=_TEXT, fontsize=12,
+        ax.text(0.988, 0.5, metrics_str, color=_TEXT, fontsize=fontsize,
                 family="monospace", ha="right", va="center",
                 transform=ax.transAxes)
 
