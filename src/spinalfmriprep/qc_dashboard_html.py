@@ -526,34 +526,32 @@ def _generate_reportlet_gallery_html(
             session_str = f" / {session}" if session else ""
             label_str = f"{subject}{session_str}"
 
-            lines.append("<div class=\"card\">")
-            # Get mtime for cache busting
             try:
                  mtime = int(path_abs.stat().st_mtime)
             except OSError:
                  mtime = 0
 
-            # HTML reportlets (e.g. S1 dataset_summary) render as a link
-            # card, not an <img>. Rasterizing tabular reports is wrong;
-            # we show a header + "open report" link instead.
+            # HTML reportlets (e.g. S1 dataset_summary) embed inline as
+            # an iframe at full width — the report is just plain tables,
+            # no reason to constrain to a 400px image card.
             is_html = str(path_abs).lower().endswith((".html", ".htm"))
             if is_html:
                 lines.append(
-                    f"<a href=\"{reportlet_rel}?v={mtime}\" "
-                    f"target=\"_blank\" "
-                    f"style=\"display:block;padding:24px;text-align:center;"
-                    f"background:#1a1d23;border:1px solid #2a2e36;"
-                    f"border-radius:4px;color:#7dcfff;text-decoration:none;\">"
-                    f"📄 Open report &rarr;</a>"
+                    f"<div style=\"flex:1 1 100%;max-width:100%;\">"
+                    f"<iframe src=\"{reportlet_rel}?v={mtime}\" "
+                    f"style=\"width:100%;height:420px;border:1px solid #333;"
+                    f"border-radius:4px;background:#0f1115;\"></iframe>"
+                    f"</div>"
                 )
             else:
+                lines.append("<div class=\"card\">")
                 lines.append(f"<img src=\"{reportlet_rel}?v={mtime}\" alt=\"{dataset} / {label_str}\" />")
-            lines.append("<div class=\"card-info\">")
-            lines.append(f"<span class=\"status-badge status-{status}\">{status}</span>")
-            lines.append(f"<span>{label_str}</span><br/>")
-            lines.append(f"<span style=\"color: #999; font-size: 0.85em;\">{path_rel_display}</span>")
-            lines.append("</div>")
-            lines.append("</div>")
+                lines.append("<div class=\"card-info\">")
+                lines.append(f"<span class=\"status-badge status-{status}\">{status}</span>")
+                lines.append(f"<span>{label_str}</span><br/>")
+                lines.append(f"<span style=\"color: #999; font-size: 0.85em;\">{path_rel_display}</span>")
+                lines.append("</div>")
+                lines.append("</div>")
 
         lines.append("</div>")  # Close gallery
         lines.append("</div>")  # Close dataset-section
