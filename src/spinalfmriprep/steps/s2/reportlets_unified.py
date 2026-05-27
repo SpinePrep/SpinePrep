@@ -288,30 +288,44 @@ def _orient_marker(ax, label_left: str = "R", label_right: str = "L") -> None:
 
 
 def _render_axial_tile(
-    ax, slice_xy: np.ndarray, overlays: list[tuple[np.ndarray, str, float]],
+    ax, slice_xy: np.ndarray,
+    overlays: list,  # tuples of (mask, color, linewidth) or (mask, color, lw, alpha)
     vmin: float, vmax: float, z_idx: int, first: bool = False,
     crop: Optional[tuple[int, int, int, int]] = None,
 ) -> None:
-    """Render one axial tile: anat slice in grayscale + contour overlays.
+    """Render one axial tile: anat slice in grayscale + overlays.
 
-    overlays = list of (binary_mask_2d, color_hex, linewidth).
-    Cropping the slice to the cord bbox (in voxels) is done by the caller.
+    overlay tuple = (binary_mask_2d, color_hex, linewidth) for contour-only,
+    or (binary_mask_2d, color_hex, linewidth, fill_alpha) for filled +
+    contour. fill_alpha=0 ⇒ contour only.
     """
     if crop is not None:
         x0, x1, y0, y1 = crop
         slice_xy = slice_xy[x0:x1, y0:y1]
-        overlays_cropped = [(m[x0:x1, y0:y1], c, lw) for m, c, lw in overlays]
+        overlays_cropped = []
+        for ov in overlays:
+            m = ov[0][x0:x1, y0:y1]
+            overlays_cropped.append((m, *ov[1:]))
     else:
         overlays_cropped = overlays
-    # Display: rotate 90° so X (R-L) is horizontal and Y (A-P) is vertical
     disp = np.rot90(slice_xy)
     ax.imshow(disp, cmap="gray", vmin=vmin, vmax=vmax,
               interpolation="bilinear", aspect="equal")
-    for m, color, lw in overlays_cropped:
+    for ov in overlays_cropped:
+        m, color, lw = ov[0], ov[1], ov[2]
+        fill_alpha = ov[3] if len(ov) > 3 else 0.0
         m_rot = np.rot90(m.astype(bool))
-        if m_rot.any():
+        if not m_rot.any():
+            continue
+        if fill_alpha > 0:
+            rgba = np.zeros((*m_rot.shape, 4))
+            rgb = matplotlib.colors.to_rgb(color)
+            rgba[..., 0] = rgb[0]; rgba[..., 1] = rgb[1]; rgba[..., 2] = rgb[2]
+            rgba[..., 3] = m_rot.astype(float) * fill_alpha
+            ax.imshow(rgba, interpolation="nearest", aspect="equal")
+        if lw > 0:
             ax.contour(m_rot, levels=[0.5], colors=[color],
-                       linewidths=lw, alpha=0.9)
+                       linewidths=lw, alpha=0.95)
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values():
         s.set_color(_BORDER); s.set_linewidth(0.8)
@@ -662,6 +676,7 @@ def render_cordmask_montage(
             axial_overlays_factory=axial_overlays,
             legend_items=[(_C_CORD, "cord seg")],
             metric_lines=metric_lines,
+            axial_window_vox=(28, 28),  # extra context around the cord
         )
     except Exception as e:
         _stub_figure(output_path, f"cordmask render failed: {e}")
@@ -737,13 +752,18 @@ def render_totalspineseg_montage(
             sag_overlays.append((disc_mask[x_mid, :, :], _C_DISC, 0.45, 0.0))
 
         def axial_overlays(z):
-            ov = [(cord_mask[:, :, z], _C_CORD, 1.2)]
-            if canal_mask is not None:
-                ov.append((canal_mask[:, :, z], _C_CANAL, 1.0))
+            # Tuple format: (mask, color, contour_lw, fill_alpha).
+            # Cord stays as contour-only (its boundary is the truth).
+            # Canal / vertebrae / discs get filled overlays so they're
+            # visually distinct from each other even when they overlap
+            # the cord region.
+            ov: list = [(cord_mask[:, :, z], _C_CORD, 1.6, 0.0)]
             if vert_mask is not None:
-                ov.append((vert_mask[:, :, z], "#22c55e", 0.8))
+                ov.append((vert_mask[:, :, z], "#22c55e", 1.4, 0.22))
             if disc_mask is not None:
-                ov.append((disc_mask[:, :, z], _C_DISC, 0.8))
+                ov.append((disc_mask[:, :, z], _C_DISC, 1.4, 0.35))
+            if canal_mask is not None:
+                ov.append((canal_mask[:, :, z], _C_CANAL, 1.4, 0.25))
             return ov
 
         m = metrics or {}
@@ -776,6 +796,10 @@ def render_totalspineseg_montage(
             ],
             metric_lines=metric_lines,
             z_label_levels=z_labels,
+            # TSS needs to show vertebra body (anterior, ~10-20 vox from
+            # cord) + canal (around cord) + cord. Widen axial window so
+            # all structures fit with margin.
+            axial_window_vox=(44, 44),
         )
     except Exception as e:
         _stub_figure(output_path, f"totalspineseg render failed: {e}")
