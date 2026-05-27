@@ -806,6 +806,24 @@ def render_rootlets_montage(
     status: str = "UNKNOWN",
     metrics: Optional[dict] = None,
 ) -> None:
+    """S2.3 dorsal rootlets — rootlet-aware layout.
+
+    Rootlets are tiny (typical 5-80 voxels per level total) and sparse
+    in Z (each level spans 6-15 slices). The standard cord-axial
+    layout misses them entirely because (a) uniform Z picks miss
+    rootlet-bearing slices, (b) thin contours on 5-vox masks are
+    invisible, (c) a cord-centered 22×22 crop puts rootlets at the
+    edge.
+
+    This renderer:
+      - Picks ONE Z per detected rootlet level at that level's median Z.
+      - Projects each tile across a ±3 voxel Z slab to maximize visible
+        rootlet voxels.
+      - Crop centered between cord centroid and the slab's rootlet
+        centroid so rootlets sit clearly in-frame.
+      - Dilated filled rootlet overlay (alpha 0.85) for visibility.
+      - Wider 30×30 voxel window.
+    """
     try:
         if not cordref_path.exists():
             _stub_figure(output_path, "cordref missing")
@@ -829,58 +847,209 @@ def render_rootlets_montage(
             _stub_figure(output_path, "Rootlets file has no nonzero labels")
             return
 
-        # Rainbow color per level
+        from scipy.ndimage import binary_dilation
+
         cmap = plt.get_cmap("turbo")
         level_colors = {
             lab: matplotlib.colors.to_hex(cmap(i / max(len(unique) - 1, 1)))
             for i, lab in enumerate(unique)
         }
-        rootlets_all = roots > 0
 
-        x_mid = _midcord_sagittal_slice(cord_mask)
-        # Pass 3D masks so the slab projection (sag_slab_halfwidth_x) can
-        # widen them across X. Rootlets are dorsal to the cord centerline,
-        # so a single-voxel sagittal slice misses them.
-        sag_overlays = [(cord_mask[x_mid, :, :], _C_CORD, 0.0, 1.0)]
+        # Per-level median Z and per-level rootlet centroid (X, Y)
+        level_info: list[dict] = []
+        nx, ny, nz = roots.shape
         for lab in unique:
+            mask_3d = roots == lab
+            if not mask_3d.any():
+                continue
+            zs = np.where(mask_3d.any(axis=(0, 1)))[0]
+            z_med = int(np.median(zs))
+            coords = np.argwhere(mask_3d)
+            level_info.append({
+                "lab": lab,
+                "z": z_med,
+                "cx": int(round(float(coords[:, 0].mean()))),
+                "cy": int(round(float(coords[:, 1].mean()))),
+                "color": level_colors[lab],
+            })
+
+        # Sagittal panel: wide slab across X so off-midline rootlets project in.
+        x_mid = _midcord_sagittal_slice(cord_mask)
+        sag_overlays: list[tuple[np.ndarray, str, float, float]] = [
+            (cord_mask[x_mid, :, :], _C_CORD, 0.0, 1.2),
+        ]
+        for info in level_info:
             sag_overlays.append(
-                ((roots == lab), level_colors[lab], 0.75, 0.0)
+                ((roots == info["lab"]), info["color"], 0.85, 0.0)
             )
 
+        # Custom layout: one axial tile per rootlet level, picks at
+        # that level's median Z. Use the shared layout for the
+        # sagittal + header + footer, but pass rootlet-aware z_picks
+        # and overlay factory.
+        n_tiles = len(level_info)
+        if n_tiles == 0:
+            _stub_figure(output_path, "No rootlet level voxels")
+            return
+
+        slab_halfwidth_z = 3
+
         def axial_overlays(z):
-            ov = [(cord_mask[:, :, z], _C_CORD, 1.0)]
-            for lab in unique:
-                m_xy = (roots == lab)[:, :, z]
-                if m_xy.any():
-                    ov.append((m_xy, level_colors[lab], 1.2))
+            """Per-tile overlays: cord contour + filled+dilated rootlets
+            projected across ±slab_halfwidth_z in Z."""
+            z_lo = max(0, z - slab_halfwidth_z)
+            z_hi = min(nz, z + slab_halfwidth_z + 1)
+            cord_slab = cord_mask[:, :, z_lo:z_hi].any(axis=2)
+            ov: list[tuple[np.ndarray, str, float]] = [
+                (cord_slab, _C_CORD, 1.4),
+            ]
+            for info in level_info:
+                slab_xy = (roots[:, :, z_lo:z_hi] == info["lab"]).any(axis=2)
+                if not slab_xy.any():
+                    continue
+                # Dilate 1 voxel for visibility on tiny clusters
+                slab_xy_dilated = binary_dilation(slab_xy, iterations=1)
+                ov.append((slab_xy_dilated, info["color"], 2.4))
             return ov
 
         m = metrics or {}
         n_lvl = len(unique)
         metric_header = f"{n_lvl} rootlet levels"
+        legend_items: list[tuple[str, str]] = [(_C_CORD, "cord")]
+        for info in level_info:
+            legend_items.append(
+                (info["color"], _rootlet_level_name(info["lab"]))
+            )
 
-        # Legend: show first / last detected level
-        legend_items = [(_C_CORD, "cord")]
-        # Mark each level with a swatch
-        for lab in unique:
-            legend_items.append((level_colors[lab], _rootlet_level_name(lab)))
-
-        _render_sagittal_plus_montage(
+        # We need per-tile crops centered on (cord_centroid + rootlet)
+        # midpoint so dorsal rootlets sit clearly inside the window.
+        _render_rootlets_custom_layout(
             output_path=output_path,
             title="S2.3 — Dorsal rootlets",
             subtitle=f"sub-{subject} • {dataset_key}",
-            status=status, metric_header=metric_header,
-            anat=anat, cord_mask=cord_mask,
+            status=status,
+            metric_header=metric_header,
+            anat=anat,
+            cord_mask=cord_mask,
+            roots=roots,
+            level_info=level_info,
+            slab_halfwidth_z=slab_halfwidth_z,
             sag_overlays=sag_overlays,
             axial_overlays_factory=axial_overlays,
             legend_items=legend_items,
-            metric_lines=[],
-            # Rootlets project laterally ~7-10 voxels from cord midline
-            # (dorsal entry zones). Use a wide slab so they show up.
             sag_slab_halfwidth_x=15,
+            axial_window_vox=(30, 30),
         )
     except Exception as e:
         _stub_figure(output_path, f"rootlets render failed: {e}")
+
+
+def _render_rootlets_custom_layout(
+    output_path: Path,
+    title: str,
+    subtitle: str,
+    status: str,
+    metric_header: Optional[str],
+    anat: np.ndarray,
+    cord_mask: np.ndarray,
+    roots: np.ndarray,
+    level_info: list[dict],
+    slab_halfwidth_z: int,
+    sag_overlays: list[tuple[np.ndarray, str, float, float]],
+    axial_overlays_factory,
+    legend_items: list[tuple[str, str]],
+    sag_slab_halfwidth_x: int = 15,
+    axial_window_vox: tuple[int, int] = (30, 30),
+) -> None:
+    """Rootlets-specific layout: one tile per detected level, per-tile
+    crop centered between cord and rootlet centroids."""
+    x_mid = _midcord_sagittal_slice(cord_mask)
+
+    k = max(0, int(sag_slab_halfwidth_x))
+    x_lo, x_hi = max(0, x_mid - k), min(anat.shape[0], x_mid + k + 1)
+    sag = anat[x_lo:x_hi, :, :].max(axis=0)
+    sag_overlays_slab: list[tuple[np.ndarray, str, float, float]] = []
+    for m, color, alpha, lw in sag_overlays:
+        if m.ndim == 2:
+            sag_overlays_slab.append((m, color, alpha, lw))
+        else:
+            sag_overlays_slab.append(
+                (m[x_lo:x_hi, :, :].any(axis=0), color, alpha, lw))
+    vmin_sag, vmax_sag = _intensity_window(sag)
+
+    # Axial intensity windowing from a mid-cord slice
+    z_mid_cord = int(np.median(np.argwhere(cord_mask)[:, 2]))
+    vmin_ax, vmax_ax = _intensity_window(anat[:, :, z_mid_cord])
+
+    fig = _layout_figure(16.0, 9.0)
+    _add_header(fig, title, subtitle, status, metric_header)
+
+    ax_sag = fig.add_axes((0.025, 0.10, 0.36, 0.80))
+    ax_sag.set_facecolor(_BG)
+    _render_sagittal(ax_sag, sag, sag_overlays_slab, vmin_sag, vmax_sag)
+
+    # Axial grid: one tile per detected level
+    n_tiles = len(level_info)
+    n_cols = 2
+    n_rows = (n_tiles + n_cols - 1) // n_cols
+    grid_x0 = 0.42
+    grid_x1 = 0.985
+    grid_y0 = 0.10
+    grid_y1 = 0.90
+    cell_w = (grid_x1 - grid_x0) / n_cols
+    cell_h = (grid_y1 - grid_y0) / n_rows
+
+    # Sort levels by Z descending so top row = superior
+    levels_sorted = sorted(level_info, key=lambda d: d["z"], reverse=True)
+
+    hx, hy = axial_window_vox
+    nx, ny = cord_mask.shape[:2]
+    for i, info in enumerate(levels_sorted):
+        row = i // n_cols
+        col = i % n_cols
+        ax = fig.add_axes((
+            grid_x0 + col * cell_w + cell_w * 0.04,
+            grid_y0 + (n_rows - 1 - row) * cell_h + cell_h * 0.04,
+            cell_w * 0.92, cell_h * 0.92,
+        ))
+        ax.set_facecolor(_BG)
+
+        # Per-tile crop centered on midpoint between cord centroid (this Z)
+        # and rootlet centroid (this level), so dorsal rootlets sit
+        # clearly inside the frame.
+        z = info["z"]
+        cord_slab = cord_mask[:, :, max(0, z-slab_halfwidth_z):min(cord_mask.shape[2], z+slab_halfwidth_z+1)].any(axis=2)
+        if cord_slab.any():
+            cord_xs, cord_ys = np.nonzero(cord_slab)
+            cord_cx = int(round(float(cord_xs.mean())))
+            cord_cy = int(round(float(cord_ys.mean())))
+        else:
+            cord_cx, cord_cy = nx // 2, ny // 2
+        # Midpoint between cord and rootlet
+        cx = (cord_cx + info["cx"]) // 2
+        cy = (cord_cy + info["cy"]) // 2
+        x0 = max(0, cx - hx // 2); x1 = min(nx, x0 + hx); x0 = max(0, x1 - hx)
+        y0 = max(0, cy - hy // 2); y1 = min(ny, y0 + hy); y0 = max(0, y1 - hy)
+        tile_crop = (x0, x1, y0, y1)
+
+        overlays = axial_overlays_factory(z)
+        _render_axial_tile(ax, anat[:, :, z], overlays,
+                            vmin_ax, vmax_ax, z, first=(i == 0),
+                            crop=tile_crop)
+        # Level label badge in top-left of each tile
+        ax.text(0.06, 0.92,
+                _rootlet_level_name(info["lab"]),
+                transform=ax.transAxes,
+                color=info["color"], fontsize=13, fontweight="bold",
+                ha="left", va="top",
+                bbox=dict(facecolor="black", alpha=0.65,
+                          edgecolor="none", boxstyle="round,pad=0.25"))
+
+    _add_footer(fig, legend_items, [])
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=130, facecolor=_BG,
+                bbox_inches="tight", pad_inches=0.05)
+    plt.close(fig)
 
 
 def _rootlet_level_name(v: int) -> str:
