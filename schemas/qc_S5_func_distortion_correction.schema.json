@@ -148,7 +148,27 @@
                 "description": "dice_mean_after − dice_mean_before (positive = improvement)"
               },
               "voxsize_y_mm": {"type": ["number", "null"]},
-              "n_slices_evaluated": {"type": ["integer", "null"]}
+              "n_slices_evaluated": {"type": ["integer", "null"]},
+              "orient_axcodes": {
+                "type": ["string", "null"],
+                "description": "Affine-derived axis codes of the BOLD (e.g. 'RAS', 'LPI'); used to locate the A-P axis for centroid extraction."
+              },
+              "ap_axis_index": {
+                "type": ["integer", "null"],
+                "description": "0-based BOLD voxel-axis index that maps to anterior-posterior (typically 1 for RAS-like BOLD)."
+              },
+              "smooth_window": {
+                "type": ["integer", "null"],
+                "description": "Savitzky-Golay window length applied to the per-slice Y(z) cord-centroid trace."
+              },
+              "smooth_poly_order": {
+                "type": ["integer", "null"],
+                "description": "Savitzky-Golay polynomial order applied alongside `smooth_window`."
+              },
+              "min_voxels_per_slice": {
+                "type": ["integer", "null"],
+                "description": "Floor on cord voxels per slice for inclusion in centroid/Dice traces."
+              }
             }
           },
           "failure_reasons": {

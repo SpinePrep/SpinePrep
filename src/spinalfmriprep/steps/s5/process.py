@@ -16,6 +16,7 @@ import nibabel as nib
 import numpy as np
 
 from spinalfmriprep.lib.run import run_command as _run_command
+from .mode import _pe_from_run
 
 
 _ANTS_DOCKER_IMAGE = "vnmd/ants_2.6.0:20250424"
@@ -100,18 +101,26 @@ def _trt_for(run: dict, bids_root: Optional[Path] = None) -> Optional[float]:
 
 def _bold_pe_index_in_acqparams(
     bold_pe: str, fmap_pes: list[str]
-) -> int:
+) -> Optional[int]:
     """applytopup --inindex (1-based) of the acqparams row whose PE matches
-    the BOLD's PE direction. Spec §S5.2 step 4."""
+    the BOLD's PE direction. Spec §S5.2 step 4.
+
+    Returns None when the BOLD's PE axis doesn't match any fmap row
+    (e.g. axial BOLD with PE=`i` but fmap pair acquired on the `j`
+    axis). Audit-v2 Finding 5: previously this silently returned 1,
+    which let applytopup apply a field estimated for the wrong axis
+    — caller must now FAIL explicitly so the run drops through to SyN
+    instead of producing a silently mis-corrected BOLD.
+    """
     for i, pe in enumerate(fmap_pes, start=1):
         if pe == bold_pe:
             return i
-    # Defensive: when the BOLD PE doesn't exactly match either fmap row
-    # (e.g. j vs j-), use the first row whose axis matches.
+    # Same axis, opposite polarity — still applicable (applytopup uses
+    # the row's PE sign to determine field application direction).
     for i, pe in enumerate(fmap_pes, start=1):
         if pe and pe.rstrip("-") == bold_pe.rstrip("-"):
             return i
-    return 1  # last resort
+    return None
 
 
 def _write_acqparams(
@@ -169,7 +178,6 @@ def _run_topup(
         return {"status": "FAIL", "mode": "topup",
                 "failure_message": "TotalReadoutTime not in BIDS sidecar"}
 
-    from .mode import _pe_from_run
     fmap_paths = [bids_root / f["path"] for f in fmap_runs]
     fmap_pes = [_pe_from_run(f) for f in fmap_runs]
     if any(pe is None for pe in fmap_pes):
@@ -222,6 +230,13 @@ def _run_topup(
 
     bold_pe = _pe_from_run(bold_run) or "j"  # safe default for cervical EPI
     inindex = _bold_pe_index_in_acqparams(bold_pe, fmap_pes)
+    if inindex is None:
+        return {"status": "FAIL", "mode": "topup",
+                "failure_message": (
+                    f"BOLD PhaseEncodingDirection {bold_pe!r} does not "
+                    f"match any fmap row PE {fmap_pes!r} (axis mismatch). "
+                    f"Topup-estimated field would be applied along the "
+                    f"wrong axis. Falling back to SyN.")}
     apply_method = policy.get("distortion_correction", {}).get(
         "topup", {}).get("apply_method", "jac")
 
@@ -252,6 +267,24 @@ def _run_fugue(*args, **kwargs) -> dict[str, Any]:
             "failure_message": "FUGUE mode not implemented in v1.0 - falls back to SyN"}
 
 
+def _pe_axis_to_restrict_vec(pe: Optional[str]) -> str:
+    """Map BIDS PhaseEncodingDirection (e.g. "j-") to an ANTs
+    --restrict-deformation 3-vector.
+
+    EPI susceptibility distortion is fundamentally 1-D along the
+    phase-encoding axis (Andersson 2003, Treiber 2016). fMRIPrep's
+    SDCFlows `syn_sdc` workflow restricts the SyN warp accordingly.
+
+    Default to A-P (`0x1x0`) when PE is unknown: this matches our
+    typical axial cervical cord EPI (PE=`j-`, A→P), and is safer
+    than allowing free deformation in all three dimensions.
+    """
+    if not pe:
+        return "0x1x0"
+    axis = pe.rstrip("-").lower()
+    return {"i": "1x0x0", "j": "0x1x0", "k": "0x0x1"}.get(axis, "0x1x0")
+
+
 def _run_syn(
     bold_path: Path,
     anat_path: Path,
@@ -261,9 +294,10 @@ def _run_syn(
     policy: dict,
     bold_space_cord_mask: Optional[Path] = None,
     anat_in_bold: Optional[Path] = None,
+    bold_run: Optional[dict] = None,
 ) -> dict[str, Any]:
     """Mode = SyN fallback. Light cord-mask-restricted SyN of mean(BOLD)
-    to T2w anat. Spec §S5.4.
+    to T2w anat, with deformation restricted to the PE axis. Spec §S5.4.
 
     Operates entirely in BOLD geometry so the output preserves BOLD shape
     for downstream consumers (S6+) and reportlets. Caller passes
@@ -288,23 +322,32 @@ def _run_syn(
         return {"status": "FAIL", "mode": "syn",
                 "failure_message": "anat_in_bold missing (caller must resample)"}
 
-    # Prefer a BOLD-space cord mask. Fall back to resampling the anat-space
-    # cord mask onto BOLD geometry (nearest-neighbour to keep it binary).
-    if bold_space_cord_mask is not None and bold_space_cord_mask.exists():
-        syn_mask = bold_space_cord_mask
-    else:
-        syn_mask = work_dir / "cord_mask_in_bold.nii.gz"
+    # Cord-mask priority (audit-v2 Finding 3): the published recipe
+    # (Treiber 2016 / CoSpine) restricts the SyN cost to the cord
+    # SEGMENTATION proper. S3.1's `funccrop_mask` is the 60 mm crop
+    # CYLINDER — wider than the cord, includes CSF + surrounding tissue.
+    # So prefer the resampled anat cord_dseg as the registration mask;
+    # use funccrop_mask only as a defensive fallback.
+    syn_mask: Optional[Path] = None
+    if cord_mask_path is not None and Path(cord_mask_path).exists():
+        candidate = work_dir / "cord_mask_in_bold.nii.gz"
         ok, out = _run_command([
             "flirt",
             "-in", str(cord_mask_path),
             "-ref", str(mean_path),
             "-applyxfm", "-usesqform",
             "-interp", "nearestneighbour",
-            "-out", str(syn_mask),
+            "-out", str(candidate),
         ])
-        if not ok:
-            return {"status": "FAIL", "mode": "syn",
-                    "failure_message": f"flirt mask->bold failed: {out[:240]}"}
+        if ok and candidate.exists():
+            syn_mask = candidate
+    if syn_mask is None and bold_space_cord_mask is not None and bold_space_cord_mask.exists():
+        syn_mask = bold_space_cord_mask
+    if syn_mask is None:
+        return {"status": "FAIL", "mode": "syn",
+                "failure_message": (
+                    "no cord mask available for SyN restriction "
+                    "(both anat cord_dseg flirt and bold-space funccrop_mask failed)")}
 
     syn_cfg = policy.get("distortion_correction", {}).get("syn", {})
     transform = syn_cfg.get("transform", "SyN[0.1,3,0]")
@@ -313,6 +356,11 @@ def _run_syn(
     metric_args = (
         f"MI[{anat_in_bold},{mean_path},1,{syn_cfg.get('bin_count', 32)}]"
     )
+    # Restrict deformation to the PE axis (audit-v2 Finding 1) — EPI
+    # distortion is 1-D along PE; deforming in non-PE axes inside the
+    # cord mask is non-physical and burns convergence budget.
+    pe = _pe_from_run(bold_run) if bold_run else None
+    restrict_vec = _pe_axis_to_restrict_vec(pe)
     out_prefix = work_dir / "syn_"
 
     cmd_reg = _ants_command([
@@ -325,6 +373,7 @@ def _run_syn(
         "--shrink-factors", shrink,
         "--smoothing-sigmas", smoothing,
         "--masks", f"[{syn_mask},{syn_mask}]",
+        "--restrict-deformation", restrict_vec,
         "--output", str(out_prefix),
     ])
     ok, out = _run_command(cmd_reg)
@@ -590,8 +639,9 @@ def _compute_cospine_metrics(
     anat_intensity_path: Optional[Path],
     anat_cord_mask_path: Optional[Path],
     work_dir: Path,
-    min_voxels_per_slice: int = 3,
+    min_voxels_per_slice: int = 5,
     smooth_window: int = 5,
+    smooth_poly_order: int = 2,
 ) -> dict[str, Any]:
     """Per-Z A–P cord-centerline displacement and 2D cord-Dice, Before
     and After distortion correction. Closely follows CoSpine
@@ -710,9 +760,9 @@ def _compute_cospine_metrics(
     # Polynomial smoothing along Z, NaN-preserving. This removes finite-
     # voxel sampling jitter while preserving distortion variation, which
     # has a spatial scale of several slices.
-    y_anat_s = np.asarray(_smooth_trace(y_anat.tolist(), smooth_window))
-    y_b_s = np.asarray(_smooth_trace(y_b.tolist(), smooth_window))
-    y_a_s = np.asarray(_smooth_trace(y_a.tolist(), smooth_window))
+    y_anat_s = np.asarray(_smooth_trace(y_anat.tolist(), smooth_window, smooth_poly_order))
+    y_b_s = np.asarray(_smooth_trace(y_b.tolist(), smooth_window, smooth_poly_order))
+    y_a_s = np.asarray(_smooth_trace(y_a.tolist(), smooth_window, smooth_poly_order))
 
     # 5. Per-slice displacement + Dice on the Z range where the anat
     # reference and at least one of the EPI segs is valid.
@@ -807,6 +857,7 @@ def _compute_cospine_metrics(
     out["orient_axcodes"] = "".join(axcodes)
     out["ap_axis_index"] = int(ap_axis)
     out["smooth_window"] = int(smooth_window)
+    out["smooth_poly_order"] = int(smooth_poly_order)
     out["min_voxels_per_slice"] = int(min_voxels_per_slice)
     return out
 
@@ -835,9 +886,15 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
 
     skip = metrics.get("cospine_skip_reason")
     if skip:
+        # Audit-v2 Finding 4: when CoSpine geometric metrics couldn't
+        # compute, we have no geometric evidence of correction quality.
+        # MI alone (dominated by background air on cord-cropped data)
+        # is not a sufficient PASS criterion — force at least WARN.
         reasons.append(f"CoSpine metrics skipped: {skip}")
         if mi_delta is not None and mi_delta < 0:
             reasons.append(f"MI did not improve ({mi_delta:+.1f}%)")
+        else:
+            reasons.append("MI delta is not a geometric quality signal")
     else:
         dice_a = metrics.get("dice_mean_after")
         dice_b = metrics.get("dice_mean_before")
@@ -985,6 +1042,11 @@ def run_S5_func_distortion_correction(
             out_undistorted=out_undistorted,
             policy=policy,
         )
+        # Topup may legitimately fail when BOLD PE doesn't match fmap
+        # axis (audit-v2 Finding 5). Fall through to SyN rather than
+        # leaving the run un-corrected.
+        if modeinfo.get("status") != "OK":
+            mode = "syn"
     elif mode == "fugue":
         modeinfo = _run_fugue()
         # Fall through to SyN on fugue not-implemented
@@ -1014,6 +1076,7 @@ def run_S5_func_distortion_correction(
             policy=policy,
             bold_space_cord_mask=bold_space_cord_mask,
             anat_in_bold=anat_in_bold,
+            bold_run=bold_run,
         )
 
     if modeinfo.get("status") != "OK":
@@ -1050,9 +1113,11 @@ def run_S5_func_distortion_correction(
         anat_cord_mask_path=cord_mask_path,
         work_dir=s5_work_dir / "cospine",
         min_voxels_per_slice=int(cospine_thresholds.get(
-            "cospine_min_voxels_per_slice", 3)),
+            "cospine_min_voxels_per_slice", 5)),
         smooth_window=int(cospine_thresholds.get(
             "cospine_smooth_window", 5)),
+        smooth_poly_order=int(cospine_thresholds.get(
+            "cospine_smooth_poly_order", 2)),
     )
     metrics.update(cospine)
 
