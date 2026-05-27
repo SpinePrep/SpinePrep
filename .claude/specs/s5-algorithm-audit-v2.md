@@ -1,0 +1,362 @@
+---
+status: approved
+supersedes: none
+extends: s5-algorithm-audit.md
+---
+
+# S5 algorithm audit v2 — deep second pass
+
+Follow-up to [s5-algorithm-audit.md](s5-algorithm-audit.md). The v1
+audit (commit `8e57000`) covered the architecture, mode ladder, topup
+config, SyN parameters at the top level, and CoSpine effectiveness
+metrics. This v2 pass digs deeper at the implementation level:
+ANTs flags vs Treiber 2016 / SDCFlows defaults, IO edge cases in mode
+dispatch, mask selection inside SyN, cohort empirics, and small
+correctness gaps.
+
+**Headline v2 verdict**: S5 remains correct and well-aligned with the
+field. Three implementation-level findings warrant action; the rest
+are documented-as-acceptable.
+
+## v1 findings carried forward
+
+These remain open from v1 (unchanged in this pass):
+
+1. FUGUE not implemented; falls back to SyN. (deferred to v1.1)
+2. Anat→BOLD-after rigid uses SCT cord-seg-driven instead of
+   CoSpine's FLIRT 6-DOF. (defensible; head-to-head test deferred)
+3. Savitzky-Golay smoothing of Y(z) is a pipeline contribution, not
+   in CoSpine. (defensible; spatial-scale argument holds)
+
+## New findings in v2
+
+### Finding 1 — SyN deformation not restricted to PE direction
+
+**Status**: ⚠️ deviation from Treiber 2016 / fMRIPrep SDCFlows.
+
+EPI susceptibility distortion is fundamentally **1-D along the phase-
+encoding direction** (Andersson 2003, Treiber 2016). fMRIPrep's
+experimental `syn_sdc` workflow (SDCFlows) applies ANTs SyN with
+`--restrict-deformation 0x1x0` (or `1x0x0` depending on PE axis) so
+the warp can only deform along PE.
+
+Our `_run_syn` in `steps/s5/process.py:330` constructs
+`antsRegistration` with `--transform SyN[0.1,3,0]` but **no
+`--restrict-deformation` flag**. ANTs defaults to deformation in all
+three dimensions inside the cord mask. Theoretically this could:
+
+- introduce non-physical R-L or S-I deformation inside the cord ROI,
+  not corresponding to real distortion;
+- spend convergence budget on degrees-of-freedom that don't help.
+
+Empirically (cohort 11 runs, dice 0.32-0.76 → 0.68-0.86 after) the
+SyN correction is still effective, so the deviation isn't breaking
+anything — but it's a defensible-to-fix gap vs the published reference.
+
+**Recommendation**: in `_run_syn`, append
+`"--restrict-deformation", "0x1x0"` (axial cord acquisitions are A-P
+phase-encoded → restrict to Y axis, BIDS PE `j-/j`). For non-A-P
+acquisitions, derive the axis from `_pe_from_run(bold_run)` →
+`{i,i-: 1x0x0, j,j-: 0x1x0, k,k-: 0x0x1}`. One-line code change;
+adds a deg-of-freedom restriction that matches SDCFlows.
+
+### Finding 2 — SyN convergence has 0 iterations at highest resolution
+
+**Status**: ⚠️ documented "light SyN" choice that's worth quantifying.
+
+`--convergence [40x20x0,1e-6,10]`: 40 iterations at the coarsest level
+(shrink 4×), 20 at the middle level (shrink 2×), **0 at the finest
+level (shrink 1×, full resolution)**. So effectively SyN runs as a
+2-level pyramid, never refining at the BOLD's actual voxel size.
+
+For comparison:
+- fMRIPrep brain SyN: `[100x70x50,1e-6,10]` (refines at full res)
+- ANTs default SyN: `[1000x500x250,1e-6,10]`
+
+The argument for `0` at the finest level is that the cord-mask-
+restricted ROI is small and the coarser levels already capture the
+A-P distortion mode (which is itself low spatial frequency). Empirics
+support this (dice gains are real). But the audit-truthful framing:
+"we run a 2-level SyN, not a 3-level."
+
+**Recommendation**: either (a) document `40x20x0` as a deliberate
+2-level choice in policy YAML comment, or (b) try `40x20x10` on the
+reg cohort and compare dice-after distributions. If `40x20x10` doesn't
+materially improve dice, lock in `40x20x0` permanently. Untested as
+of this audit.
+
+### Finding 3 — SyN mask is the crop cylinder, not the cord seg
+
+**Status**: ⚠️ defensible but less precise than CoSpine recipe.
+
+`_run_syn` selects the SyN restriction mask in this priority order
+(`process.py:293-307`):
+
+1. **`bold_space_cord_mask` (S3.1 `funccrop_mask.nii.gz`)** — if it
+   exists. This is the 60 mm **crop ROI cylinder**, NOT the cord
+   segmentation. It's a fat cylinder around the cord centerline.
+2. Resampled anat-space cord mask (NN interp) — fallback if S3.1
+   funccrop_mask isn't found.
+
+The CoSpine recipe and Treiber 2016 SDC-SyN restrict the registration
+cost to the **cord segmentation** specifically, not a crop bounding
+box. Our cylinder is wider (60 mm) than the cord (~5 mm CSA diameter),
+so the cost function includes a fair bit of CSF and surrounding tissue
+around the cord. This:
+
+- gives the registration "extra signal" to lock onto outside the cord
+  proper (T2*-bright CSF can pull the warp away from cord-only
+  alignment);
+- doesn't match the published recipe's strict cord-only cost.
+
+Empirically the metric still works (we're scoring cord-only Dice and
+displacement). But it's another small deviation.
+
+**Recommendation**: prefer the resampled anat-space cord mask
+(option 2) over the funccrop_mask (option 1). The fallback chain
+should be **inverted**: anat-cord-seg-resampled-to-BOLD first,
+funccrop_mask only as a defensive fallback when anat cord seg is
+unavailable. One-line code change in `process.py:293`.
+
+### Finding 4 — TRT source priority assumes fmap == BOLD readout
+
+**Status**: ✅ correct for our acquisitions; document the assumption.
+
+`_run_topup` (line 166-167):
+```python
+trt = (_trt_for(fmap_runs[0], bids_root)
+       or _trt_for(bold_run, bids_root))
+```
+
+Reads TotalReadoutTime from `fmap_runs[0]` first, falls back to
+`bold_run`'s TRT. FSL topup actually only needs **relative TRT
+ratios** across acqparams.txt rows to estimate the field correctly,
+then applytopup uses the matching row's TRT to apply the correction.
+If fmaps and BOLD share the EPI protocol (standard practice), they
+share TRT and the code is correct.
+
+But our reg cohort is 100% SyN-fallback, so this branch isn't
+empirically exercised. If a future cohort ships fmaps with different
+TRT from the BOLD (rare but possible), the correction magnitude would
+be miscalibrated.
+
+**Recommendation**: assert/warn when fmap[0] TRT and bold TRT differ
+by more than 10%. Easy guard, no impact on current correctness.
+
+### Finding 5 — `_bold_pe_index_in_acqparams` silently falls back to row 1
+
+**Status**: ⚠️ defensive but silent.
+
+When the BOLD's PE direction doesn't exactly match any fmap row's PE
+(e.g., BOLD `j` vs fmaps `i`/`i-`), the function returns 1 without
+warning. That row's TRT × field gets applied to the BOLD, but the
+field was estimated for a different PE axis — the correction would be
+wrong.
+
+**Recommendation**: when neither exact match nor axis-stripped match
+succeeds (the current "last resort" line), raise/return FAIL with an
+explicit message ("BOLD PE `j` doesn't match any fmap row PE `i`/`i-`
+— topup not applicable, falling back to SyN") rather than silently
+returning row 1.
+
+### Finding 6 — `cospine_min_voxels_per_slice = 3` is permissive
+
+**Status**: 🟡 minor; defensible.
+
+A 5 mm diameter cord at 1 mm in-plane = ~20 voxels per slice. At
+1.5 mm = ~9 voxels. At 2 mm = ~5 voxels. Setting floor=3 admits
+partial-volume slices where centroid noise dominates:
+
+- centroid stddev ≈ diameter / √(12·N)
+- at N=3: stddev ≈ 5 / √36 ≈ 0.83 mm (substantial)
+- at N=5: stddev ≈ 5 / √60 ≈ 0.65 mm
+- at N=10: stddev ≈ 5 / √120 ≈ 0.46 mm
+- at N=20: stddev ≈ 5 / √240 ≈ 0.32 mm
+
+Sav-Gol smoothing across z partly compensates by averaging out the
+high-frequency jitter. But the per-slice trace in the reportlet
+includes thin-cord slices that may contribute spurious large
+displacements.
+
+**Recommendation**: raise to 5 (would require ~1.6 mm × 1.6 mm
+in-plane resolution to admit cord slices; matches typical cord-fMRI
+in the cohort). Or pass a per-acquisition floor via policy based on
+the cord cross-sectional area at that Z-level. Low priority — current
+reportlets are interpretable.
+
+### Finding 7 — Schema-vs-code drift on optional metrics keys
+
+**Status**: 🟡 documentation-only; schema is permissive.
+
+Code (`process.py:805-810`) writes these fields to `metrics`:
+- `orient_axcodes`
+- `ap_axis_index`
+- `smooth_window`
+- `min_voxels_per_slice`
+
+Schema (`schemas/qc_S5_func_distortion_correction.schema.json`) does
+not list them. The schema is permissive (no `additionalProperties:
+false`), so validation passes. But adding them to the schema would
+document the contract.
+
+**Recommendation**: add these four fields to the `metrics` properties
+in the schema. Documentation-only fix.
+
+### Finding 8 — MI-only fallback can return PASS without geometric evidence
+
+**Status**: ⚠️ correctness gap on the gating logic.
+
+`_classify_run_status` (process.py:836-841):
+```python
+skip = metrics.get("cospine_skip_reason")
+if skip:
+    reasons.append(f"CoSpine metrics skipped: {skip}")
+    if mi_delta is not None and mi_delta < 0:
+        reasons.append(f"MI did not improve ({mi_delta:+.1f}%)")
+```
+
+When the CoSpine metrics couldn't compute (anat unavailable, deepseg
+failed), we fall back to MI gating. **If MI improved (delta ≥ 0)**, no
+reasons get appended for the CoSpine skip — and the function reaches
+the end with `not reasons` (when not SyN), returning **PASS**.
+
+Concern: MI on cord-cropped BOLD is dominated by background air; a
+PASS based on MI alone is not actually evidence that distortion was
+corrected. We're effectively saying "trust the MI" without any
+geometric ground-truth.
+
+For SyN runs (the realistic path with no fmap + no anat = rare), this
+returns WARN due to the existing SyN-always-WARN rule. For topup runs
+without anat (theoretically possible), it returns PASS.
+
+**Recommendation**: when `cospine_skip_reason` is present, force
+status to at most WARN regardless of MI. A topup run without
+geometric verification shouldn't claim PASS. Defensive fix; doesn't
+affect the current reg cohort (all SyN already get WARN'd).
+
+### Finding 9 — Polynomial order for SavGol smoothing is hardcoded
+
+**Status**: 🟡 minor; documented partially.
+
+Policy has `cospine_smooth_window: 5` but `_smooth_trace` (process.py:
+521) hardcodes `poly=2`. The signature accepts a `poly` argument but
+the caller never overrides. So poly-2 is locked in code, not policy.
+
+**Recommendation**: expose `cospine_smooth_poly_order: 2` in policy.
+Documentation/symmetry fix; doesn't change current behaviour.
+
+## Empirical cohort results (reg, 11 runs)
+
+Sourced from `wf_reg_072/logs/S5_func_distortion_correction/*/qc.json`:
+
+| Dataset | mode | 3D Dice Before → After | Disp mean Before → After |
+|---|---|---|---|
+| balgrist_motor (3 runs) | syn | 0.73–0.76 → 0.81–0.82 | 1.33–1.49 → 0.62–0.63 mm |
+| ds004386_rest (2 runs) | syn | 0.74–0.76 → 0.85–0.86 | 1.04–1.14 → 0.40–0.42 mm |
+| ds004616_handgrasp (2 runs) | syn | 0.08–0.12 → 0.09–0.16 | 1.82–5.17 → 2.21–5.00 mm |
+| ds005883_cospine_pain (1 run) | syn | 0.49 → 0.79 | 2.51 → 0.40 mm |
+| ds005884_cospine_motor (2 runs) | syn | 0.32–0.35 → 0.68–0.70 | 3.66–3.91 → 1.00–1.16 mm |
+
+**Empirical narrative**:
+- SyN cord-mask-restricted correction is **effective**: 8 of 11 runs
+  improve dice by ≥ 0.05 and reduce mean A-P displacement to
+  sub-millimetre or near-millimetre values.
+- The strongest gains are on `cospine_pain` (0.49 → 0.79) and
+  `cospine_motor` (0.32 → 0.70). These are the CoSpine reference
+  datasets — high baseline distortion, recoverable by SyN.
+- The 2 FAILs are both from `ds004616_handgrasp`: Before-correction
+  dice is already 0.08/0.12 (near-zero overlap). **SyN cannot recover
+  this** — there's a real anat/EPI geometric mismatch in that dataset
+  that distortion correction alone won't bridge (likely cord-localisation
+  drift inside the cord-aware rigid step, or a fundamentally bad
+  anat segmentation in BOLD geometry).
+- The 1 borderline WARN on `cospine_motor` (disp 1.00 mm exactly at
+  the pass ceiling) is the threshold being exact — a slight
+  loosening of `pass_displacement_max_mm` would PASS it.
+
+These results validate that the choice of metric + thresholds is
+working **as designed** — passing what should pass, failing what
+should fail, surfacing borderline cases for human review.
+
+## Comparison to non-CoSpine alternatives
+
+| Method | Approach | Used here? |
+|---|---|---|
+| `topup` (FSL, Andersson 2003) | reversed-PE EPI pair | ✅ when data available |
+| `fugue` (FSL) | GRE phasediff + magnitude | ❌ v1.0 stub |
+| `epic` / `epic_correct` (BIDSCoin) | PE-reversed alternative | ❌ not standard for cord |
+| `DRBUDDI` (Irfanoglu 2015, TORTOISE) | dual-PE B-spline + outlier rejection | ❌ not in SCT |
+| `HySCO` (Ruthotto 2012, SPM) | hybrid susceptibility correction | ❌ SPM-only |
+| `SDC-SyN` (Treiber 2016, fMRIPrep) | anat-driven SyN with PE-restricted warp | ⚠️ used WITHOUT PE-restrict (Finding 1) |
+| `qsiprep` SDCFlows | brain SDC ladder | ✅ same ladder; we match |
+
+Verdict: S5 follows the field's mainstream ladder. The implementation
+detail in Finding 1 (no `--restrict-deformation`) is the one place
+where our SyN deviates from the published reference; the other tools
+above are not currently field-standard for spinal cord.
+
+## Truthfulness review (v2 additions)
+
+| Claim | True? | Source |
+|---|---|---|
+| "Light SyN" with `[40x20x0]` | ✅ but it's effectively 2-level (Finding 2). Documentation should say "2-level light SyN", not "3-level light SyN". |
+| "Cord-mask-restricted SyN" | ⚠️ The restriction mask is the 60 mm crop cylinder, not the cord seg proper (Finding 3). Documentation says "cord-restricted SyN" without distinguishing crop ROI vs cord seg. |
+| "MI delta as catastrophic-drop sanity" | ✅ |
+| "FD `0.5 mm` is coarse gauge, S8 uses 0.2 mm" | ✅ inherited from v1 |
+| "SyN-always-WARN — no fmap = lower confidence" | ✅ |
+| "Per-slice A–P cord-centerline displacement matches CoSpine" | ✅ |
+| "Anat resampled to BOLD before SyN" | ✅ via flirt `-applyxfm -usesqform -interp trilinear` |
+| "SyN convergence: 40x20x0 with 1e-6 stop and 10-iter window" | ✅ verbatim |
+
+No truthfulness violations beyond the two qualifications above. Both
+flagged for cleanup.
+
+## Audit verdict (v2)
+
+**S5 is correct, well-implemented, and largely standard. Two
+implementation-level fixes are recommended; the rest are
+defensible-as-is with documentation tweaks.**
+
+- ✅ Mode ladder, topup config, ANTs SyN gradient/smoothing/metric all
+  match field conventions.
+- ✅ CoSpine effectiveness metrics literal-match Wei 2025 (with
+  documented additive SavGol smoothing).
+- ✅ Empirical cohort behavior validates the threshold choices —
+  passes what should pass, fails what should fail.
+- ⚠️ **Finding 1** (no `--restrict-deformation` on SyN PE axis) —
+  recommended fix.
+- ⚠️ **Finding 3** (SyN mask prefers funccrop cylinder over cord seg)
+  — recommended fix (one-line priority swap).
+- 🟡 Findings 2, 4, 5, 6, 7, 8, 9: documentation or low-priority
+  hardening; safe to defer to v1.1.
+
+## Recommended actions
+
+| # | Action | Effort | Priority |
+|---|---|---|---|
+| 1 | Append `--restrict-deformation 0x1x0` (or PE-axis-derived) to `_run_syn` antsRegistration command | 5 lines | high |
+| 2 | Swap SyN-mask priority: prefer anat-cord-seg-resampled-to-BOLD over funccrop_mask | 1 line | high |
+| 3 | Explicit FAIL in `_bold_pe_index_in_acqparams` last-resort branch | 3 lines | medium |
+| 4 | Force WARN when `cospine_skip_reason` is present, regardless of MI | 2 lines | medium |
+| 5 | Expose `cospine_smooth_poly_order` in policy YAML | 3 lines | low |
+| 6 | Add `orient_axcodes`/`ap_axis_index`/`smooth_window`/`min_voxels_per_slice` to schema | schema-only | low |
+| 7 | Raise `cospine_min_voxels_per_slice` from 3 to 5 OR derive from in-plane voxel size | 1-line policy + assert | low |
+| 8 | Document policy YAML comment: "convergence `40x20x0` runs as 2-level SyN" | comment-only | low |
+
+Actions 1-2 are real implementation upgrades; the rest are
+documentation, defensive guards, or empirical follow-ups deferred to
+the next reg cohort calibration.
+
+## Sources (additional to v1)
+
+- Treiber et al. 2016 — "Characterization and Correction of Geometric
+  Distortions in 814 Diffusion Weighted Images." PLoS One.
+  (the original SDC-SyN reference for PE-restricted deformation)
+- ANTs `antsRegistration` documentation — `--restrict-deformation`
+  flag semantics
+- fMRIPrep / SDCFlows `syn_sdc` workflow — restricts deformation to PE
+  axis via `RestrictDeformation` ITK parameter
+- Cieslak et al. 2021 — qsiprep (SDC ladder for diffusion / shared
+  with fMRIPrep)
+- Irfanoglu et al. 2015 — DRBUDDI; alternative dual-PE method
+- Ruthotto et al. 2012 — HySCO; SPM-side hybrid SDC
