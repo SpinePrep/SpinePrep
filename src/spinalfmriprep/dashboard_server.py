@@ -19,7 +19,17 @@ from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Resp
 
 WORK_ROOT = Path(os.environ.get("SFMRI_WORK_ROOT", "/mnt/ssd1/SpinalfMRIprep/work"))
 
-app = FastAPI(title="SpinalfMRIprep QC Dashboard", docs_url=None, redoc_url=None)
+# `redirect_slashes=False` is critical: Starlette's default trailing-
+# slash auto-redirect emits an absolute `Location: /dashboard/` that
+# drops the `/p2` reverse-proxy prefix, sending the browser to
+# `271828.space/dashboard/` which falls through to the catch-all
+# returning HTTP 401 "auth required". Handling bare and trailing-slash
+# paths explicitly (no redirect) keeps the prefix intact.
+app = FastAPI(
+    title="SpinalfMRIprep QC Dashboard",
+    docs_url=None, redoc_url=None,
+    redirect_slashes=False,
+)
 
 
 def _list_workfolders() -> list[dict]:
@@ -148,6 +158,18 @@ async def workfolders_json():
     return JSONResponse(_list_workfolders(), headers=_NO_CACHE_HEADERS)
 
 
+@app.get("/{wf_name}/dashboard")
+@app.get("/{wf_name}/dashboard/")
+async def serve_wf_dashboard_index(wf_name: str):
+    """Bare `/{wf}/dashboard` or `/{wf}/dashboard/` — serve index.html."""
+    if not wf_name.startswith("wf_"):
+        return Response(status_code=404)
+    index = WORK_ROOT / wf_name / "dashboard" / "index.html"
+    if not index.is_file():
+        return Response(status_code=404)
+    return _file_response(index)
+
+
 @app.get("/{wf_name}/dashboard/{path:path}")
 async def serve_wf_dashboard(wf_name: str, path: str):
     """Serve dashboard files from a specific workfolder."""
@@ -170,6 +192,24 @@ async def serve_wf_derivatives(wf_name: str, path: str):
     if resolved is None:
         return Response(status_code=404)
     return _file_response(resolved)
+
+
+@app.get("/dashboard")
+@app.get("/dashboard/")
+async def serve_latest_dashboard_index():
+    """Bare `/dashboard` or `/dashboard/` — serve index.html directly.
+
+    Avoids Starlette's auto-slash redirect (which leaks the localhost
+    URL and drops the `/p2` reverse-proxy prefix, sending the browser
+    to a 401-returning catch-all on 271828.space).
+    """
+    wf = _latest_workfolder()
+    if wf is None:
+        return Response("No workfolder with dashboard found", status_code=404)
+    index = wf / "dashboard" / "index.html"
+    if not index.is_file():
+        return Response(status_code=404)
+    return _file_response(index)
 
 
 @app.get("/dashboard/{path:path}")
