@@ -70,17 +70,30 @@ def _step_logs_subdir(wf: Path, step_num: int) -> Optional[Path]:
 def _latest_wf_with_step(
     work_root: Path, step_num: int, scope: str,
 ) -> Optional[Path]:
-    """Find the most recent ``wf_{scope}_*`` whose logs contain S{step_num}."""
+    """Find the most recent ``wf_{scope}_*`` whose logs contain S{step_num}.
+
+    Sort by the *step subdirectory's* mtime, not the wf root mtime —
+    a wf's root mtime gets bumped by unrelated activity (symlink edits,
+    chained downstream steps writing into the same wf), which would
+    falsely promote a wf whose S{step_num} data is actually stale.
+    """
     pattern = f"wf_{scope}_*"
-    wfs = sorted(
-        (d for d in work_root.glob(pattern) if d.is_dir()),
-        key=lambda d: d.stat().st_mtime,
-        reverse=True,
-    )
-    for wf in wfs:
-        if _step_logs_subdir(wf, step_num) is not None:
-            return wf
-    return None
+    candidates: list[tuple[float, Path]] = []
+    for wf in work_root.glob(pattern):
+        if not wf.is_dir():
+            continue
+        step_dir = _step_logs_subdir(wf, step_num)
+        if step_dir is None:
+            continue
+        try:
+            mtime = step_dir.resolve().stat().st_mtime
+        except OSError:
+            continue
+        candidates.append((mtime, wf))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda t: t[0], reverse=True)
+    return candidates[0][1]
 
 
 def _approved_wf(done_root: Path, step_num: int) -> Optional[Path]:
