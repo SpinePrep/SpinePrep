@@ -82,6 +82,38 @@ already-computed `outlier_mask.json` and S3.1 / S3.3 sub-step returns):
 | 9 | Reproducible | ✅ | ✅ | versioned policy + schema + spec |
 | 10 | Heterogeneity is the test | ✅ | ✅ | 4 FAILs on `_acq-KombiShimZBrain` (brain-shim acquisitions in balgrist) — the drift gate correctly catches cord-seg leakage into brain. **The heterogeneity surfaced the bug.** |
 
+## Drift gate — pipeline-specific QC guard (not literature-backed)
+
+The S3.1 brain-contamination "drift gate" (`_check_drift_gate` in
+`localize.py`) is a **SpinalfMRIprep contribution**, not a published
+cord-fMRI convention.
+
+**Why it exists**: `sct_deepseg seg_sc_contrast_agnostic` can drift
+into the brain on cospine-style acquisitions where the top of FOV
+clips through the brain stem. The "cord" segmentation then bleeds
+upward and the downstream pipeline computes cord-fMRI metrics on
+brain tissue. Documented by SCT issue threads and indirectly
+acknowledged in CoSpine 2025's "per-acquisition QC" caveat, but
+not codified as a published guard.
+
+**How it works**: two cheap checks on the most-superior 5 cord-
+bearing slices:
+
+| Check | Threshold | Rationale |
+|---|---|---|
+| `absolute_area_cap_mm2` | 200 mm² | Cervical cord CSA ≤ 80 mm² normally; 200 mm² floor leaves margin for swelling / pathology while rejecting brain-stem leaks (CSA 500+ mm²) |
+| `area_spike_threshold` | 4× | Top-slice / immediate-inferior-slice ratio. Brain stem is 6-10× cord CSA; 4× is sensitivity-favoring (catches early drift) |
+
+**Effect on the reg cohort**: the 4 `KombiShimZBrain` runs in
+`reg_internal_balgrist_motor_11_subset` correctly FAIL with
+`S3.1 drift gate: empty segmentation` — these are brain-shim
+acquisitions never intended for cord analysis. The drift gate is
+the QC layer that prevents them from polluting downstream.
+
+**Status**: novel but principled. Cited in
+`.claude/specs/s3-algorithm-audit.md` as the one S3 component
+without published precedent. Algorithm audit verdict: defensible.
+
 ## Remaining gaps (acceptable / deferred)
 
 - Per-Z slice tSNR estimate (currently we report only mean/std of the
