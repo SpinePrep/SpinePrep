@@ -1,4 +1,13 @@
-"""S3.1: Dummy drop, fast median reference, cord localization, func_ref0."""
+"""S3.1: Dummy drop, coarse functional reference (median over all
+dummy-dropped frames), cord localization, brain-contamination check
+(internal: drift gate), and `func_ref0` for downstream S3.2.
+
+Naming notes: the "coarse functional reference" follows fMRIPrep's
+"coarse / initial reference volume" terminology; the on-disk filename
+is `func_ref_fast.nii.gz`, kept stable for the S4-S10 downstream
+contract. The "brain-contamination check" is what the policy YAML
+and code call `drift_gate` (kept for backwards compatibility); user-
+facing text uses the literature-aligned name."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -182,17 +191,26 @@ def _process_s3_1_dummy_drop_and_localization(
     run_id: Optional[str] = None,
 ) -> dict[str, Any]:
     """
-    S3.1: Dummy-volume drop + fast median reference + func cord localization + func_ref0.
+    S3.1: Dummy-volume drop + coarse functional reference + cord localization + func_ref0.
+
+    The "coarse functional reference" (fMRIPrep terminology; on-disk
+    filename `func_ref_fast.nii.gz` kept for the downstream contract
+    with S4-S10) is the median over all dummy-dropped frames. It is
+    cheap to compute and is later refined to the robust functional
+    reference in S3.2 (median over non-outlier frames only).
 
     This function:
     1. Drops dummy volumes per policy
-    2. Computes func_ref_fast (median of all frames)
+    2. Computes the coarse functional reference `func_ref_fast`
+       (median of all frames; SCT batch_processing convention)
     3. Localizes cord in func space (S2 exact spec)
     4. Computes func_ref0 from cropped region
-    5. Renders S3.1 figure
+    5. Renders S3.1 figure (brain-contamination check is applied
+       here; failure path emits a stub with the rejection reason)
 
     Returns:
-        Dictionary with results including func_ref_fast, func_ref0, localization results.
+        Dictionary with results including the coarse functional
+        reference (`func_ref_fast`), func_ref0, localization results.
     """
     # Create init directory
     init_dir = work_dir / "init"
@@ -274,7 +292,7 @@ def _process_s3_1_dummy_drop_and_localization(
               "func_bold_coarse_path": func_bold_coarse_path,
               "discovery_seg_crop_path": localize_dir / "func_ref_fast_seg_crop.nii.gz",
               "localization_status": "PASS" if gate_ok else "FAIL",
-              "failure_message": None if gate_ok else f"S3.1 drift gate: {gate_msg}",
+              "failure_message": None if gate_ok else f"S3.1 brain-contamination check: {gate_msg}",
               "figure_path": fig_path,
               "crop_bbox": crop_bbox,
               "drift_gate_info": gate_info,
@@ -296,13 +314,14 @@ def _process_s3_1_dummy_drop_and_localization(
     else:
             bold_data_dropped = bold_data
 
-    # Compute func_ref_fast (median of all frames)
+    # Compute the coarse functional reference (median of all frames;
+    # on-disk name `func_ref_fast.nii.gz` kept for the S4-S10 contract).
     if bold_data_dropped.ndim == 4:
         func_ref_fast_data = np.median(bold_data_dropped, axis=3)
     else:
         func_ref_fast_data = bold_data_dropped
 
-    # Save func_ref_fast
+    # Save the coarse functional reference
     func_ref_fast_img = nib.Nifti1Image(func_ref_fast_data, bold_affine)
     nib.save(func_ref_fast_img, func_ref_fast_path)
 
@@ -485,7 +504,7 @@ def _process_s3_1_dummy_drop_and_localization(
         "func_ref_fast_crop_path": func_ref_fast_crop_path,
         "func_bold_coarse_path": func_bold_coarse_path,
         "localization_status": "PASS" if gate_ok else "FAIL",
-        "failure_message": None if gate_ok else f"S3.1 drift gate: {gate_msg}",
+        "failure_message": None if gate_ok else f"S3.1 brain-contamination check: {gate_msg}",
         "figure_path": rendered_path,
         "crop_bbox": crop_bbox,
         "drift_gate_info": gate_info,

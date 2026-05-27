@@ -220,10 +220,11 @@ def _render_s3_1_simple_func_with_mask(
         if not (ok and output_path.exists()):
             return None
 
-        # Drift-gate banner. Drawn AFTER the ImageMagick resize so the font and
-        # banner height are sized relative to the final 1200-px image, not the
-        # tiny pre-resize buffer (which would get scaled ~18x along with the
-        # figure).
+        # Brain-contamination check banner (internal symbol: drift_gate).
+        # Drawn AFTER the ImageMagick resize so the font and banner
+        # height are sized relative to the final 1200-px image, not the
+        # tiny pre-resize buffer (which would get scaled ~18x along
+        # with the figure).
         if drift_gate and drift_gate.get("status") == "FAIL":
             with Image.open(output_path) as base:
                 base_rgb = base.convert("RGB")
@@ -231,7 +232,7 @@ def _render_s3_1_simple_func_with_mask(
             banner_h = 36
             font_size = 18
             font = _load_font(font_size)
-            text = f"REJECTED  {drift_gate.get('reason', 'drift gate failed')}"
+            text = f"REJECTED  {drift_gate.get('reason', 'brain contamination check failed')}"
             measure = ImageDraw.Draw(Image.new("RGB", (1, 1)))
             while measure.textlength(text, font=font) > w - 16 and len(text) > 20:
                 text = text[:-2]

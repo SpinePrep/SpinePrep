@@ -31,8 +31,9 @@ func_localization:
 
 # Outlier gating: identify motion-corrupted frames using cord-centric metrics.
 # Definitions: Power 2014 DVARS (RMS of temporal derivative) restricted to the
-# cord mask (Smyser 2019 / Kaptan 2023 cord adaptation) + refRMS (RMS of
-# (frame - reference) within mask, fMRIPrep / MRIQC convention).
+# cord mask (Smyser 2019 / Kaptan 2023 cord adaptation) + DVARS-ref (RMS of
+# (frame - reference) within mask; aka "refRMS" in Kaptan 2023 / Dabbagh 2024,
+# kept as the canonical "DVARS-ref" name on reportlets and in docs).
 outlier_gating:
   # Tukey 1977 boxplot cutoff: P75 + 1.5*IQR. NOTE: this is a deviation from
   # Kaptan 2023 / Dabbagh 2024, which use 3σ above the time-series mean. We
@@ -41,10 +42,10 @@ outlier_gating:
   # variability without a group-mean calibration. Audit:
   # .claude/specs/s3-algorithm-audit.md
   iqr_multiplier: 1.5
-  # Dual criterion (DVARS OR refRMS above threshold) — Power 2014 / Kaptan 2023.
+  # Dual criterion (DVARS OR DVARS-ref above threshold) — Power 2014 / Kaptan 2023.
   metrics:
-    - dvars   # RMS of frame-to-frame intensity difference within mask
-    - refrms  # RMS of frame-to-reference intensity difference within mask
+    - dvars     # RMS of frame-to-frame intensity difference within mask
+    - dvars_ref # RMS of frame-to-reference intensity difference within mask
   # Fraction thresholds for QC status. Kaptan 2023 reports typical 2% (range
   # 0.6-5.6%) on healthy cord rest; warn at 30%, fail at 50% — conservative
   # upper end of "still usable".

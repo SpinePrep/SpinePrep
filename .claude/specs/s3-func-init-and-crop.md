@@ -10,25 +10,34 @@ Step-local audit of S3 against the SpinalfMRIprep development principles
 
 ## Objective
 
-For each BOLD run, drop dummy volumes, localize the cord in the
-functional volume, gate frames by DVARS / refRMS outliers, build a
-robust functional reference (mean BOLD), and crop the 4D volume around
-the cord. Outputs feed S4 motion correction.
+For each BOLD run, drop dummy volumes, localize the cord on a coarse
+functional reference, gate frames by DVARS / DVARS-ref outliers, build
+a robust functional reference (median of non-outlier volumes), and
+crop the 4D volume around the cord. Outputs feed S4 motion correction.
+
+Naming notes: "coarse functional reference" (a.k.a. internal symbol
+`func_ref_fast` / on-disk `func_ref_fast.nii.gz`) is fMRIPrep's
+"coarse/initial reference volume". "DVARS-ref" is the literature name
+for what Kaptan 2023 / Dabbagh 2024 call **refRMS** — kept as
+`ref_rms` on disk (frame_metrics.tsv) for the downstream S8 contract,
+surfaced as DVARS-ref on reportlets. The "brain-contamination check (drift gate)" stays as the
+internal symbol; reportlet and doc text use **brain contamination
+check** so a field-reader recognises it.
 
 ## Sub-steps
 
 | Stage | Purpose |
 |---|---|
-| S3.1 | Dummy drop + cord localization (`sct_deepseg seg_sc_contrast_agnostic`) with a drift gate (catches "cord seg leaked into brain") |
-| S3.2 | Mask-aware DVARS + refRMS frame metrics; outlier flagging via boxplot cutoff; robust functional reference (mean of non-outlier volumes) |
-| S3.3 | Cord-focused crop using the localization mask (60 mm cylinder) |
+| S3.1 | Dummy drop + cord localization on coarse functional reference (`sct_deepseg seg_sc_contrast_agnostic`) with a brain-contamination check (a.k.a. internal "drift gate" — catches "cord seg leaked into brain") |
+| S3.2 | Mask-aware DVARS + DVARS-ref (refRMS) frame metrics; outlier flagging via boxplot cutoff; robust functional reference (median of non-outlier volumes) |
+| S3.3 | Cord-focused crop using the localization mask (60 mm cylinder); produces the cropped BOLD (`funccrop_bold.nii.gz`) + cord mask (`funccrop_mask.nii.gz`) downstream contract |
 
 ## Literature backing
 
 | Choice | Source |
 |---|---|
 | Mask-aware DVARS | Power 2014, Smyser 2019 — restrict DVARS to a cord ROI to avoid noise being dominated by background |
-| refRMS metric | Standard fMRIPrep / `mriqc` frame metric |
+| DVARS-ref (refRMS) metric | Standard fMRIPrep / `mriqc` frame metric; Kaptan 2023 / Dabbagh 2024 cord |
 | Outlier boxplot cutoff (Q3 + 1.5·IQR) | Tukey 1977; field-standard non-parametric outlier definition |
 | `sct_deepseg seg_sc_contrast_agnostic` for cord localization | SCT 7.0+ recommended |
 | 60 mm cord cylinder crop | Cervical cord typical diameter; matches S2 cordref crop |
@@ -40,10 +49,10 @@ already-computed `outlier_mask.json` and S3.1 / S3.3 sub-step returns):
 
 - `n_frames_total` — volumes after dummy drop.
 - `n_dummy_dropped` — first-N volumes dropped (steady-state).
-- `n_outliers` — frames flagged outlier (DVARS OR refRMS).
+- `n_outliers` — frames flagged outlier (DVARS OR DVARS-ref).
 - `outlier_fraction` — **headline truth gauge.** Gate in
   `qc_thresholds.outlier_fraction_pass_max` (0.20, Kaptan 2023).
-- `dvars_threshold` / `refrms_threshold` — the boxplot-derived cutoffs
+- `dvars_threshold` / `dvars_ref_threshold` — the boxplot-derived cutoffs
   used for this run (recorded so the analyst can audit per-run gating).
 - `n_cord_slices_localization` — cord coverage detected in S3.1.
 - `funcref_in_cord_mean` / `funcref_in_cord_std` — quick funcref
@@ -80,13 +89,14 @@ already-computed `outlier_mask.json` and S3.1 / S3.3 sub-step returns):
 | 7 | No chain backtracking | ✅ | ✅ | only reads S2 (cordref + cord_dseg) |
 | 8 | Full cohort = deliverable | ✅ | ✅ | ~1 min per run; scales freely |
 | 9 | Reproducible | ✅ | ✅ | versioned policy + schema + spec |
-| 10 | Heterogeneity is the test | ✅ | ✅ | 4 FAILs on `_acq-KombiShimZBrain` (brain-shim acquisitions in balgrist) — the drift gate correctly catches cord-seg leakage into brain. **The heterogeneity surfaced the bug.** |
+| 10 | Heterogeneity is the test | ✅ | ✅ | 4 FAILs on `_acq-KombiShimZBrain` (brain-shim acquisitions in balgrist) — the brain-contamination check (drift gate) correctly catches cord-seg leakage into brain. **The heterogeneity surfaced the bug.** |
 
-## Drift gate — pipeline-specific QC guard (not literature-backed)
+## Brain-contamination check (internal: drift gate) — pipeline-specific QC guard (not literature-backed)
 
-The S3.1 brain-contamination "drift gate" (`_check_drift_gate` in
-`localize.py`) is a **SpinalfMRIprep contribution**, not a published
-cord-fMRI convention.
+The S3.1 brain-contamination check (internal symbol: `drift_gate` —
+implemented as `_check_drift_gate` in `localize.py`) is a
+**SpinalfMRIprep contribution**, not a published cord-fMRI
+convention.
 
 **Why it exists**: `sct_deepseg seg_sc_contrast_agnostic` can drift
 into the brain on cospine-style acquisitions where the top of FOV
@@ -106,8 +116,8 @@ bearing slices:
 
 **Effect on the reg cohort**: the 4 `KombiShimZBrain` runs in
 `reg_internal_balgrist_motor_11_subset` correctly FAIL with
-`S3.1 drift gate: empty segmentation` — these are brain-shim
-acquisitions never intended for cord analysis. The drift gate is
+`S3.1 brain-contamination check (drift gate): empty segmentation` — these are brain-shim
+acquisitions never intended for cord analysis. The brain-contamination check (drift gate) is
 the QC layer that prevents them from polluting downstream.
 
 **Status**: novel but principled. Cited in
@@ -126,7 +136,7 @@ without published precedent. Algorithm audit verdict: defensible.
 
 The 4 FAIL runs in `reg_internal_balgrist_motor_11_subset` are all
 `_acq-KombiShimZBrain` — brain-shim acquisitions that the cord
-localization correctly rejects ("S3.1 drift gate: empty segmentation").
-This is **not a bug**; it's the drift gate working as designed,
+localization correctly rejects ("S3.1 brain-contamination check (drift gate): empty segmentation").
+This is **not a bug**; it's the brain-contamination check (drift gate) working as designed,
 preventing a brain-shimmed BOLD from polluting downstream cord-only
 analysis. The cord-shimmed runs (`_acq-KombiShimZSpine`) all PASS.

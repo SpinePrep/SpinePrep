@@ -8,6 +8,10 @@ PIL+ImageMagick renderers (`reportlets.py`, `localize_viz.py`).
 Four S3 reportlets:
   S3.1 func_localization       Discovery cord on coarse functional reference
   S3.2 frame_metrics           DVARS + DVARS-ref + outlier markers
+                                  (DVARS-ref = RMS of (frame - reference)
+                                   within cord mask; equivalent to the
+                                   "refRMS" metric in Kaptan 2023 /
+                                   Dabbagh 2024)
   S3.3 crop_box_sagittal       Cord-cropped funcref sagittal + montage
   S3.3 funcref_montage         Robust funcref with cord contour overlay
 """
@@ -103,7 +107,13 @@ def render_frame_metrics(
     dataset_key: str = "?",
     status: str = "UNKNOWN",
 ) -> None:
-    """DVARS + refRMS line plot with threshold + outlier markers.
+    """DVARS + DVARS-ref line plot with threshold + outlier markers.
+
+    DVARS (Power 2014): RMS of the temporal derivative within the cord
+    mask. DVARS-ref (Kaptan 2023 / Dabbagh 2024 — referred to as
+    "refRMS" in those papers, kept as the column name in
+    frame_metrics.tsv for the downstream S8 confound contract): RMS of
+    (frame - reference) within the cord mask.
 
     Dark theme matching the chain's visual language. Header carries
     outlier_fraction; footer shows total frame + outlier counts. The
@@ -115,7 +125,10 @@ def render_frame_metrics(
             stub_figure(output_path, "frame_metrics.tsv missing")
             return
 
-        # Parse TSV (columns: frame, dvars, ref_rms, outlier)
+        # Parse TSV. Columns: frame, dvars, ref_rms, outlier.
+        # NOTE: column name "ref_rms" is the on-disk frame_metrics.tsv
+        # contract (Kaptan 2023 "refRMS"). We surface it as "DVARS-ref"
+        # in user-facing labels for literature-standard naming.
         rows = []
         with open(frame_metrics_tsv) as f:
             header_line = f.readline().strip().split("\t")
@@ -130,12 +143,12 @@ def render_frame_metrics(
             return
         frames = arr[:, 0].astype(int)
         dvars = arr[:, 1]
-        refrms = arr[:, 2]
+        dvars_ref = arr[:, 2]
         outlier_mask = arr[:, 3].astype(bool)
 
         # Outlier thresholds + counts from JSON
         dvars_thr = None
-        refrms_thr = None
+        dvars_ref_thr = None
         outlier_frac = None
         n_outliers = None
         if outlier_mask_json and outlier_mask_json.exists():
@@ -143,7 +156,9 @@ def render_frame_metrics(
                 meta = json.loads(outlier_mask_json.read_text(encoding="utf-8"))
                 thr = meta.get("thresholds", {}) or {}
                 dvars_thr = thr.get("dvars")
-                refrms_thr = thr.get("ref_rms")
+                # Kept as "ref_rms" in the JSON for downstream contract;
+                # display as DVARS-ref.
+                dvars_ref_thr = thr.get("ref_rms")
                 outlier_frac = meta.get("outlier_fraction")
                 n_outliers = meta.get("outlier_count")
             except Exception:
@@ -189,16 +204,18 @@ def render_frame_metrics(
                     t.set_color(TEXT)
         ax1.tick_params(labelbottom=False)
 
-        # refRMS panel
+        # DVARS-ref panel (Kaptan 2023 "refRMS"; literature-standard
+        # name on the plot axis label so an OHBM-reading reviewer
+        # recognises it immediately).
         ax2 = fig.add_subplot(gs[1], sharex=ax1)
-        _setup_axes(ax2, "refRMS")
-        ax2.plot(frames, refrms, color="#22c55e", linewidth=1.4)
-        if refrms_thr is not None:
-            ax2.axhline(refrms_thr, color="#facc15", linestyle="--",
-                        linewidth=1.0, alpha=0.8, label=f"threshold {refrms_thr:.1f}")
-            out_idx = np.where(refrms > refrms_thr)[0]
+        _setup_axes(ax2, "DVARS-ref")
+        ax2.plot(frames, dvars_ref, color="#22c55e", linewidth=1.4)
+        if dvars_ref_thr is not None:
+            ax2.axhline(dvars_ref_thr, color="#facc15", linestyle="--",
+                        linewidth=1.0, alpha=0.8, label=f"threshold {dvars_ref_thr:.1f}")
+            out_idx = np.where(dvars_ref > dvars_ref_thr)[0]
             if out_idx.size:
-                ax2.scatter(out_idx, refrms[out_idx], color="#ef4444",
+                ax2.scatter(out_idx, dvars_ref[out_idx], color="#ef4444",
                             s=40, marker="x", linewidths=2, zorder=5,
                             label=f"{out_idx.size} outliers")
             leg = ax2.legend(loc="upper right", facecolor=BG,
@@ -216,7 +233,7 @@ def render_frame_metrics(
             fig,
             legend_items=[
                 ("#22d3ee", "DVARS"),
-                ("#22c55e", "refRMS"),
+                ("#22c55e", "DVARS-ref"),
                 ("#facc15", "threshold"),
                 ("#ef4444", "outlier"),
             ],

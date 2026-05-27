@@ -118,7 +118,10 @@ def _process_s3_2_outlier_gating(
     bold_masked = bold_data[mask_indices]  # shape (N_voxels, N_frames)
     ref0_masked = ref0_data[mask_indices]  # shape (N_voxels,)
 
-    # RefRMS
+    # DVARS-ref: RMS of (frame - reference) within the cord mask.
+    # Kaptan 2023 / Dabbagh 2024 call this "refRMS"; we use the
+    # literature-aligned "DVARS-ref" name in plots / docs while
+    # keeping the TSV column `ref_rms` for the downstream S8 contract.
     diff_ref = (bold_masked.T - ref0_masked).T
     ref_rms = np.sqrt(np.mean(diff_ref ** 2, axis=0))
 
@@ -215,12 +218,12 @@ def _process_s3_2_outlier_gating(
         ax1.legend()
         ax1.grid(True, alpha=0.3)
 
-        # Plot RefRMS
-        ax2.plot(frames, ref_rms, label='RefRMS', color='green')
+        # Plot DVARS-ref (Kaptan 2023 "refRMS")
+        ax2.plot(frames, ref_rms, label='DVARS-ref', color='green')
         ax2.axhline(ref_rms_thresh, color='red', linestyle='--', label='Threshold')
         out_idx_ref = np.where(outliers_ref)[0]
         ax2.scatter(out_idx_ref, ref_rms[out_idx_ref], color='red', marker='x')
-        ax2.set_ylabel("RefRMS")
+        ax2.set_ylabel("DVARS-ref")
         ax2.set_xlabel("Frame (after dummy drop)")
         ax2.legend()
         ax2.grid(True, alpha=0.3)
