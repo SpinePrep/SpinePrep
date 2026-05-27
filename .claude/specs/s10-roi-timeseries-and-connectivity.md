@@ -173,3 +173,74 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 - PAM50 — local label index `info_label.txt` (template + atlas folders); 20 vertebral × 30 segmental labels verified by direct NIfTI read.
 - Nilearn `NiftiMapsMasker`, `NiftiLabelsMasker`, `ConnectivityMeasure` — implementation backbone.
 - Frostell et al. 2016 Table 3 — anatomical vertebral-to-spinal-segment correspondence reference.
+
+---
+
+# Principles audit (May 2026)
+
+Post-implementation audit of S10 against the `CLAUDE.md` dev principles.
+The scope spec above is the *redesign rationale* (Nilearn NiftiMapsMasker
+on PAM50 horn atlases, hemicord + spinalseg + vertlvl extraction);
+this section is the principles-alignment check.
+
+## Audit verdict per principle
+
+| # | Principle | Verdict |
+|---|---|---|
+| 1 | Small dev cohort | ✅ 11-run reg set |
+| 2 | Literature defaults | ✅ Kaptan 2023 hemicord ROIs, Eippert 2017 rsFC bandpass, Marrelec 2006 partial correlation, Shrout & Fleiss 1979 ICC(3,1), Cicchetti 1994 reliability bands, Frostell 2016 vertebral→segmental mapping |
+| 3 | Step-local truth metric | ✅ `n_rois_hemicord` / `n_rois_spinalseg` / `n_rois_vertlvl` (coverage), `n_rois_dropped_low_voxels` (the headline gauge), `condition_number_pearson_hemicord` (matrix conditioning), `n_volumes` |
+| 4 | Diagnostic reportlet | ✅ 3 PNGs emitted per single-session run (`hemicord_timeseries`, `hemicord_connectivity`, `vertlvl_tsnr`) + 2 multi-session reportlets (`reliability_icc`, `reliability_dice`) that fire only when a subject has ≥2 same-task sessions |
+| 5 | Visual QC validator | ✅ |
+| 6 | Lock and ship | ✅ scope spec + policy w/ thresholds |
+| 7 | No chain backtracking | ✅ consumes S8 confound TSVs + S9 smoothed BOLD + S7 PAM50-in-native atlases; S10 metrics are self-contained |
+| 8 | Full cohort = deliverable | ✅ |
+| 9 | Reproducible | ✅ schema + policy + spec all versioned |
+| 10 | Heterogeneity is the test | ✅ **11/11 WARN — all due to `dropped_rois > 0`**. The dropped-ROI counts vary by dataset (rest: 4; balgrist_motor: 14; cospine_motor: 48–50), encoding the actual cord coverage variability across the 5 datasets. **This is the principle §10 signal**: heterogeneity surfacing as quantitative coverage differences. |
+
+## Step-local truth metric rationale
+
+| Metric | What it answers |
+|---|---|
+| `n_rois_dropped_low_voxels` | **Headline gauge.** Number of PAM50 ROIs that fell below the minimum-voxel floor in this run's cord coverage. Encodes "how much of the cord did this EPI cover?" — a coverage-faithfulness measure that the cohort-level S11 coverage matrix builds on. |
+| `n_rois_hemicord` / `_spinalseg` / `_vertlvl` | Per-atlas usable ROI count. Drops below the atlas's nominal label count (8/30/20 respectively) signal coverage limits. |
+| `condition_number_pearson_hemicord` | Connectivity matrix conditioning. High κ ⇒ some hemicord ROIs are near-collinear (small ROI with shared variance). Brain-heuristic gate; cord recalibration deferred. |
+| `n_volumes` | Pass-through context: short runs (n < 80) have unreliable connectivity. |
+
+## Threshold rationale (`policy/S10_roi_timeseries_and_connectivity.yaml`)
+
+| Gate | Value | Source |
+|---|---|---|
+| `warn_dropped_rois_max` | 0 | Any drop ⇒ WARN. Intentionally strict — tells the analyst "this run doesn't span the full cord; check coverage before aggregating to segmental analyses." |
+| PASS `pass_max_condition_number` | 1000.0 | fMRIPrep brain heuristic |
+| WARN `warn_max_condition_number` | 10000.0 | Above ⇒ FAIL |
+
+## Why 11/11 WARN is acceptable
+
+The reg cohort spans 5 heterogeneous datasets with cord-FOV variability
+ranging from a few segments (cospine cord-only acquisitions) to most
+of the cervical cord (rest test-retest). With 30 spinal_levels +
+20 vertebral_levels + 8 hemicord ROIs available in PAM50 and a
+strict-zero PASS gate, any run that doesn't span the full cord WARNs
+on `dropped_rois`. **This is the metric working as designed** — flagging
+coverage gaps so cohort-level aggregation (S11) can stratify by
+coverage rather than blindly average. The dropped-ROI count is itself
+the heterogeneity signal of principle §10.
+
+## Decision: no code change
+
+S10 already satisfies all 10 principles. The 11/11 WARN bias carries
+information (per-dataset coverage variability), not noise. Loosening
+the gate to "PASS any coverage > 50%" would hide the heterogeneity
+that the cohort needs to be aware of. Lock and ship (principle §6).
+
+## Remaining gaps (acceptable / deferred)
+
+- Cord-specific `condition_number` thresholds (same as S8 — brain
+  heuristic, cord recalibration deferred).
+- Per-vertebral-level connectivity matrix (currently only hemicord
+  connectivity is plotted). Tracked in scope spec; not blocking.
+- The 50-ROI drop on cospine_motor reflects a known coverage gap in
+  that dataset; the S11 cohort coverage matrix surfaces this to the
+  analyst directly.
+
