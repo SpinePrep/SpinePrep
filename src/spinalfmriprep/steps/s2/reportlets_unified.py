@@ -172,13 +172,13 @@ def _uniform_z_picks(z0: int, z1: int, n: int = 9) -> list[int]:
 
 
 def _draw_pill(ax, x: float, y: float, w: float, h: float, label: str,
-               status: str, fontsize: int = 9, transform=None) -> None:
+               status: str, fontsize: int = 13, transform=None) -> None:
     pal = _STATUS.get(status, _STATUS["UNKNOWN"])
     if transform is None:
         transform = ax.transAxes
     box = mpatches.FancyBboxPatch(
         (x, y), w, h, boxstyle="round,pad=0.003,rounding_size=0.10",
-        facecolor=pal["fill"], edgecolor=pal["edge"], linewidth=1.0,
+        facecolor=pal["fill"], edgecolor=pal["edge"], linewidth=1.2,
         transform=transform, zorder=5,
     )
     ax.add_patch(box)
@@ -190,49 +190,50 @@ def _draw_pill(ax, x: float, y: float, w: float, h: float, label: str,
 def _add_header(fig, title: str, subtitle: str, status: str,
                 metric_text: Optional[str] = None) -> None:
     """Header strip with title (left), subtitle (center), status pill (right)."""
-    ax = fig.add_axes((0.0, 0.94, 1.0, 0.06))
+    ax = fig.add_axes((0.0, 0.92, 1.0, 0.08))
     ax.set_facecolor(_BG); ax.axis("off")
     ax.set_xlim(0, 1); ax.set_ylim(0, 1)
-    ax.text(0.012, 0.62, title, color=_TEXT, fontsize=12,
+    ax.text(0.012, 0.65, title, color=_TEXT, fontsize=18,
             fontweight="bold", transform=ax.transAxes, va="center")
-    ax.text(0.012, 0.22, subtitle, color=_MUTED, fontsize=9,
+    ax.text(0.012, 0.22, subtitle, color=_MUTED, fontsize=12,
             family="monospace", transform=ax.transAxes, va="center")
     if metric_text:
-        ax.text(0.85, 0.5, metric_text, color=_TEXT, fontsize=10,
-                ha="right", va="center", transform=ax.transAxes)
-    _draw_pill(ax, 0.90, 0.27, 0.08, 0.45, status, status,
-               fontsize=11, transform=ax.transAxes)
+        ax.text(0.82, 0.5, metric_text, color=_TEXT, fontsize=14,
+                fontweight="bold", ha="right", va="center",
+                transform=ax.transAxes)
+    _draw_pill(ax, 0.88, 0.25, 0.10, 0.50, status, status,
+               fontsize=15, transform=ax.transAxes)
 
 
 def _add_footer(fig, legend_items: Iterable[tuple[str, str]],
                 metric_lines: Iterable[str] = ()) -> None:
     """Footer strip with legend swatches (left) + metric strings (right)."""
-    ax = fig.add_axes((0.0, 0.0, 1.0, 0.05))
+    ax = fig.add_axes((0.0, 0.0, 1.0, 0.06))
     ax.set_facecolor(_BG); ax.axis("off")
     ax.set_xlim(0, 1); ax.set_ylim(0, 1)
     x = 0.012
     for color, label in legend_items:
-        ax.add_patch(mpatches.Rectangle((x, 0.35), 0.013, 0.30,
+        ax.add_patch(mpatches.Rectangle((x, 0.32), 0.016, 0.36,
                                          facecolor=color, edgecolor="none",
                                          transform=ax.transAxes))
-        ax.text(x + 0.018, 0.5, label, color=_MUTED, fontsize=9,
+        ax.text(x + 0.022, 0.5, label, color=_TEXT, fontsize=12,
                 ha="left", va="center", transform=ax.transAxes)
-        x += 0.018 + 0.012 + len(label) * 0.007
+        x += 0.022 + 0.015 + len(label) * 0.008
     # Right-side metric lines
     metrics_str = "    ".join(metric_lines)
     if metrics_str:
-        ax.text(0.988, 0.5, metrics_str, color=_TEXT, fontsize=9,
+        ax.text(0.988, 0.5, metrics_str, color=_TEXT, fontsize=12,
                 family="monospace", ha="right", va="center",
                 transform=ax.transAxes)
 
 
 def _orient_marker(ax, label_left: str = "R", label_right: str = "L") -> None:
     """Anatomical orientation markers in the top corners of an axial tile."""
-    ax.text(0.04, 0.92, label_left, transform=ax.transAxes,
-            color=_MUTED, fontsize=8, fontweight="bold",
+    ax.text(0.06, 0.94, label_left, transform=ax.transAxes,
+            color="#facc15", fontsize=12, fontweight="bold",
             ha="left", va="top")
-    ax.text(0.96, 0.92, label_right, transform=ax.transAxes,
-            color=_MUTED, fontsize=8, fontweight="bold",
+    ax.text(0.94, 0.94, label_right, transform=ax.transAxes,
+            color="#facc15", fontsize=12, fontweight="bold",
             ha="right", va="top")
 
 
@@ -264,9 +265,12 @@ def _render_axial_tile(
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values():
         s.set_color(_BORDER); s.set_linewidth(0.8)
-    ax.text(0.04, 0.05, f"z={z_idx}", transform=ax.transAxes,
-            color="#facc15", fontsize=8, fontweight="bold",
-            ha="left", va="bottom")
+    # Z-index label with a dark backdrop for legibility on bright tiles
+    ax.text(0.06, 0.06, f"z={z_idx}", transform=ax.transAxes,
+            color="#facc15", fontsize=12, fontweight="bold",
+            ha="left", va="bottom",
+            bbox=dict(facecolor="black", alpha=0.55, edgecolor="none",
+                      boxstyle="round,pad=0.25"))
     if first:
         _orient_marker(ax)
 
@@ -304,22 +308,25 @@ def _render_sagittal(
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values():
         s.set_color(_BORDER); s.set_linewidth(0.8)
-    # Anterior is left after np.rot90 of a RAS-canonical Y-Z plane (Y=A-P).
-    ax.text(0.04, 0.98, "S", transform=ax.transAxes, color=_MUTED,
-            fontsize=9, fontweight="bold", ha="left", va="top")
-    ax.text(0.04, 0.02, "I", transform=ax.transAxes, color=_MUTED,
-            fontsize=9, fontweight="bold", ha="left", va="bottom")
-    ax.text(0.02, 0.5, "A", transform=ax.transAxes, color=_MUTED,
-            fontsize=9, fontweight="bold", ha="left", va="center")
-    ax.text(0.98, 0.5, "P", transform=ax.transAxes, color=_MUTED,
-            fontsize=9, fontweight="bold", ha="right", va="center")
+    # Anatomical orientation markers with dark backdrops for legibility
+    _bbox = dict(facecolor="black", alpha=0.55, edgecolor="none",
+                 boxstyle="round,pad=0.25")
+    ax.text(0.05, 0.97, "S", transform=ax.transAxes, color="#facc15",
+            fontsize=14, fontweight="bold", ha="left", va="top", bbox=_bbox)
+    ax.text(0.05, 0.03, "I", transform=ax.transAxes, color="#facc15",
+            fontsize=14, fontweight="bold", ha="left", va="bottom", bbox=_bbox)
+    ax.text(0.03, 0.5, "A", transform=ax.transAxes, color="#facc15",
+            fontsize=14, fontweight="bold", ha="left", va="center", bbox=_bbox)
+    ax.text(0.97, 0.5, "P", transform=ax.transAxes, color="#facc15",
+            fontsize=14, fontweight="bold", ha="right", va="center", bbox=_bbox)
     if z_label_levels:
-        # Side annotation: vertebral level labels at given Z indices
         for z, lbl in z_label_levels.items():
             ax.text(0.99, 1.0 - (z / sag_yz.shape[1]),
                     lbl, transform=ax.transAxes, color=_TEXT,
-                    fontsize=7, family="monospace",
-                    ha="right", va="center")
+                    fontsize=10, family="monospace", fontweight="bold",
+                    ha="right", va="center",
+                    bbox=dict(facecolor="black", alpha=0.6,
+                              edgecolor="none", boxstyle="round,pad=0.15"))
 
 
 def _midcord_sagittal_slice(mask: np.ndarray) -> int:
@@ -479,11 +486,11 @@ def _render_sagittal_plus_montage(
     mid_z = (z0 + z1) // 2
     vmin_ax, vmax_ax = _intensity_window(anat[:, :, mid_z])
 
-    fig = _layout_figure(14.0, 8.0)
+    fig = _layout_figure(16.0, 9.0)
     _add_header(fig, title, subtitle, status, metric_header)
 
-    # Sagittal occupies the LEFT half (slightly under 50%)
-    ax_sag = fig.add_axes((0.03, 0.08, 0.40, 0.84))
+    # Sagittal occupies the LEFT (slightly under 40%)
+    ax_sag = fig.add_axes((0.025, 0.10, 0.36, 0.80))
     ax_sag.set_facecolor(_BG)
     _render_sagittal(ax_sag, sag, sag_overlays_slab, vmin_sag, vmax_sag,
                      z_label_levels=z_label_levels)
@@ -492,10 +499,10 @@ def _render_sagittal_plus_montage(
     n_tiles = len(z_picks)
     n_cols = max(1, min(n_axial_cols, n_tiles))
     n_rows = (n_tiles + n_cols - 1) // n_cols
-    grid_x0 = 0.47
+    grid_x0 = 0.42
     grid_x1 = 0.985
-    grid_y0 = 0.08
-    grid_y1 = 0.92
+    grid_y0 = 0.10
+    grid_y1 = 0.90
     cell_w = (grid_x1 - grid_x0) / n_cols
     cell_h = (grid_y1 - grid_y0) / n_rows
     global_bbox = (x0, x1, y0, y1)
