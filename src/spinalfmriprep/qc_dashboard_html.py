@@ -301,18 +301,24 @@ def _generate_index_html(
                 pass
 
     # Compact S11 release banner — single row instead of header + list.
+    # S11 emits its deliverable paths into qc.json; trust that rather
+    # than hard-coding a directory (F11 moves output to release/ when
+    # derivatives is a chain-runner symlink).
     if out_dir is not None:
         s11_qc_path = out_dir / "logs" / "S11_qc_aggregation_and_release" / "qc.json"
-        rel_report = out_dir / "derivatives" / "spinalfmriprep" / "release_report.html"
-        if s11_qc_path.exists() and rel_report.exists():
+        s11_qc: dict = {}
+        if s11_qc_path.exists():
             try:
                 s11_qc = json.loads(s11_qc_path.read_text(encoding="utf-8"))
             except Exception:
                 s11_qc = {}
+        deliv = s11_qc.get("deliverables", {}) or {}
+        rel_rel = deliv.get("release_report") or ""
+        rel_report = (out_dir / rel_rel) if rel_rel else None
+        if s11_qc and rel_report is not None and rel_report.exists():
             status = s11_qc.get("status", "UNKNOWN")
             metrics = s11_qc.get("metrics", {}) or {}
             rel_link = _relpath(rel_report, dashboard_dir).replace("\\", "/")
-            deliv = s11_qc.get("deliverables", {}) or {}
             group_link = deliv.get("group_dashboard")
             group_html = ""
             if group_link:
