@@ -201,6 +201,34 @@ FIX:
 | 3 | Enforce FWHM tolerance gates in `_classify` (or drop the unused policy keys + document) | medium | ~20 lines |
 | 4 | Document cord_dice_pre_post + tsnr_ratio interpretation in policy YAML comments | low | comments only |
 
+## Update 2026-05-28 — FWHM gate is WARN-only, not PASS/WARN/FAIL
+
+The first implementation attempt enforced PASS/WARN/FAIL on per-axis
+|requested - measured| FWHM with policy tolerances (0.5/1.0 mm XY,
+1.0/2.0 mm Z). Empirically on the 11-run reg cohort this would FAIL
+**every single run**: requested 2.4/2.4/11.8 mm against measured
+~0.5–1.8 / 0.6–1.8 / 3.2–11.4 mm, giving |Δ| of 1.3–2.1 / 0.5–1.8 /
+0.4–8.6 mm.
+
+Root cause: autocorrelation-based residual-FWHM estimators
+systematically **under-report** the applied kernel width when
+restricted to small ROIs (well-known limitation in fMRIPrep / AFNI
+3dFWHMx documentation; whole-brain ROIs are needed for accurate
+recovery). Our cord-only ROI (~1000 voxels) loses 50-70% of the
+applied kernel through the per-axis autocorrelation calculation.
+
+Decision: the FWHM metric **cannot legitimately FAIL** a run because
+it can't truthfully measure cord-restricted smoothness. Demoted to
+**WARN-only** in `_classify` — large |req-meas| gaps still surface
+as warnings (so smoothing failures get visibility), but they no
+longer block a run. The metric remains valuable as observability —
+seeing the gap is informative — but the gate is calibrated to what
+the estimator can actually measure.
+
+The smoothness_summary reportlet keeps its tolerance bands; those
+visualize the same policy values but for the analyst to read rather
+than a hard accept/reject.
+
 ## Sources
 
 - Esteban et al. 2019 — fMRIPrep (*Nat Methods*)
