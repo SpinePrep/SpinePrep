@@ -473,18 +473,31 @@ def render_s8_carpet_plot(
     _draw_header(fig, "S8 — Carpet plot (cord BOLD)",
                  subtitle, status)
 
-    # Layout: carpet on top (~60% height), traces below (~30%).
+    # Layout — carpet on top, traces below. Carpet has a dedicated
+    # colorbar gutter to the RIGHT (cax) so the carpet's plot box
+    # width equals the trace boxes (no auto-shrink from
+    # `fig.colorbar(ax=ax_carpet)`). Volume-axis alignment requires
+    # identical x-positions on all panels.
+    plot_x0 = 0.08
+    plot_w  = 0.80       # carpet + traces all this wide
+    cbar_x0 = plot_x0 + plot_w + 0.012
+    cbar_w  = 0.018
+
     if n_panels == 1:
-        ax_carpet = fig.add_axes((0.08, 0.10, 0.88, 0.75))
+        ax_carpet = fig.add_axes((plot_x0, 0.10, plot_w, 0.75))
+        cax = fig.add_axes((cbar_x0, 0.10 + 0.75 * 0.18, cbar_w, 0.75 * 0.64))
         trace_axes: list = []
     else:
         carpet_h = 0.55
         trace_h_each = 0.20 / max(n_panels - 1, 1)
-        ax_carpet = fig.add_axes((0.08, 0.30, 0.88, carpet_h))
+        ax_carpet = fig.add_axes((plot_x0, 0.30, plot_w, carpet_h))
+        cax = fig.add_axes(
+            (cbar_x0, 0.30 + carpet_h * 0.18, cbar_w, carpet_h * 0.64)
+        )
         trace_axes = []
         next_y = 0.08
         for i in range(n_panels - 1):
-            tax = fig.add_axes((0.08, next_y, 0.88, trace_h_each))
+            tax = fig.add_axes((plot_x0, next_y, plot_w, trace_h_each))
             trace_axes.append(tax)
             next_y += trace_h_each + 0.01
 
@@ -492,7 +505,9 @@ def render_s8_carpet_plot(
     im = ax_carpet.imshow(
         carpet, cmap="RdBu_r", vmin=vmin, vmax=vmax,
         aspect="auto", interpolation="nearest",
+        extent=(0, n_t, n_vox, 0),       # x in volume units (matches traces)
     )
+    ax_carpet.set_xlim(0, n_t - 1)
     ax_carpet.set_ylabel(f"Cord voxels (sorted by mean, n={n_vox})",
                          color=TEXT, fontsize=9)
     if trace_axes:
@@ -500,17 +515,17 @@ def render_s8_carpet_plot(
     else:
         ax_carpet.set_xlabel("Volume", color=TEXT, fontsize=10)
 
+    cb = fig.colorbar(im, cax=cax)
+    cb.set_label("σ", color=TEXT, fontsize=9)
+    cb.ax.tick_params(colors=TEXT, labelsize=8)
+    cb.outline.set_edgecolor(BORDER)
+
     # Outlier markers across all axes
     all_axes = [ax_carpet] + trace_axes
     if outlier_indices is not None:
         for oi in outlier_indices:
             for ax in all_axes:
                 ax.axvline(oi, color="#ef4444", lw=0.4, alpha=0.30)
-
-    cb = fig.colorbar(im, ax=ax_carpet, shrink=0.6, pad=0.01)
-    cb.set_label("σ", color=TEXT, fontsize=9)
-    cb.ax.tick_params(colors=TEXT, labelsize=8)
-    cb.outline.set_edgecolor(BORDER)
 
     # Bottom traces
     trace_specs = []
@@ -533,7 +548,7 @@ def render_s8_carpet_plot(
         ax.set_ylabel(label, color=TEXT, fontsize=8)
         ax.grid(alpha=0.15, color=BORDER)
         ax.set_axisbelow(True)
-        ax.set_xlim(0, len(vec) - 1)
+        ax.set_xlim(0, n_t - 1)        # match the carpet x extent exactly
 
     # X-label only on bottom-most panel
     if trace_axes:
