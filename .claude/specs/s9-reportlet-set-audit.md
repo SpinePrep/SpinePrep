@@ -217,13 +217,14 @@ restricted to small ROIs (well-known limitation in fMRIPrep / AFNI
 recovery). Our cord-only ROI (~1000 voxels) loses 50-70% of the
 applied kernel through the per-axis autocorrelation calculation.
 
-Decision: the FWHM metric **cannot legitimately FAIL** a run because
-it can't truthfully measure cord-restricted smoothness. Demoted to
-**WARN-only** in `_classify` — large |req-meas| gaps still surface
-as warnings (so smoothing failures get visibility), but they no
-longer block a run. The metric remains valuable as observability —
-seeing the gap is informative — but the gate is calibrated to what
-the estimator can actually measure.
+Decision: the FWHM metric **cannot legitimately FAIL OR WARN** a run
+because it can't truthfully measure cord-restricted smoothness. The
+WARN-only first pass still flagged 11/11 cohort runs as WARN — same
+false-alarm problem at a different threshold. Final decision: FWHM
+is **observability-only** — the metric is recorded in qc.json and
+visualised in the smoothness_summary reportlet (with tolerance
+bands for analyst review), but does NOT enter the PASS/WARN/FAIL
+classifier at all.
 
 The smoothness_summary reportlet keeps its tolerance bands; those
 visualize the same policy values but for the analyst to read rather

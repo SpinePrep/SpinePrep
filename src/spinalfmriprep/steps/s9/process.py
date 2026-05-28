@@ -362,40 +362,18 @@ def _classify(
             if worst == "PASS":
                 worst = "WARN"
 
-    # Gate 3: per-axis FWHM in tolerance band — WARN-ONLY.
-    #
-    # Autocorrelation-based residual-FWHM estimators systematically
-    # under-report applied kernel width on small ROIs (well-known
-    # limitation, documented in fMRIPrep / AFNI 3dFWHMx; whole-brain
-    # ROIs are needed for accurate recovery). Empirically on the
-    # 11-run reg cohort: requested 2.4/2.4/11.8 mm but measured
-    # ~0.5-1.8 / 0.6-1.8 / 3.2-11.4 mm — the cord-only estimator
-    # routinely sees 30-50% of the applied kernel.
-    #
-    # The metric is still useful as observability (large |req-meas|
-    # gaps signal smoothing issues), but it cannot legitimately FAIL
-    # a run because it cannot truthfully measure cord-restricted
-    # smoothness. We emit WARN (never FAIL) so the gap is visible
-    # without producing false negatives. See
+    # FWHM is observability-only — not a gate. Autocorrelation-based
+    # residual-FWHM estimators systematically under-report applied
+    # kernel width on small ROIs (well-known limitation in fMRIPrep /
+    # AFNI 3dFWHMx; whole-brain ROIs needed for accurate recovery).
+    # Empirically on the 11-run reg cohort: requested 2.4/2.4/11.8 mm
+    # but measured ~0.5-1.8 / 0.6-1.8 / 3.2-11.4 mm. The cord-only
+    # estimator literally cannot reach the requested value, so ANY
+    # gating threshold (FAIL OR WARN) produces false alarms on every
+    # run. The metric remains in qc.json + the smoothness_summary
+    # reportlet (with policy tolerance bands for analyst review) but
+    # does NOT enter the PASS/WARN/FAIL classifier. See
     # .claude/specs/s9-reportlet-set-audit.md.
-    if fwhm_cfg and fwhm_cfg.get("enabled", True):
-        tol_xy_pass = float(fwhm_cfg.get("tolerance_mm_xy", 0.5))
-        tol_z_pass  = float(fwhm_cfg.get("tolerance_mm_z", 1.0))
-        for axis, key_req, key_meas, tp in (
-            ("X", "fwhm_x_requested_mm", "fwhm_x_measured_mm", tol_xy_pass),
-            ("Y", "fwhm_y_requested_mm", "fwhm_y_measured_mm", tol_xy_pass),
-            ("Z", "fwhm_z_requested_mm", "fwhm_z_measured_mm", tol_z_pass),
-        ):
-            req = metrics.get(key_req)
-            meas = metrics.get(key_meas)
-            if req is None or meas is None:
-                continue
-            d = abs(float(meas) - float(req))
-            if d > tp:
-                reasons.append(f"fwhm_{axis.lower()} WARN: |{meas:.2f}-{req:.2f}|={d:.2f}mm "
-                               f"(cord-ROI autocorrelation under-reports applied kernel)")
-                if worst == "PASS":
-                    worst = "WARN"
 
     return worst, reasons
 
