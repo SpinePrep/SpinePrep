@@ -854,9 +854,14 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
       - cord ``dice_mean_after`` ≥ ``pass_dice_min`` and ≥ Before − ε
       - per-slice ``displacement_mean_after_mm`` ≤
         ``pass_displacement_max_mm`` and ≤ Before + ε
-    Plus the legacy MI sanity check (PASS requires Δ ≥ 0%, but a
-    catastrophic drop fails outright). SyN always degrades to WARN
-    (no fmap = inherently weaker correction).
+    Plus the legacy MI sanity check (a catastrophic drop fails
+    outright only when geometric metrics also disagree).
+
+    Mode (topup / fugue / syn) is recorded on the run but no longer
+    gates status — geometric Dice + displacement decide PASS/WARN/FAIL
+    for every mode (2026-05-28). The earlier SyN-always-WARN rule was
+    too conservative given empirical Dice 0.72-0.87 / disp 0.33-0.71 mm
+    on SyN-fallback runs across the reg cohort.
 
     When the CoSpine metrics could not be computed (anat unavailable),
     fall back to MI gating alone so the step still meaningfully runs.
@@ -931,11 +936,14 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
                 reasons.append(f"cord A–P displacement increased "
                                f"({disp_b:.2f} → {disp_a:.2f} mm)")
 
-    if mode == "syn":
-        # SyN always marked WARN per spec (no fmap = degraded capability)
-        reasons.append("SyN fallback used (no fieldmap available)")
-        return "WARN", reasons
-
+    # Mode is captured in the run's `mode` field and surfaced in every
+    # reportlet's subtitle; downstream consumers can filter SyN-mode
+    # runs themselves if they want extra caution. The metric gates above
+    # (geometric Dice + A-P displacement, with the MI catastrophic drop
+    # check) decide PASS/WARN/FAIL for every mode now. Prior SyN-always-
+    # WARN rule removed 2026-05-28 — empirically the SyN-fallback runs
+    # achieve Dice 0.72-0.87 / disp 0.33-0.71 mm on the reg cohort,
+    # comfortably above the PASS thresholds.
     return "PASS" if not reasons else "WARN", reasons
 
 
