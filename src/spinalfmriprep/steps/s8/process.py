@@ -85,20 +85,44 @@ def _load_frame_metrics(frame_metrics_tsv: Path) -> pd.DataFrame:
     return df
 
 
+def _tukey_outlier_mask(x: np.ndarray, k: float = 1.5) -> np.ndarray:
+    """Tukey upper-fence outlier flag: values above Q3 + k·IQR.
+
+    Non-parametric; works on heavy-tailed cord-fMRI distributions
+    where the μ + nσ Gaussian rule over-flags. Matches fMRIPrep's
+    `motion_outlier_NN` convention and S3.2's own outlier rule.
+    """
+    q1, q3 = np.percentile(x, [25, 75])
+    return x > (q3 + k * (q3 - q1))
+
+
 def _build_outlier_columns(
     frame_metrics: pd.DataFrame, fd: np.ndarray,
-    fd_thresh: float, dvars_nsd: float, refrms_nsd: float,
+    fd_thresh: float,
+    dvars_iqr_k: float = 1.5, refrms_iqr_k: float = 1.5,
 ) -> tuple[dict[str, np.ndarray], int]:
-    """One-hot spike columns where FD>thresh OR DVARS>μ+nσ OR refRMS>μ+nσ."""
+    """One-hot spike columns where FD > thresh OR DVARS Tukey OR refRMS Tukey.
+
+    Field-standard convention (fMRIPrep `motion_outlier_NN`):
+      FD > 0.5 mm  (Power 2014 / Kaptan 2023 / Dabbagh 2024 cord)
+      DVARS > Q3 + 1.5·IQR  (Tukey; matches S3.2's own outlier rule)
+      refRMS > Q3 + 1.5·IQR (same)
+
+    Audit references: .claude/specs/s8-outlier-rate-root-cause.md
+    + .claude/specs/s8-algorithm-audit.md.
+
+    We do NOT OR-merge S3.2's `frame_metrics["outlier"]` column anymore
+    — S3.2 used Tukey on the same DVARS/refRMS for funcref-selection,
+    and we recompute Tukey here for the spike regressors. Merging
+    layered detectors caused duplicated/inflated flag counts.
+    """
     n = len(frame_metrics)
     dvars = frame_metrics["dvars"].to_numpy(dtype=np.float64)
     refrms = frame_metrics["ref_rms"].to_numpy(dtype=np.float64)
     flag = np.zeros(n, dtype=bool)
     flag |= (fd[:n] > fd_thresh)
-    flag |= (dvars > dvars.mean() + dvars_nsd * dvars.std())
-    flag |= (refrms > refrms.mean() + refrms_nsd * refrms.std())
-    if flag.any() and "outlier" in frame_metrics.columns:
-        flag |= (frame_metrics["outlier"].to_numpy(dtype=bool))
+    flag |= _tukey_outlier_mask(dvars, k=dvars_iqr_k)
+    flag |= _tukey_outlier_mask(refrms, k=refrms_iqr_k)
     cols: dict[str, np.ndarray] = {}
     idx_outliers = np.where(flag)[0]
     for i, t in enumerate(idx_outliers):
@@ -1028,9 +1052,9 @@ def run_S8_confounds_and_physio_regressors(
         ocols, n_out = _build_outlier_columns(
             frame_metrics,
             columns["framewise_displacement"],
-            fd_thresh=float(mp.get("fd_outlier_threshold_mm", 0.2)),
-            dvars_nsd=float(mp.get("dvars_outlier_n_sd", 3.0)),
-            refrms_nsd=float(mp.get("refrms_outlier_n_sd", 3.0)),
+            fd_thresh=float(mp.get("fd_outlier_threshold_mm", 0.5)),
+            dvars_iqr_k=float(mp.get("dvars_outlier_iqr_k", 1.5)),
+            refrms_iqr_k=float(mp.get("refrms_outlier_iqr_k", 1.5)),
         )
         for k, v in ocols.items():
             columns[k] = v
@@ -1266,7 +1290,11 @@ def run_S8_confounds_and_physio_regressors(
         "Software": "SpinalfMRIprep S8 + FSL PNM (popp + pnm_evs)",
         "ConfoundFamilies": {
             "motion": "trans_x/y from S4 slicewise NIfTI moco params (mean-over-z), derivative1, FD = |Δx|+|Δy|",
-            "outliers": "one-hot for frames where FD > %.2f mm OR DVARS > μ+3σ OR refRMS > μ+3σ" % float(policy.get("motion", {}).get("fd_outlier_threshold_mm", 0.2)),
+            "outliers": "one-hot for frames where FD > %.2f mm OR DVARS > Q3+%.1f·IQR OR refRMS > Q3+%.1f·IQR" % (
+                float(policy.get("motion", {}).get("fd_outlier_threshold_mm", 0.5)),
+                float(policy.get("motion", {}).get("dvars_outlier_iqr_k", 1.5)),
+                float(policy.get("motion", {}).get("refrms_outlier_iqr_k", 1.5)),
+            ),
             "csf": "slicewise top-%.0f%%-variance mean of eroded PAM50csf voxels (1 column per slice)" % (100 * float(policy.get("csf_slicewise", {}).get("top_variance_fraction", 0.20))),
             "retroicor": "FSL PNM slicewise cardiac/respiratory/interactions × N_slices (cord-mean of voxelwise EVs)",
             "cosine": "DCT type-II basis up to %s Hz (~%.0f s high-pass)" % (
@@ -1313,7 +1341,7 @@ def run_S8_confounds_and_physio_regressors(
         int(np.argmax(v)) for k, v in columns.items()
         if k.startswith("motion_outlier_")
     ], dtype=int)
-    fd_thr = float(policy.get("motion", {}).get("fd_outlier_threshold_mm", 0.2))
+    fd_thr = float(policy.get("motion", {}).get("fd_outlier_threshold_mm", 0.5))
 
     try:
         render_s8_confound_columns(

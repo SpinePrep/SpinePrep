@@ -149,11 +149,10 @@ def render_s8_fd_dvars_outliers(
     fig = plt.figure(figsize=(11, 7), facecolor=BG)
     _draw_header(fig, "S8 — Motion + frame outliers", subtitle, status)
     axes = []
-    for i, (vec, label, color, thr_label) in enumerate(zip(
+    for i, (vec, label, color) in enumerate(zip(
         [fd, dvars, refrms],
         ["Framewise Displacement (mm)", "DVARS", "refRMS"],
         ["#7dcfff", "#ef4444", "#f59e0b"],
-        ["FD = 0.2 mm", "DVARS μ + 3σ", "refRMS μ + 3σ"],
     )):
         ax = fig.add_axes((0.08, 0.78 - i * 0.235, 0.88, 0.20))
         _setup_dark_axes(ax)
@@ -169,14 +168,16 @@ def render_s8_fd_dvars_outliers(
         if outlier_indices is not None and len(outlier_indices) > 0:
             for oi in outlier_indices:
                 ax.axvline(oi, color="#ef4444", lw=0.4, alpha=0.35)
-        # Threshold lines
+        # Threshold lines — FD uses caller-supplied threshold; DVARS/
+        # refRMS use Tukey Q3 + 1.5·IQR (matches the actual gate).
         if i == 0:
             ax.axhline(fd_thresh, ls="--", color="#9ca3af", lw=0.6,
-                       label=thr_label)
+                       label=f"FD = {fd_thresh:.2f} mm")
         else:
-            mu = float(np.mean(vec)); sd = float(np.std(vec))
-            ax.axhline(mu + 3 * sd, ls="--", color="#9ca3af", lw=0.6,
-                       label=thr_label)
+            q1, q3 = np.percentile(vec, [25, 75])
+            thr = q3 + 1.5 * (q3 - q1)
+            ax.axhline(thr, ls="--", color="#9ca3af", lw=0.6,
+                       label="Q3 + 1.5·IQR")
         leg = ax.legend(loc="upper right", fontsize=8, facecolor="#1a1d23",
                         edgecolor=BORDER, labelcolor=TEXT)
         for t in leg.get_texts():
@@ -530,7 +531,8 @@ def render_s8_carpet_plot(
     # Bottom traces
     trace_specs = []
     if has_fd:
-        trace_specs.append((fd, "FD (mm)", "#7dcfff", fd_thresh, "FD = 0.2 mm"))
+        trace_specs.append((fd, "FD (mm)", "#7dcfff", fd_thresh,
+                            f"FD = {fd_thresh:.2f} mm"))
     if has_dvars:
         mu_d = float(np.mean(dvars)); sd_d = float(np.std(dvars))
         trace_specs.append((dvars, "DVARS", "#ef4444",
