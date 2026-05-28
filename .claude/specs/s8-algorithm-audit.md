@@ -117,6 +117,26 @@ proxy) + **outlier fraction** (observability, soft-WARN).
 
 **10 WARN + 1 PASS** — but ALL WARNs are `outlier_fraction WARN` (soft, observability-only) or `RETROICOR skipped`. None are condition-number failures or critical bugs.
 
+## Update 2026-05-28 — Findings 3 & 6 retracted after verification
+
+After deeper verification:
+- **Finding 3 retracted**: RETROICOR routing is correct. Source-BIDS
+  cross-check found that only 5 of 11 reg-cohort runs ship physio
+  (handgrasp×2, pain×1, motor×2; balgrist×8 and ds004386×2 ship
+  none). The locked S8 cohort routed all 5 physio-equipped runs
+  through RETROICOR and skipped the 6 physio-less runs — exactly as
+  designed. The "9/11 skipped" claim in the original audit was a
+  qc.json-key reading error.
+- **Finding 6 retracted**: `metrics.n_columns_total` + per-family
+  `n_columns_motion`/`_csf`/`_retroicor`/`_cosine`/`_spinalcompcor`/
+  `_outliers` ARE present in every qc.json run. The audit's
+  "family_counts={}" claim came from looking for the wrong
+  top-level key (`family_counts` is in the JSON sidecar, not the
+  metrics dict).
+
+Both findings were observability-survey errors, not implementation
+bugs. Removed from the action list below.
+
 ## Findings
 
 ### Finding 1 — FD formula is L1, not L2 (Power 2014 uses L2 + radians)
