@@ -80,9 +80,35 @@ def _find_bold(out_dir: Path, subject: str, session: Optional[str],
 
 
 def _find_cord_mask(out_dir: Path, run_id: str) -> Optional[Path]:
-    """S3 cord seg in BOLD geometry."""
+    """EPI cord seg in the SAME geometry as the post-S5 BOLD that S9
+    operates on.
+
+    Priority (same pattern as S6 / S7 — audit refs:
+    .claude/specs/s6-algorithm-audit.md F10 and the matching S7 fix):
+      1. S5 ``cospine/bold_after_cord_seg.nii.gz`` — sct_deepseg sc_epi
+         on the POST-S5 mean BOLD. Matches the post-S5 BOLD that S9
+         smooths.
+      2. S3.1 ``func_ref_fast_seg_crop.nii.gz`` — fallback, PRE-S5
+         geometry. Only correct when S5 made minimal cord shifts (SyN-
+         fallback). On topup runs the cord shifts 5-10 mm A-P and this
+         seg lands off-cord, producing the misaligned-mask artifact
+         the user reported on the smoothed_vs_unsmoothed reportlet.
+    """
     project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
                     else Path.cwd())
+
+    # Priority 1: S5 post-correction cord seg.
+    s5_rel = (Path("S5_func_distortion_correction") / run_id / "cospine"
+              / "bold_after_cord_seg.nii.gz")
+    for cand in (
+        out_dir / "work" / s5_rel,
+        project_root / "work" / "done" / "reg" / "S5" / "work" / s5_rel,
+        Path("work") / "done" / "reg" / "S5" / "work" / s5_rel,
+    ):
+        if cand.exists():
+            return cand
+
+    # Priority 2 (fallback): S3.1 pre-S5 cord seg.
     rel = (Path("runs") / "S3_func_init_and_crop" / run_id
            / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz")
     rel_local = (Path("S3_func_init_and_crop") / run_id
