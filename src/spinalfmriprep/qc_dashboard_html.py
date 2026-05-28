@@ -44,9 +44,8 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "cord_dice_per_slice",      # S6 - per-slice cord Dice bars
     ],
     "S7_template_normalization": [
-        "pam50_overlay_sagittal",   # S7 - funcref + PAM50 cord contour (mid-sagittal)
-        "pam50_overlay_axial",      # S7 - funcref + PAM50 cord contour (axial montage)
-        "vertebral_alignment",      # S7 - vertebral level overlay
+        "pam50_on_func",            # S7 - composite: sagittal pair + axial montage (funcref + PAM50 cord + EPI cord)
+        "cord_dice_per_level",      # S7 - per-vertebral-level cord Dice bars
     ],
     "S8_confounds_and_physio_regressors": [
         "confound_columns",         # S8 - column counts per family
@@ -103,9 +102,8 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "cord_dice_per_slice": "S6 - Cord Dice per Slice",
     },
     "S7_template_normalization": {
-        "pam50_overlay_sagittal": "S7 - PAM50 Overlay (Sagittal)",
-        "pam50_overlay_axial": "S7 - PAM50 Overlay (Axial)",
-        "vertebral_alignment": "S7 - Vertebral Level Alignment",
+        "pam50_on_func": "S7 - PAM50 on Func (Composite)",
+        "cord_dice_per_level": "S7 - Cord Dice per Vertebral Level",
     },
     "S8_confounds_and_physio_regressors": {
         "confound_columns":    "S8 - Confound Column Counts",

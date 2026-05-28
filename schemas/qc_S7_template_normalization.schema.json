@@ -46,21 +46,25 @@
             "properties": {
               "cord_dice_native_func": {
                 "type": ["number", "null"],
-                "description": "Dice(PAM50_cord warped to func, S5/S6 func cord_dseg) in native func space"
+                "description": "Overall 3D Dice between PAM50_cord (warped to native func) and the S6 native func cord seg. Headline gate (Cohen-Adad 2014)."
               },
-              "label_offset_pam50_mean_mm": {
+              "cord_dice_per_level": {
+                "type": ["object", "null"],
+                "additionalProperties": { "type": "number" },
+                "description": "Per-vertebral-level cord Dice. Keys are stringified PAM50_spinal_levels integers (1..20); values are Dice restricted to that level's Z slices. Kaptan 2023 / CoSpine 2025 / Valošek 2025 standard."
+              },
+              "vertebral_level_coverage": {
+                "type": ["array", "null"],
+                "items": { "type": "integer" },
+                "description": "Sorted list of PAM50_spinal_levels integers present in the BOLD FOV."
+              },
+              "cord_round_trip_med_mm": {
                 "type": ["number", "null"],
-                "description": "Mean vertebral-label centroid offset in PAM50 space (subject vs atlas)"
+                "description": "Median per-Z cord centroid drift on forward∘inverse warp (cord-mask-restricted, replaces the FOV-wide intensity-weighted COM)."
               },
-              "label_offset_pam50_max_mm": {
-                "type": ["number", "null"]
-              },
-              "round_trip_func_med_mm": {
+              "cord_round_trip_max_mm": {
                 "type": ["number", "null"],
-                "description": "Median voxel displacement: funcref -> PAM50 -> funcref"
-              },
-              "round_trip_func_max_mm": {
-                "type": ["number", "null"]
+                "description": "Max per-Z cord centroid drift, same metric family."
               },
               "runtime_s": { "type": ["number", "null"] }
             }
@@ -72,10 +76,16 @@
           "failure_message": { "type": ["string", "null"] },
           "reportlets": {
             "type": "object",
+            "required": ["pam50_on_func", "cord_dice_per_level"],
             "properties": {
-              "pam50_overlay_sagittal": { "type": "string" },
-              "pam50_overlay_axial": { "type": "string" },
-              "vertebral_alignment": { "type": "string" }
+              "pam50_on_func": {
+                "type": "string",
+                "description": "Composite registration QC view: tall-narrow sagittal pair (funcref + PAM50 spinal_levels color blocks) + 3 cord-bearing axial tiles with PAM50_cord (yellow) and EPI-cord (cyan) contours."
+              },
+              "cord_dice_per_level": {
+                "type": "string",
+                "description": "Per-vertebral-level 3D Dice bar chart with PASS/WARN/FAIL color bands. Kaptan 2023 / CoSpine 2025 / Valošek 2025 standard."
+              }
             }
           },
           "xfm_paths": {

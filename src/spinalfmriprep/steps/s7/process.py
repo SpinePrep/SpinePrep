@@ -245,85 +245,97 @@ def _dice(a: np.ndarray, b: np.ndarray) -> float:
     return float(2 * (a & b).sum() / n)
 
 
-def _vertebral_label_offset_mm(
-    subject_labels_in_PAM50: Path, pam50_levels: Path,
-) -> tuple[Optional[float], Optional[float]]:
-    """Per-label centroid offset in mm between subject vertebral labels
-    (warped to PAM50) and the PAM50 spinal_levels atlas. Match labels by
-    integer value (1..N). Return (mean_offset_mm, max_offset_mm).
-    """
-    try:
-        sub_img = nib.load(subject_labels_in_PAM50)
-        pam_img = nib.load(pam50_levels)
-    except Exception:
-        return None, None
-    sub = np.asarray(sub_img.dataobj)
-    pam = np.asarray(pam_img.dataobj)
-    if sub.shape != pam.shape:
-        return None, None
-    zooms = np.array(sub_img.header.get_zooms()[:3], dtype=np.float32)
-
-    offsets: list[float] = []
-    sub_labels = np.unique(sub[sub > 0]).astype(int)
-    pam_labels = np.unique(pam[pam > 0]).astype(int)
-    common = sorted(set(sub_labels.tolist()) & set(pam_labels.tolist()))
-    for lbl in common:
-        a = np.argwhere(sub == lbl)
-        b = np.argwhere(pam == lbl)
-        if a.size == 0 or b.size == 0:
-            continue
-        ca = a.mean(axis=0) * zooms
-        cb = b.mean(axis=0) * zooms
-        offsets.append(float(np.linalg.norm(ca - cb)))
-    if not offsets:
-        return None, None
-    return float(np.mean(offsets)), float(np.max(offsets))
-
-
-def _round_trip_displacement_mm(
-    funcref: Path,
+def _cord_round_trip_mm(
+    cord_seg: Path,
     warp_func_to_PAM50: Path,
     warp_PAM50_to_func: Path,
     pam50_ref: Path,
     work_dir: Path,
 ) -> tuple[Optional[float], Optional[float]]:
-    """Push funcref through forward then inverse; measure voxel-by-voxel
-    displacement of the image grid origin point. Median + max.
+    """Cord-mask-restricted round-trip drift in mm.
 
-    Implementation: forward-warp funcref to PAM50, then inverse-warp it back
-    to funcref. Compare to the original by COM drift (per-voxel-displacement
-    requires a sampling grid which is over-engineered for v1).
+    Push the native cord seg through forward then inverse warps and
+    measure (median, max) per-Z-slice in-plane centroid drift. Replaces
+    the FOV-wide intensity-weighted COM round-trip (audit Finding 4 of
+    s7-algorithm-audit.md), which was dominated by background voxels.
     """
-    fwd = work_dir / "rt_funcref_in_PAM50.nii.gz"
-    back = work_dir / "rt_funcref_back.nii.gz"
+    fwd = work_dir / "rt_cord_in_PAM50.nii.gz"
+    back = work_dir / "rt_cord_back.nii.gz"
     ok, _ = _run_command([
-        "sct_apply_transfo", "-i", str(funcref), "-d", str(pam50_ref),
-        "-w", str(warp_func_to_PAM50), "-x", "linear", "-o", str(fwd),
+        "sct_apply_transfo", "-i", str(cord_seg), "-d", str(pam50_ref),
+        "-w", str(warp_func_to_PAM50), "-x", "nn", "-o", str(fwd),
     ])
     if not ok or not fwd.exists():
         return None, None
     ok, _ = _run_command([
-        "sct_apply_transfo", "-i", str(fwd), "-d", str(funcref),
-        "-w", str(warp_PAM50_to_func), "-x", "linear", "-o", str(back),
+        "sct_apply_transfo", "-i", str(fwd), "-d", str(cord_seg),
+        "-w", str(warp_PAM50_to_func), "-x", "nn", "-o", str(back),
     ])
     if not ok or not back.exists():
         return None, None
     try:
-        a = nib.load(funcref).get_fdata()
-        b = nib.load(back).get_fdata()
+        zooms = np.array(nib.load(cord_seg).header.get_zooms()[:3], dtype=np.float32)
+        a = nib.load(cord_seg).get_fdata() > 0.5
+        b = nib.load(back).get_fdata() > 0.5
         if a.shape != b.shape:
             return None, None
-        zooms = np.array(nib.load(funcref).header.get_zooms()[:3], dtype=np.float32)
-        # Center-of-mass drift, weighted by intensity. Coarse but sufficient.
-        wa = a / max(a.sum(), 1.0)
-        wb = b / max(b.sum(), 1.0)
-        coords = np.indices(a.shape).reshape(3, -1).astype(np.float32)
-        ca = (coords * wa.ravel()).sum(axis=1) * zooms
-        cb = (coords * wb.ravel()).sum(axis=1) * zooms
-        drift = float(np.linalg.norm(ca - cb))
-        return drift, drift
+        drifts: list[float] = []
+        for z in range(a.shape[2]):
+            az = a[:, :, z]
+            bz = b[:, :, z]
+            if not az.any() or not bz.any():
+                continue
+            ca = np.array(np.where(az)).mean(axis=1) * zooms[:2]
+            cb = np.array(np.where(bz)).mean(axis=1) * zooms[:2]
+            drifts.append(float(np.linalg.norm(ca - cb)))
+        if not drifts:
+            return None, None
+        return float(np.median(drifts)), float(np.max(drifts))
     except Exception:
         return None, None
+
+
+def _cord_dice_per_level(
+    pam50_cord_in_func: Path,
+    func_cord_seg: Path,
+    pam50_levels_in_func: Path,
+) -> tuple[dict[int, float], list[int]]:
+    """Compute per-vertebral-level cord Dice + the level coverage list.
+
+    For each integer value present in PAM50_spinal_levels (warped into
+    native func), compute the Dice between the PAM50_cord (restricted
+    to that level's Z slices) and the native cord seg (same Z slices).
+
+    Returns ({level_id: dice}, [level_ids_in_FOV_sorted_ascending]).
+    The Kaptan 2023 / CoSpine 2025 / Valošek 2025 standard per-level
+    diagnostic.
+    """
+    try:
+        cord_pam50 = nib.load(pam50_cord_in_func).get_fdata() > 0.5
+        cord_func = nib.load(func_cord_seg).get_fdata() > 0.5
+        lvls = nib.load(pam50_levels_in_func).get_fdata().astype(np.int32)
+    except Exception:
+        return {}, []
+    if cord_pam50.shape != cord_func.shape or cord_pam50.shape != lvls.shape:
+        return {}, []
+    coverage_set: set[int] = set()
+    per_level: dict[int, float] = {}
+    for lvl in sorted(int(v) for v in np.unique(lvls) if v > 0):
+        lvl_mask = lvls == lvl
+        if not lvl_mask.any():
+            continue
+        coverage_set.add(lvl)
+        # Restrict Dice to Z slices where this level is present
+        z_mask = lvl_mask.any(axis=(0, 1))
+        if not z_mask.any():
+            continue
+        a = cord_pam50[:, :, z_mask] & lvl_mask[:, :, z_mask]
+        b = cord_func[:, :, z_mask] & lvl_mask[:, :, z_mask]
+        denom = int(a.sum()) + int(b.sum())
+        if denom == 0:
+            continue
+        per_level[lvl] = float(2 * int((a & b).sum()) / denom)
+    return per_level, sorted(coverage_set)
 
 
 # ---------------------------------------------------------------------------
@@ -438,7 +450,11 @@ def run_S7_template_normalization(
         if template_data_dir is None else (template_data_dir / pam50_ref_filename)
     pam50_cord = _pam50_path(template_data_dir, "template/PAM50_cord.nii.gz") \
         if template_data_dir is None else (template_data_dir / "PAM50_cord.nii.gz")
-    pam50_levels = _pam50_path(None, "template/PAM50_spinal_levels.nii.gz")
+    # F5 (s7-algorithm-audit.md): honor policy template_data_dir for the
+    # spinal_levels lookup too (was hardcoded to $SCT_DIR).
+    pam50_levels = (template_data_dir / "PAM50_spinal_levels.nii.gz"
+                    if template_data_dir is not None
+                    else _pam50_path(None, "template/PAM50_spinal_levels.nii.gz"))
 
     if not pam50_t2s.exists() or not pam50_cord.exists():
         return {
@@ -578,8 +594,10 @@ def run_S7_template_normalization(
     # 6. QC metrics
     metrics: dict[str, Any] = {}
 
-    # 6a. cord Dice in native func
     pam_cord_in_func = label_dir / "template" / "PAM50_cord.nii.gz"
+    pam_levels_in_func = label_dir / "template" / "PAM50_spinal_levels.nii.gz"
+
+    # 6a. cord Dice in native func (overall, headline gate)
     if pam_cord_in_func.exists():
         try:
             a = nib.load(pam_cord_in_func).get_fdata() > 0.5
@@ -589,31 +607,29 @@ def run_S7_template_normalization(
         except Exception as e:
             failure_reasons.append(f"cord_dice failed: {e}")
 
-    # 6b. label offset (optional, only when subject vertebral labels available)
-    if subject_vertebral_labels and subject_vertebral_labels.exists():
-        labels_in_PAM50 = s7_work_dir / "subject_labels_in_PAM50.nii.gz"
-        ok, _ = _run_command([
-            "sct_apply_transfo",
-            "-i", str(subject_vertebral_labels),
-            "-d", str(pam50_t2s),
-            "-w", str(s2_warp_anat_to_PAM50),
-            "-x", "nn", "-o", str(labels_in_PAM50),
-        ])
-        if ok and labels_in_PAM50.exists() and pam50_levels.exists():
-            mean_off, max_off = _vertebral_label_offset_mm(labels_in_PAM50, pam50_levels)
-            metrics["label_offset_pam50_mean_mm"] = mean_off
-            metrics["label_offset_pam50_max_mm"] = max_off
+    # 6b. per-vertebral-level Dice + level coverage (Kaptan 2023 standard).
+    # Replaces the mismatched-scheme label_offset_* metrics (audit
+    # Finding 3 of s7-algorithm-audit.md, see s7-reportlet-set-audit.md).
+    if pam_cord_in_func.exists() and pam_levels_in_func.exists():
+        per_level, coverage = _cord_dice_per_level(
+            pam_cord_in_func, func_seg_local, pam_levels_in_func,
+        )
+        if per_level:
+            metrics["cord_dice_per_level"] = {str(k): v for k, v in per_level.items()}
+        if coverage:
+            metrics["vertebral_level_coverage"] = coverage
 
-    # 6c. round-trip drift
-    rt_med, rt_max = _round_trip_displacement_mm(
-        funcref=funcref_local,
+    # 6c. cord-restricted round-trip drift (audit Finding 4: replaces
+    # FOV-wide intensity-weighted COM which was background-dominated).
+    rt_med, rt_max = _cord_round_trip_mm(
+        cord_seg=func_seg_local,
         warp_func_to_PAM50=warp_func_to_PAM50,
         warp_PAM50_to_func=warp_PAM50_to_func,
         pam50_ref=pam50_t2s,
         work_dir=s7_work_dir,
     )
-    metrics["round_trip_func_med_mm"] = rt_med
-    metrics["round_trip_func_max_mm"] = rt_max
+    metrics["cord_round_trip_med_mm"] = rt_med
+    metrics["cord_round_trip_max_mm"] = rt_max
 
     # 7. Funcref in PAM50 (QC-only single 3D; we never push 4D BOLD there)
     funcref_in_PAM50 = func_dir / f"{prefix}_space-PAM50_desc-funcref.nii.gz"
@@ -630,35 +646,36 @@ def run_S7_template_normalization(
     status, reasons = _classify(metrics, policy.get("qc_thresholds", {}))
     failure_reasons.extend(reasons)
 
-    # 9. Reportlets (sagittal/axial overlays + vertebral alignment)
+    # 9. Reportlets — 2 figures matching the field-standard
+    # "composite + quantitative" pattern (see s7-reportlet-set-audit.md):
+    #   1. pam50_on_func        — composite axial + sagittal overlays
+    #   2. cord_dice_per_level  — per-vertebral-level Dice bar chart
     from .reportlets import (
-        render_s7_pam50_overlay_sagittal,
-        render_s7_pam50_overlay_axial,
-        render_s7_vertebral_alignment,
+        render_s7_pam50_on_func,
+        render_s7_cord_dice_per_level,
     )
-    rep_sag = figures_dir / f"{prefix}_desc-S7_pam50_overlay_sagittal.png"
-    rep_axi = figures_dir / f"{prefix}_desc-S7_pam50_overlay_axial.png"
-    rep_vert = figures_dir / f"{prefix}_desc-S7_vertebral_alignment.png"
+    rep_composite = figures_dir / f"{prefix}_desc-S7_pam50_on_func.png"
+    rep_levels = figures_dir / f"{prefix}_desc-S7_cord_dice_per_level.png"
+    dice_val = metrics.get("cord_dice_native_func")
     try:
-        render_s7_pam50_overlay_sagittal(
-            funcref_local, pam_cord_in_func, rep_sag,
+        render_s7_pam50_on_func(
+            funcref_path=funcref_local,
+            pam50_cord_in_func_path=pam_cord_in_func,
+            pam50_levels_in_func_path=pam_levels_in_func if pam_levels_in_func.exists() else None,
+            func_cord_seg_path=func_seg_local,
+            output_path=rep_composite,
+            dice=dice_val,
         )
     except Exception as e:
-        failure_reasons.append(f"sagittal reportlet failed: {e}")
+        failure_reasons.append(f"pam50_on_func reportlet failed: {e}")
     try:
-        render_s7_pam50_overlay_axial(
-            funcref_local, pam_cord_in_func, rep_axi,
+        render_s7_cord_dice_per_level(
+            per_level=metrics.get("cord_dice_per_level") or {},
+            thresholds=policy.get("qc_thresholds", {}),
+            output_path=rep_levels,
         )
     except Exception as e:
-        failure_reasons.append(f"axial reportlet failed: {e}")
-    try:
-        render_s7_vertebral_alignment(
-            label_dir / "template" / "PAM50_spinal_levels.nii.gz",
-            subject_vertebral_labels,
-            rep_vert,
-        )
-    except Exception as e:
-        failure_reasons.append(f"vertebral_alignment reportlet failed: {e}")
+        failure_reasons.append(f"cord_dice_per_level reportlet failed: {e}")
 
     # 10. Save work-side qc_metrics.json
     provenance = {
@@ -688,12 +705,10 @@ def run_S7_template_normalization(
         "failure_reasons": failure_reasons,
         "failure_message": "; ".join(failure_reasons) if failure_reasons else None,
         "reportlets": {
-            "pam50_overlay_sagittal": str(rep_sag.relative_to(out_dir))
-                if rep_sag.exists() else "",
-            "pam50_overlay_axial": str(rep_axi.relative_to(out_dir))
-                if rep_axi.exists() else "",
-            "vertebral_alignment": str(rep_vert.relative_to(out_dir))
-                if rep_vert.exists() else "",
+            "pam50_on_func": str(rep_composite.relative_to(out_dir))
+                if rep_composite.exists() else "",
+            "cord_dice_per_level": str(rep_levels.relative_to(out_dir))
+                if rep_levels.exists() else "",
         },
         "xfm_paths": {
             "from_bold_to_PAM50": str(xfm_fwd.relative_to(out_dir)),

@@ -47,23 +47,30 @@ atlas:
     - "PAM50_spinal_levels"
 
 interpolation:
-  bold:  "LanczosWindowedSinc"  # funcref-in-PAM50 (QC only)
-  mask:  "NearestNeighbor"
-  label: "NearestNeighbor"
-  anat:  "Linear"
+  # SCT sct_apply_transfo accepts only `nn | linear | spline`. The
+  # ANTs name `LanczosWindowedSinc` was silently rejected/substituted
+  # (audit Finding 6 in s7-algorithm-audit.md). Use SCT's spline for
+  # the 3D funcref-in-PAM50 QC push.
+  bold:  "spline"               # funcref-in-PAM50 (QC only)
+  mask:  "nn"                   # PAM50 masks → native func (binary)
+  label: "nn"                   # PAM50 spinal_levels → native func (integer)
+  anat:  "linear"               # anat resamples
 
 qc_thresholds:
-  # Cord Dice in NATIVE func space: PAM50_cord warped to func vs S3 func
-  # cord_seg. Compose-only typically lands at 0.80-0.85 (limited by S6's
+  # Cord Dice in NATIVE func space: PAM50_cord warped to func vs S6 func
+  # cord_seg. Compose-only typically lands at 0.80–0.85 (limited by S6's
   # native Dice cap + the additional PAM50<->anat composition step).
+  # Used both for the overall `cord_dice_native_func` gate AND for the
+  # per-level `cord_dice_per_level` reportlet color bands.
   pass_dice_min: 0.80
   warn_dice_min: 0.65
   fail_dice_below: 0.65
-  # Round-trip is observability-only — intensity-weighted COM over full
-  # funcref FOV is noisy (background dominates).
-  # Label offset is observability-only — PAM50_spinal_levels (segmental
-  # 1-20) and S2's vertebral_labels (vertebral bodies 1-7) use different
-  # label schemes, so per-label centroid match is not meaningful.
+  # Cord-restricted round-trip drift on native func (audit Finding 4 in
+  # s7-algorithm-audit.md replaced the FOV-wide intensity-weighted COM
+  # which was background-dominated). Observability-only for v1; surface
+  # in qc.json for diagnostic value but don't gate (bsplinesyn's forward
+  # and inverse are separately optimised → non-zero intrinsic drift even
+  # at Dice 0.95). Add thresholds here if a regression surfaces.
 
 reproducibility:
   strict: false                 # ANTS_RANDOM_SEED=1 + ITK_THREADS=1 when true
