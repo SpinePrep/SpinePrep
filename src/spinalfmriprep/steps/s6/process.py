@@ -570,12 +570,18 @@ def run_S6_func_to_anat_registration(
     dice_val = metrics.get("cord_dice")
     hd95_val = metrics.get("cord_hd95_mm")
     if anat_dseg_in_bold.exists():
+        # Pass anat_in_bold (warped anat INTENSITY) too so the reportlet
+        # can show BOLD vs Anat in dual-modality side-by-side. The cord
+        # is unambiguous on the anat T1w/T2w panel — without it, the
+        # eye reads the bright CSF in T2*-EPI as the cord.
+        anat_intensity_arg = anat_in_bold if anat_in_bold.exists() else None
         try:
             render_s6_axial(
                 bold_mean_path=bold_mean_local,
                 anat_dseg_in_bold_path=anat_dseg_in_bold,
                 cord_mask_path=funccrop_local,
                 output_path=rep_axial,
+                anat_in_bold_path=anat_intensity_arg,
                 funcref_path=funcref_local,
                 dice=dice_val, hd95=hd95_val,
             )
@@ -587,6 +593,7 @@ def run_S6_func_to_anat_registration(
                 anat_dseg_in_bold_path=anat_dseg_in_bold,
                 cord_mask_path=funccrop_local,
                 output_path=rep_sag,
+                anat_in_bold_path=anat_intensity_arg,
                 dice=dice_val, hd95=hd95_val,
             )
         except Exception as e:

@@ -71,13 +71,38 @@ def _find_bold(out_dir: Path, subject: str, session: Optional[str], run_id: str)
 
 
 def _find_funccrop_mask(out_dir: Path, run_id: str) -> Optional[Path]:
-    """S3.1 cord seg in BOLD geometry. The actual cord segmentation is
-    `init/localize/func_ref_fast_seg_crop.nii.gz` (~3% of voxels = cord);
-    `funccrop_mask.nii.gz` is the FOV mask (~94% of voxels) and is wrong
-    for `-iseg`. Search local then chain.
+    """EPI cord seg in the SAME geometry as the funcref passed to S6.
+
+    Priority:
+      1. S5 ``cospine/bold_after_cord_seg.nii.gz`` — sct_deepseg sc_epi
+         on the POST-S5 mean BOLD. This matches the post-S5 funcref
+         that S6 actually uses.
+      2. S3.1 ``func_ref_fast_seg_crop.nii.gz`` — fallback, PRE-S5
+         geometry. Only correct if S5 made minimal cord-position
+         changes (e.g. SyN-fallback). On topup runs the cord can shift
+         5–10 mm in A-P due to physical field correction and this
+         seg lands off-cord.
+
+    Audit context: cospine_motorL S6 reportlets showed both cord
+    contours offset from the actual cord because S6 was using the
+    S3.1 (pre-S5) seg on the post-S5 funcref. Verified with per-Z
+    centroid comparison: 1.5–10 mm A-P offset across the cord.
     """
     project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
                     else Path.cwd())
+
+    # Priority 1: S5's post-correction cord seg from sct_deepseg sc_epi.
+    s5_rel = (Path("S5_func_distortion_correction") / run_id / "cospine"
+              / "bold_after_cord_seg.nii.gz")
+    for cand in (
+        out_dir / "work" / s5_rel,
+        project_root / "work" / "done" / "reg" / "S5" / "work" / s5_rel,
+        Path("work") / "done" / "reg" / "S5" / "work" / s5_rel,
+    ):
+        if cand.exists():
+            return cand
+
+    # Priority 2 (fallback): S3.1 pre-S5 cord seg.
     rel = (Path("runs") / "S3_func_init_and_crop" / run_id
            / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz")
     rel_local = (Path("S3_func_init_and_crop") / run_id
