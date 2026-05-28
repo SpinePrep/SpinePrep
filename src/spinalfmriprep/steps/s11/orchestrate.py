@@ -23,13 +23,13 @@ from .process import (
     _build_group_dashboard_data,
     _build_methods_manifest,
     _build_metrics_index,
+    _build_metrics_index_tsv,
     _build_participants_tsv,
     _build_per_subject_html,
     _build_references_bib,
     _build_release_report,
     _build_reproducibility_receipt,
     _build_run_inventory,
-    _build_sidecar_audit,
     _flat_run_records,
     _render_group_dashboard_html,
     _walk_chain_qc,
@@ -73,13 +73,24 @@ def run_S11(
     if not records:
         return StepResult("FAIL", "No qc.json files found on chain")
 
-    deriv_root = out_path / "derivatives" / "spinalfmriprep"
+    # Destination scoping (audit B15): chain-runner sets
+    # ``out_dir/derivatives`` as a symlink to the immediate predecessor's
+    # derivatives. If we wrote here we'd mutate the upstream-locked
+    # workfolder. When derivatives is a symlink, S11 owns
+    # ``out_dir/release/`` instead — the upstream tree stays immutable.
+    deriv_link = out_path / "derivatives"
+    if deriv_link.is_symlink():
+        deriv_root = out_path / "release"
+    else:
+        deriv_root = deriv_link / "spinalfmriprep"
     deriv_root.mkdir(parents=True, exist_ok=True)
+    logs_root = deriv_root / "logs"
+    logs_root.mkdir(parents=True, exist_ok=True)
 
     deliverables: dict[str, str] = {}
     failures: list[str] = []
 
-    # 2. metrics_index.jsonl
+    # 2. metrics_index.jsonl + metrics_index.tsv (MRIQC long-format)
     try:
         idx = deriv_root / "metrics_index.jsonl"
         n_idx = _build_metrics_index(records, idx)
@@ -87,6 +98,12 @@ def run_S11(
     except Exception as e:
         failures.append(f"metrics_index: {e}")
         n_idx = 0
+    try:
+        idx_tsv = deriv_root / "metrics_index.tsv"
+        _build_metrics_index_tsv(records, idx_tsv)
+        deliverables["metrics_index_tsv"] = str(idx_tsv.relative_to(out_path))
+    except Exception as e:
+        failures.append(f"metrics_index_tsv: {e}")
 
     # 3. Run inventory
     try:
@@ -108,20 +125,11 @@ def run_S11(
     except Exception as e:
         failures.append(f"group_dashboard: {e}")
 
-    # 5. Per-subject HTML reports
+    # Per-subject HTML is delayed until after the methods boilerplate
+    # has been built, so each report can embed it (NiPreps convention).
     subjects = {(r.get("dataset_key"), r.get("subject")) for r in records
                 if r.get("subject")}
-    subject_report_paths: list[Path] = []
-    for ds, sub in sorted(subjects):
-        try:
-            p = _build_per_subject_html(out_path, ds, sub, records, policy)
-            if p:
-                subject_report_paths.append(p)
-        except Exception as e:
-            failures.append(f"per_subject {ds}/{sub}: {e}")
     n_subjects = len(subjects)
-    n_subject_reports = len(subject_report_paths)
-    fraction = (n_subject_reports / n_subjects) if n_subjects else 0.0
 
     # 6. Cord-novel cohort views
     try:
@@ -162,7 +170,7 @@ def run_S11(
         failures.append(f"reproducibility_receipt: {e}")
         recipe = {}
 
-    # 8. CITATION.cff + references.bib
+    # 8. CITATION.cff (top level) + CITATION.bib (logs/, NiPreps convention)
     try:
         cff_path = deriv_root / "CITATION.cff"
         _build_citation_cff(cff_path, recipe, policy)
@@ -170,11 +178,11 @@ def run_S11(
     except Exception as e:
         failures.append(f"citation_cff: {e}")
     try:
-        bib_path = deriv_root / "references.bib"
+        bib_path = logs_root / "CITATION.bib"
         _build_references_bib(bib_path)
-        deliverables["references_bib"] = str(bib_path.relative_to(out_path))
+        deliverables["citation_bib"] = str(bib_path.relative_to(out_path))
     except Exception as e:
-        failures.append(f"references_bib: {e}")
+        failures.append(f"citation_bib: {e}")
 
     # 9. dataset_description.json
     try:
@@ -194,28 +202,37 @@ def run_S11(
     except Exception as e:
         failures.append(f"participants_tsv: {e}")
 
-    # 11. Methods manifest
+    # 11. CITATION.{md,tex,html} (NiPreps convention; was methods_manifest.*)
     try:
-        m_md = deriv_root / "methods_manifest.md"
-        m_tex = deriv_root / "methods_manifest.tex"
-        m_html = deriv_root / "methods_manifest.html"
-        _build_methods_manifest(out_path, recipe, policy, m_md, m_tex, m_html)
-        deliverables["methods_md"] = str(m_md.relative_to(out_path))
-        deliverables["methods_tex"] = str(m_tex.relative_to(out_path))
-        deliverables["methods_html"] = str(m_html.relative_to(out_path))
+        m_md = logs_root / "CITATION.md"
+        m_tex = logs_root / "CITATION.tex"
+        m_html = logs_root / "CITATION.html"
+        methods_md_text = _build_methods_manifest(out_path, recipe, policy,
+                                                  m_md, m_tex, m_html)
+        deliverables["citation_md"] = str(m_md.relative_to(out_path))
+        deliverables["citation_tex"] = str(m_tex.relative_to(out_path))
+        deliverables["citation_html"] = str(m_html.relative_to(out_path))
     except Exception as e:
-        failures.append(f"methods_manifest: {e}")
+        failures.append(f"citation_md: {e}")
+        methods_md_text = ""
 
-    # 12. Sidecar audit
-    try:
-        sa_json = deriv_root / "sidecar_audit.json"
-        sa_html = deriv_root / "sidecar_audit.html"
-        audit = _build_sidecar_audit(out_path, records, policy, sa_json, sa_html)
-        deliverables["sidecar_audit_json"] = str(sa_json.relative_to(out_path))
-        deliverables["sidecar_audit_html"] = str(sa_html.relative_to(out_path))
-    except Exception as e:
-        failures.append(f"sidecar_audit: {e}")
-        audit = {"missing_reportlets": 0}
+    # 12. (was sidecar_audit; dropped per audit B11 / F10 — function
+    # was misnamed and bids-validator isn't installed.)
+
+    # 12b. Per-subject HTML reports — NOW we have methods_md_text to embed.
+    subject_report_paths: list[Path] = []
+    for ds, sub in sorted(subjects):
+        try:
+            p = _build_per_subject_html(
+                out_path, ds, sub, records, policy,
+                citation_md=methods_md_text,
+            )
+            if p:
+                subject_report_paths.append(p)
+        except Exception as e:
+            failures.append(f"per_subject {ds}/{sub}: {e}")
+    n_subject_reports = len(subject_report_paths)
+    fraction = (n_subject_reports / n_subjects) if n_subjects else 0.0
 
     # 13. release_report.html
     try:
@@ -248,8 +265,8 @@ def run_S11(
         "n_subject_reports": int(n_subject_reports),
         "subject_report_fraction": float(fraction),
         "missing_step_qc_count": 0,
-        "sidecar_audit_issues": int(audit.get("missing_reportlets", 0)),
-        "cohort_fc_n_common_rois": int(fc_meta.get("n_common_rois", 0)),
+        "cohort_fc_n_matrices": int(fc_meta.get("n_matrices", 0)),
+        "cohort_fc_n_per_dataset_summaries": int(fc_meta.get("n_datasets", 0)),
     }
 
     qc_dir = out_path / "logs" / "S11_qc_aggregation_and_release"
