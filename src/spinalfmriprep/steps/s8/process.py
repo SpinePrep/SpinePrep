@@ -44,6 +44,16 @@ def _extract_motion(
     SCT writes the per-volume slicewise params as 4D NIfTI with shape
     (1, 1, n_slices, n_volumes). Mean across slices yields the scalar
     in-plane translation per volume.
+
+    **Cord-2D motion variant** (not full Friston 1996 24P). S4's cord
+    moco is 2D slicewise — no Z translation and no rotations are
+    estimated. We emit 4 motion columns (trans_x, trans_y, plus
+    derivative1 of each) + FD = |Δtrans_x| + |Δtrans_y|. This matches
+    Mohammed 2020 cord moco conventions and Kaptan 2023's reported
+    4-6 motion params; full 24P with squares and squared-derivatives
+    is deliberately not emitted because it would overfit on the
+    cord's small ROI (~100 voxels per slice). See audit-v2 Findings
+    1-2-5 in .claude/specs/s8-algorithm-audit.md.
     """
     mx = nib.load(moco_x_4d_path).get_fdata()
     my = nib.load(moco_y_4d_path).get_fdata()
@@ -1225,22 +1235,35 @@ def run_S8_confounds_and_physio_regressors(
         "policy_sha256": policy_sha,
     }, indent=2, default=str))
 
-    # Reportlets
+    # Reportlets — 4 PNGs, visual-standard chrome (status pill + dark theme).
+    # csf_variance reportlet dropped 2026-05-28 — its info is already in
+    # metrics.n_columns_csf + the correlation_heatmap.
     from .reportlets import (
         render_s8_confound_columns,
         render_s8_fd_dvars_outliers,
-        render_s8_csf_variance,
         render_s8_pnm_peaks,
         render_s8_correlation_heatmap,
     )
-    rep = {}
     rep_cols  = figures_dir / f"{prefix}_desc-S8_confound_columns.png"
     rep_fd    = figures_dir / f"{prefix}_desc-S8_fd_dvars_outliers.png"
-    rep_csf   = figures_dir / f"{prefix}_desc-S8_csf_variance.png"
     rep_pnm   = figures_dir / f"{prefix}_desc-S8_pnm_peaks.png"
     rep_corr  = figures_dir / f"{prefix}_desc-S8_correlation_heatmap.png"
+
+    # Outlier indices for the FD/DVARS panels — derived from the one-hot
+    # motion_outlier_NN columns we already built.
+    outlier_indices = np.array([
+        int(np.argmax(v)) for k, v in columns.items()
+        if k.startswith("motion_outlier_")
+    ], dtype=int)
+    fd_thr = float(policy.get("motion", {}).get("fd_outlier_threshold_mm", 0.2))
+
     try:
-        render_s8_confound_columns(family_counts, sidecar, rep_cols)
+        render_s8_confound_columns(
+            family_counts, sidecar, rep_cols,
+            status=status,
+            n_columns_total=metrics.get("n_columns_total"),
+            condition_number=metrics.get("condition_number"),
+        )
     except Exception as e:
         failure_reasons.append(f"confound_columns reportlet failed: {e}")
     try:
@@ -1248,19 +1271,25 @@ def run_S8_confounds_and_physio_regressors(
             columns.get("framewise_displacement"),
             columns.get("dvars"), columns.get("ref_rms"),
             family_counts["outliers"], rep_fd,
+            status=status,
+            fd_thresh=fd_thr,
+            outlier_indices=outlier_indices,
         )
     except Exception as e:
         failure_reasons.append(f"fd_dvars_outliers reportlet failed: {e}")
     try:
-        render_s8_csf_variance(csf_meta, rep_csf)
-    except Exception as e:
-        failure_reasons.append(f"csf_variance reportlet failed: {e}")
-    try:
-        render_s8_pnm_peaks(s8_work_dir, physio_present, rep_pnm)
+        render_s8_pnm_peaks(
+            s8_work_dir, physio_present, rep_pnm,
+            status=status,
+        )
     except Exception as e:
         failure_reasons.append(f"pnm_peaks reportlet failed: {e}")
     try:
-        render_s8_correlation_heatmap(df, rep_corr)
+        render_s8_correlation_heatmap(
+            df, rep_corr,
+            status=status,
+            condition_number=metrics.get("condition_number"),
+        )
     except Exception as e:
         failure_reasons.append(f"correlation_heatmap reportlet failed: {e}")
 
@@ -1279,7 +1308,6 @@ def run_S8_confounds_and_physio_regressors(
         "reportlets": {
             "confound_columns":    str(rep_cols.relative_to(out_dir)) if rep_cols.exists() else "",
             "fd_dvars_outliers":   str(rep_fd.relative_to(out_dir))   if rep_fd.exists() else "",
-            "csf_variance":        str(rep_csf.relative_to(out_dir))  if rep_csf.exists() else "",
             "pnm_peaks":           str(rep_pnm.relative_to(out_dir))  if rep_pnm.exists() else "",
             "correlation_heatmap": str(rep_corr.relative_to(out_dir)) if rep_corr.exists() else "",
         },

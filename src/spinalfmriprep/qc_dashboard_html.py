@@ -50,7 +50,6 @@ REPORTLET_ORDER: dict[str, list[str]] = {
     "S8_confounds_and_physio_regressors": [
         "confound_columns",         # S8 - column counts per family
         "fd_dvars_outliers",        # S8 - FD/DVARS/refRMS with outlier highlights
-        "csf_variance",             # S8 - per-slice CSF voxel count
         "pnm_peaks",                # S8 - FSL PNM cardiac/respiratory peak detection
         "correlation_heatmap",      # S8 - confound correlation matrix
     ],
@@ -108,7 +107,6 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
     "S8_confounds_and_physio_regressors": {
         "confound_columns":    "S8 - Confound Column Counts",
         "fd_dvars_outliers":   "S8 - FD / DVARS / refRMS with Outliers",
-        "csf_variance":        "S8 - CSF Voxel Count per Slice",
         "pnm_peaks":           "S8 - PNM Cardiac/Respiratory Peaks",
         "correlation_heatmap": "S8 - Confound Correlation Heatmap",
     },

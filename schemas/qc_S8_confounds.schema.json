@@ -66,12 +66,29 @@
           "failure_message": { "type": ["string", "null"] },
           "reportlets": {
             "type": "object",
+            "required": [
+              "confound_columns",
+              "fd_dvars_outliers",
+              "pnm_peaks",
+              "correlation_heatmap"
+            ],
             "properties": {
-              "confound_columns": { "type": "string" },
-              "fd_dvars_outliers": { "type": "string" },
-              "csf_variance": { "type": "string" },
-              "pnm_peaks": { "type": "string" },
-              "correlation_heatmap": { "type": "string" }
+              "confound_columns": {
+                "type": "string",
+                "description": "Per-family regressor count bar chart with status pill"
+              },
+              "fd_dvars_outliers": {
+                "type": "string",
+                "description": "FD + DVARS + refRMS time series, outlier frames marked"
+              },
+              "pnm_peaks": {
+                "type": "string",
+                "description": "FSL popp cardiac peaks + respiratory phase; placeholder when physio absent"
+              },
+              "correlation_heatmap": {
+                "type": "string",
+                "description": "Pearson r matrix across confound columns (multicollinearity proxy)"
+              }
             }
           },
           "confounds_paths": {
