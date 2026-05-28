@@ -1,5 +1,7 @@
 ---
-status: approved
+status: implemented
+implemented_in: wf_reg_093
+implemented_at: 2026-05-28
 ---
 
 # S11 algorithm + release-aggregation audit

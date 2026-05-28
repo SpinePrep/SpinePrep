@@ -24,12 +24,17 @@ aggregation:
 
   group_dashboard:
     enabled: true
-    metric_distributions:            # which fields to boxplot
-      - "S4.metrics.fd_max_mm"
+    # MRIQC group dashboard convention: one boxplot per metric, subject
+    # dots colored by dataset. Each path is `<step>.metrics.<key>` and
+    # must match the key the step actually emits in its qc.json (verify
+    # against schemas/qc_S?_*.schema.json before adding).
+    metric_distributions:
+      - "S4.metrics.mean_fd_mm"
       - "S6.metrics.cord_dice"
       - "S7.metrics.cord_dice_native_func"
       - "S9.metrics.tsnr_post_median"
       - "S10.metrics.condition_number_pearson_hemicord"
+      - "S10.metrics.fc_mean_strength"
 
   metrics_index:
     enabled: true
@@ -47,15 +52,21 @@ cohort_views:
 
   tsnr_heatmap:
     enabled: true
-    # Source: S9 *_desc-tsnr_per_level.tsv (mean_tsnr column per level)
-    color_range: [0, 50]             # tSNR display range
+    # Source: S9 *_desc-tsnr_per_level.tsv (mean_tsnr per level).
+    # Kaptan 2023 boxplot-with-subject-dots convention; one box per
+    # spinal level. Range 0..30 — cervical cord median tSNR typically
+    # 8-20; the previous 0..50 cap left the high end unused.
+    color_range: [0, 30]
 
   fc_summary:
     enabled: true
-    # Source: S10 *_desc-hemicord_pearson_connectivity.tsv per run
-    # Emit (a) group-mean Fisher-z matrix, (b) consistency map (fraction
-    # of subjects with |z| > consistency_threshold per connection)
+    # Source: S10 *_desc-hemicord_pearson_connectivity.tsv per run.
+    # Stratified per-dataset (audit B5; Principle 10 — heterogeneity is
+    # the test, not the noise). Within each dataset, ROIs are intersected
+    # across subjects (cord coverage varies). A cross-dataset summary is
+    # appended on the canonical Kaptan 2023 segment range (C3..T1).
     consistency_z_threshold: 0.3     # connections with |z|>0.3 count as "present"
+    canonical_segment_range: [3, 9]  # Kaptan 2023: C3..T1 (T1 encoded as 9)
 
 # ----------------------------------------------------------------------
 # Tier 3: publication & reproducibility
@@ -109,15 +120,13 @@ publication:
     formats: ["markdown", "latex", "html"]
 
 # ----------------------------------------------------------------------
-# Tier 4: compliance + navigation
+# Tier 4: navigation
 compliance:
-  sidecar_audit:
-    enabled: true
-    # Verify every emitted .nii.gz has matching .json (per family);
-    # every .tsv has matching .json sidecar OR documented schema.
-    # NIfTI dtype + shape + affine validity check.
-    non_blocking: true               # informational; doesn't gate PASS
-
+  # sidecar_audit dropped 2026-05-28 (audit B11): function name promised
+  # BIDS sidecar coverage but implementation only checked reportlet PNG
+  # existence. Field standard is bids-validator (Markiewicz 2021 eLife);
+  # since it's not installed here, the deliverable is removed entirely.
+  # If reintroduced, wrap bids-validator's JSON output, don't reinvent.
   release_report:
     enabled: true                    # top-level release_report.html index
 

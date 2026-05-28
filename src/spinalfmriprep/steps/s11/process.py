@@ -68,25 +68,59 @@ def _walk_chain_qc(out_dir: Path) -> dict[str, dict[str, dict]]:
     return out
 
 
+def _norm_subject(sub: Any) -> Optional[str]:
+    """Canonical subject label: drop `sub-` prefix; drop synthetic ids.
+
+    S1 (and a few orchestrators) emit ``subject="all"`` as a synthetic
+    per-dataset row; that's not a real participant and pollutes
+    participant tables + run inventory if kept. Audit ref B2 + B3.
+    """
+    if sub is None:
+        return None
+    s = str(sub).strip()
+    if s.startswith("sub-"):
+        s = s[4:]
+    if s in ("", "all", "*", "None"):
+        return None
+    return s
+
+
+def _norm_session(ses: Any) -> Optional[str]:
+    """Canonical session label: drop `ses-` prefix; empty string → None.
+
+    Upstream steps disagree: S2 emits ``"01"``, S4 emits ``"ses-01"``,
+    S1 emits ``None``. Without normalisation, run_inventory groupby
+    treats them as distinct rows. Audit ref B3.
+    """
+    if ses is None:
+        return None
+    s = str(ses).strip()
+    if s.startswith("ses-"):
+        s = s[4:]
+    if s in ("", "None"):
+        return None
+    return s
+
+
 def _flat_run_records(chain_qc: dict[str, dict[str, dict]]) -> list[dict]:
     """Flatten chain_qc into per-(step, run) records.
 
-    Subject IDs are normalized to bare labels (no `sub-` prefix); upstream
-    steps disagree (some emit `02`, some `sub-02`) and downstream code adds
-    its own prefix.
+    Subject + session IDs are normalised to bare labels (no `sub-` /
+    `ses-` prefix). Synthetic `subject="all"` records (S1 dataset
+    rollups, etc.) are dropped — they're not real participants.
     """
     records: list[dict] = []
     for step_short, by_ds in chain_qc.items():
         for ds_key, qc in by_ds.items():
             for r in qc.get("runs", []):
-                sub = r.get("subject")
-                if isinstance(sub, str) and sub.startswith("sub-"):
-                    sub = sub[4:]
+                sub = _norm_subject(r.get("subject"))
+                if sub is None:
+                    continue
                 rec = {
                     "step": step_short,
                     "dataset_key": ds_key,
                     "subject": sub,
-                    "session": r.get("session"),
+                    "session": _norm_session(r.get("session")),
                     "run_id": r.get("run_id"),
                     "status": r.get("status"),
                     "failure_message": r.get("failure_message"),
@@ -111,19 +145,66 @@ def _build_metrics_index(records: list[dict], out_path: Path) -> int:
     return len(records)
 
 
+def _build_metrics_index_tsv(records: list[dict], out_path: Path) -> int:
+    """Emit metrics_index.tsv in MRIQC long-format:
+    ``step, dataset_key, subject, session, run_id, status, metric, value``.
+
+    One row per (record, metric). Numeric values only; non-numeric
+    metric dicts are skipped (timeseries paths etc. don't belong here).
+    """
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for r in records:
+        metrics = r.get("metrics") or {}
+        for k, v in metrics.items():
+            if v is None:
+                continue
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                if not np.isfinite(v):
+                    continue
+                rows.append({
+                    "step": r.get("step"),
+                    "dataset_key": r.get("dataset_key"),
+                    "subject": r.get("subject"),
+                    "session": r.get("session") or "",
+                    "run_id": r.get("run_id"),
+                    "status": r.get("status"),
+                    "metric": k,
+                    "value": float(v),
+                })
+    if not rows:
+        out_path.write_text(
+            "step\tdataset_key\tsubject\tsession\trun_id\tstatus\tmetric\tvalue\n"
+        )
+        return 0
+    df = pd.DataFrame(rows)
+    df.to_csv(out_path, sep="\t", index=False, float_format="%.6g")
+    return len(rows)
+
+
+_BOLD_STEPS = {"S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"}
+
+
 def _build_run_inventory(
     records: list[dict], out_tsv: Path, out_png: Path,
 ) -> int:
     """subjects × runs pivot: per-(subject, run) overall pass/warn/fail
     aggregated across steps.
+
+    S1 emits per-dataset summary rows; S2 emits per-anat records. Both
+    pollute the BOLD-run inventory. Restrict to S3..S10 (the BOLD chain).
     """
     out_tsv.parent.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(records)
     if df.empty:
         out_tsv.write_text("subject\trun_id\tdataset_key\tn_steps\tworst_status\n")
         return 0
+    df = df[df["step"].isin(_BOLD_STEPS)]
     df = df.dropna(subset=["run_id"])
-    grouped = df.groupby(["dataset_key", "subject", "session", "run_id"])
+    # session as canonical key — None → empty string so groupby doesn't drop
+    df = df.assign(session=df["session"].fillna(""))
+    grouped = df.groupby(["dataset_key", "subject", "session", "run_id"],
+                         dropna=False)
     rows = []
     for (ds, sub, ses, rid), g in grouped:
         statuses = g["status"].tolist()
@@ -171,15 +252,16 @@ def _build_run_inventory(
 def _build_group_dashboard_data(
     records: list[dict], policy: dict,
 ) -> dict:
-    """Build status-heatmap + metric-distributions for group dashboard."""
+    """Build status-heatmap + per-step pass-rate + per-metric boxplot
+    series for the group dashboard (MRIQC convention).
+    """
     df = pd.DataFrame(records)
     if df.empty:
         return {"empty": True}
-    # status matrix: subject × step
     df = df.dropna(subset=["subject", "step"])
     subjects = sorted(df["subject"].astype(str).unique())
     steps = [s for s, _ in ALL_STEPS]
-    # collapse runs: worst status per (subject, step)
+    # 1. Status matrix: subject × step (worst across runs)
     matrix = pd.DataFrame(index=subjects, columns=steps, dtype=object)
     for (sub, step), g in df.groupby(["subject", "step"]):
         st = g["status"].tolist()
@@ -192,25 +274,118 @@ def _build_group_dashboard_data(
         else:
             v = "?"
         matrix.loc[sub, step] = v
-    # Per-step pass-rate
+    # 2. Per-step pass-rate
     pass_rates: dict[str, float] = {}
     for step in steps:
         col = df[df["step"] == step]["status"].dropna()
         if len(col):
             pass_rates[step] = float((col == "PASS").mean())
-    return {"matrix": matrix, "pass_rates": pass_rates}
+    # 3. Per-metric boxplot series (policy-declared)
+    metric_paths = (policy.get("aggregation", {})
+                          .get("group_dashboard", {})
+                          .get("metric_distributions", []) or [])
+    metric_series: list[dict] = []
+    for path in metric_paths:
+        parts = path.split(".")
+        if len(parts) != 3 or parts[1] != "metrics":
+            continue
+        step, _, key = parts
+        sel = df[df["step"] == step]
+        rows = []
+        for _, r in sel.iterrows():
+            m = r.get("metrics") or {}
+            if not isinstance(m, dict):
+                continue
+            v = m.get(key)
+            if v is None:
+                continue
+            try:
+                vf = float(v)
+            except (TypeError, ValueError):
+                continue
+            if not np.isfinite(vf):
+                continue
+            rows.append({
+                "dataset_key": r.get("dataset_key"),
+                "subject": r.get("subject"),
+                "value": vf,
+            })
+        metric_series.append({
+            "path": path, "step": step, "key": key,
+            "values": rows,
+        })
+    return {
+        "matrix": matrix,
+        "pass_rates": pass_rates,
+        "metric_series": metric_series,
+    }
+
+
+def _render_metric_boxplots_png(
+    metric_series: list[dict], out_path: Path,
+) -> Optional[Path]:
+    """Render one boxplot per declared metric (MRIQC convention),
+    subject dots colored by dataset (Kaptan 2023).
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    valid = [s for s in metric_series if s["values"]]
+    if not valid:
+        return None
+    n = len(valid)
+    fig, axes = plt.subplots(1, n, figsize=(max(4, 3.2 * n), 4.2))
+    if n == 1:
+        axes = [axes]
+    # Color palette per dataset_key
+    all_ds = sorted({v["dataset_key"] for s in valid for v in s["values"]})
+    cmap = plt.get_cmap("tab10")
+    ds_color = {ds: cmap(i % 10) for i, ds in enumerate(all_ds)}
+    for ax, s in zip(axes, valid):
+        vals = [v["value"] for v in s["values"]]
+        ax.boxplot(vals, vert=True, widths=0.5,
+                   boxprops=dict(facecolor="#eef", color="#444"),
+                   medianprops=dict(color="#cc2222"),
+                   whiskerprops=dict(color="#444"),
+                   capprops=dict(color="#444"),
+                   flierprops=dict(marker=""), patch_artist=True)
+        # Jittered dots
+        rng = np.random.default_rng(42)
+        x_jitter = 1 + (rng.random(len(vals)) - 0.5) * 0.20
+        colors = [ds_color[v["dataset_key"]] for v in s["values"]]
+        ax.scatter(x_jitter, vals, c=colors, s=22, alpha=0.85, edgecolor="white",
+                   linewidth=0.4, zorder=3)
+        ax.set_title(f"{s['step']} · {s['key']}", fontsize=9)
+        ax.set_xticks([])
+        ax.grid(axis="y", alpha=0.25)
+    # Dataset legend below
+    legend_handles = [plt.Line2D([0], [0], marker='o', color='w',
+                                 label=ds[:32], markerfacecolor=ds_color[ds],
+                                 markersize=7)
+                      for ds in all_ds]
+    fig.legend(handles=legend_handles, loc="lower center",
+               ncol=min(3, len(all_ds)), fontsize=7,
+               bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle("Per-metric distributions across cohort", fontsize=11)
+    fig.tight_layout(rect=(0, 0.07, 1, 0.96))
+    fig.savefig(out_path, dpi=120, bbox_inches="tight")
+    plt.close(fig)
+    return out_path
 
 
 def _render_group_dashboard_html(
     data: dict, out_path: Path,
 ) -> None:
-    """Group QC dashboard HTML with status heatmap + pass-rate bars."""
+    """Group QC dashboard HTML: status heatmap + pass-rate bars + per-metric
+    boxplot panel (rendered as PNG sibling).
+    """
     out_path.parent.mkdir(parents=True, exist_ok=True)
     if data.get("empty"):
         out_path.write_text("<html><body><p>No data.</p></body></html>")
         return
     matrix = data["matrix"]
     pass_rates = data["pass_rates"]
+    metric_series = data.get("metric_series", []) or []
 
     status_color = {"PASS": "#22aa44", "WARN": "#dd8800", "FAIL": "#cc2222", "?": "#888"}
 
@@ -234,6 +409,15 @@ def _render_group_dashboard_html(
         pass_rate_html.append(f"<tr><td>{step}</td><td>{rate*100:.0f}%</td><td>{bar}</td></tr>")
     pass_rate_html.append("</table>")
 
+    box_png = out_path.with_name("group_qc_metric_distributions.png")
+    box_out = _render_metric_boxplots_png(metric_series, box_png)
+    box_html = (f"<img src='{box_out.name}' alt='metric distributions' "
+                f"style='max-width:100%;border:1px solid #ddd' />"
+                if box_out is not None else
+                "<p><em>No metric distributions available "
+                "(policy.aggregation.group_dashboard.metric_distributions empty "
+                "or no matching values).</em></p>")
+
     html = f"""<!DOCTYPE html><html><head><meta charset='utf-8'>
 <title>SpinalfMRIprep — Group QC Dashboard</title>
 <style>
@@ -250,6 +434,8 @@ h1 {{ color:#333; }}
 {"".join(rows_html)}
 <h2>Per-step pass-rate</h2>
 {"".join(pass_rate_html)}
+<h2>Metric distributions</h2>
+{box_html}
 </body></html>"""
     out_path.write_text(html, encoding="utf-8")
 
@@ -262,8 +448,15 @@ h1 {{ color:#333; }}
 def _build_per_subject_html(
     out_dir: Path, dataset_key: str, subject: str,
     records: list[dict], policy: dict,
+    citation_md: Optional[str] = None,
 ) -> Optional[Path]:
-    """Emit derivatives/spinalfmriprep/<ds>/sub-XX/sub-XX_qc_report.html."""
+    """Emit derivatives/spinalfmriprep/<ds>/sub-XX/sub-XX_qc_report.html.
+
+    NiPreps convention: per-subject reports embed the CITATION
+    boilerplate (so reviewers see what was run on this subject without
+    cross-referencing the dataset-level CITATION.md). Pass in
+    ``citation_md`` to embed.
+    """
     sub_records = [r for r in records
                    if r.get("subject") == subject and r.get("dataset_key") == dataset_key]
     if not sub_records:
@@ -312,6 +505,29 @@ def _build_per_subject_html(
         rows.append("<tr>" + "".join(row_cells) + "</tr>")
     rows.append("</table>")
 
+    cit_section = ""
+    if citation_md:
+        cit_html = None
+        try:
+            r = subprocess.run(
+                ["pandoc", "-f", "markdown", "-t", "html5"],
+                input=citation_md, text=True, capture_output=True, timeout=15,
+            )
+            if r.returncode == 0:
+                cit_html = r.stdout
+        except Exception:
+            pass
+        if cit_html:
+            cit_section = ("<details><summary><b>Methods boilerplate</b> "
+                           "(auto-generated, CC0; reuse verbatim)</summary>"
+                           "<div class='cite-body'>" + cit_html + "</div>"
+                           "</details>")
+        else:
+            cit_section = ("<details><summary><b>Methods boilerplate</b> "
+                           "(Markdown)</summary>"
+                           "<pre class='cite-body'>"
+                           f"{citation_md}</pre></details>")
+
     html = f"""<!DOCTYPE html><html><head><meta charset='utf-8'>
 <title>QC Report — sub-{subject} ({dataset_key})</title>
 <style>
@@ -321,11 +537,15 @@ td, th {{ border:1px solid #ccc; padding:6px 10px; text-align:center; font-famil
 th {{ background:#eee; }}
 img {{ display:block; }}
 h1 {{ color:#333; }}
+.cite-body {{ background:#fff; border:1px solid #ddd; padding:14px 18px; margin-top:8px; font-family:serif; }}
+.cite-body pre {{ white-space:pre-wrap; font-family:serif; }}
+details summary {{ cursor:pointer; padding:8px 0; }}
 </style></head>
 <body>
 <h1>QC Report — sub-{subject}</h1>
 <p>Dataset: <code>{dataset_key}</code>. Runs: {len(runs)}.</p>
 {"".join(rows)}
+{cit_section}
 <p><small>Generated by SpinalfMRIprep S11.</small></p>
 </body></html>"""
     out_path.write_text(html, encoding="utf-8")
@@ -341,74 +561,80 @@ def _build_cohort_coverage_matrix(
     out_dir: Path, records: list[dict], policy: dict,
     out_tsv: Path, out_png: Path,
 ) -> int:
-    """Per-subject vertebral-level coverage. Source: S9 per_level TSVs.
-    Coverage = the per-level TSV has a row for that label.
+    """Per-(subject,run) vertebral-level coverage from S7's authoritative
+    ``vertebral_level_coverage`` metric (audit F6).
+
+    Previously sourced from S9 ``*_desc-tsnr_per_level.tsv``, which
+    conflated "level in FOV" with "S9 tSNR was computed at this level"
+    — same number most of the time, but the wrong concept for a
+    coverage matrix. S7's metric is the registration-confirmed list of
+    PAM50 vertebral labels intersecting the warped EPI FOV.
+
+    Each subject × vertebral level cell is GREEN if any run for that
+    subject covers it (Principle 10 — heterogeneity is the test).
     """
     out_tsv.parent.mkdir(parents=True, exist_ok=True)
-    rows = []
-    # S9 records have output_paths.tsnr_per_level_tsv pointing to per-level TSV
-    s9_recs = [r for r in records if r.get("step") == "S9"
+    s7_recs = [r for r in records if r.get("step") == "S7"
                and r.get("status") in ("PASS", "WARN")]
-    for r in s9_recs:
-        sub = r.get("subject")
-        ds = r.get("dataset_key")
-        rid = r.get("run_id")
-        # Re-read S9 qc.json output_paths via the records' output_paths if exposed
-        # (records only have metrics + reportlets, not output_paths in our serialization)
-        tsnr_tsv = (out_dir / "derivatives" / "spinalfmriprep" / ds
-                    / f"sub-{sub}" / "func"
-                    / f"{rid}_desc-tsnr_per_level.tsv")
-        if not tsnr_tsv.exists():
-            # Fall back: search legacy unkeyed path
-            tsnr_tsv_alt = (out_dir / "derivatives" / "spinalfmriprep"
-                            / f"sub-{sub}" / "func"
-                            / f"{rid}_desc-tsnr_per_level.tsv")
-            if tsnr_tsv_alt.exists():
-                tsnr_tsv = tsnr_tsv_alt
-            else:
+    rows = []
+    for r in s7_recs:
+        sub = r.get("subject"); ds = r.get("dataset_key"); rid = r.get("run_id")
+        m = r.get("metrics") or {}
+        levels = m.get("vertebral_level_coverage") or []
+        per_level_dice = m.get("cord_dice_per_level") or {}
+        for lvl in levels:
+            try:
+                lvl_i = int(lvl)
+            except (TypeError, ValueError):
                 continue
-        try:
-            df = pd.read_csv(tsnr_tsv, sep="\t")
-            for _, lvl_row in df.iterrows():
-                rows.append({
-                    "dataset_key": ds,
-                    "subject": sub,
-                    "run_id": rid,
-                    "level": int(lvl_row["level"]),
-                    "n_voxels": int(lvl_row["n_voxels"]),
-                    "mean_tsnr": float(lvl_row["mean_tsnr"]),
-                })
-        except Exception:
-            continue
+            rows.append({
+                "dataset_key": ds,
+                "subject": sub,
+                "run_id": rid,
+                "level": lvl_i,
+                "cord_dice": float(per_level_dice.get(str(lvl_i),
+                                   per_level_dice.get(lvl_i, np.nan))),
+            })
     if not rows:
-        out_tsv.write_text("dataset_key\tsubject\trun_id\tlevel\tn_voxels\tmean_tsnr\n")
+        out_tsv.write_text("dataset_key\tsubject\trun_id\tlevel\tcord_dice\n")
         return 0
     cov_df = pd.DataFrame(rows)
     cov_df.to_csv(out_tsv, sep="\t", index=False)
-    # PNG: cohort × levels coverage heatmap
     try:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        # Use one row per (dataset, subject, run) and cols = levels
+        n_levels_policy = int(policy.get("cohort_views", {})
+                              .get("coverage_matrix", {})
+                              .get("n_levels", 8))
+        max_level = max(n_levels_policy, int(cov_df["level"].max()))
+        all_levels = list(range(1, max_level + 1))
+        # Pivot to (subject) × (level): coverage = any run covers
         pivot = cov_df.pivot_table(
-            index=["dataset_key", "subject", "run_id"],
-            columns="level",
-            values="n_voxels", aggfunc="sum",
-        ).fillna(0)
-        if pivot.empty:
-            return len(cov_df)
-        fig, ax = plt.subplots(figsize=(max(7, pivot.shape[1] * 0.8),
-                                        max(3, len(pivot) * 0.25 + 2)))
-        ax.imshow((pivot > 0).astype(int), cmap="Greens",
-                  vmin=0, vmax=1, aspect="auto")
-        ax.set_xticks(range(pivot.shape[1]))
-        ax.set_xticklabels([str(c) for c in pivot.columns])
-        ax.set_yticks(range(len(pivot)))
-        ax.set_yticklabels([f"{idx[0][:18]}/{idx[1]}/{idx[2][:20]}"
-                            for idx in pivot.index], fontsize=7)
-        ax.set_xlabel("Vertebral level")
-        ax.set_title(f"Cohort coverage matrix — {len(pivot)} runs")
+            index=["dataset_key", "subject"], columns="level",
+            values="run_id", aggfunc="count",
+        ).reindex(columns=all_levels)
+        covered = (pivot > 0).astype(int).fillna(0)
+        fig, ax = plt.subplots(figsize=(max(7, len(all_levels) * 0.8),
+                                        max(3, len(covered) * 0.30 + 1.5)))
+        ax.imshow(covered.to_numpy(), cmap="Greens", vmin=0, vmax=1,
+                  aspect="auto")
+        ax.set_xticks(range(len(all_levels)))
+        ax.set_xticklabels([(f"C{l}" if l <= 8 else f"T{l-8}")
+                            for l in all_levels])
+        ax.set_yticks(range(len(covered)))
+        ax.set_yticklabels([f"{ds[:18]}/sub-{sub}"
+                            for ds, sub in covered.index], fontsize=7)
+        ax.set_xlabel("Vertebral level (S7 vertebral_level_coverage)")
+        ax.set_title(f"Cohort coverage matrix — {covered.shape[0]} (dataset, subject) rows")
+        # Cell annotations: number of runs covering
+        for i in range(covered.shape[0]):
+            for j in range(covered.shape[1]):
+                n_runs_here = int(pivot.iloc[i, j]) if not pd.isna(pivot.iloc[i, j]) else 0
+                if n_runs_here > 0:
+                    ax.text(j, i, str(n_runs_here),
+                            ha="center", va="center", fontsize=7,
+                            color="#0a0" if n_runs_here >= 2 else "#444")
         fig.tight_layout()
         fig.savefig(out_png, dpi=120, bbox_inches="tight")
         plt.close(fig)
@@ -421,7 +647,13 @@ def _build_cohort_tsnr_heatmap(
     out_dir: Path, records: list[dict], policy: dict,
     out_tsv: Path, out_png: Path,
 ) -> int:
-    """Cohort tSNR heatmap by spinal level. Source: same S9 per_level TSVs."""
+    """Cohort tSNR per spinal level — Kaptan 2023 box-plot convention:
+    one box per (level), subject dots overlaid, colored by dataset.
+
+    Source: S9 ``*_desc-tsnr_per_level.tsv`` (mean_tsnr per level).
+    Color/y-range default 0..30 (cord realistic; previously 0..50 left
+    the high end unused).
+    """
     out_tsv.parent.mkdir(parents=True, exist_ok=True)
     s9_recs = [r for r in records if r.get("step") == "S9"
                and r.get("status") in ("PASS", "WARN")]
@@ -454,31 +686,51 @@ def _build_cohort_tsnr_heatmap(
         return 0
     df = pd.DataFrame(rows)
     df.to_csv(out_tsv, sep="\t", index=False)
-    # PNG
     try:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        pivot = df.pivot_table(
-            index=["dataset_key", "subject", "run_id"],
-            columns="level", values="mean_tsnr",
-        )
-        if pivot.empty:
-            return len(df)
         cr = policy.get("cohort_views", {}).get("tsnr_heatmap", {}).get(
-            "color_range", [0, 50])
-        fig, ax = plt.subplots(figsize=(max(7, pivot.shape[1] * 0.8),
-                                        max(3, len(pivot) * 0.25 + 2)))
-        im = ax.imshow(pivot.fillna(0).to_numpy(), cmap="hot",
-                       vmin=cr[0], vmax=cr[1], aspect="auto")
-        fig.colorbar(im, ax=ax, shrink=0.7, label="median tSNR")
-        ax.set_xticks(range(pivot.shape[1]))
-        ax.set_xticklabels([str(c) for c in pivot.columns])
-        ax.set_yticks(range(len(pivot)))
-        ax.set_yticklabels([f"{i[0][:18]}/{i[1]}/{i[2][:20]}"
-                            for i in pivot.index], fontsize=7)
+            "color_range", [0, 30])
+        levels = sorted(df["level"].unique())
+        datasets = sorted(df["dataset_key"].unique())
+        cmap = plt.get_cmap("tab10")
+        ds_color = {ds: cmap(i % 10) for i, ds in enumerate(datasets)}
+        fig, ax = plt.subplots(figsize=(max(7, len(levels) * 0.9), 5.2))
+        # Box per level
+        per_level = [df[df["level"] == lvl]["mean_tsnr"].to_numpy()
+                     for lvl in levels]
+        ax.boxplot(per_level, positions=range(len(levels)),
+                   widths=0.55,
+                   boxprops=dict(facecolor="#eef", color="#444"),
+                   medianprops=dict(color="#cc2222"),
+                   whiskerprops=dict(color="#444"),
+                   capprops=dict(color="#444"),
+                   flierprops=dict(marker=""), patch_artist=True)
+        rng = np.random.default_rng(7)
+        for j, lvl in enumerate(levels):
+            sub_df = df[df["level"] == lvl]
+            xj = j + (rng.random(len(sub_df)) - 0.5) * 0.30
+            ax.scatter(xj, sub_df["mean_tsnr"],
+                       c=[ds_color[ds] for ds in sub_df["dataset_key"]],
+                       s=22, alpha=0.85, edgecolor="white",
+                       linewidth=0.4, zorder=3)
+        ax.set_xticks(range(len(levels)))
+        ax.set_xticklabels([f"C{lvl}" if lvl <= 8 else f"T{lvl-8}"
+                            for lvl in levels])
         ax.set_xlabel("Spinal level")
-        ax.set_title(f"Cohort cord tSNR by spinal level — {len(pivot)} runs")
+        ax.set_ylabel("Median tSNR (S9)")
+        ax.set_ylim(cr[0], cr[1])
+        ax.grid(axis="y", alpha=0.25)
+        ax.set_axisbelow(True)
+        legend_handles = [plt.Line2D([0], [0], marker='o', color='w',
+                                     label=ds[:32], markerfacecolor=ds_color[ds],
+                                     markersize=7)
+                          for ds in datasets]
+        ax.legend(handles=legend_handles, loc="upper right", fontsize=7,
+                  frameon=True, framealpha=0.9)
+        ax.set_title(f"Cohort cord tSNR by level — {df['subject'].nunique()} "
+                     f"subjects, {len(df)} (subject,level) observations")
         fig.tight_layout()
         fig.savefig(out_png, dpi=120, bbox_inches="tight")
         plt.close(fig)
@@ -487,14 +739,43 @@ def _build_cohort_tsnr_heatmap(
     return len(df)
 
 
-def _build_cohort_fc_summary(
-    out_dir: Path, records: list[dict], policy: dict,
-    out_mean_tsv: Path, out_consistency_tsv: Path, out_png: Path,
-) -> dict[str, Any]:
-    """Group-mean Fisher-z + consistency map across all hemicord FC matrices."""
+def _canonical_segment_filter(
+    labels: list[str], canonical_range: tuple[int, int],
+) -> list[str]:
+    """Subset hemicord ROI labels to a canonical segment range.
+
+    Labels look like ``VL_segC5``, ``DR_segC8``, ``VL_segT1``. The range
+    is given as ``(2, 8)`` for C2..C8 etc. Kaptan 2023 convention: C3-T1.
+    """
+    lo, hi = canonical_range
+    keep = []
+    for lab in labels:
+        m = lab.split("_seg")
+        if len(m) != 2:
+            continue
+        tag = m[1]
+        # Map segment tag to integer (C1..C8 → 1..8, T1 → 9 by convention)
+        idx: Optional[int] = None
+        if tag.startswith("C") and tag[1:].isdigit():
+            idx = int(tag[1:])
+        elif tag.startswith("T") and tag[1:].isdigit():
+            idx = 8 + int(tag[1:])
+        elif tag.isdigit():
+            idx = int(tag)
+        if idx is not None and lo <= idx <= hi:
+            keep.append(lab)
+    return keep
+
+
+def _collect_fc_matrices(
+    out_dir: Path, records: list[dict],
+) -> list[tuple[str, str, pd.DataFrame]]:
+    """Return [(dataset_key, subject, matrix), …] for every S10 PASS/WARN
+    run with a hemicord Fisher-z TSV on disk.
+    """
     s10_recs = [r for r in records if r.get("step") == "S10"
                 and r.get("status") in ("PASS", "WARN")]
-    matrices: list[pd.DataFrame] = []
+    out = []
     for r in s10_recs:
         sub = r.get("subject"); ds = r.get("dataset_key"); rid = r.get("run_id")
         path = (out_dir / "derivatives" / "spinalfmriprep" / ds
@@ -504,81 +785,293 @@ def _build_cohort_fc_summary(
             continue
         try:
             mat = pd.read_csv(path, sep="\t", index_col=0)
-            matrices.append(mat)
+            out.append((ds, sub, mat))
         except Exception:
             continue
-    def _placeholder(reason: str, n_matrices: int, n_common: int) -> dict[str, Any]:
-        out_mean_tsv.parent.mkdir(parents=True, exist_ok=True)
-        out_mean_tsv.write_text(f"# {reason}\n")
-        out_consistency_tsv.write_text(f"# {reason}\n")
-        try:
-            import matplotlib
-            matplotlib.use("Agg")
-            import matplotlib.pyplot as plt
-            fig, ax = plt.subplots(figsize=(6, 3))
-            ax.axis("off")
-            ax.text(0.5, 0.5, reason, ha="center", va="center",
-                    fontsize=11, wrap=True)
-            fig.savefig(out_png, dpi=120, bbox_inches="tight")
-            plt.close(fig)
-        except Exception:
-            out_png.write_bytes(b"")
-        return {"n_matrices": n_matrices, "n_common_rois": n_common}
+    return out
 
-    if not matrices:
-        return _placeholder("No FC matrices found on chain.", 0, 0)
-    # Intersect ROIs
-    common = set(matrices[0].columns)
-    for m in matrices[1:]:
-        common &= set(m.columns)
-    common = sorted(common)
-    if len(common) < 2:
-        return _placeholder(
-            f"Only {len(common)} ROI(s) common across {len(matrices)} matrices — "
-            "cohort FC summary not informative. Consider stratifying by dataset.",
-            len(matrices), len(common),
-        )
-    aligned = np.stack([m.loc[common, common].to_numpy() for m in matrices], axis=0)
-    mean_z = np.nanmean(aligned, axis=0)
-    thr = float(policy.get("cohort_views", {}).get("fc_summary", {}).get(
-        "consistency_z_threshold", 0.3))
-    consistency = (np.abs(aligned) > thr).mean(axis=0)
-    mean_df = pd.DataFrame(mean_z, index=common, columns=common)
-    cons_df = pd.DataFrame(consistency, index=common, columns=common)
+
+def _summarise_fc_stack(
+    matrices: list[pd.DataFrame], labels: list[str], consistency_thr: float,
+) -> Optional[tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+    """Stack matrices restricted to `labels` (intersection-with-canonical),
+    return (mean_z, consistency, per-cell N).
+    """
+    aligned = []
+    for m in matrices:
+        cols = [c for c in labels if c in m.columns]
+        if len(cols) < 2:
+            continue
+        sub = m.loc[cols, cols].reindex(index=labels, columns=labels)
+        aligned.append(sub.to_numpy())
+    if not aligned:
+        return None
+    arr = np.stack(aligned, axis=0)
+    mean_z = np.nanmean(arr, axis=0)
+    n_per_cell = np.isfinite(arr).sum(axis=0)
+    consistency = (np.abs(arr) > consistency_thr).sum(axis=0) / np.maximum(n_per_cell, 1)
+    return (
+        pd.DataFrame(mean_z, index=labels, columns=labels),
+        pd.DataFrame(consistency, index=labels, columns=labels),
+        pd.DataFrame(n_per_cell, index=labels, columns=labels),
+    )
+
+
+def _build_cohort_fc_summary(
+    out_dir: Path, records: list[dict], policy: dict,
+    out_mean_tsv: Path, out_consistency_tsv: Path, out_png: Path,
+) -> dict[str, Any]:
+    """Stratified group FC summary (audit B5).
+
+    For each dataset_key, emit a Fisher-z mean + consistency matrix
+    restricted to the dataset's intersection ROIs. The headline plot
+    shows per-dataset panels side-by-side. A cross-dataset summary on
+    the canonical Kaptan 2023 segment range (C3-T1) is appended at the
+    bottom and written to the TSV outputs.
+    """
+    cfg = policy.get("cohort_views", {}).get("fc_summary", {})
+    consistency_thr = float(cfg.get("consistency_z_threshold", 0.3))
+    canonical = cfg.get("canonical_segment_range", [3, 9])  # C3..T1
+    canonical = (int(canonical[0]), int(canonical[1]))
+
+    all_mats = _collect_fc_matrices(out_dir, records)
+    if not all_mats:
+        return _fc_placeholder(out_mean_tsv, out_consistency_tsv, out_png,
+                               "No FC matrices found on chain.", 0, 0)
+
+    # Per-dataset stratification
+    by_dataset: dict[str, list[pd.DataFrame]] = {}
+    for ds, _sub, m in all_mats:
+        by_dataset.setdefault(ds, []).append(m)
+
+    per_dataset_summaries: list[tuple[str, pd.DataFrame, pd.DataFrame, pd.DataFrame]] = []
+    for ds, mats in sorted(by_dataset.items()):
+        # Dataset-level intersection (subjects within a protocol have
+        # consistent coverage)
+        common = set(mats[0].columns)
+        for m in mats[1:]:
+            common &= set(m.columns)
+        common = sorted(common)
+        if len(common) < 2:
+            continue
+        out = _summarise_fc_stack(mats, common, consistency_thr)
+        if out is None:
+            continue
+        mean_df, cons_df, n_df = out
+        per_dataset_summaries.append((ds, mean_df, cons_df, n_df))
+
+    # Canonical cross-dataset Kaptan range — restrict every matrix to the
+    # canonical segment range first, then intersect.
+    canonical_labels_per_mat: list[set[str]] = []
+    canonical_mats: list[pd.DataFrame] = []
+    for _ds, _sub, m in all_mats:
+        kept = _canonical_segment_filter(list(m.columns), canonical)
+        if kept:
+            canonical_labels_per_mat.append(set(kept))
+            canonical_mats.append(m)
+    cross_summary = None
+    if canonical_labels_per_mat:
+        cross_common = set.intersection(*canonical_labels_per_mat)
+        cross_common = sorted(cross_common)
+        if len(cross_common) >= 2:
+            cross_summary = _summarise_fc_stack(
+                canonical_mats, cross_common, consistency_thr,
+            )
+
+    if not per_dataset_summaries and cross_summary is None:
+        return _fc_placeholder(out_mean_tsv, out_consistency_tsv, out_png,
+                               "Every dataset has <2 common ROIs and the canonical "
+                               f"range C{canonical[0]}-{'C' if canonical[1]<=8 else 'T'}"
+                               f"{canonical[1] if canonical[1]<=8 else canonical[1]-8} "
+                               "yields no shared subset.",
+                               len(all_mats), 0)
+
+    # Write TSV outputs: header-prefixed sections per dataset + cross
     out_mean_tsv.parent.mkdir(parents=True, exist_ok=True)
-    mean_df.to_csv(out_mean_tsv, sep="\t", float_format="%.4f")
-    cons_df.to_csv(out_consistency_tsv, sep="\t", float_format="%.4f")
-    # PNG: side-by-side heatmaps
+    with open(out_mean_tsv, "w", encoding="utf-8") as fh_mean, \
+         open(out_consistency_tsv, "w", encoding="utf-8") as fh_cons:
+        for ds, mean_df, cons_df, _n_df in per_dataset_summaries:
+            fh_mean.write(f"# dataset={ds}  n_runs={len(by_dataset[ds])}\n")
+            mean_df.to_csv(fh_mean, sep="\t", float_format="%.4f")
+            fh_mean.write("\n")
+            fh_cons.write(f"# dataset={ds}  n_runs={len(by_dataset[ds])}\n")
+            cons_df.to_csv(fh_cons, sep="\t", float_format="%.4f")
+            fh_cons.write("\n")
+        if cross_summary is not None:
+            mean_df, cons_df, _n = cross_summary
+            fh_mean.write(f"# cross_dataset_canonical=C{canonical[0]}..C{canonical[1]} "
+                          f"n_matrices={len(canonical_mats)}\n")
+            mean_df.to_csv(fh_mean, sep="\t", float_format="%.4f")
+            fh_mean.write("\n")
+            fh_cons.write(f"# cross_dataset_canonical=C{canonical[0]}..C{canonical[1]} "
+                          f"n_matrices={len(canonical_mats)}\n")
+            cons_df.to_csv(fh_cons, sep="\t", float_format="%.4f")
+            fh_cons.write("\n")
+
+    # PNG: grid of per-dataset panels + cross-dataset row
     try:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-        im0 = axes[0].imshow(mean_z, cmap="RdBu_r", vmin=-1, vmax=1)
-        axes[0].set_title(f"Group-mean Fisher-z (n={len(matrices)})")
-        fig.colorbar(im0, ax=axes[0], shrink=0.7)
-        im1 = axes[1].imshow(consistency, cmap="viridis", vmin=0, vmax=1)
-        axes[1].set_title(f"Consistency: fraction of subjects with |z|>{thr}")
-        fig.colorbar(im1, ax=axes[1], shrink=0.7)
-        for ax in axes:
-            step = max(1, len(common) // 24)
-            ax.set_xticks(range(0, len(common), step))
-            ax.set_yticks(range(0, len(common), step))
-            ax.set_xticklabels([common[i] for i in range(0, len(common), step)],
-                               rotation=90, fontsize=6)
-            ax.set_yticklabels([common[i] for i in range(0, len(common), step)],
-                               fontsize=6)
+        n_panels = len(per_dataset_summaries) + (1 if cross_summary else 0)
+        cols = 2  # mean | consistency
+        fig, axes = plt.subplots(n_panels, cols,
+                                 figsize=(11, 4.2 * n_panels))
+        if n_panels == 1:
+            axes = np.array([axes])
+        row = 0
+        for ds, mean_df, cons_df, n_df in per_dataset_summaries:
+            _draw_fc_panel(axes[row, 0], mean_df, f"{ds[:30]}\nmean Fisher-z (n={len(by_dataset[ds])})",
+                           cmap="RdBu_r", vmin=-1, vmax=1)
+            _draw_fc_panel(axes[row, 1], cons_df, f"{ds[:30]}\nconsistency |z|>{consistency_thr}",
+                           cmap="viridis", vmin=0, vmax=1)
+            row += 1
+        if cross_summary is not None:
+            mean_df, cons_df, n_df = cross_summary
+            title_seg = f"C{canonical[0]}..C{canonical[1]}"
+            _draw_fc_panel(axes[row, 0], mean_df,
+                           f"cross-dataset ({title_seg})\nmean Fisher-z (n={len(canonical_mats)})",
+                           cmap="RdBu_r", vmin=-1, vmax=1)
+            _draw_fc_panel(axes[row, 1], cons_df,
+                           f"cross-dataset ({title_seg})\nconsistency |z|>{consistency_thr}",
+                           cmap="viridis", vmin=0, vmax=1)
         fig.tight_layout()
         fig.savefig(out_png, dpi=120, bbox_inches="tight")
         plt.close(fig)
     except Exception:
         pass
-    return {"n_matrices": len(matrices), "n_common_rois": len(common)}
+
+    return {
+        "n_matrices": len(all_mats),
+        "n_datasets": len(per_dataset_summaries),
+        "cross_dataset_n_common_rois": (cross_summary[0].shape[0]
+                                        if cross_summary else 0),
+    }
+
+
+def _draw_fc_panel(ax, df: pd.DataFrame, title: str,
+                   cmap: str, vmin: float, vmax: float) -> None:
+    arr = df.to_numpy()
+    im = ax.imshow(arr, cmap=cmap, vmin=vmin, vmax=vmax, interpolation="nearest")
+    ax.set_title(title, fontsize=9)
+    labels = list(df.columns)
+    step = max(1, len(labels) // 18)
+    tick_idx = list(range(0, len(labels), step))
+    ax.set_xticks(tick_idx)
+    ax.set_yticks(tick_idx)
+    ax.set_xticklabels([labels[i] for i in tick_idx], rotation=90, fontsize=6)
+    ax.set_yticklabels([labels[i] for i in tick_idx], fontsize=6)
+    ax.figure.colorbar(im, ax=ax, shrink=0.7)
+
+
+def _fc_placeholder(out_mean_tsv: Path, out_cons_tsv: Path, out_png: Path,
+                    reason: str, n_matrices: int, n_common: int) -> dict[str, Any]:
+    out_mean_tsv.parent.mkdir(parents=True, exist_ok=True)
+    out_mean_tsv.write_text(f"# {reason}\n")
+    out_cons_tsv.write_text(f"# {reason}\n")
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots(figsize=(6, 3))
+        ax.axis("off")
+        ax.text(0.5, 0.5, reason, ha="center", va="center",
+                fontsize=11, wrap=True)
+        fig.savefig(out_png, dpi=120, bbox_inches="tight")
+        plt.close(fig)
+    except Exception:
+        out_png.write_bytes(b"")
+    return {"n_matrices": n_matrices, "n_datasets": 0,
+            "cross_dataset_n_common_rois": n_common}
 
 
 # ---------------------------------------------------------------------------
 # Tier 3: publication & reproducibility
 # ---------------------------------------------------------------------------
+
+
+_VERSION_RE = __import__("re").compile(r"^\d+\.\d+(?:\.\d+)?$")
+
+
+def _parse_version_lines(text: str) -> Optional[str]:
+    """Return the first line that looks like a semver-ish version."""
+    for line in (text or "").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if _VERSION_RE.match(line):
+            return line
+        # Strip a "version: X" prefix
+        for prefix in ("version:", "Version:", "FSL version"):
+            if line.lower().startswith(prefix.lower()):
+                tail = line.split(":", 1)[-1].strip()
+                if _VERSION_RE.match(tail):
+                    return tail
+    return None
+
+
+def _detect_fsl_version() -> Optional[str]:
+    """Canonical: ``$FSLDIR/etc/fslversion``. ``fslversion`` command output
+    starts with the env-var banner ``FSLDIR:  /usr/local/fsl`` which used
+    to leak into the receipt as the captured version (audit B10).
+    """
+    fsldir = os.environ.get("FSLDIR")
+    if fsldir:
+        canon = Path(fsldir) / "etc" / "fslversion"
+        if canon.exists():
+            v = canon.read_text().strip().split(":", 1)[0].strip()
+            if v:
+                return v
+    try:
+        out = subprocess.run(["fslversion"], capture_output=True, text=True, timeout=10)
+        merged = (out.stdout or "") + "\n" + (out.stderr or "")
+        parsed = _parse_version_lines(merged)
+        if parsed:
+            return parsed
+    except Exception:
+        pass
+    return None
+
+
+def _detect_sct_version() -> Optional[str]:
+    try:
+        out = subprocess.run(["sct_version"], capture_output=True, text=True, timeout=10)
+        merged = (out.stdout or "") + "\n" + (out.stderr or "")
+        parsed = _parse_version_lines(merged)
+        if parsed:
+            return parsed
+        # Fallback: first non-empty line
+        for line in merged.splitlines():
+            if line.strip():
+                return line.strip()
+    except Exception:
+        pass
+    return None
+
+
+def _hash_policy_yaml(project_root: Path, step_full: str) -> Optional[str]:
+    """SHA256 of the step's policy YAML — source of truth regardless of
+    chain-runner symlink topology (audit B6).
+
+    Tries ``policy/<step_full>.yaml`` first; falls back to a single
+    glob match of ``policy/<short>_*.yaml`` (S8's file is named
+    ``S8_confounds.yaml`` while its step full-name is
+    ``S8_confounds_and_physio_regressors``).
+    """
+    pol_dir = project_root / "policy"
+    direct = pol_dir / f"{step_full}.yaml"
+    candidates: list[Path] = []
+    if direct.exists():
+        candidates.append(direct)
+    else:
+        short = step_full.split("_", 1)[0]
+        candidates = sorted(pol_dir.glob(f"{short}_*.yaml"))
+    if not candidates:
+        return None
+    try:
+        return hashlib.sha256(candidates[0].read_bytes()).hexdigest()
+    except Exception:
+        return None
 
 
 def _build_reproducibility_receipt(
@@ -590,18 +1083,9 @@ def _build_reproducibility_receipt(
         "hostname": socket.gethostname(),
         "os": platform.platform(),
         "python_version": platform.python_version(),
+        "sct_version": _detect_sct_version(),
+        "fsl_version": _detect_fsl_version(),
     }
-    # External tools
-    try:
-        out = subprocess.run(["sct_version"], capture_output=True, text=True, timeout=10)
-        recipe["sct_version"] = (out.stdout or out.stderr).strip().split("\n")[0]
-    except Exception:
-        recipe["sct_version"] = None
-    try:
-        out = subprocess.run(["fslversion"], capture_output=True, text=True, timeout=10)
-        recipe["fsl_version"] = (out.stdout or out.stderr).strip().split("\n")[0]
-    except Exception:
-        recipe["fsl_version"] = None
     # Python package versions
     recipe["package_versions"] = {}
     for pkg in policy.get("publication", {}).get("reproducibility_receipt", {}).get(
@@ -612,35 +1096,10 @@ def _build_reproducibility_receipt(
             recipe["package_versions"][pkg] = metadata.version(pkg)
         except Exception:
             recipe["package_versions"][pkg] = None
-    # Per-step policy SHAs (read from any one run's qc_metrics.json provenance)
-    recipe["policy_sha256_per_step"] = {}
-    for short, full in ALL_STEPS:
-        # Find first run's work qc_metrics.json
-        wm_dir = out_dir / "work" / full
-        sha: Optional[str] = None
-        if wm_dir.exists():
-            for ds_dir in wm_dir.iterdir():
-                if not ds_dir.is_dir():
-                    continue
-                for run_dir in ds_dir.iterdir():
-                    if not run_dir.is_dir():
-                        continue
-                    qm = run_dir / "qc_metrics.json"
-                    if qm.exists():
-                        try:
-                            d = json.loads(qm.read_text())
-                            sha = d.get("policy_sha256") or d.get("provenance", {}).get("policy_sha256")
-                            if sha:
-                                break
-                        except Exception:
-                            pass
-                if sha:
-                    break
-        recipe["policy_sha256_per_step"][short] = sha
     # Pipeline Git SHA
+    project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
+                    else Path.cwd())
     try:
-        project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
-                        else Path.cwd())
         out = subprocess.run(
             ["git", "-C", str(project_root), "rev-parse", "HEAD"],
             capture_output=True, text=True, timeout=5,
@@ -654,6 +1113,12 @@ def _build_reproducibility_receipt(
     except Exception:
         recipe["pipeline_git_sha"] = None
         recipe["pipeline_git_describe"] = None
+    # Per-step policy SHA: hash the YAML directly so symlinked workfolders
+    # don't shadow upstream steps.
+    recipe["policy_sha256_per_step"] = {
+        short: _hash_policy_yaml(project_root, full)
+        for short, full in ALL_STEPS + [("S11", "S11_qc_aggregation_and_release")]
+    }
     out_path.write_text(json.dumps(recipe, indent=2, default=str))
     return recipe
 
@@ -827,30 +1292,65 @@ def _build_references_bib(out_path: Path) -> None:
     out_path.write_text(bib)
 
 
+def _detect_code_url(project_root: Path) -> Optional[str]:
+    """Resolve the GitHub CodeURL from ``git remote get-url origin``.
+    Returns ``None`` when no remote is configured (previous behaviour
+    was a placeholder ``[org]`` literal — audit B14).
+    """
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(project_root), "remote", "get-url", "origin"],
+            capture_output=True, text=True, timeout=5,
+        )
+        url = out.stdout.strip()
+        if not url:
+            return None
+        # Normalise SSH → HTTPS (git@github.com:org/repo.git → https://github.com/org/repo)
+        if url.startswith("git@") and ":" in url:
+            host, path = url.split(":", 1)
+            host = host.split("@", 1)[-1]
+            url = f"https://{host}/{path}"
+        if url.endswith(".git"):
+            url = url[:-4]
+        return url
+    except Exception:
+        return None
+
+
 def _build_dataset_description(
     out_dir: Path, chain_qc: dict, recipe: dict, out_path: Path,
 ) -> None:
+    """BIDS-Derivatives v1.11 manifest. When CITATION.cff is present
+    alongside this file, the spec requires Authors / License /
+    HowToAcknowledge / ReferencesAndLinks to live in CFF, not here
+    (audit B13). We emit only the GeneratedBy + SourceDatasets fields
+    and let CITATION.cff own the rest.
+    """
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    # Collect source datasets from S1/S2 qc.json bids_root fields
+    project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
+                    else Path.cwd())
+    code_url = _detect_code_url(project_root)
     source_datasets: list[dict] = []
     for ds_key, qc in (chain_qc.get("S2") or chain_qc.get("S1") or {}).items():
         br = qc.get("bids_root")
         if br:
             source_datasets.append({"URL": f"file://{br}", "Description": ds_key})
+    generated_by: dict[str, Any] = {
+        "Name": "SpinalfMRIprep",
+        "Version": recipe.get("pipeline_git_describe") or "0.0.0",
+        "Description": "Cervical spinal cord fMRI preprocessing pipeline",
+        "Container": {
+            "Type": "host",
+            "Tag": recipe.get("pipeline_git_sha") or "unknown",
+        },
+    }
+    if code_url:
+        generated_by["CodeURL"] = code_url
     desc = {
         "Name": "SpinalfMRIprep derivatives",
-        "BIDSVersion": "1.10.0",
+        "BIDSVersion": "1.11.0",
         "DatasetType": "derivative",
-        "GeneratedBy": [{
-            "Name": "SpinalfMRIprep",
-            "Version": recipe.get("pipeline_git_describe") or "0.0.0",
-            "Description": "Cervical spinal cord fMRI preprocessing pipeline",
-            "CodeURL": "https://github.com/[org]/SpinalfMRIprep",
-            "Container": {
-                "Type": "host",
-                "Tag": recipe.get("pipeline_git_sha") or "unknown",
-            },
-        }],
+        "GeneratedBy": [generated_by],
         "SourceDatasets": source_datasets,
     }
     out_path.write_text(json.dumps(desc, indent=2))
@@ -870,10 +1370,13 @@ def _build_participants_tsv(
         "include_threshold_fd", 0.5))
     tsnr_thresh = float(policy.get("publication", {}).get("participants_tsv", {}).get(
         "include_threshold_tsnr", 5.0))
+    # n_runs is a count of BOLD runs (S3..S10); S1/S2 records pollute it.
+    df_runs = df[df["step"].isin(_BOLD_STEPS)].dropna(subset=["run_id"])
     rows = []
     for (sub, ds), g in df.groupby(["subject", "dataset_key"]):
-        # Per-run worst status
-        run_groups = g.groupby("run_id")
+        # Per-run worst status from the BOLD-step subset only.
+        g_runs = df_runs[(df_runs["subject"] == sub) & (df_runs["dataset_key"] == ds)]
+        run_groups = g_runs.groupby("run_id")
         n_pass = sum(1 for _, gg in run_groups
                      if all(s == "PASS" for s in gg["status"]))
         n_warn = sum(1 for _, gg in run_groups
@@ -882,15 +1385,20 @@ def _build_participants_tsv(
         n_failed = sum(1 for _, gg in run_groups
                        if any(s == "FAIL" for s in gg["status"]))
         n_runs = run_groups.ngroups
-        n_sessions = g["session"].nunique()
+        # Treat None-session as "1 implicit session" (BIDS single-session
+        # subjects); count distinct named sessions otherwise.
+        named_sessions = {s for s in g_runs["session"].dropna().unique() if s}
+        n_sessions = max(1, len(named_sessions))
         # Aggregate metrics
         s4 = g[g["step"] == "S4"]
         s9 = g[g["step"] == "S9"]
         s10 = g[g["step"] == "S10"]
         mean_fd = np.nan
         if not s4.empty:
-            fds = [r.get("fd_max_mm") for r in s4["metrics"] if isinstance(r, dict)]
-            fds = [f for f in fds if f is not None]
+            # S4 emits both mean_fd_mm and max_fd_mm; we want the
+            # per-run mean averaged across runs (Power 2014 convention).
+            fds = [r.get("mean_fd_mm") for r in s4["metrics"] if isinstance(r, dict)]
+            fds = [f for f in fds if f is not None and np.isfinite(f)]
             if fds:
                 mean_fd = float(np.mean(fds))
         median_tsnr = np.nan
@@ -950,110 +1458,187 @@ def _build_participants_tsv(
     return len(out_df)
 
 
+def _read_policy_yaml(project_root: Path, step_full: str) -> dict:
+    pol = project_root / "policy" / f"{step_full}.yaml"
+    if not pol.exists():
+        return {}
+    try:
+        import yaml as _yaml
+        return _yaml.safe_load(pol.read_text()) or {}
+    except Exception:
+        return {}
+
+
 def _build_methods_manifest(
     out_dir: Path, recipe: dict, policy: dict,
     out_md: Path, out_tex: Path, out_html: Path,
-) -> None:
+) -> str:
+    """Auto-emit Methods boilerplate as CITATION.{md,tex,html}.
+
+    Naming + location follow the NiPreps convention (logs/CITATION.*;
+    fMRIPrep / sMRIPrep / ASLPrep / dMRIPrep / NiBabies all use this).
+    Policy values are read from disk so the manifest doesn't drift
+    silently from the actual pipeline (audit B9). Pandoc converts
+    md → tex/html (audit B8 — the previous regex one-liner produced
+    malformed LaTeX).
+    """
+    project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
+                    else Path.cwd())
+    # Pull live values from the policy files (so the manifest tracks reality)
+    s4_pol = _read_policy_yaml(project_root, "S4_func_motion_correction")
+    s5_pol = _read_policy_yaml(project_root, "S5_func_distortion_correction")
+    s6_pol = _read_policy_yaml(project_root, "S6_func_to_anat_registration")
+    s8_pol = _read_policy_yaml(project_root, "S8_confounds_and_physio_regressors")
+    s9_pol = _read_policy_yaml(project_root, "S9_primary_functional_derivatives")
+    s10_pol = _read_policy_yaml(project_root, "S10_roi_timeseries_and_connectivity")
+
+    sigma = s9_pol.get("smoothing", {}).get("sigma_mm", [1, 1, 5])
+    sigma_str = "×".join(str(s) for s in sigma)
+    masker = s10_pol.get("masker", {})
+    hp = masker.get("high_pass", 0.01)
+    lp = masker.get("low_pass", 0.1)
+    fd_thr = (s8_pol.get("frame_metrics", {}).get("fd_threshold_mm")
+              or s4_pol.get("qc_thresholds", {}).get("warn_max_mean_fd_mm")
+              or 0.5)
+    vert_range = s10_pol.get("roi_catalogs", {}).get("vertlvl", {}).get(
+        "label_range", [1, 8])
+    seg_range = s10_pol.get("roi_catalogs", {}).get("spinalseg", {}).get(
+        "label_range", [1, 8])
+    horn_thr = s10_pol.get("roi_catalogs", {}).get("hemicord", {}).get(
+        "horn_prob_threshold", 0.3)
+
     pipeline_v = recipe.get("pipeline_git_describe") or "0.0.0"
-    sct_v = recipe.get("sct_version", "n/a")
-    fsl_v = recipe.get("fsl_version", "n/a")
-    nilearn_v = recipe.get("package_versions", {}).get("nilearn", "n/a")
-    nibabel_v = recipe.get("package_versions", {}).get("nibabel", "n/a")
+    sct_v = recipe.get("sct_version") or "n/a"
+    fsl_v = recipe.get("fsl_version") or "n/a"
+    nilearn_v = recipe.get("package_versions", {}).get("nilearn") or "n/a"
+    nibabel_v = recipe.get("package_versions", {}).get("nibabel") or "n/a"
 
-    md = f"""# Methods (auto-generated by SpinalfMRIprep S11)
+    md = f"""# Methods boilerplate (auto-generated by SpinalfMRIprep S11)
 
-**Pipeline**: SpinalfMRIprep {pipeline_v}. **Tools**: Spinal Cord Toolbox {sct_v}; FSL {fsl_v}; Nilearn {nilearn_v}; NiBabel {nibabel_v}.
+> Reuse this text verbatim in your methods section. Adapt only the
+> dataset description and the citation format. Policy values shown
+> here reflect what actually ran (read live from policy YAMLs).
+
+**Pipeline**: SpinalfMRIprep {pipeline_v}.
+**Tools**: Spinal Cord Toolbox {sct_v}; FSL {fsl_v};
+Nilearn {nilearn_v}; NiBabel {nibabel_v}.
 
 ## Preprocessing
 
-Cervical spinal cord BOLD data were preprocessed using SpinalfMRIprep, a custom pipeline integrating Spinal Cord Toolbox (SCT) [@sct2017], FSL Physiological Noise Modelling [@brooks2008], and Nilearn [@nilearn], with templates from PAM50 [@deleener2018].
+Cervical spinal cord BOLD data were preprocessed using SpinalfMRIprep,
+a custom pipeline integrating Spinal Cord Toolbox (SCT) [@sct2017],
+FSL Physiological Noise Modelling [@brooks2008], and Nilearn
+[@nilearn], with templates from PAM50 [@deleener2018].
 
-**Anatomical (S2)**: T1w / T2w / T2*-MEGRE images were segmented via SCT contrast-agnostic spinal cord segmentation, labeled via TotalSpineSeg, and registered to PAM50 using rootlets-based registration [@valosek2024_rootlets] (falling back to disc labels). Dual-role anatomical model: full-FOV primary anat (T1w/T2w) for labeling and template registration; T2*-MEGRE secondary cordref for functional registration (cleaner same-contrast match to T2*-weighted BOLD).
+**Anatomical (S2)**: T1w / T2w / T2\\*-MEGRE images were segmented via
+SCT contrast-agnostic spinal cord segmentation, labeled via
+TotalSpineSeg, and registered to PAM50 using rootlets-based
+registration [@valosek2024_rootlets] (falling back to disc labels).
+Dual-role anatomical model: full-FOV primary anat (T1w/T2w) for
+labeling and template registration; T2\\*-MEGRE secondary cordref for
+functional registration.
 
-**Functional initialization (S3)**: BOLD reference image discovered via fast cord segmentation; volume cropped to a cord-centered FOV. Frame-level QC metrics (DVARS, refRMS) computed per Power 2014 [@power2014].
+**Functional initialization (S3)**: BOLD reference image discovered via
+fast cord segmentation; volume cropped to a cord-centered FOV.
+Frame-level QC metrics (DVARS, refRMS) computed per Power 2014
+[@power2014].
 
-**Motion correction (S4)**: 2D slicewise translation (x, y) via SCT `sct_fmri_moco`, regularized along Z. Per-slice translation parameters emitted as 4D NIfTI for downstream confound use.
+**Motion correction (S4)**: 2D slicewise translation (x, y) via SCT
+`sct_fmri_moco`, regularized along Z. Per-slice translation parameters
+emitted as 4D NIfTI for downstream confound use.
 
-**Distortion correction (S5)**: Per-dataset mode (TopUp / FUGUE / SyN fallback). Mutual information of funcref-vs-anat computed before/after as QC.
+**Distortion correction (S5)**: Per-dataset mode (TopUp / FUGUE / SyN
+fallback). Cord A-P displacement per slice + cord Dice per slice
+emitted as QC.
 
-**Functional-to-anat registration (S6)**: SCT `sct_register_multimodal` with the cord-driven Kaptan 2023 recipe [@kaptan2023]: `centermassrot → columnwise → bsplinesyn (iter=20, slicewise)`. Output: bidirectional warp `from-bold_to-anat_xfm.nii.gz`.
+**Functional-to-anat registration (S6)**: SCT `sct_register_multimodal`
+with the cord-driven Kaptan 2023 recipe [@kaptan2023]:
+`centermassrot → columnwise → bsplinesyn`. Output: bidirectional warp
+`from-bold_to-anat_xfm.nii.gz`.
 
-**Template normalization (S7)**: Composed S2 (anat ↔ PAM50) and S6 (bold ↔ anat) warps via `sct_concat_transfo`; refined the composite at the EPI level via a second `sct_register_multimodal` pass (`slicereg + bsplinesyn`, iter=5). PAM50 atlas warped into native func space; no 4D BOLD resampling.
+**Template normalization (S7)**: Composed S2 (anat ↔ PAM50) and S6
+(bold ↔ anat) warps via `sct_concat_transfo`; refined the composite at
+the EPI level via a second `sct_register_multimodal` pass
+(`slicereg + bsplinesyn`). PAM50 atlas warped into native func space;
+no 4D BOLD resampling.
 
-**Confounds (S8)**: Five families assembled per BIDS-Derivatives convention: (a) motion (trans_x/y + derivatives + FD); (b) S3-computed DVARS+refRMS outlier one-hot regressors; (c) slicewise CSF top-20%-variance mean (Hemmerling 2025 [@hemmerling2025]); (d) RETROICOR (FSL PNM popp + pnm_evs; cardiac order 4 + respiratory 4 + interactions 4×4, slice-mean aggregated; HR/RVT slow regressors) [@brooks2008]; (e) cosine basis up to 1/100 Hz; (f) SpinalCompCor (Hemmerling 2025 [@hemmerling2025]; default global_3d aggregation with K=5 PCs; opt-in slicewise + IAAFT parallel analysis [@schreiber1996]). All emitted; nothing regressed out of the BOLD itself.
+**Confounds (S8)**: Six families assembled per BIDS-Derivatives
+convention: (a) motion (trans_x/y + derivatives + FD); (b)
+DVARS+refRMS outlier one-hot regressors (Power 2014 [@power2014],
+FD > {fd_thr} mm + Tukey IQR DVARS); (c) slicewise CSF top-20%-variance
+mean (Hemmerling 2025 [@hemmerling2025]); (d) RETROICOR (FSL PNM
+popp + pnm_evs) [@brooks2008]; (e) cosine basis up to 1/100 Hz; (f)
+SpinalCompCor (Hemmerling 2025 [@hemmerling2025]). All emitted as
+columns; the BOLD itself is not regressed.
 
-**Primary functional derivatives (S9)**: Cord-aware Gaussian smoothing via SCT `sct_smooth_spinalcord` (σ = 1, 1, 5 mm in R-L, A-P, S-I; CoSpi-validated lineage; Eippert 2017 anisotropic principle [@eippert2017]). Output: native + PAM50-space smoothed BOLD, per-vertebral-level tSNR TSV.
+**Primary functional derivatives (S9)**: Cord-aware Gaussian smoothing
+via SCT `sct_smooth_spinalcord` (σ = {sigma_str} mm in R-L, A-P, S-I;
+Eippert 2017 anisotropic principle [@eippert2017]). Output: native +
+PAM50-space smoothed BOLD, per-vertebral-level tSNR TSV.
 
-**ROI timeseries + connectivity (S10)**: Three ROI catalogs via Nilearn `NiftiLabelsMasker` [@nilearn] in native func:
-- vertebral levels (PAM50_levels, 1–8);
-- spinal segmental levels (PAM50_spinal_levels, 1–8 = C1–C8);
-- hemicord × spinal segmental (4 horns × N segments, Kaptan 2023 [@kaptan2023]).
-Two confound modes per catalog: raw + S8-regressed. Pearson and Marrelec 2006 [@marrelec2006] partial correlation (Ledoit-Wolf shrinkage) connectivity matrices emitted for hemicord. Bandpass 0.01–0.1 Hz [@eippert2017]. Per-subject reliability (multi-session same task): pooled ICC(3,1) [@shrout1979], Cicchetti 1994 bands [@cicchetti1994].
+**ROI timeseries + connectivity (S10)**: Three ROI catalogs via Nilearn
+`NiftiLabelsMasker` [@nilearn] in native func:
+
+- vertebral levels (PAM50_levels, {vert_range[0]}–{vert_range[1]});
+- spinal segmental levels (PAM50_spinal_levels, {seg_range[0]}–{seg_range[1]});
+- hemicord × spinal segmental (4 horns at p > {horn_thr} × spinal
+  segments, Kaptan 2023 [@kaptan2023]).
+
+Two confound modes per catalog: raw + S8-regressed. Pearson and
+Marrelec 2006 [@marrelec2006] partial correlation (Ledoit-Wolf
+shrinkage) connectivity matrices emitted for the hemicord catalog.
+Bandpass {hp}–{lp} Hz [@eippert2017]. Per-subject reliability
+(multi-session, same task): pooled ICC(3,1) [@shrout1979], Cicchetti
+1994 bands [@cicchetti1994].
 
 ## Citation
-Please cite the methods listed in `references.bib` (auto-generated alongside this manifest).
+
+The boilerplate above is licensed CC0 — reuse it verbatim. Cite the
+methods listed in `CITATION.bib` (auto-generated alongside this file).
 
 ## Reproducibility
-Per-step policy SHA256 + pipeline Git SHA captured in `reproducibility_receipt.json`.
+
+Per-step policy SHA256 + pipeline Git SHA captured in
+`reproducibility_receipt.json`. Tool versions: SCT {sct_v}, FSL {fsl_v},
+Nilearn {nilearn_v}, NiBabel {nibabel_v}.
 """
+
     out_md.parent.mkdir(parents=True, exist_ok=True)
     out_md.write_text(md)
-    # Bare LaTeX version
-    out_tex.write_text(md.replace("# ", "\\section{").replace("## ", "\\subsection{") + "}")
-    # HTML version
-    html = f"""<!DOCTYPE html><html><head><meta charset='utf-8'>
-<title>SpinalfMRIprep Methods Manifest</title>
-<style>body {{ font-family: serif; padding:24px; max-width:900px; margin:auto; }} h1,h2 {{ color:#333; }} code {{ background:#eee; padding:2px 4px; }}</style>
-</head><body>
-<pre style='white-space:pre-wrap'>{md}</pre>
-</body></html>"""
-    out_html.write_text(html)
+
+    # Pandoc → LaTeX + HTML (NiPreps convention)
+    def _pandoc(target: Path, fmt: str) -> bool:
+        try:
+            r = subprocess.run(
+                ["pandoc", "-f", "markdown", "-t", fmt, "-o", str(target)],
+                input=md, text=True, capture_output=True, timeout=20,
+            )
+            return r.returncode == 0
+        except Exception:
+            return False
+
+    if not _pandoc(out_tex, "latex"):
+        # Plain-text fallback if Pandoc unavailable — clearly labelled,
+        # not malformed LaTeX.
+        out_tex.write_text(
+            "% Pandoc unavailable; verbatim Markdown follows.\n"
+            "\\begin{verbatim}\n" + md + "\n\\end{verbatim}\n"
+        )
+    if not _pandoc(out_html, "html5"):
+        out_html.write_text(
+            f"<!DOCTYPE html><html><head><meta charset='utf-8'>"
+            f"<title>CITATION</title><style>body{{font-family:serif;"
+            f"padding:24px;max-width:900px;margin:auto}}"
+            f"pre{{white-space:pre-wrap}}</style></head>"
+            f"<body><pre>{md}</pre></body></html>"
+        )
+
+    return md
 
 
 # ---------------------------------------------------------------------------
-# Tier 4: compliance + navigation
+# Navigation
 # ---------------------------------------------------------------------------
-
-
-def _build_sidecar_audit(
-    out_dir: Path, records: list[dict], policy: dict,
-    out_json: Path, out_html: Path,
-) -> dict:
-    """Verify per-emit contract: every reportlet PNG path in records exists;
-    spot-check NIfTI dtype on key outputs.
-    """
-    out_json.parent.mkdir(parents=True, exist_ok=True)
-    missing_reportlets: list[str] = []
-    nifti_issues: list[str] = []
-    expected_total = 0
-    for r in records:
-        for rkey, rpath in (r.get("reportlets") or {}).items():
-            if not rpath:
-                continue
-            expected_total += 1
-            full = out_dir / rpath
-            if not full.exists():
-                missing_reportlets.append(f"{r.get('step')}/{r.get('run_id')}/{rkey}: {rpath}")
-    audit = {
-        "expected_reportlets": expected_total,
-        "missing_reportlets": len(missing_reportlets),
-        "missing_reportlets_list": missing_reportlets[:50],
-        "nifti_issues": len(nifti_issues),
-        "nifti_issues_list": nifti_issues[:50],
-        "non_blocking": True,
-    }
-    out_json.write_text(json.dumps(audit, indent=2))
-    html = f"""<!DOCTYPE html><html><head><meta charset='utf-8'>
-<title>Sidecar audit</title>
-<style>body {{ font-family:sans-serif; padding:20px; }} pre {{ background:#f5f5f5; padding:10px; }}</style>
-</head><body>
-<h1>Sidecar audit</h1>
-<p>Reportlets expected: {expected_total} | Missing: {len(missing_reportlets)} | NIfTI issues: {len(nifti_issues)}</p>
-<h2>Missing reportlets (first 50)</h2><pre>{chr(10).join(missing_reportlets[:50]) or 'none'}</pre>
-<h2>NIfTI issues</h2><pre>{chr(10).join(nifti_issues[:50]) or 'none'}</pre>
-</body></html>"""
-    out_html.write_text(html)
-    return audit
 
 
 def _build_release_report(
@@ -1100,19 +1685,12 @@ a {{ color:#0086e6; text-decoration:none; }} a:hover {{ text-decoration:underlin
 <div class='card'>
 <h2>Release artifacts</h2>
 <ul>
-<li><a href='{rel_links.get('citation_cff','#')}'>CITATION.cff</a> · <a href='{rel_links.get('references_bib','#')}'>references.bib</a></li>
-<li><a href='{rel_links.get('methods_md','#')}'>Methods manifest (Markdown)</a> · <a href='{rel_links.get('methods_html','#')}'>HTML</a> · <a href='{rel_links.get('methods_tex','#')}'>LaTeX</a></li>
-<li><a href='{rel_links.get('dataset_description','#')}'>dataset_description.json (BIDS-Derivatives)</a></li>
+<li><a href='{rel_links.get('citation_cff','#')}'>CITATION.cff</a> · <a href='{rel_links.get('citation_bib','#')}'>CITATION.bib</a></li>
+<li><a href='{rel_links.get('citation_md','#')}'>Methods boilerplate (Markdown)</a> · <a href='{rel_links.get('citation_html','#')}'>HTML</a> · <a href='{rel_links.get('citation_tex','#')}'>LaTeX</a></li>
+<li><a href='{rel_links.get('dataset_description','#')}'>dataset_description.json (BIDS-Derivatives v1.11)</a></li>
 <li><a href='{rel_links.get('participants_tsv','#')}'>participants.tsv</a> · <a href='{rel_links.get('participants_json','#')}'>participants.json</a></li>
 <li><a href='{rel_links.get('reproducibility_receipt','#')}'>reproducibility_receipt.json</a></li>
-<li><a href='{rel_links.get('metrics_index_jsonl','#')}'>metrics_index.jsonl</a></li>
-</ul>
-</div>
-
-<div class='card'>
-<h2>Compliance</h2>
-<ul>
-<li><a href='{rel_links.get('sidecar_audit_html','#')}'>Sidecar audit</a></li>
+<li><a href='{rel_links.get('metrics_index_jsonl','#')}'>metrics_index.jsonl</a> · <a href='{rel_links.get('metrics_index_tsv','#')}'>metrics_index.tsv</a></li>
 </ul>
 </div>
 
