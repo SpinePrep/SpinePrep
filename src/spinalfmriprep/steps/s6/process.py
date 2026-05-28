@@ -558,12 +558,9 @@ def run_S6_func_to_anat_registration(
         nib.save(nib.Nifti1Image(tsnr, bimg.affine, bimg.header), tsnr_path)
 
     # 7. Reportlets
-    from .reportlets import (
-        render_s6_axial, render_s6_sagittal, render_s6_dice_per_slice,
-    )
-    rep_axial = figures_dir / f"{prefix}_desc-S6_bold_on_anat_axial.png"
-    rep_sag   = figures_dir / f"{prefix}_desc-S6_bold_on_anat_sagittal.png"
-    rep_dice  = figures_dir / f"{prefix}_desc-S6_cord_dice_per_slice.png"
+    from .reportlets import render_s6_composite, render_s6_dice_per_slice
+    rep_composite = figures_dir / f"{prefix}_desc-S6_bold_on_anat.png"
+    rep_dice = figures_dir / f"{prefix}_desc-S6_cord_dice_per_slice.png"
     # Audit Finding 8: pass the warped anat cord SEGMENTATION (not the
     # warped anat intensity image) so the reportlet contour traces the
     # cord boundary instead of an arbitrary intensity percentile.
@@ -576,35 +573,23 @@ def run_S6_func_to_anat_registration(
         # eye reads the bright CSF in T2*-EPI as the cord.
         anat_intensity_arg = anat_in_bold if anat_in_bold.exists() else None
         try:
-            render_s6_axial(
+            render_s6_composite(
                 bold_mean_path=bold_mean_local,
                 anat_dseg_in_bold_path=anat_dseg_in_bold,
                 cord_mask_path=funccrop_local,
-                output_path=rep_axial,
+                output_path=rep_composite,
                 anat_in_bold_path=anat_intensity_arg,
                 funcref_path=funcref_local,
                 dice=dice_val, hd95=hd95_val,
             )
         except Exception as e:
-            failure_reasons.append(f"axial reportlet failed: {e}")
-        try:
-            render_s6_sagittal(
-                bold_mean_path=bold_mean_local,
-                anat_dseg_in_bold_path=anat_dseg_in_bold,
-                cord_mask_path=funccrop_local,
-                output_path=rep_sag,
-                anat_in_bold_path=anat_intensity_arg,
-                dice=dice_val, hd95=hd95_val,
-            )
-        except Exception as e:
-            failure_reasons.append(f"sagittal reportlet failed: {e}")
+            failure_reasons.append(f"composite reportlet failed: {e}")
     else:
         from spinalfmriprep.reportlets_common import stub_figure
         try:
-            stub_figure(rep_axial, "anat cord seg not resampled into BOLD geometry")
-            stub_figure(rep_sag,   "anat cord seg not resampled into BOLD geometry")
+            stub_figure(rep_composite, "anat cord seg not resampled into BOLD geometry")
         except Exception as e:
-            failure_reasons.append(f"reportlet stubs failed: {e}")
+            failure_reasons.append(f"reportlet stub failed: {e}")
     try:
         render_s6_dice_per_slice(
             funccrop_local, anat_dseg_in_bold if anat_dseg_in_bold.exists() else None,
@@ -642,8 +627,7 @@ def run_S6_func_to_anat_registration(
         "failure_reasons": failure_reasons,
         "failure_message": "; ".join(failure_reasons) if failure_reasons else None,
         "reportlets": {
-            "bold_on_anat_axial": str(rep_axial.relative_to(out_dir)),
-            "bold_on_anat_sagittal": str(rep_sag.relative_to(out_dir)),
+            "bold_on_anat": str(rep_composite.relative_to(out_dir)),
             "cord_dice_per_slice": str(rep_dice.relative_to(out_dir)),
         },
         "xfm_paths": {

@@ -37,7 +37,7 @@
           "run_id": { "type": ["string", "null"] },
           "anat_modality": {
             "type": ["string", "null"],
-            "enum": ["T1w", "T2w", null],
+            "enum": ["T1w", "T2w", "T2star", "PD", "T1map", null],
             "description": "Anatomical modality used as moving image"
           },
           "distortion_correction_mode_inherited": {
@@ -65,10 +65,16 @@
           "failure_message": { "type": ["string", "null"] },
           "reportlets": {
             "type": "object",
+            "required": ["bold_on_anat", "cord_dice_per_slice"],
             "properties": {
-              "bold_on_anat_axial": { "type": "string" },
-              "bold_on_anat_sagittal": { "type": "string" },
-              "cord_dice_per_slice": { "type": "string" }
+              "bold_on_anat": {
+                "type": "string",
+                "description": "Composite registration QC view: sagittal pair (BOLD + Anat at midcord X) + 3 cord-bearing axial Z columns × 2 modality rows. Yellow anat-cord and cyan EPI-cord contours on every panel."
+              },
+              "cord_dice_per_slice": {
+                "type": "string",
+                "description": "Per-Z 3D-Dice bar chart with PASS/WARN/FAIL color bands. Quantitative complement to bold_on_anat."
+              }
             }
           },
           "xfm_paths": {

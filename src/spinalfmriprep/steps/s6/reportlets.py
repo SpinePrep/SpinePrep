@@ -1,23 +1,30 @@
 """S6 reportlet rendering — chain-wide visual standard.
 
-Three reportlets:
+Two reportlets:
 
-1. ``bold_on_anat_axial`` — sagittal pair (Before/After context isn't
-   meaningful here, but a sagittal anchor + axial montage is the
-   standard cord-fMRI QC view) + 6 cord-bearing axial tiles. Yellow
-   anat-cord contour on every panel.
-2. ``bold_on_anat_sagittal`` — single mid-sagittal slice (BOLD-in-anat
-   geometry) with yellow anat-cord-seg contour and cyan EPI-cord-seg
-   contour. Quick visual: do the two cords line up along Z?
-3. ``cord_dice_per_slice`` — per-slice 3D-Dice bar chart, color-coded
-   PASS/WARN/FAIL band. Kept simple (non-image plot doesn't need
-   visual-standard chrome).
+1. ``bold_on_anat`` — composite registration QC view: sagittal pair
+   (BOLD + Anat, tall-narrow at midcord X) on the left + 3 cord-bearing
+   axial Z columns × 2 modality rows (BOLD top, Anat bottom) on the
+   right. Yellow anat-cord-seg contour and cyan EPI-cord-seg contour
+   on every panel. Dual-modality so the cord is unambiguous on the
+   anat panel (T2*-EPI shows CSF brighter than the cord which can be
+   visually misleading on BOLD-only views).
+2. ``cord_dice_per_slice`` — per-slice 3D-Dice bar chart, color-coded
+   PASS/WARN/FAIL band. Quantitative complement to the visual overlay.
+   Non-image plot, intentionally minimal chrome.
 
-Audit reference: ``.claude/specs/s6-algorithm-audit.md`` — fixes
-Findings 8 (intensity-percentile contour → cord seg) and 9 (visual
-standard adherence). Inputs include the warped anat **cord
-segmentation** (``anat_dseg_in_bold``), not the warped anat intensity
-image; the contour now traces the cord boundary directly.
+Audit references:
+- ``.claude/specs/s6-algorithm-audit.md`` — Findings 8 (intensity-
+  percentile contour → cord seg) and 9 (visual standard adherence).
+- ``.claude/specs/s6-reportlet-set-audit.md`` — the standalone
+  ``bold_on_anat_sagittal`` was dropped 2026-05-28 as redundant with
+  the sagittal strips inside the composite. Field-standard pattern
+  (fMRIPrep, qsiprep, SCT, CoSpine, Kaptan 2023) is composite-view +
+  quantitative — exactly 2 reportlets per registration step.
+
+Inputs include the warped anat **cord segmentation**
+(``anat_dseg_in_bold``), not the warped anat intensity image; the
+contour traces the cord boundary directly.
 """
 
 from __future__ import annotations
@@ -33,11 +40,11 @@ import numpy as np
 
 
 # ---------------------------------------------------------------------------
-# Reportlet 1+2: axial + sagittal overlays, using reportlets_common chrome
+# Reportlet 1: composite axial + sagittal pair, BOLD vs Anat
 # ---------------------------------------------------------------------------
 
 
-def render_s6_axial(
+def render_s6_composite(
     bold_mean_path: Path,
     anat_dseg_in_bold_path: Path,
     cord_mask_path: Path,
@@ -237,123 +244,14 @@ def render_s6_axial(
     plt.close(fig)
 
 
-def render_s6_sagittal(
-    bold_mean_path: Path,
-    anat_dseg_in_bold_path: Path,
-    cord_mask_path: Path,
-    output_path: Path,
-    anat_in_bold_path: Optional[Path] = None,
-    dice: Optional[float] = None,
-    hd95: Optional[float] = None,
-    contour_lw: float = 2.2,
-    dpi: int = 120,
-) -> None:
-    """Mid-sagittal reportlet: BOLD (left) + anat-in-BOLD (right),
-    each with anat-cord (yellow) and EPI-cord (cyan) contours.
-
-    Dual-modality pair so the cord — which can be hidden behind
-    bright CSF in T2*-weighted EPI — is unambiguously identifiable
-    on the anat T1w/T2w panel.
-    """
-    from spinalfmriprep.reportlets_common import (
-        BG, TEXT, MARKER_YELLOW, SEMANTIC,
-        intensity_window, midcord_sagittal_slice,
-        add_header, add_footer, render_sagittal,
-        stub_figure,
-    )
-
-    bold_img = nib.load(bold_mean_path)
-    bold = bold_img.get_fdata().astype(np.float32)
-    anat_cord = nib.load(anat_dseg_in_bold_path).get_fdata() > 0.5
-    epi_cord = nib.load(cord_mask_path).get_fdata() > 0.5
-
-    if bold.shape != anat_cord.shape or bold.shape != epi_cord.shape:
-        stub_figure(output_path,
-                    "S6 sagittal: shape mismatch between BOLD / anat-cord / EPI-cord")
-        return
-    if not anat_cord.any() or not epi_cord.any():
-        stub_figure(output_path,
-                    "S6 sagittal: empty cord seg(s) — registration may have failed")
-        return
-
-    has_anat = anat_in_bold_path is not None and Path(anat_in_bold_path).exists()
-    if has_anat:
-        try:
-            anat = nib.load(anat_in_bold_path).get_fdata().astype(np.float32)
-            if anat.shape != bold.shape:
-                has_anat = False
-                anat = bold
-        except Exception:
-            has_anat = False
-            anat = bold
-    else:
-        anat = bold
-
-    x_mid = midcord_sagittal_slice(anat_cord)
-    sag_bold = bold[x_mid, :, :]
-    sag_anat = anat[x_mid, :, :]
-    sag_overlay_yellow = anat_cord[x_mid, :, :]
-    sag_overlay_cyan = epi_cord[x_mid, :, :]
-
-    zooms = list(bold_img.header.get_zooms()[:3]) + [1.0, 1.0, 1.0]
-    zx, zy, zz = float(zooms[0]), float(zooms[1]), float(zooms[2])
-    sag_aspect = zz / zy if zy > 0 else 1.0
-
-    vmin_b, vmax_b = intensity_window(sag_bold, 2.0, 98.0)
-    if has_anat and sag_anat[sag_anat > 0].size:
-        vmin_a, vmax_a = intensity_window(sag_anat[sag_anat > 0], 2.0, 98.0)
-    else:
-        vmin_a, vmax_a = vmin_b, vmax_b
-
-    subtitle_parts = []
-    if dice is not None:
-        subtitle_parts.append(f"Dice={dice:.2f}")
-    if hd95 is not None:
-        subtitle_parts.append(f"HD95={hd95:.2f}mm")
-    subtitle = "  ·  ".join(subtitle_parts) if subtitle_parts else ""
-    status = "PASS" if (dice is not None and dice >= 0.80) else "WARN"
-    epi_cyan = SEMANTIC.get("cord_epi", "#22d3ee")
-
-    fig = plt.figure(figsize=(12.0, 9.0), facecolor=BG)
-    fig.patch.set_facecolor(BG)
-    add_header(fig, "S6 — BOLD vs Anat (Mid-Sagittal)",
-               subtitle, status, None)
-
-    ax_b = fig.add_axes((0.08, 0.10, 0.38, 0.76))
-    ax_a = fig.add_axes((0.54, 0.10, 0.38, 0.76))
-    ax_b.set_facecolor(BG); ax_a.set_facecolor(BG)
-    sag_overlays = [
-        (sag_overlay_yellow, MARKER_YELLOW, 0.0, contour_lw),
-        (sag_overlay_cyan, epi_cyan, 0.0, contour_lw),
-    ]
-    render_sagittal(ax_b, sag_bold, sag_overlays, vmin_b, vmax_b,
-                    pixel_aspect=sag_aspect)
-    render_sagittal(ax_a, sag_anat, sag_overlays, vmin_a, vmax_a,
-                    pixel_aspect=sag_aspect)
-    fig.text(0.08 + 0.38 / 2, 0.86 + 0.012, "BOLD",
-             color=TEXT, fontsize=13, fontweight="bold",
-             ha="center", va="bottom")
-    fig.text(0.54 + 0.38 / 2, 0.86 + 0.012,
-             "Anat" if has_anat else "BOLD",
-             color=TEXT, fontsize=13, fontweight="bold",
-             ha="center", va="bottom")
-
-    add_footer(
-        fig,
-        legend_items=[
-            (MARKER_YELLOW, "anat cord seg"),
-            (epi_cyan, "EPI cord seg"),
-        ],
-        metric_lines=[f"midcord X = {x_mid}"],
-    )
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=dpi, facecolor=BG,
-                bbox_inches="tight", pad_inches=0.05)
-    plt.close(fig)
+# Removed `render_s6_sagittal` 2026-05-28 — it duplicated the mid-
+# sagittal cut, backgrounds, and overlays already shown as tall-narrow
+# strips on the left of `render_s6_composite`. See
+# .claude/specs/s6-reportlet-set-audit.md.
 
 
 # ---------------------------------------------------------------------------
-# Reportlet 3: per-slice Dice bar chart (kept simple, no chrome)
+# Reportlet 2: per-slice Dice bar chart (kept simple, no chrome)
 # ---------------------------------------------------------------------------
 
 
