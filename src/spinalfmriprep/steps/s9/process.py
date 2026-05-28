@@ -318,10 +318,18 @@ def _cord_dice_pre_post(
 # ---------------------------------------------------------------------------
 
 
-def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
+def _classify(
+    metrics: dict, thresholds: dict, fwhm_cfg: dict | None = None,
+) -> tuple[str, list[str]]:
+    """Three gates: tSNR ratio, cord-mask preservation, and per-axis FWHM
+    landing in the policy tolerance band (audit Issue 2 in
+    .claude/specs/s9-reportlet-set-audit.md — the FWHM tolerance keys
+    used to be declared in policy but never enforced).
+    """
     reasons: list[str] = []
     worst = "PASS"
 
+    # Gate 1: tSNR ratio (smoothing improvement).
     r = metrics.get("tsnr_ratio_median")
     pass_r = thresholds.get("pass_tsnr_ratio_min", 1.5)
     warn_r = thresholds.get("warn_tsnr_ratio_min", 1.2)
@@ -341,6 +349,7 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
         if worst == "PASS":
             worst = "WARN"
 
+    # Gate 2: cord-mask preservation across smoothing.
     cd = metrics.get("cord_dice_pre_post")
     pass_d = thresholds.get("pass_cord_dice", 0.95)
     warn_d = thresholds.get("warn_cord_dice", 0.85)
@@ -352,6 +361,30 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
             reasons.append(f"cord_dice WARN: {cd:.3f}")
             if worst == "PASS":
                 worst = "WARN"
+
+    # Gate 3: per-axis FWHM in tolerance band.
+    if fwhm_cfg and fwhm_cfg.get("enabled", True):
+        tol_xy_pass = float(fwhm_cfg.get("tolerance_mm_xy", 0.5))
+        tol_xy_warn = float(fwhm_cfg.get("tolerance_mm_xy_warn", 1.0))
+        tol_z_pass  = float(fwhm_cfg.get("tolerance_mm_z", 1.0))
+        tol_z_warn  = float(fwhm_cfg.get("tolerance_mm_z_warn", 2.0))
+        for axis, key_req, key_meas, tp, tw in (
+            ("X", "fwhm_x_requested_mm", "fwhm_x_measured_mm", tol_xy_pass, tol_xy_warn),
+            ("Y", "fwhm_y_requested_mm", "fwhm_y_measured_mm", tol_xy_pass, tol_xy_warn),
+            ("Z", "fwhm_z_requested_mm", "fwhm_z_measured_mm", tol_z_pass,  tol_z_warn),
+        ):
+            req = metrics.get(key_req)
+            meas = metrics.get(key_meas)
+            if req is None or meas is None:
+                continue
+            d = abs(float(meas) - float(req))
+            if d > tw:
+                reasons.append(f"fwhm_{axis.lower()} FAIL: |{meas:.2f}-{req:.2f}|={d:.2f} > {tw:.2f}mm")
+                worst = "FAIL"
+            elif d > tp:
+                reasons.append(f"fwhm_{axis.lower()} WARN: |{meas:.2f}-{req:.2f}|={d:.2f} > {tp:.2f}mm")
+                if worst == "PASS":
+                    worst = "WARN"
 
     return worst, reasons
 
@@ -544,7 +577,11 @@ def run_S9_primary_functional_derivatives(
         "smoothing_runtime_s": float(sm_runtime),
     }
 
-    status, reasons = _classify(metrics, policy.get("qc_thresholds", {}))
+    status, reasons = _classify(
+        metrics,
+        policy.get("qc_thresholds", {}),
+        fwhm_cfg=policy.get("fwhm_estimate", {}),
+    )
     failure_reasons.extend(reasons)
 
     # --- 9. Reportlets ------------------------------------------------
@@ -558,23 +595,40 @@ def run_S9_primary_functional_derivatives(
     rep_tsnrmap = figures_dir / f"{prefix}_desc-S9_tsnr_map_axial.png"
     rep_perlevel = figures_dir / f"{prefix}_desc-S9_tsnr_per_level.png"
     rep_smsum = figures_dir / f"{prefix}_desc-S9_smoothness_summary.png"
+    qct = policy.get("qc_thresholds", {})
+    fwhm_cfg_p = policy.get("fwhm_estimate", {})
     try:
         render_s9_smoothed_vs_unsmoothed_axial(
             bold_path, smoothed_native, cord_mask_path, rep_smvsu,
+            status=status, tsnr_ratio=metrics.get("tsnr_ratio_median"),
         )
     except Exception as e:
         failure_reasons.append(f"smoothed_vs_unsmoothed reportlet failed: {e}")
     try:
-        render_s9_tsnr_map_axial(tsnr_native_post, cord_mask_path, rep_tsnrmap)
+        render_s9_tsnr_map_axial(
+            tsnr_native_post, cord_mask_path, rep_tsnrmap,
+            status=status,
+            tsnr_ratio=metrics.get("tsnr_ratio_median"),
+        )
     except Exception as e:
         failure_reasons.append(f"tsnr_map reportlet failed: {e}")
     try:
-        render_s9_tsnr_per_level(per_level_tsv, rep_perlevel)
+        render_s9_tsnr_per_level(
+            per_level_tsv, rep_perlevel,
+            status=status,
+            pass_threshold=float(qct.get("pass_median_in_cord_tsnr", 5.0)),
+            warn_threshold=float(qct.get("warn_median_in_cord_tsnr", 3.0)),
+        )
     except Exception as e:
         failure_reasons.append(f"tsnr_per_level reportlet failed: {e}")
     try:
         render_s9_smoothness_summary(
             requested=sigma_fwhm, measured=fwhm_meta, output_path=rep_smsum,
+            status=status,
+            tolerance_xy=float(fwhm_cfg_p.get("tolerance_mm_xy", 0.5)),
+            tolerance_xy_warn=float(fwhm_cfg_p.get("tolerance_mm_xy_warn", 1.0)),
+            tolerance_z=float(fwhm_cfg_p.get("tolerance_mm_z", 1.0)),
+            tolerance_z_warn=float(fwhm_cfg_p.get("tolerance_mm_z_warn", 2.0)),
         )
     except Exception as e:
         failure_reasons.append(f"smoothness_summary reportlet failed: {e}")
