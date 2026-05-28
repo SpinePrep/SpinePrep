@@ -1,18 +1,31 @@
 """S6: per-run func->anat registration.
 
-Spec: private/SPEC/S6_func_to_anat_registration.md
+Spec: ``.claude/specs/s6-func-to-anat-registration.md``
+Audit: ``.claude/specs/s6-algorithm-audit.md``
 
-Algorithm (Kaptan 2023 verbatim, intensity-agnostic):
-  step1: type=seg,algo=centermass
-  step2: type=seg,algo=bsplinesyn,metric=MeanSquares,smooth=1,slicewise=1,iter=3
+Algorithm — CoSpi 3-stage cord recipe (`spi06_1fov_reg.sh`,
+Kaptan 2023, CoSpine 2025), intensity-agnostic, seg-driven cost:
 
-Direction: register anat (moving) -> funcref (destination); invert for
-BIDS `from-bold_to-anat` output. fMRI as destination = fewer slices,
-faster, no anat-grid resampling of BOLD.
+  step=1, type=seg, algo=centermassrot, metric=MeanSquares,
+          slicewise=1, smooth=1            # bulk slicewise COM + roll
+  step=2, type=seg, algo=columnwise, metric=MeanSquares,
+          slicewise=1, smooth=1            # R-L scaling + A-P column
+  step=3, type=seg, algo=bsplinesyn, metric=MeanSquares,
+          slicewise=1, iter=20             # non-linear refinement
 
-Output xfm is saved as SCT-native .nii.gz displacement field (consistent
-with S2's `_warp.nii.gz`). v1.x can convert to .h5 composite for
-fMRIPrep compat.
+Direction: ``-i funcref -d anat`` (func is moving, anat is dest).
+Anat is pre-cropped to a dilated cord region via ``sct_crop_image
+-m anat_dseg -dilate 10x10x10``. We keep both the forward warp
+(``warp_func2anat`` ↔ BIDS ``from-bold_to-anat_xfm``) and the
+inverse (``warp_anat2func`` ↔ ``from-anat_to-bold_xfm``).
+
+Pre-flight: sform=qform sync on local copies of all four inputs
+(the #1 silent SCT failure mode).
+
+Output xfm files are SCT-native ``.nii.gz`` displacement fields,
+matching S2's ``_warp.nii.gz`` convention. Each xfm carries a JSON
+sidecar with policy SHA, registration params, software version, and
+the repro seed/thread settings.
 """
 
 from __future__ import annotations
@@ -43,179 +56,6 @@ def _sync_sform_qform(path: Path) -> None:
     aff = img.get_qform()
     img.set_sform(aff, code=int(img.header["sform_code"]) or 1)
     nib.save(img, path)
-
-
-def _world_align_anat_z(
-    anat: Path, anat_dseg: Path,
-    funcref: Path, funccrop_mask: Path,
-    work_dir: Path,
-) -> tuple[Path, Path, list[str]]:
-    """Header-only Z translation so anat cord COM aligns with BOLD cord
-    COM in world coordinates. SCT's centermass step operates slicewise
-    (by index), and `step=0,type=im,algo=rigid,metric=MI` can fail to
-    converge in Z on T2*-EPI vs T1w due to inverted contrast and the
-    cord's near-cylindric symmetry. A pre-flight header shift guarantees
-    a Z-aligned starting state. Image data is unchanged.
-    """
-    flags: list[str] = []
-    fimg = nib.load(funcref)
-    fmask = nib.load(funccrop_mask).get_fdata() > 0.5
-    if not fmask.any():
-        return anat, anat_dseg, flags
-    bold_com_vox = np.array(np.where(fmask)).mean(axis=1)
-    bold_com_world_z = float(nib.affines.apply_affine(fimg.affine, bold_com_vox)[2])
-
-    aimg = nib.load(anat_dseg)
-    amask = aimg.get_fdata() > 0.5
-    if not amask.any():
-        return anat, anat_dseg, flags
-    anat_com_vox = np.array(np.where(amask)).mean(axis=1)
-    anat_com_world_z = float(nib.affines.apply_affine(aimg.affine, anat_com_vox)[2])
-
-    z_shift = bold_com_world_z - anat_com_world_z
-    if abs(z_shift) < 1.0:
-        return anat, anat_dseg, flags
-
-    flags.append(f"anat_world_z_prealign ({z_shift:+.1f}mm)")
-    out_anat = work_dir / "anat_zshift.nii.gz"
-    out_dseg = work_dir / "anat_dseg_zshift.nii.gz"
-    for src, dst in [(anat, out_anat), (anat_dseg, out_dseg)]:
-        img = nib.load(src)
-        aff = img.affine.copy()
-        aff[2, 3] += z_shift
-        new = nib.Nifti1Image(img.get_fdata(), aff, img.header)
-        try:
-            qcode = int(img.header.get("qform_code", 1)) or 1
-            scode = int(img.header.get("sform_code", 1)) or 1
-        except Exception:
-            qcode = scode = 1
-        new.set_qform(aff, code=qcode)
-        new.set_sform(aff, code=scode)
-        nib.save(new, dst)
-    return out_anat, out_dseg, flags
-
-
-def _maybe_z_crop_anat(
-    anat: Path, anat_dseg: Path,
-    funcref: Path, funccrop_mask: Path,
-    work_dir: Path,
-    margin_mm: float = 10.0,
-    min_ratio: float = 0.6,
-) -> tuple[Path, Path, list[str]]:
-    """Crop anat (cordref + dseg) along Z to roughly the BOLD's cord
-    physical extent + margin, centered on the anat cord COM.
-
-    Only kicks in when BOLD_extent / anat_extent < min_ratio (~ partial-
-    coverage acquisitions: BOLD covers only a fraction of the anat cord).
-    Without this, centermass aligns whole-cord COM with partial-cord COM
-    and the registration collapses.
-
-    Assumption: the BOLD targets the middle of the anat cord coverage —
-    true for typical cervical motor/sensory protocols.
-    """
-    flags: list[str] = []
-    mask = nib.load(funccrop_mask).get_fdata() > 0.5
-    anat_d = nib.load(anat_dseg).get_fdata() > 0.5
-    if not mask.any() or not anat_d.any():
-        return anat, anat_dseg, flags
-
-    bold_zoom_z = float(nib.load(funcref).header.get_zooms()[2])
-    z_idx = np.where(mask.any(axis=(0, 1)))[0]
-    bold_z_extent_mm = (int(z_idx.max()) - int(z_idx.min())) * bold_zoom_z
-
-    anat_img = nib.load(anat_dseg)
-    anat_zoom_z = float(anat_img.header.get_zooms()[2])
-    anat_cord_z = np.where(anat_d.any(axis=(0, 1)))[0]
-    anat_z_extent_mm = (int(anat_cord_z.max()) - int(anat_cord_z.min())) * anat_zoom_z
-
-    if anat_z_extent_mm <= 0:
-        return anat, anat_dseg, flags
-    ratio = bold_z_extent_mm / anat_z_extent_mm
-    if ratio >= min_ratio:
-        return anat, anat_dseg, flags
-
-    flags.append(f"anat_z_cropped (ratio={ratio:.2f})")
-    anat_cord_com_z = int(round(anat_cord_z.mean()))
-    half_width_vox = int((bold_z_extent_mm + 2 * margin_mm) / 2 / anat_zoom_z)
-    z_min = max(int(anat_cord_z.min()), anat_cord_com_z - half_width_vox)
-    z_max = min(int(anat_cord_z.max()), anat_cord_com_z + half_width_vox)
-    if z_max - z_min < 5:
-        flags.append("anat_z_crop_too_narrow; aborted")
-        return anat, anat_dseg, flags
-
-    cropped_anat = work_dir / "anat_zcrop.nii.gz"
-    cropped_dseg = work_dir / "anat_dseg_zcrop.nii.gz"
-    for src, dst in [(anat, cropped_anat), (anat_dseg, cropped_dseg)]:
-        ok, _ = _run_command([
-            "sct_crop_image", "-i", str(src),
-            "-zmin", str(z_min), "-zmax", str(z_max),
-            "-o", str(dst),
-        ])
-        if not ok or not dst.exists():
-            flags.append("anat_z_crop_failed; using originals")
-            return anat, anat_dseg, flags
-    return cropped_anat, cropped_dseg, flags
-
-
-def _make_cylindric_mask(
-    funcref: Path,
-    funccrop_mask: Path,
-    work_dir: Path,
-    radius_mm: float = 30.0,
-) -> tuple[Optional[Path], list[str]]:
-    """Build a cylindric cord mask around the funcref centerline.
-
-    Cascade: optic centerline -> fitseg from funccrop_mask -> dilate-2vox
-    fitseg. Returns (mask_path or None, failure_flags_added).
-    """
-    flags: list[str] = []
-    centerline = work_dir / "centerline.nii.gz"
-
-    # Try optic
-    ok, _ = _run_command([
-        "sct_get_centerline", "-i", str(funcref),
-        "-method", "optic", "-c", "t2s",
-        "-o", str(centerline),
-    ])
-    if not ok or not centerline.exists():
-        # Fallback 1: fitseg from S3.1 funccrop_mask
-        ok, _ = _run_command([
-            "sct_get_centerline", "-i", str(funcref),
-            "-s", str(funccrop_mask),
-            "-method", "fitseg",
-            "-o", str(centerline),
-        ])
-    if not ok or not centerline.exists():
-        # Fallback 2: dilate funccrop_mask by 2 vox, retry fitseg
-        flags.append("centerline_fallback_dilate")
-        dilated = work_dir / "funccrop_mask_dil2.nii.gz"
-        ok, _ = _run_command([
-            "sct_maths", "-i", str(funccrop_mask),
-            "-dilate", "2", "-o", str(dilated),
-        ])
-        if ok:
-            ok, _ = _run_command([
-                "sct_get_centerline", "-i", str(funcref),
-                "-s", str(dilated),
-                "-method", "fitseg",
-                "-o", str(centerline),
-            ])
-    if not ok or not centerline.exists():
-        flags.append("centerline_failed")
-        return None, flags
-
-    mask_func = work_dir / "mask_func.nii.gz"
-    ok, _ = _run_command([
-        "sct_create_mask", "-i", str(funcref),
-        "-p", f"centerline,{centerline}",
-        "-size", f"{int(radius_mm)}mm",
-        "-f", "cylinder",
-        "-o", str(mask_func),
-    ])
-    if not ok or not mask_func.exists():
-        flags.append("cylindric_mask_failed")
-        return None, flags
-    return mask_func, flags
 
 
 # ---------------------------------------------------------------------------
@@ -395,7 +235,15 @@ def _centerline_round_trip(
     seg: Path, warp_forward: Path, warp_inverse: Path,
     ref_dest: Path, ref_src: Path, work_dir: Path,
 ) -> tuple[Optional[float], Optional[float]]:
-    """Push a seg through forward then inverse warp; report drift in voxels."""
+    """Push a seg through forward then inverse warp; report per-slice
+    (median, max) centerline drift in voxels.
+
+    For each Z slice present in BOTH the original and the round-tripped
+    seg, compute the in-plane (X, Y) displacement of the slice's
+    centroid. Return the median and max across cord-bearing slices.
+    Previously this returned a single COM-norm value for both fields
+    (audit-v2 Finding 5); fixed to a true per-slice array.
+    """
     fwd = work_dir / "rt_forward.nii.gz"
     back = work_dir / "rt_roundtrip.nii.gz"
     if not _resample_warp_to_target(seg, warp_forward, ref_dest, fwd):
@@ -406,11 +254,19 @@ def _centerline_round_trip(
     b = nib.load(back).get_fdata() > 0.5
     if not a.any() or not b.any():
         return None, None
-    # Per-axis center-of-mass drift in voxels
-    com_a = np.array(np.where(a)).mean(axis=1)
-    com_b = np.array(np.where(b)).mean(axis=1)
-    drift = np.linalg.norm(com_a - com_b)
-    return float(drift), float(drift)  # med/max are identical for COM-only v1
+
+    drifts: list[float] = []
+    for z in range(a.shape[2]):
+        az = a[:, :, z]
+        bz = b[:, :, z]
+        if not az.any() or not bz.any():
+            continue
+        ca = np.array(np.where(az)).mean(axis=1)
+        cb = np.array(np.where(bz)).mean(axis=1)
+        drifts.append(float(np.linalg.norm(ca - cb)))
+    if not drifts:
+        return None, None
+    return float(np.median(drifts)), float(np.max(drifts))
 
 
 def _mutual_information(a: np.ndarray, b: np.ndarray, bins: int = 32) -> float:
@@ -466,15 +322,23 @@ def _classify(metrics: dict, thresholds: dict, syn_fallback: bool) -> tuple[str,
         worst = "WARN"
 
     hd95 = metrics.get("cord_hd95_mm")
-    t = _tier(hd95, thresholds.get("pass_hd95_mm_max", 2.0),
-              thresholds.get("warn_hd95_mm_max", 4.0), "cord_hd95_mm")
+    # Defaults must match policy YAML — audit-v2 Finding 6.
+    t = _tier(hd95, thresholds.get("pass_hd95_mm_max", 4.0),
+              thresholds.get("warn_hd95_mm_max", 8.0), "cord_hd95_mm")
     if t == "FAIL": worst = "FAIL"
     elif t == "WARN" and worst == "PASS": worst = "WARN"
 
     rt_med = metrics.get("centerline_round_trip_med_vox")
-    t = _tier(rt_med, thresholds.get("pass_centerline_med_vox_max", 0.5),
-              thresholds.get("warn_centerline_med_vox_max", 1.0),
+    t = _tier(rt_med, thresholds.get("pass_centerline_med_vox_max", 3.0),
+              thresholds.get("warn_centerline_med_vox_max", 6.0),
               "centerline_round_trip_med_vox")
+    if t == "FAIL": worst = "FAIL"
+    elif t == "WARN" and worst == "PASS": worst = "WARN"
+
+    rt_max = metrics.get("centerline_round_trip_max_vox")
+    t = _tier(rt_max, thresholds.get("pass_centerline_max_vox_max", 5.0),
+              thresholds.get("warn_centerline_max_vox_max", 10.0),
+              "centerline_round_trip_max_vox")
     if t == "FAIL": worst = "FAIL"
     elif t == "WARN" and worst == "PASS": worst = "WARN"
 
@@ -528,8 +392,15 @@ def run_S6_func_to_anat_registration(
     s6_work_dir = work_dir / step_code / run_id
     s6_work_dir.mkdir(parents=True, exist_ok=True)
 
-    # Anat modality from filename
-    anat_modality = "T1w" if "_T1w" in anat_path.name else "T2w" if "_T2w" in anat_path.name else None
+    # Anat modality from filename. Order matters: T2star must come
+    # before T2w so the `_T2w` substring check doesn't eat T2star.
+    # Audit-v2 Finding 7: previously this only handled T1w/T2w, so
+    # balgrist's `*_desc-cordref_T2star.nii.gz` was recorded as None.
+    anat_modality: Optional[str] = None
+    for mod in ("T2star", "T2w", "T1w", "PD", "T1map"):
+        if f"_{mod}" in anat_path.name:
+            anat_modality = mod
+            break
 
     failure_reasons: list[str] = []
 
@@ -693,16 +564,40 @@ def run_S6_func_to_anat_registration(
     rep_axial = figures_dir / f"{prefix}_desc-S6_bold_on_anat_axial.png"
     rep_sag   = figures_dir / f"{prefix}_desc-S6_bold_on_anat_sagittal.png"
     rep_dice  = figures_dir / f"{prefix}_desc-S6_cord_dice_per_slice.png"
-    try:
-        render_s6_axial(bold_mean_local, anat_in_bold if anat_in_bold.exists() else anat_local,
-                        funccrop_local, rep_axial)
-    except Exception as e:
-        failure_reasons.append(f"axial reportlet failed: {e}")
-    try:
-        render_s6_sagittal(bold_mean_local, anat_in_bold if anat_in_bold.exists() else anat_local,
-                           funccrop_local, rep_sag)
-    except Exception as e:
-        failure_reasons.append(f"sagittal reportlet failed: {e}")
+    # Audit Finding 8: pass the warped anat cord SEGMENTATION (not the
+    # warped anat intensity image) so the reportlet contour traces the
+    # cord boundary instead of an arbitrary intensity percentile.
+    dice_val = metrics.get("cord_dice")
+    hd95_val = metrics.get("cord_hd95_mm")
+    if anat_dseg_in_bold.exists():
+        try:
+            render_s6_axial(
+                bold_mean_path=bold_mean_local,
+                anat_dseg_in_bold_path=anat_dseg_in_bold,
+                cord_mask_path=funccrop_local,
+                output_path=rep_axial,
+                funcref_path=funcref_local,
+                dice=dice_val, hd95=hd95_val,
+            )
+        except Exception as e:
+            failure_reasons.append(f"axial reportlet failed: {e}")
+        try:
+            render_s6_sagittal(
+                bold_mean_path=bold_mean_local,
+                anat_dseg_in_bold_path=anat_dseg_in_bold,
+                cord_mask_path=funccrop_local,
+                output_path=rep_sag,
+                dice=dice_val, hd95=hd95_val,
+            )
+        except Exception as e:
+            failure_reasons.append(f"sagittal reportlet failed: {e}")
+    else:
+        from spinalfmriprep.reportlets_common import stub_figure
+        try:
+            stub_figure(rep_axial, "anat cord seg not resampled into BOLD geometry")
+            stub_figure(rep_sag,   "anat cord seg not resampled into BOLD geometry")
+        except Exception as e:
+            failure_reasons.append(f"reportlet stubs failed: {e}")
     try:
         render_s6_dice_per_slice(
             funccrop_local, anat_dseg_in_bold if anat_dseg_in_bold.exists() else None,
