@@ -386,6 +386,35 @@ def _emit_subject_summaries(
             }, indent=2, default=str))
             reliability_json_path = rel_path
 
+            # Per-subject reliability reportlet — figures dir at subject root,
+            # not per-session. Kaptan 2023 cord rs-fMRI ICC visual standard.
+            # Attach the resulting PNG path back into each per-run dict so the
+            # flat per-run dashboard surfaces it (same PNG for every run of
+            # this subject).
+            try:
+                fig_dir = sub_dir / "figures"
+                fig_dir.mkdir(parents=True, exist_ok=True)
+                rel_fig = fig_dir / f"sub-{sub}_desc-S10_reliability_icc.png"
+                from .reportlets import render_s10_reliability_icc
+                per_conn_records = (per_conn.to_dict(orient="records")
+                                    if not per_conn.empty else [])
+                rel_status = "PASS"
+                if icc_good_frac is not None and icc_good_frac < 0.25:
+                    rel_status = "WARN"
+                render_s10_reliability_icc(
+                    per_conn_records, bands, rel_fig,
+                    status=rel_status,
+                    n_sessions=len(sessions),
+                    pooled_icc=pooled_icc,
+                )
+                if rel_fig.exists():
+                    rel_rel = str(rel_fig.relative_to(out_path))
+                    for r in runs:
+                        r.setdefault("reportlets", {})["reliability_icc"] = rel_rel
+            except Exception as e:
+                logger.warning("reliability_icc reportlet failed for sub-%s: %s",
+                               sub, e)
+
         out.append({
             "subject": sub,
             "n_sessions": len(per_session_pearson),

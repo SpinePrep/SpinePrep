@@ -487,22 +487,22 @@ def _spatial_dice(
 def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
     """Classify per-run status.
 
-    Dropped ROIs is informational only (WARN). Cord hemicord×segment
-    parcellation naturally drops voxels in corners where horns don't
-    cover the segment — that's expected coverage variability, not a
-    pipeline failure.
+    Two real failure modes:
+      - 0 hemicord ROIs survived (no analysis is possible) → FAIL
+      - Connectivity matrix is rank-deficient (cn > warn_max) → FAIL
 
-    Hard FAIL only when:
-      - Connectivity matrix is rank-deficient (cn > warn_max)
-      - 0 hemicord ROIs survived (no analysis is possible)
+    ``n_rois_dropped_low_voxels`` was previously a WARN gate but the
+    hemicord×segment parcellation drops 8-16 ROIs by construction
+    wherever horns don't cover a segment; the gate WARNs 11/11 runs and
+    carries no signal. Reported as a metric, never gated.
+
+    ``fc_mean_strength`` and ``pct_significant_connections`` are
+    observability metrics (Kaptan 2023 cord rs-fMRI FC strength range:
+    |r|≈0.10–0.25 typical). Not gated — single-run FC strength has no
+    PASS/FAIL threshold in the cord literature.
     """
     reasons: list[str] = []
     worst = "PASS"
-    n_drop = metrics.get("n_rois_dropped_low_voxels", 0) or 0
-    if n_drop > thresholds.get("warn_dropped_rois_max", 0):
-        reasons.append(f"dropped_rois WARN: {n_drop}")
-        if worst == "PASS":
-            worst = "WARN"
     n_hemi = metrics.get("n_rois_hemicord", 0) or 0
     if n_hemi == 0:
         reasons.append("no hemicord ROIs survived FAIL")
@@ -688,6 +688,9 @@ def run_S10_roi_timeseries_and_connectivity(
 
     # 5. Connectivity matrices on hemicord regressed timeseries
     cn_hemicord: Optional[float] = None
+    fc_mean_strength: Optional[float] = None
+    pct_significant_connections: Optional[float] = None
+    mats: dict[str, pd.DataFrame] = {}
     if hemicord_ts_regressed is not None and not hemicord_ts_regressed.empty:
         kinds = policy.get("connectivity", {}).get("kinds",
             ["correlation", "partial correlation"])
@@ -707,6 +710,18 @@ def run_S10_roi_timeseries_and_connectivity(
                 s = np.linalg.svd(p, compute_uv=False)
                 if s[-1] > 0:
                     cn_hemicord = float(s[0] / s[-1])
+                # Off-diagonal Pearson |r| → FC strength + sparsity
+                n = p.shape[0]
+                if n > 1:
+                    iu = np.triu_indices(n, k=1)
+                    off = p[iu]
+                    off = off[np.isfinite(off)]
+                    if off.size:
+                        fc_mean_strength = float(np.mean(np.abs(off)))
+                        thr = float(policy.get("connectivity", {})
+                                          .get("significance_abs_r_threshold", 0.1))
+                        pct_significant_connections = float(
+                            (np.abs(off) > thr).mean())
             except Exception:
                 pass
 
@@ -724,50 +739,40 @@ def run_S10_roi_timeseries_and_connectivity(
             "dropped_low_voxel", []))) if per_catalog_meta.get("hemicord") else 0,
         "n_rois_dropped_low_voxels": int(n_dropped_total),
         "condition_number_pearson_hemicord": cn_hemicord,
+        "fc_mean_strength": fc_mean_strength,
+        "pct_significant_connections": pct_significant_connections,
     }
     status, reasons = _classify(metrics, policy.get("qc_thresholds", {}))
     failure_reasons.extend(reasons)
 
-    # 7. Reportlets
+    # 7. Reportlets — chain-wide dark theme + status pill
+    # Dropped vertlvl_tsnr 2026-05-28 (audit: redundant with S9.tsnr_per_level,
+    # same data + same plot). Reliability reportlet emitted per-subject by
+    # the orchestrator, not per-run.
     from .reportlets import (
         render_s10_hemicord_timeseries,
         render_s10_hemicord_connectivity,
-        render_s10_vertlvl_tsnr,
     )
     rep_ts = figures_dir / f"{prefix}_desc-S10_hemicord_timeseries.png"
     rep_cn = figures_dir / f"{prefix}_desc-S10_hemicord_connectivity.png"
-    rep_tsnr = figures_dir / f"{prefix}_desc-S10_vertlvl_tsnr.png"
     try:
         if hemicord_ts_regressed is not None and not hemicord_ts_regressed.empty:
-            render_s10_hemicord_timeseries(hemicord_ts_regressed, rep_ts)
+            render_s10_hemicord_timeseries(hemicord_ts_regressed, rep_ts,
+                                           status=status)
     except Exception as e:
         failure_reasons.append(f"hemicord_timeseries reportlet failed: {e}")
     try:
-        if "fisherz" in mats if 'mats' in dir() and mats else False:
-            render_s10_hemicord_connectivity(mats["fisherz"], rep_cn,
-                                             title="Hemicord Fisher-z")
+        if mats and "fisherz" in mats:
+            render_s10_hemicord_connectivity(
+                mats["fisherz"], rep_cn,
+                title="Hemicord Fisher-z connectivity",
+                status=status,
+                condition_number=cn_hemicord,
+                fc_mean_strength=fc_mean_strength,
+                pct_significant=pct_significant_connections,
+            )
     except Exception as e:
         failure_reasons.append(f"hemicord_connectivity reportlet failed: {e}")
-    # vertlvl tSNR — use the raw vertlvl voxel counts + per-ROI tSNR
-    try:
-        # Quick per-ROI tSNR from BOLD and vertlvl parc
-        vlimg = nib.load(vert_parc).get_fdata().astype(np.int32)
-        bimg = nib.load(bold_path).get_fdata().astype(np.float32)
-        if bimg.ndim == 4 and vlimg.shape == bimg.shape[:3]:
-            mean = bimg.mean(axis=3); std = bimg.std(axis=3)
-            tsnr = np.where(std > 0, mean / std, 0)
-            tsnr_per_label: dict[str, float] = {}
-            for i, name in enumerate(vert_all_names, start=1):
-                m = (vlimg == i)
-                if m.any():
-                    vals = tsnr[m]
-                    vals = vals[(vals > 0) & np.isfinite(vals)]
-                    if vals.size:
-                        tsnr_per_label[name] = float(np.median(vals))
-            if tsnr_per_label:
-                render_s10_vertlvl_tsnr(tsnr_per_label, rep_tsnr)
-    except Exception as e:
-        failure_reasons.append(f"vertlvl_tsnr reportlet failed: {e}")
 
     # 8. Save work qc + policy provenance
     policy_sha = hashlib.sha256(json.dumps(policy, sort_keys=True).encode()).hexdigest()
@@ -791,7 +796,6 @@ def run_S10_roi_timeseries_and_connectivity(
         "reportlets": {
             "hemicord_timeseries":   str(rep_ts.relative_to(out_dir)) if rep_ts.exists() else "",
             "hemicord_connectivity": str(rep_cn.relative_to(out_dir)) if rep_cn.exists() else "",
-            "vertlvl_tsnr":          str(rep_tsnr.relative_to(out_dir)) if rep_tsnr.exists() else "",
         },
         "output_paths": output_paths,
     }

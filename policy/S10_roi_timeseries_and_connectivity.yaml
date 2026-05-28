@@ -82,6 +82,9 @@ connectivity:
   # Both via Nilearn ConnectivityMeasure with Ledoit-Wolf shrinkage when
   # n_volumes < n_ROIs for partial.
   fisher_z: true                      # always emit Fisher-z transform of r
+  # FC observability metric: fraction of off-diagonal Pearson |r| above
+  # this threshold (Kaptan 2023 cord FC magnitudes typically |r|≈0.1–0.25).
+  significance_abs_r_threshold: 0.1
 
 # --------------------------------------------------------------------
 # Min voxel guards
@@ -112,9 +115,10 @@ reliability:
 
 # --------------------------------------------------------------------
 qc_thresholds:
-  # Per-run gating
-  fail_dropped_rois_max: 2           # > 2 ROIs dropped for low voxels = FAIL
-  warn_dropped_rois_max: 0           # > 0 but ≤ 2 = WARN
+  # Per-run gating — only condition-number based.
+  # Removed 2026-05-28 (audit s10-reportlet-set-audit.md F4):
+  #   * dropped_rois gate: hemicord×segment parcellation drops 8-16 ROIs by
+  #     construction wherever horns don't cover a segment; WARN fired 11/11.
   pass_max_condition_number: 1000.0  # Pearson matrix condition number
   warn_max_condition_number: 10000.0
   fail_max_nan_fraction: 0.10        # > 10% NaN cells in any TSV = FAIL

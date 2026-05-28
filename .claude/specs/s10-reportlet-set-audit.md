@@ -1,5 +1,7 @@
 ---
-status: approved
+status: implemented
+implemented_in: wf_reg_089
+implemented_at: 2026-05-28
 ---
 
 # S10 reportlet+metric-set audit — redundancy + field-standard composition
@@ -215,14 +217,15 @@ ADD:
 
 ## Implementation map
 
-| # | Action | Priority | Effort |
-|---|---|---|---|
-| 1 | Drop `vertlvl_tsnr` from process.py reportlets dict + reportlets.py renderer + schema + dashboard registry (S9 owns this signal) | high | ~30 lines |
-| 2 | Wire `render_s10_reliability_icc` + `render_s10_reliability_dice` — fires on multi-session subjects only (handgrasp + ds004386_rest in cohort) | high | ~40 lines |
-| 3 | Reorder ROIs in `hemicord_connectivity` heatmap — group by hemicord (V L → V R → D L → D R), shows block structure | medium | ~20 lines |
-| 4 | Apply chain-wide visual standard (dark theme + status pill) to all S10 reportlets | medium | ~80 lines |
-| 5 | Change `n_rois_dropped_low_voxels` gate to coverage-fraction OR drop the gate entirely | medium | ~10 lines |
-| 6 | Add new metrics: `pct_significant_connections`, `fc_mean_strength`, `icc_median`, `n_in_excellent_band` | low | ~30 lines |
+| # | Action | Status |
+|---|---|---|
+| 1 | Drop `vertlvl_tsnr` from process.py reportlets dict + reportlets.py renderer + schema + dashboard registry (S9 owns this signal) | DONE |
+| 2 | Wire `render_s10_reliability_icc` — per-subject reportlet rendered by orchestrator into `sub-XX/figures/` and back-attached to every run of that subject so the per-run dashboard shows it; fires only when ≥2 sessions exist (handgrasp sub-02 in current cohort) | DONE |
+| 2b | Wire `render_s10_reliability_dice` (spatial Dice across sessions) | DEFERRED — requires building seed-to-voxel maps per session in a shared space; orchestrator has `_seed_to_voxel_map` + `_spatial_dice` helpers but no data pipe wired. Not blocking S10 lock; tracked separately |
+| 3 | Reorder ROIs in `hemicord_connectivity` heatmap — group by hemicord (VL → VR → DL → DR) with block divider lines | DONE |
+| 4 | Apply chain-wide visual standard (dark theme + status pill) to all S10 reportlets | DONE |
+| 5 | Drop the `n_rois_dropped_low_voxels` gate (kept as informational metric; was WARN 11/11 on every cohort run — no signal) | DONE |
+| 6 | Add metrics: `fc_mean_strength`, `pct_significant_connections` (per-run, from hemicord Pearson off-diagonals); reliability metrics (`pooled_icc31`, `icc_good_or_excellent_fraction`) already emitted by orchestrator per-subject reliability JSON | DONE |
 
 ## Sources
 

@@ -62,10 +62,8 @@ REPORTLET_ORDER: dict[str, list[str]] = {
     ],
     "S10_roi_timeseries_and_connectivity": [
         "hemicord_timeseries",           # S10 - hemicord×seg ROI timeseries panels
-        "hemicord_connectivity",         # S10 - Fisher-z connectivity heatmap
-        "vertlvl_tsnr",                  # S10 - per-vertebral-level tSNR bars
-        "reliability_icc",               # S10 - cross-session agreement bars
-        "reliability_dice",              # S10 - spatial Dice per seed
+        "hemicord_connectivity",         # S10 - Fisher-z connectivity heatmap (reordered)
+        "reliability_icc",               # S10 - per-subject cross-session ICC (multi-session)
     ],
 }
 
@@ -121,9 +119,7 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
     "S10_roi_timeseries_and_connectivity": {
         "hemicord_timeseries":   "S10 - Hemicord ROI Timeseries",
         "hemicord_connectivity": "S10 - Hemicord Fisher-z Connectivity",
-        "vertlvl_tsnr":          "S10 - Per-Vertebral-Level tSNR",
-        "reliability_icc":       "S10 - Cross-Session ICC (multi-session)",
-        "reliability_dice":      "S10 - Spatial Dice (multi-session)",
+        "reliability_icc":       "S10 - Cross-Session ICC (per subject, multi-session)",
     },
 }
 
