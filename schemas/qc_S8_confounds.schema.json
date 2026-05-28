@@ -41,7 +41,6 @@
             "type": "object",
             "properties": {
               "n_volumes": { "type": ["integer", "null"] },
-              "n_slices_with_csf": { "type": ["integer", "null"] },
               "n_columns_total": { "type": ["integer", "null"] },
               "n_columns_motion": { "type": ["integer", "null"] },
               "n_columns_csf": { "type": ["integer", "null"] },
@@ -54,9 +53,18 @@
               "fd_mean_mm": { "type": ["number", "null"] },
               "fd_max_mm": { "type": ["number", "null"] },
               "dvars_mean": { "type": ["number", "null"] },
-              "cardiac_bpm_estimate": { "type": ["number", "null"] },
-              "respiratory_cpm_estimate": { "type": ["number", "null"] },
-              "spinalcompcor_median_pcs": { "type": ["number", "null"] }
+              "cardiac_bpm_estimate": {
+                "type": ["number", "null"],
+                "description": "Cardiac rate (bpm) from FSL popp peak detection. Null when physio absent."
+              },
+              "respiratory_cpm_estimate": {
+                "type": ["number", "null"],
+                "description": "Respiratory cycle rate (cpm) from popp phase wraps. Null when physio absent."
+              },
+              "spinalcompcor_n_components": {
+                "type": ["integer", "null"],
+                "description": "Number of SpinalCompCor PCs included. Equals fixed_n_components in global_3d mode (default); median(pcs_per_slice) in slicewise mode. Null when SpinalCompCor disabled."
+              }
             }
           },
           "failure_reasons": {
@@ -67,19 +75,24 @@
           "reportlets": {
             "type": "object",
             "required": [
-              "confound_columns",
+              "carpet_plot",
               "fd_dvars_outliers",
+              "confound_columns",
               "pnm_peaks",
               "correlation_heatmap"
             ],
             "properties": {
-              "confound_columns": {
+              "carpet_plot": {
                 "type": "string",
-                "description": "Per-family regressor count bar chart with status pill"
+                "description": "Cord-restricted voxel × time BOLD intensity image with FD/DVARS traces (Power 2017 / fMRIPrep)."
               },
               "fd_dvars_outliers": {
                 "type": "string",
                 "description": "FD + DVARS + refRMS time series, outlier frames marked"
+              },
+              "confound_columns": {
+                "type": "string",
+                "description": "Per-family regressor count bar chart with status pill"
               },
               "pnm_peaks": {
                 "type": "string",
