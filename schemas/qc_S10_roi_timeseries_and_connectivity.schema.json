@@ -43,10 +43,8 @@
               "n_rois_hemicord": { "type": ["integer", "null"] },
               "n_rois_dropped_low_voxels": { "type": ["integer", "null"] },
               "condition_number_pearson_hemicord": { "type": ["number", "null"] },
-              "mean_within_segment_ventral_z": { "type": ["number", "null"] },
-              "mean_within_segment_dorsal_z": { "type": ["number", "null"] },
-              "mean_cross_hemicord_z": { "type": ["number", "null"] },
-              "median_per_roi_tsnr_hemicord": { "type": ["number", "null"] }
+              "fc_mean_strength": { "type": ["number", "null"] },
+              "pct_significant_connections": { "type": ["number", "null"] }
             }
           },
           "failure_reasons": {
@@ -58,10 +56,7 @@
             "type": "object",
             "properties": {
               "hemicord_timeseries": { "type": "string" },
-              "hemicord_connectivity": { "type": "string" },
-              "vertlvl_tsnr": { "type": "string" },
-              "reliability_icc": { "type": "string" },
-              "reliability_dice": { "type": "string" }
+              "hemicord_connectivity": { "type": "string" }
             }
           },
           "output_paths": {
