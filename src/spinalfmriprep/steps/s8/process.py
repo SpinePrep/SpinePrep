@@ -1352,11 +1352,11 @@ def run_S8_confounds_and_physio_regressors(
         failure_reasons.append(f"correlation_heatmap reportlet failed: {e}")
     try:
         # Cord-restricted carpet plot of the BOLD timeseries (Power 2017
-        # / fMRIPrep standard). Uses the funccrop_mask we already loaded
-        # as the cord mask; bold_path is the same 4D used for csf+spcc.
+        # / fMRIPrep standard). Uses the cord_mask the orchestrator
+        # already passed; bold_path is the same 4D used for csf+spcc.
         render_s8_carpet_plot(
             bold_path=bold_path,
-            cord_mask_path=funccrop_mask_path,
+            cord_mask_path=cord_mask_path,
             output_path=rep_carpet,
             fd=columns.get("framewise_displacement"),
             dvars=columns.get("dvars"),
