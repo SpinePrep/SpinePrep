@@ -40,8 +40,7 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "distortion_effectiveness", # S5 - visual Before/After + anat overlay
     ],
     "S6_func_to_anat_registration": [
-        "bold_on_anat_axial",       # S6 - axial overlay BOLD + anat contour + cord seg
-        "bold_on_anat_sagittal",    # S6 - mid-sagittal overlay
+        "bold_on_anat",             # S6 - composite: sagittal pair + axial montage (BOLD + Anat)
         "cord_dice_per_slice",      # S6 - per-slice cord Dice bars
     ],
     "S7_template_normalization": [
@@ -100,8 +99,7 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "distortion_effectiveness": "S5 - Distortion Correction (Before vs After)",
     },
     "S6_func_to_anat_registration": {
-        "bold_on_anat_axial": "S6 - BOLD on Anat (Axial)",
-        "bold_on_anat_sagittal": "S6 - BOLD on Anat (Sagittal)",
+        "bold_on_anat": "S6 - BOLD on Anat (Composite)",
         "cord_dice_per_slice": "S6 - Cord Dice per Slice",
     },
     "S7_template_normalization": {
