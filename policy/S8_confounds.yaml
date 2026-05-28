@@ -13,10 +13,21 @@ version: 1
 # params. derivative1 via np.diff(prepend=0). FD = |Δtrans_x| + |Δtrans_y|
 # (Power 2-D adapted for cord 2-D moco). DVARS + refRMS already computed
 # by S3.2 (frame_metrics.tsv); we just repack with outlier flags.
+#
+# Outlier gating (audit-v2 .claude/specs/s8-outlier-rate-root-cause.md):
+#   - FD threshold = 0.5 mm (Power 2014, Kaptan 2023, Dabbagh 2024 cord
+#     scrubbing standard). The earlier 0.2 mm value was a citation
+#     misattribution — Kaptan 2023's 0.2 mm is the SPIKE-REGRESSOR-
+#     INCLUSION threshold (a GLM-time operation), NOT the scrubbing
+#     threshold. Empirical cohort rate dropped from 15-83% → 2-30%
+#     after the correction, matching the literature 5-30% band.
+#   - DVARS / refRMS gate = Tukey Q3 + 1.5·IQR (fMRIPrep convention,
+#     matches S3.2 — eliminates layered-detector inconsistency). The
+#     previous μ + 3σ assumed Gaussian; cord DVARS is heavy-tailed.
 motion:
-  fd_outlier_threshold_mm: 0.2     # cord 3σ (Mohammed 2020 / Kaptan 2023)
-  dvars_outlier_n_sd: 3.0          # Kaptan 2023 / Dabbagh 2024
-  refrms_outlier_n_sd: 3.0         # same — dual criterion (OR)
+  fd_outlier_threshold_mm: 0.5     # Power 2014 / Kaptan 2023 / Dabbagh 2024
+  dvars_outlier_iqr_k: 1.5         # Tukey Q3 + k·IQR (fMRIPrep convention)
+  refrms_outlier_iqr_k: 1.5        # same — dual criterion (OR)
 
 # ----------------------------------------------------------------------
 # 2. CSF slicewise (always present when S7 PAM50csf_mask exists)
@@ -107,15 +118,14 @@ qc_thresholds:
   # Matrix condition number — brain heuristic; calibrate on cord empirically.
   pass_condition_number: 1000.0
   warn_condition_number: 10000.0
-  # Outlier fraction (volumes flagged as DVARS, refRMS, or FD outliers).
-  # The 0.20 brain threshold (Power 2014) doesn't transfer to cord — on
-  # cord-cropped EPI the 3σ DVARS gate captures real physiological
-  # pulsation that brain would average over a larger ROI. Empirical
-  # reg-cohort range: 0.15–0.83. Raised PASS to 0.40 (was 0.20) to match
-  # the cord regime; analysts handle high-OF runs at GLM time. Audit
-  # Finding 7 in .claude/specs/s8-algorithm-audit.md.
-  pass_outlier_fraction_max: 0.40
-  warn_outlier_fraction_max: 0.60
+  # Outlier fraction (volumes flagged as FD>0.5 OR DVARS/refRMS Tukey).
+  # After the root-cause fix (s8-outlier-rate-root-cause.md), empirical
+  # reg-cohort range is 2-30%. Set PASS at 0.20 (Power 2014 / Kaptan
+  # 2023 cord standard); WARN above; classifier still only soft-WARNs
+  # (never FAILs on OF) because high motion is the analyst's problem
+  # at GLM time.
+  pass_outlier_fraction_max: 0.20
+  warn_outlier_fraction_max: 0.40
 
 # ----------------------------------------------------------------------
 reproducibility:
