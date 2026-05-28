@@ -207,9 +207,32 @@ def _find_subject_vertebral_labels(
 
 
 def _find_func_cord_seg(out_dir: Path, run_id: str) -> Optional[Path]:
-    """Cord seg in BOLD geometry — S3.1 output (matches S6's _find_funccrop_mask)."""
+    """EPI cord seg in the SAME geometry as the post-S5 funcref S7 uses.
+
+    Priority (same logic as S6's _find_funccrop_mask, see S6 audit
+    Finding 10):
+      1. S5 ``cospine/bold_after_cord_seg.nii.gz`` — sct_deepseg sc_epi
+         on the POST-S5 mean BOLD. Matches the post-S5 funcref.
+      2. S3.1 ``func_ref_fast_seg_crop.nii.gz`` — fallback, PRE-S5
+         geometry. Only correct when S5 made minimal cord shifts
+         (SyN-fallback). On topup runs the cord shifts 5-10 mm A-P
+         and this seg lands off-cord, producing falsely low S7 Dice.
+    """
     project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
                     else Path.cwd())
+
+    # Priority 1: S5 post-correction cord seg.
+    s5_rel = (Path("S5_func_distortion_correction") / run_id / "cospine"
+              / "bold_after_cord_seg.nii.gz")
+    for cand in (
+        out_dir / "work" / s5_rel,
+        project_root / "work" / "done" / "reg" / "S5" / "work" / s5_rel,
+        Path("work") / "done" / "reg" / "S5" / "work" / s5_rel,
+    ):
+        if cand.exists():
+            return cand
+
+    # Priority 2 (fallback): S3.1 pre-S5 cord seg.
     rel = (Path("runs") / "S3_func_init_and_crop" / run_id
            / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz")
     rel_local = (Path("S3_func_init_and_crop") / run_id
