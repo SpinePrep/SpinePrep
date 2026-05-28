@@ -123,16 +123,40 @@ def _clear_stale_step_links(view_logs: Path) -> None:
 
 
 def _link_cohort_deliverables(view_root: Path, source_wf: Path) -> None:
-    """Symlink S11's cohort-level derivative *files* into the view.
+    """Symlink S11's cohort-level deliverables into the view.
 
-    The S11 release banner in ``qc_dashboard_html`` looks for
-    ``out_dir/derivatives/spinalfmriprep/release_report.html`` and
-    ``group_qc_dashboard.html``. These live at the cohort tier of the S11
-    source wf's derivatives tree (not under any subject). We symlink
-    only the top-level FILES — not the per-subject subdirs, which would
-    conflict with the per-step source wfs' contributions to those same
-    subjects.
+    S11 emits its release artifacts to one of two places (audit F11):
+      * ``source_wf/release/`` when the chain runner sym-linked
+        ``source_wf/derivatives`` (current behaviour)
+      * ``source_wf/derivatives/spinalfmriprep/`` (legacy)
+
+    The dashboard banner reads ``deliverables.release_report`` from
+    S11's qc.json verbatim, so we mirror whichever directory exists
+    into the view at the SAME relative path. This keeps
+    ``out_dir / deliverables['release_report']`` resolvable from the
+    stitched view too.
     """
+    # New location (post-F11)
+    src_release = source_wf / "release"
+    if src_release.exists():
+        dest_release = view_root / "release"
+        # Wipe stale link/dir
+        if dest_release.is_symlink() or dest_release.exists():
+            try:
+                if dest_release.is_dir() and not dest_release.is_symlink():
+                    import shutil
+                    shutil.rmtree(dest_release)
+                else:
+                    dest_release.unlink()
+            except OSError:
+                pass
+        try:
+            dest_release.symlink_to(src_release.resolve())
+        except OSError:
+            pass
+        return
+
+    # Legacy fallback: cohort-tier files in derivatives/spinalfmriprep/
     src_top = source_wf / "derivatives" / "spinalfmriprep"
     if not src_top.exists():
         return
