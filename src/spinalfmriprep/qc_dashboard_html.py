@@ -48,8 +48,9 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "cord_dice_per_level",      # S7 - per-vertebral-level cord Dice bars
     ],
     "S8_confounds_and_physio_regressors": [
-        "confound_columns",         # S8 - column counts per family
+        "carpet_plot",              # S8 - cord BOLD voxel×time + FD/DVARS (Power 2017)
         "fd_dvars_outliers",        # S8 - FD/DVARS/refRMS with outlier highlights
+        "confound_columns",         # S8 - column counts per family
         "pnm_peaks",                # S8 - FSL PNM cardiac/respiratory peak detection
         "correlation_heatmap",      # S8 - confound correlation matrix
     ],
@@ -105,8 +106,9 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "cord_dice_per_level": "S7 - Cord Dice per Vertebral Level",
     },
     "S8_confounds_and_physio_regressors": {
-        "confound_columns":    "S8 - Confound Column Counts",
+        "carpet_plot":         "S8 - Carpet Plot (cord BOLD)",
         "fd_dvars_outliers":   "S8 - FD / DVARS / refRMS with Outliers",
+        "confound_columns":    "S8 - Confound Column Counts",
         "pnm_peaks":           "S8 - PNM Cardiac/Respiratory Peaks",
         "correlation_heatmap": "S8 - Confound Correlation Heatmap",
     },

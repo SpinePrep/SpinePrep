@@ -814,6 +814,49 @@ def _parallel_analysis_count(
 # ---------------------------------------------------------------------------
 
 
+def _bpm_cpm_from_popp(work_dir: Path) -> tuple[Optional[float], Optional[float]]:
+    """Compute cardiac BPM + respiratory CPM from FSL popp output.
+
+    Cardiac BPM = 60 / median(diff(card_peaks_times)).
+    Respiratory CPM = 60 × n_breath_cycles / duration_s, where breath
+    cycles are detected from phase wraps in popp_resp.txt.
+
+    Mirrors the calculation in render_s8_pnm_peaks so qc.json and the
+    reportlet stay consistent.
+    """
+    pnm = work_dir / "pnm"
+    bpm: Optional[float] = None
+    cpm: Optional[float] = None
+    card_path = pnm / "popp_card.txt"
+    resp_path = pnm / "popp_resp.txt"
+    if card_path.exists():
+        try:
+            card_times = np.loadtxt(card_path)
+            if card_times.size > 1:
+                bpm = float(60.0 / float(np.median(np.diff(card_times))))
+        except Exception:
+            bpm = None
+    if resp_path.exists():
+        try:
+            arr = np.loadtxt(resp_path)
+            if arr.ndim == 2 and arr.shape[1] == 2:
+                t = arr[:, 0]; ph = arr[:, 1]
+            elif arr.ndim == 1:
+                t = np.arange(arr.size) * 0.0025  # 400 Hz default
+                ph = arr
+            else:
+                t = np.array([]); ph = np.array([])
+            if t.size > 1:
+                phw = np.mod(ph + np.pi, 2 * np.pi) - np.pi
+                n_breaths = int((np.diff(phw) < -np.pi).sum())
+                duration_s = float(t[-1] - t[0])
+                if duration_s > 0:
+                    cpm = float(60.0 * n_breaths / duration_s)
+        except Exception:
+            cpm = None
+    return bpm, cpm
+
+
 def _condition_number(df: pd.DataFrame) -> float:
     if df.empty:
         return float("nan")
@@ -1168,9 +1211,28 @@ def run_S8_confounds_and_physio_regressors(
 
     # Condition number QC
     cn = _condition_number(df)
+
+    # SpinalCompCor: report the actual K (component count). In
+    # `aggregation: global_3d` (default) this equals
+    # `fixed_n_components` when SpinalCompCor ran; previously
+    # `spinalcompcor_median_pcs` always returned NaN because it
+    # medianed an empty `pcs_per_slice` list. See
+    # .claude/specs/s8-reportlet-set-audit.md.
+    sc_n = None
+    if sc_meta.get("enabled"):
+        per_slice = sc_meta.get("pcs_per_slice") or []
+        if per_slice:
+            sc_n = int(np.median(per_slice))
+        else:
+            # global_3d mode: count global PC columns we actually built
+            sc_n = int(family_counts.get("spinalcompcor", 0)) or None
+
+    # Cardiac BPM + respiratory CPM from popp output (when PNM ran).
+    # Previously documented "populated when PNM ran" but always None.
+    cardiac_bpm, respiratory_cpm = _bpm_cpm_from_popp(s8_work_dir)
+
     metrics = {
         "n_volumes": int(n_volumes),
-        "n_slices_with_csf": int(csf_meta.get("n_slices_with_csf", 0)),
         "n_columns_total": int(df.shape[1]),
         "n_columns_motion": int(family_counts["motion"]),
         "n_columns_csf": int(family_counts["csf"]),
@@ -1183,17 +1245,10 @@ def run_S8_confounds_and_physio_regressors(
         "fd_mean_mm": float(np.mean(columns["framewise_displacement"])),
         "fd_max_mm": float(np.max(columns["framewise_displacement"])),
         "dvars_mean": float(np.mean(columns["dvars"])) if "dvars" in columns else None,
-        "spinalcompcor_median_pcs": (
-            float(np.median(sc_meta.get("pcs_per_slice", [0]))) if sc_meta.get("enabled") else None
-        ),
+        "cardiac_bpm_estimate": cardiac_bpm,
+        "respiratory_cpm_estimate": respiratory_cpm,
+        "spinalcompcor_n_components": sc_n,
     }
-    if frame_metrics_path:
-        try:
-            frame_metrics = _load_frame_metrics(frame_metrics_path)
-            metrics["cardiac_bpm_estimate"] = None     # populated when PNM ran
-            metrics["respiratory_cpm_estimate"] = None
-        except Exception:
-            pass
 
     status, reasons = _classify(metrics, policy.get("qc_thresholds", {}))
     failure_reasons.extend(reasons)
@@ -1235,19 +1290,22 @@ def run_S8_confounds_and_physio_regressors(
         "policy_sha256": policy_sha,
     }, indent=2, default=str))
 
-    # Reportlets — 4 PNGs, visual-standard chrome (status pill + dark theme).
+    # Reportlets — 5 PNGs, visual-standard chrome (status pill + dark theme).
     # csf_variance reportlet dropped 2026-05-28 — its info is already in
     # metrics.n_columns_csf + the correlation_heatmap.
+    # carpet_plot added 2026-05-28 (Power 2017 / fMRIPrep standard).
     from .reportlets import (
         render_s8_confound_columns,
         render_s8_fd_dvars_outliers,
         render_s8_pnm_peaks,
         render_s8_correlation_heatmap,
+        render_s8_carpet_plot,
     )
-    rep_cols  = figures_dir / f"{prefix}_desc-S8_confound_columns.png"
-    rep_fd    = figures_dir / f"{prefix}_desc-S8_fd_dvars_outliers.png"
-    rep_pnm   = figures_dir / f"{prefix}_desc-S8_pnm_peaks.png"
-    rep_corr  = figures_dir / f"{prefix}_desc-S8_correlation_heatmap.png"
+    rep_cols    = figures_dir / f"{prefix}_desc-S8_confound_columns.png"
+    rep_fd      = figures_dir / f"{prefix}_desc-S8_fd_dvars_outliers.png"
+    rep_pnm     = figures_dir / f"{prefix}_desc-S8_pnm_peaks.png"
+    rep_corr    = figures_dir / f"{prefix}_desc-S8_correlation_heatmap.png"
+    rep_carpet  = figures_dir / f"{prefix}_desc-S8_carpet_plot.png"
 
     # Outlier indices for the FD/DVARS panels — derived from the one-hot
     # motion_outlier_NN columns we already built.
@@ -1292,6 +1350,22 @@ def run_S8_confounds_and_physio_regressors(
         )
     except Exception as e:
         failure_reasons.append(f"correlation_heatmap reportlet failed: {e}")
+    try:
+        # Cord-restricted carpet plot of the BOLD timeseries (Power 2017
+        # / fMRIPrep standard). Uses the funccrop_mask we already loaded
+        # as the cord mask; bold_path is the same 4D used for csf+spcc.
+        render_s8_carpet_plot(
+            bold_path=bold_path,
+            cord_mask_path=funccrop_mask_path,
+            output_path=rep_carpet,
+            fd=columns.get("framewise_displacement"),
+            dvars=columns.get("dvars"),
+            status=status,
+            fd_thresh=fd_thr,
+            outlier_indices=outlier_indices,
+        )
+    except Exception as e:
+        failure_reasons.append(f"carpet_plot reportlet failed: {e}")
 
     return {
         "status": status,
@@ -1306,10 +1380,11 @@ def run_S8_confounds_and_physio_regressors(
         "failure_reasons": failure_reasons,
         "failure_message": "; ".join(failure_reasons) if failure_reasons else None,
         "reportlets": {
-            "confound_columns":    str(rep_cols.relative_to(out_dir)) if rep_cols.exists() else "",
-            "fd_dvars_outliers":   str(rep_fd.relative_to(out_dir))   if rep_fd.exists() else "",
-            "pnm_peaks":           str(rep_pnm.relative_to(out_dir))  if rep_pnm.exists() else "",
-            "correlation_heatmap": str(rep_corr.relative_to(out_dir)) if rep_corr.exists() else "",
+            "carpet_plot":         str(rep_carpet.relative_to(out_dir)) if rep_carpet.exists() else "",
+            "fd_dvars_outliers":   str(rep_fd.relative_to(out_dir))     if rep_fd.exists() else "",
+            "confound_columns":    str(rep_cols.relative_to(out_dir))   if rep_cols.exists() else "",
+            "pnm_peaks":           str(rep_pnm.relative_to(out_dir))    if rep_pnm.exists() else "",
+            "correlation_heatmap": str(rep_corr.relative_to(out_dir))   if rep_corr.exists() else "",
         },
         "confounds_paths": {
             "tsv":  str(tsv_path.relative_to(out_dir)),

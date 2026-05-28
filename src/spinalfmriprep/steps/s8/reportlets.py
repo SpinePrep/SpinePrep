@@ -369,3 +369,177 @@ def render_s8_correlation_heatmap(
 
     fig.savefig(output_path, dpi=120, facecolor=BG, bbox_inches="tight")
     plt.close(fig)
+
+
+# ---------------------------------------------------------------------------
+# Reportlet 5: carpet plot (Power 2017 / fMRIPrep standard)
+# ---------------------------------------------------------------------------
+
+
+def render_s8_carpet_plot(
+    bold_path,
+    cord_mask_path,
+    output_path: Path,
+    fd: Optional[np.ndarray] = None,
+    dvars: Optional[np.ndarray] = None,
+    status: str = "PASS",
+    fd_thresh: float = 0.2,
+    outlier_indices: Optional[np.ndarray] = None,
+) -> None:
+    """Cord-restricted voxel × time BOLD intensity carpet, with FD/DVARS
+    traces below. Power 2017 / fMRIPrep / Kaptan 2023 standard.
+
+    Visualises WHERE in the cord (vertical axis = voxels sorted by
+    mean intensity for stable striping) and WHEN (horizontal = volume
+    index) the residual noise lives. Striped patterns indicate a
+    confound the regressor model didn't capture; coherent bands
+    align with FD spikes; speckled noise is acceptable.
+
+    Voxels are intensity-normalised per row (mean-centered, std-
+    divided) so the carpet visualises temporal variation, not
+    absolute intensity. fMRIPrep convention.
+
+    Parameters
+    ----------
+    bold_path : Path
+        4D BOLD time series in native func space (post-S5/post-S6).
+    cord_mask_path : Path
+        Cord mask in BOLD geometry (S6 funccrop equivalent).
+    fd, dvars : array-like
+        Optional time series for the bottom traces.
+    outlier_indices : array-like
+        Volume indices to mark as red vertical bands across all axes.
+    """
+    import nibabel as nib
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        bimg = nib.load(bold_path)
+        bold = bimg.get_fdata()
+        cord = nib.load(cord_mask_path).get_fdata() > 0.5
+    except Exception as e:
+        fig, ax = plt.subplots(figsize=(10, 5), facecolor=BG)
+        _draw_header(fig, "S8 — Carpet plot", f"load failed: {e}", "WARN")
+        ax.set_facecolor(BG); ax.axis("off")
+        fig.savefig(output_path, dpi=120, facecolor=BG, bbox_inches="tight")
+        plt.close(fig)
+        return
+
+    if bold.ndim != 4 or cord.shape != bold.shape[:3]:
+        fig, ax = plt.subplots(figsize=(10, 5), facecolor=BG)
+        _draw_header(fig, "S8 — Carpet plot",
+                     f"shape mismatch: bold={bold.shape} cord={cord.shape}",
+                     "WARN")
+        ax.set_facecolor(BG); ax.axis("off")
+        fig.savefig(output_path, dpi=120, facecolor=BG, bbox_inches="tight")
+        plt.close(fig)
+        return
+
+    # Extract cord voxel timeseries: (V, T)
+    cord_vox = bold[cord]
+    n_vox, n_t = cord_vox.shape
+    if n_vox < 5 or n_t < 5:
+        fig, ax = plt.subplots(figsize=(10, 5), facecolor=BG)
+        _draw_header(fig, "S8 — Carpet plot",
+                     f"insufficient data: {n_vox} voxels × {n_t} volumes",
+                     "WARN")
+        ax.set_facecolor(BG); ax.axis("off")
+        fig.savefig(output_path, dpi=120, facecolor=BG, bbox_inches="tight")
+        plt.close(fig)
+        return
+
+    # Per-voxel mean-center + std-normalise (fMRIPrep convention).
+    mu = cord_vox.mean(axis=1, keepdims=True)
+    sd = cord_vox.std(axis=1, keepdims=True)
+    sd[sd < 1e-6] = 1.0
+    carpet = (cord_vox - mu) / sd
+
+    # Sort voxels by mean intensity for stable banding patterns
+    # (high-signal voxels = cord interior cluster at the top).
+    order = np.argsort(mu.flatten())[::-1]
+    carpet = carpet[order]
+
+    # Color scale: ±2σ clipped — fMRIPrep convention.
+    vmin, vmax = -2.0, 2.0
+
+    has_fd = fd is not None and len(fd) == n_t
+    has_dvars = dvars is not None and len(dvars) == n_t
+    n_panels = 1 + int(has_fd) + int(has_dvars)
+
+    subtitle = f"{n_vox} cord voxels × {n_t} volumes  ·  carpet ±{abs(vmin):.0f}σ"
+
+    fig = plt.figure(figsize=(12, 7), facecolor=BG)
+    _draw_header(fig, "S8 — Carpet plot (cord BOLD)",
+                 subtitle, status)
+
+    # Layout: carpet on top (~60% height), traces below (~30%).
+    if n_panels == 1:
+        ax_carpet = fig.add_axes((0.08, 0.10, 0.88, 0.75))
+        trace_axes: list = []
+    else:
+        carpet_h = 0.55
+        trace_h_each = 0.20 / max(n_panels - 1, 1)
+        ax_carpet = fig.add_axes((0.08, 0.30, 0.88, carpet_h))
+        trace_axes = []
+        next_y = 0.08
+        for i in range(n_panels - 1):
+            tax = fig.add_axes((0.08, next_y, 0.88, trace_h_each))
+            trace_axes.append(tax)
+            next_y += trace_h_each + 0.01
+
+    _setup_dark_axes(ax_carpet)
+    im = ax_carpet.imshow(
+        carpet, cmap="RdBu_r", vmin=vmin, vmax=vmax,
+        aspect="auto", interpolation="nearest",
+    )
+    ax_carpet.set_ylabel(f"Cord voxels (sorted by mean, n={n_vox})",
+                         color=TEXT, fontsize=9)
+    if trace_axes:
+        ax_carpet.tick_params(labelbottom=False)
+    else:
+        ax_carpet.set_xlabel("Volume", color=TEXT, fontsize=10)
+
+    # Outlier markers across all axes
+    all_axes = [ax_carpet] + trace_axes
+    if outlier_indices is not None:
+        for oi in outlier_indices:
+            for ax in all_axes:
+                ax.axvline(oi, color="#ef4444", lw=0.4, alpha=0.30)
+
+    cb = fig.colorbar(im, ax=ax_carpet, shrink=0.6, pad=0.01)
+    cb.set_label("σ", color=TEXT, fontsize=9)
+    cb.ax.tick_params(colors=TEXT, labelsize=8)
+    cb.outline.set_edgecolor(BORDER)
+
+    # Bottom traces
+    trace_specs = []
+    if has_fd:
+        trace_specs.append((fd, "FD (mm)", "#7dcfff", fd_thresh, "FD = 0.2 mm"))
+    if has_dvars:
+        mu_d = float(np.mean(dvars)); sd_d = float(np.std(dvars))
+        trace_specs.append((dvars, "DVARS", "#ef4444",
+                            mu_d + 3 * sd_d, "DVARS μ + 3σ"))
+
+    for ax, (vec, label, color, thr, thr_lbl) in zip(trace_axes, trace_specs):
+        _setup_dark_axes(ax)
+        x = np.arange(len(vec))
+        ax.plot(x, vec, color=color, lw=0.9)
+        ax.axhline(thr, ls="--", color="#9ca3af", lw=0.5, label=thr_lbl)
+        leg = ax.legend(loc="upper right", fontsize=7, facecolor="#1a1d23",
+                        edgecolor=BORDER, labelcolor=TEXT)
+        for t in leg.get_texts():
+            t.set_color(TEXT)
+        ax.set_ylabel(label, color=TEXT, fontsize=8)
+        ax.grid(alpha=0.15, color=BORDER)
+        ax.set_axisbelow(True)
+        ax.set_xlim(0, len(vec) - 1)
+
+    # X-label only on bottom-most panel
+    if trace_axes:
+        for ax in trace_axes[:-1]:
+            ax.tick_params(labelbottom=False)
+        trace_axes[-1].set_xlabel("Volume", color=TEXT, fontsize=10)
+
+    fig.savefig(output_path, dpi=120, facecolor=BG, bbox_inches="tight")
+    plt.close(fig)
