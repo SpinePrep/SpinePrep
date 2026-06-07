@@ -332,12 +332,32 @@ def run_S4_func_motion_correction(
         params_total['tx'] = np.zeros(img_after.shape[3])
         params_total['ty'] = np.zeros(img_after.shape[3])
 
-    if stage2_params_path.exists():
-        p2 = pd.read_csv(stage2_params_path, sep="\t")
-        if 'X' in p2.columns:
-            params_total['tx'] += p2['X']
-        if 'Y' in p2.columns:
-            params_total['ty'] += p2['Y']
+    # Stage-2 slicewise contribution. SCT writes signed per-volume slicewise
+    # translations as 4D NIfTI fields (moco_params_x/_y.nii.gz, shape
+    # (1,1,n_slices,n_vol)) in the moco cwd (s4_work_dir); the sidecar
+    # moco_params.tsv only has a single unsigned magnitude column
+    # `mean(sqrt(X^2+Y^2))` (NOT 'X'/'Y' — the old `if 'X' in p2.columns` guard
+    # was always false, silently dropping Stage-2 from FD). Mean over space per
+    # volume (same reduction S8 uses) and add to the Stage-1 bulk so FD reflects
+    # bulk + slicewise total motion. See BUG-1, meeting-2026-05-29-task-audit.
+    moco_x_path = s4_work_dir / "moco_params_x.nii.gz"
+    moco_y_path = s4_work_dir / "moco_params_y.nii.gz"
+    if moco_x_path.exists() and moco_y_path.exists():
+        mx = nib.load(moco_x_path).get_fdata()
+        my = nib.load(moco_y_path).get_fdata()
+        if mx.ndim == 4 and mx.shape[-1] == len(params_total):
+            params_total['tx'] += mx.mean(axis=(0, 1, 2))
+            params_total['ty'] += my.mean(axis=(0, 1, 2))
+        else:
+            logger.warning(
+                f"[{step_code}] SCT moco_params_x/y shape {mx.shape} incompatible "
+                f"with {len(params_total)} volumes; FD reflects bulk stage only"
+            )
+    elif "2d" in mode:
+        logger.warning(
+            f"[{step_code}] SCT moco_params_x/_y.nii.gz not found in {s4_work_dir}; "
+            f"FD reflects bulk stage only"
+        )
 
     # Compute FD
     fd = moco.compute_framewise_displacement(params_total)

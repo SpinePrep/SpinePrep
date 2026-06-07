@@ -82,15 +82,28 @@ def test_S4_integration_flow(s4_test_env):
         def side_effect(*args, **kwargs):
             cwd = kwargs.get("cwd")
             if cwd:
-                # Create sct_fmri_moco outputs
-                nib.save(nib.load(s4_test_env["bold_path"]), cwd / "sct_input_moco.nii.gz")
-                
-                # Create params tsv
+                bold_img = nib.load(s4_test_env["bold_path"])
+                n_sl, n_vol = bold_img.shape[2], bold_img.shape[3]
+                # Create sct_fmri_moco corrected bold
+                nib.save(bold_img, cwd / "sct_input_moco.nii.gz")
+
+                # Real sct_fmri_moco sidecar: ONE unsigned magnitude column
+                # named "mean(sqrt(X^2 + Y^2))" — NOT 'X'/'Y'. (Reproducing the
+                # real schema so the test exercises the production read path and
+                # cannot silently mask BUG-1 again.)
                 with open(cwd / "moco_params.tsv", "w") as f:
-                    f.write("X\tY\n")
-                    for _ in range(20):
-                        f.write("0\t0\n")
-                    
+                    f.write("mean(sqrt(X^2 + Y^2))\n")
+                    for _ in range(n_vol):
+                        f.write("0.1\n")
+
+                # Real signed slicewise fields: 4D (1,1,n_slices,n_vol),
+                # nonzero + time-varying so FD must reflect Stage-2 motion.
+                t = np.arange(n_vol, dtype=float)
+                mx = np.broadcast_to(np.sin(t / 3.0) * 0.5, (1, 1, n_sl, n_vol)).astype(np.float32)
+                my = np.broadcast_to(np.cos(t / 4.0) * 0.3, (1, 1, n_sl, n_vol)).astype(np.float32)
+                nib.save(nib.Nifti1Image(mx.copy(), np.eye(4)), cwd / "moco_params_x.nii.gz")
+                nib.save(nib.Nifti1Image(my.copy(), np.eye(4)), cwd / "moco_params_y.nii.gz")
+
             return MagicMock(returncode=0)
             
         mock_run.side_effect = side_effect
@@ -106,8 +119,15 @@ def test_S4_integration_flow(s4_test_env):
         
         # Verify result
         assert result["status"] == "PASS"
-        assert result["status"] == "PASS"
         assert result["dataset_key"] == "test_ds"
+
+        # BUG-1 regression guard: FD must reflect the (nonzero) Stage-2
+        # slicewise motion read from moco_params_x/_y.nii.gz. With the old
+        # `if 'X' in p2.columns` guard against the magnitude-only TSV, Stage-2
+        # was silently dropped and FD on this static-volume fixture was 0.
+        assert result["metrics"]["max_fd_mm"] > 0, (
+            "FD is zero — Stage-2 slicewise motion was dropped (BUG-1 regression)"
+        )
         
         # Verify derivatives output
         deriv_func = out_dir / "derivatives" / "spinalfmriprep" / "sub-01" / "ses-01" / "func"
