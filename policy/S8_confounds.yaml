@@ -52,14 +52,16 @@ csf_slicewise:
 
 # ----------------------------------------------------------------------
 # 3. RETROICOR slicewise via FSL PNM (when BIDS physio readable)
-# popp -> pnm_evs. Cardiac order 4 + respiratory order 4 + interaction
-# order 4×4 = 16 → 32 slicewise regressors per slice. Cord-mean each EV
-# within S3 funccrop_mask per slice for the TSV row. Dabbagh 2024 recipe.
+# popp -> pnm_evs. EV count = 2*oc + 2*or + 4*multc*multr. With oc=or=4 and
+# interaction order 2 (multc=multr=2): 8 cardiac + 8 respiratory + 16 interaction
+# = 32 regressors per slice (Kaptan 2023 / Dabbagh 2024 cord recipe). Cord-mean
+# each EV within S3 funccrop_mask per slice for the TSV row. Short runs set
+# interaction_order=0 -> drop interactions (16 total). Dabbagh 2024 recipe.
 retroicor:
   enabled: true                    # auto-disable when physio absent
   cardiac_order: 4                 # 8 regressors (sin + cos × 4)
   respiratory_order: 4             # 8 regressors
-  interaction_order: 16            # 4 × 4 cross-terms
+  interaction_order: 2             # FSL pnm_evs --multc/--multr order; 4·2·2 = 16 interaction EVs
   # TSV aggregation. Slicewise pnm_evs EVs (constant within slice) are
   # aggregated to one column per EV for the BIDS-style flat TSV.
   #   slice_mean  — mean across cord-bearing slices (Kaptan/Dabbagh:

@@ -443,7 +443,13 @@ def _run_pnm(
     rvt_file = popp_out.with_suffix(".rvt")
     # pnm_evs: generate the slicewise EVs as voxelwise NIfTI files
     evs_prefix = pnm_dir / "ev"
-    mult = max(1, int(np.sqrt(max(interaction_order, 1))))
+    # interaction_order is the FSL pnm_evs multiplicative order (--multc/--multr).
+    # pnm_evs EV count = 2*oc + 2*or + 4*multc*multr (verified empirically + in
+    # FSL pnm_evs.cc). order 2 -> 4*2*2 = 16 interaction EVs -> 8+8+16 = 32 total
+    # (Kaptan 2023 / Dabbagh 2024 cord recipe). order 0 drops interactions (16
+    # total) for short runs. The previous `sqrt(interaction_order)` mapping turned
+    # 16 into multc=multr=4 -> 64 interaction -> 80 total (BUG-2).
+    mult = max(0, int(interaction_order))
     cmd_evs = [
         "pnm_evs", "-i", str(bold_path), "-o", str(evs_prefix),
         "-r", str(resp_file), "-c", str(card_file),
@@ -1148,7 +1154,7 @@ def run_S8_confounds_and_physio_regressors(
                     sampling_rate_hz=float(physio["sampling_frequency_hz"]),
                     cardiac_order=int(rp_eff.get("cardiac_order", 4)),
                     respiratory_order=int(rp_eff.get("respiratory_order", 4)),
-                    interaction_order=int(rp_eff.get("interaction_order", 16)),
+                    interaction_order=int(rp_eff.get("interaction_order", 2)),
                     work_dir=s8_work_dir,
                 )
                 if not ok:
