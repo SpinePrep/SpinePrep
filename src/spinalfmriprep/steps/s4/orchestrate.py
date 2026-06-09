@@ -361,7 +361,13 @@ def run_S4_func_motion_correction_reportlets_only(
         # Load persisted intermediates
         tsnr_before_path = s4_work_dir / "tsnr_before.nii.gz"
         tsnr_after_path = s4_work_dir / "tsnr_after.nii.gz"
-        params_path = func_dir / f"{prefix}_moco_params.tsv"
+        # SIGNED motion sources (mirror the main path). Do NOT use the
+        # {prefix}_moco_params.tsv sidecar — it is the unsigned magnitude only,
+        # which made this path plot flat zeros.
+        coarse_path = s4_work_dir / "moco_params_coarse.tsv"
+        mx_path = s4_work_dir / "moco_params_x.nii.gz"
+        my_path = s4_work_dir / "moco_params_y.nii.gz"
+        moco_bold_path = func_dir / f"{prefix}_desc-mocoref_bold.nii.gz"
 
         # Find cord mask
         mask_path = None
@@ -370,55 +376,65 @@ def run_S4_func_motion_correction_reportlets_only(
             mask_path = mask_candidates[0]
 
         fd_threshold = policy.get("qc_thresholds", {}).get("fd_threshold_mm", 0.5)
+        dpi = policy.get("qc", {}).get("motion_traces", {}).get("dpi", 100)
 
-        # 1. Motion traces
-        if params_path.exists():
-            try:
-                params_df = pd.read_csv(params_path, sep="\t")
+        try:
+            # Build params_total = Stage-1 bulk + Stage-2 slicewise mean (both mm)
+            params_df = pd.DataFrame()
+            slicewise_x = slicewise_y = None
+            if coarse_path.exists():
+                p1 = pd.read_csv(coarse_path, sep="\t")
+                params_df["tx"] = p1.get("tx_coarse", 0.0)
+                params_df["ty"] = p1.get("ty_coarse", 0.0)
+            if mx_path.exists() and my_path.exists():
+                mx = nib.load(mx_path).get_fdata(); my = nib.load(my_path).get_fdata()
+                if len(params_df) == 0 and mx.ndim == 4:
+                    params_df["tx"] = np.zeros(mx.shape[-1]); params_df["ty"] = np.zeros(mx.shape[-1])
+                if mx.ndim == 4 and mx.shape[-1] == len(params_df):
+                    params_df["tx"] += mx.mean(axis=(0, 1, 2)); params_df["ty"] += my.mean(axis=(0, 1, 2))
+                    slicewise_x, slicewise_y = mx, my
+
+            # DVARS + cord mask + Tukey threshold (matches S8)
+            dvars = np.zeros(len(params_df)); dvars_threshold = 1.0; mask_data = None
+            if moco_bold_path.exists():
+                bold_data = nib.load(moco_bold_path).get_fdata()
+                mask_data = (nib.load(mask_path).get_fdata() > 0) if (mask_path and mask_path.exists()) \
+                    else (np.mean(bold_data, axis=-1) > 0)
+                dvars = moco.compute_dvars(bold_data, mask_data)
+                q1, q3 = np.percentile(dvars, [25, 75]); dvars_threshold = float(q3 + 1.5 * (q3 - q1))
+            cz = np.where(mask_data.any(axis=(0, 1)))[0] if mask_data is not None else np.array([])
+            cord_z_extent = (int(cz.min()), int(cz.max())) if cz.size else None
+
+            if len(params_df):
+                fd = moco.compute_framewise_displacement(params_df)
                 viz_s4.render_motion_traces(
-                    params_df,
-                    fd_threshold=fd_threshold,
-                    output_path=figures_dir / f"{prefix}_desc-S4_motion_traces.png",
-                    figsize=tuple(policy.get("qc", {}).get("motion_traces", {}).get("figsize", [10, 4])),
-                    dpi=policy.get("qc", {}).get("motion_traces", {}).get("dpi", 100),
-                    colors=policy.get("qc", {}).get("motion_traces", {}).get("colors", {}),
+                    params_df, fd, dvars, fd_threshold, dvars_threshold,
+                    figures_dir / f"{prefix}_desc-S4_motion_traces.png", dpi=dpi,
                 )
-            except Exception:
-                pass
+                if slicewise_x is not None:
+                    viz_s4.render_slicewise_heatmap(
+                        slicewise_x, slicewise_y,
+                        figures_dir / f"{prefix}_desc-S4_slicewise_heatmap.png",
+                        cord_z_extent=cord_z_extent, dpi=dpi,
+                    )
+        except Exception:
+            pass
 
-        # 2. tSNR comparison
+        # tSNR comparison + per-slice profile
         if tsnr_before_path.exists() and tsnr_after_path.exists():
             try:
                 tsnr_before_img = nib.load(tsnr_before_path)
-                tsnr_before_data = tsnr_before_img.get_fdata()
-                tsnr_after_data = nib.load(tsnr_after_path).get_fdata()
+                tb = tsnr_before_img.get_fdata(); ta = nib.load(tsnr_after_path).get_fdata()
                 zooms = tsnr_before_img.header.get_zooms()[:3]
-                mask_data = nib.load(mask_path).get_fdata() > 0 if mask_path and mask_path.exists() else tsnr_before_data > 0
+                m = nib.load(mask_path).get_fdata() > 0 if mask_path and mask_path.exists() else tb > 0
+                mb = tb[m].mean() if m.sum() else 0.0
+                impr = float((ta[m].mean() - mb) / mb * 100) if mb > 0 else 0.0
                 viz_s4.render_tsnr_comparison(
-                    tsnr_before_data,
-                    tsnr_after_data,
-                    mask_data,
-                    zooms=zooms,
+                    tb, ta, m, zooms=zooms,
                     output_path=figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png",
+                    improvement_pct=impr,
                     colormap=policy.get("qc", {}).get("tsnr_comparison", {}).get("colormap", "viridis"),
                 )
-            except Exception:
-                pass
-
-        # 3. DVARS plot
-        if params_path.exists():
-            try:
-                moco_bold_path = func_dir / f"{prefix}_desc-mocoref_bold.nii.gz"
-                if moco_bold_path.exists() and mask_path and mask_path.exists():
-                    mask_data = nib.load(mask_path).get_fdata() > 0
-                    bold_data = nib.load(moco_bold_path).get_fdata()
-                    dvars = moco.compute_dvars(bold_data, mask_data)
-                    threshold = np.percentile(dvars, 75) + 1.5 * (np.percentile(dvars, 75) - np.percentile(dvars, 25))
-                    viz_s4.render_dvars_plot(
-                        dvars,
-                        threshold=threshold,
-                        output_path=figures_dir / f"{prefix}_desc-S4_dvars_plot.png",
-                    )
             except Exception:
                 pass
 

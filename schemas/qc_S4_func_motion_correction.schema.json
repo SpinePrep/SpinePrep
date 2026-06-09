@@ -135,26 +135,20 @@
             "description": "Paths to QC reportlet files",
             "required": [
               "S4_motion_traces",
-              "S4_tsnr_comparison",
-              "S4_dvars_plot",
-              "S4_moco_comparison"
+              "S4_tsnr_comparison"
             ],
             "properties": {
               "S4_motion_traces": {
                 "type": "string",
-                "description": "Path to motion traces PNG (XY translation time series)"
+                "description": "Path to the stacked trace panel PNG (total X/Y translation + FD + DVARS, shared time axis)"
+              },
+              "S4_slicewise_heatmap": {
+                "type": ["string", "null"],
+                "description": "Path to the slice x volume slicewise-shift heatmap PNG (Stage-2; null when the 2D slicewise stage did not run)"
               },
               "S4_tsnr_comparison": {
                 "type": "string",
-                "description": "Path to before/after tSNR comparison PNG"
-              },
-              "S4_dvars_plot": {
-                "type": "string",
-                "description": "Path to DVARS time series PNG"
-              },
-              "S4_moco_comparison": {
-                "type": "string",
-                "description": "Path to before/after motion correction comparison GIF"
+                "description": "Path to before/after tSNR comparison PNG with per-slice cord-tSNR profile"
               }
             }
           },

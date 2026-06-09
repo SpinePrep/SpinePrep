@@ -1,5 +1,7 @@
 ---
-status: approved
+status: superseded
+superseded_by: meeting-2026-05-29-task-audit.md (S4 reportlet redesign, 2026-06-10)
+note: Motion is sub-voxel in 10/11 reg runs, so a before/after axial/GIF conveys nothing. Replaced by the 3-figure set (trace panel + slicewise heatmap + tSNR/per-slice). Dropped from the schema's required reportlets.
 ---
 
 # Scope Spec: S4 moco-comparison axial redesign
