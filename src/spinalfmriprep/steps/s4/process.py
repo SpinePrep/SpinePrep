@@ -342,12 +342,14 @@ def run_S4_func_motion_correction(
     # bulk + slicewise total motion. See BUG-1, meeting-2026-05-29-task-audit.
     moco_x_path = s4_work_dir / "moco_params_x.nii.gz"
     moco_y_path = s4_work_dir / "moco_params_y.nii.gz"
+    slicewise_x = slicewise_y = None   # kept for the slicewise heatmap reportlet
     if moco_x_path.exists() and moco_y_path.exists():
         mx = nib.load(moco_x_path).get_fdata()
         my = nib.load(moco_y_path).get_fdata()
         if mx.ndim == 4 and mx.shape[-1] == len(params_total):
             params_total['tx'] += mx.mean(axis=(0, 1, 2))
             params_total['ty'] += my.mean(axis=(0, 1, 2))
+            slicewise_x, slicewise_y = mx, my
         else:
             logger.warning(
                 f"[{step_code}] SCT moco_params_x/y shape {mx.shape} incompatible "
@@ -395,38 +397,43 @@ def run_S4_func_motion_correction(
     logger.info(f"[{step_code}] Generating reportlets in {figures_dir}")
     from spinalfmriprep.lib import viz_s4
 
-    # 1. Motion Traces
+    # DVARS is a raw RMS intensity change on a run-specific scale, so a fixed
+    # threshold (the old 0.5 default) is meaningless and flags every volume.
+    # Use a Tukey upper fence (Q3 + 1.5*IQR), the same data-driven rule S8 uses.
+    _q1, _q3 = np.percentile(dvars, [25, 75])
+    dvars_threshold = float(_q3 + 1.5 * (_q3 - _q1))
+    zooms = img_before.header.get_zooms()
+    cord_z = np.where(mask.any(axis=(0, 1)))[0]
+    cord_z_extent = (int(cord_z.min()), int(cord_z.max())) if cord_z.size else None
+
+    # Figure 1 — trace panel: total X/Y motion + FD + DVARS (shared time axis)
     viz_s4.render_motion_traces(
-        params_total,
+        params_total, fd, dvars,
         fd_threshold=fd_threshold,
+        dvars_threshold=dvars_threshold,
         output_path=figures_dir / f"{prefix}_desc-S4_motion_traces.png",
-        figsize=tuple(policy["qc"]["motion_traces"]["figsize"]),
         dpi=policy["qc"]["motion_traces"]["dpi"],
-        colors=policy["qc"]["motion_traces"]["colors"]
     )
 
-    # 2. tSNR Comparison
-    zooms = img_before.header.get_zooms()
+    # Figure 2 — slicewise heatmap (Stage-2 per-slice shift, signed mm). Only
+    # emitted when the Stage-2 slicewise fields exist (2D stage ran).
+    slicewise_rel = None
+    if slicewise_x is not None and slicewise_y is not None:
+        sw_path = figures_dir / f"{prefix}_desc-S4_slicewise_heatmap.png"
+        viz_s4.render_slicewise_heatmap(
+            slicewise_x, slicewise_y, output_path=sw_path,
+            cord_z_extent=cord_z_extent, dpi=policy["qc"]["motion_traces"]["dpi"],
+        )
+        slicewise_rel = str(sw_path.relative_to(out_dir))
+
+    # Figure 3 — tSNR before/after + per-slice cord-tSNR profile
     viz_s4.render_tsnr_comparison(
-        tsnr_map_before,
-        tsnr_map_after,
-        mask,
+        tsnr_map_before, tsnr_map_after, mask,
         zooms=zooms[:3],
         output_path=figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png",
-        colormap=policy["qc"]["tsnr_comparison"]["colormap"]
+        improvement_pct=qc_metrics["tsnr_improvement_pct"],
+        colormap=policy["qc"]["tsnr_comparison"]["colormap"],
     )
-
-    # 3. DVARS Plot
-    viz_s4.render_dvars_plot(
-        dvars,
-        threshold=policy["outlier_gating"]["metrics"]["dvars"]["threshold"] if "outlier_gating" in policy else 0.5,
-        output_path=figures_dir / f"{prefix}_desc-S4_dvars_plot.png"
-    )
-
-    # The S4 moco-comparison reportlet was removed: an audit showed motion is
-    # sub-voxel in 10/11 reg runs, so neither a sagittal GIF nor an axial
-    # PNG/GIF can convey the correction visibly. tSNR before/after carries
-    # the moco-quality story; motion_traces + DVARS cover the diagnostic.
 
     # -------------------------------------------------------------------------
     # S4.5: Write QC JSON
@@ -460,8 +467,8 @@ def run_S4_func_motion_correction(
             # Store paths RELATIVE to out_dir so the dashboard can resolve them
             # in chain workfolders (S2/S3 already follow this convention).
             "S4_motion_traces": str((figures_dir / f"{prefix}_desc-S4_motion_traces.png").relative_to(out_dir)),
+            "S4_slicewise_heatmap": slicewise_rel,
             "S4_tsnr_comparison": str((figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png").relative_to(out_dir)),
-            "S4_dvars_plot": str((figures_dir / f"{prefix}_desc-S4_dvars_plot.png").relative_to(out_dir)),
         }
     }
 

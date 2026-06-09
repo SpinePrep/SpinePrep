@@ -76,6 +76,22 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
   by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
+## W2 (S4 reportlets) — DONE 2026-06-10
+S4 figure set redesigned to minimal-complete-correct (grounded + adversarially
+vetted vs fMRIPrep/MRIQC/SCT/Mohammed2020/Kaptan2023). Now **3 figures**:
+(1) trace panel — total X/Y motion + FD(thr+dots) + DVARS(Tukey thr+dots), shared
+time axis; (2) **slicewise heatmap (NEW)** — slice×time signed shift (mm), the
+missing cord figure that shows opposing rostral/caudal slice motion FD averages
+away; (3) tSNR before/after + per-slice cord-tSNR profile (catches a single
+harmed slice) + improvement%. Fixed along the way: FD-threshold-on-position
+mislabel, reportlets-only flat-zero path (now reads signed sources), DVARS fixed
+0.5→Tukey, dropped phantom required `S4_moco_comparison` from schema. Verified:
+generated for all 11 reg runs (`scripts/gen_s4_reportlets_reg.py`), figures
+inspected. Units checked: SCT `moco_params_x/y` are ANTs warp fields in **mm**
+(NOT pixels) — the adversarial "needs ×1.5" claim was REFUTED, so FD is unit-OK.
+Open follow-ups (noted, not blocking): tSNR montage uses FOV mask not cord-seg
+(centering not perfectly cord-tight); mask self-selection on tSNR mean.
+
 ## TIER A — Real bugs (audit-surfaced; highest value)
 
 ### BUG-1 — S4's own FD/QC silently drops Stage-2 motion (scope: S4 only)
