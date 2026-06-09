@@ -39,11 +39,14 @@ from spinalfmriprep.lib.run import run_command as _run_command
 def _extract_motion(
     moco_x_4d_path: Path, moco_y_4d_path: Path, n_volumes_expected: int,
 ) -> dict[str, np.ndarray]:
-    """trans_x/y = mean-over-z of slicewise moco params; FD = |Δx|+|Δy|.
+    """trans_x/y = Stage-1 bulk + mean-over-z of Stage-2 slicewise moco; FD = |Δx|+|Δy|.
 
     SCT writes the per-volume slicewise params as 4D NIfTI with shape
     (1, 1, n_slices, n_volumes). Mean across slices yields the scalar
-    in-plane translation per volume.
+    in-plane slicewise translation per volume; the Stage-1 coarse bulk XY
+    (co-located moco_params_coarse.tsv) is added on top so the confound
+    motion + FD reflect total (bulk + slicewise) motion, consistent with
+    S4's FD (BUG-1b).
 
     **Cord-2D motion variant** (not full Friston 1996 24P). S4's cord
     moco is 2D slicewise — no Z translation and no rotations are
@@ -59,8 +62,17 @@ def _extract_motion(
     my = nib.load(moco_y_4d_path).get_fdata()
     if mx.ndim != 4 or my.ndim != 4:
         raise ValueError(f"moco params not 4D: {mx.shape}, {my.shape}")
-    tx = mx.mean(axis=(0, 1, 2)).astype(np.float64)  # (n_volumes,)
+    tx = mx.mean(axis=(0, 1, 2)).astype(np.float64)  # (n_volumes,) slicewise
     ty = my.mean(axis=(0, 1, 2)).astype(np.float64)
+    # Add Stage-1 coarse bulk XY so motion/FD = bulk + slicewise, matching
+    # S4's FD. The coarse TSV is co-located with the slicewise NIfTIs; absent
+    # on 2d-only runs, in which case motion stays slicewise-only. (BUG-1b)
+    coarse_tsv = Path(moco_x_4d_path).parent / "moco_params_coarse.tsv"
+    if coarse_tsv.exists():
+        c = pd.read_csv(coarse_tsv, sep="\t")
+        if len(c) == tx.size and {"tx_coarse", "ty_coarse"} <= set(c.columns):
+            tx = tx + c["tx_coarse"].to_numpy(dtype=np.float64)
+            ty = ty + c["ty_coarse"].to_numpy(dtype=np.float64)
     if tx.size != n_volumes_expected:
         raise ValueError(
             f"moco length {tx.size} != BOLD volumes {n_volumes_expected}"

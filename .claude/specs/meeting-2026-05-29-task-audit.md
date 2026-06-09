@@ -93,7 +93,12 @@ forces mult=1 → 4 interaction → **20** (8+8+4), not 16 — so decide the int
 short-run count when fixing. 0 on no-physio is genuinely correct. Sync
 policy/spec comments (`s8-algorithm-audit.md:75-76`, policy `interaction_order`).
 
-### BUG-1b — S8's analysis-grade FD/motion is slicewise-ONLY (omits Stage-1 bulk) [NEW, open]
+### BUG-1b — S8's analysis-grade FD/motion was slicewise-ONLY (omitted Stage-1 bulk) [FIXED 2026-06-09]
+**Fixed:** `_extract_motion` now reads the co-located `moco_params_coarse.tsv`
+and adds `tx_coarse/ty_coarse` to the slicewise mean → S8 motion/FD = bulk +
+slicewise, consistent with S4. Verified on a real run (handgrasp): trans_x std
+0.39→0.63 once bulk included. (Original finding below.)
+
 Discovered while fixing BUG-1. S8's `_extract_motion` (`s8/process.py:39-75`)
 builds `trans_x/trans_y`/FD purely from `moco_params_x/_y.nii.gz` (SCT Stage-2
 slicewise), so the confounds matrix's motion regressors + FD **never include the
