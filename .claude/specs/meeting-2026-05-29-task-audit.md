@@ -66,6 +66,15 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   shadowed the count. **Fixed (BUG-1d):** `_run_pnm` now deletes stale
   `ev*.nii.gz`/`ev*evlist*.txt` before regenerating → deterministic reruns.
   Re-running S8→S11 to validate (expect 32/16/0 EVs, condition_number recovered).
+- **2026-06-09 — reg rerun #2 (S8→S11) VALIDATED.** S8 RETROICOR = 32 (full) /
+  16 (short, clean — not the old 20) / 0 (no-physio); condition_number 27–59
+  (was ~1e16 FAIL); motion includes bulk (BUG-1b). S9 = 10/10 PASS; S11 promoted
+  (wf_reg_105). No condition_number FAILs. **Open (NOT W1 regressions):**
+  (a) S10 ×2 FAIL on cospine_motorL/R — "no hemicord ROIs survived" (separate
+  S10 ROI/registration issue); (b) outlier_fraction high on balgrist motor
+  (62–66%) + handgrasp ses-01 (56%) — honest consequence of the corrected larger
+  FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
+  by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
 ## TIER A — Real bugs (audit-surfaced; highest value)
 
