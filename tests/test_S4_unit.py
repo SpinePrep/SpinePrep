@@ -69,13 +69,18 @@ def test_coarse_bulk_xy_correction_with_motion(tmp_path):
     assert np.isclose(abs(tx), 1.0, atol=0.2)
     assert np.isclose(ty, 0.0, atol=0.2)
     
-    # Check corrected data similarity to ref
-    # Note: FLIRT on 20x20 synthetic data may not reduce MSE due to
-    # interpolation artifacts on tiny images. We verify the shift
-    # detection is correct (above) rather than asserting MSE improvement.
+    # Stage-1 must IMPROVE alignment to the reference, not worsen it. This
+    # guards the FLIRT→scipy shift sign convention (BUG-1c): the old
+    # shift=[+tx,+ty] increased MSE above the uncorrected baseline (it pushed
+    # the moving frame further from ref). The correct shift=[-tx,+ty] recovers
+    # the reference. Asserting improvement is what would have caught the bug.
     mse_orig = np.mean((data[..., 1] - ref)**2)
     mse_corr = np.mean((corrected[..., 1] - ref)**2)
     print(f"MSE: {mse_orig:.6f} -> {mse_corr:.6f}")
+    assert mse_corr < mse_orig, (
+        f"Stage-1 worsened alignment (MSE {mse_orig:.4f} -> {mse_corr:.4f}); "
+        f"FLIRT→scipy shift sign is wrong (BUG-1c)"
+    )
 
 def test_apply_z_shift_correction():
     # 4D data: (x, y, z, t) = (1, 1, 5, 1)

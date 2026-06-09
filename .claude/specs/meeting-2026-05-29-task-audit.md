@@ -49,6 +49,15 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   Stage-1 bulk). Documented, not yet fixed (changes confounds; needs decision/rerun).
 - Pre-existing failures (NOT from W1): `test_S5_unit.py` ×5 = BUG-5 (stale tests);
   `test_qc_dashboard` + `test_S2_labeling` dashboard ×2 = separate, unrelated.
+- **2026-06-09 — BUG-1c FIXED & verified** (found during a "verify moco code"
+  pass). S4 Stage-1 bulk correction applied the FLIRT shift with the wrong sign;
+  `moco.py` now uses `shift=[-tx, +ty]`. Empirically: a known (+dx,+dy) shift is
+  recovered MSE 1328→9 only by `[-tx,+ty]`; old `[+tx,+ty]` AND the first
+  workflow's proposed `[-tx,-ty]` both made MSE WORSE than no correction. Added
+  an MSE-improvement assertion to `test_S4_unit.py` (the check it used to skip).
+- **Reg cohort is STALE**: all 11 reg runs ran (10 PASS/1 WARN) but predate the
+  BUG-1/1c/2 fixes (S8 still emits 80 EVs). A rerun from S4 is required:
+  `python scripts/full_chain_reg.py --start S4`.
 
 ## TIER A — Real bugs (audit-surfaced; highest value)
 
@@ -94,6 +103,21 @@ is small, but it's a real inconsistency. **Decision needed** (changes the shippe
 confounds + needs S8 rerun): either (a) add Stage-1 bulk into S8's motion (read
 `moco_params_coarse.tsv` and add), or (b) accept slice-only and document why.
 **Do not fix silently.**
+
+### BUG-1c — S4 Stage-1 bulk correction had the WRONG shift sign [FIXED 2026-06-09]
+`lib/moco.py` registered each Z-projected volume with FLIRT then applied
+`scipy.ndimage.shift(vol, [+tx, +ty])`. Because the FLIRT temp images are
+written with `np.eye(4)` (positive-det → FSL neurological, internal x-flip),
+FLIRT's tx matches the axis-0 displacement sign and ty is opposite on axis-1, so
+the correct pull-back is `[-tx, +ty]`. The old `[+tx,+ty]` pushed the moving
+frame FURTHER from the reference — Stage-1 actively *worsened* bulk alignment
+(verified: known shift recovered MSE 1328→9 only by `[-tx,+ty]`; `[+tx,+ty]`→1715,
+`[-tx,-ty]`→1929). Real-world impact was masked because real bulk motion is
+sub-mm and Stage-2 SCT cleans up the residual — but post-BUG-1 the wrong-signed
+bulk now feeds FD. **Fixed:** `shift=[-tx, ty]`; added an MSE-improvement
+regression assertion to `test_S4_unit.py`. Note: the first verification
+workflow's auto-proposed fix (`[-tx,-ty]`) was itself wrong — caught by
+re-testing before applying.
 
 ### BUG-3 — S7 per-level bars mislabeled "L6/L7" on cervical data
 `steps/s7/reportlets.py:311` does `f"L{lvl}"` over raw PAM50 *segmental*
