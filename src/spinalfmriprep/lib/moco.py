@@ -129,15 +129,18 @@ def coarse_bulk_xy_correction(
         vol = bold_4d[..., t]
         
         for z in range(nz):
-            # Apply shift to 2D slice
-            # scipy.ndimage.shift takes (shift_dim0, shift_dim1)
-            # CAREFUL: standard scipy shift convention vs FLIRT convention.
-            # Usually FLIRT output matrix means: x_ref = x_mov + tx => x_mov = x_ref - tx
-            # In scipy.ndimage.shift, a positive shift [tx, ty] moves data coordinates up.
-            # So applying [tx, ty] directly shifts moving towards reference.
+            # Apply shift to 2D slice. The FLIRT temp images above are written
+            # with np.eye(4) (positive determinant → FSL treats them as
+            # neurological and internally flips the first axis), so the reported
+            # tx has the SAME sign as the axis-0 displacement and ty the OPPOSITE
+            # sign on axis-1. To pull the moving slice back onto the reference we
+            # therefore shift by [-tx, +ty] (negate x only). Verified empirically:
+            # a known (+dx,+dy) displacement is recovered to ~0 MSE only by
+            # [-tx,+ty]; [+tx,+ty] (old) and [-tx,-ty] both increase MSE above the
+            # uncorrected baseline. (BUG-1c)
             corrected_4d[:, :, z, t] = shift(
-                vol[:, :, z], 
-                shift=[tx, ty], 
+                vol[:, :, z],
+                shift=[-tx, ty],
                 order=interpolation_order,
                 mode='constant',
                 cval=0.0
