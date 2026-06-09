@@ -58,6 +58,14 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
 - **Reg cohort is STALE**: all 11 reg runs ran (10 PASS/1 WARN) but predate the
   BUG-1/1c/2 fixes (S8 still emits 80 EVs). A rerun from S4 is required:
   `python scripts/full_chain_reg.py --start S4`.
+- **2026-06-09 — reg rerun #1 (S4→S11) exposed BUG-1d.** S4–S7 regenerated fine
+  (S4 FD correctly larger), but S8 emitted 80 EVs again → condition_number FAIL
+  on pain/handgrasp. Cause: the chain symlinks every step's `work/` to S1's
+  shared tree, so S8's `_run_pnm` reused the stale May-28 `ev_evlist.txt` (80
+  entries) — `pnm_evs` rewrote evev001–032 but 48 stale EVs + the stale evlist
+  shadowed the count. **Fixed (BUG-1d):** `_run_pnm` now deletes stale
+  `ev*.nii.gz`/`ev*evlist*.txt` before regenerating → deterministic reruns.
+  Re-running S8→S11 to validate (expect 32/16/0 EVs, condition_number recovered).
 
 ## TIER A — Real bugs (audit-surfaced; highest value)
 

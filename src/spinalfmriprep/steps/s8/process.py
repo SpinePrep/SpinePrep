@@ -455,6 +455,14 @@ def _run_pnm(
     rvt_file = popp_out.with_suffix(".rvt")
     # pnm_evs: generate the slicewise EVs as voxelwise NIfTI files
     evs_prefix = pnm_dir / "ev"
+    # Defensive: clear any stale EV artifacts before regenerating. The reg chain
+    # symlinks each step's work/ to S1's shared tree, so a prior run's ev*.nii.gz
+    # and ev_evlist.txt linger; the evlist-reuse below (`if not evlist.exists()`)
+    # would then return the OLD EV count (e.g. 80) instead of the freshly
+    # generated set, defeating any recipe change. Removing them makes reruns
+    # deterministic. (BUG-1d)
+    for _stale in list(pnm_dir.glob("ev*.nii.gz")) + list(pnm_dir.glob("ev*evlist*.txt")):
+        _stale.unlink(missing_ok=True)
     # interaction_order is the FSL pnm_evs multiplicative order (--multc/--multr).
     # pnm_evs EV count = 2*oc + 2*or + 4*multc*multr (verified empirically + in
     # FSL pnm_evs.cc). order 2 -> 4*2*2 = 16 interaction EVs -> 8+8+16 = 32 total
