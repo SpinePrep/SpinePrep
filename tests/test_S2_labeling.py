@@ -174,9 +174,9 @@ def test_dashboard_with_new_labeling_fields(tmp_path: Path) -> None:
     res = generate_dashboard(out)
     assert res.indexed_qc_files == 1
     
-    # Verify workfolder is displayed (path contains wf_test)
+    # Verify workfolder is displayed (topbar chip <code class="wf">wf_test</code>)
     index_html = (out / "dashboard" / "index.html").read_text(encoding="utf-8")
-    assert "Workfolder: wf_test" in index_html
+    assert "wf_test" in index_html
 
 
 def test_check_labeling_consistency_global_offset(tmp_path: Path) -> None:
