@@ -1355,15 +1355,21 @@ def run_S8_confounds_and_physio_regressors(
         failure_reasons.append("RETROICOR: physio TSV / SliceTiming missing — skipped")
     family_meta["retroicor"] = pnm_meta
 
-    # 5. Cosine basis
+    # 5. Cosine basis (optional; default ON — DCT high-pass is the cord standard,
+    # Kaptan/Dabbagh. Set cosine.enabled: false to omit, e.g. when the analyst's
+    # downstream GLM owns high-pass filtering.)
     cob = policy.get("cosine", {})
-    cccols = _cosine_basis(
-        n_volumes=n_volumes, tr_s=tr_s,
-        cutoff_hz=float(cob.get("cutoff_hz", 0.01)),
-    )
-    for k, v in cccols.items():
-        columns[k] = v
-        family_counts["cosine"] += 1
+    if cob.get("enabled", True):
+        cccols = _cosine_basis(
+            n_volumes=n_volumes, tr_s=tr_s,
+            cutoff_hz=float(cob.get("cutoff_hz", 0.01)),
+        )
+        for k, v in cccols.items():
+            columns[k] = v
+            family_counts["cosine"] += 1
+        family_meta["cosine"] = {"enabled": True, "n_columns": int(family_counts["cosine"])}
+    else:
+        family_meta["cosine"] = {"enabled": False}
 
     # 6. SpinalCompCor (opt-in)
     sp = policy.get("spinalcompcor", {})
