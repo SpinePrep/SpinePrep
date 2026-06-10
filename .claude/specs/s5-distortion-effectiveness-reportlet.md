@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 ---
 
 # Scope Spec: S5 third reportlet — visual distortion-correction effectiveness

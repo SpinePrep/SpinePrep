@@ -76,6 +76,21 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
   by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
+## ✅ S5 (distortion correction) — LOCKED 2026-06-10
+Standard SDC, always-on: selection ladder **TOPUP** (reverse-PE) → **FUGUE**
+(GRE, intentional stub) → **SyN** (data-driven default, no field map) — matches
+fMRIPrep/SDCFlows + CoSpine. Gating is geometry-based (cord Dice + A-P
+displacement; mode no longer gates; MI only a backup that fails on a
+catastrophic drop when geometry also didn't improve). 3 reportlets
+(slice_displacement, cord_dice_per_slice, distortion_effectiveness — verified
+clear/truthful). Dev-cohort: **10/10 PASS** (7 SyN, 3 TOPUP on the cospine
+reverse-PE runs); dice_after 0.71–0.86, disp_after 0.32–0.84 mm. **BUG-5 fixed**
+— rewrote the 5 stale unit tests to the current geometry gating + metric-driven
+reportlets (19/19 S5 unit tests pass). Specs final (s5-func-distortion-correction
+implemented; effectiveness-reportlet implemented). The **SDC-necessity ablation
+(FEAT-1/2) is explicitly OUT** — a separate on-top validation harness, not part
+of S5; S5 ships SDC always-on.
+
 ## ✅ S4 (moco) — LOCKED 2026-06-10
 Final recipe: **Stage-1 = FLIRT 2-DOF coarse bulk XY** (Z-projected, sign-fixed
 BUG-1c) → **Stage-2 = sct_fmri_moco slicewise**. FD = bulk + slicewise, 6-DOF-
