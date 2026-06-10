@@ -164,74 +164,107 @@ def test_write_acqparams_rejects_unsupported_pe(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_syn_mode_always_warn():
+# Gating is geometry-based (CoSpine Dice + A-P displacement). Mode no longer
+# decides status — the SyN-always-WARN rule was removed 2026-05-28. MI is only a
+# backup signal: a catastrophic MI drop fails ONLY when geometry also didn't
+# improve. These tests track that current contract.
+
+_GATE_THR = {
+    "pass_dice_min": 0.50, "warn_dice_min": 0.30,
+    "pass_displacement_max_mm": 1.0, "warn_displacement_max_mm": 2.0,
+    "fail_mi_max_drop_pct": 10.0,
+}
+
+
+def test_geometry_pass_regardless_of_mode():
+    """Good geometry PASSes for every mode (SyN included)."""
     from spinalfmriprep.steps.s5.process import _classify_run_status
-    metrics = {"mi_delta_pct": 5.0}
-    status, reasons = _classify_run_status(metrics, "syn", {})
+    metrics = {"dice_mean_after": 0.85, "dice_mean_before": 0.78,
+               "displacement_mean_after_mm": 0.5, "displacement_mean_before_mm": 1.6}
+    for mode in ("syn", "topup", "fugue"):
+        status, reasons = _classify_run_status(metrics, mode, _GATE_THR)
+        assert status == "PASS", f"{mode}: {reasons}"
+
+
+def test_warn_when_dice_below_pass_floor():
+    from spinalfmriprep.steps.s5.process import _classify_run_status
+    metrics = {"dice_mean_after": 0.45, "displacement_mean_after_mm": 0.5}
+    status, reasons = _classify_run_status(metrics, "syn", _GATE_THR)
     assert status == "WARN"
-    assert any("SyN" in r for r in reasons)
+    assert any("Dice" in r for r in reasons)
 
 
-def test_topup_mode_pass_when_mi_improves():
+def test_fail_when_dice_below_warn_floor():
     from spinalfmriprep.steps.s5.process import _classify_run_status
-    metrics = {"mi_delta_pct": 5.0}
-    status, _ = _classify_run_status(metrics, "topup", {})
-    assert status == "PASS"
-
-
-def test_fail_on_large_mi_drop():
-    from spinalfmriprep.steps.s5.process import _classify_run_status
-    metrics = {"mi_delta_pct": -20.0}
-    status, _ = _classify_run_status(metrics, "topup",
-                                     {"fail_mi_max_drop_pct": 10.0})
+    metrics = {"dice_mean_after": 0.20, "displacement_mean_after_mm": 0.5}
+    status, _ = _classify_run_status(metrics, "topup", _GATE_THR)
     assert status == "FAIL"
 
 
-def test_s5_reportlet_renders_png(tmp_path):
-    """Smoke: render_s5_before_after produces a real PNG."""
-    from spinalfmriprep.steps.s5.reportlets import render_s5_before_after
+def test_fail_when_displacement_above_warn_ceiling():
+    from spinalfmriprep.steps.s5.process import _classify_run_status
+    metrics = {"dice_mean_after": 0.80, "displacement_mean_after_mm": 2.5}
+    status, _ = _classify_run_status(metrics, "syn", _GATE_THR)
+    assert status == "FAIL"
 
-    shape = (16, 16, 4, 5)
-    rng = np.random.default_rng(0)
-    before = rng.normal(100, 5, shape).astype(np.float32)
-    after = rng.normal(100, 3, shape).astype(np.float32)
-    mask = np.zeros(shape[:3], dtype=np.float32)
-    mask[6:10, 6:10, 1:3] = 1
-    affine = np.eye(4)
 
-    p_before = tmp_path / "before.nii.gz"
-    p_after = tmp_path / "after.nii.gz"
-    p_mask = tmp_path / "mask.nii.gz"
-    nib.save(nib.Nifti1Image(before, affine), p_before)
-    nib.save(nib.Nifti1Image(after, affine), p_after)
-    nib.save(nib.Nifti1Image(mask, affine), p_mask)
+def test_catastrophic_mi_drop_fails_only_when_geometry_not_improved():
+    from spinalfmriprep.steps.s5.process import _classify_run_status
+    # No geometry metrics -> not improved -> MI drop fails outright
+    status, _ = _classify_run_status({"mi_delta_pct": -20.0}, "topup", _GATE_THR)
+    assert status == "FAIL"
 
-    out = tmp_path / "fig.png"
-    render_s5_before_after(p_before, p_after, p_mask, out, n_slices=4)
+
+def test_mi_drop_ignored_when_geometry_improved():
+    """Geometry is ground truth (cospine_pain topup: MI -12.9% but Dice +0.07)."""
+    from spinalfmriprep.steps.s5.process import _classify_run_status
+    metrics = {"mi_delta_pct": -15.0, "dice_delta": 0.07,
+               "displacement_delta_mm": -1.3, "dice_mean_after": 0.82,
+               "displacement_mean_after_mm": 0.6}
+    status, _ = _classify_run_status(metrics, "topup", _GATE_THR)
+    assert status == "PASS"
+
+
+# ---------------------------------------------------------------------------
+# Reportlets (metric-driven; missing keys -> placeholder, never raise)
+# ---------------------------------------------------------------------------
+
+
+def _disp_metrics():
+    return {"per_slice_z": [2, 3, 4, 5],
+            "displacement_before_mm": [1.6, 1.8, 1.5, 1.7],
+            "displacement_after_mm": [0.5, 0.6, 0.4, 0.5],
+            "displacement_mean_before_mm": 1.65, "displacement_mean_after_mm": 0.5,
+            "displacement_delta_mm": -1.15}
+
+
+def _dice_metrics():
+    return {"per_slice_z": [2, 3, 4, 5],
+            "dice_per_slice_before": [0.72, 0.70, 0.74, 0.71],
+            "dice_per_slice_after": [0.85, 0.86, 0.84, 0.85],
+            "dice_mean_before": 0.72, "dice_mean_after": 0.85,
+            "dice_3d_before": 0.70, "dice_3d_after": 0.84, "dice_delta": 0.13}
+
+
+def test_s5_slice_displacement_renders(tmp_path):
+    from spinalfmriprep.steps.s5.reportlets import render_s5_slice_displacement
+    out = tmp_path / "disp.png"
+    render_s5_slice_displacement(_disp_metrics(), out, "syn")
     assert out.exists() and out.stat().st_size > 1000
 
 
-def test_s5_mi_summary_render(tmp_path):
-    from spinalfmriprep.steps.s5.reportlets import render_s5_mi_summary
-    out = tmp_path / "mi.png"
-    render_s5_mi_summary({"mi_before": 0.2, "mi_after": 0.25,
-                          "mi_delta_pct": 25.0}, out, "topup")
-    assert out.exists() and out.stat().st_size > 500
-
-
-def test_s5_reportlet_handles_non_square_slices(tmp_path):
-    """Regression for the smoke-test shape bug: np.rot90 swaps axes, so
-    the grid must use post-rotation shape (h=Y_in, w=X_in)."""
-    from spinalfmriprep.steps.s5.reportlets import render_s5_before_after
-    # Non-square in-plane (30, 33) like the cospine_motor cropped BOLD
-    shape = (30, 33, 5, 4)
-    rng = np.random.default_rng(1)
-    before = rng.normal(100, 5, shape).astype(np.float32)
-    after = rng.normal(100, 3, shape).astype(np.float32)
-    affine = np.eye(4)
-    p_b = tmp_path / "b.nii.gz"; p_a = tmp_path / "a.nii.gz"
-    nib.save(nib.Nifti1Image(before, affine), p_b)
-    nib.save(nib.Nifti1Image(after, affine), p_a)
-    out = tmp_path / "fig.png"
-    render_s5_before_after(p_b, p_a, None, out, n_slices=4)
+def test_s5_cord_dice_per_slice_renders(tmp_path):
+    from spinalfmriprep.steps.s5.reportlets import render_s5_cord_dice_per_slice
+    out = tmp_path / "dice.png"
+    render_s5_cord_dice_per_slice(_dice_metrics(), out, "topup")
     assert out.exists() and out.stat().st_size > 1000
+
+
+def test_s5_reportlets_handle_missing_keys(tmp_path):
+    """Both metric-driven reportlets degrade to a placeholder, never raise."""
+    from spinalfmriprep.steps.s5.reportlets import (
+        render_s5_slice_displacement, render_s5_cord_dice_per_slice)
+    d = tmp_path / "d.png"; c = tmp_path / "c.png"
+    render_s5_slice_displacement({}, d, "syn")
+    render_s5_cord_dice_per_slice({}, c, "syn")
+    assert d.exists() and c.exists()
