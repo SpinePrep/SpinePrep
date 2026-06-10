@@ -31,14 +31,18 @@ motion:
   refrms_outlier_iqr_k: 1.5        # same — dual criterion (OR)
 
 # ----------------------------------------------------------------------
-# 2. CSF slicewise (always present when S7 PAM50csf_mask exists)
-# For each slice z: voxels in S7 PAM50csf_mask ranked by temporal variance;
-# mean of top 20% = 1 column per slice. Hemmerling 2025 Base model convention.
-# erode_voxels: 0 (NO erosion). The cord CSF mask is thin (often 1-2 voxels
-# wide); 1-vox erosion kills most slices. The "top-20% variance" voxel
-# selection already filters to pulsatile CSF — no need to erode away the
-# cord-CSF boundary. Hemmerling 2025 doesn't erode. Min voxel count
-# per slice: 5; otherwise slice's CSF column is omitted with a flag.
+# 2. CSF aCompCor, slicewise (always present when the CSF mask exists)
+# Per slice z: the top-N principal components (eigenvariates) of the CSF ROI =
+# `n_components` columns per slice (csf_slice{z}_pc{k}). aCompCor (Behzadi 2007)
+# applied per slice, matching CoSpi spi12_acompcor.m (5 PCs/slice).
+# TOOLS (decided with Gergely + Jan Valošek in Slack, replacing Matlab SPM
+# PhysIO which is hard to embed): FSL `fslmeants --eig --order N` computes the
+# eigenvariates; the BOLD is per-voxel constant+linear detrended (numpy lstsq)
+# first to match PhysIO's pre-PCA step. Validated in
+# research/physio_vs_fslmeants_acompcor. erode_voxels: 0 (cord-CSF too thin).
+# Min voxel count per slice: 5; otherwise that slice is skipped with a flag.
+# NOTE: this multiplies CSF columns ~5x (5 PCs × N_slices) — designed for a
+# SLICEWISE GLM (CoSpi/FEAT), where each slice's model uses only its 5 CSF PCs.
 csf_slicewise:
   enabled: true
   # mask_source: "S2_canal_minus_cord" (default, subject-specific) builds
@@ -47,8 +51,9 @@ csf_slicewise:
   # "S7_pam50csf" (PAM50 template CSF warped to native) when S2 outputs
   # or S6 warp are unavailable.
   mask_source: "S2_canal_minus_cord"
+  method: "acompcor_fslmeants_eig"  # FSL fslmeants --eig (PCs), not SPM PhysIO
+  n_components: 5                  # 5 PCs/slice (CoSpi spi12_acompcor.m)
   erode_voxels: 0                  # no erosion (cord-CSF too thin)
-  top_variance_fraction: 0.20      # Hemmerling 2025
   min_voxels_per_slice: 5          # numerical-stability floor
 
 # ----------------------------------------------------------------------
