@@ -575,24 +575,15 @@ def run_S9_primary_functional_derivatives(
 
     # --- 9. Reportlets ------------------------------------------------
     from .reportlets import (
-        render_s9_smoothed_vs_unsmoothed_axial,
         render_s9_tsnr_map_axial,
         render_s9_tsnr_per_level,
         render_s9_smoothness_summary,
     )
-    rep_smvsu = figures_dir / f"{prefix}_desc-S9_smoothed_vs_unsmoothed_axial.png"
     rep_tsnrmap = figures_dir / f"{prefix}_desc-S9_tsnr_map_axial.png"
     rep_perlevel = figures_dir / f"{prefix}_desc-S9_tsnr_per_level.png"
     rep_smsum = figures_dir / f"{prefix}_desc-S9_smoothness_summary.png"
     qct = policy.get("qc_thresholds", {})
     fwhm_cfg_p = policy.get("fwhm_estimate", {})
-    try:
-        render_s9_smoothed_vs_unsmoothed_axial(
-            bold_path, smoothed_native, cord_mask_path, rep_smvsu,
-            status=status, tsnr_ratio=metrics.get("tsnr_ratio_median"),
-        )
-    except Exception as e:
-        failure_reasons.append(f"smoothed_vs_unsmoothed reportlet failed: {e}")
     try:
         render_s9_tsnr_map_axial(
             tsnr_native_post, cord_mask_path, rep_tsnrmap,
@@ -644,8 +635,6 @@ def run_S9_primary_functional_derivatives(
         "failure_reasons": failure_reasons,
         "failure_message": "; ".join(failure_reasons) if failure_reasons else None,
         "reportlets": {
-            "smoothed_vs_unsmoothed_axial": str(rep_smvsu.relative_to(out_dir))
-                if rep_smvsu.exists() else "",
             "tsnr_map_axial":               str(rep_tsnrmap.relative_to(out_dir))
                 if rep_tsnrmap.exists() else "",
             "tsnr_per_level":               str(rep_perlevel.relative_to(out_dir))

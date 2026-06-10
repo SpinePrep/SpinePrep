@@ -37,7 +37,10 @@ ALL_CHAIN_STEPS = [
     ("S7", "S7_template_normalization"),
     ("S8", "S8_confounds_and_physio_regressors"),
     ("S9", "S9_primary_functional_derivatives"),
-    ("S10", "S10_roi_timeseries_and_connectivity"),
+    # S10_roi_timeseries_and_connectivity removed from the active pipeline
+    # 2026-06-11 — connectivity/ICC is downstream analysis (analyst-owned),
+    # not preprocessing. Chain now runs S9 -> S11 directly. The S10 step code
+    # is retained (deferred, not deleted); see the S10 spec.
     ("S11", "S11_qc_aggregation_and_release"),
 ]
 
@@ -94,7 +97,7 @@ def link_chain(wf: Path, predecessors: list[str], current_code: str) -> None:
         if deriv.exists() and not (wf / "derivatives").exists():
             (wf / "derivatives").symlink_to(deriv)
     # runs/ is S3-specific. Only link for downstream consumers (S4+).
-    if current_code in ("S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11"):
+    if current_code in ("S4", "S5", "S6", "S7", "S8", "S9", "S11"):
         s3 = (PROJECT_ROOT / "work" / "done" / "reg" / "S3").resolve()
         s3_runs = s3 / "runs"
         if s3_runs.exists() and not (wf / "runs").exists():
