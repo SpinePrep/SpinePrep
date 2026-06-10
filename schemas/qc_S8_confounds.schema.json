@@ -43,7 +43,18 @@
               "n_volumes": { "type": ["integer", "null"] },
               "n_columns_total": { "type": ["integer", "null"] },
               "n_columns_motion": { "type": ["integer", "null"] },
-              "n_columns_csf": { "type": ["integer", "null"] },
+              "n_columns_csf": {
+                "type": ["integer", "null"],
+                "description": "Flat-TSV CSF aCompCor column total = components × N_slices (storage size). The per-slice model size is n_csf_components_per_slice."
+              },
+              "n_csf_components_per_slice": {
+                "type": ["integer", "null"],
+                "description": "CSF aCompCor PCs a single slice's GLM fits (e.g. 5). This is the meaningful model dimensionality, not the stacked n_columns_csf."
+              },
+              "n_csf_slices": {
+                "type": ["integer", "null"],
+                "description": "Number of slices that received CSF aCompCor components."
+              },
               "n_columns_retroicor": { "type": ["integer", "null"] },
               "n_columns_cosine": { "type": ["integer", "null"] },
               "n_columns_spinalcompcor": { "type": ["integer", "null"] },
