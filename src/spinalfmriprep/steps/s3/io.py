@@ -84,39 +84,62 @@ def _extract_subject_session_from_work_dir(work_dir: Path) -> tuple[Optional[str
 # ---------------------------------------------------------------------------
 
 
+def _s2_work_search_dirs(
+    out_root: Path, run_id: str, dataset_key: Optional[str],
+) -> list[Path]:
+    """Candidate S2 work dirs holding `S2_anat_cordref/.../<run_id>/` outputs.
+
+    S2 writes per-(dataset_key, run_id) — and multiple datasets can share the
+    same run_id (e.g. sub-02 in balgrist AND cospine), so the flat run_id path
+    is ambiguous and may miss. We search, in order:
+      1. the linked S2 root, dataset-keyed     (current S2 layout)
+      2. the linked S2 root, flat              (legacy / single-dataset)
+      3. the PROMOTED S2 (work/done/<scope>/S2), dataset-keyed
+      4. the promoted S2, flat
+    (3)/(4) are the robust fallback when the chain's linked work tree diverges
+    from the promoted S2 tree (independent re-promotions).
+    """
+    dirs: list[Path] = []
+    base = out_root / "work" / "S2_anat_cordref"
+    if dataset_key:
+        dirs.append(base / dataset_key / run_id)
+    dirs.append(base / run_id)
+    # Promoted S2 fallback: derive scope from the wf folder name (wf_<scope>_NNN).
+    name = out_root.name
+    if name.startswith("wf_") and "_" in name[3:]:
+        scope = name[3:].rsplit("_", 1)[0]
+        promoted = out_root.parent / "done" / scope / "S2" / "work" / "S2_anat_cordref"
+        if dataset_key:
+            dirs.append(promoted / dataset_key / run_id)
+        dirs.append(promoted / run_id)
+    return dirs
+
+
 def _find_s2_cordref_std(
     out_root: Path,
     subject: str,
     session: Optional[str],
+    dataset_key: Optional[str] = None,
 ) -> Optional[Path]:
-    """
-    Locate S2.1 cordref_std.nii.gz file.
-
-    Looks in: work/S2_anat_cordref/{run_id}/cordref_std.nii.gz
+    """Locate S2.1 cordref_std.nii.gz, dataset-aware (see _s2_work_search_dirs).
 
     Args:
-        out_root: Base output directory
-        subject: Subject ID (without 'sub-' prefix)
-        session: Session ID (without 'ses-' prefix) or None
+        out_root: Base output directory (the chain's S2 lookup root).
+        subject: Subject ID (without 'sub-' prefix).
+        session: Session ID (without 'ses-' prefix) or None.
+        dataset_key: SpinalfMRIprep dataset key (disambiguates shared run_ids).
 
     Returns:
-        Path to cordref_std.nii.gz or None if not found
+        Path to cordref_std.nii.gz or None if not found.
     """
-    # Format run_id matching S2: sub-{subject}_ses-{session} or sub-{subject}_ses-none
-    if session:
-        run_id = f"sub-{subject}_ses-{session}"
-    else:
-        run_id = f"sub-{subject}_ses-none"
-
-    cordref_std_path = out_root / "work" / "S2_anat_cordref" / run_id / "cordref_std.nii.gz"
-
-    # Check if file exists and is non-empty
-    if cordref_std_path.exists():
+    run_id = f"sub-{subject}_ses-{session}" if session else f"sub-{subject}_ses-none"
+    for d in _s2_work_search_dirs(out_root, run_id, dataset_key):
+        p = d / "cordref_std.nii.gz"
         try:
-            if cordref_std_path.stat().st_size > 0:
-                return cordref_std_path
+            if p.exists() and p.stat().st_size > 0:
+                return p
         except OSError:
-            return None
+            continue
     return None
 
 

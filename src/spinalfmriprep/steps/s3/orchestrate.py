@@ -108,7 +108,7 @@ def run_S3_func_init_and_crop(
     if batch_workers > 1:
         with ProcessPoolExecutor(max_workers=batch_workers) as executor:
             futures = {
-                executor.submit(_process_session_s3, sub, ses, cands, bids_root, out_path, policy, s2_out_root): (sub, ses)
+                executor.submit(_process_session_s3, sub, ses, cands, bids_root, out_path, policy, s2_out_root, dataset_key): (sub, ses)
                 for sub, ses, cands in session_items
             }
 
@@ -130,7 +130,7 @@ def run_S3_func_init_and_crop(
     else:
         # Sequential
         for sub, ses, cands in session_items:
-            runs = _process_session_s3(sub, ses, cands, bids_root, out_path, policy, s2_out_root)
+            runs = _process_session_s3(sub, ses, cands, bids_root, out_path, policy, s2_out_root, dataset_key)
             all_runs.extend(runs)
 
     # Write artifacts: per-dataset qc.json + runs.jsonl is the source of truth
@@ -267,6 +267,7 @@ def run_S3_func_init_and_crop_batch(
             out_root=Path(sess["out_root"]),
             policy=policy,
             s2_root=Path(sess["s2_root"]),
+            dataset_key=ds_key,
         )
 
         # Tag runs with dataset_key
