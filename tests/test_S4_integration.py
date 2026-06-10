@@ -80,9 +80,27 @@ def test_S4_integration_flow(s4_test_env):
     with patch("subprocess.run") as mock_run:
         # Configure mock to create expected output file
         def side_effect(*args, **kwargs):
+            cmd = args[0] if args else kwargs.get("args", [])
+            bold_img0 = nib.load(s4_test_env["bold_path"])
+            n_vol0 = bold_img0.shape[3]
+
+            # Stage 1: MCFLIRT — produce <out_base>.nii.gz + 6-col .par
+            if cmd and str(cmd[0]) == "mcflirt":
+                out_base = cmd[cmd.index("-o") + 1] if "-o" in cmd else None
+                if out_base:
+                    nib.save(bold_img0, Path(out_base + ".nii.gz"))
+                    # FSL .par: rx ry rz (rad), tx ty tz (mm) — nonzero/time-varying
+                    t = np.arange(n_vol0, dtype=float)
+                    par = np.column_stack([
+                        np.sin(t / 9) * 0.01, np.cos(t / 11) * 0.01, np.sin(t / 7) * 0.01,
+                        np.sin(t / 3) * 0.5, np.cos(t / 4) * 0.4, np.sin(t / 5) * 0.2,
+                    ])
+                    np.savetxt(Path(out_base + ".par"), par)
+                return MagicMock(returncode=0)
+
             cwd = kwargs.get("cwd")
             if cwd:
-                bold_img = nib.load(s4_test_env["bold_path"])
+                bold_img = bold_img0
                 n_sl, n_vol = bold_img.shape[2], bold_img.shape[3]
                 # Create sct_fmri_moco corrected bold
                 nib.save(bold_img, cwd / "sct_input_moco.nii.gz")

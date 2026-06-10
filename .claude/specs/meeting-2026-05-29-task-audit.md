@@ -76,6 +76,19 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
   by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
+## S4 Stage-1 → MCFLIRT (CoSpi recipe) — 2026-06-10
+Verified CoSpi (`/mnt/hdd2/P1_CoSpi/pilot_motor/code/spi06_2_motioncorrection.sh`)
+uses MCFLIRT 3D 6-DOF rigid for the bulk stage, then sct_fmri_moco slicewise,
+keeping all 6 MCFLIRT params as nuisance regressors. Our old Stage-1 was a custom
+2-DOF FLIRT-on-Z-mean (in-plane X/Y only) — a non-literature deviation (and the
+BUG-1c sign-bug source). **Replaced Stage 1 with MCFLIRT** (`moco.mcflirt_bulk_
+correction`, `mcflirt -reffile <robust ref> -cost leastsquares -spline_final`),
+matching CoSpi + Mohammed 2020. Now emits 6 params (tx/ty/tz + rx/ry/rz_coarse)
+→ full 6-DOF Power FD. Smoke-tested on real reg BOLD: rotations tiny (~0.2-0.6°,
+no over-rotation), 6-DOF FD max 3.4/mean 1.3 mm. 9/9 S4 tests pass. Open: S8
+still uses only tx/ty as motion regressors (BUG-1b) — could now add the 4 extra
+MCFLIRT params (rz/tz/rx/ry) to match CoSpi's nuisance set (separate decision).
+
 ## W2 (S4 reportlets) — DONE 2026-06-10
 S4 figure set redesigned to minimal-complete-correct (grounded + adversarially
 vetted vs fMRIPrep/MRIQC/SCT/Mohammed2020/Kaptan2023). Now **3 figures**:

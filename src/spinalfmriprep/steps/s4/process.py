@@ -193,37 +193,25 @@ def run_S4_func_motion_correction(
                 robust_ref_path = z_corrected_ref_path  # Point subsequent stages to corrected ref
 
     # -------------------------------------------------------------------------
-    # S4.2: Stage 1 - Coarse Bulk XY Correction
+    # S4.2: Stage 1 - Bulk MCFLIRT (3D 6-DOF rigid) — CoSpi recipe
     # -------------------------------------------------------------------------
     # Outputs of Stage 1
     stage1_bold_path = s4_work_dir / "bold_coarse.nii.gz"
     stage1_params_path = s4_work_dir / "moco_params_coarse.tsv"
 
     if "3d" in mode:
-        logger.info(f"[{step_code}] Running Stage 1: Coarse Bulk XY")
+        logger.info(f"[{step_code}] Running Stage 1: MCFLIRT bulk (3D 6-DOF rigid)")
 
-        # Load data (use current_bold_path which might be Z-corrected)
-        bold_img = nib.load(current_bold_path)
-        ref_img = nib.load(robust_ref_path)
-
-        bold_data = bold_img.get_fdata()
-        ref_data = ref_img.get_fdata()
-
-        # Run correction
-        corrected_data, params_df = moco.coarse_bulk_xy_correction(
-            bold_data,
-            ref_data,
+        # Full-volume rigid realignment to the robust reference (same target
+        # Stage 2 uses), capturing 3 translations + 3 rotations. Matches CoSpi
+        # spi06_2_motioncorrection.sh. Replaces the old 2-DOF FLIRT-on-Z-mean.
+        _, params_df = moco.mcflirt_bulk_correction(
+            bold_path=current_bold_path,
+            ref_path=robust_ref_path,
+            out_path=stage1_bold_path,
             work_dir=s4_work_dir,
-            upsample_factor=policy["motion_correction"]["stage1_coarse"].get("upsample_factor", 10),
-            interpolation_order=policy["motion_correction"]["stage1_coarse"].get("interpolation_order", 1)
         )
-
-        # Save Stage 1 output
-        stage1_img = nib.Nifti1Image(corrected_data, bold_img.affine, bold_img.header)
-        nib.save(stage1_img, stage1_bold_path)
-
         params_df.to_csv(stage1_params_path, sep="\t", index=False)
-
         current_bold_path = stage1_bold_path
     else:
         # Skip Stage 1
@@ -322,12 +310,18 @@ def run_S4_func_motion_correction(
     nib.save(nib.Nifti1Image(tsnr_map_before, img_before.affine), tsnr_before_path)
     nib.save(nib.Nifti1Image(tsnr_map_after, img_after.affine), tsnr_after_path)
 
-    # FD and Motion Params
+    # FD and Motion Params. Stage 1 (MCFLIRT) gives 6 rigid params per volume
+    # (3 translations + 3 rotations); FD is the full Power 2012 6-DOF FD.
     params_total = pd.DataFrame()
     if stage1_params_path.exists():
         p1 = pd.read_csv(stage1_params_path, sep="\t")
-        params_total['tx'] = p1.get('tx_coarse', 0.0)
-        params_total['ty'] = p1.get('ty_coarse', 0.0)
+        n = len(p1)
+        params_total['tx'] = p1.get('tx_coarse', pd.Series(np.zeros(n)))
+        params_total['ty'] = p1.get('ty_coarse', pd.Series(np.zeros(n)))
+        params_total['tz'] = p1.get('tz_coarse', pd.Series(np.zeros(n)))
+        params_total['rx'] = p1.get('rx_coarse', pd.Series(np.zeros(n)))
+        params_total['ry'] = p1.get('ry_coarse', pd.Series(np.zeros(n)))
+        params_total['rz'] = p1.get('rz_coarse', pd.Series(np.zeros(n)))
     else:
         params_total['tx'] = np.zeros(img_after.shape[3])
         params_total['ty'] = np.zeros(img_after.shape[3])
