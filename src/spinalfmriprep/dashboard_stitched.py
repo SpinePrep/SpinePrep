@@ -31,6 +31,13 @@ logger = logging.getLogger(__name__)
 VISIBLE_SCOPES: tuple[str, ...] = ("reg", "full")
 MAX_STEP = 11
 
+# Steps removed from the active pipeline. They are skipped entirely in the
+# stitched view (even via the latest-wf fallback) so retired-step outputs in
+# old wf folders don't resurface. S10 (roi_timeseries_and_connectivity) was
+# removed 2026-06-11 — analyst-owned analysis, not preprocessing. Re-add the
+# step here (delete from the set) if it returns to the pipeline.
+REMOVED_STEPS: frozenset[int] = frozenset({10})
+
 
 def _step_logs_subdir(wf: Path, step_num: int) -> Optional[Path]:
     """Return ``wf/logs/S{n}_<name>`` if it exists and has qc.json, else None.
@@ -202,6 +209,8 @@ def build_view(scope: str, work_root: Path) -> tuple[Path, set[str], dict[str, s
     sources: dict[str, str] = {}
 
     for n in range(1, MAX_STEP + 1):
+        if n in REMOVED_STEPS:
+            continue
         approved = _approved_wf(done_root, n)
         source_wf = approved
         is_locked = approved is not None
