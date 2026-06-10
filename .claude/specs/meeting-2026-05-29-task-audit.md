@@ -76,6 +76,19 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
   by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
+## ✅ S4 (moco) — LOCKED 2026-06-10
+Final recipe: **Stage-1 = FLIRT 2-DOF coarse bulk XY** (Z-projected, sign-fixed
+BUG-1c) → **Stage-2 = sct_fmri_moco slicewise**. FD = bulk + slicewise, 6-DOF-
+capable but in-plane on this data (BUG-1/1b). Reportlets = 3 (trace panel w/
+Tukey DVARS, slicewise heatmap, tSNR+per-slice). Bugs fixed: BUG-1, BUG-1b,
+BUG-1c, (BUG-2/1d are S8). MCFLIRT 3D 6-DOF evaluated and **rejected** by
+dev-cohort A/B (cord tSNR 15.26 ≈ no-correction vs FLIRT-2DOF 18.30). Dev-cohort
+acceptance 10/11 not-FAIL (91%); locked per principle #6. Policy +
+s4-func-motion-correction.md (implemented) + s4-stage1-flirt-2d-replacement.md
+(implemented) are final. Promoted: done/reg/S4 → wf_reg_114 (FLIRT-2DOF cohort).
+Open non-blocking follow-up: make Stage-1 conditional on motion (it helps
+high-motion runs, ~no-op on low-motion motorL/R).
+
 ## S4 Stage-1 A/B — REVERTED to FLIRT-2DOF (2026-06-10)
 Implemented CoSpi's MCFLIRT 3D 6-DOF (below) and ran it on reg — then a dev-cohort
 A/B (`work/review/stage1_ab/`) settled it on the step-local truth metric (cord
