@@ -46,8 +46,9 @@ def test_generate_dashboard_writes_index_and_reportlet_pages(tmp_path: Path) -> 
     html = reportlet_page.read_text(encoding="utf-8")
     # The gallery should link to the figure via a relative path.
     assert "sub-01_desc-S2_cordmask_montage.png" in html
-    # The workfolder should be displayed
-    assert "Workfolder: wf_test" in html
+    # The workfolder name is shown as the topbar chip on the index page.
+    index_html = (out / "dashboard" / "index.html").read_text(encoding="utf-8")
+    assert "wf_test" in index_html
 
 
 def test_generate_dashboard_without_workfolder(tmp_path: Path) -> None:
