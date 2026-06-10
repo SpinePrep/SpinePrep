@@ -203,6 +203,84 @@ def _csf_slicewise(
     return cols, meta
 
 
+def _csf_acompcor_slicewise(
+    bold_path: Path, csf_mask_path: Path, work_dir: Path,
+    n_components: int = 5,
+    erode_voxels: int = 0,
+    min_voxels_per_slice: int = 5,
+) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
+    """Per-slice CSF aCompCor: the top-``n_components`` principal components
+    (eigenvariates) of the CSF ROI in each Z slice.
+
+    Tools agreed with Gergely + Jan Valošek in Slack (replacing the Matlab SPM
+    PhysIO toolbox, which is hard to embed): **FSL `fslmeants --eig --order N`**
+    computes the eigenvariates (= PCs), and the BOLD is first per-voxel
+    constant+linear detrended in numpy to match PhysIO's pre-PCA step. Validated
+    against PhysIO in ``research/physio_vs_fslmeants_acompcor`` (matches CoSpi
+    ``spi12_acompcor.m``, which uses 5 PCs/slice). Emits up to ``n_components``
+    columns per slice: ``csf_slice{z}_pc{k}``.
+    """
+    import subprocess
+    bimg = nib.load(bold_path)
+    bold = bimg.get_fdata()
+    if bold.ndim != 4:
+        raise ValueError(f"BOLD not 4D: {bold.shape}")
+    nx, ny, nz, nt = bold.shape
+    csf = (nib.load(csf_mask_path).get_fdata() > 0.5)
+    if csf.shape[:3] != bold.shape[:3]:
+        raise ValueError(f"CSF mask shape {csf.shape} != BOLD {bold.shape[:3]}")
+    csf_eroded = _erode_mask_voxels(csf, erode_voxels)
+
+    # Per-voxel constant + linear detrend (matches PhysIO; detrend_lstsq.py).
+    t = np.arange(nt)
+    dm = np.column_stack([np.ones(nt), t - t.mean()])
+    flat = bold.reshape(-1, nt).astype(np.float64)
+    beta = np.linalg.lstsq(dm, flat.T, rcond=None)[0]
+    resid = (flat - (dm @ beta).T).reshape(nx, ny, nz, nt).astype(np.float32)
+    acdir = work_dir / "csf_acompcor"
+    acdir.mkdir(parents=True, exist_ok=True)
+    det_path = acdir / "bold_detrended.nii.gz"
+    nib.save(nib.Nifti1Image(resid, bimg.affine, bimg.header), det_path)
+
+    cols: dict[str, np.ndarray] = {}
+    meta: dict[str, Any] = {
+        "method": "fslmeants_eig_acompcor", "n_components_requested": n_components,
+        "n_slices_total": nz, "n_slices_with_csf": 0,
+        "pcs_per_slice": [], "slice_voxel_counts": [], "skipped_slices": [],
+    }
+    for z in range(nz):
+        m = csf_eroded[:, :, z]
+        nv = int(m.sum())
+        meta["slice_voxel_counts"].append(nv)
+        if nv < min_voxels_per_slice:
+            meta["skipped_slices"].append(z)
+            continue
+        # max retrievable PCs is bounded by voxels-1 and timepoints-1
+        k = min(n_components, nv - 1, nt - 1)
+        if k < 1:
+            meta["skipped_slices"].append(z)
+            continue
+        sm = np.zeros((nx, ny, nz), dtype=np.uint8)
+        sm[:, :, z] = m.astype(np.uint8)
+        sm_path = acdir / f"csf_slice{z:02d}_mask.nii.gz"
+        nib.save(nib.Nifti1Image(sm, bimg.affine, bimg.header), sm_path)
+        out_txt = acdir / f"csf_slice{z:02d}_eig.txt"
+        cmd = ["fslmeants", "-i", str(det_path), "--eig", f"--order={k}",
+               "-m", str(sm_path), "-o", str(out_txt)]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0 or not out_txt.exists():
+            meta["skipped_slices"].append(z)
+            continue
+        arr = np.loadtxt(str(out_txt))
+        if arr.ndim == 1:
+            arr = arr[:, None]
+        for j in range(arr.shape[1]):
+            cols[f"csf_slice{z:02d}_pc{j + 1:02d}"] = arr[:, j].astype(np.float32)
+        meta["pcs_per_slice"].append(int(arr.shape[1]))
+        meta["n_slices_with_csf"] += 1
+    return cols, meta
+
+
 # ---------------------------------------------------------------------------
 # 4. RETROICOR via FSL PNM
 # ---------------------------------------------------------------------------
@@ -1115,9 +1193,9 @@ def run_S8_confounds_and_physio_regressors(
     csf_meta["mask_source_used"] = csf_used_source
     if (cp.get("enabled", True) and csf_used is not None):
         try:
-            ccols, csf_meta_inner = _csf_slicewise(
-                bold_path, csf_used,
-                top_variance_fraction=float(cp.get("top_variance_fraction", 0.20)),
+            ccols, csf_meta_inner = _csf_acompcor_slicewise(
+                bold_path, csf_used, s8_work_dir,
+                n_components=int(cp.get("n_components", 5)),
                 erode_voxels=int(cp.get("erode_voxels", 0)),
                 min_voxels_per_slice=int(cp.get("min_voxels_per_slice", 5)),
             )
@@ -1321,7 +1399,7 @@ def run_S8_confounds_and_physio_regressors(
                 float(policy.get("motion", {}).get("dvars_outlier_iqr_k", 1.5)),
                 float(policy.get("motion", {}).get("refrms_outlier_iqr_k", 1.5)),
             ),
-            "csf": "slicewise top-%.0f%%-variance mean of eroded PAM50csf voxels (1 column per slice)" % (100 * float(policy.get("csf_slicewise", {}).get("top_variance_fraction", 0.20))),
+            "csf": "slicewise CSF aCompCor: top-%d PCs/slice via FSL fslmeants --eig on per-voxel-detrended BOLD (csf_slice{z}_pc{k}); Behzadi 2007 / CoSpi spi12" % int(policy.get("csf_slicewise", {}).get("n_components", 5)),
             "retroicor": "FSL PNM slicewise cardiac/respiratory/interactions × N_slices (cord-mean of voxelwise EVs)",
             "cosine": "DCT type-II basis up to %s Hz (~%.0f s high-pass)" % (
                 str(policy.get("cosine", {}).get("cutoff_hz", 0.01)),
