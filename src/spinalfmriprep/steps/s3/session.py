@@ -33,12 +33,15 @@ def _process_session_s3(
     out_root: Path,
     policy: dict[str, Any],
     s2_root: Optional[Path] = None,
+    dataset_key: Optional[str] = None,
 ) -> list[dict]:
     session_runs = []
 
-    # Locate S2 outputs - use s2_root if provided (chain model), else use out_root
+    # Locate S2 outputs - use s2_root if provided (chain model), else use out_root.
+    # dataset_key disambiguates run_ids shared across datasets (e.g. sub-02 in
+    # both balgrist and cospine) and enables the promoted-S2 fallback.
     s2_lookup_root = s2_root if s2_root else out_root
-    cordref_std_path = _find_s2_cordref_std(s2_lookup_root, subject, session)
+    cordref_std_path = _find_s2_cordref_std(s2_lookup_root, subject, session, dataset_key)
     cordmask_dseg_path = _find_s2_cordmask_dseg(s2_lookup_root, subject, session)
 
     if not cordref_std_path:
