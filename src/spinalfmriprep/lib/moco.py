@@ -152,68 +152,6 @@ def coarse_bulk_xy_correction(
     return corrected_4d, pd.DataFrame(motion_records)
 
 
-def mcflirt_bulk_correction(bold_path, ref_path, out_path, work_dir=None):
-    """Stage-1 bulk motion correction via FSL MCFLIRT — 3D 6-DOF rigid-body
-    realignment of each volume to ``ref_path``.
-
-    Matches the CoSpi cord-fMRI recipe (spi06_2_motioncorrection.sh):
-    `mcflirt -cost leastsquares -spline_final`, registering to a fixed
-    reference. Unlike the old 2-DOF FLIRT-on-Z-mean, this captures all six
-    rigid parameters (3 translations + 3 rotations), which also become the
-    standard motion nuisance regressors.
-
-    Returns ``(corrected_path, params_df)`` where params_df has columns
-    ``volume, tx_coarse, ty_coarse, tz_coarse, rx_coarse, ry_coarse,
-    rz_coarse``. FSL MCFLIRT writes its .par as rotations (rad) x/y/z then
-    translations (mm) x/y/z.
-    """
-    import subprocess
-    import logging
-    logger = logging.getLogger(__name__)
-
-    out_base = str(out_path)
-    for ext in (".nii.gz", ".nii"):
-        if out_base.endswith(ext):
-            out_base = out_base[: -len(ext)]
-            break
-
-    cmd = [
-        "mcflirt",
-        "-in", str(bold_path),
-        "-reffile", str(ref_path),
-        "-cost", "leastsquares",
-        "-spline_final",
-        "-plots",
-        "-o", out_base,
-    ]
-    logger.info(f"Executing: {' '.join(cmd)}")
-    res = subprocess.run(cmd, capture_output=True, text=True)
-    if res.returncode != 0:
-        raise RuntimeError(f"mcflirt failed: {res.stderr or res.stdout}")
-
-    # Locate the .par (mcflirt writes <out_base>.par, sometimes <out_base>.nii.gz.par)
-    par_path = Path(out_base + ".par")
-    if not par_path.exists():
-        alt = Path(out_base + ".nii.gz.par")
-        par_path = alt if alt.exists() else par_path
-    par = np.loadtxt(str(par_path))
-    if par.ndim == 1:
-        par = par.reshape(1, -1)
-
-    df = pd.DataFrame({
-        "volume": np.arange(par.shape[0]),
-        "rx_coarse": par[:, 0], "ry_coarse": par[:, 1], "rz_coarse": par[:, 2],
-        "tx_coarse": par[:, 3], "ty_coarse": par[:, 4], "tz_coarse": par[:, 5],
-    })
-
-    # Ensure the corrected 4D ends up at out_path (mcflirt writes out_base.nii.gz)
-    written = Path(out_base + ".nii.gz")
-    if str(written) != str(out_path) and written.exists():
-        shutil.move(str(written), str(out_path))
-
-    return Path(out_path), df
-
-
 def compute_framewise_displacement(
     params_df: pd.DataFrame, 
     radius_mm: float = 50.0 # Standard, essentially ignored for pure Translation

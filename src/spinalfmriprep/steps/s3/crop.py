@@ -64,7 +64,6 @@ def _process_s3_3_crop_and_qc(
     # Policy params
     crop_dia = policy.get("crop", {}).get("mask_diameter_mm", 40)
     dilate_xyz = policy.get("crop", {}).get("dilate_xyz", [2, 2, 0])
-    dummy_count = policy.get("dummy_volumes", {}).get("count", 4)
 
     # 1. Create Cylindrical Crop Mask
     cmd_mask = [
@@ -90,16 +89,10 @@ def _process_s3_3_crop_and_qc(
     if not ok:
         return {"qc_status": "FAIL", "failure_message": f"Failed to crop BOLD: {out}"}
 
-    # Drop dummies and save final
+    # Dummies were ALREADY dropped in S3.1 (input is the cropped post-drop
+    # series). Do NOT drop again — just finalize the cropped 4D BOLD.
     try:
-        img_crop = nib.load(bold_crop_temp)
-        data_crop = img_crop.get_fdata()
-        if data_crop.ndim == 4 and data_crop.shape[3] > dummy_count:
-            data_final = data_crop[..., dummy_count:]
-            nib.save(nib.Nifti1Image(data_final, img_crop.affine), bold_crop_path)
-        else:
-            # Just move
-            bold_crop_temp.rename(bold_crop_path)
+        bold_crop_temp.rename(bold_crop_path)
 
         # Cleanup temp
         if bold_crop_temp.exists():
