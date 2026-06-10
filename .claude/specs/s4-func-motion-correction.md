@@ -48,7 +48,7 @@ Deferred per principle §6 (lock and ship); not bug-fixable urgency.
 | `sct_fmri_moco` slice-wise (not volume-wise) | SCT convention for cord fMRI; cord motion is dominated by physiological pulsation, which is z-localised — slice-wise rigid is the field standard (De Leener 2017, Eippert 2017) |
 | Cord-mask-restricted registration ROI | Restricts cost function to cord pixels; avoids the cost being dominated by non-cord motion artefacts (Cohen-Adad 2014) |
 | Framewise displacement (FD) as motion gauge | Power 2014; the standard cord-fMRI gauge |
-| FD `0.5 mm` for high-motion classification (this step) | Coarse usability gate, looser than the 0.2 mm scrubbing threshold S8 uses for per-frame outlier flagging. Two thresholds are intentional: 0.5 mm asks "is the run usable at all", 0.2 mm asks "which frames to regress" (S8 uses Mohammed 2020 / Kaptan 2023 0.2 mm for the latter). |
+| FD `0.5 mm` for high-motion classification (this step) | **Power 2014** lenient FD scrub. S8 per-frame outlier flagging now also uses **0.5 mm** (Power 2014). DOC-2: the earlier "0.2 mm (Mohammed/Kaptan)" was a misattribution — Kaptan uses dVARS/refRMS, not FD; 0.2 mm is Power's *stringent* variant. |
 | tSNR before/after as moco-quality gauge | Mohammed 2020 cord-fMRI moco evaluation; tSNR improvement after slice-wise rigid is the field-standard sanity check |
 
 ## Step-local truth metrics (principle §3)
@@ -90,7 +90,7 @@ production; the three above cover the diagnostic surface.
 | WARN `warn_tsnr` | 5.0 | "Cord signal questionable" |
 | FAIL `max_high_motion_fraction` | 0.50 | More than half the volumes high-motion ⇒ unusable |
 | WARN `warn_high_motion_fraction` | 0.30 | More than 30% high-motion ⇒ questionable |
-| `fd_threshold_mm` | 0.5 | Per-frame high-motion definition (S4 coarse gate); S8 uses 0.2 mm for finer scrubbing |
+| `fd_threshold_mm` | 0.5 | Per-frame high-motion definition (Power 2014); S8 scrubbing now also uses 0.5 mm |
 
 ## Audit verdict per principle
 
@@ -111,9 +111,9 @@ production; the three above cover the diagnostic surface.
 
 S4 already satisfies all 10 principles. This audit doc records that.
 Future tightening could:
-- Surface a cord-fMRI-specific 0.2 mm FD outlier count alongside the
-  0.5 mm coarse gauge (Kaptan 2023 standard). Tracked as a low-priority
-  follow-up — S8 already does this for the per-frame regression layer.
+- Optionally surface Power 2014's "stringent" 0.2 mm FD outlier count
+  alongside the 0.5 mm lenient gauge. Low-priority follow-up. (Kaptan 2023
+  is not an FD source — it scrubs dVARS/refRMS.)
 - Add the previously-scoped `S4_moco_comparison` axial PNG if a fourth
   diagnostic dimension proves useful in practice.
 

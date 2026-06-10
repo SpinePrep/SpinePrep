@@ -11,7 +11,7 @@ Emit a BIDS-Derivatives `*_desc-confounds_timeseries.tsv` + JSON sidecar per BOL
 ## Constraints
 - **Native func space only.** S8 reads `*_desc-undistorted_bold.nii.gz` (S5), uses S7's `*_desc-PAM50csf_mask.nii.gz` (native func), and S3's funccrop_mask. No 4D BOLD resampling.
 - **Slicewise where physiology demands it.** CSF (1 per slice) + RETROICOR (4×2 cardiac + 4×2 respiratory + 16 interactions = 32 per slice in PNM, then cord-mean averaged within each slice). Motion + cosine stay scalar.
-- **Cord-calibrated thresholds.** FD outlier ≥ 0.2 mm (Kaptan 2023). DVARS OR refRMS ≥ 3 SD above run mean (Kaptan/Dabbagh).
+- **Cord-calibrated thresholds.** FD outlier ≥ 0.5 mm (Power 2014 lenient scrub — NOT Kaptan, which uses no FD threshold). DVARS OR refRMS via Tukey Q3+1.5·IQR (the dVARS/refRMS outlier rule; cf. Kaptan 2023's SD-cutoff). [DOC-2/DONE-8: was "0.2 mm (Kaptan 2023)" — wrong value AND wrong citation.]
 - **FSL PNM** as RETROICOR tool (already in env, no MATLAB).
 - **SpinalCompCor off by default for v1** (`policy.spinalcompcor.enabled: false`). When enabled: 18 mm dilation noise ROI, mean-center + DCT-detrend per-voxel pre-PCA, 50 IAAFT surrogates, parallel-analysis component selection.
 - **TSV flat-columned**, BIDS-Derivatives convention. Column naming: `<family>_<param>[_slice{NN}]`.
@@ -78,7 +78,7 @@ Emit a BIDS-Derivatives `*_desc-confounds_timeseries.tsv` + JSON sidecar per BOL
 | Q2 | RETROICOR via FSL PNM | No MATLAB dep; SCT-recommended; slicewise NIfTI EVs native. |
 | Q3 | RETROICOR interactions ON (4×4=16) | Dabbagh 2024 standard cord recipe; 32 total RETROICOR regressors. |
 | Q4 | Outliers via S3-precomputed DVARS + refRMS at 3 SD | Already in S3 frame_metrics.tsv; avoids re-running fsl_motion_outliers. |
-| Q5 | FD threshold 0.2 mm | Cord 3σ above group mean per Mohammed 2020 / Kaptan 2023. |
+| Q5 | FD threshold 0.5 mm | Power 2014 lenient FD scrub (superseded the wrong "0.2 mm Kaptan" — Kaptan uses dVARS/refRMS, no FD). See s8-outlier-rate-root-cause.md. |
 | Q6 | TSV flat-columned slicewise | BIDS convention; Nilearn load_confounds compatible. |
 | Q7 | SpinalCompCor off by default v1 | Hemmerling says augments not replaces; needs validation; MATLAB-only ref impl forces Python port. |
 | Q8 | Pre-PCA mean-center + DCT-detrend | fMRIPrep convention; guards against trivial drift PCs. |
@@ -130,10 +130,11 @@ the BOLD it regresses (which would be downstream).
 | PASS `pass_outlier_fraction_max` | 0.20 | Kaptan 2023 cord-fMRI |
 | WARN `warn_outlier_fraction_max` | 0.40 | Above ⇒ FAIL |
 
-The intentional split between S4's `fd_threshold_mm = 0.5` (coarse
-run-usability gate) and S8's `motion.fd_outlier_threshold_mm = 0.2`
-(per-frame scrubbing gate) is documented in
-`.claude/specs/s4-func-motion-correction.md`.
+Both S4's `fd_threshold_mm = 0.5` (coarse run-usability gate) and S8's
+`motion.fd_outlier_threshold_mm = 0.5` (per-frame scrubbing gate) use the
+**Power 2014** lenient FD threshold (the earlier S8 value of 0.2 was corrected
+to 0.5 in s8-outlier-rate-root-cause.md). Kaptan 2023 is NOT the source of
+either FD value — it scrubs on dVARS/refRMS SD-cutoff.
 
 ## Why 10/11 WARN is acceptable
 

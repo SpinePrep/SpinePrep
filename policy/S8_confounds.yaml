@@ -15,17 +15,18 @@ version: 1
 # by S3.2 (frame_metrics.tsv); we just repack with outlier flags.
 #
 # Outlier gating (audit-v2 .claude/specs/s8-outlier-rate-root-cause.md):
-#   - FD threshold = 0.5 mm (Power 2014, Kaptan 2023, Dabbagh 2024 cord
-#     scrubbing standard). The earlier 0.2 mm value was a citation
-#     misattribution — Kaptan 2023's 0.2 mm is the SPIKE-REGRESSOR-
-#     INCLUSION threshold (a GLM-time operation), NOT the scrubbing
-#     threshold. Empirical cohort rate dropped from 15-83% → 2-30%
-#     after the correction, matching the literature 5-30% band.
-#   - DVARS / refRMS gate = Tukey Q3 + 1.5·IQR (fMRIPrep convention,
-#     matches S3.2 — eliminates layered-detector inconsistency). The
-#     previous μ + 3σ assumed Gaussian; cord DVARS is heavy-tailed.
+#   - FD threshold = 0.5 mm — Power 2014 (its "lenient" FD scrubbing cutoff;
+#     the same paper also defines a "stringent" FD > 0.2 mm). DOC-2: do NOT
+#     credit this to Kaptan 2023 — Kaptan uses NO FD threshold at all; it flags
+#     outlier volumes on dVARS/refRMS (≥2 SD above the run mean, via FSL
+#     fsl_motion_outliers). The earlier 0.2 mm here was both wrong (should be
+#     0.5 for cord) and mis-cited. Cohort outlier rate dropped 15-83% → 2-30%
+#     after the 0.5 correction, matching the literature 5-30% band.
+#   - DVARS / refRMS gate = Tukey Q3 + 1.5·IQR (fMRIPrep convention; this is the
+#     dVARS/refRMS outlier rule, the cord analogue of Kaptan 2023's SD-cutoff).
+#     The previous μ + 3σ assumed Gaussian; cord DVARS is heavy-tailed.
 motion:
-  fd_outlier_threshold_mm: 0.5     # Power 2014 / Kaptan 2023 / Dabbagh 2024
+  fd_outlier_threshold_mm: 0.5     # Power 2014 (lenient FD scrub). NOT Kaptan (uses dVARS/refRMS, no FD)
   dvars_outlier_iqr_k: 1.5         # Tukey Q3 + k·IQR (fMRIPrep convention)
   refrms_outlier_iqr_k: 1.5        # same — dual criterion (OR)
 
@@ -122,8 +123,8 @@ qc_thresholds:
   warn_condition_number: 10000.0
   # Outlier fraction (volumes flagged as FD>0.5 OR DVARS/refRMS Tukey).
   # After the root-cause fix (s8-outlier-rate-root-cause.md), empirical
-  # reg-cohort range is 2-30%. Set PASS at 0.20 (Power 2014 / Kaptan
-  # 2023 cord standard); WARN above; classifier still only soft-WARNs
+  # reg-cohort range is 2-30%. Set PASS at 0.20 (Power 2014 scrubbing
+  # standard); WARN above; classifier still only soft-WARNs
   # (never FAILs on OF) because high motion is the analyst's problem
   # at GLM time.
   pass_outlier_fraction_max: 0.20

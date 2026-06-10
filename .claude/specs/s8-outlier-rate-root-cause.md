@@ -70,14 +70,16 @@ motion:
 | **Power 2014** (*NeuroImage*) — brain | FD > 0.5 mm for scrubbing; some analyses report 0.2 mm/0.5 mm/0.9 mm sensitivity comparisons |
 | **Power 2014 motion_outlier convention** | fMRIPrep's `motion_outlier_NN` = OR(FD > 0.5 mm, DVARS > Tukey 1.5·IQR) |
 | **Mohammed 2020** (bioRxiv cord moco) | FD measurement methodology; does not propose a specific scrub threshold. Cited as the cord-FD definition source. |
-| **Kaptan 2023** (cord rs-fMRI reliability) — explicit | "FD threshold of 0.5 mm" for scrubbing/outlier flagging. The 0.2 mm value in Kaptan 2023 is for a **separate** spike-regressor inclusion criterion at GLM time. |
+| **Kaptan 2023** (cord rs-fMRI reliability) — CORRECTION | Uses **NO FD threshold**. Flags outlier volumes on **dVARS/refRMS ≥2 SD above the run mean** (FSL fsl_motion_outliers). The terms "framewise displacement"/"FD" do not appear in the paper. Earlier rows in this doc that credit Kaptan with "FD 0.5 / 0.2 mm" are a verified misattribution (DOC-2). |
 | **Dabbagh 2024** (cord fMRI confound) | 0.5 mm FD scrubbing |
 | **fMRIPrep** | FD > 0.5 mm, DVARS Tukey 1.5·IQR |
 | **MRIQC** | FD > 0.5 mm |
 
-**Verdict**: every cord-fMRI scrubbing standard uses **0.5 mm**, not
-0.2 mm. The policy comment conflated two different Kaptan 2023
-thresholds.
+**Verdict**: the cord-fMRI FD scrubbing value is **0.5 mm**, sourced from
+**Power 2014** (its lenient FD cutoff; the 0.2 mm "stringent" value is also
+Power 2014). **Kaptan 2023 is not an FD source at all** — it scrubs on
+dVARS/refRMS. The original policy comment conflated Power's two FD values and
+wrongly attributed them to Kaptan (DOC-2, verified against the primary sources).
 
 ## DVARS / refRMS gate
 
