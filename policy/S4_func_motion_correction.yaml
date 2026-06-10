@@ -2,25 +2,25 @@ version: 1
 
 # Motion Correction Strategy
 # mode: "3d+2d" (default) | "3d" | "2d"
-# "3d+2d": two-stage correction (coarse bulk XY -> slice-wise)
-# "3d": only coarse bulk XY
+# "3d+2d": two-stage correction (bulk MCFLIRT -> slice-wise)
+# "3d": only bulk MCFLIRT
 # "2d": only slice-wise (sct_fmri_moco)
 #
-# IMPORTANT (.claude/specs/s4-algorithm-audit.md): sct_fmri_moco
-# itself runs an internal 3D rigid stage before SliceReg. So
-# mode="3d+2d" effectively runs THREE stages: our custom phase-cross-
-# correlation XY, SCT's built-in 3D rigid, and SCT's SliceReg 2D. The
-# extra stage is harmless (already-aligned volumes converge in 1 iter)
-# but doubles bulk-stage compute. Candidate for simplification at next
-# S4 touch — drop the custom stage1 or pass -r 0 to suppress SCT's 3D.
+# Stage 1 = FSL MCFLIRT, a 3D 6-DOF rigid realignment of each volume to the
+# robust reference (cost=leastsquares, spline_final), matching the CoSpi cord
+# recipe (spi06_2_motioncorrection.sh) and Mohammed 2020. It captures 3
+# translations + 3 rotations (the standard motion nuisance regressors) and
+# feeds a full Power-2012 6-DOF FD. Replaces the old custom 2-DOF
+# FLIRT-on-Z-mean (which estimated in-plane X/Y only). Stage 2 = sct_fmri_moco
+# slicewise. Note sct_fmri_moco also runs its own internal 3D rigid before
+# SliceReg, so "3d+2d" is bulk-redundant; harmless (converges in 1 iter).
 motion_correction:
   mode: "3d+2d"
-  
-  # Stage 1: Coarse Bulk XY Correction
+
+  # Stage 1: bulk MCFLIRT (3D 6-DOF rigid). No tunable knobs — fixed CoSpi recipe
+  # (mcflirt -reffile <robust ref> -cost leastsquares -spline_final -plots).
   stage1_coarse:
-    method: "phase_cross_correlation"
-    upsample_factor: 10  # Subpixel precision for shift estimation
-    interpolation_order: 1  # Bilinear interpolation for applying shifts
+    method: "mcflirt"
     
   # Stage 2: Slice-wise Correction (sct_fmri_moco)
   stage2_slicereg:
