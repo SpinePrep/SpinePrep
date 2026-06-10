@@ -72,7 +72,7 @@ extra stage is harmless), but it doubles compute on the bulk stage.
 
 | Gate | Value | Literature | Verdict |
 |---|---|---|---|
-| `fd_threshold_mm` (high-motion frame) | 0.5 | Power 2014 brain standard. **Note**: Kaptan 2023 / Dabbagh 2024 use 0.2 mm for cord per-frame scrubbing. We intentionally use 0.5 mm here as the COARSE "run usability" gauge; S8 uses 0.2 mm for per-frame outlier flagging. | ✅ documented split — Power 2014 / Kaptan 2023 |
+| `fd_threshold_mm` (high-motion frame) | 0.5 | **Power 2014** lenient FD scrub (its "stringent" 0.2 mm is also Power). DOC-2: Kaptan 2023 is NOT an FD source — it scrubs dVARS/refRMS at SD; the old "Kaptan/Dabbagh 0.2 mm" note was a misattribution. S8 now also uses 0.5 mm. | ✅ Power 2014 |
 | `max_fd_mm` FAIL | 3.0 | Conservative — runs above 3 mm peak FD are unusable | ✅ defensible |
 | `warn_fd_mm` WARN | 2.0 | Cord-fMRI typical max FD < 1 mm in good runs | ✅ defensible |
 | `min_tsnr` FAIL | 3.0 | Cord tSNR typical 8-15 (Eippert 2017); below 3 means no usable signal | ✅ defensible |
