@@ -6,21 +6,22 @@ version: 1
 # "3d": only bulk MCFLIRT
 # "2d": only slice-wise (sct_fmri_moco)
 #
-# Stage 1 = FSL MCFLIRT, a 3D 6-DOF rigid realignment of each volume to the
-# robust reference (cost=leastsquares, spline_final), matching the CoSpi cord
-# recipe (spi06_2_motioncorrection.sh) and Mohammed 2020. It captures 3
-# translations + 3 rotations (the standard motion nuisance regressors) and
-# feeds a full Power-2012 6-DOF FD. Replaces the old custom 2-DOF
-# FLIRT-on-Z-mean (which estimated in-plane X/Y only). Stage 2 = sct_fmri_moco
-# slicewise. Note sct_fmri_moco also runs its own internal 3D rigid before
-# SliceReg, so "3d+2d" is bulk-redundant; harmless (converges in 1 iter).
+# Stage 1 = coarse in-plane X/Y bulk correction via FLIRT 2-DOF on the
+# Z-projected volume (lib/moco.coarse_bulk_xy_correction, sign-corrected per
+# BUG-1c). We A/B-tested CoSpi's MCFLIRT 3D 6-DOF (spi06_2_motioncorrection.sh)
+# on the 11-run dev cohort: FLIRT-2DOF mean cord tSNR 18.30 vs MCFLIRT 15.26 vs
+# no-correction 15.35 — i.e. MCFLIRT ≈ doing nothing and far worse than 2-DOF
+# (it over-corrects on the cord-cropped FOV by locking onto surrounding tissue).
+# So FLIRT-2DOF is the default; moco.mcflirt_bulk_correction stays available.
+# See ledger meeting-2026-05-29-task-audit "S4 Stage-1 A/B". Stage 2 =
+# sct_fmri_moco slicewise (which also runs its own internal 3D rigid first).
 motion_correction:
   mode: "3d+2d"
 
-  # Stage 1: bulk MCFLIRT (3D 6-DOF rigid). No tunable knobs — fixed CoSpi recipe
-  # (mcflirt -reffile <robust ref> -cost leastsquares -spline_final -plots).
+  # Stage 1: coarse bulk XY (FLIRT 2-DOF on Z-projection)
   stage1_coarse:
-    method: "mcflirt"
+    method: "flirt_2dof"
+    interpolation_order: 1  # Bilinear interpolation for applying shifts
     
   # Stage 2: Slice-wise Correction (sct_fmri_moco)
   stage2_slicereg:

@@ -1,0 +1,12 @@
+run,tsnr_before,flirt2dof,dv_flirt,mcflirt,dv_mcf,none,dv_none
+sub-02_ses-01_task-handgrasp,12.49,18.31,159.3,15.12,168.5,14.21,173.1
+sub-02_ses-02_task-handgrasp,12.66,18.74,140.5,15.51,180.6,14.5,163.9
+sub-02_task-motorL,19.92,22.41,50.1,20.16,54.1,21.18,55.0
+sub-02_task-motorR,18.28,21.1,80.1,19.3,85.9,21.12,52.6
+sub-02_task-motor_acq-KombiShimZSp,12.39,16.41,95.2,14.13,47.7,14.35,40.8
+sub-02_task-motor_acq-KombiShimZSp,12.5,17.41,35.3,13.87,49.8,14.25,40.9
+sub-02_task-motor_acq-KombiShimZSp,12.45,17.58,35.6,14.23,45.6,14.22,48.7
+sub-02_task-motor_acq-KombiShimZSp,12.17,18.15,39.4,14.21,44.6,14.42,43.0
+sub-02_task-pain,11.56,19.46,171.3,15.58,211.4,15.09,214.2
+sub-ZS002_task-rest_acq-autozshim,11.65,16.19,22.4,12.87,22.4,12.61,22.9
+sub-ZS002_task-rest_acq-manualzshi,12.15,15.56,17.9,12.87,23.2,12.85,18.7

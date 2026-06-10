@@ -200,17 +200,24 @@ def run_S4_func_motion_correction(
     stage1_params_path = s4_work_dir / "moco_params_coarse.tsv"
 
     if "3d" in mode:
-        logger.info(f"[{step_code}] Running Stage 1: MCFLIRT bulk (3D 6-DOF rigid)")
+        logger.info(f"[{step_code}] Running Stage 1: Coarse Bulk XY (FLIRT 2-DOF)")
 
-        # Full-volume rigid realignment to the robust reference (same target
-        # Stage 2 uses), capturing 3 translations + 3 rotations. Matches CoSpi
-        # spi06_2_motioncorrection.sh. Replaces the old 2-DOF FLIRT-on-Z-mean.
-        _, params_df = moco.mcflirt_bulk_correction(
-            bold_path=current_bold_path,
-            ref_path=robust_ref_path,
-            out_path=stage1_bold_path,
+        # Coarse in-plane X/Y bulk correction (FLIRT 2-DOF on the Z-projected
+        # volume; sign-corrected per BUG-1c). NOTE: we evaluated CoSpi's MCFLIRT
+        # 3D 6-DOF here (moco.mcflirt_bulk_correction) but the dev-cohort A/B
+        # showed it gives LOWER cord tSNR than this 2-DOF approach on all 11 reg
+        # runs (and below no-correction on some) — MCFLIRT over-corrects on the
+        # cord-cropped FOV. So FLIRT-2DOF stays the default. See ledger
+        # meeting-2026-05-29-task-audit "S4 Stage-1 A/B".
+        bold_img = nib.load(current_bold_path)
+        ref_img = nib.load(robust_ref_path)
+        corrected_data, params_df = moco.coarse_bulk_xy_correction(
+            bold_img.get_fdata(),
+            ref_img.get_fdata(),
             work_dir=s4_work_dir,
+            interpolation_order=policy["motion_correction"]["stage1_coarse"].get("interpolation_order", 1),
         )
+        nib.save(nib.Nifti1Image(corrected_data, bold_img.affine, bold_img.header), stage1_bold_path)
         params_df.to_csv(stage1_params_path, sep="\t", index=False)
         current_bold_path = stage1_bold_path
     else:

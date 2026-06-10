@@ -76,7 +76,20 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
   by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
-## S4 Stage-1 → MCFLIRT (CoSpi recipe) — 2026-06-10
+## S4 Stage-1 A/B — REVERTED to FLIRT-2DOF (2026-06-10)
+Implemented CoSpi's MCFLIRT 3D 6-DOF (below) and ran it on reg — then a dev-cohort
+A/B (`work/review/stage1_ab/`) settled it on the step-local truth metric (cord
+tSNR): **FLIRT-2DOF 18.30 vs MCFLIRT 15.26 vs no-correction 15.35** (mean over 11
+runs). MCFLIRT ≈ doing nothing and far worse than 2-DOF — it over-corrects on the
+cord-cropped FOV (locks onto surrounding tissue, degrading cord temporal
+stability; below no-correction on motorR/L). Independently confirmed by the
+pipeline's own cord-tSNR: FLIRT-2DOF (wf_reg_094) > MCFLIRT (wf_reg_106) on 11/11
+runs. **Decision: keep FLIRT-2DOF as Stage-1 default** (the literature-standard
+MCFLIRT loses on THIS data — the project decides on the dev cohort, not the
+literature). `moco.mcflirt_bulk_correction` retained as a documented option.
+Re-running reg to restore the FLIRT-2DOF cohort.
+
+## S4 Stage-1 → MCFLIRT (CoSpi recipe) — 2026-06-10 [REVERTED, see above]
 Verified CoSpi (`/mnt/hdd2/P1_CoSpi/pilot_motor/code/spi06_2_motioncorrection.sh`)
 uses MCFLIRT 3D 6-DOF rigid for the bulk stage, then sct_fmri_moco slicewise,
 keeping all 6 MCFLIRT params as nuisance regressors. Our old Stage-1 was a custom
