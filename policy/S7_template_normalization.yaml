@@ -63,8 +63,7 @@ qc_thresholds:
   # Used both for the overall `cord_dice_native_func` gate AND for the
   # per-level `cord_dice_per_level` reportlet color bands.
   pass_dice_min: 0.80
-  warn_dice_min: 0.65
-  fail_dice_below: 0.65
+  fail_dice_below: 0.65              # < this = FAIL; [fail, pass) = WARN; >= pass = PASS
   # Cord-restricted round-trip drift on native func (audit Finding 4 in
   # s7-algorithm-audit.md replaced the FOV-wide intensity-weighted COM
   # which was background-dominated). Observability-only for v1; surface

@@ -266,7 +266,13 @@ def _process_session_s3(
             except Exception:
                 pass
             run_result["metrics"] = metrics
-            run_result["status"] = "PASS"
+            # Carry the S3.2 soft outlier WARN into the run status (never FAIL).
+            if s3_2_res.get("outlier_status") == "WARN":
+                run_result["status"] = "WARN"
+                if not run_result.get("failure_message"):
+                    run_result["failure_message"] = s3_2_res.get("failure_message")
+            else:
+                run_result["status"] = "PASS"
 
         except Exception as e:
             run_result["status"] = "FAIL"

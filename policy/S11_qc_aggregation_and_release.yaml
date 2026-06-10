@@ -1,7 +1,9 @@
 version: 1
 
-# S11 aggregates S1-S10 outputs into release-readiness deliverables.
-# 14 items across 4 tiers: aggregation core, cord-novel cohort views,
+# S11 aggregates S1-S9 outputs into release-readiness deliverables.
+# (S10 ROI-timeseries/connectivity was removed from the active pipeline
+# 2026-06-11 — analyst-owned analysis, not preprocessing.)
+# 13 items across 4 tiers: aggregation core, cord-novel cohort views,
 # publication/reproducibility, compliance/navigation.
 # See .claude/specs/s11-qc-aggregation-and-release.md for design rationale.
 
@@ -20,7 +22,6 @@ aggregation:
       S7_template_normalization: "pam50_overlay_axial"
       S8_confounds_and_physio_regressors: "confound_columns"
       S9_primary_functional_derivatives: "tsnr_map_axial"
-      S10_roi_timeseries_and_connectivity: "hemicord_connectivity"
 
   group_dashboard:
     enabled: true
@@ -33,8 +34,6 @@ aggregation:
       - "S6.metrics.cord_dice"
       - "S7.metrics.cord_dice_native_func"
       - "S9.metrics.tsnr_post_median"
-      - "S10.metrics.condition_number_pearson_hemicord"
-      - "S10.metrics.fc_mean_strength"
 
   metrics_index:
     enabled: true
@@ -58,15 +57,6 @@ cohort_views:
     # 8-20; the previous 0..50 cap left the high end unused.
     color_range: [0, 30]
 
-  fc_summary:
-    enabled: true
-    # Source: S10 *_desc-hemicord_pearson_connectivity.tsv per run.
-    # Stratified per-dataset (audit B5; Principle 10 — heterogeneity is
-    # the test, not the noise). Within each dataset, ROIs are intersected
-    # across subjects (cord coverage varies). A cross-dataset summary is
-    # appended on the canonical Kaptan 2023 segment range (C3..T1).
-    consistency_z_threshold: 0.3     # connections with |z|>0.3 count as "present"
-    canonical_segment_range: [3, 9]  # Kaptan 2023: C3..T1 (T1 encoded as 9)
 
 # ----------------------------------------------------------------------
 # Tier 3: publication & reproducibility
@@ -110,7 +100,6 @@ publication:
       - "n_failed"
       - "mean_fd_mm"
       - "median_in_cord_tsnr"
-      - "max_condition_number"
       - "included_recommendation"
     include_threshold_fd: 0.5        # FD > 0.5 mm mean → flag exclusion candidate
     include_threshold_tsnr: 5.0      # tSNR < 5 → flag exclusion candidate

@@ -362,6 +362,22 @@ def _classify(
             if worst == "PASS":
                 worst = "WARN"
 
+    # Gate 3: median in-cord tSNR floor (signal-quality headline; the
+    # per-level reportlet colors against the same thresholds). Cord tSNR
+    # typically 8-20 (Eippert 2017); below the warn floor the cord signal
+    # is questionable, below the fail floor it is unusable.
+    mt = metrics.get("tsnr_post_median")
+    pass_t = thresholds.get("pass_median_in_cord_tsnr", 5.0)
+    warn_t = thresholds.get("warn_median_in_cord_tsnr", 3.0)
+    if mt is not None:
+        if mt < warn_t:
+            reasons.append(f"median_in_cord_tsnr FAIL: {mt:.1f}")
+            worst = "FAIL"
+        elif mt < pass_t:
+            reasons.append(f"median_in_cord_tsnr WARN: {mt:.1f}")
+            if worst == "PASS":
+                worst = "WARN"
+
     # FWHM is observability-only — not a gate. Autocorrelation-based
     # residual-FWHM estimators systematically under-report applied
     # kernel width on small ROIs (well-known limitation in fMRIPrep /

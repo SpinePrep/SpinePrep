@@ -581,6 +581,7 @@ def run_S6_func_to_anat_registration(
                 anat_in_bold_path=anat_intensity_arg,
                 funcref_path=funcref_local,
                 dice=dice_val, hd95=hd95_val,
+                status=status,
             )
         except Exception as e:
             failure_reasons.append(f"composite reportlet failed: {e}")

@@ -153,8 +153,10 @@ than "ratio is good".
 2. tsnr_per_level           — KEEP. Cord-specific signature
                               (Kaptan 2023 / CoSpine 2025 figure).
 
-3. smoothed_vs_unsmoothed_axial — KEEP. Visual confirmation of
-                                  the smoothing operation.
+3. smoothed_vs_unsmoothed_axial — [DROPPED 2026-06-11, see note below]
+                                  Originally KEEP for visual
+                                  confirmation of the smoothing
+                                  operation.
 
 4. smoothness_summary       — KEEP but REDESIGN: color-code PASS/
                               WARN/FAIL bars per the policy
@@ -230,7 +232,23 @@ The smoothness_summary reportlet keeps its tolerance bands; those
 visualize the same policy values but for the analyst to read rather
 than a hard accept/reject.
 
-## Sources
+## Update 2026-06-11 — `smoothed_vs_unsmoothed_axial` dropped
+
+The `smoothed_vs_unsmoothed_axial` reportlet has been **removed**. S9
+now ships **three** reportlets: `tsnr_map_axial`, `tsnr_per_level`,
+`smoothness_summary`.
+
+Reason: the side-by-side mean-BOLD panel added no diagnostic that the
+tSNR map didn't already carry. The tSNR map is itself the smoothing
+signal — smoothing's whole purpose is to raise tSNR, and that shows up
+directly (and quantitatively, via `tsnr_ratio_median`) in the tSNR map
+and per-level plot. The "did smoothing blur the BOLD" question the
+side-by-side panel answered is redundant with "did tSNR go up", and the
+extra panel diluted the eyeball signal (principle §4). The earlier
+"keep both — complementary" call (Q1 above) was re-examined and
+reversed: in practice a wide-blur / low-ratio mismatch shows up just as
+clearly on the tSNR map (signal smeared away from the cord → low cord
+tSNR) without needing the second panel.
 
 - Esteban et al. 2019 — fMRIPrep (*Nat Methods*)
 - Esteban et al. 2017 — MRIQC (*PLoS One*)

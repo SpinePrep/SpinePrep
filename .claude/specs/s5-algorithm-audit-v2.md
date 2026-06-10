@@ -145,19 +145,19 @@ by more than 10%. Easy guard, no impact on current correctness.
 
 ### Finding 5 — `_bold_pe_index_in_acqparams` silently falls back to row 1
 
-**Status**: ⚠️ defensive but silent.
+**Status**: ✅ RESOLVED (implemented). The silent fallback is gone.
 
-When the BOLD's PE direction doesn't exactly match any fmap row's PE
-(e.g., BOLD `j` vs fmaps `i`/`i-`), the function returns 1 without
-warning. That row's TRT × field gets applied to the BOLD, but the
-field was estimated for a different PE axis — the correction would be
-wrong.
+Originally the function returned row 1 without warning when the BOLD's
+PE direction didn't match any fmap row. **This is now fixed in code:**
+`_bold_pe_index_in_acqparams` returns `None` when no PE row matches, and
+the topup dispatcher FAILs that run explicitly (so it drops through to
+SyN) instead of applying a mismatched correction (`steps/s5/process.py`,
+the `inindex` check that returns `{"status": "FAIL", "mode": "topup", …}`).
 
-**Recommendation**: when neither exact match nor axis-stripped match
-succeeds (the current "last resort" line), raise/return FAIL with an
-explicit message ("BOLD PE `j` doesn't match any fmap row PE `i`/`i-`
-— topup not applicable, falling back to SyN") rather than silently
-returning row 1.
+Original recommendation (now done): when neither exact match nor
+axis-stripped match succeeds, return an explicit FAIL ("BOLD PE doesn't
+match any fmap row — topup not applicable, falling back to SyN") rather
+than silently returning row 1.
 
 ### Finding 6 — `cospine_min_voxels_per_slice = 3` is permissive
 
@@ -186,53 +186,48 @@ reportlets are interpretable.
 
 ### Finding 7 — Schema-vs-code drift on optional metrics keys
 
-**Status**: 🟡 documentation-only; schema is permissive.
+**Status**: ✅ RESOLVED. The four keys are now in the schema.
 
-Code (`process.py:805-810`) writes these fields to `metrics`:
+When this audit was written, the code wrote four `metrics` fields that
+the schema didn't list:
 - `orient_axcodes`
 - `ap_axis_index`
 - `smooth_window`
 - `min_voxels_per_slice`
 
-Schema (`schemas/qc_S5_func_distortion_correction.schema.json`) does
-not list them. The schema is permissive (no `additionalProperties:
-false`), so validation passes. But adding them to the schema would
-document the contract.
-
-**Recommendation**: add these four fields to the `metrics` properties
-in the schema. Documentation-only fix.
+`schemas/qc_S5_func_distortion_correction.schema.json` **now defines all
+four** under the `metrics` properties (verified — also adds a
+`smooth_poly_order` field). The contract is documented; no drift remains.
 
 ### Finding 8 — MI-only fallback can return PASS without geometric evidence
 
-**Status**: ⚠️ correctness gap on the gating logic.
+**Status**: ✅ RESOLVED (implemented). Skip now forces WARN, never PASS.
 
-`_classify_run_status` (process.py:836-841):
+The recommendation below is implemented in the current code. In
+`_classify_run_status` (`steps/s5/process.py`), when
+`cospine_skip_reason` is set the code **always** appends a reason —
+either "MI did not improve (…)" when `mi_delta < 0`, **or** "MI delta
+is not a geometric quality signal" when MI is missing or non-negative:
+
 ```python
 skip = metrics.get("cospine_skip_reason")
 if skip:
     reasons.append(f"CoSpine metrics skipped: {skip}")
     if mi_delta is not None and mi_delta < 0:
         reasons.append(f"MI did not improve ({mi_delta:+.1f}%)")
+    else:
+        reasons.append("MI delta is not a geometric quality signal")
 ```
 
-When the CoSpine metrics couldn't compute (anat unavailable, deepseg
-failed), we fall back to MI gating. **If MI improved (delta ≥ 0)**, no
-reasons get appended for the CoSpine skip — and the function reaches
-the end with `not reasons` (when not SyN), returning **PASS**.
+Because `reasons` is non-empty whenever a skip reason is present, the
+final `return "PASS" if not reasons else "WARN"` can **never** return
+PASS for a skipped-CoSpine run — it is forced to at least WARN. The
+code comment even says "force at least WARN." So the original concern
+(a topup run claiming PASS on MI alone, without geometric evidence) is
+closed.
 
-Concern: MI on cord-cropped BOLD is dominated by background air; a
-PASS based on MI alone is not actually evidence that distortion was
-corrected. We're effectively saying "trust the MI" without any
-geometric ground-truth.
-
-For SyN runs (the realistic path with no fmap + no anat = rare), this
-returns WARN due to the existing SyN-always-WARN rule. For topup runs
-without anat (theoretically possible), it returns PASS.
-
-**Recommendation**: when `cospine_skip_reason` is present, force
-status to at most WARN regardless of MI. A topup run without
-geometric verification shouldn't claim PASS. Defensive fix; doesn't
-affect the current reg cohort (all SyN already get WARN'd).
+Original recommendation (now done): when `cospine_skip_reason` is
+present, force status to at most WARN regardless of MI.
 
 ### Finding 9 — Polynomial order for SavGol smoothing is hardcoded
 
@@ -336,10 +331,10 @@ defensible-as-is with documentation tweaks.**
 |---|---|---|---|
 | 1 | Append `--restrict-deformation 0x1x0` (or PE-axis-derived) to `_run_syn` antsRegistration command | 5 lines | high |
 | 2 | Swap SyN-mask priority: prefer anat-cord-seg-resampled-to-BOLD over funccrop_mask | 1 line | high |
-| 3 | Explicit FAIL in `_bold_pe_index_in_acqparams` last-resort branch | 3 lines | medium |
-| 4 | Force WARN when `cospine_skip_reason` is present, regardless of MI | 2 lines | medium |
+| 3 | Explicit FAIL in `_bold_pe_index_in_acqparams` last-resort branch | 3 lines | ✅ done (Finding 5) |
+| 4 | Force WARN when `cospine_skip_reason` is present, regardless of MI | 2 lines | ✅ done (Finding 8) |
 | 5 | Expose `cospine_smooth_poly_order` in policy YAML | 3 lines | low |
-| 6 | Add `orient_axcodes`/`ap_axis_index`/`smooth_window`/`min_voxels_per_slice` to schema | schema-only | low |
+| 6 | Add `orient_axcodes`/`ap_axis_index`/`smooth_window`/`min_voxels_per_slice` to schema | schema-only | ✅ done (Finding 7) |
 | 7 | Raise `cospine_min_voxels_per_slice` from 3 to 5 OR derive from in-plane voxel size | 1-line policy + assert | low |
 | 8 | Document policy YAML comment: "convergence `40x20x0` runs as 2-level SyN" | comment-only | low |
 

@@ -51,8 +51,7 @@ qc_thresholds:
   # it registration is unreliable). DOC-1.
   pass_dice_min: 0.85                # Cohen-Adad 2014 / De Leener 2017 cord-reg band
   pass_dice_min_syn_fallback: 0.80   # lower bar for S5 SyN-fallback runs
-  warn_dice_min: 0.65
-  fail_dice_below: 0.65
+  fail_dice_below: 0.65              # < this = FAIL; [fail, pass) = WARN; >= pass = PASS
   # HD95 in mm: registration on cord-cropped EPI (~1mm in-plane, ~3-4mm Z)
   # routinely has 3-4mm HD95 at Dice 0.9+; EPISeg baseline 1.28±0.73 is
   # for seg-vs-truth on same image, not via a warp. Realistic thresholds:

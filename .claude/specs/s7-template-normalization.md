@@ -30,7 +30,7 @@ Bring the PAM50 template, cord/WM/GM/CSF masks, and white-matter atlas into nati
 - `*_space-PAM50_desc-funcref.nii.gz` — funcref resampled to PAM50 (single 3D image, for QC overlay only; not used downstream).
 - `*_desc-PAM50cord_mask.nii.gz` — PAM50 cord mask warped to native func.
 - `*_desc-PAM50csf_mask.nii.gz`, `*_desc-PAM50wm_mask.nii.gz`, `*_desc-PAM50gm_mask.nii.gz` — PAM50 tissue masks in native func.
-- `*_desc-PAM50spinallevels.nii.gz` — PAM50 spinal level atlas (1–20) in native func, for ROI extraction.
+- `*_desc-PAM50spinallevels.nii.gz` — PAM50 spinal level atlas (1–30) in native func, for ROI extraction. The shipped SCT `PAM50_spinal_levels` file carries 30 segmental levels: 1–8 = C1–C8, 9–20 = T1–T12, 21–25 = L1–L5, 26–30 = S1–S5. This is a cervical-only pipeline, so only the C-levels (1–8, plus T1 ≈ 9) are used in practice, but the atlas itself spans the full spinal column.
 
 **anat/** (one-off per session, idempotent across runs)
 - `*_space-PAM50_desc-funcref.nii.gz` is in func/, but anat-side composite is unchanged from S2. S7 does NOT rewrite anat-space outputs.

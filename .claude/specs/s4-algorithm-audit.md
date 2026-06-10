@@ -9,6 +9,18 @@ Line-by-line audit of every motion-correction choice in S4
 against the cord-fMRI literature. Sibling of the S3 audit (same
 format).
 
+> **Update — Stage-1 engine is now FLIRT 2-DOF, not phase_cross_correlation.**
+> When this audit was written, Stage 1 used scikit-image
+> `phase_cross_correlation`. That approach was evaluated and **reverted**:
+> the shipped Stage 1 is now coarse in-plane (X, Y) bulk correction via
+> **FLIRT 2-DOF on the Z-projection** (`policy/S4_func_motion_correction.yaml`
+> `stage1_coarse.method: flirt_2dof`; `lib/moco.coarse_bulk_xy_correction`,
+> sign-corrected per BUG-1c). The accurate, current spec for Stage 1 is
+> `.claude/specs/s4-stage1-flirt-2d-replacement.md` (status `implemented`).
+> Read the rows below that mention `phase_cross_correlation` as **superseded**
+> — the literature reasoning (XY-only bulk pre-alignment before SCT's
+> slice-wise stage) still holds; only the engine changed.
+
 ## Sub-step summary
 
 The S4 pipeline runs up to three stages of motion correction on the
@@ -17,7 +29,7 @@ S3-cropped 4D BOLD:
 | Stage | Operation | Engine | Default mode |
 |---|---|---|---|
 | **(opt) Z-shift** | Inter-run bulk Z-translation between this run's funcref and the run-01 funcref of the same (sub, ses, task) | NumPy cross-correlation in `lib/moco.py` | **disabled** (`z_shift_correction.enabled = false`) |
-| **Stage 1** (3D bulk XY) | Subpixel phase cross-correlation per volume, applied as bulk in-plane (X, Y) shifts | scikit-image `phase_cross_correlation` (upsample_factor=10, Foroosh 2002 / Guizar-Sicairos 2008) | on when mode contains `"3d"` (default `"3d+2d"`) |
+| **Stage 1** (3D bulk XY) | Coarse in-plane (X, Y) bulk correction on the Z-projected volume | **FLIRT 2-DOF** (`lib/moco.coarse_bulk_xy_correction`, Jenkinson & Smith 2001) — *replaced the reverted scikit-image `phase_cross_correlation`* | on when mode contains `"3d"` (default `"3d+2d"`) |
 | **Stage 2** (slice-wise) | Slice-by-slice rigid realignment with Z-axis polynomial regularization | `sct_fmri_moco` (`-param poly=2,metric=MeanSquares,iter=10 -x spline`) | on when mode contains `"2d"` (default `"3d+2d"`) |
 
 ## Per-choice verdict
@@ -45,10 +57,15 @@ extra stage is harmless), but it doubles compute on the bulk stage.
 
 ### Stage 1 (custom bulk XY)
 
+> **SUPERSEDED — the rows below describe the reverted phase_cross_correlation
+> engine.** The shipped Stage 1 is now FLIRT 2-DOF on the Z-projection
+> (`stage1_coarse.method: flirt_2dof`). The `upsample_factor` knob no
+> longer applies. Current spec: `.claude/specs/s4-stage1-flirt-2d-replacement.md`.
+
 | Choice | Value | Literature | Verdict |
 |---|---|---|---|
-| `stage1_coarse.method` | `phase_cross_correlation` | Foroosh 2002 (phase correlation theory) + Guizar-Sicairos 2008 (subpixel via FFT zero-padding) | ✅ standard image-registration primitive |
-| `upsample_factor` | 10 | Guizar-Sicairos 2008: factor-10 gives 0.1-voxel precision, standard for sub-pixel registration | ✅ standard |
+| `stage1_coarse.method` | ~~`phase_cross_correlation`~~ → now `flirt_2dof` | FLIRT 2-DOF (Jenkinson & Smith 2001) on the Z-projection; the phase-correlation engine (Foroosh 2002 / Guizar-Sicairos 2008) was reverted after the dev-cohort A/B | ✅ field-recognised FLIRT primitive |
+| `upsample_factor` | ~~10~~ (n/a) | Was a phase-correlation subpixel parameter; not used by FLIRT 2-DOF | superseded |
 | `interpolation_order` | 1 (bilinear) | Standard for applying small shifts; spline (order 3) is slower and only marginally sharper on EPI data | ✅ defensible |
 
 ### Stage 2 (slice-wise via sct_fmri_moco)

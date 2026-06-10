@@ -27,9 +27,7 @@
         "n_datasets":             { "type": ["integer", "null"] },
         "n_subject_reports":      { "type": ["integer", "null"] },
         "subject_report_fraction": { "type": ["number", "null"] },
-        "missing_step_qc_count":  { "type": ["integer", "null"] },
-        "sidecar_audit_issues":   { "type": ["integer", "null"] },
-        "cohort_fc_n_common_rois": { "type": ["integer", "null"] }
+        "missing_step_qc_count":  { "type": ["integer", "null"] }
       }
     },
     "failure_reasons": {

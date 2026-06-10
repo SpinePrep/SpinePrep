@@ -1,9 +1,9 @@
 """S8 reportlet rendering — chain-wide visual standard (dark theme).
 
-4 reportlets per run, following the field-standard for confound-matrix QC:
+5 reportlets per run, following the field-standard for confound-matrix QC:
 
-1. ``confound_columns`` — bar chart of regressor counts per family
-   (motion / outliers / CSF / RETROICOR / cosine / SpinalCompCor),
+1. ``confound_columns`` — per-slice design bar chart of regressor counts
+   per family (motion / outliers / CSF / RETROICOR / cosine / SpinalCompCor),
    PASS/WARN/FAIL status pill in the header. Quick health-of-the-
    confound-matrix view.
 2. ``fd_dvars_outliers`` — 3-row time series (FD + DVARS + refRMS)
@@ -13,11 +13,11 @@
    physio exists; explicit "physio absent" placeholder otherwise.
 4. ``correlation_heatmap`` — Pearson r matrix across all confound
    columns, color-coded for design-matrix multicollinearity.
+5. ``carpet_plot`` — cord BOLD carpet (Power 2017) with FD/DVARS rails.
 
 Dropped:
-- ``csf_variance`` — implementation-detail per-slice voxel count;
-  its info is already in metrics.n_columns_csf + the correlation
-  heatmap.
+- ``csf_variance`` (2026-05-28) — implementation-detail per-slice voxel
+  count; its info is in metrics.n_columns_csf + the correlation heatmap.
 """
 
 from __future__ import annotations

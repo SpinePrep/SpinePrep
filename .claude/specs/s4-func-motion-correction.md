@@ -24,9 +24,15 @@ literature audit):
 
 - **Stage 0 (target build)**: take the robust de-outliered funcref from
   S3.2 as the registration target.
-- **Stage 1 (custom coarse 3D bulk XY)**: per-volume subpixel
-  `phase_cross_correlation` (`lib/moco.py`, scikit-image upsample=10;
-  Foroosh 2002 / Guizar-Sicairos 2008) applied as bulk XY shifts.
+- **Stage 1 (coarse bulk XY via FLIRT 2-DOF)**: per-volume coarse
+  in-plane (X, Y) bulk correction with FLIRT 2-DOF on the Z-projected
+  volume (`lib/moco.coarse_bulk_xy_correction`, sign-corrected per
+  BUG-1c; Jenkinson & Smith 2001). This is the **shipped** Stage-1
+  engine — the earlier `phase_cross_correlation` approach was evaluated
+  and reverted (see `.claude/specs/s4-stage1-flirt-2d-replacement.md`,
+  status `implemented`). CoSpi's MCFLIRT 3D 6-DOF was A/B-tested on the
+  11-run dev cohort and lost (cord tSNR 15.26 ≈ no-correction vs
+  FLIRT-2DOF 18.30 — MCFLIRT over-corrects on the cord-cropped FOV).
   Active when `motion_correction.mode` contains `"3d"` (default).
 - **Stage 2 (SCT slice-wise)**: `sct_fmri_moco` with
   `-param poly=2,metric=MeanSquares,iter=10 -x spline` and the cord
@@ -72,13 +78,15 @@ Already richly populated in qc.json per run:
 
 | Reportlet | What it shows | What failure looks like |
 |---|---|---|
-| `S4_motion_traces` | Per-frame X/Y translation, X/Y rotation, FD vs time | Step jumps ⇒ uncorrected sudden movement; oscillation ⇒ respiratory coupling |
-| `S4_dvars_plot` | Post-moco DVARS timeseries | High DVARS spikes despite low FD ⇒ residual physiological pulsation (S8 will mitigate via RETROICOR) |
+| `S4_motion_traces` | Per-frame X/Y translation, X/Y rotation, FD vs time (DVARS now folded into this panel) | Step jumps ⇒ uncorrected sudden movement; oscillation ⇒ respiratory coupling; high DVARS despite low FD ⇒ residual physiological pulsation |
+| `S4_slicewise_heatmap` | Per-slice/per-frame moco map | Slice-localised residual motion (one slice misbehaving) |
 | `S4_tsnr_comparison` | Side-by-side axial tSNR maps Before/After + headline tSNR improvement | Brighter cord after ⇒ moco helped; darker ⇒ moco introduced blurring |
 
-The earlier-spec `S4_moco_comparison` axial PNG (per-slice Before/After
-mean BOLD) is not currently registered in the dashboard or emitted in
-production; the three above cover the diagnostic surface.
+The three reportlets above are the ones actually emitted. The
+standalone `S4_dvars_plot` was dropped — DVARS is now folded into the
+`S4_motion_traces` panel. The earlier-spec `S4_moco_comparison` axial
+PNG (per-slice Before/After mean BOLD) is also not registered in the
+dashboard or emitted in production.
 
 ## Threshold rationale (`policy/S4_func_motion_correction.yaml`)
 
