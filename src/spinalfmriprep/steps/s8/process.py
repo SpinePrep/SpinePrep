@@ -1433,11 +1433,23 @@ def run_S8_confounds_and_physio_regressors(
     # Previously documented "populated when PNM ran" but always None.
     cardiac_bpm, respiratory_cpm = _bpm_cpm_from_popp(s8_work_dir)
 
+    # CSF aCompCor is slicewise: n_columns_csf is the flat-TSV total
+    # (components × N_slices). The model dimensionality a single slice's GLM
+    # actually fits is the PER-SLICE component count — report it explicitly so
+    # the reportlet/QC shows 5 (per slice), not the 5×N_slices stacked total.
+    _csf_meta = family_meta.get("csf", {})
+    _pcs = _csf_meta.get("pcs_per_slice") or []
+    csf_n_slices = int(_csf_meta.get("n_slices_with_csf", 0))
+    csf_per_slice = (int(np.median(_pcs)) if _pcs
+                     else int(policy.get("csf_slicewise", {}).get("n_components", 5)))
+
     metrics = {
         "n_volumes": int(n_volumes),
         "n_columns_total": int(df.shape[1]),
         "n_columns_motion": int(family_counts["motion"]),
         "n_columns_csf": int(family_counts["csf"]),
+        "n_csf_components_per_slice": (csf_per_slice if csf_n_slices else None),
+        "n_csf_slices": csf_n_slices,
         "n_columns_retroicor": int(family_counts["retroicor"]),
         "n_columns_cosine": int(family_counts["cosine"]),
         "n_columns_spinalcompcor": int(family_counts["spinalcompcor"]),
@@ -1529,6 +1541,8 @@ def run_S8_confounds_and_physio_regressors(
             status=status,
             n_columns_total=metrics.get("n_columns_total"),
             condition_number=metrics.get("condition_number"),
+            csf_per_slice=metrics.get("n_csf_components_per_slice"),
+            csf_n_slices=metrics.get("n_csf_slices"),
         )
     except Exception as e:
         failure_reasons.append(f"confound_columns reportlet failed: {e}")

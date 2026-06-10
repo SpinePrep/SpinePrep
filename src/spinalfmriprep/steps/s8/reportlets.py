@@ -95,32 +95,65 @@ def render_s8_confound_columns(
     status: str = "PASS",
     n_columns_total: Optional[int] = None,
     condition_number: Optional[float] = None,
+    csf_per_slice: Optional[int] = None,
+    csf_n_slices: Optional[int] = None,
 ) -> None:
-    """Per-family regressor count bar chart with status pill."""
+    """Per-family regressor count bar chart with status pill.
+
+    The chart shows the **per-slice GLM design** — how many regressors each
+    family contributes to a single slice's model. CSF aCompCor is slicewise, so
+    its bar is the per-slice component count (e.g. 5), NOT the flat-TSV total
+    (5 × N_slices); every other family is global (one set reused for all slices),
+    so its per-slice count equals its column count. The flat-TSV column total is
+    reported in the subtitle so the storage size stays discoverable.
+    """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     families = ["motion", "outliers", "csf", "retroicor", "cosine", "spinalcompcor"]
-    counts = [int(family_counts.get(f, 0)) for f in families]
-    total = sum(counts) if n_columns_total is None else int(n_columns_total)
+    flat_counts = {f: int(family_counts.get(f, 0)) for f in families}
 
-    subtitle_parts = [f"n_columns_total={total}"]
+    # Per-slice design: CSF collapses to its per-slice component count.
+    show_per_slice = csf_per_slice is not None and flat_counts["csf"] > 0
+    disp = dict(flat_counts)
+    if show_per_slice:
+        disp["csf"] = int(csf_per_slice)
+    counts = [disp[f] for f in families]
+
+    flat_total = (sum(flat_counts.values()) if n_columns_total is None
+                  else int(n_columns_total))
+    per_slice_total = sum(disp.values())
+
+    subtitle_parts = []
+    if show_per_slice:
+        ns = f"×{int(csf_n_slices)} slices" if csf_n_slices else "per slice"
+        subtitle_parts.append(f"per-slice design = {per_slice_total} regressors  "
+                              f"(CSF {int(csf_per_slice)}/slice)")
+        subtitle_parts.append(f"flat TSV = {flat_total} cols  "
+                              f"(CSF {flat_counts['csf']} = {int(csf_per_slice)} {ns})")
+    else:
+        subtitle_parts.append(f"n_columns_total={flat_total}")
     if condition_number is not None and np.isfinite(condition_number):
         subtitle_parts.append(f"condition_number={condition_number:.1f}")
     subtitle = "  ·  ".join(subtitle_parts)
 
     fig, ax = plt.subplots(figsize=(10, 5), facecolor=BG)
     _draw_header(fig,
-                 "S8 — Confound regressor families",
+                 "S8 — Confound regressors per slice"
+                 if show_per_slice else "S8 — Confound regressor families",
                  subtitle, status)
     _setup_dark_axes(ax)
     ax.set_position((0.08, 0.12, 0.88, 0.72))
 
     colors = [_FAMILY_COLORS[f] for f in families]
     bars = ax.bar(families, counts, color=colors, edgecolor=BORDER, linewidth=0.5)
-    for bar, c in zip(bars, counts):
+    for f, bar, c in zip(families, bars, counts):
+        label = str(c)
+        if show_per_slice and f == "csf" and csf_n_slices:
+            label = f"{c}/slice"
         ax.text(bar.get_x() + bar.get_width() / 2,
                 c + max(counts) * 0.02,
-                str(c), ha="center", color=TEXT, fontsize=11, fontweight="bold")
-    ax.set_ylabel("Regressor columns", color=TEXT, fontsize=11)
+                label, ha="center", color=TEXT, fontsize=11, fontweight="bold")
+    ax.set_ylabel("Regressors in one slice's GLM" if show_per_slice
+                  else "Regressor columns", color=TEXT, fontsize=11)
     ax.grid(axis="y", alpha=0.15, color=BORDER)
     ax.set_axisbelow(True)
 
