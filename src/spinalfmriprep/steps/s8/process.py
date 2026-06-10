@@ -19,6 +19,7 @@ import gzip
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -1005,6 +1006,71 @@ def _condition_number(df: pd.DataFrame) -> float:
         return float("nan")
 
 
+_SLICE_COL_RE = re.compile(r"(?:^|_)slice(\d+)")
+
+
+def _slice_of_column(name: str) -> Optional[int]:
+    """The slice index a per-slice regressor belongs to, else None (global).
+
+    Matches the slicewise families' naming: CSF aCompCor ``csf_slice03_pc02``
+    and any slicewise RETROICOR ``*_slice03``. Global regressors (motion,
+    cosine, spinalcompcor global_3d, slice-mean RETROICOR, outliers) carry no
+    ``slice##`` token and stay in every slice's design.
+    """
+    m = _SLICE_COL_RE.search(name)
+    return int(m.group(1)) if m else None
+
+
+def _condition_number_slicewise(df: pd.DataFrame) -> dict:
+    """Per-slice design conditioning (the honest gate for a slicewise GLM).
+
+    Per-slice confound families (CSF aCompCor ``csf_slice{z}_pc{k}``, and any
+    slicewise RETROICOR ``*_slice{z}``) are applied SLICE-LOCALLY downstream —
+    CoSpi/FEAT hand them to FSL as voxelwise EVs so each slice's GLM only ever
+    sees its own 5 CSF PCs (``spi12_acompcor.m`` → ``spi15_*.fsf``). Scoring the
+    condition number on the FLAT union of every slice's columns is therefore
+    wrong: it stacks 5×N_slices CSF columns into one matrix and explodes for a
+    design no voxel actually fits. We instead score each slice's REAL design =
+    global regressors + that slice's own per-slice columns, and report the worst
+    (max) slice as the headline gate. Falls back to the flat number when no
+    per-slice family is present (e.g. CSF disabled).
+    """
+    if df.empty:
+        return {"condition_number": float("nan"), "global_only": float("nan"),
+                "worst_slice": None, "per_slice": {}}
+    cols = list(df.columns)
+    slice_of = {c: _slice_of_column(c) for c in cols}
+    global_cols = [c for c in cols if slice_of[c] is None]
+    per_slice_cols: dict[int, list[str]] = {}
+    for c in cols:
+        z = slice_of[c]
+        if z is not None:
+            per_slice_cols.setdefault(z, []).append(c)
+
+    global_cn = _condition_number(df[global_cols]) if global_cols else float("nan")
+
+    if not per_slice_cols:
+        flat = _condition_number(df)
+        return {"condition_number": flat, "global_only": flat,
+                "worst_slice": None, "per_slice": {}}
+
+    per_slice_cn: dict[int, float] = {}
+    for z, scols in sorted(per_slice_cols.items()):
+        per_slice_cn[z] = _condition_number(df[global_cols + scols])
+    finite = {z: v for z, v in per_slice_cn.items() if np.isfinite(v)}
+    if finite:
+        worst_z = max(finite, key=finite.get)
+        headline = finite[worst_z]
+    else:
+        worst_z, headline = None, float("inf")
+    return {
+        "condition_number": float(headline),
+        "global_only": float(global_cn),
+        "worst_slice": (int(worst_z) if worst_z is not None else None),
+        "per_slice": {int(z): float(v) for z, v in per_slice_cn.items()},
+    }
+
+
 def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
     reasons: list[str] = []
     worst = "PASS"
@@ -1337,8 +1403,10 @@ def run_S8_confounds_and_physio_regressors(
     # Truncate any column that overshot n_volumes (defensive)
     df = df.iloc[:n_volumes]
 
-    # Condition number QC
-    cn = _condition_number(df)
+    # Condition number QC — per-slice (slicewise GLM), see
+    # _condition_number_slicewise. Headline = worst slice's design conditioning.
+    cn_info = _condition_number_slicewise(df)
+    cn = cn_info["condition_number"]
 
     # SpinalCompCor: report the actual K (component count). In
     # `aggregation: global_3d` (default) this equals
@@ -1370,6 +1438,8 @@ def run_S8_confounds_and_physio_regressors(
         "n_columns_outliers": int(family_counts["outliers"]),
         "outlier_fraction": float(outlier_fraction),
         "condition_number": cn,
+        "condition_number_global": cn_info["global_only"],
+        "condition_number_worst_slice": cn_info["worst_slice"],
         "fd_mean_mm": float(np.mean(columns["framewise_displacement"])),
         "fd_max_mm": float(np.max(columns["framewise_displacement"])),
         "dvars_mean": float(np.mean(columns["dvars"])) if "dvars" in columns else None,

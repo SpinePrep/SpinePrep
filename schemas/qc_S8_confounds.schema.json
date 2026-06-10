@@ -49,7 +49,18 @@
               "n_columns_spinalcompcor": { "type": ["integer", "null"] },
               "n_columns_outliers": { "type": ["integer", "null"] },
               "outlier_fraction": { "type": ["number", "null"] },
-              "condition_number": { "type": ["number", "null"] },
+              "condition_number": {
+                "type": ["number", "null"],
+                "description": "Worst per-slice design conditioning (global regressors + that slice's per-slice CSF/RETROICOR columns). Slicewise GLM gate, not the flat-matrix number — see _condition_number_slicewise."
+              },
+              "condition_number_global": {
+                "type": ["number", "null"],
+                "description": "Conditioning of the global-only regressors (motion, cosine, spinalcompcor, slice-mean RETROICOR, outliers); per-slice families excluded."
+              },
+              "condition_number_worst_slice": {
+                "type": ["integer", "null"],
+                "description": "Slice index whose design has the worst (headline) condition number."
+              },
               "fd_mean_mm": { "type": ["number", "null"] },
               "fd_max_mm": { "type": ["number", "null"] },
               "dvars_mean": { "type": ["number", "null"] },

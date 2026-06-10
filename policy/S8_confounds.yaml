@@ -124,6 +124,14 @@ spinalcompcor:
 # QC thresholds
 qc_thresholds:
   # Matrix condition number — brain heuristic; calibrate on cord empirically.
+  # PER-SLICE gate (Option A): the per-slice CSF aCompCor family is applied
+  # slice-locally downstream (CoSpi/FEAT voxelwise EVs — each slice's GLM sees
+  # only its own 5 PCs; spi12_acompcor.m → spi15_*.fsf). So we score each
+  # slice's REAL design = global regressors + that slice's per-slice columns,
+  # and gate on the WORST slice (condition_number). condition_number_global
+  # (global-only regressors) is reported alongside for diagnosis. Scoring the
+  # flat union of all 5×N_slices CSF columns would explode for a design no
+  # voxel ever fits — that is not what the downstream GLM does.
   pass_condition_number: 1000.0
   warn_condition_number: 10000.0
   # Outlier fraction (volumes flagged as FD>0.5 OR DVARS/refRMS Tukey).
