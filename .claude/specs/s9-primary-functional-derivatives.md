@@ -35,8 +35,9 @@ Emit the final preprocessed 4D BOLD outputs (native + PAM50, smoothed; un-smooth
 - `straightened/` — sct_smooth intermediates.
 - `qc_metrics.json` — provenance + tSNR + FWHM verification.
 
-**Reportlets** (`figures/`):
-- `*_desc-S9_smoothed_vs_unsmoothed_axial.png` — 9-slice montage, before/after.
+**Reportlets** (`figures/`) — three current reportlets (the
+`smoothed_vs_unsmoothed_axial` montage was removed 2026-06-11; the tSNR
+map already carries the smoothing signal):
 - `*_desc-S9_tsnr_map_axial.png` — 9-slice tSNR montage (native).
 - `*_desc-S9_tsnr_per_level.png` — bar chart of tSNR per PAM50 vertebral level.
 - `*_desc-S9_smoothness_summary.png` — measured vs requested FWHM bars.
@@ -64,7 +65,7 @@ Emit the final preprocessed 4D BOLD outputs (native + PAM50, smoothed; un-smooth
 - Median in-cord tSNR (post-smoothing) ≥ 5 (CoSpine 2025 published baseline).
 - tSNR ratio ≥ 1.5 in ≥ 80% of runs.
 - Residual FWHM in-plane is requested ± 0.5 mm; through-slice residual FWHM is the requested S-I FWHM ± 1.0 mm.
-- Dashboard renders all 4 reportlets per run.
+- Dashboard renders all 3 reportlets per run.
 
 ## Next Steps
 1. Mark `private/SPEC/S9_primary_functional_derivatives.md` superseded (done in this PR).
@@ -121,7 +122,7 @@ principles-alignment check.
 | 1 | Small dev cohort | ✅ 11-run reg set |
 | 2 | Literature defaults | ✅ CoSpi spi14 sct_smooth_spinalcord recipe, Eippert 2017 anisotropic σ, Brooks 2008 1.5×1.5×6 mm originator |
 | 3 | Step-local truth metric | ✅ `cord_dice_pre_post` (smoothing preserves cord shape), `fwhm_x/y/z_measured_mm` vs `_requested_mm` (smoothness validation), `tsnr_pre_median` / `tsnr_post_median` / `tsnr_ratio_median`, `n_levels_with_tsnr`, `smoothing_runtime_s`, `n_volumes` |
-| 4 | Diagnostic reportlet | ✅ 4 PNGs (`smoothed_vs_unsmoothed_axial`, `tsnr_map_axial`, `tsnr_per_level`, `smoothness_summary`) |
+| 4 | Diagnostic reportlet | ✅ 3 PNGs (`tsnr_map_axial`, `tsnr_per_level`, `smoothness_summary`). The former `smoothed_vs_unsmoothed_axial` montage was dropped 2026-06-11 — the tSNR map already carries the smoothing signal. |
 | 5 | Visual QC validator | ✅ |
 | 6 | Lock and ship | ✅ |
 | 7 | No chain backtracking | ✅ consumes S5 BOLD + S6 cord seg + S7 vertebral atlas |

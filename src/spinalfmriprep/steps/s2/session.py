@@ -627,11 +627,25 @@ def _process_session(
         dataset_key=dataset_key,
     )
 
+    # Step-local truth gate: PAM50 cord Dice (dev principle §3). Only gates when
+    # the metric was actually computed (None when warps/PAM50 unavailable).
+    run_status = "PASS"
+    run_fail_msg = None
+    _qt = policy.get("qc_thresholds", {})
+    _dice = metrics.get("pam50_cord_dice")
+    if _dice is not None:
+        if _dice < _qt.get("pam50_cord_dice_warn_min", 0.60):
+            run_status = "FAIL"
+            run_fail_msg = f"pam50_cord_dice FAIL: {_dice:.3f}"
+        elif _dice < _qt.get("pam50_cord_dice_pass_min", 0.80):
+            run_status = "WARN"
+            run_fail_msg = f"pam50_cord_dice WARN: {_dice:.3f}"
+
     return {
         "subject": subject,
         "session": session,
-        "status": "PASS",
-        "failure_message": None,
+        "status": run_status,
+        "failure_message": run_fail_msg,
         "run_id": run_id,
         "dataset_key": dataset_key,
         "source_path": source_rel,

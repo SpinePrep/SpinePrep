@@ -37,14 +37,19 @@ import numpy as np
 
 
 def _seg_name(lvl: int) -> str:
-    """PAM50 ``spinal_levels`` integer (1..20) → cord-segment name. These are
-    SEGMENTAL spinal-cord levels, NOT vertebrae and NOT lumbar — labeling them
-    ``L{lvl}`` rendered cervical segments 6/7 as "L6/L7" (BUG-3). 1..8 = C1..C8,
-    9..20 = T1..T12."""
+    """PAM50 ``spinal_levels`` integer (1..30) → cord-segment name. These are
+    SEGMENTAL spinal-cord levels, NOT vertebrae — labeling them ``L{lvl}``
+    rendered cervical segments 6/7 as "L6/L7" (BUG-3). The shipped SCT PAM50
+    atlas has 30 levels: 1..8 = C1..C8, 9..20 = T1..T12, 21..25 = L1..L5,
+    26..30 = S1..S5. (This is a cervical pipeline, so L/S rarely appear.)"""
     if 1 <= lvl <= 8:
         return f"C{lvl}"
     if 9 <= lvl <= 20:
         return f"T{lvl - 8}"
+    if 21 <= lvl <= 25:
+        return f"L{lvl - 20}"
+    if 26 <= lvl <= 30:
+        return f"S{lvl - 25}"
     return f"seg{lvl}"
 
 

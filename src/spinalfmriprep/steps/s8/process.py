@@ -3,12 +3,14 @@
 Spec: .claude/specs/s8-confounds-and-physio-regressors.md
 
 Five families assembled into a BIDS-Derivatives confounds TSV + JSON sidecar:
-  1. Motion           — trans_x/y + derivatives + FD (S4 slicewise moco)
-  2. Outliers         — DVARS + refRMS @ 3 SD (S3 frame_metrics) → one-hot
-  3. CSF slicewise    — top-20%-variance mean per slice (Hemmerling 2025)
+  1. Motion           — trans_x/y + derivatives + FD (S4 bulk+slicewise moco)
+  2. Outliers         — FD>0.5 (Power 2014) OR DVARS/refRMS Tukey Q3+1.5·IQR
+                        (S3 frame_metrics) → one-hot
+  3. CSF aCompCor     — 5 PCs/slice via FSL fslmeants --eig on per-voxel
+                        detrended BOLD (Behzadi 2007 / CoSpi spi12)
   4. RETROICOR        — slicewise via FSL PNM (32 regressors × slices)
-  5. Cosine basis     — DCT high-pass equivalent at policy cutoff
-  6. SpinalCompCor    — opt-in; 18 mm noise ROI + IAAFT parallel analysis
+  5. Cosine basis     — DCT high-pass equivalent (optional; cosine.enabled)
+  6. SpinalCompCor    — optional (spinalcompcor.enabled); 18 mm noise ROI
 
 Native func space throughout. No BOLD resampling. No regression.
 """

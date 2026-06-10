@@ -82,21 +82,20 @@ def test_s3_2_outlier_gating_logic(mock_work_dir):
     mask_data = np.ones(shape[:3], dtype=np.uint8)
     nib.save(nib.Nifti1Image(mask_data, np.eye(4)), mask_path)
     
-    policy = {"dummy_volumes": {"count": 2}} # Drop first 2
-    
-    # We dropped 2. Correct indices:
-    # Original Frame 5 becomes Frame 3 (5-2).
-    # Expected outlier index: 3
-    
+    policy = {"dummy": {"drop_count": 2}}
+
+    # func_bold_coarse is ALREADY dummy-dropped by S3.1 — S3.2 must NOT drop
+    # again (that was the double-drop bug). So all 10 frames are preserved and
+    # the outlier injected at frame 5 stays at index 5 (no shift).
     res = _process_s3_2_outlier_gating(bold_path, ref0_path, mask_path, mock_work_dir, policy)
-    
+
     # Verify outputs
     outlier_json = res["outlier_mask_path"]
     with open(outlier_json) as f:
         info = json.load(f)
-        
-    assert info["total_frames"] == 8 # 10 - 2
-    assert 3 in info["outlier_indices"] # Frame 3 IS the outlier
+
+    assert info["total_frames"] == 10  # no re-drop in S3.2
+    assert 5 in info["outlier_indices"]  # outlier stays at its original frame
     assert info["outlier_count"] >= 1
 
 

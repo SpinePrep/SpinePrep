@@ -571,7 +571,7 @@ respiratory phase per slice — see
 <li><code>confound_columns</code> — column counts per family.</li>
 <li><code>fd_dvars_outliers</code> — FD / DVARS / DVARS-ref with
 outlier highlights.</li>
-<li><code>csf_variance</code> — per-slice CSF voxel count.</li>
+<li><code>carpet_plot</code> — cord BOLD carpet with FD / DVARS rails.</li>
 <li><code>pnm_peaks</code> — FSL PNM cardiac / respiratory peak
 detection.</li>
 <li><code>correlation_heatmap</code> — confound correlation
@@ -598,8 +598,6 @@ working chain produces tSNR &gt; 15–20 per voxel in cervical cord
 slice has a coil dropout.</p>
 <p>Reportlets:</p>
 <ul>
-<li><code>smoothed_vs_unsmoothed_axial</code> — before/after
-smoothing axial montage.</li>
 <li><code>tsnr_map_axial</code> — native tSNR map montage.</li>
 <li><code>tsnr_per_level</code> — per-vertebral-level tSNR
 bars.</li>

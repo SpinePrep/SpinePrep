@@ -46,11 +46,9 @@ outlier_gating:
   metrics:
     - dvars     # RMS of frame-to-frame intensity difference within mask
     - dvars_ref # RMS of frame-to-reference intensity difference within mask
-  # Fraction thresholds for QC status. Kaptan 2023 reports typical 2% (range
-  # 0.6-5.6%) on healthy cord rest; warn at 30%, fail at 50% — conservative
-  # upper end of "still usable".
-  outlier_fraction_warn: 0.30
-  outlier_fraction_fail: 0.50
+  # NOTE: the outlier_fraction PASS/WARN thresholds live in qc_thresholds below
+  # (single source of truth). outlier_fraction is a soft WARN-only gate — it
+  # never FAILs (high motion is the analyst's GLM-time call, consistent with S8).
   # Minimum good (non-outlier) frames to build the robust median funcref.
   min_good_frames: 10
 

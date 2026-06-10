@@ -56,6 +56,7 @@ def render_s6_composite(
     hd95: Optional[float] = None,
     contour_lw: float = 2.0,
     dpi: int = 120,
+    status: Optional[str] = None,
 ) -> None:
     """Dual-modality axial reportlet: BOLD vs anat at the same Z slices,
     with anat cord seg (yellow) and EPI cord seg (cyan) on every panel.
@@ -142,7 +143,11 @@ def render_s6_composite(
     if hd95 is not None:
         subtitle_parts.append(f"HD95={hd95:.2f}mm")
     subtitle = "  ·  ".join(subtitle_parts) if subtitle_parts else ""
-    status = "PASS" if (dice is not None and dice >= 0.80) else "WARN"
+    # Use the run's real qc.json status when provided (the policy PASS gate is
+    # Dice>=0.85, not 0.80); fall back to a coarse Dice heuristic only if the
+    # caller didn't pass a status.
+    if status is None:
+        status = "PASS" if (dice is not None and dice >= 0.85) else "WARN"
 
     fig = plt.figure(figsize=(16.0, 9.0), facecolor=BG)
     fig.patch.set_facecolor(BG)

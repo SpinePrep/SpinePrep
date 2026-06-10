@@ -231,9 +231,19 @@ def _process_s3_2_outlier_gating(
     except Exception as e:
         pass  # Failed to plot metrics
 
+    # Soft gate: outlier_fraction is observability-only — it WARNs but never
+    # FAILs (high motion is the analyst's call at GLM time, consistent with S8).
+    pass_max = policy.get("qc_thresholds", {}).get("outlier_fraction_pass_max", 0.20)
+    if outlier_frac > pass_max:
+        outlier_status = "WARN"
+        outlier_msg = f"outlier_fraction {outlier_frac:.0%} > {pass_max:.0%} (soft WARN)"
+    else:
+        outlier_status = "PASS"
+        outlier_msg = None
+
     result = {
-        "outlier_status": "PASS",
-        "failure_message": None,
+        "outlier_status": outlier_status,
+        "failure_message": outlier_msg,
         "func_ref_path": func_ref_path,
         "frame_metrics_path": frame_metrics_path,
         "outlier_mask_path": outlier_mask_path,

@@ -50,8 +50,12 @@ already-computed `outlier_mask.json` and S3.1 / S3.3 sub-step returns):
 - `n_frames_total` — volumes after dummy drop.
 - `n_dummy_dropped` — first-N volumes dropped (steady-state).
 - `n_outliers` — frames flagged outlier (DVARS OR DVARS-ref).
-- `outlier_fraction` — **headline truth gauge.** Gate in
+- `outlier_fraction` — **headline truth gauge.** Reference threshold in
   `qc_thresholds.outlier_fraction_pass_max` (0.20, Kaptan 2023).
+  **Treated as observability / soft WARN, never FAIL** — high motion is
+  the analyst's call at GLM time, so S3 surfaces the number (and a WARN
+  above the threshold) but does not drop the run. Consistent with S8's
+  motion handling.
 - `dvars_threshold` / `dvars_ref_threshold` — the boxplot-derived cutoffs
   used for this run (recorded so the analyst can audit per-run gating).
 - `n_cord_slices_localization` — cord coverage detected in S3.1.

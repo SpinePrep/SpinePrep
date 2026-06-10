@@ -193,7 +193,7 @@ def run_S4_func_motion_correction(
                 robust_ref_path = z_corrected_ref_path  # Point subsequent stages to corrected ref
 
     # -------------------------------------------------------------------------
-    # S4.2: Stage 1 - Bulk MCFLIRT (3D 6-DOF rigid) — CoSpi recipe
+    # S4.2: Stage 1 - Coarse Bulk XY (FLIRT 2-DOF on the Z-projection)
     # -------------------------------------------------------------------------
     # Outputs of Stage 1
     stage1_bold_path = s4_work_dir / "bold_coarse.nii.gz"
@@ -203,11 +203,10 @@ def run_S4_func_motion_correction(
         logger.info(f"[{step_code}] Running Stage 1: Coarse Bulk XY (FLIRT 2-DOF)")
 
         # Coarse in-plane X/Y bulk correction (FLIRT 2-DOF on the Z-projected
-        # volume; sign-corrected per BUG-1c). NOTE: we evaluated CoSpi's MCFLIRT
-        # 3D 6-DOF here (moco.mcflirt_bulk_correction) but the dev-cohort A/B
-        # showed it gives LOWER cord tSNR than this 2-DOF approach on all 11 reg
-        # runs (and below no-correction on some) — MCFLIRT over-corrects on the
-        # cord-cropped FOV. So FLIRT-2DOF stays the default. See ledger
+        # volume; sign-corrected per BUG-1c). NOTE: CoSpi's MCFLIRT 3D 6-DOF was
+        # evaluated and REVERTED — the dev-cohort A/B showed it gives LOWER cord
+        # tSNR than this 2-DOF approach on all 11 reg runs (MCFLIRT over-corrects
+        # on the cord-cropped FOV). FLIRT-2DOF is the default. See ledger
         # meeting-2026-05-29-task-audit "S4 Stage-1 A/B".
         bold_img = nib.load(current_bold_path)
         ref_img = nib.load(robust_ref_path)
@@ -317,18 +316,20 @@ def run_S4_func_motion_correction(
     nib.save(nib.Nifti1Image(tsnr_map_before, img_before.affine), tsnr_before_path)
     nib.save(nib.Nifti1Image(tsnr_map_after, img_after.affine), tsnr_after_path)
 
-    # FD and Motion Params. Stage 1 (MCFLIRT) gives 6 rigid params per volume
-    # (3 translations + 3 rotations); FD is the full Power 2012 6-DOF FD.
+    # FD and Motion Params. Stage 1 (FLIRT 2-DOF) gives in-plane X/Y bulk
+    # translations only; tz/rx/ry/rz are structurally zero for this cord-2D
+    # engine (kept so any 6-column consumer still sees a full frame). The
+    # cord FD used downstream is the 2-D |Δtx|+|Δty| (see lib/moco.py).
     params_total = pd.DataFrame()
     if stage1_params_path.exists():
         p1 = pd.read_csv(stage1_params_path, sep="\t")
         n = len(p1)
         params_total['tx'] = p1.get('tx_coarse', pd.Series(np.zeros(n)))
         params_total['ty'] = p1.get('ty_coarse', pd.Series(np.zeros(n)))
-        params_total['tz'] = p1.get('tz_coarse', pd.Series(np.zeros(n)))
-        params_total['rx'] = p1.get('rx_coarse', pd.Series(np.zeros(n)))
-        params_total['ry'] = p1.get('ry_coarse', pd.Series(np.zeros(n)))
-        params_total['rz'] = p1.get('rz_coarse', pd.Series(np.zeros(n)))
+        params_total['tz'] = np.zeros(n)
+        params_total['rx'] = np.zeros(n)
+        params_total['ry'] = np.zeros(n)
+        params_total['rz'] = np.zeros(n)
     else:
         params_total['tx'] = np.zeros(img_after.shape[3])
         params_total['ty'] = np.zeros(img_after.shape[3])
