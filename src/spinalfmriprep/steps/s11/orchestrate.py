@@ -17,7 +17,6 @@ import yaml
 from .process import (
     _build_citation_cff,
     _build_cohort_coverage_matrix,
-    _build_cohort_fc_summary,
     _build_cohort_tsnr_heatmap,
     _build_dataset_description,
     _build_group_dashboard_data,
@@ -148,18 +147,7 @@ def run_S11(
         deliverables["tsnr_heatmap_png"] = str(ts_png.relative_to(out_path))
     except Exception as e:
         failures.append(f"tsnr_heatmap: {e}")
-    try:
-        fc_mean = deriv_root / "cohort_fc_mean_fisherz.tsv"
-        fc_cons = deriv_root / "cohort_fc_consistency.tsv"
-        fc_png = deriv_root / "cohort_fc_summary.png"
-        fc_meta = _build_cohort_fc_summary(out_path, records, policy,
-                                           fc_mean, fc_cons, fc_png)
-        deliverables["fc_summary_mean_tsv"] = str(fc_mean.relative_to(out_path))
-        deliverables["fc_summary_consistency_tsv"] = str(fc_cons.relative_to(out_path))
-        deliverables["fc_summary_png"] = str(fc_png.relative_to(out_path))
-    except Exception as e:
-        failures.append(f"fc_summary: {e}")
-        fc_meta = {"n_matrices": 0, "n_common_rois": 0}
+    # cohort FC summary removed 2026-06-11 with S10 (analyst-owned analysis).
 
     # 7. Reproducibility receipt (needs to be computed before CITATION + manifest)
     try:
@@ -265,8 +253,6 @@ def run_S11(
         "n_subject_reports": int(n_subject_reports),
         "subject_report_fraction": float(fraction),
         "missing_step_qc_count": 0,
-        "cohort_fc_n_matrices": int(fc_meta.get("n_matrices", 0)),
-        "cohort_fc_n_per_dataset_summaries": int(fc_meta.get("n_datasets", 0)),
     }
 
     qc_dir = out_path / "logs" / "S11_qc_aggregation_and_release"

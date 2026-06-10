@@ -91,8 +91,9 @@ def _find_cord_mask(out_dir: Path, run_id: str) -> Optional[Path]:
       2. S3.1 ``func_ref_fast_seg_crop.nii.gz`` — fallback, PRE-S5
          geometry. Only correct when S5 made minimal cord shifts (SyN-
          fallback). On topup runs the cord shifts 5-10 mm A-P and this
-         seg lands off-cord, producing the misaligned-mask artifact
-         the user reported on the smoothed_vs_unsmoothed reportlet.
+         seg lands off-cord, producing the misaligned-mask artifact the
+         user reported (the tSNR-map / former smoothed_vs_unsmoothed
+         reportlets). Priority 1 (S5 seg) is what fixes it.
     """
     project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
                     else Path.cwd())

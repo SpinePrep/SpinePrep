@@ -55,16 +55,13 @@ REPORTLET_ORDER: dict[str, list[str]] = {
         "correlation_heatmap",      # S8 - confound correlation matrix
     ],
     "S9_primary_functional_derivatives": [
-        "smoothed_vs_unsmoothed_axial",  # S9 - axial montage before/after smoothing
         "tsnr_map_axial",                # S9 - tSNR map montage
         "tsnr_per_level",                # S9 - per-vertebral-level tSNR bars
         "smoothness_summary",            # S9 - requested vs measured FWHM
     ],
-    "S10_roi_timeseries_and_connectivity": [
-        "hemicord_timeseries",           # S10 - hemicord×seg ROI timeseries panels
-        "hemicord_connectivity",         # S10 - Fisher-z connectivity heatmap (reordered)
-        "reliability_icc",               # S10 - per-subject cross-session ICC (multi-session)
-    ],
+    # S10_roi_timeseries_and_connectivity removed from the active pipeline
+    # 2026-06-11 — connectivity/ICC is downstream analysis (analyst-owned),
+    # not preprocessing. See .claude/specs/s10-roi-timeseries-and-connectivity.md.
 }
 
 # Human-readable labels for reportlets (matching ROADMAP milestones)
@@ -111,16 +108,11 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "correlation_heatmap": "S8 - Confound Correlation Heatmap",
     },
     "S9_primary_functional_derivatives": {
-        "smoothed_vs_unsmoothed_axial": "S9 - Smoothed vs Unsmoothed (Axial)",
         "tsnr_map_axial":               "S9 - Native tSNR Map (Axial)",
         "tsnr_per_level":               "S9 - tSNR per Vertebral Level",
         "smoothness_summary":           "S9 - Requested vs Measured FWHM",
     },
-    "S10_roi_timeseries_and_connectivity": {
-        "hemicord_timeseries":   "S10 - Hemicord ROI Timeseries",
-        "hemicord_connectivity": "S10 - Hemicord Fisher-z Connectivity",
-        "reliability_icc":       "S10 - Cross-Session ICC (per subject, multi-session)",
-    },
+    # S10 removed from the active pipeline 2026-06-11 (analyst-owned analysis).
 }
 
 

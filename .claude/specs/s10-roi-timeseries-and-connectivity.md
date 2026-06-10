@@ -1,7 +1,20 @@
 ---
-status: approved
+status: deferred
 supersedes: private/SPEC/S10_roi_timeseries_and_reliability.md
 ---
+
+> **DEFERRED 2026-06-11 — removed from the active pipeline.** ROI timeseries,
+> connectivity, and ICC reliability are downstream **analysis**, not
+> preprocessing. SpinalfMRIprep's contract is preprocess → confounds → release
+> (S1–S9, S11); the analyst owns the GLM/connectivity on their own design
+> (the same boundary S8 states: "S8 emits the matrix; the analyst regresses").
+> S10 was also the pipeline's only persistent FAIL source (hemicord-ROI "no
+> ROIs survived" on cospine_motor). Removed from the chain runner, the dashboard
+> registry, and S11's consumption (cohort FC summary, `max_condition_number`,
+> the S10 methods paragraph). The step **code is retained** (not deleted) so it
+> can return as an analyst-side module / v2 — re-add the `("S10", …)` entry to
+> `full_chain_reg.ALL_CHAIN_STEPS` and `S11._STEPS`, and the dashboard registry
+> block, to reactivate. Reason it was kept around historically below.
 
 # Scope Spec: S10 ROI Timeseries + Connectivity + Reliability v2
 

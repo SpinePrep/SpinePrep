@@ -2,7 +2,7 @@
 
 Spec: .claude/specs/s11-qc-aggregation-and-release.md
 
-14 deliverables across 4 tiers. Read-only consumer of S1–S10 artifacts.
+14 deliverables across 4 tiers. Read-only consumer of S1–S9 artifacts.
 Deterministic: same chain → byte-identical outputs.
 """
 
@@ -33,7 +33,7 @@ ALL_STEPS = [
     ("S7", "S7_template_normalization"),
     ("S8", "S8_confounds_and_physio_regressors"),
     ("S9", "S9_primary_functional_derivatives"),
-    ("S10", "S10_roi_timeseries_and_connectivity"),
+    # S10 removed from the active pipeline 2026-06-11 (analyst-owned analysis).
 ]
 
 
@@ -182,7 +182,7 @@ def _build_metrics_index_tsv(records: list[dict], out_path: Path) -> int:
     return len(rows)
 
 
-_BOLD_STEPS = {"S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"}
+_BOLD_STEPS = {"S3", "S4", "S5", "S6", "S7", "S8", "S9"}
 
 
 def _build_run_inventory(
@@ -192,7 +192,7 @@ def _build_run_inventory(
     aggregated across steps.
 
     S1 emits per-dataset summary rows; S2 emits per-anat records. Both
-    pollute the BOLD-run inventory. Restrict to S3..S10 (the BOLD chain).
+    pollute the BOLD-run inventory. Restrict to S3..S9 (the BOLD chain).
     """
     out_tsv.parent.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(records)
@@ -1145,7 +1145,7 @@ date-released: "{recipe.get('timestamp_utc', '')[:10]}"
 
 
 def _build_references_bib(out_path: Path) -> None:
-    """Auto-bibliography of every methods reference used in S2..S10."""
+    """Auto-bibliography of every methods reference used in S2..S9."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
     bib = r"""@article{kaptan2023,
   title={Spinal fMRI demonstrates segmental organisation of functionally connected networks in the cervical spinal cord},
@@ -1370,7 +1370,7 @@ def _build_participants_tsv(
         "include_threshold_fd", 0.5))
     tsnr_thresh = float(policy.get("publication", {}).get("participants_tsv", {}).get(
         "include_threshold_tsnr", 5.0))
-    # n_runs is a count of BOLD runs (S3..S10); S1/S2 records pollute it.
+    # n_runs is a count of BOLD runs (S3..S9); S1/S2 records pollute it.
     df_runs = df[df["step"].isin(_BOLD_STEPS)].dropna(subset=["run_id"])
     rows = []
     for (sub, ds), g in df.groupby(["subject", "dataset_key"]):
@@ -1392,7 +1392,6 @@ def _build_participants_tsv(
         # Aggregate metrics
         s4 = g[g["step"] == "S4"]
         s9 = g[g["step"] == "S9"]
-        s10 = g[g["step"] == "S10"]
         mean_fd = np.nan
         if not s4.empty:
             # S4 emits both mean_fd_mm and max_fd_mm; we want the
@@ -1407,13 +1406,6 @@ def _build_participants_tsv(
             ts = [t for t in ts if t is not None]
             if ts:
                 median_tsnr = float(np.median(ts))
-        max_cn = np.nan
-        if not s10.empty:
-            cns = [r.get("condition_number_pearson_hemicord")
-                   for r in s10["metrics"] if isinstance(r, dict)]
-            cns = [c for c in cns if c is not None and np.isfinite(c)]
-            if cns:
-                max_cn = float(np.max(cns))
         recommend = "include"
         if (np.isfinite(mean_fd) and mean_fd > fd_thresh) or \
            (np.isfinite(median_tsnr) and median_tsnr < tsnr_thresh) or \
@@ -1429,7 +1421,6 @@ def _build_participants_tsv(
             "n_failed": int(n_failed),
             "mean_fd_mm": float(mean_fd) if np.isfinite(mean_fd) else "n/a",
             "median_in_cord_tsnr": float(median_tsnr) if np.isfinite(median_tsnr) else "n/a",
-            "max_condition_number": float(max_cn) if np.isfinite(max_cn) else "n/a",
             "included_recommendation": recommend,
         })
     out_df = pd.DataFrame(rows).sort_values(["dataset_key", "participant_id"])
@@ -1440,12 +1431,11 @@ def _build_participants_tsv(
         "dataset_key": {"Description": "SpinalfMRIprep dataset key (multi-source aggregation)"},
         "n_runs": {"Description": "Number of BOLD runs successfully processed"},
         "n_sessions": {"Description": "Number of MRI sessions for this participant"},
-        "n_passed": {"Description": "Number of runs that PASS across all S2..S10 steps"},
+        "n_passed": {"Description": "Number of runs that PASS across all S2..S9 steps"},
         "n_warn": {"Description": "Number of runs with at least one step WARN"},
         "n_failed": {"Description": "Number of runs with at least one step FAIL"},
         "mean_fd_mm": {"Description": "Mean framewise displacement (mm) across runs", "Units": "mm"},
         "median_in_cord_tsnr": {"Description": "Median in-cord tSNR post-smoothing (S9)"},
-        "max_condition_number": {"Description": "Max Pearson hemicord connectivity matrix condition number (S10)"},
         "included_recommendation": {
             "Description": "Pipeline recommendation for cohort inclusion: 'include' or 'review'",
             "Levels": {
@@ -1490,22 +1480,12 @@ def _build_methods_manifest(
     s6_pol = _read_policy_yaml(project_root, "S6_func_to_anat_registration")
     s8_pol = _read_policy_yaml(project_root, "S8_confounds_and_physio_regressors")
     s9_pol = _read_policy_yaml(project_root, "S9_primary_functional_derivatives")
-    s10_pol = _read_policy_yaml(project_root, "S10_roi_timeseries_and_connectivity")
 
     sigma = s9_pol.get("smoothing", {}).get("sigma_mm", [1, 1, 5])
     sigma_str = "×".join(str(s) for s in sigma)
-    masker = s10_pol.get("masker", {})
-    hp = masker.get("high_pass", 0.01)
-    lp = masker.get("low_pass", 0.1)
     fd_thr = (s8_pol.get("frame_metrics", {}).get("fd_threshold_mm")
               or s4_pol.get("qc_thresholds", {}).get("warn_max_mean_fd_mm")
               or 0.5)
-    vert_range = s10_pol.get("roi_catalogs", {}).get("vertlvl", {}).get(
-        "label_range", [1, 8])
-    seg_range = s10_pol.get("roi_catalogs", {}).get("spinalseg", {}).get(
-        "label_range", [1, 8])
-    horn_thr = s10_pol.get("roi_catalogs", {}).get("hemicord", {}).get(
-        "horn_prob_threshold", 0.3)
 
     pipeline_v = recipe.get("pipeline_git_describe") or "0.0.0"
     sct_v = recipe.get("sct_version") or "n/a"
@@ -1576,20 +1556,9 @@ via SCT `sct_smooth_spinalcord` (σ = {sigma_str} mm in R-L, A-P, S-I;
 Eippert 2017 anisotropic principle [@eippert2017]). Output: native +
 PAM50-space smoothed BOLD, per-vertebral-level tSNR TSV.
 
-**ROI timeseries + connectivity (S10)**: Three ROI catalogs via Nilearn
-`NiftiLabelsMasker` [@nilearn] in native func:
-
-- vertebral levels (PAM50_levels, {vert_range[0]}–{vert_range[1]});
-- spinal segmental levels (PAM50_spinal_levels, {seg_range[0]}–{seg_range[1]});
-- hemicord × spinal segmental (4 horns at p > {horn_thr} × spinal
-  segments, Kaptan 2023 [@kaptan2023]).
-
-Two confound modes per catalog: raw + S8-regressed. Pearson and
-Marrelec 2006 [@marrelec2006] partial correlation (Ledoit-Wolf
-shrinkage) connectivity matrices emitted for the hemicord catalog.
-Bandpass {hp}–{lp} Hz [@eippert2017]. Per-subject reliability
-(multi-session, same task): pooled ICC(3,1) [@shrout1979], Cicchetti
-1994 bands [@cicchetti1994].
+_ROI timeseries, connectivity, and reliability (former S10) are
+analyst-owned downstream analysis and are not part of this preprocessing
+release as of 2026-06-11._
 
 ## Citation
 
@@ -1673,7 +1642,6 @@ a {{ color:#0086e6; text-decoration:none; }} a:hover {{ text-decoration:underlin
 <li><a href='{rel_links.get('run_inventory_png','#')}'>Run inventory bar</a> · <a href='{rel_links.get('run_inventory_tsv','#')}'>TSV</a></li>
 <li><a href='{rel_links.get('coverage_matrix_png','#')}'>Per-vertebral coverage matrix</a> · <a href='{rel_links.get('coverage_matrix_tsv','#')}'>TSV</a></li>
 <li><a href='{rel_links.get('tsnr_heatmap_png','#')}'>Cohort cord SNR heatmap</a> · <a href='{rel_links.get('tsnr_heatmap_tsv','#')}'>TSV</a></li>
-<li><a href='{rel_links.get('fc_summary_png','#')}'>Cohort FC summary</a> · <a href='{rel_links.get('fc_summary_mean_tsv','#')}'>mean Fisher-z</a> · <a href='{rel_links.get('fc_summary_consistency_tsv','#')}'>consistency</a></li>
 </ul>
 </div>
 

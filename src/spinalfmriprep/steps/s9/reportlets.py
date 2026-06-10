@@ -1,17 +1,18 @@
 """S9 reportlet rendering — chain-wide visual standard (dark theme).
 
-4 reportlets per run, matching the field-standard cord-fMRI primary-
+3 reportlets per run, matching the field-standard cord-fMRI primary-
 derivative QC composition (Kaptan 2023 + CoSpine 2025 + Eippert 2017):
 
 1. ``tsnr_map_axial`` — headline diagnostic: axial montage of the
    smoothed tSNR map with cord-median annotation in the subtitle.
 2. ``tsnr_per_level`` — cord-specific signature: per-vertebral-level
    mean ± SD tSNR bars (Kaptan 2023 / CoSpine 2025 Fig 6).
-3. ``smoothed_vs_unsmoothed_axial`` — visual confirmation of the
-   smoothing operation: pre vs post mean BOLD side-by-side with
-   cord contour.
-4. ``smoothness_summary`` — measured residual FWHM per axis vs the
+3. ``smoothness_summary`` — measured residual FWHM per axis vs the
    policy tolerance band, color-coded PASS / WARN / FAIL per axis.
+
+The earlier ``smoothed_vs_unsmoothed_axial`` reportlet was dropped
+2026-06-11 — the tSNR map already carries the smoothing signal, and the
+side-by-side mean-BOLD panel added no diagnostic the tSNR map lacked.
 
 Audit reference: ``.claude/specs/s9-reportlet-set-audit.md``.
 """
@@ -238,69 +239,7 @@ def render_s9_tsnr_per_level(
 
 
 # ---------------------------------------------------------------------------
-# Reportlet 3: smoothed_vs_unsmoothed_axial
-# ---------------------------------------------------------------------------
-
-
-def render_s9_smoothed_vs_unsmoothed_axial(
-    unsmoothed_bold: Path, smoothed_bold: Path, cord_mask: Path,
-    output_path: Path, n_slices: int = 9,
-    status: str = "PASS",
-    tsnr_ratio: Optional[float] = None,
-) -> None:
-    """9-tile axial montage: unsmoothed (left) vs smoothed (right) mean BOLD."""
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    pre = nib.load(unsmoothed_bold).get_fdata().astype(np.float32).mean(axis=3)
-    post = nib.load(smoothed_bold).get_fdata().astype(np.float32).mean(axis=3)
-    mask = nib.load(cord_mask).get_fdata() > 0.5
-    bbx = _crop_bbox(mask)
-    pre_c = pre[bbx]; post_c = post[bbx]; mask_c = mask[bbx]
-    z_idx = np.where(mask_c.any(axis=(0, 1)))[0]
-    if z_idx.size == 0:
-        z_idx = np.arange(pre_c.shape[2])
-    z_pick = np.linspace(z_idx.min(), z_idx.max(),
-                         min(n_slices, max(1, z_idx.size)), dtype=int)
-    rows = int(np.ceil(np.sqrt(len(z_pick))))
-    cols = int(np.ceil(len(z_pick) / rows))
-    th, tw = pre_c.shape[1], pre_c.shape[0]
-    g_pre = np.zeros((rows * th, cols * tw), dtype=np.float32)
-    g_post = np.zeros_like(g_pre)
-    g_msk = np.zeros_like(g_pre, dtype=bool)
-    for i, z in enumerate(z_pick):
-        r, c = i // cols, i % cols
-        g_pre[r*th:(r+1)*th, c*tw:(c+1)*tw] = np.rot90(pre_c[:, :, z])
-        g_post[r*th:(r+1)*th, c*tw:(c+1)*tw] = np.rot90(post_c[:, :, z])
-        g_msk[r*th:(r+1)*th, c*tw:(c+1)*tw] = np.rot90(mask_c[:, :, z]).astype(bool)
-
-    subtitle_parts = []
-    if tsnr_ratio is not None:
-        subtitle_parts.append(f"tSNR ratio = {tsnr_ratio:.2f}×")
-    subtitle = "  ·  ".join(subtitle_parts) if subtitle_parts else ""
-
-    fig = plt.figure(figsize=(13, 7), facecolor=BG)
-    _draw_header(fig, "S9 — Smoothed vs unsmoothed (mean BOLD)",
-                 subtitle, status)
-
-    vmin, vmax = _safe_pct(g_pre, (2, 98))
-    for j, (grid, label) in enumerate(zip(
-        [g_pre, g_post], ["Unsmoothed", "Smoothed"]
-    )):
-        ax = fig.add_axes((0.04 + j * 0.48, 0.07, 0.44, 0.80))
-        _setup_dark_axes(ax)
-        ax.imshow(grid, cmap="gray", vmin=vmin, vmax=vmax,
-                  interpolation="nearest")
-        if g_msk.any():
-            ax.contour(g_msk, levels=[0.5], colors=[EPI_CYAN],
-                       linewidths=0.6)
-        ax.set_xticks([]); ax.set_yticks([])
-        ax.set_title(label, color=TEXT, fontsize=12, fontweight="bold", pad=4)
-
-    fig.savefig(output_path, dpi=120, facecolor=BG, bbox_inches="tight")
-    plt.close(fig)
-
-
-# ---------------------------------------------------------------------------
-# Reportlet 4: smoothness_summary — REDESIGNED with tolerance bands
+# Reportlet 3: smoothness_summary — REDESIGNED with tolerance bands
 # ---------------------------------------------------------------------------
 
 
