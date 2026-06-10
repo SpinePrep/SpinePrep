@@ -36,6 +36,18 @@ import nibabel as nib
 import numpy as np
 
 
+def _seg_name(lvl: int) -> str:
+    """PAM50 ``spinal_levels`` integer (1..20) → cord-segment name. These are
+    SEGMENTAL spinal-cord levels, NOT vertebrae and NOT lumbar — labeling them
+    ``L{lvl}`` rendered cervical segments 6/7 as "L6/L7" (BUG-3). 1..8 = C1..C8,
+    9..20 = T1..T12."""
+    if 1 <= lvl <= 8:
+        return f"C{lvl}"
+    if 9 <= lvl <= 20:
+        return f"T{lvl - 8}"
+    return f"seg{lvl}"
+
+
 # ---------------------------------------------------------------------------
 # Reportlet 1: pam50_on_func composite
 # ---------------------------------------------------------------------------
@@ -210,7 +222,8 @@ def render_s7_pam50_on_func(
         present = [int(v) for v in np.unique(vals) if v > 0]
         if not present:
             return ""
-        return f"L{min(present)}" if len(present) == 1 else f"L{min(present)}-{max(present)}"
+        return _seg_name(min(present)) if len(present) == 1 \
+            else f"{_seg_name(min(present))}-{_seg_name(max(present))}"
 
     for col, z in enumerate(z_picks):
         cx = grid_x0 + col * col_w + col_w / 2
@@ -308,12 +321,12 @@ def render_s7_cord_dice_per_level(
     ax.axhline(fail_below, linestyle="--", color="#ef4444", linewidth=0.9,
                label=f"FAIL < {fail_below:.2f}")
     ax.set_xticks(xs)
-    ax.set_xticklabels([f"L{lvl}" for lvl in levels],
+    ax.set_xticklabels([_seg_name(lvl) for lvl in levels],
                        color="#e6e8ec", fontsize=10)
-    ax.set_xlabel("PAM50 spinal level (1..20)", color="#e6e8ec")
+    ax.set_xlabel("Cord segment (PAM50 spinal level)", color="#e6e8ec")
     ax.set_ylabel("Cord Dice (PAM50 ∩ EPI seg)", color="#e6e8ec")
     ax.set_ylim(0, 1.0)
-    ax.set_title("S7 — Cord Dice by vertebral level (PAM50 spinal_levels)",
+    ax.set_title("S7 — Cord Dice by spinal-cord segment (PAM50 spinal_levels)",
                  color="#e6e8ec", fontsize=12, fontweight="bold")
     ax.tick_params(colors="#e6e8ec")
     for s in ax.spines.values():

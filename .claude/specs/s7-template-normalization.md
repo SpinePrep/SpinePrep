@@ -1,5 +1,5 @@
 ---
-status: approved
+status: implemented
 supersedes: private/SPEC/S7_template_normalization.md
 ---
 

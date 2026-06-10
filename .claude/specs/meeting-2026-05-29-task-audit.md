@@ -76,6 +76,21 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
   by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
+## ✅ S7 (template normalization) — LOCKED 2026-06-10
+Standard recipe: PAM50 normalization, **atlas→native** (never push 4D BOLD into
+PAM50) — Eippert 2017 / SCT batch_processing / CoSpi spi08_10. Step-local metric
+= per-segment cord Dice + label offset. Dev-cohort **10/10 PASS**. Finalized:
+- **BUG-3** — per-level bars were labeled `f"L{lvl}"` over PAM50 *segmental*
+  integers (1..20), rendering cervical segments as "L6/L7" (lumbar-looking). Now
+  mapped to cord-segment names via `_seg_name` (1-8→C1-C8, 9-20→T1-T12); axis
+  "Cord segment (PAM50 spinal level)", title "by spinal-cord segment". Also fixed
+  the sagittal `_level_at_z` labels. 10 cohort figures regenerated + verified
+  (C3..C8,T1,T2). 
+- **BUG-4** — sagittal markers: fixed in shared `render_sagittal` (S7 callers
+  pass affine=); verified on S6 (identical code). S7 *composite* cohort figures
+  lag (warped-PAM50 inputs not retained in work dir) — they pick up the marker
+  fix on the next S7 figure generation; metrics/normalization unchanged.
+
 ## ✅ S6 (func→anat registration) — LOCKED 2026-06-10
 Standard recipe: `sct_register_multimodal` 3-stage cord-seg-driven
 (centermassrot → columnwise → bsplinesyn) — CoSpi `spi06_1fov_reg.sh` /
