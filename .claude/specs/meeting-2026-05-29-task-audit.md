@@ -76,6 +76,23 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
   by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
+## ✅ S6 (func→anat registration) — LOCKED 2026-06-10
+Standard recipe: `sct_register_multimodal` 3-stage cord-seg-driven
+(centermassrot → columnwise → bsplinesyn) — CoSpi `spi06_1fov_reg.sh` /
+SCT batch_processing / Kaptan 2023. Step-local metric = per-slice cord Dice.
+Dev-cohort **9 PASS / 1 WARN** (≥80%). Finalized:
+- **DOC-1** — cited the Dice cutoffs in policy (pass≥0.85 = Cohen-Adad 2014 /
+  De Leener 2017 cord-reg band; 0.65 warn/fail = usable floor).
+- **FEAT-3** — per-slice Dice bar now has affine-derived **caudal/rostral** end
+  labels (no longer just "Slice (Z)").
+- **BUG-4** — `render_sagittal` S/I/A/P markers were hardcoded (A/P FLIPPED on
+  this (L,A,S) cohort); now derived from the affine via `aff2axcodes`. Shared
+  fix benefits S6 AND S7 (S7 figures regenerate when S7 is finalized). S6 cohort
+  figures regenerated (`scripts/gen_s6_reportlets_reg.py`), dashboard refreshed,
+  both fixes spot-checked visually.
+FEAT-4 (low-Dice slice exclusion → endpoint A/B) is OUT — an on-top research
+experiment, not core S6.
+
 ## ✅ S5 (distortion correction) — LOCKED 2026-06-10
 Standard SDC, always-on: selection ladder **TOPUP** (reverse-PE) → **FUGUE**
 (GRE, intentional stub) → **SyN** (data-driven default, no field map) — matches

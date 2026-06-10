@@ -164,9 +164,9 @@ def render_s6_composite(
         (epi_cord[x_mid, :, :], epi_cyan, 0.0, contour_lw),
     ]
     render_sagittal(ax_sag_b, bold[x_mid, :, :], sag_overlays, vmin_b, vmax_b,
-                    pixel_aspect=sag_aspect)
+                    pixel_aspect=sag_aspect, affine=bold_img.affine)
     render_sagittal(ax_sag_a, anat[x_mid, :, :], sag_overlays, vmin_a, vmax_a,
-                    pixel_aspect=sag_aspect)
+                    pixel_aspect=sag_aspect, affine=bold_img.affine)
     sag_label_y = sag_y0 + sag_h + 0.012
     fig.text(sag_x_b + sag_w_each / 2, sag_label_y, "BOLD",
              color=TEXT, fontsize=13, fontweight="bold", ha="center", va="bottom")
@@ -274,7 +274,8 @@ def render_s6_dice_per_slice(
                     "S6 cord_dice_per_slice: anat cord seg in BOLD geometry unavailable")
         return
 
-    a = nib.load(funccrop_mask_path).get_fdata() > 0.5
+    a_img = nib.load(funccrop_mask_path)
+    a = a_img.get_fdata() > 0.5
     b = nib.load(anat_dseg_in_bold_path).get_fdata() > 0.5
     if a.shape != b.shape:
         from spinalfmriprep.reportlets_common import stub_figure
@@ -305,6 +306,14 @@ def render_s6_dice_per_slice(
     ax.axhline(fail_below, linestyle="--", color="#ef4444", linewidth=0.9,
                label=f"FAIL < {fail_below:.2f}")
     ax.set_xlabel("Slice (Z)", color="#e6e8ec")
+    # Caudal/rostral end labels from the mask's Z orientation (not hardcoded):
+    # +Z toward Superior (head) = rostral; toward Inferior (feet) = caudal.
+    _zc = nib.orientations.aff2axcodes(a_img.affine)[2]
+    _lo, _hi = ("caudal", "rostral") if _zc == "S" else ("rostral", "caudal")
+    ax.text(0.0, -0.16, f"← {_lo}", transform=ax.transAxes, color="#9aa0a6",
+            fontsize=9, ha="left", va="top")
+    ax.text(1.0, -0.16, f"{_hi} →", transform=ax.transAxes, color="#9aa0a6",
+            fontsize=9, ha="right", va="top")
     ax.set_ylabel("Cord Dice (EPI ∩ anat)", color="#e6e8ec")
     ax.set_ylim(0, 1.0)
     ax.set_title("S6 — Cord segmentation Dice by slice",

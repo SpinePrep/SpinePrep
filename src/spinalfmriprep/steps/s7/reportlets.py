@@ -156,7 +156,7 @@ def render_s7_pam50_on_func(
         (sag_epi, epi_cyan, 0.0, contour_lw),
     ]
     render_sagittal(ax_sag_f, sag_func, sag_overlays, vmin, vmax,
-                    pixel_aspect=sag_aspect)
+                    pixel_aspect=sag_aspect, affine=fimg.affine)
 
     # Spinal-levels sagittal: render the level integers as a color
     # block backdrop, with the cord contour drawn on top so the user
@@ -184,7 +184,7 @@ def render_s7_pam50_on_func(
     else:
         # No levels — show a second funcref strip so the layout is balanced
         render_sagittal(ax_sag_l, sag_func, sag_overlays, vmin, vmax,
-                        pixel_aspect=sag_aspect)
+                        pixel_aspect=sag_aspect, affine=fimg.affine)
 
     sag_label_y = sag_y0 + sag_h + 0.012
     fig.text(sag_x_f + sag_w_each / 2, sag_label_y, "Funcref",
