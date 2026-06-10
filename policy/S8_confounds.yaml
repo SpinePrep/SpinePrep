@@ -80,10 +80,12 @@ retroicor:
   hr_rvt_enabled: true             # heart rate + RVT slow regressors (2 cols; popp --rvt --heartrate)
 
 # ----------------------------------------------------------------------
-# 4. Cosine basis (always present)
+# 4. Cosine basis (optional; default ON)
 # DCT high-pass equivalent. Default 1/100 s = 0.01 Hz (Kaptan 2023 /
 # Dabbagh 2024 cord standard). fMRIPrep brain default is 1/128 s.
+# enabled: false omits the family (e.g. when the analyst's GLM owns high-pass).
 cosine:
+  enabled: true                    # toggle the DCT high-pass family
   cutoff_hz: 0.01                  # = 1/100 s
 
 # ----------------------------------------------------------------------
@@ -95,7 +97,7 @@ cosine:
 # eigenvalue-intersection cutoff. Off by default v1; default ON for v2
 # pending validation on the 5 reg datasets.
 spinalcompcor:
-  enabled: true                    # ON by default
+  enabled: true                    # optional family; ON by default, set false to omit
   dilation_mm: 18.0                # Hemmerling 2025 noise ROI (rounded to voxels)
   edge_voxel_remove: 3             # up to 3 voxels at slice FOV edge
   pre_pca_mean_center: true        # fMRIPrep convention (paper omits; safer)
