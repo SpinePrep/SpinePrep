@@ -8,7 +8,6 @@ Deterministic: same chain → byte-identical outputs.
 
 from __future__ import annotations
 
-import gzip
 import hashlib
 import json
 import os
@@ -19,7 +18,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-import nibabel as nib
 import numpy as np
 import pandas as pd
 
@@ -739,252 +737,6 @@ def _build_cohort_tsnr_heatmap(
     return len(df)
 
 
-def _canonical_segment_filter(
-    labels: list[str], canonical_range: tuple[int, int],
-) -> list[str]:
-    """Subset hemicord ROI labels to a canonical segment range.
-
-    Labels look like ``VL_segC5``, ``DR_segC8``, ``VL_segT1``. The range
-    is given as ``(2, 8)`` for C2..C8 etc. Kaptan 2023 convention: C3-T1.
-    """
-    lo, hi = canonical_range
-    keep = []
-    for lab in labels:
-        m = lab.split("_seg")
-        if len(m) != 2:
-            continue
-        tag = m[1]
-        # Map segment tag to integer (C1..C8 → 1..8, T1 → 9 by convention)
-        idx: Optional[int] = None
-        if tag.startswith("C") and tag[1:].isdigit():
-            idx = int(tag[1:])
-        elif tag.startswith("T") and tag[1:].isdigit():
-            idx = 8 + int(tag[1:])
-        elif tag.isdigit():
-            idx = int(tag)
-        if idx is not None and lo <= idx <= hi:
-            keep.append(lab)
-    return keep
-
-
-def _collect_fc_matrices(
-    out_dir: Path, records: list[dict],
-) -> list[tuple[str, str, pd.DataFrame]]:
-    """Return [(dataset_key, subject, matrix), …] for every S10 PASS/WARN
-    run with a hemicord Fisher-z TSV on disk.
-    """
-    s10_recs = [r for r in records if r.get("step") == "S10"
-                and r.get("status") in ("PASS", "WARN")]
-    out = []
-    for r in s10_recs:
-        sub = r.get("subject"); ds = r.get("dataset_key"); rid = r.get("run_id")
-        path = (out_dir / "derivatives" / "spinalfmriprep" / ds
-                / f"sub-{sub}" / "func"
-                / f"{rid}_desc-hemicord_fisherz_connectivity.tsv")
-        if not path.exists():
-            continue
-        try:
-            mat = pd.read_csv(path, sep="\t", index_col=0)
-            out.append((ds, sub, mat))
-        except Exception:
-            continue
-    return out
-
-
-def _summarise_fc_stack(
-    matrices: list[pd.DataFrame], labels: list[str], consistency_thr: float,
-) -> Optional[tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
-    """Stack matrices restricted to `labels` (intersection-with-canonical),
-    return (mean_z, consistency, per-cell N).
-    """
-    aligned = []
-    for m in matrices:
-        cols = [c for c in labels if c in m.columns]
-        if len(cols) < 2:
-            continue
-        sub = m.loc[cols, cols].reindex(index=labels, columns=labels)
-        aligned.append(sub.to_numpy())
-    if not aligned:
-        return None
-    arr = np.stack(aligned, axis=0)
-    mean_z = np.nanmean(arr, axis=0)
-    n_per_cell = np.isfinite(arr).sum(axis=0)
-    consistency = (np.abs(arr) > consistency_thr).sum(axis=0) / np.maximum(n_per_cell, 1)
-    return (
-        pd.DataFrame(mean_z, index=labels, columns=labels),
-        pd.DataFrame(consistency, index=labels, columns=labels),
-        pd.DataFrame(n_per_cell, index=labels, columns=labels),
-    )
-
-
-def _build_cohort_fc_summary(
-    out_dir: Path, records: list[dict], policy: dict,
-    out_mean_tsv: Path, out_consistency_tsv: Path, out_png: Path,
-) -> dict[str, Any]:
-    """Stratified group FC summary (audit B5).
-
-    For each dataset_key, emit a Fisher-z mean + consistency matrix
-    restricted to the dataset's intersection ROIs. The headline plot
-    shows per-dataset panels side-by-side. A cross-dataset summary on
-    the canonical Kaptan 2023 segment range (C3-T1) is appended at the
-    bottom and written to the TSV outputs.
-    """
-    cfg = policy.get("cohort_views", {}).get("fc_summary", {})
-    consistency_thr = float(cfg.get("consistency_z_threshold", 0.3))
-    canonical = cfg.get("canonical_segment_range", [3, 9])  # C3..T1
-    canonical = (int(canonical[0]), int(canonical[1]))
-
-    all_mats = _collect_fc_matrices(out_dir, records)
-    if not all_mats:
-        return _fc_placeholder(out_mean_tsv, out_consistency_tsv, out_png,
-                               "No FC matrices found on chain.", 0, 0)
-
-    # Per-dataset stratification
-    by_dataset: dict[str, list[pd.DataFrame]] = {}
-    for ds, _sub, m in all_mats:
-        by_dataset.setdefault(ds, []).append(m)
-
-    per_dataset_summaries: list[tuple[str, pd.DataFrame, pd.DataFrame, pd.DataFrame]] = []
-    for ds, mats in sorted(by_dataset.items()):
-        # Dataset-level intersection (subjects within a protocol have
-        # consistent coverage)
-        common = set(mats[0].columns)
-        for m in mats[1:]:
-            common &= set(m.columns)
-        common = sorted(common)
-        if len(common) < 2:
-            continue
-        out = _summarise_fc_stack(mats, common, consistency_thr)
-        if out is None:
-            continue
-        mean_df, cons_df, n_df = out
-        per_dataset_summaries.append((ds, mean_df, cons_df, n_df))
-
-    # Canonical cross-dataset Kaptan range — restrict every matrix to the
-    # canonical segment range first, then intersect.
-    canonical_labels_per_mat: list[set[str]] = []
-    canonical_mats: list[pd.DataFrame] = []
-    for _ds, _sub, m in all_mats:
-        kept = _canonical_segment_filter(list(m.columns), canonical)
-        if kept:
-            canonical_labels_per_mat.append(set(kept))
-            canonical_mats.append(m)
-    cross_summary = None
-    if canonical_labels_per_mat:
-        cross_common = set.intersection(*canonical_labels_per_mat)
-        cross_common = sorted(cross_common)
-        if len(cross_common) >= 2:
-            cross_summary = _summarise_fc_stack(
-                canonical_mats, cross_common, consistency_thr,
-            )
-
-    if not per_dataset_summaries and cross_summary is None:
-        return _fc_placeholder(out_mean_tsv, out_consistency_tsv, out_png,
-                               "Every dataset has <2 common ROIs and the canonical "
-                               f"range C{canonical[0]}-{'C' if canonical[1]<=8 else 'T'}"
-                               f"{canonical[1] if canonical[1]<=8 else canonical[1]-8} "
-                               "yields no shared subset.",
-                               len(all_mats), 0)
-
-    # Write TSV outputs: header-prefixed sections per dataset + cross
-    out_mean_tsv.parent.mkdir(parents=True, exist_ok=True)
-    with open(out_mean_tsv, "w", encoding="utf-8") as fh_mean, \
-         open(out_consistency_tsv, "w", encoding="utf-8") as fh_cons:
-        for ds, mean_df, cons_df, _n_df in per_dataset_summaries:
-            fh_mean.write(f"# dataset={ds}  n_runs={len(by_dataset[ds])}\n")
-            mean_df.to_csv(fh_mean, sep="\t", float_format="%.4f")
-            fh_mean.write("\n")
-            fh_cons.write(f"# dataset={ds}  n_runs={len(by_dataset[ds])}\n")
-            cons_df.to_csv(fh_cons, sep="\t", float_format="%.4f")
-            fh_cons.write("\n")
-        if cross_summary is not None:
-            mean_df, cons_df, _n = cross_summary
-            fh_mean.write(f"# cross_dataset_canonical=C{canonical[0]}..C{canonical[1]} "
-                          f"n_matrices={len(canonical_mats)}\n")
-            mean_df.to_csv(fh_mean, sep="\t", float_format="%.4f")
-            fh_mean.write("\n")
-            fh_cons.write(f"# cross_dataset_canonical=C{canonical[0]}..C{canonical[1]} "
-                          f"n_matrices={len(canonical_mats)}\n")
-            cons_df.to_csv(fh_cons, sep="\t", float_format="%.4f")
-            fh_cons.write("\n")
-
-    # PNG: grid of per-dataset panels + cross-dataset row
-    try:
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-        n_panels = len(per_dataset_summaries) + (1 if cross_summary else 0)
-        cols = 2  # mean | consistency
-        fig, axes = plt.subplots(n_panels, cols,
-                                 figsize=(11, 4.2 * n_panels))
-        if n_panels == 1:
-            axes = np.array([axes])
-        row = 0
-        for ds, mean_df, cons_df, n_df in per_dataset_summaries:
-            _draw_fc_panel(axes[row, 0], mean_df, f"{ds[:30]}\nmean Fisher-z (n={len(by_dataset[ds])})",
-                           cmap="RdBu_r", vmin=-1, vmax=1)
-            _draw_fc_panel(axes[row, 1], cons_df, f"{ds[:30]}\nconsistency |z|>{consistency_thr}",
-                           cmap="viridis", vmin=0, vmax=1)
-            row += 1
-        if cross_summary is not None:
-            mean_df, cons_df, n_df = cross_summary
-            title_seg = f"C{canonical[0]}..C{canonical[1]}"
-            _draw_fc_panel(axes[row, 0], mean_df,
-                           f"cross-dataset ({title_seg})\nmean Fisher-z (n={len(canonical_mats)})",
-                           cmap="RdBu_r", vmin=-1, vmax=1)
-            _draw_fc_panel(axes[row, 1], cons_df,
-                           f"cross-dataset ({title_seg})\nconsistency |z|>{consistency_thr}",
-                           cmap="viridis", vmin=0, vmax=1)
-        fig.tight_layout()
-        fig.savefig(out_png, dpi=120, bbox_inches="tight")
-        plt.close(fig)
-    except Exception:
-        pass
-
-    return {
-        "n_matrices": len(all_mats),
-        "n_datasets": len(per_dataset_summaries),
-        "cross_dataset_n_common_rois": (cross_summary[0].shape[0]
-                                        if cross_summary else 0),
-    }
-
-
-def _draw_fc_panel(ax, df: pd.DataFrame, title: str,
-                   cmap: str, vmin: float, vmax: float) -> None:
-    arr = df.to_numpy()
-    im = ax.imshow(arr, cmap=cmap, vmin=vmin, vmax=vmax, interpolation="nearest")
-    ax.set_title(title, fontsize=9)
-    labels = list(df.columns)
-    step = max(1, len(labels) // 18)
-    tick_idx = list(range(0, len(labels), step))
-    ax.set_xticks(tick_idx)
-    ax.set_yticks(tick_idx)
-    ax.set_xticklabels([labels[i] for i in tick_idx], rotation=90, fontsize=6)
-    ax.set_yticklabels([labels[i] for i in tick_idx], fontsize=6)
-    ax.figure.colorbar(im, ax=ax, shrink=0.7)
-
-
-def _fc_placeholder(out_mean_tsv: Path, out_cons_tsv: Path, out_png: Path,
-                    reason: str, n_matrices: int, n_common: int) -> dict[str, Any]:
-    out_mean_tsv.parent.mkdir(parents=True, exist_ok=True)
-    out_mean_tsv.write_text(f"# {reason}\n")
-    out_cons_tsv.write_text(f"# {reason}\n")
-    try:
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-        fig, ax = plt.subplots(figsize=(6, 3))
-        ax.axis("off")
-        ax.text(0.5, 0.5, reason, ha="center", va="center",
-                fontsize=11, wrap=True)
-        fig.savefig(out_png, dpi=120, bbox_inches="tight")
-        plt.close(fig)
-    except Exception:
-        out_png.write_bytes(b"")
-    return {"n_matrices": n_matrices, "n_datasets": 0,
-            "cross_dataset_n_common_rois": n_common}
-
-
 # ---------------------------------------------------------------------------
 # Tier 3: publication & reproducibility
 # ---------------------------------------------------------------------------
@@ -1133,7 +885,7 @@ message: "If you use SpinalfMRIprep, please cite the methods listed in reference
 title: SpinalfMRIprep
 abstract: >
   Cervical spinal cord fMRI preprocessing pipeline. BIDS-Derivatives
-  compliant. Integrates SCT, FSL PNM, Nilearn, and PAM50 template.
+  compliant. Integrates SCT, FSL PNM, and PAM50 template.
 authors:
   - family-names: Sharifi
     given-names: Kiomars
@@ -1206,27 +958,6 @@ def _build_references_bib(out_path: Path) -> None:
   year={2024}
 }
 
-@article{cicchetti1994,
-  title={Guidelines, criteria, and rules of thumb for evaluating normed and standardized assessment instruments in psychology},
-  author={Cicchetti, D.V.},
-  journal={Psychological Assessment},
-  year={1994}
-}
-
-@article{shrout1979,
-  title={Intraclass correlations: uses in assessing rater reliability},
-  author={Shrout, P.E. and Fleiss, J.L.},
-  journal={Psychological Bulletin},
-  year={1979}
-}
-
-@article{marrelec2006,
-  title={Partial correlation for functional brain interactivity investigation in functional MRI},
-  author={Marrelec, G. and others},
-  journal={NeuroImage},
-  year={2006}
-}
-
 @article{dabbagh2024,
   title={Reliability of task-based fMRI in the dorsal horn of the human spinal cord},
   author={Dabbagh, A. and others},
@@ -1262,13 +993,6 @@ def _build_references_bib(out_path: Path) -> None:
   year={2014}
 }
 
-@article{vahdat2020,
-  title={Dynamic Functional Connectivity of Resting-State Spinal Cord fMRI Reveals Fine-Grained Intrinsic Architecture},
-  author={Vahdat, S. and others},
-  journal={Neuron},
-  year={2020}
-}
-
 @article{cospine2025,
   title={CoSpine open access simultaneous cortico-spinal fMRI database of thermal pain and motor tasks},
   author={CoSpine consortium},
@@ -1281,12 +1005,6 @@ def _build_references_bib(out_path: Path) -> None:
   author={De Leener, B. and others},
   journal={NeuroImage},
   year={2017}
-}
-
-@misc{nilearn,
-  title={Nilearn: machine learning for NeuroImaging in Python},
-  author={Abraham, A. and others},
-  year={2014}
 }
 """
     out_path.write_text(bib)
@@ -1490,7 +1208,6 @@ def _build_methods_manifest(
     pipeline_v = recipe.get("pipeline_git_describe") or "0.0.0"
     sct_v = recipe.get("sct_version") or "n/a"
     fsl_v = recipe.get("fsl_version") or "n/a"
-    nilearn_v = recipe.get("package_versions", {}).get("nilearn") or "n/a"
     nibabel_v = recipe.get("package_versions", {}).get("nibabel") or "n/a"
 
     md = f"""# Methods boilerplate (auto-generated by SpinalfMRIprep S11)
@@ -1500,15 +1217,14 @@ def _build_methods_manifest(
 > here reflect what actually ran (read live from policy YAMLs).
 
 **Pipeline**: SpinalfMRIprep {pipeline_v}.
-**Tools**: Spinal Cord Toolbox {sct_v}; FSL {fsl_v};
-Nilearn {nilearn_v}; NiBabel {nibabel_v}.
+**Tools**: Spinal Cord Toolbox {sct_v}; FSL {fsl_v}; NiBabel {nibabel_v}.
 
 ## Preprocessing
 
 Cervical spinal cord BOLD data were preprocessed using SpinalfMRIprep,
-a custom pipeline integrating Spinal Cord Toolbox (SCT) [@sct2017],
-FSL Physiological Noise Modelling [@brooks2008], and Nilearn
-[@nilearn], with templates from PAM50 [@deleener2018].
+a custom pipeline integrating Spinal Cord Toolbox (SCT) [@sct2017] and
+FSL Physiological Noise Modelling [@brooks2008], with templates from
+PAM50 [@deleener2018].
 
 **Anatomical (S2)**: T1w / T2w / T2\\*-MEGRE images were segmented via
 SCT contrast-agnostic spinal cord segmentation, labeled via
@@ -1569,7 +1285,7 @@ methods listed in `CITATION.bib` (auto-generated alongside this file).
 
 Per-step policy SHA256 + pipeline Git SHA captured in
 `reproducibility_receipt.json`. Tool versions: SCT {sct_v}, FSL {fsl_v},
-Nilearn {nilearn_v}, NiBabel {nibabel_v}.
+NiBabel {nibabel_v}.
 """
 
     out_md.parent.mkdir(parents=True, exist_ok=True)

@@ -86,13 +86,10 @@ def _process_s3_2_outlier_gating(
     mask_img = nib.load(cordmask_func_path)
     mask_data = mask_img.get_fdata() > 0
 
-    # Drop dummy volumes (must match S3.1)
-    dummy_count = policy.get("dummy_volumes", {}).get("count", 4)
-    if bold_data.ndim == 4 and bold_data.shape[3] > dummy_count:
-        bold_data = bold_data[..., dummy_count:]
-    else:
-        # If already dropped or short, use as is (warn?)
-        pass
+    # Dummies were ALREADY dropped in S3.1 — this input (func_bold_coarse) is
+    # post-drop. Do NOT drop again (the old re-drop discarded the first real
+    # volumes). dummy_count is read only for reporting/labels.
+    dummy_count = policy.get("dummy", {}).get("drop_count", 4)
 
     n_frames = bold_data.shape[3]
 

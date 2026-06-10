@@ -567,9 +567,12 @@ def render_s8_carpet_plot(
         trace_specs.append((fd, "FD (mm)", "#7dcfff", fd_thresh,
                             f"FD = {fd_thresh:.2f} mm"))
     if has_dvars:
-        mu_d = float(np.mean(dvars)); sd_d = float(np.std(dvars))
+        # Match the actual DVARS gate (Tukey Q3 + 1.5·IQR), same as the
+        # fd_dvars_outliers reportlet — not the abandoned μ+3σ rule.
+        q1_d, q3_d = np.percentile(dvars, [25, 75])
+        dvars_thr = float(q3_d + 1.5 * (q3_d - q1_d))
         trace_specs.append((dvars, "DVARS", "#ef4444",
-                            mu_d + 3 * sd_d, "DVARS μ + 3σ"))
+                            dvars_thr, "DVARS Q3 + 1.5·IQR"))
 
     for ax, (vec, label, color, thr, thr_lbl) in zip(trace_axes, trace_specs):
         _setup_dark_axes(ax)

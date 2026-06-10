@@ -563,10 +563,11 @@ def _process_session(
     else:
         if reg_rootlet and reg_rootlet.get("status") == "FAIL":
             msg = reg_rootlet.get("failure_message") or "rootlet registration failed."
-            return _fail_run(subject, session, run_id, str(msg, dataset_key=dataset_key))
+            return _fail_run(subject, session, run_id, str(msg), dataset_key=dataset_key)
         return _fail_run(
             subject, session, run_id,
             str(reg_disc.get("failure_message") or "Registration failed."),
+            dataset_key=dataset_key,
         )
 
     xfm_dir = _derivatives_xfm_dir(out_root, subject, session, dataset_key)
@@ -596,10 +597,11 @@ def _process_session(
     except Exception:
         labels_metrics = {}
     if isinstance(labels_metrics, dict):
-        if "n_vertebrae" in labels_metrics:
-            metrics["n_vertebral_levels"] = int(labels_metrics["n_vertebrae"])
-        if "n_discs" in labels_metrics:
-            metrics["n_disc_levels"] = int(labels_metrics["n_discs"])
+        # _run_totalspineseg emits vertebrae_count / disc_count (segment.py).
+        if "vertebrae_count" in labels_metrics:
+            metrics["n_vertebral_levels"] = int(labels_metrics["vertebrae_count"])
+        if "disc_count" in labels_metrics:
+            metrics["n_disc_levels"] = int(labels_metrics["disc_count"])
     rootlets_meta = rootlets_info if isinstance(rootlets_info, dict) else {}
     if rootlets_meta.get("status") == "PASS" and rootlets_meta.get("rootlets_path"):
         try:

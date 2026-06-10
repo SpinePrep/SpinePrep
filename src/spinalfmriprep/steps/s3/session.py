@@ -320,7 +320,7 @@ def _run_s3_test_harness(out: Optional[str]) -> StepResult:
         nib.save(mask_img, cordmask_dseg_path)
 
     policy = {
-        "dummy_volumes": {"count": 4},
+        "dummy": {"drop_count": 4},
         "func_localization": {"enabled": True, "method": "deepseg", "task": "spinalcord"},
         "crop": {"mask_diameter_mm": 40},
     }

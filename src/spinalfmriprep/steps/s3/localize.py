@@ -305,8 +305,10 @@ def _process_s3_1_dummy_drop_and_localization(
     bold_affine = bold_img.affine
     bold_data = bold_img.get_fdata()
 
-    # Get dummy volume count from policy
-    dummy_volumes = policy.get("dummy_volumes", {}).get("count", 4)
+    # Get dummy volume count from policy. This is the ONE place dummies are
+    # dropped — S3.2/S3.3 consume func_bold_coarse (already post-drop) and must
+    # NOT drop again.
+    dummy_volumes = policy.get("dummy", {}).get("drop_count", 4)
 
     # Drop dummy volumes
     if bold_data.ndim == 4:

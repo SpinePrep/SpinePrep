@@ -253,10 +253,11 @@ def check_S4_func_motion_correction(
 
         # Check reportlets
         reportlets = run.get("reportlets", {})
+        # DVARS was folded into the motion-traces panel (row 3); the standalone
+        # S4_dvars_plot was dropped, so it is no longer required here.
         required_reportlets = [
             "S4_motion_traces",
             "S4_tsnr_comparison",
-            "S4_dvars_plot",
         ]
         for key in required_reportlets:
             rel = reportlets.get(key)

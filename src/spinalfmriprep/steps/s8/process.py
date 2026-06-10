@@ -18,9 +18,7 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
-import os
 import re
-import shutil
 import subprocess
 from pathlib import Path
 from typing import Any, Optional
@@ -159,51 +157,6 @@ def _erode_mask_voxels(mask: np.ndarray, n: int = 1) -> np.ndarray:
     return binary_erosion(mask, iterations=n)
 
 
-def _csf_slicewise(
-    bold_path: Path, csf_mask_path: Path,
-    top_variance_fraction: float = 0.20,
-    erode_voxels: int = 0,
-    min_voxels_per_slice: int = 5,
-) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
-    """For each slice z: mean timeseries of the top-N%-variance voxels
-    in the eroded CSF mask. One regressor per slice with enough voxels.
-    """
-    bimg = nib.load(bold_path)
-    bold = bimg.get_fdata()  # (X, Y, Z, T)
-    if bold.ndim != 4:
-        raise ValueError(f"BOLD not 4D: {bold.shape}")
-    csf = (nib.load(csf_mask_path).get_fdata() > 0.5)
-    if csf.shape[:3] != bold.shape[:3]:
-        raise ValueError(
-            f"CSF mask shape {csf.shape} != BOLD {bold.shape[:3]}"
-        )
-    csf_eroded = _erode_mask_voxels(csf, erode_voxels)
-    n_slices = bold.shape[2]
-    n_volumes = bold.shape[3]
-    cols: dict[str, np.ndarray] = {}
-    meta: dict[str, Any] = {
-        "n_slices_total": n_slices,
-        "n_slices_with_csf": 0,
-        "slice_voxel_counts": [],
-        "skipped_slices": [],
-    }
-    for z in range(n_slices):
-        m = csf_eroded[:, :, z]
-        if int(m.sum()) < min_voxels_per_slice:
-            meta["slice_voxel_counts"].append(int(m.sum()))
-            meta["skipped_slices"].append(z)
-            continue
-        ts = bold[:, :, z][m]  # (n_voxels, T)
-        var = ts.var(axis=1)
-        n_keep = max(1, int(np.ceil(var.size * top_variance_fraction)))
-        idx_top = np.argsort(var)[-n_keep:]
-        mean_ts = ts[idx_top].mean(axis=0).astype(np.float32)
-        cols[f"csf_slice{z:02d}"] = mean_ts
-        meta["slice_voxel_counts"].append(int(m.sum()))
-        meta["n_slices_with_csf"] += 1
-    return cols, meta
-
-
 def _csf_acompcor_slicewise(
     bold_path: Path, csf_mask_path: Path, work_dir: Path,
     n_components: int = 5,
@@ -221,7 +174,6 @@ def _csf_acompcor_slicewise(
     ``spi12_acompcor.m``, which uses 5 PCs/slice). Emits up to ``n_components``
     columns per slice: ``csf_slice{z}_pc{k}``.
     """
-    import subprocess
     bimg = nib.load(bold_path)
     bold = bimg.get_fdata()
     if bold.ndim != 4:
