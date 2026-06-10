@@ -323,18 +323,36 @@ def render_axial_tile(
         _orient_axial(ax)
 
 
+def _sagittal_markers(affine: Optional[np.ndarray]) -> tuple[str, str, str, str]:
+    """(top, bottom, left, right) orientation letters for the rot90'd sagittal
+    display of data[x, :, :] (axes y=1, z=2). Derived from the affine so the
+    A/P and S/I markers are correct for any orientation (BUG-4); falls back to
+    the RAS assumption (S,I,A,P) when no affine is given.
+
+    rot90 maps the (ny,nz) slice to display rows = Z (top=max Z) and display
+    cols = Y (left=min Y): top = +Z dir, bottom = −Z, left = −Y, right = +Y.
+    """
+    if affine is None:
+        return "S", "I", "A", "P"
+    codes = nib.orientations.aff2axcodes(affine)  # e.g. ('L','A','S')
+    opp = {"R": "L", "L": "R", "A": "P", "P": "A", "S": "I", "I": "S"}
+    y_code, z_code = codes[1], codes[2]
+    return z_code, opp[z_code], opp[y_code], y_code
+
+
 def render_sagittal(
     ax, sag_yz: np.ndarray,
     overlays: list[tuple[np.ndarray, str, float, float]],
     vmin: float, vmax: float,
     z_label_levels: Optional[dict[int, str]] = None,
     pixel_aspect: float = 1.0,  # = (y_voxel_mm / z_voxel_mm) AFTER rot90
+    affine: Optional[np.ndarray] = None,  # source affine → correct S/I/A/P
 ) -> None:
     """Sagittal panel: anat with semi-transparent overlays + contours.
 
     overlays = list of (binary_mask_yz, color_hex, alpha, linewidth).
     `linewidth > 0` ⇒ contour; `alpha > 0 and linewidth == 0` ⇒
-    alpha-blended fill. S/I/A/P orientation markers + optional
+    alpha-blended fill. S/I/A/P orientation markers (affine-derived) + optional
     vertebral-level labels along the right margin.
     """
     disp = np.rot90(sag_yz)
@@ -358,13 +376,14 @@ def render_sagittal(
         s.set_color(BORDER); s.set_linewidth(0.8)
     _bbox = dict(facecolor="black", alpha=0.55, edgecolor="none",
                  boxstyle="round,pad=0.25")
-    ax.text(0.05, 0.97, "S", transform=ax.transAxes, color=MARKER_YELLOW,
+    _top, _bot, _left, _right = _sagittal_markers(affine)
+    ax.text(0.05, 0.97, _top, transform=ax.transAxes, color=MARKER_YELLOW,
             fontsize=14, fontweight="bold", ha="left", va="top", bbox=_bbox)
-    ax.text(0.05, 0.03, "I", transform=ax.transAxes, color=MARKER_YELLOW,
+    ax.text(0.05, 0.03, _bot, transform=ax.transAxes, color=MARKER_YELLOW,
             fontsize=14, fontweight="bold", ha="left", va="bottom", bbox=_bbox)
-    ax.text(0.03, 0.5, "A", transform=ax.transAxes, color=MARKER_YELLOW,
+    ax.text(0.03, 0.5, _left, transform=ax.transAxes, color=MARKER_YELLOW,
             fontsize=14, fontweight="bold", ha="left", va="center", bbox=_bbox)
-    ax.text(0.97, 0.5, "P", transform=ax.transAxes, color=MARKER_YELLOW,
+    ax.text(0.97, 0.5, _right, transform=ax.transAxes, color=MARKER_YELLOW,
             fontsize=14, fontweight="bold", ha="right", va="center", bbox=_bbox)
     if z_label_levels:
         for z, lbl in z_label_levels.items():

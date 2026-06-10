@@ -43,7 +43,13 @@ reproducibility:
   capture_provenance: true
 
 qc_thresholds:
-  pass_dice_min: 0.85
+  # Cord-Dice is the registration-validation metric per Cohen-Adad et al. 2014
+  # (cord template/registration), De Leener et al. 2017 (SCT), and Gros et al.
+  # 2019 (sct_deepseg), which report cord-seg/registration Dice in the
+  # ~0.85-0.95 band — hence pass≥0.85. The 0.65 warn/fail floor is the
+  # lower-quality-but-usable band (CoSpi-validated on cord-cropped EPI; below
+  # it registration is unreliable). DOC-1.
+  pass_dice_min: 0.85                # Cohen-Adad 2014 / De Leener 2017 cord-reg band
   pass_dice_min_syn_fallback: 0.80   # lower bar for S5 SyN-fallback runs
   warn_dice_min: 0.65
   fail_dice_below: 0.65
