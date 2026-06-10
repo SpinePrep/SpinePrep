@@ -76,6 +76,38 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
   FD, but verify the bulk(FLIRT-frame)+slicewise(SCT-frame) FD sum isn't inflated
   by frame inconsistency (ties to the BUG-1b frame-mixing caveat).
 
+## ✅ S8 (confounds + physio regressors) — LOCKED 2026-06-10
+Standard recipe: per-run confound matrix (BIDS-Derivatives TSV + JSON), 5
+families, native func space, no regression (analyst owns that at S9). Families:
+**motion** (S4 bulk+slicewise trans/derivative + FD, Power 2014), **CSF
+aCompCor** (5 PCs/slice via FSL `fslmeants --eig` + numpy detrend — CoSpi
+spi12 model, Slack-agreed engine), **RETROICOR** (FSL PNM, 32 EVs cardiac+
+resp+interactions, Kaptan/Dabbagh), **Cosine/DCT** high-pass (0.01 Hz), and
+**SpinalCompCor** (Hemmerling 2025). Step-local metric = per-slice design
+condition number + outlier fraction. Dev-cohort **10/10 not-FAIL** (0 FAIL; the
+WARNs are soft outlier_fraction + RETROICOR-skipped-no-physio, neither gates).
+Finalized:
+- **DEC-2** — CSF replaced: was top-20%-variance *mean* (1 col/slice); now
+  per-slice 5-PC aCompCor (`csf_slice{z}_pc{k}`). Engine swap SPM PhysIO → FSL
+  `fslmeants --eig --order 5` on per-voxel constant+linear-detrended BOLD,
+  decided with Gergely + Jan in Slack. Commit `96b3b24`.
+- **Per-slice condition gate (Option A)** — the per-slice CSF (~5×N_slices cols)
+  is applied slice-locally downstream (CoSpi/FEAT voxelwise EVs; verified
+  spi12→spi13→spi15), so the flat-matrix condition number is the wrong gate.
+  `_condition_number_slicewise` scores each slice's real design and gates on the
+  worst slice. Validated wf_reg_122: total cols exceed n_volumes on several runs
+  (flatly rank-deficient → ∞) but **worst per-slice cond = 36.5** (gate 1000);
+  global 9–28. Commit `3ae8cd7`.
+- **DEC-3 / DEC-4** — SpinalCompCor and Cosine/DCT are now optional families
+  (`spinalcompcor.enabled`, `cosine.enabled`; both default true, literature
+  standard). Verified enabled=false drops the columns. Commit `9210d2f`.
+- **DOC-2 / DONE-8** (earlier) — FD outlier threshold 0.5 mm = Power 2014 (not
+  Kaptan); outlier rate back to literature 2–30% band.
+- **BUG-1b / BUG-1d** (earlier) — motion includes Stage-1 bulk; stale PNM EV
+  artifacts cleared before regeneration.
+Promoted **S8 → wf_reg_122**. Voxelwise PC images (CoSpi spi12 4D layout) are an
+optional downstream-convenience add, not needed to lock.
+
 ## ✅ S7 (template normalization) — LOCKED 2026-06-10
 Standard recipe: PAM50 normalization, **atlas→native** (never push 4D BOLD into
 PAM50) — Eippert 2017 / SCT batch_processing / CoSpi spi08_10. Step-local metric
@@ -351,11 +383,13 @@ manifest+`--bids-root` path and fix README:76-103); flesh out the stub
     Validated on reg cohort (wf_reg_122): ds005884 107-vol runs have 181 total
     cols (flatly rank-deficient → ∞) but per-slice worst ≈ 15, global ≈ 11 →
     PASS.
-- **DEC-3 — "Spinal-cord regressor" optional.** No separate flag; SpinalCompCor
-  is ON by default. Clarify terminology (is it SpinalCompCor?), then set its
-  default to opt-in if desired.
-- **DEC-4 — Cosine/DCT regressors.** Always emitted (count volume-driven 5–11),
-  no toggle. If you may remove it, add `cosine.enabled` flag.
+- **DEC-3 — SpinalCompCor optional. ✅ DONE (2026-06-10).** Already gated by
+  `spinalcompcor.enabled` (default true; code default false). Comment clarified
+  it's an optional family. Commit `9210d2f`.
+- **DEC-4 — Cosine/DCT optional. ✅ DONE (2026-06-10).** Added `cosine.enabled`
+  (default true — DCT high-pass is the cord standard, Kaptan/Dabbagh; set false
+  when the analyst's GLM owns high-pass). Both toggles verified (enabled=false
+  drops the family's columns). Commit `9210d2f`.
 - **DEC-5 — Cross-correlation MoCo fallback.** `phase_cross_correlation` already
   exists (prior Stage-1, still in `detect_z_shift`). Only a `stage1.method`
   policy switch + default decision is open — not a build.
