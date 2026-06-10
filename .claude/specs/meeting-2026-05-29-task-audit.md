@@ -328,10 +328,29 @@ manifest+`--bids-root` path and fix README:76-103); flesh out the stub
   (σ≈2.12). One-line policy edit (`policy/S9_...yaml:16`) + update FWHM tolerance
   bands; literature default is defensible (CLAUDE.md principle 2). Could A/B on
   reg cohort.
-- **DEC-2 — CSF default = 5 PCs?** "29/27" is the *per-slice CSF* family
-  (variance-mean, Hemmerling 2025); the *5-PC* family is SpinalCompCor and
-  already emits exactly 5. No bug. If you want per-slice CSF replaced by 5-PC
-  PCA, add `csf_slicewise.method: {variance_mean|pca5}`.
+- **DEC-2 — CSF default = 5 PCs/slice. ✅ RESOLVED + DONE (2026-06-10).** The
+  user's "5 PCs from CSF per slice" is CoSpi's `spi12_acompcor.m` (5-component
+  noise-ROI PCA *per slice*), NOT our old `csf_slicewise` (top-20%-variance
+  *mean*, 1 col/slice) and NOT SpinalCompCor (global tissue-shell). My earlier
+  "no bug, already 5" was wrong — corrected.
+  - **Done:** replaced `_csf_slicewise` with `_csf_acompcor_slicewise` —
+    per-slice top-5 PCs (eigenvariates) via FSL `fslmeants --eig --order 5` on
+    per-voxel constant+linear-detrended BOLD (numpy lstsq, matches PhysIO's
+    pre-PCA step). Tools = Slack decision with Gergely + Jan Valošek (drop
+    Matlab SPM PhysIO, embed FSL). Emits `csf_slice{z}_pc{k}`. Verified on a real
+    run: 35 slices × 5 PCs = 175 cols, 0-mean eigenvariates. Commit `96b3b24`,
+    policy `acompcor_fslmeants_eig`, `n_components: 5`. Ref:
+    `research/physio_vs_fslmeants_acompcor`.
+  - **Consequence + fix (Option A, user-approved):** per-slice CSF → ~5×N_slices
+    cols in the flat TSV; CoSpi keeps these slice-local (FEAT voxelwise EVs —
+    each slice's GLM sees only its own 5 PCs, verified spi12→spi13→spi15). So the
+    flat-matrix condition number is the wrong gate. Replaced with
+    `_condition_number_slicewise`: score each slice's REAL design (globals + that
+    slice's per-slice cols), gate on the worst slice; report
+    `condition_number_global` + `condition_number_worst_slice`. Commit `3ae8cd7`.
+    Validated on reg cohort (wf_reg_122): ds005884 107-vol runs have 181 total
+    cols (flatly rank-deficient → ∞) but per-slice worst ≈ 15, global ≈ 11 →
+    PASS.
 - **DEC-3 — "Spinal-cord regressor" optional.** No separate flag; SpinalCompCor
   is ON by default. Clarify terminology (is it SpinalCompCor?), then set its
   default to opt-in if desired.
