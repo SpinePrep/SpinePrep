@@ -158,15 +158,30 @@ def run_S4_func_motion_correction(
         # Determine slice thickness from header
         img_current_ref = nib.load(robust_ref_path)
         slice_thickness = img_current_ref.header.get_zooms()[2]
+        cur_ref_data = img_current_ref.get_fdata()
+        run1_ref_data = nib.load(run1_ref_path).get_fdata()
 
-        # Compute shift
-        shift_mm, shift_slices = moco.detect_z_shift(
-            img_current_ref.get_fdata(),
-            nib.load(run1_ref_path).get_fdata(),
-            slice_thickness_mm=float(slice_thickness)
-        )
-        z_shift_detected_mm = shift_mm
-        z_shift_slices = shift_slices
+        # S3 crops each run to its OWN cord bounding box, so sibling-run
+        # references routinely differ in-plane (e.g. (33,34,11) vs (33,33,11)).
+        # Cross-run z-shift detection uses phase_cross_correlation, which raises
+        # "images must be same shape" on a mismatch. Detection is observability-
+        # only and z-shift correction is off by default, so skip (don't crash)
+        # when the shapes differ.
+        shift_mm, shift_slices = 0.0, 0
+        if cur_ref_data.shape != run1_ref_data.shape:
+            logger.warning(
+                f"[{step_code}] Skipping Z-shift detection: ref shape "
+                f"{cur_ref_data.shape} != run-01 ref {run1_ref_data.shape}")
+        else:
+            try:
+                shift_mm, shift_slices = moco.detect_z_shift(
+                    cur_ref_data, run1_ref_data,
+                    slice_thickness_mm=float(slice_thickness),
+                )
+                z_shift_detected_mm = shift_mm
+                z_shift_slices = shift_slices
+            except Exception as _ze:
+                logger.warning(f"[{step_code}] Z-shift detection failed: {_ze}")
 
         if abs(shift_mm) > threshold_mm:
             logger.warning(f"[{step_code}] Large Z-shift detected: {shift_mm:.2f}mm ({shift_slices} slices)")
