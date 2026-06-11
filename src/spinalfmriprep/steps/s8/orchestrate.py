@@ -15,6 +15,7 @@ from typing import Optional
 import yaml
 
 from .process import run_S8_confounds_and_physio_regressors
+from spinalfmriprep.lib.chain_scope import chain_scope
 
 logger = logging.getLogger(__name__)
 
@@ -175,8 +176,8 @@ def _find_cord_mask(out_dir: Path, run_id: str) -> Optional[Path]:
                  / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz")
     for cand in (
         out_dir / "work" / rel_local,
-        project_root / "work" / "done" / "reg" / "S3" / rel,
-        Path("work") / "done" / "reg" / "S3" / rel,
+        project_root / "work" / "done" / chain_scope(out_dir) / "S3" / rel,
+        Path("work") / "done" / chain_scope(out_dir) / "S3" / rel,
     ):
         if cand.exists():
             return cand
@@ -189,8 +190,8 @@ def _find_moco_params(out_dir: Path, run_id: str) -> tuple[Optional[Path], Optio
                     else Path.cwd())
     for base in (
         out_dir / "work" / "S4_func_motion_correction" / run_id,
-        project_root / "work" / "done" / "reg" / "S1" / "work" / "S4_func_motion_correction" / run_id,
-        project_root / "work" / "done" / "reg" / "S4" / "work" / "S4_func_motion_correction" / run_id,
+        project_root / "work" / "done" / chain_scope(out_dir) / "S1" / "work" / "S4_func_motion_correction" / run_id,
+        project_root / "work" / "done" / chain_scope(out_dir) / "S4" / "work" / "S4_func_motion_correction" / run_id,
     ):
         x = base / "moco_params_x.nii.gz"
         y = base / "moco_params_y.nii.gz"
@@ -206,8 +207,8 @@ def _find_frame_metrics(out_dir: Path, run_id: str) -> Optional[Path]:
     rel = (Path("S3_func_init_and_crop") / run_id / "metrics" / "frame_metrics.tsv")
     for base in (
         out_dir / "runs",
-        project_root / "work" / "done" / "reg" / "S3" / "runs",
-        Path("work") / "done" / "reg" / "S3" / "runs",
+        project_root / "work" / "done" / chain_scope(out_dir) / "S3" / "runs",
+        Path("work") / "done" / chain_scope(out_dir) / "S3" / "runs",
     ):
         p = base / rel
         if p.exists():

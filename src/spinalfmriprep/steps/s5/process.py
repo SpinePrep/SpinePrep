@@ -17,6 +17,7 @@ import numpy as np
 
 from spinalfmriprep.lib.run import run_command as _run_command
 from .mode import _pe_from_run
+from spinalfmriprep.lib.chain_scope import chain_scope
 
 
 _ANTS_DOCKER_IMAGE = "vnmd/ants_2.6.0:20250424"
@@ -1003,8 +1004,8 @@ def run_S5_func_distortion_correction(
     rel = Path("runs") / "S3_func_init_and_crop" / run_id / "funccrop_mask.nii.gz"
     for cand in (
         out_dir / "work" / "S3_func_init_and_crop" / run_id / "funccrop_mask.nii.gz",
-        project_root / "work" / "done" / "reg" / "S3" / rel,
-        Path("work") / "done" / "reg" / "S3" / rel,
+        project_root / "work" / "done" / chain_scope(out_dir) / "S3" / rel,
+        Path("work") / "done" / chain_scope(out_dir) / "S3" / rel,
     ):
         if cand.exists():
             bold_space_cord_mask = cand
