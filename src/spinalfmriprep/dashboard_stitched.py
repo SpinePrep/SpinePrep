@@ -28,7 +28,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-VISIBLE_SCOPES: tuple[str, ...] = ("reg", "full")
+VISIBLE_SCOPES: tuple[str, ...] = ("reg", "full", "exp")
 MAX_STEP = 11
 
 # Steps removed from the active pipeline. They are skipped entirely in the

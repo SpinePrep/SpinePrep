@@ -136,8 +136,8 @@ def main() -> int:
     )
     parser.add_argument(
         "scope",
-        choices=["smoke", "reg", "full"],
-        help="Scope chain (smoke, reg, or full)",
+        choices=["smoke", "reg", "full", "exp"],
+        help="Scope chain (smoke, reg, full, or exp)",
     )
     parser.add_argument(
         "step",
