@@ -16,6 +16,7 @@ from typing import Optional
 import yaml
 
 from .process import run_S5_func_distortion_correction
+from spinalfmriprep.lib.chain_scope import chain_scope
 
 logger = logging.getLogger(__name__)
 
@@ -66,11 +67,12 @@ def _anat_search_roots(
     # Try the current workfolder first (in case S2 ran in-place or was
     # symlinked into derivatives)
     bases = [out_path]
-    # Also the S2 chain target
-    s2_done = out_path / "work" / "done" / "reg" / "S2"
+    # Also the S2 chain target (scope-aware, derived from the workfolder name).
+    _scope = chain_scope(out_path)
+    s2_done = out_path / "work" / "done" / _scope / "S2"
     # Fallback: project-relative work/done
-    project_done = Path("work") / "done" / "reg" / "S2"
-    for cand in (s2_done, project_done, out_path.parent / "done" / "reg" / "S2"):
+    project_done = Path("work") / "done" / _scope / "S2"
+    for cand in (s2_done, project_done, out_path.parent / "done" / _scope / "S2"):
         if cand.exists():
             try:
                 bases.append(cand.resolve())

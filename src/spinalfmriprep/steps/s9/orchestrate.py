@@ -15,6 +15,7 @@ from typing import Optional
 import yaml
 
 from .process import run_S9_primary_functional_derivatives
+from spinalfmriprep.lib.chain_scope import chain_scope
 
 logger = logging.getLogger(__name__)
 
@@ -103,8 +104,8 @@ def _find_cord_mask(out_dir: Path, run_id: str) -> Optional[Path]:
               / "bold_after_cord_seg.nii.gz")
     for cand in (
         out_dir / "work" / s5_rel,
-        project_root / "work" / "done" / "reg" / "S5" / "work" / s5_rel,
-        Path("work") / "done" / "reg" / "S5" / "work" / s5_rel,
+        project_root / "work" / "done" / chain_scope(out_dir) / "S5" / "work" / s5_rel,
+        Path("work") / "done" / chain_scope(out_dir) / "S5" / "work" / s5_rel,
     ):
         if cand.exists():
             return cand
@@ -116,8 +117,8 @@ def _find_cord_mask(out_dir: Path, run_id: str) -> Optional[Path]:
                  / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz")
     for cand in (
         out_dir / "work" / rel_local,
-        project_root / "work" / "done" / "reg" / "S3" / rel,
-        Path("work") / "done" / "reg" / "S3" / rel,
+        project_root / "work" / "done" / chain_scope(out_dir) / "S3" / rel,
+        Path("work") / "done" / chain_scope(out_dir) / "S3" / rel,
     ):
         if cand.exists():
             return cand
