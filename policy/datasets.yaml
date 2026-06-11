@@ -453,6 +453,41 @@ datasets:
     subjects: []
     sessions: []
   notes: ''
+- key: internal_balgrist_painmotor_21
+  title: balgrist_painmotor_21
+  source: private
+  accession: internal_balgrist_painmotor_21
+  doi: null
+  homepage: null
+  license: unknown
+  intended_use:
+  - v1_validation
+  counts:
+    participants: 21
+    sessions: 1
+  spec:
+    domains:
+    - brain_spine
+    modalities:
+    - anat
+    - func
+    paradigms:
+    - task
+    tasks:
+    - MotionPain
+    has_fmap: false
+    has_physio: false
+  selection:
+    mode: all
+    subjects: []
+    sessions: []
+  # P1-CoSpi main_painmotor/spine/rawdata (BIDS, .nii uncompressed). 21 subjects,
+  # task-MotionPain (combined motor+pain). Func acq: KombiShimZSpine (cord runs)
+  # + KombiShimZBrain (brain-shimmed, expected to fail S3 cord-localization).
+  # Anat: MEGRE T2star (4 runs x 4 echoes) + MPRAGE T1w. Physio exists separately
+  # (main_painmotor/physio, sub-CO* naming) but is NOT BIDS-integrated -> RETROICOR
+  # auto-disables. sub-12 has 6 func runs (extra); all others 4.
+  notes: 'Balgrist motor+pain cohort (21 subjects) from P1-CoSpi main_painmotor/spine.'
 - key: openneuro_ds005075_brain_spine_rest
   title: Simultaneous brain and spinal cord resting-state fMRI dataset
   source: openneuro
