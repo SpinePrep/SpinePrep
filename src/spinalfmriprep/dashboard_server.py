@@ -157,9 +157,23 @@ async def tutorial_page():
 
 
 @app.get("/{prefix}/dashboard")
+async def redirect_dashboard_index(prefix: str):
+    """Redirect the no-trailing-slash index to ``dashboard/``.
+
+    The index links to reportlets relatively (``href="reportlets/..."``, no
+    ``<base>`` tag). Served at ``/{prefix}/dashboard`` (no slash) the browser
+    resolves those against ``/{prefix}/`` -> ``/{prefix}/reportlets/...`` (404).
+    Redirect to the trailing-slash URL so they resolve under
+    ``/{prefix}/dashboard/...``. The Location is RELATIVE (``dashboard/``) so the
+    browser preserves the ``/p2`` reverse-proxy prefix — an absolute redirect
+    would drop it (see the redirect_slashes note above)."""
+    return RedirectResponse(url="dashboard/", status_code=307,
+                            headers=_NO_CACHE_HEADERS)
+
+
 @app.get("/{prefix}/dashboard/")
 async def serve_dashboard_index(prefix: str):
-    """Bare `/{prefix}/dashboard` — serves either a wf's per-wf
+    """Bare `/{prefix}/dashboard/` — serves either a wf's per-wf
     dashboard (when prefix starts with ``wf_``) or the stitched
     per-scope dashboard (when prefix in VISIBLE_SCOPES). 404 otherwise."""
     if prefix.startswith("wf_"):
