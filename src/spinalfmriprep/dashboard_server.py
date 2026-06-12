@@ -18,7 +18,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, RedirectResponse, Response
 
 WORK_ROOT = Path(os.environ.get("SFMRI_WORK_ROOT", "/mnt/ssd1/SpinalfMRIprep/work"))
-VISIBLE_SCOPES: tuple[str, ...] = ("reg", "full")
+VISIBLE_SCOPES: tuple[str, ...] = ("reg", "full", "exp")
 DEFAULT_SCOPE = "reg"
 
 # `redirect_slashes=False` is critical: Starlette's default trailing-
