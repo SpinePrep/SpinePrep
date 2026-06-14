@@ -92,6 +92,19 @@ def _file_response(path: Path, media_type: str | None = None) -> FileResponse:
 
 # --- Routes ---
 
+import re as _re
+_SCOPE_RE = _re.compile(r"^[a-z0-9_]+$")
+
+
+def _is_scope(prefix: str) -> bool:
+    """A URL prefix is a stitched-view scope if it's a known scope OR any safe
+    identifier with a work/done/<prefix> dir (per-dataset rollout scopes auto-
+    served, no per-dataset code edit). The path-param can't contain '/', and the
+    regex blocks '..'-style traversal."""
+    if prefix in VISIBLE_SCOPES:
+        return True
+    return bool(_SCOPE_RE.match(prefix)) and (WORK_ROOT / "done" / prefix).is_dir()
+
 
 def _build_stitched_view(scope: str) -> Path | None:
     """Rebuild the stitched view for ``scope`` and return its index.html
@@ -181,7 +194,7 @@ async def serve_dashboard_index(prefix: str):
         if not index.is_file():
             return Response(status_code=404)
         return _file_response(index)
-    if prefix in VISIBLE_SCOPES:
+    if _is_scope(prefix):
         index = _build_stitched_view(prefix)
         if index is None or not index.is_file():
             return Response(
@@ -201,7 +214,7 @@ async def serve_dashboard_file(prefix: str, path: str):
     """
     if prefix.startswith("wf_"):
         base = WORK_ROOT / prefix / "dashboard"
-    elif prefix in VISIBLE_SCOPES:
+    elif _is_scope(prefix):
         base = WORK_ROOT / "done" / prefix / "_view" / "dashboard"
     else:
         return Response(status_code=404)
@@ -218,7 +231,7 @@ async def serve_derivatives(prefix: str, path: str):
     symlinks into the source wf)."""
     if prefix.startswith("wf_"):
         base = WORK_ROOT / prefix / "derivatives"
-    elif prefix in VISIBLE_SCOPES:
+    elif _is_scope(prefix):
         base = WORK_ROOT / "done" / prefix / "_view" / "derivatives"
     else:
         return Response(status_code=404)
