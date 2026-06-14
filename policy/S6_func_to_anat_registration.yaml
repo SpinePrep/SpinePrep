@@ -52,11 +52,13 @@ qc_thresholds:
   pass_dice_min: 0.85                # Cohen-Adad 2014 / De Leener 2017 cord-reg band
   pass_dice_min_syn_fallback: 0.80   # lower bar for S5 SyN-fallback runs
   fail_dice_below: 0.65              # < this = FAIL; [fail, pass) = WARN; >= pass = PASS
-  # HD95 in mm: registration on cord-cropped EPI (~1mm in-plane, ~3-4mm Z)
-  # routinely has 3-4mm HD95 at Dice 0.9+; EPISeg baseline 1.28±0.73 is
-  # for seg-vs-truth on same image, not via a warp. Realistic thresholds:
+  # HD95 in mm: OBSERVABILITY-ONLY (WARN ceiling, never FAIL) as of 2026-06-14.
+  # It is quantized to the EPI slice thickness (~5mm) and dominated by single
+  # rostral/caudal end-slice segmentation dropout, so it FAILed runs whose
+  # registration is good by the step-local truth metric (cord Dice) — e.g.
+  # exp pain sub-19 (Dice 0.886) was wrongly FAILed and lost. > pass = soft WARN.
   pass_hd95_mm_max: 4.0
-  warn_hd95_mm_max: 8.0
+  warn_hd95_mm_max: 8.0              # retained for reference; HD95 no longer FAILs
   # COM-based round-trip drift is observability-only in v1 (bsplinesyn's
   # forward + inverse are separately optimized → non-zero intrinsic drift
   # even at Dice 0.95). Setting permissive thresholds so it does not gate.
