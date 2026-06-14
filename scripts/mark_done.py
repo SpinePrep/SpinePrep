@@ -136,8 +136,8 @@ def main() -> int:
     )
     parser.add_argument(
         "scope",
-        choices=["smoke", "reg", "full", "exp"],
-        help="Scope chain (smoke, reg, full, or exp)",
+        help="Scope chain (e.g. smoke, reg, full, exp, or a per-dataset "
+             "rollout scope like 'cosmotor'). Any [a-z0-9_]+ identifier.",
     )
     parser.add_argument(
         "step",
@@ -155,7 +155,14 @@ def main() -> int:
     )
     
     args = parser.parse_args()
-    
+
+    # Safety: scope is used to build work/done/<scope>/... paths — restrict to a
+    # plain identifier so it can't traverse out of the work tree.
+    import re as _re
+    if not _re.fullmatch(r"[a-z0-9_]+", args.scope):
+        print(f"ERROR: invalid scope '{args.scope}' (must be [a-z0-9_]+)")
+        return 1
+
     # Normalize step to S{N} format
     step = args.step
     if "_" in step:
@@ -228,10 +235,11 @@ def main() -> int:
         from spinalfmriprep.dashboard_stitched import render_view
         generate_dashboard_safe(workfolder.resolve())
         write_latest_landing(work_root.resolve())
-        if args.scope in ("reg", "full"):
-            stitched_index = render_view(args.scope, work_root.resolve())
-            if stitched_index is not None:
-                print(f"  Stitched view:       {stitched_index}")
+        # Build the stitched per-scope view for any scope (reg/full/exp/per-
+        # dataset rollout scopes), so each rollout dataset auto-gets a dashboard.
+        stitched_index = render_view(args.scope, work_root.resolve())
+        if stitched_index is not None:
+            print(f"  Stitched view:       {stitched_index}")
         print(f"  Dashboard refreshed: {workfolder}/dashboard/index.html")
         print(f"  Latest landing:      {work_root}/dashboard.html")
     except Exception as e:
