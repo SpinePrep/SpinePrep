@@ -89,6 +89,25 @@ def _process_s3_3_crop_and_qc(
     if not ok:
         return {"qc_status": "FAIL", "failure_message": f"Failed to crop BOLD: {out}"}
 
+    # Data-integrity guard: sct_crop_image is a SPATIAL crop, so the timepoint
+    # count must be preserved. Dummies were already dropped once in S3.1; if the
+    # output frame count differs from the input, frames were silently dropped/
+    # added (this is exactly the failure mode of the S3 double-dummy-drop bug,
+    # which shipped undetected because nothing reconciled frame counts). Fail
+    # loudly. Guards every dataset.
+    try:
+        n_in = nib.load(str(bold_data_path)).shape
+        n_out = nib.load(str(bold_crop_temp)).shape
+        in_t = n_in[3] if len(n_in) == 4 else 1
+        out_t = n_out[3] if len(n_out) == 4 else 1
+        if in_t != out_t:
+            return {"qc_status": "FAIL",
+                    "failure_message": (f"Frame-count integrity check failed: cropped BOLD "
+                                        f"has {out_t} frames but input had {in_t} "
+                                        f"(spatial crop must preserve timepoints).")}
+    except Exception as e:
+        return {"qc_status": "FAIL", "failure_message": f"Frame-count integrity check error: {e}"}
+
     # Dummies were ALREADY dropped in S3.1 (input is the cropped post-drop
     # series). Do NOT drop again — just finalize the cropped 4D BOLD.
     try:

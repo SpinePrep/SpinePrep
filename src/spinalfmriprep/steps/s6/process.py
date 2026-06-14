@@ -321,12 +321,17 @@ def _classify(metrics: dict, thresholds: dict, syn_fallback: bool) -> tuple[str,
         reasons.append(f"cord_dice WARN: {dice:.3f}")
         worst = "WARN"
 
+    # HD95 is observability-only (WARN ceiling, NEVER FAIL). It is quantized to
+    # the EPI slice thickness (~5mm) and dominated by a single rostral/caudal
+    # end-slice segmentation dropout, so it FAILed runs whose registration is
+    # good by the step-local truth metric — cord Dice (CLAUDE.md principle #3).
+    # E.g. exp pain sub-19: Dice 0.886, ASD ~1mm, but HD95 10mm -> wrongly FAILed
+    # and lost the subject. Gate on Dice; surface HD95 as a soft flag only.
     hd95 = metrics.get("cord_hd95_mm")
-    # Defaults must match policy YAML — audit-v2 Finding 6.
-    t = _tier(hd95, thresholds.get("pass_hd95_mm_max", 4.0),
-              thresholds.get("warn_hd95_mm_max", 8.0), "cord_hd95_mm")
-    if t == "FAIL": worst = "FAIL"
-    elif t == "WARN" and worst == "PASS": worst = "WARN"
+    if hd95 is not None and hd95 > thresholds.get("pass_hd95_mm_max", 4.0):
+        reasons.append(f"cord_hd95_mm WARN: {hd95:.3f}")
+        if worst == "PASS":
+            worst = "WARN"
 
     rt_med = metrics.get("centerline_round_trip_med_vox")
     t = _tier(rt_med, thresholds.get("pass_centerline_med_vox_max", 3.0),
