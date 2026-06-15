@@ -36,6 +36,7 @@ def run_S2_anat_cordref(
     datasets_local: Optional[Path],
     bids_root: Optional[Path],
     out: Optional[Path],
+    batch_workers: int = 1,
 ) -> StepResult:
     command_line = _format_command_line(dataset_key, datasets_local, bids_root, out)
     if out is None:
@@ -75,7 +76,11 @@ def run_S2_anat_cordref(
     candidates = _collect_anat_candidates(inventory)
     sessions = _collect_subject_sessions(inventory)
 
-    max_workers = 1
+    # Parallelize anatomical seg across subjects (the parallel path below uses
+    # the same _process_session_worker as batch mode). Each worker loads
+    # TotalSpineSeg/nnU-Net (~2-3GB RAM); the caller sizes batch_workers to the
+    # available RAM/cores (and to the number of concurrent chains).
+    max_workers = max(1, int(batch_workers))
     runs = []
     sorted_sessions = sorted(sessions)
 
