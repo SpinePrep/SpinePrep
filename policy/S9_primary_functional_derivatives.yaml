@@ -20,13 +20,18 @@ smoothing:
 # PAM50-space outputs:
 #  - PAM50 funcref (temporal mean, 3D ~5 MB) — always emitted
 #  - PAM50 tSNR (3D ~5 MB) — always emitted
-#  - PAM50 4D BOLD (smoothed) — OFF by default (~17 GB per run at PAM50's
-#    0.5mm isotropic 141×141×991 grid × ~200 volumes). When needed, the
-#    analyst can apply S7's from-bold_to-PAM50_xfm to the native smoothed
-#    BOLD themselves.
+#  - PAM50 4D BOLD (smoothed + unsmoothed) + co-gridded cord mask — ON.
+#    The naive full-grid warp is ~17 GB/run (0.5mm 141×141×991 × ~200 vol).
+#    We instead crop the 0.5mm PAM50 reference to each run's cord field-of-
+#    view (nonzero extent of the warped funcref, padded) and warp DIRECTLY
+#    into that cropped grid → ~1-2 GB/run, same 0.5mm space/resolution as
+#    the funcref/tSNR products, co-gridded with the cord mask so the
+#    template-space BOLD ships GLM-ready (BOLD + mask in one grid).
+#    fMRIPrep analog: space-MNI152..._res-2 (template space, sane resolution).
 pam50_4d_output:
-  enabled: false                   # full 4D BOLD in PAM50 (huge disk cost)
-  emit_unsmoothed: false           # also warp the unsmoothed native (huge)
+  enabled: true                    # 4D BOLD in PAM50, cropped to cord FOV
+  emit_unsmoothed: true            # also emit the unsmoothed PAM50 4D (Q2: both)
+  fov_pad_vox: 4                   # padding (PAM50 voxels) around cord coverage
 
 # Output of per-vertebral-level tSNR — uses S7's
 # *_desc-PAM50spinallevels.nii.gz (already in native func grid). Emits

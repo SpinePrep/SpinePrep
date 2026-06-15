@@ -145,6 +145,39 @@ def _find_pam50_levels_native(
     )
 
 
+def _run_repetition_time(bids_root: Optional[str], run_id: str) -> Optional[float]:
+    """Authoritative RepetitionTime (s) from the raw BIDS bold sidecar.
+
+    The processed NIfTI loses TR from its header (pixdim[4] defaults to 1.0),
+    so a GLM would mis-model timing if we read it back from the image. We read
+    it from the source sidecar, walking BIDS inheritance: the run's own sidecar
+    first, then a task-level sidecar at the dataset root.
+    """
+    if not bids_root:
+        return None
+    root = Path(bids_root)
+    if not root.exists():
+        return None
+    for j in root.rglob(f"{run_id}_bold.json"):
+        try:
+            tr = json.loads(j.read_text()).get("RepetitionTime")
+            if tr:
+                return float(tr)
+        except Exception:
+            pass
+    import re
+    m = re.search(r"task-([A-Za-z0-9]+)", run_id)
+    if m:
+        for j in root.glob(f"task-{m.group(1)}_bold.json"):
+            try:
+                tr = json.loads(j.read_text()).get("RepetitionTime")
+                if tr:
+                    return float(tr)
+            except Exception:
+                pass
+    return None
+
+
 def _pam50_ref() -> Optional[Path]:
     import os
     sct_dir = os.environ.get("SCT_DIR")
@@ -180,10 +213,12 @@ def run_S9(
     if s8_qc:
         upstream_runs = [r for r in s8_qc.get("runs", []) if r.get("status") != "FAIL"]
         upstream_name = "S8"
+        bids_root = s8_qc.get("bids_root")
     else:
         s7_qc = _load_qc(out_path, "S7_template_normalization", dataset_key)
         upstream_runs = [r for r in s7_qc.get("runs", []) if r.get("status") != "FAIL"]
         upstream_name = "S7"
+        bids_root = s7_qc.get("bids_root")
     if not upstream_runs:
         return StepResult("FAIL",
                           f"No PASS/WARN {upstream_name} runs for dataset {dataset_key}")
@@ -222,7 +257,8 @@ def run_S9(
             continue
 
         bold_run = {"subject": subject, "session": session,
-                    "run_id": run_id, "path": f"{run_id}_bold.nii.gz"}
+                    "run_id": run_id, "path": f"{run_id}_bold.nii.gz",
+                    "RepetitionTime": _run_repetition_time(bids_root, run_id)}
         res = run_S9_primary_functional_derivatives(
             bold_path=bold, cord_mask_path=cord_mask,
             warp_bold_to_pam50=warp, pam50_ref=pam50_ref,
