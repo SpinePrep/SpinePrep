@@ -162,6 +162,107 @@ def _warp_4d_to_pam50(
 
 
 # ---------------------------------------------------------------------------
+# PAM50 cord-FOV cropping (keeps the 4D template-space BOLD ~1-2 GB instead of
+# ~17 GB: we crop the 0.5 mm PAM50 reference to the run's cord coverage and warp
+# DIRECTLY into that cropped grid, so no full-grid intermediate is ever written)
+# ---------------------------------------------------------------------------
+
+
+def _pam50_cord_template(pam50_ref: Path) -> Optional[Path]:
+    """PAM50_cord.nii.gz lives next to PAM50_t2s.nii.gz in $SCT_DIR template."""
+    cand = pam50_ref.parent / "PAM50_cord.nii.gz"
+    return cand if cand.exists() else None
+
+
+def _nonzero_bbox(
+    img_path: Path, pad: int = 4,
+) -> Optional[tuple[slice, slice, slice]]:
+    """Padded bounding box of nonzero voxels in a 3D (or temporal-mean of 4D)
+    image. Returns (sx, sy, sz) slices clamped to the volume, or None if empty.
+    """
+    img = nib.load(img_path)
+    data = img.get_fdata()
+    if data.ndim == 4:
+        data = data.mean(axis=3)
+    nz = np.argwhere(np.abs(data) > 1e-6)
+    if nz.size == 0:
+        return None
+    shape = np.array(data.shape[:3])
+    lo = np.maximum(nz.min(axis=0) - pad, 0)
+    hi = np.minimum(nz.max(axis=0) + 1 + pad, shape)
+    return tuple(slice(int(lo[i]), int(hi[i])) for i in range(3))
+
+
+def _crop_to_bbox(in_path: Path, bbox: tuple, out_path: Path) -> None:
+    """Crop a NIfTI to bbox using nibabel's slicer (affine-correct, memory-light:
+    the array proxy reads only the cropped region)."""
+    img = nib.load(in_path)
+    sx, sy, sz = bbox
+    cropped = (img.slicer[sx, sy, sz, :] if img.ndim == 4
+               else img.slicer[sx, sy, sz])
+    nib.save(cropped, out_path)
+
+
+# ---------------------------------------------------------------------------
+# BIDS sidecars (a GLM needs RepetitionTime; BIDS-Derivatives needs the sidecar)
+# ---------------------------------------------------------------------------
+
+
+def _bold_tr(bold_path: Path) -> Optional[float]:
+    """RepetitionTime (s) from the BOLD header pixdim[4]. SCT preserves it."""
+    z = nib.load(bold_path).header.get_zooms()
+    return float(z[3]) if len(z) > 3 and z[3] and z[3] > 0 else None
+
+
+def _task_from_run_id(run_id: str) -> Optional[str]:
+    import re
+    m = re.search(r"task-([A-Za-z0-9]+)", run_id)
+    return m.group(1) if m else None
+
+
+def _write_bold_sidecar(
+    bold_path: Path, tr: Optional[float], task: Optional[str],
+    *, space: Optional[str] = None,
+    smoothing_fwhm: Optional[list[float]] = None,
+) -> None:
+    """Emit a `*_bold.json` next to the BOLD with the minimum a GLM needs."""
+    meta: dict[str, Any] = {"SkullStripped": False}
+    if tr is not None:
+        meta["RepetitionTime"] = tr
+    if task:
+        meta["TaskName"] = task
+    if space:
+        meta["SpatialReference"] = space
+    if smoothing_fwhm is not None:
+        meta["SmoothingFWHM"] = [round(float(s), 4) for s in smoothing_fwhm]
+    meta["GeneratedBy"] = [{
+        "Name": "SpinalfMRIprep",
+        "Step": "S9_primary_functional_derivatives",
+    }]
+    out = bold_path.with_name(
+        bold_path.name.replace(".nii.gz", ".json").replace(".nii", ".json"))
+    out.write_text(json.dumps(meta, indent=2))
+
+
+def _ensure_dataset_description(deriv_spinalprep_root: Path) -> None:
+    """Minimal BIDS-Derivatives manifest so S9 outputs are self-contained.
+    Idempotent: S11 later overwrites with the richer (CITATION-linked) version."""
+    dd = deriv_spinalprep_root / "dataset_description.json"
+    if dd.exists():
+        return
+    deriv_spinalprep_root.mkdir(parents=True, exist_ok=True)
+    dd.write_text(json.dumps({
+        "Name": "SpinalfMRIprep derivatives",
+        "BIDSVersion": "1.11.0",
+        "DatasetType": "derivative",
+        "GeneratedBy": [{
+            "Name": "SpinalfMRIprep",
+            "Description": "Cervical spinal cord fMRI preprocessing pipeline",
+        }],
+    }, indent=2))
+
+
+# ---------------------------------------------------------------------------
 # tSNR + per-vertebral-level tSNR
 # ---------------------------------------------------------------------------
 
@@ -523,18 +624,49 @@ def run_S9_primary_functional_derivatives(
     except Exception as e:
         failure_reasons.append(f"PAM50 tSNR warp failed: {e}")
 
-    # OPTIONAL: full 4D BOLD in PAM50 (gated by policy).
+    # Full 4D BOLD in PAM50, cropped to the run's cord FOV (policy-gated).
+    # We crop the 0.5 mm PAM50 reference to the nonzero extent of the warped
+    # funcref, then warp the 4D DIRECTLY into that cropped grid -- so the
+    # output is ~1-2 GB (not ~17 GB) and is co-gridded with the cord mask
+    # below. Warps act in physical/world space, so cropping the destination
+    # FOV preserves alignment.
+    pam50_cord_mask = func_dir / f"{prefix}_space-PAM50_desc-cord_mask.nii.gz"
     p4d_cfg = policy.get("pam50_4d_output", {})
     if p4d_cfg.get("enabled", False):
-        ok, err = _warp_4d_to_pam50(
-            smoothed_native, warp_bold_to_pam50, pam50_ref, pam50_smoothed,
-        )
-        if not ok:
-            failure_reasons.append(f"PAM50 4D smoothed warp failed: {err}")
-        if p4d_cfg.get("emit_unsmoothed", False):
-            _warp_4d_to_pam50(
-                bold_path, warp_bold_to_pam50, pam50_ref, pam50_unsmoothed,
-            )
+        if not pam50_funcref.exists():
+            failure_reasons.append("PAM50 4D skipped: funcref-in-PAM50 missing")
+        else:
+            bbox = _nonzero_bbox(
+                pam50_funcref, pad=int(p4d_cfg.get("fov_pad_vox", 4)))
+            if bbox is None:
+                failure_reasons.append("PAM50 4D skipped: empty cord FOV")
+            else:
+                cropped_ref = s9_work_dir / "pam50_ref_cropfov.nii.gz"
+                _crop_to_bbox(pam50_ref, bbox, cropped_ref)
+                ok, err = _warp_4d_to_pam50(
+                    smoothed_native, warp_bold_to_pam50, cropped_ref,
+                    pam50_smoothed, interp="spline",
+                )
+                if not ok:
+                    failure_reasons.append(f"PAM50 4D smoothed warp failed: {err}")
+                if p4d_cfg.get("emit_unsmoothed", True):
+                    ok2, err2 = _warp_4d_to_pam50(
+                        bold_path, warp_bold_to_pam50, cropped_ref,
+                        pam50_unsmoothed, interp="spline",
+                    )
+                    if not ok2:
+                        failure_reasons.append(
+                            f"PAM50 4D unsmoothed warp failed: {err2}")
+                # Co-gridded cord mask: crop PAM50_cord with the SAME bbox so it
+                # shares the cropped grid (identical affine+shape) with the 4D.
+                cord_tmpl = _pam50_cord_template(pam50_ref)
+                if cord_tmpl is not None:
+                    try:
+                        _crop_to_bbox(cord_tmpl, bbox, pam50_cord_mask)
+                    except Exception as e:
+                        failure_reasons.append(f"PAM50 cord mask crop failed: {e}")
+                else:
+                    failure_reasons.append("PAM50_cord.nii.gz not found for mask")
 
     # --- 5. Native funcref (temporal mean of smoothed native) ----------
     funcref_native = func_dir / f"{prefix}_desc-preproc_funcref.nii.gz"
@@ -629,6 +761,25 @@ def run_S9_primary_functional_derivatives(
     except Exception as e:
         failure_reasons.append(f"smoothness_summary reportlet failed: {e}")
 
+    # --- 9b. BIDS sidecars for every BOLD + dataset_description --------
+    # A GLM needs RepetitionTime; BIDS-Derivatives needs the sidecar.
+    # Prefer the authoritative TR from the raw BIDS sidecar (passed in via
+    # bold_run); the processed header's pixdim[4] is unreliable (defaults to 1.0).
+    tr = bold_run.get("RepetitionTime") or _bold_tr(bold_path)
+    task = _task_from_run_id(run_id)
+    try:
+        _write_bold_sidecar(smoothed_native, tr, task, smoothing_fwhm=sigma_fwhm)
+        _write_bold_sidecar(unsmoothed_native, tr, task)
+        if pam50_smoothed.exists():
+            _write_bold_sidecar(pam50_smoothed, tr, task, space="PAM50",
+                                smoothing_fwhm=sigma_fwhm)
+        if pam50_unsmoothed.exists():
+            _write_bold_sidecar(pam50_unsmoothed, tr, task, space="PAM50")
+        _ensure_dataset_description(
+            out_dir / "derivatives" / "spinalfmriprep")
+    except Exception as e:
+        failure_reasons.append(f"sidecar/dataset_description failed: {e}")
+
     # --- 10. Save work qc + sidecar ----------------------------------
     policy_sha = hashlib.sha256(json.dumps(policy, sort_keys=True).encode()).hexdigest()
     (s9_work_dir / "qc_metrics.json").write_text(json.dumps({
@@ -659,12 +810,17 @@ def run_S9_primary_functional_derivatives(
                 if rep_smsum.exists() else "",
         },
         "output_paths": {
-            "preproc_bold_native":   str(smoothed_native.relative_to(out_dir)),
-            "preproc_bold_pam50":    str(pam50_smoothed.relative_to(out_dir))
+            "preproc_bold_native":     str(smoothed_native.relative_to(out_dir)),
+            "unsmoothed_bold_native":  str(unsmoothed_native.relative_to(out_dir)),
+            "preproc_bold_pam50":      str(pam50_smoothed.relative_to(out_dir))
                 if pam50_smoothed.exists() else "",
-            "tsnr_native":           str(tsnr_native_post.relative_to(out_dir)),
-            "tsnr_pam50":            str(pam50_tsnr_path.relative_to(out_dir))
+            "unsmoothed_bold_pam50":   str(pam50_unsmoothed.relative_to(out_dir))
+                if pam50_unsmoothed.exists() else "",
+            "cord_mask_pam50":         str(pam50_cord_mask.relative_to(out_dir))
+                if pam50_cord_mask.exists() else "",
+            "tsnr_native":             str(tsnr_native_post.relative_to(out_dir)),
+            "tsnr_pam50":              str(pam50_tsnr_path.relative_to(out_dir))
                 if pam50_tsnr_path.exists() else "",
-            "tsnr_per_level_tsv":    str(per_level_tsv.relative_to(out_dir)),
+            "tsnr_per_level_tsv":      str(per_level_tsv.relative_to(out_dir)),
         },
     }
