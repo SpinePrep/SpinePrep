@@ -350,6 +350,7 @@ def _run_S2(args):
             datasets_local=args.datasets_local,
             bids_root=args.bids_root,
             out=args.out,
+            batch_workers=args.batch_workers,
         )
 
 

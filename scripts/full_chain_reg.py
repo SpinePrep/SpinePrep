@@ -90,7 +90,7 @@ def link_chain(wf: Path, scope: str, predecessors: list[str], current_code: str)
             (wf / "runs").symlink_to(s3_runs)
 
 
-def run_step(step_full: str, wf: Path, keys: list[str]) -> dict:
+def run_step(step_full: str, wf: Path, keys: list[str], batch_workers: int = 1) -> dict:
     """Run a step on each key sequentially. Returns {key: status}."""
     results = {}
     for k in keys:
@@ -98,6 +98,7 @@ def run_step(step_full: str, wf: Path, keys: list[str]) -> dict:
         cmd = ["poetry", "run", "spinalfmriprep", "run", step_full,
                "--dataset-key", k,
                "--datasets-local", str(LOCAL_MAP),
+               "--batch-workers", str(batch_workers),
                "--out", str(wf)]
         r = subprocess.run(cmd, cwd=PROJECT_ROOT)
         results[k] = "OK" if r.returncode == 0 else "FAIL"
@@ -119,6 +120,9 @@ def main() -> int:
                    help="Chain scope (work/done/<scope>/...). Default reg.")
     p.add_argument("--datasets", nargs="+", default=None,
                    help="Dataset keys to run. Default: all intended_use=regression keys.")
+    p.add_argument("--batch-workers", type=int, default=1, dest="batch_workers",
+                   help="Per-step subject/run parallelism (S2 anat seg + S3 etc.). "
+                        "Size to RAM/cores AND the number of concurrent chains.")
     args = p.parse_args()
 
     keys = args.datasets if args.datasets else reg_keys()
@@ -137,7 +141,7 @@ def main() -> int:
         wf.mkdir(parents=True)
         print(f"\n===== {full} :: {wf.name} =====", flush=True)
         link_chain(wf, scope, completed_codes, current_code=code)
-        results = run_step(full, wf, keys)
+        results = run_step(full, wf, keys, batch_workers=args.batch_workers)
         passed = [k for k, v in results.items() if v == "OK"]
         failed = [k for k, v in results.items() if v != "OK"]
         print(f"  PASS={len(passed)}  FAIL={len(failed)}")
