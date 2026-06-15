@@ -6,11 +6,19 @@ import os
 import subprocess
 
 
-def run_command(cmd: list[str], timeout: int | None = None) -> tuple[bool, str]:
+def run_command(
+    cmd: list[str], timeout: int | None = None, cwd: str | os.PathLike | None = None,
+) -> tuple[bool, str]:
     """Run a shell command and return (success, output).
 
     Enforces single-threaded execution for numerical libraries to avoid
     contention when called from parallel workers.
+
+    ``cwd`` runs the command in a specific directory. This matters for SCT
+    tools that drop working files (e.g. sct_straighten_spinalcord writes
+    warp_curve2straight.nii.gz + straightening.cache into the *current*
+    directory): without a private cwd, concurrent workers race on those
+    shared filenames. Pass a per-run dir to isolate them.
     """
     try:
         env = os.environ.copy()
@@ -24,6 +32,7 @@ def run_command(cmd: list[str], timeout: int | None = None) -> tuple[bool, str]:
             check=True,
             env=env,
             timeout=timeout,
+            cwd=cwd,
         )
     except FileNotFoundError:
         return False, f"Command not found: {cmd[0]}"

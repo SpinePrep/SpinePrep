@@ -110,6 +110,130 @@ def _run_sct_smooth_per_volume(
     return True, None, time.time() - t0
 
 
+def _run_sct_smooth_batched(
+    bold_path: Path, cord_seg_path: Path,
+    sigma_xyz_mm: list[float], work_dir: Path,
+    out_path: Path,
+) -> tuple[bool, Optional[str], float]:
+    """Cord-aware smoothing, batched over the time axis.
+
+    sct_smooth_spinalcord straightens the cord (the expensive step) then
+    smooths in straight space. The straightening depends only on the cord
+    centerline -- identical for every volume of a run -- so the per-volume
+    loop recomputes/cache-reuses the same warp ~T times, and (because SCT
+    drops warp_curve2straight.nii.gz + straightening.cache into the *cwd*)
+    concurrent workers race on those shared files.
+
+    Here we straighten ONCE in a private cwd, apply the warp to the whole 4D
+    in one sct_apply_transfo, smooth each volume in straight space (sigma 0
+    along time = no temporal blur), de-straighten the whole 4D, and restore
+    zeroed voxels. Numerically identical to the per-volume loop (same single
+    centerline -> same warp -> same per-volume gaussian), with ~T fewer SCT
+    spawns and no cache race.
+
+    Faithful to spinalcordtoolbox/scripts/sct_smooth_spinalcord.py: RPI
+    orientation, bspline straightening with spline resampling, sigma_mm/pixdim
+    voxel conversion, scipy gaussian_filter(order=0, truncate=4.0), and the
+    issue-#937 zero-voxel restore.
+    """
+    t0 = time.time()
+    wd = work_dir / "smooth_batched"
+    wd.mkdir(parents=True, exist_ok=True)
+    # SCT calls run with cwd=wd (to isolate the straightening cache), so all
+    # input paths handed to them must be absolute.
+    bold_path = Path(bold_path).resolve()
+    cord_seg_path = Path(cord_seg_path).resolve()
+    orig = nib.load(bold_path)
+
+    def _sct(cmd: list[str]) -> tuple[bool, Optional[str]]:
+        ok, err = _run_command(cmd, cwd=str(wd))
+        return ok, (None if ok else err)
+
+    try:
+        # 1. RPI orientation (SCT's smoothing axes are R-L, A-P, S-I).
+        bold_rpi = wd / "bold_rpi.nii.gz"
+        seg_rpi = wd / "seg_rpi.nii.gz"
+        ok, err = _sct(["sct_image", "-i", str(bold_path),
+                        "-setorient", "RPI", "-o", str(bold_rpi)])
+        if not ok:
+            return False, f"setorient bold failed: {err}", time.time() - t0
+        ok, err = _sct(["sct_image", "-i", str(cord_seg_path),
+                        "-setorient", "RPI", "-o", str(seg_rpi)])
+        if not ok:
+            return False, f"setorient seg failed: {err}", time.time() - t0
+
+        # 2. 3D reference (temporal mean) for the straightening pass.
+        ref3d = wd / "ref3d.nii.gz"
+        bimg = nib.load(bold_rpi)
+        bdata = bimg.get_fdata().astype(np.float32)
+        if bdata.ndim != 4:
+            return False, f"BOLD not 4D: {bdata.shape}", time.time() - t0
+        nib.save(nib.Nifti1Image(bdata.mean(axis=3), bimg.affine, bimg.header),
+                 ref3d)
+
+        # 3. Straighten ONCE (warps land in wd; -s drives the warp geometry).
+        ok, err = _sct([
+            "sct_straighten_spinalcord", "-i", str(ref3d), "-s", str(seg_rpi),
+            "-o", "ref3d_straight.nii.gz", "-x", "spline",
+            "-param", "algo_fitting=bspline", "-v", "0",
+        ])
+        w_c2s = wd / "warp_curve2straight.nii.gz"
+        w_s2c = wd / "warp_straight2curve.nii.gz"
+        straight_ref = wd / "straight_ref.nii.gz"
+        if not ok or not w_c2s.exists() or not w_s2c.exists():
+            return False, f"straighten failed: {err or 'no warp produced'}", time.time() - t0
+
+        # 4. Apply curve->straight to the whole 4D.
+        straightened = wd / "bold_straight.nii.gz"
+        ok, err = _sct(["sct_apply_transfo", "-i", str(bold_rpi),
+                        "-w", str(w_c2s), "-d", str(straight_ref),
+                        "-x", "spline", "-o", str(straightened), "-v", "0"])
+        if not ok or not straightened.exists():
+            return False, f"curve2straight apply failed: {err}", time.time() - t0
+
+        # 5. Smooth in straight space: sigma_mm/pixdim per axis, 0 along time.
+        simg = nib.load(straightened)
+        sdata = simg.get_fdata().astype(np.float32)
+        px = simg.header.get_zooms()[:3]
+        sigma_vox = [sigma_xyz_mm[i] / max(float(px[i]), 1e-6) for i in range(3)]
+        sigma_vox4 = sigma_vox + [0.0]
+        from scipy.ndimage import gaussian_filter
+        sdata_sm = gaussian_filter(sdata, sigma_vox4, order=0, truncate=4.0
+                                   ).astype(np.float32)
+        straight_sm = wd / "bold_straight_smooth.nii.gz"
+        nib.save(nib.Nifti1Image(sdata_sm, simg.affine, simg.header), straight_sm)
+
+        # 6. De-straighten the whole 4D back to the native grid. The
+        #    destination MUST be 3D (sct_apply_transfo mis-resamples against a
+        #    4D -d -> round-trip corr NaN) and in the ORIGINAL orientation:
+        #    warps act in physical space, so a native-orientation 3D dest yields
+        #    output already in the original grid -- no reorientation needed.
+        ref3d_orig = wd / "ref3d_orig.nii.gz"
+        odata = orig.get_fdata().astype(np.float32)
+        nib.save(nib.Nifti1Image(odata.mean(axis=3), orig.affine, orig.header),
+                 ref3d_orig)
+        destraight = wd / "bold_destraight.nii.gz"
+        ok, err = _sct(["sct_apply_transfo", "-i", str(straight_sm),
+                        "-w", str(w_s2c), "-d", str(ref3d_orig),
+                        "-x", "spline", "-o", str(destraight), "-v", "0"])
+        if not ok or not destraight.exists():
+            return False, f"straight2curve apply failed: {err}", time.time() - t0
+
+        # 7. Restore zeroed voxels from the original (SCT issue #937) and write
+        #    with the input's exact affine+header so downstream geometry matches
+        #    the per-volume path.
+        ddata = nib.load(destraight).get_fdata().astype(np.float32)
+        if ddata.shape != odata.shape:
+            return (False, f"shape mismatch: {ddata.shape} vs {odata.shape}",
+                    time.time() - t0)
+        zero = ddata == 0
+        ddata[zero] = odata[zero]
+        nib.save(nib.Nifti1Image(ddata, orig.affine, orig.header), out_path)
+        return out_path.exists(), None, time.time() - t0
+    except Exception as e:
+        return False, f"batched smoothing failed: {e}", time.time() - t0
+
+
 # ---------------------------------------------------------------------------
 # In-plane Gaussian alternative (no Z blur)
 # ---------------------------------------------------------------------------
@@ -563,8 +687,13 @@ def run_S9_primary_functional_derivatives(
         ok, err, sm_runtime = _gaussian_inplane(
             bold_path, sigma_xyz[:2], smoothed_native,
         )
-    else:
+    elif method == "sct_cord_pervolume":
+        # Legacy per-volume loop (escape hatch; ~T SCT spawns, shared cache).
         ok, err, sm_runtime = _run_sct_smooth_per_volume(
+            bold_path, cord_mask_path, sigma_xyz, s9_work_dir, smoothed_native,
+        )
+    else:  # "sct_cord" (default): straighten once, smooth the 4D in batch
+        ok, err, sm_runtime = _run_sct_smooth_batched(
             bold_path, cord_mask_path, sigma_xyz, s9_work_dir, smoothed_native,
         )
     if not ok:
