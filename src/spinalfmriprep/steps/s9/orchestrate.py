@@ -145,6 +145,24 @@ def _find_pam50_levels_native(
     )
 
 
+def _resolve_bids_root(datasets_local: Optional[str], dataset_key: str) -> Optional[str]:
+    """Map dataset_key -> local BIDS root via datasets_local.yaml. Used when the
+    upstream qc doesn't carry bids_root (S8's qc has it as None)."""
+    if not datasets_local:
+        return None
+    try:
+        d = yaml.safe_load(Path(datasets_local).read_text()) or {}
+    except Exception:
+        return None
+    m = d.get("datasets", d)
+    if not isinstance(m, dict):
+        return None
+    v = m.get(dataset_key)
+    if isinstance(v, dict):
+        v = v.get("path") or v.get("bids_root")
+    return v if isinstance(v, str) else None
+
+
 def _run_repetition_time(bids_root: Optional[str], run_id: str) -> Optional[float]:
     """Authoritative RepetitionTime (s) from the raw BIDS bold sidecar.
 
@@ -219,6 +237,10 @@ def run_S9(
         upstream_runs = [r for r in s7_qc.get("runs", []) if r.get("status") != "FAIL"]
         upstream_name = "S7"
         bids_root = s7_qc.get("bids_root")
+    # S8's qc carries bids_root=None; fall back to the dataset config so the
+    # authoritative TR (raw BIDS sidecar) can be read for the BOLD sidecars.
+    if not bids_root:
+        bids_root = _resolve_bids_root(datasets_local, dataset_key)
     if not upstream_runs:
         return StepResult("FAIL",
                           f"No PASS/WARN {upstream_name} runs for dataset {dataset_key}")
