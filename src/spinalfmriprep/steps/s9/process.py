@@ -298,22 +298,40 @@ def _pam50_cord_template(pam50_ref: Path) -> Optional[Path]:
     return cand if cand.exists() else None
 
 
-def _nonzero_bbox(
-    img_path: Path, pad: int = 4,
+def _cord_fov_bbox(
+    funcref_path: Path, cord_path: Path,
+    xy_margin: int = 8, z_pad: int = 4,
 ) -> Optional[tuple[slice, slice, slice]]:
-    """Padded bounding box of nonzero voxels in a 3D (or temporal-mean of 4D)
-    image. Returns (sx, sy, sz) slices clamped to the volume, or None if empty.
+    """Bounding box for the PAM50 4D crop: cord cross-section (x,y from the
+    PAM50 cord mask + margin) by functional coverage (z from the warped
+    funcref's nonzero extent + pad, clamped to the cord's z-range).
+
+    Cropping to the cord ROI rather than the whole warped imaging slab keeps
+    the 4D small and CONSISTENT across acquisitions: a wide-FOV run (e.g. rest)
+    warps to a large PAM50 region, but only the ~24x18-voxel cord cross-section
+    is relevant to cord analysis. (The earlier funcref-nonzero bbox left x,y
+    unbounded -> 3 GB/run on wide-FOV data, which filled the disk.)
     """
-    img = nib.load(img_path)
-    data = img.get_fdata()
-    if data.ndim == 4:
-        data = data.mean(axis=3)
-    nz = np.argwhere(np.abs(data) > 1e-6)
-    if nz.size == 0:
+    cord = nib.load(cord_path).get_fdata()
+    cnz = np.argwhere(cord > 0)
+    fimg = nib.load(funcref_path)
+    fdata = fimg.get_fdata()
+    if fdata.ndim == 4:
+        fdata = fdata.mean(axis=3)
+    fnz = np.argwhere(np.abs(fdata) > 1e-6)
+    if cnz.size == 0 or fnz.size == 0:
         return None
-    shape = np.array(data.shape[:3])
-    lo = np.maximum(nz.min(axis=0) - pad, 0)
-    hi = np.minimum(nz.max(axis=0) + 1 + pad, shape)
+    shape = np.array(cord.shape[:3])
+    lo = np.empty(3, int); hi = np.empty(3, int)
+    # x, y: cord cross-section + margin (peri-cord tissue for CSF/aCompCor view)
+    for i in (0, 1):
+        lo[i] = max(int(cnz[:, i].min()) - xy_margin, 0)
+        hi[i] = min(int(cnz[:, i].max()) + 1 + xy_margin, int(shape[i]))
+    # z: functional coverage, clamped to where the cord exists
+    lo[2] = max(int(fnz[:, 2].min()) - z_pad, int(cnz[:, 2].min()), 0)
+    hi[2] = min(int(fnz[:, 2].max()) + 1 + z_pad, int(cnz[:, 2].max()) + 1, int(shape[2]))
+    if hi[2] <= lo[2]:
+        return None
     return tuple(slice(int(lo[i]), int(hi[i])) for i in range(3))
 
 
@@ -753,20 +771,25 @@ def run_S9_primary_functional_derivatives(
     except Exception as e:
         failure_reasons.append(f"PAM50 tSNR warp failed: {e}")
 
-    # Full 4D BOLD in PAM50, cropped to the run's cord FOV (policy-gated).
-    # We crop the 0.5 mm PAM50 reference to the nonzero extent of the warped
-    # funcref, then warp the 4D DIRECTLY into that cropped grid -- so the
-    # output is ~1-2 GB (not ~17 GB) and is co-gridded with the cord mask
-    # below. Warps act in physical/world space, so cropping the destination
-    # FOV preserves alignment.
+    # Full 4D BOLD in PAM50, cropped to the CORD ROI (cord cross-section x
+    # functional z-coverage), then warp the 4D DIRECTLY into that cropped grid
+    # -- output is ~0.5 GB (not ~17 GB full-grid, and not the ~3 GB the old
+    # funcref-nonzero bbox produced on wide-FOV runs) and is co-gridded with the
+    # cord mask below. Warps act in physical/world space, so cropping the
+    # destination FOV preserves alignment.
     pam50_cord_mask = func_dir / f"{prefix}_space-PAM50_desc-cord_mask.nii.gz"
     p4d_cfg = policy.get("pam50_4d_output", {})
     if p4d_cfg.get("enabled", False):
+        cord_tmpl = _pam50_cord_template(pam50_ref)
         if not pam50_funcref.exists():
             failure_reasons.append("PAM50 4D skipped: funcref-in-PAM50 missing")
+        elif cord_tmpl is None:
+            failure_reasons.append("PAM50 4D skipped: PAM50_cord.nii.gz not found")
         else:
-            bbox = _nonzero_bbox(
-                pam50_funcref, pad=int(p4d_cfg.get("fov_pad_vox", 4)))
+            bbox = _cord_fov_bbox(
+                pam50_funcref, cord_tmpl,
+                xy_margin=int(p4d_cfg.get("cord_xy_margin_vox", 8)),
+                z_pad=int(p4d_cfg.get("fov_pad_vox", 4)))
             if bbox is None:
                 failure_reasons.append("PAM50 4D skipped: empty cord FOV")
             else:
@@ -788,14 +811,10 @@ def run_S9_primary_functional_derivatives(
                             f"PAM50 4D unsmoothed warp failed: {err2}")
                 # Co-gridded cord mask: crop PAM50_cord with the SAME bbox so it
                 # shares the cropped grid (identical affine+shape) with the 4D.
-                cord_tmpl = _pam50_cord_template(pam50_ref)
-                if cord_tmpl is not None:
-                    try:
-                        _crop_to_bbox(cord_tmpl, bbox, pam50_cord_mask)
-                    except Exception as e:
-                        failure_reasons.append(f"PAM50 cord mask crop failed: {e}")
-                else:
-                    failure_reasons.append("PAM50_cord.nii.gz not found for mask")
+                try:
+                    _crop_to_bbox(cord_tmpl, bbox, pam50_cord_mask)
+                except Exception as e:
+                    failure_reasons.append(f"PAM50 cord mask crop failed: {e}")
 
     # --- 5. Native funcref (temporal mean of smoothed native) ----------
     funcref_native = func_dir / f"{prefix}_desc-preproc_funcref.nii.gz"
