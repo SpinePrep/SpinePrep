@@ -18,8 +18,11 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, RedirectResponse, Response
 
 WORK_ROOT = Path(os.environ.get("SFMRI_WORK_ROOT", "/mnt/ssd1/SpinalfMRIprep/work"))
-VISIBLE_SCOPES: tuple[str, ...] = ("reg", "full", "exp")
-DEFAULT_SCOPE = "reg"
+# reg/smoke dev cohorts retired 2026-06-16; production scopes are the full
+# per-dataset chains + the balgrist experiment. Any scope with a work/done/<scope>
+# dir is served regardless (see _is_scope); this list is just the fast-path/default.
+VISIBLE_SCOPES: tuple[str, ...] = ("exp", "cosmotor", "cospain", "handgrasp", "rest", "full")
+DEFAULT_SCOPE = "exp"
 
 # `redirect_slashes=False` is critical: Starlette's default trailing-
 # slash auto-redirect emits an absolute `Location: /dashboard/` that
