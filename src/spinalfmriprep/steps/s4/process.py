@@ -459,17 +459,41 @@ def run_S4_func_motion_correction(
     status = "PASS"
     failure_reasons = []
 
-    # Check thresholds
-    if qc_metrics["max_fd_mm"] > policy["qc_thresholds"]["max_fd_mm"]:
+    # Motion gating is RELATIVE and frame-fraction based, not single-frame.
+    # Field standard (Power 2014; fMRIPrep; cord-fMRI Eippert/Kaptan): a single
+    # high-motion frame is CENSORED downstream (S8 motion_outlier regressors),
+    # never grounds to reject a run. A run is excluded only when too large a
+    # FRACTION of its frames would be censored, i.e. too little usable data
+    # remains. This fraction is self-normalizing, so one threshold generalizes
+    # across acquisitions (TR/voxel/cord-vs-brain) where an absolute mm cutoff
+    # does not. (The policy already declared these thresholds; the gate now
+    # enforces them instead of the old single-frame max_fd FAIL.)
+    qt = policy["qc_thresholds"]
+    frac = qc_metrics["high_motion_fraction"]
+    if frac > qt["max_high_motion_fraction"]:
         status = "FAIL"
-        failure_reasons.append(f"Max FD {qc_metrics['max_fd_mm']:.2f} > {policy['qc_thresholds']['max_fd_mm']}")
-    elif qc_metrics["max_fd_mm"] > policy["qc_thresholds"]["warn_fd_mm"]:
+        failure_reasons.append(
+            f"{frac:.0%} of frames exceed FD>{qt['fd_threshold_mm']}mm "
+            f"(> {qt['max_high_motion_fraction']:.0%} usable-data floor)")
+    elif frac > qt["warn_high_motion_fraction"]:
         status = "WARN"
-        failure_reasons.append("High Max FD")
+        failure_reasons.append(f"high censored fraction {frac:.0%}")
 
-    if qc_metrics["tsnr_after_mean"] < policy["qc_thresholds"]["min_tsnr"]:
+    # max_fd is a single-frame peak and is also sensitive to slicewise-moco
+    # divergence (e.g. spurious 30+ mm "displacement" on a 128 mm FOV). It is
+    # observability-only: surface as WARN for human QC, never FAIL.
+    if qc_metrics["max_fd_mm"] > qt["warn_fd_mm"]:
+        if status == "PASS":
+            status = "WARN"
+        failure_reasons.append(
+            f"motion/artifact spike: max FD {qc_metrics['max_fd_mm']:.2f}mm "
+            f"(censored downstream, not a rejection)")
+
+    # tSNR FAIL stays: this is a technical motion-correction failure, not a
+    # subject-motion judgement.
+    if qc_metrics["tsnr_after_mean"] < qt["min_tsnr"]:
         status = "FAIL"
-        failure_reasons.append(f"tSNR {qc_metrics['tsnr_after_mean']:.2f} < {policy['qc_thresholds']['min_tsnr']}")
+        failure_reasons.append(f"tSNR {qc_metrics['tsnr_after_mean']:.2f} < {qt['min_tsnr']}")
 
     qc_status = {
         "status": status,

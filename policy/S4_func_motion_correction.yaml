@@ -37,17 +37,25 @@ motion_correction:
 
 # Quality Control Thresholds
 qc_thresholds:
-  # FAIL thresholds (hard stop/fail status)
-  max_fd_mm: 3.0
-  min_tsnr: 3.0
-  max_high_motion_fraction: 0.50
-  
-  # WARN thresholds (warning status)
-  warn_fd_mm: 2.0
+  # FAIL thresholds (hard stop/fail status).
+  # Motion exclusion is RELATIVE: a run is dropped only when a majority of its
+  # frames would be censored (too little usable data). Single-frame max_fd is
+  # NOT a FAIL trigger — that is non-standard (Power 2014 censors frames; fMRIPrep
+  # and cord-fMRI Eippert/Kaptan never reject runs on one frame) and is sensitive
+  # to slicewise-moco artifacts. Fraction is self-normalizing -> generalizes
+  # across acquisitions where an absolute mm cutoff cannot.
+  max_high_motion_fraction: 0.50   # FAIL: >50% of frames exceed fd_threshold_mm
+  min_tsnr: 3.0                    # FAIL: technical moco failure (not motion)
+
+  # WARN thresholds (warning status; surfaced for human QC, never drop the run)
+  warn_high_motion_fraction: 0.30  # WARN: elevated censored fraction
+  warn_fd_mm: 2.0                  # WARN: motion/artifact spike (observability)
   warn_tsnr: 5.0
-  warn_high_motion_fraction: 0.30
-  
-  # Definition of "High Motion" frame
+  # max_fd_mm retired as a FAIL gate 2026-06-16 (was 3.0); see warn_fd_mm.
+
+  # Per-frame "high motion" threshold (Power 2012). Frames above this are the
+  # ones censored/modeled downstream (S8 motion_outlier regressors); the FAIL
+  # gate above is the fraction of frames exceeding it.
   fd_threshold_mm: 0.5
 
 # QC Reportlet Visual Configuration
