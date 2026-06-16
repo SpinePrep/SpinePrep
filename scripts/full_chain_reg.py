@@ -120,6 +120,10 @@ def main() -> int:
     import argparse
     p = argparse.ArgumentParser()
     p.add_argument("--start", default="S1", help="First step to run (S1..S11)")
+    p.add_argument("--stop", default=None,
+                   help="Last step to run (inclusive). Default: run to the end. "
+                        "Use e.g. --start S8 --stop S8 to re-run a single step "
+                        "after upstream data changes (physio, fixed files).")
     p.add_argument("--scope", default="full",
                    help="Chain scope (work/done/<scope>/...). Default full.")
     p.add_argument("--datasets", nargs="+", default=None,
@@ -138,8 +142,10 @@ def main() -> int:
     work_root = PROJECT_ROOT / "work"
     all_codes = [c for c, _ in ALL_CHAIN_STEPS]
     start_idx = all_codes.index(args.start) if args.start in all_codes else 1
+    stop_idx = (all_codes.index(args.stop) if args.stop in all_codes
+                else len(all_codes) - 1)
     completed_codes: list[str] = all_codes[:start_idx]
-    steps_to_run = ALL_CHAIN_STEPS[start_idx:]
+    steps_to_run = ALL_CHAIN_STEPS[start_idx:stop_idx + 1]
     for code, full in steps_to_run:
         wf = get_next_workfolder(scope, work_root)
         wf.mkdir(parents=True)
