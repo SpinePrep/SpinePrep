@@ -7,11 +7,18 @@
 
 ## The principles
 
-### 1. Small fixed dev cohort. Forever.
-~10 runs, spanning the failure modes (vendor, FOV, shim, motion regime).
-fMRIPrep uses `ds-fmripreptests`; we use the 11-run regression set in
-`policy/datasets.yaml` (`intended_use: regression`). **Never grow it for
-engineering decisions.**
+### 1. ~~Small fixed dev cohort. Forever.~~ → Full data (retired 2026-06-16).
+**Superseded.** The pipeline steps are locked; the project moved off the
+small regression dev cohort and now runs **full datasets only**. The `reg`
+(and `smoke`) cohorts, their `reg_*_subset` keys, and their workfolders were
+removed. Production = the full per-dataset scopes (one per `intended_use:
+v1_validation` dataset) + the balgrist `exp` scope.
+
+*Historical rationale (kept for context):* during step development we used a
+~10-run fixed cohort spanning the failure modes (vendor, FOV, shim, motion)
+and never grew it for engineering decisions — the standard fMRIPrep/MRIQC
+practice. That phase is done; principles #8 and #10 below now apply at full
+scale rather than to a dev subset.
 
 ### 2. Literature-grounded defaults. Tune knobs, don't reinvent algorithms.
 - Distortion correction: topup > fugue > SyN-fallback (FSL / fMRIPrep brain / CoSpine).

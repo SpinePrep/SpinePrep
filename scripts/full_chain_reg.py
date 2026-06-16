@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Full chain runner: S1 -> S2 -> ... -> S9 -> S11 on a set of dataset keys.
 
-Defaults reproduce the original regression behaviour exactly:
-  --scope reg, --datasets = every key with intended_use: regression, --start S2
-  (the reg cohort's S1 is already promoted at work/done/reg/S1).
+The regression dev cohort was retired 2026-06-16: the pipeline now runs full
+datasets only. Defaults:
+  --scope full, --datasets = every key with intended_use: v1_validation,
+  --start S1.
 
-To run an arbitrary cohort (e.g. the balgrist experiment) in its OWN scope,
-isolated from the locked reg chain:
+To run a specific cohort in its OWN scope (e.g. the balgrist experiment):
   full_chain_reg.py --scope exp --start S1 \
       --datasets internal_balgrist_motor_11 internal_balgrist_painmotor_21
 
@@ -48,10 +48,14 @@ ALL_CHAIN_STEPS = [
 ]
 
 
-def reg_keys() -> list[str]:
+def full_keys() -> list[str]:
+    """All real production datasets (intended_use includes v1_validation).
+
+    The regression dev-cohort subsets were retired 2026-06-16; the pipeline
+    now runs full datasets only (see CLAUDE.md principle #1)."""
     p = yaml.safe_load(POLICY.read_text())
     return [d["key"] for d in p.get("datasets", [])
-            if "regression" in d.get("intended_use", [])]
+            if "v1_validation" in d.get("intended_use", [])]
 
 
 def link_chain(wf: Path, scope: str, predecessors: list[str], current_code: str) -> None:
@@ -115,17 +119,17 @@ def mark_done(scope: str, code: str, wf: Path) -> None:
 def main() -> int:
     import argparse
     p = argparse.ArgumentParser()
-    p.add_argument("--start", default="S2", help="First step to run (S1..S11)")
-    p.add_argument("--scope", default="reg",
-                   help="Chain scope (work/done/<scope>/...). Default reg.")
+    p.add_argument("--start", default="S1", help="First step to run (S1..S11)")
+    p.add_argument("--scope", default="full",
+                   help="Chain scope (work/done/<scope>/...). Default full.")
     p.add_argument("--datasets", nargs="+", default=None,
-                   help="Dataset keys to run. Default: all intended_use=regression keys.")
+                   help="Dataset keys to run. Default: all intended_use=v1_validation keys.")
     p.add_argument("--batch-workers", type=int, default=1, dest="batch_workers",
                    help="Per-step subject/run parallelism (S2 anat seg + S3 etc.). "
                         "Size to RAM/cores AND the number of concurrent chains.")
     args = p.parse_args()
 
-    keys = args.datasets if args.datasets else reg_keys()
+    keys = args.datasets if args.datasets else full_keys()
     scope = args.scope
     print(f"Scope: {scope}   Datasets ({len(keys)}):")
     for k in keys:
