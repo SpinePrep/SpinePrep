@@ -134,6 +134,15 @@ def main() -> int:
     args = p.parse_args()
 
     keys = args.datasets if args.datasets else full_keys()
+    # Guard: every key must be a real dataset in the policy. Catches a key that
+    # got word-joined by shell expansion (e.g. "motor painmotor" passed as one
+    # arg), which otherwise silently fails downstream as "No PASS/WARN runs".
+    valid = {d["key"] for d in yaml.safe_load(POLICY.read_text()).get("datasets", [])}
+    bad = [k for k in keys if k not in valid]
+    if bad:
+        print(f"ERROR: unknown dataset key(s): {bad}\n"
+              f"  (a space-joined key usually means --datasets was quoted as one arg)")
+        return 2
     scope = args.scope
     print(f"Scope: {scope}   Datasets ({len(keys)}):")
     for k in keys:
