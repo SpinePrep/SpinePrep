@@ -77,8 +77,15 @@ def mppca_denoise(
     noise_map = work_dir / "denoise_noise_map.nii.gz"
     meta: dict[str, Any] = {"tool": "dwidenoise", "enabled": True}
 
+    # Cap dwidenoise's internal thread pool. MRtrix uses its own pool (it ignores
+    # OMP_NUM_THREADS), so without -nthreads each call grabs ALL cores; combined
+    # with run-level batch-workers parallelism that massively oversubscribes the
+    # CPU. Default 1 -> parallelism comes from batch-workers (the toolbox's
+    # run-level convention), tunable via policy.
+    nthreads = int(cfg.get("nthreads", 1))
     cmd = ["dwidenoise", str(bold_path), str(out_path),
-           "-noise", str(noise_map), "-force"]
+           "-noise", str(noise_map), "-nthreads", str(nthreads), "-force"]
+    meta["nthreads"] = nthreads
     extent = cfg.get("extent")
     if extent:  # e.g. "5,5,5"; default (None) lets dwidenoise auto-size
         cmd += ["-extent", str(extent)]
