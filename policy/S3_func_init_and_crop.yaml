@@ -1,5 +1,22 @@
 version: 1
 
+# MP-PCA thermal-noise denoising (Veraart 2016; MRtrix3 dwidenoise). OFF by
+# default. When enabled, runs FIRST on the raw per-run 4D BOLD (before
+# localize/crop and before S4 motion correction) -- MP-PCA requires the rawest,
+# non-interpolated data or the Marchenko-Pastur i.i.d. assumption breaks.
+# Spinal-cord precedent: Kaptan/Eippert 2023 (NeuroImage), ~140% GM tSNR gain vs
+# smoothing's spatial-smoothness inflation. Requires MRtrix3 (`dwidenoise`).
+# Caveats (why it is opt-in): magnitude data is Rician (dwidenoise does not
+# correct the non-Gaussian floor); low-rank denoising can cause activation
+# "spreading"; cord/CSF/tissue patch mixing in the thin cord is unstudied for
+# fMRI. Falls back to the raw BOLD if dwidenoise is missing or errors.
+denoise:
+  enabled: false
+  # extent: patch size "x,y,z". Leave unset to let dwidenoise auto-size
+  # (smallest isotropic patch exceeding the volume count: 7x7x7 for <=343 vols),
+  # which is the recommended voxels>=volumes regime.
+  extent: null
+
 # Dummy volume drop: remove initial unstable frames before computing reference
 dummy:
   # Number of dummy volumes to drop from the start of each BOLD run

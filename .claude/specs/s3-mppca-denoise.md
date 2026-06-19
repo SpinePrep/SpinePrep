@@ -1,0 +1,62 @@
+---
+status: implemented
+---
+
+# Spec: Optional MP-PCA thermal-noise denoising (S3)
+
+## Objective
+Add optional Marchenko-Pastur PCA (MP-PCA) thermal-noise denoising of the 4D
+BOLD, off by default, literature-faithful and minimal.
+
+## Decision: where, what, why
+
+- **Placement — first S3 operation, on the raw per-run 4D BOLD, before
+  localize/crop and before S4 motion correction.** MP-PCA requires non-
+  interpolated data: any realignment/distortion/smoothing/resampling correlates
+  the noise and breaks the Marchenko-Pastur i.i.d. assumption (MRtrix docs treat
+  this as a failure condition). Matches the only cord-fMRI precedent — Kaptan/
+  Eippert 2023 (NeuroImage): MP-PCA on the whole 4D cord series before moco,
+  ~140% gray-matter tSNR gain without smoothing's spatial-smoothness inflation.
+- **Tool — MRtrix3 `dwidenoise`** (Veraart 2016 + Cordero-Grande 2019), shelled
+  out like SCT/FSL/ANTs. It is the reference implementation, auto-sizes the
+  patch (7^3 for ~200-343 vols; the recommended voxels>=volumes regime), and
+  emits a noise map. Captured in the per-run provenance for the S11 receipt.
+- **Not NORDIC** — NORDIC needs complex/phase data or a noise scan; on this
+  magnitude-only BOLD its advantages collapse (it falls back to MP-PCA
+  internally), so plain MP-PCA is the simpler, equally-justified, better-tooled
+  choice.
+- **Not dipy** — same algorithm but I'd own the auto-patch logic and the noise-
+  map; dwidenoise gives both for free and is the citable reference.
+
+## Constraints / caveats (why opt-in)
+- Magnitude data is Rician; dwidenoise does NOT correct the non-Gaussian floor
+  (a tolerated high-SNR approximation).
+- Low-rank denoising can cause activation "spreading" (also affects NORDIC).
+- Cord/CSF/tissue patch mixing in the thin cord is unstudied for fMRI.
+- Hence default OFF; falls back to the raw BOLD if dwidenoise is missing/errors
+  (never silently corrupts the chain).
+
+## Deliverables (implemented)
+- `src/spinalfmriprep/lib/denoise.py` — `mppca_denoise()` shells dwidenoise
+  (`-noise`, optional `-extent`, `-force`), returns (ok, noise_map, meta) with
+  provenance (tool/version/extent), the step-local metric (tissue median tSNR
+  pre/post + % gain), and noise median.
+- `src/spinalfmriprep/steps/s3/session.py` — gated stage before S3.1; denoised
+  series feeds the chain, raw BOLD untouched on disk (provenance).
+- `policy/S3_func_init_and_crop.yaml` — `denoise: {enabled: false, extent: null}`
+  with citations + caveats.
+- `tests/test_S3_denoise.py` — 3 smoke tests (command, extent override,
+  fallback). Real integration verified: noise estimate 14.94 vs true sigma 15.
+- MRtrix3 3.0.4 installed (`dwidenoise`).
+
+## How to use
+Set `denoise.enabled: true` in the S3 policy and re-run from S3 (`--start S3`).
+Off by default = zero change to existing runs.
+
+## Decision Log
+| Q | Choice | Rationale |
+|---|--------|-----------|
+| placement | first S3 op, pre-moco | MP-PCA needs raw/non-interpolated data; Kaptan 2023 precedent |
+| tool | MRtrix3 dwidenoise (B) | reference impl, auto-patch, noise map, shell-out fit; install cost waived |
+| method | MP-PCA not NORDIC | magnitude-only data; NORDIC needs complex/noise-scan |
+| default | OFF | Rician/spreading/cord-patch caveats unsettled |

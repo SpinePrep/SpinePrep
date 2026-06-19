@@ -76,10 +76,27 @@ def _process_session_s3(
             "results": []
         }
 
+        # Optional MP-PCA thermal-noise denoising (off by default). MUST run
+        # here, on the raw per-run 4D BOLD, before any interpolation (localize
+        # /crop are index-only, but S4 moco interpolates) -- see lib/denoise.py.
+        # On success the denoised series feeds the rest of the chain; the raw
+        # BOLD is untouched on disk (provenance). On failure we fall back to raw
+        # so denoising can never silently break the run.
+        func_input = bold_path
+        dn_cfg = policy.get("denoise", {})
+        if dn_cfg.get("enabled", False):
+            from spinalfmriprep.lib.denoise import mppca_denoise
+            dn_out = work_dir / "desc-denoised_bold.nii.gz"
+            ok_dn, _noise_map, dn_meta = mppca_denoise(
+                bold_path, dn_out, work_dir, dn_cfg)
+            if ok_dn:
+                func_input = dn_out
+            run_result["denoise"] = dn_meta
+
         try:
             # S3.1
             s3_1_res = _process_s3_1_dummy_drop_and_localization(
-                bold_path,
+                func_input,
                 work_dir,
                 policy,
                 subject=subject,
