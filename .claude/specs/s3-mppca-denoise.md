@@ -2,7 +2,30 @@
 status: implemented
 ---
 
-# Spec: Optional MP-PCA thermal-noise denoising (S3)
+# Spec: Optional MP-PCA thermal-noise denoising
+
+> **Update 2026-06-20:** promoted from an S3 sub-stage to its own step,
+> **S2B_func_denoise**, with QC reportlets. The placement/tool/method decisions
+> below are unchanged; only the packaging moved. See "Separate step (S2B)".
+
+## Separate step (S2B)
+- New step **S2B_func_denoise** between S2 and S3 in `ALL_CHAIN_STEPS` (inserted
+  without renumbering S3-S11, so all existing promotions stay valid).
+- `steps/s2b/` (orchestrate + reportlets), top-level `S2B_func_denoise.py`, CLI
+  `run/check` dispatch + choices, `policy/S2B_func_denoise.yaml`.
+- Runs on the raw per-run 4D BOLD (after S1 inventory). Writes
+  `denoise/<run_id>/desc-denoised_bold.nii.gz` + noise map per run; promoted to
+  `done/<scope>/S2B`. **S3 consumes it** via `_find_denoised_bold` (same-wf, then
+  promoted-S2B fallback by chain scope); falls back to raw when absent.
+- OFF by default => clean passthrough (qc PASS, no outputs), chain advances.
+- `link_chain` hardened to walk back past an absent S2B for the derivatives link.
+- **QC reportlets (3)**: (1) noise σ map; (2) tSNR before vs after with median
+  gain; (3) residual-structure check — temporal SD of removed = raw-denoised,
+  which must be structureless (anatomy here = over-denoising). Plus an automatic
+  gate: `residual_structure_corr` = corr(removed-SD, mean image); WARN >0.4, FAIL
+  >0.6. Step-local metric = in-cord/tissue tSNR gain.
+
+# Spec: Optional MP-PCA thermal-noise denoising (original S3 sub-stage)
 
 ## Objective
 Add optional Marchenko-Pastur PCA (MP-PCA) thermal-noise denoising of the 4D

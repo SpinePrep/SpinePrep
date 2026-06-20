@@ -193,6 +193,25 @@ def _find_s2_cordmask_dseg(
 # ---------------------------------------------------------------------------
 
 
+def _find_denoised_bold(
+    out_root: Path, run_id: str,
+) -> Optional[Path]:
+    """Locate the optional S2B denoised 4D BOLD for a run, else None (=> S3 uses
+    raw). Mirrors the promoted-S2 fallback: same-wf first, then the promoted
+    work/done/<scope>/S2B, scope derived from the wf folder name."""
+    cand = out_root / "denoise" / run_id / "desc-denoised_bold.nii.gz"
+    if cand.exists():
+        return cand
+    name = out_root.name
+    if name.startswith("wf_") and "_" in name[3:]:
+        scope = name[3:].rsplit("_", 1)[0]
+        promoted = (out_root.parent / "done" / scope / "S2B" / "denoise"
+                    / run_id / "desc-denoised_bold.nii.gz")
+        if promoted.exists():
+            return promoted
+    return None
+
+
 def _collect_func_candidates(inventory: dict) -> dict[tuple[str, Optional[str]], list[dict]]:
     candidates: dict[tuple[str, Optional[str]], list[dict]] = {}
     for entry in inventory.get("files", []):
@@ -302,11 +321,6 @@ def _summarise_s3_runs(inventory: dict, policy: dict, runs: list[dict], out_path
             "reportlets": reportlets,
             "metrics": run.get("metrics") or {},
         }
-        # MP-PCA denoise provenance (tool/version/extent/tSNR) when it ran, so
-        # denoised outputs are self-documenting for the S11 reproducibility
-        # receipt. Absent when denoise is off (the default).
-        if run.get("denoise"):
-            summary_run["denoise"] = run["denoise"]
         summary_runs.append(summary_run)
 
     return {

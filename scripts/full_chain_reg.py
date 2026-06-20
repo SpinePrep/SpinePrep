@@ -36,6 +36,9 @@ LOCAL_MAP = PROJECT_ROOT / "config" / "datasets_local.yaml"
 ALL_CHAIN_STEPS = [
     ("S1", "S1_input_verify"),
     ("S2", "S2_anat_cordref"),
+    # S2B: optional MP-PCA denoise on raw BOLD (before S3/S4). No-op passthrough
+    # when policy disabled; S3 consumes its denoised series when present.
+    ("S2B", "S2B_func_denoise"),
     ("S3", "S3_func_init_and_crop"),
     ("S4", "S4_func_motion_correction"),
     ("S5", "S5_func_distortion_correction"),
@@ -81,12 +84,16 @@ def link_chain(wf: Path, scope: str, predecessors: list[str], current_code: str)
         s1 = (done / "S1").resolve()
         if s1.exists() and not (wf / "work").exists():
             (wf / "work").symlink_to(s1 / "work")
-    # Immediate predecessor provides derivatives.
-    if predecessors:
-        last_root = (done / predecessors[-1]).resolve()
-        deriv = last_root / "derivatives"
-        if deriv.exists() and not (wf / "derivatives").exists():
-            (wf / "derivatives").symlink_to(deriv)
+    # Derivatives accumulate via a symlink chain to the origin. Link from the
+    # latest predecessor that actually has a derivatives dir -- walking back so a
+    # skipped/absent optional step (e.g. S2B when denoise is off and unpromoted)
+    # doesn't break the chain.
+    if predecessors and not (wf / "derivatives").exists():
+        for code in reversed(predecessors):
+            deriv = (done / code).resolve() / "derivatives"
+            if deriv.exists():
+                (wf / "derivatives").symlink_to(deriv)
+                break
     # runs/ is S3-specific. Only link for downstream consumers (S4+).
     if current_code in ("S4", "S5", "S6", "S7", "S8", "S9", "S11"):
         s3_runs = (done / "S3").resolve() / "runs"
