@@ -51,7 +51,27 @@ BOLD, off by default, literature-faithful and minimal.
 
 ## How to use
 Set `denoise.enabled: true` in the S3 policy and re-run from S3 (`--start S3`).
-Off by default = zero change to existing runs.
+Off by default = zero change to existing runs. `denoise.nthreads` (default 6)
+caps dwidenoise's internal thread pool -- it ignores OMP_NUM_THREADS, so without
+this each call grabs all cores and oversubscribes when combined with run-level
+batch-workers parallelism.
+
+## Validated result (exp, June 2026)
+Enabled on the balgrist `exp` scope, full chain re-run S3->S11. Real in-cord
+tSNR gain (denoised vs raw, same cord masks, all 89 runs): median **5.72 ->
+8.55, +50%** (per-run range +5%..+77%; motor runs ~+56%). Lower than Kaptan's
+~140% because that is gray-matter-only while this is the whole cord seg
+(WM+GM+partial volume). Provenance (tool/version/extent/in-cord tSNR pre-post)
+recorded per run in the S3 qc.
+
+## Follow-up (not done; deliberately out of this minimal change)
+1. **Efficiency: denoise a cord-region crop, not the full 128x128 FOV.** The cord
+   is ~30 vox; denoising the whole FOV (mostly air) is ~10x wasteful I/O+compute
+   and made the HDD the bottleneck. Needs the localize-before-denoise reorder
+   (S3.1 produces a coarse cord box first), which changes the step ordering --
+   hence deferred from the minimal version. Would make denoise fast regardless of
+   worker count.
+2. Surface the in-cord tSNR gain on the S3 reportlet (currently QC-metric only).
 
 ## Decision Log
 | Q | Choice | Rationale |

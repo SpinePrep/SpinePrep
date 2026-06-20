@@ -302,6 +302,11 @@ def _summarise_s3_runs(inventory: dict, policy: dict, runs: list[dict], out_path
             "reportlets": reportlets,
             "metrics": run.get("metrics") or {},
         }
+        # MP-PCA denoise provenance (tool/version/extent/tSNR) when it ran, so
+        # denoised outputs are self-documenting for the S11 reproducibility
+        # receipt. Absent when denoise is off (the default).
+        if run.get("denoise"):
+            summary_run["denoise"] = run["denoise"]
         summary_runs.append(summary_run)
 
     return {
