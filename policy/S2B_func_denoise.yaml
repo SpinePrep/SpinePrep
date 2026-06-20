@@ -1,0 +1,36 @@
+version: 1
+
+# S2B — MP-PCA thermal-noise denoising (Veraart 2016; MRtrix3 dwidenoise).
+# Its own step at the head of the func chain: runs on the raw per-run 4D BOLD
+# after S1 inventory, BEFORE S3 localize/crop and S4 motion correction. MP-PCA
+# requires the rawest, non-interpolated data or the Marchenko-Pastur i.i.d.
+# assumption breaks. Spinal-cord precedent: Kaptan/Eippert 2023 (NeuroImage),
+# whole-cord tSNR gain (we measured ~+50% in-cord on the balgrist exp scope).
+#
+# OFF by default. When disabled, S2B is a clean passthrough (qc PASS, no
+# outputs) and S3 reads the raw BOLD. Falls back to raw on any dwidenoise error.
+#
+# Caveats (why opt-in): magnitude data is Rician (dwidenoise does not correct the
+# non-Gaussian floor); low-rank denoising can cause activation "spreading";
+# cord/CSF/tissue patch mixing in the thin cord is unstudied for fMRI -- which is
+# exactly why the residual-structure QC reportlet + gate exist.
+enabled: false
+
+# dwidenoise's internal thread pool (it ignores OMP_NUM_THREADS). Default 1 so
+# run-level batch-workers owns the parallelism; raise (e.g. 6) when running
+# few workers on a big box.
+nthreads: 1
+
+# extent: patch size "x,y,z". Unset => dwidenoise auto-sizes (smallest isotropic
+# patch exceeding the volume count: 7x7x7 for <=343 vols) -- the recommended
+# voxels>=volumes regime.
+extent: null
+
+qc_thresholds:
+  # Residual-structure correlation: corr(removed-noise SD, mean image). Healthy
+  # denoising removes structureless noise => near 0. High positive => anatomy
+  # leaked into the residual => signal removed (over-denoising).
+  warn_residual_corr: 0.4
+  fail_residual_corr: 0.6
+  # tSNR must improve; below this is a WARN (denoising did little / hurt).
+  warn_min_tsnr_gain_pct: 0.0

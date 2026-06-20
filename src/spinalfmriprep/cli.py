@@ -37,7 +37,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _add_S0_arguments(subparser: argparse.ArgumentParser) -> None:
     subparser.add_argument(
         "step",
-        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives", "S10_roi_timeseries_and_connectivity", "S11_qc_aggregation_and_release"],
+        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S2B_func_denoise", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives", "S10_roi_timeseries_and_connectivity", "S11_qc_aggregation_and_release"],
         help="Pipeline step code",
     )
     subparser.add_argument(
@@ -120,6 +120,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _run_S1(args)
         elif step == "S2_anat_cordref":
             result = _run_S2(args)
+        elif step == "S2B_func_denoise":
+            result = _run_S2B(args)
         elif step == "S3_func_init_and_crop":
             result = _run_S3(args)
         elif step == "S4_func_motion_correction":
@@ -151,6 +153,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _check_S1(args)
         elif step == "S2_anat_cordref":
             result = _check_S2(args)
+        elif step == "S2B_func_denoise":
+            result = _check_S2B(args)
         elif step == "S3_func_init_and_crop":
             result = _check_S3(args)
         elif step == "S4_func_motion_correction":
@@ -404,6 +408,25 @@ def _check_S2(args):
         dataset_key=args.dataset_key,
         datasets_local=args.datasets_local,
         bids_root=args.bids_root,
+        out=args.out,
+    )
+
+
+def _run_S2B(args):
+    from spinalfmriprep.S2B_func_denoise import run_S2B_func_denoise
+    return run_S2B_func_denoise(
+        dataset_key=args.dataset_key,
+        datasets_local=args.datasets_local,
+        out=args.out,
+        batch_workers=args.batch_workers,
+    )
+
+
+def _check_S2B(args):
+    from spinalfmriprep.S2B_func_denoise import check_S2B_func_denoise
+    return check_S2B_func_denoise(
+        dataset_key=args.dataset_key,
+        datasets_local=args.datasets_local,
         out=args.out,
     )
 
