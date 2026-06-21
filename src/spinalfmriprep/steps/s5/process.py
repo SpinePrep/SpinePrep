@@ -1039,6 +1039,10 @@ def run_S5_func_distortion_correction(
     # Mode selection (orchestrator already passes filtered fmap_runs)
     from .mode import select_mode
     mode, eligible_fmaps = select_mode(bold_run, fmap_runs)
+    # Remember what the data made us *eligible* for, before any fall-through. The
+    # run record exposes both so a fugue->syn or topup->syn fallback is visible,
+    # not silently relabelled as a plain SyN run.
+    selected_mode = mode
 
     # Dispatch
     if mode == "topup":
@@ -1063,8 +1067,13 @@ def run_S5_func_distortion_correction(
             mode = "syn"
     elif mode == "fugue":
         modeinfo = _run_fugue()
-        # Fall through to SyN on fugue not-implemented
+        # FUGUE is a deliberate stub in v1 (no v1_validation dataset ships a GRE
+        # phasediff fieldmap, so it can't be validated). Fall through to SyN, but
+        # log it loudly like the topup fallback so the substitution isn't silent.
         if modeinfo.get("status") != "OK":
+            print(f"[S5 dispatcher] fugue not implemented on {run_id}, falling to "
+                  f"SyN: {modeinfo.get('failure_message', '<no message>')}",
+                  flush=True)
             mode = "syn"
 
     if mode == "syn":
@@ -1137,6 +1146,13 @@ def run_S5_func_distortion_correction(
 
     thresholds = policy.get("qc_thresholds", {})
     status, reasons = _classify_run_status(metrics, mode, thresholds)
+    # Record any mode fall-through (e.g. fugue/topup -> syn) so the QC trail is
+    # truthful about which correction actually ran versus what the data implied.
+    if mode != selected_mode:
+        reasons.append(
+            f"distortion mode fell back from {selected_mode} to {mode}"
+            + (" (FUGUE not implemented in v1)" if selected_mode == "fugue" else "")
+        )
 
     # Save funcref (temporal mean) for downstream chain consumers
     mean_path = func_dir / f"{prefix}_desc-undistorted_funcref.nii.gz"
@@ -1198,6 +1214,7 @@ def run_S5_func_distortion_correction(
     s5_work_dir.mkdir(parents=True, exist_ok=True)
     qc_metrics_path.write_text(json.dumps({
         "mode": mode,
+        "requested_mode": selected_mode,
         "metrics": metrics,
         "failure_reasons": reasons,
         "mode_info": {k: v for k, v in modeinfo.items() if k != "status"},
@@ -1206,6 +1223,7 @@ def run_S5_func_distortion_correction(
     return {
         "status": status,
         "mode": mode,
+        "requested_mode": selected_mode,
         "step_code": step_code,
         "dataset_key": dataset_key,
         "subject": subject,

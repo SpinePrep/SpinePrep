@@ -1341,9 +1341,18 @@ Frame-level QC metrics (DVARS, refRMS) computed per Power 2014
 `sct_fmri_moco`, regularized along Z. Per-slice translation parameters
 emitted as 4D NIfTI for downstream confound use.
 
-**Distortion correction (S5)**: Per-dataset mode (TopUp / FUGUE / SyN
-fallback). Cord A-P displacement per slice + cord Dice per slice
-emitted as QC.
+**No slice-timing correction is performed.** This is a deliberate choice
+for cervical cord BOLD: the field's reference pipelines do not slice-time
+correct cord data (Eippert 2017 [@eippert2017]; Kaptan 2023 [@kaptan2023]),
+and interpolating the short slice stack would correlate the thermal noise.
+Slice-timing metadata (when present in the BIDS sidecar) is used only to
+phase the cardiac/respiratory RETROICOR regressors in S8.
+
+**Distortion correction (S5)**: Per-run mode is chosen automatically from
+the available fieldmaps: reversed-phase EPI pair -> TopUp; image-only ->
+SyN. (A GRE-fieldmap FUGUE path is specified but not implemented in v1, so
+GRE-only data falls back to SyN; the fall-back is recorded per run.) Cord
+A-P displacement per slice + cord Dice per slice emitted as QC.
 
 **Functional-to-anat registration (S6)**: SCT `sct_register_multimodal`
 with the cord-driven Kaptan 2023 recipe [@kaptan2023]:
