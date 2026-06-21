@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "qc_S2B_func_denoise.schema.json",
+  "title": "S2B_func_denoise QC Status",
+  "description": "QC status schema for the optional S2B MP-PCA thermal-noise denoising step (aggregated per dataset key). When denoising is disabled the step is a clean passthrough: status PASS, enabled false, runs empty.",
+  "type": "object",
+  "required": ["dataset_key", "status", "enabled", "runs"],
+  "properties": {
+    "dataset_key": {
+      "type": "string",
+      "description": "Dataset key this QC aggregates."
+    },
+    "bids_root": {
+      "type": "string",
+      "description": "Absolute path to the BIDS root the BOLD series were read from."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "WARN", "FAIL"],
+      "description": "Aggregate status across all runs in this dataset."
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Whether denoising actually ran. false = clean passthrough (no outputs; chain advances using the raw BOLD)."
+    },
+    "counts": {
+      "type": "object",
+      "description": "Run tallies. The passthrough case reports total/pass/fail = 0.",
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "pass": {"type": "integer", "minimum": 0},
+        "warn": {"type": "integer", "minimum": 0},
+        "fail": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "failure_message": {
+      "type": ["string", "null"],
+      "description": "Aggregate failure / passthrough note (null when all runs passed)."
+    },
+    "runs": {
+      "type": "array",
+      "description": "Per-run QC results (empty when disabled).",
+      "items": {
+        "type": "object",
+        "required": ["subject", "run_id", "status"],
+        "properties": {
+          "subject": {"type": "string"},
+          "session": {"type": ["string", "null"]},
+          "run_id": {"type": "string"},
+          "status": {
+            "type": "string",
+            "enum": ["PASS", "WARN", "FAIL"]
+          },
+          "denoise": {
+            "type": "object",
+            "description": "Provenance returned by lib/denoise.mppca_denoise (the dwidenoise call).",
+            "properties": {
+              "tool": {"type": "string", "const": "dwidenoise"},
+              "enabled": {"type": "boolean"},
+              "version": {"type": ["string", "null"], "description": "dwidenoise (MRtrix3) version string."},
+              "nthreads": {"type": "integer", "description": "Thread cap passed via -nthreads (dwidenoise ignores OMP_NUM_THREADS)."},
+              "extent": {"type": "string", "description": "Denoising patch extent: 'auto' or an explicit NxNxN."},
+              "tsnr_pre": {"type": ["number", "null"]},
+              "tsnr_post": {"type": ["number", "null"]},
+              "tsnr_gain_pct": {"type": ["number", "null"]},
+              "noise_median": {"type": ["number", "null"]},
+              "error": {"type": "string", "description": "Present only when the dwidenoise call failed."}
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Step-local metrics. tSNR gain (in-tissue median) is the truth metric; residual_structure_corr guards against over-denoising.",
+            "properties": {
+              "tsnr_pre": {"type": ["number", "null"]},
+              "tsnr_post": {"type": ["number", "null"]},
+              "tsnr_gain_pct": {"type": ["number", "null"]},
+              "noise_median": {"type": ["number", "null"]},
+              "residual_structure_corr": {
+                "type": ["number", "null"],
+                "description": "corr(temporal-SD of removed signal, mean image). Structureless is good; WARN > warn_residual_corr, FAIL > fail_residual_corr."
+              }
+            }
+          },
+          "reportlets": {
+            "type": "object",
+            "description": "Relative paths to the 3 QC figures (present on PASS/WARN).",
+            "properties": {
+              "noise_sigma": {"type": "string"},
+              "tsnr_before_after": {"type": "string"},
+              "residual_structure": {"type": "string"}
+            }
+          },
+          "failure_reasons": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "failure_message": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    }
+  }
+}
