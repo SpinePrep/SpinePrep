@@ -86,7 +86,6 @@ def render_tutorial_html() -> str:
         _section_S7(),
         _section_S8(),
         _section_S9(),
-        _section_S10(),
         _section_S11(),
     ]
 
@@ -127,7 +126,6 @@ citations.</p>
 <a href="#S7">S7 — template normalisation</a>
 <a href="#S8">S8 — confounds &amp; physio</a>
 <a href="#S9">S9 — primary functional derivatives</a>
-<a href="#S10">S10 — ROI time-series &amp; connectivity</a>
 <a href="#S11">S11 — QC aggregation &amp; release</a>
 </div>
 
@@ -606,31 +604,6 @@ FWHM.</li>
 </ul>
 <p class="ref">Kaptan M et al., NeuroImage 2023.
 Eippert F et al., NeuroImage 2017.</p>
-</div>
-"""
-
-
-def _section_S10() -> str:
-    return """
-<h2 id="S10">S10 — ROI time-series &amp; connectivity</h2>
-<div class="step">
-<p>Pull cord ROI time-series (hemicord left / right × vertebral
-level) and compute Fisher-z connectivity for resting-state runs.
-Reliability metrics (ICC, spatial Dice) are computed for multi-
-session subjects.</p>
-<p>Reportlets:</p>
-<ul>
-<li><code>hemicord_timeseries</code> — per-ROI time-series
-panels.</li>
-<li><code>hemicord_connectivity</code> — Fisher-z heatmap.</li>
-<li><code>vertlvl_tsnr</code> — per-vertebral-level tSNR
-bars.</li>
-<li><code>reliability_icc</code> — cross-session ICC bars
-(multi-session subjects only).</li>
-<li><code>reliability_dice</code> — spatial Dice per seed.</li>
-</ul>
-<p class="ref">Eippert F et al., NeuroImage 2017
-(0.01–0.1 Hz bandpass). Kong Y et al., NeuroImage 2014.</p>
 </div>
 """
 
