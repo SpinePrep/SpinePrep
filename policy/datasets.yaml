@@ -390,10 +390,42 @@ datasets:
     has_fmap: false
     has_physio: true
   selection:
-    mode: all
-    subjects: []
+    mode: subset
+    subjects:
+    - A006
+    - A007
+    - A008
+    - A009
+    - A011
+    - A013
+    - A023
+    - A024
+    - A025
+    - A026
+    - A027
+    - A028
+    - A029
+    - A030
+    - A032
+    - A033
+    - A034
+    - A036
+    - A037
+    - A038
+    - A039
+    - A043
+    - A044
+    - A045
+    - A046
+    - A048
+    - A050
+    - A051
+    - A052
+    - P099
     sessions: []
-  notes: Physiological recordings are provided but are reported as not synchronized with the rs-fMRI acquisitions.
+  notes: Physiological recordings are provided but are reported as not synchronized
+    with the rs-fMRI acquisitions. sub-P030 is anat-only (no BOLD upstream) and is
+    excluded from the selection; 30 of 31 subjects have functional runs.
 - key: openneuro_ds004507_neck_position_t2w
   title: Spinal cord neck position anatomical MRI (T2w), flexion-neutral-extension
   source: openneuro
