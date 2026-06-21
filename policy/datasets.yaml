@@ -240,15 +240,16 @@ datasets:
     tasks:
     - heat
     has_fmap: false
-    has_physio: true
+    has_physio: false
   selection:
     mode: all
     subjects: []
     sessions: []
   notes: Cervical dorsal-horn thermal-pain reliability (Leipzig/Eippert; OpenNeuro
     ds004926). Multi-TE heat task (acq-te25..te55) across 2 days; acq-te40ReliabilityRun
-    is the main run analysed in the source paper. T2w anat; physio present; no fieldmaps
-    in the BIDS release (S5 will use the SyN fallback).
+    is the main run analysed in the source paper. T2w anat; no fieldmaps (S5 uses the
+    SyN fallback). Physiological recordings exist only under derivatives/ (not as raw
+    BIDS _physio.tsv.gz), so S8 RETROICOR is skipped for this dataset.
 - key: openneuro_ds005143_spinalcord_fmri_segdb
   title: Spinal cord fMRI segmentation database
   source: openneuro
