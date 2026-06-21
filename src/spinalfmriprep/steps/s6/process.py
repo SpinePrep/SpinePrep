@@ -489,7 +489,7 @@ def run_S6_func_to_anat_registration(
 
     # MI in funcref geometry: funcref vs anat resampled into BOLD via warp_anat2func
     anat_in_bold = s6_work_dir / "anat_in_bold.nii.gz"
-    _run_command([
+    ok_aib, err_aib = _run_command([
         "sct_apply_transfo",
         "-i", str(anat_local),
         "-d", str(funcref_local),
@@ -497,6 +497,11 @@ def run_S6_func_to_anat_registration(
         "-x", "linear",
         "-o", str(anat_in_bold),
     ])
+    if not ok_aib:
+        # QC-auxiliary transform (feeds the MI metric + reportlet overlay, not the
+        # primary warp). Don't fail the step, but make the failure visible instead
+        # of silently dropping the metric.
+        failure_reasons.append(f"anat->bold QC transform failed: {err_aib[:120]}")
     if anat_in_bold.exists():
         try:
             f = nib.load(funcref_local).get_fdata()
@@ -546,7 +551,7 @@ def run_S6_func_to_anat_registration(
     bmean = bdata.mean(axis=3) if bdata.ndim == 4 else bdata
     nib.save(nib.Nifti1Image(bmean.astype(np.float32), bimg.affine,
                              bimg.header), bold_mean_local)
-    _run_command([
+    ok_bia, err_bia = _run_command([
         "sct_apply_transfo",
         "-i", str(bold_mean_local),
         "-d", str(anat_local),
@@ -554,6 +559,10 @@ def run_S6_func_to_anat_registration(
         "-x", "spline",
         "-o", str(bold4d_in_anat),
     ])
+    if not ok_bia:
+        # QC view only (mean BOLD shown in anat space); surface the failure
+        # rather than emit a clean status with a missing QC image.
+        failure_reasons.append(f"mean-bold->anat QC view failed: {err_bia[:120]}")
 
     # tSNR funcref (for S7.4 ratio comparison)
     tsnr_path = func_dir / f"{prefix}_desc-tsnr_funcref.nii.gz"

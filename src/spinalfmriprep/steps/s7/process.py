@@ -633,7 +633,7 @@ def run_S7_template_normalization(
 
     # 7. Funcref in PAM50 (QC-only single 3D; we never push 4D BOLD there)
     funcref_in_PAM50 = func_dir / f"{prefix}_space-PAM50_desc-funcref.nii.gz"
-    _run_command([
+    ok_fp, err_fp = _run_command([
         "sct_apply_transfo",
         "-i", str(funcref_local),
         "-d", str(pam50_t2s),
@@ -641,6 +641,10 @@ def run_S7_template_normalization(
         "-x", policy.get("interpolation", {}).get("bold", "spline"),
         "-o", str(funcref_in_PAM50),
     ])
+    if not ok_fp:
+        # QC-only PAM50 funcref preview; surface the failure rather than emit a
+        # clean status with the preview silently missing.
+        failure_reasons.append(f"funcref->PAM50 QC preview failed: {err_fp[:120]}")
 
     # 8. Classify
     status, reasons = _classify(metrics, policy.get("qc_thresholds", {}))
