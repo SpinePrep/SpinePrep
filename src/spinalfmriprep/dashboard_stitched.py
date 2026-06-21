@@ -43,7 +43,7 @@ def _step_logs_subdir(wf: Path, step_num: int) -> Optional[Path]:
     """Return ``wf/logs/S{n}_<name>`` if it exists and has qc.json, else None.
 
     Accepts both layouts:
-      - per-dataset: ``S{n}_<name>/<dataset>/qc.json`` (S1–S10)
+      - per-dataset: ``S{n}_<name>/<dataset>/qc.json`` (S1–S9, incl. S2B)
       - aggregate:  ``S{n}_<name>/qc.json``           (S11 release report)
     """
     logs = wf / "logs"

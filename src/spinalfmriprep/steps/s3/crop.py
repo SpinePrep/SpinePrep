@@ -1,7 +1,7 @@
 """S3.3: Cord-focused crop, QC reportlets.
 
 Writes two artefacts named with the SCT batch_processing-derived
-on-disk contract that S4-S10 read directly:
+on-disk contract that S4-S9 read directly:
 
   - ``funccrop_bold.nii.gz``  — 4D BOLD cropped to the cord cylinder
     (i.e. ``bold_cropped`` in literature terminology; SCT and CoSpine
