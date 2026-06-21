@@ -240,16 +240,23 @@ datasets:
     tasks:
     - heat
     has_fmap: false
-    has_physio: false
+    has_physio: true
   selection:
     mode: all
     subjects: []
     sessions: []
-  notes: Cervical dorsal-horn thermal-pain reliability (Leipzig/Eippert; OpenNeuro
-    ds004926). Multi-TE heat task (acq-te25..te55) across 2 days; acq-te40ReliabilityRun
-    is the main run analysed in the source paper. T2w anat; no fieldmaps (S5 uses the
-    SyN fallback). Physiological recordings exist only under derivatives/ (not as raw
-    BIDS _physio.tsv.gz), so S8 RETROICOR is skipped for this dataset.
+  notes: >-
+    Cervical dorsal-horn thermal-pain reliability (Leipzig/Eippert; OpenNeuro
+    ds004926). RESTRICTED to acq-te40ReliabilityRun (the run the source paper
+    analyses; 160 vols/run, 40 subj x 2 days = 80 runs); the other six echoes
+    (te25..te55) were moved out of the BIDS tree to
+    datasets/.excluded_ds004926_echoes/ (reversible) to avoid 4x redundant
+    compute. T2w anat; no fieldmaps (S5 uses SyN fallback). Physio integrated
+    from derivatives - the source ships a non-standard physio.tsv (header row;
+    cols ecg/resp/Rpeak/TR/stim; SamplingFrequency as a string) under
+    derivatives/sub/ses/physio/, so it was transformed to BIDS _physio.tsv.gz +
+    .json in func/ (cols cardiac=ecg, respiratory=resp, trigger=TR; 1000 Hz) for
+    S8 RETROICOR (one-off ETL).
 - key: openneuro_ds005143_spinalcord_fmri_segdb
   title: Spinal cord fMRI segmentation database
   source: openneuro
