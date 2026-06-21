@@ -15,6 +15,13 @@ search:
 
 S4 minimizes the impact of subject motion on the fMRI time series. Even small movements (< 1mm) can induce significant signal changes in spinal fMRI due to the small cross-sectional area of the cord. This step aligns all functional volumes to the robust reference created in S3.
 
+!!! note "No slice-timing correction"
+    The pipeline performs **no slice-timing correction** — it never temporally
+    resamples the BOLD series. This is a deliberate choice for cord fMRI,
+    following the field standard (Eippert 2017; Kaptan 2023). Slice-timing
+    metadata from the BIDS sidecar is used only later, by RETROICOR in S8, to
+    phase the cardiac and respiratory regressors.
+
 ---
 
 ## Algorithm Overview
