@@ -83,6 +83,8 @@ REQUIRED_V1_KEYS = {
     "openneuro_ds004616_spinalcord_handgrasp_task",
     "internal_balgrist_motor_11",
     "internal_balgrist_painmotor_21",
+    "openneuro_ds004926_dorsalhorn_pain",
+    "openneuro_ds005075_brain_spine_rest",
 }
 
 

@@ -217,6 +217,38 @@ datasets:
     - '30'
     sessions: []
   notes: ''
+- key: openneuro_ds004926_dorsalhorn_pain
+  title: Reliability of task-based fMRI in the dorsal horn of the human spinal cord
+  source: openneuro
+  accession: ds004926
+  doi: null
+  homepage: https://openneuro.org/datasets/ds004926
+  license: CC0-1.0
+  intended_use:
+  - v1_validation
+  counts:
+    participants: 40
+    sessions: 2
+  spec:
+    domains:
+    - spinalcord
+    modalities:
+    - anat
+    - func
+    paradigms:
+    - task
+    tasks:
+    - heat
+    has_fmap: false
+    has_physio: true
+  selection:
+    mode: all
+    subjects: []
+    sessions: []
+  notes: Cervical dorsal-horn thermal-pain reliability (Leipzig/Eippert; OpenNeuro
+    ds004926). Multi-TE heat task (acq-te25..te55) across 2 days; acq-te40ReliabilityRun
+    is the main run analysed in the source paper. T2w anat; physio present; no fieldmaps
+    in the BIDS release (S5 will use the SyN fallback).
 - key: openneuro_ds005143_spinalcord_fmri_segdb
   title: Spinal cord fMRI segmentation database
   source: openneuro
@@ -342,9 +374,9 @@ datasets:
   homepage: https://openneuro.org/datasets/ds005075
   license: CC0-1.0
   intended_use:
-  - extended
+  - v1_validation
   counts:
-    participants: 88
+    participants: 31
     sessions: 1
   spec:
     domains:
