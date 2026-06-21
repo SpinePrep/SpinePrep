@@ -24,6 +24,9 @@ import pandas as pd
 ALL_STEPS = [
     ("S1", "S1_input_verify"),
     ("S2", "S2_anat_cordref"),
+    # S2B: optional MP-PCA denoise (off by default). Clean PASS passthrough when
+    # disabled; its policy SHA + provenance still reach the release receipt.
+    ("S2B", "S2B_func_denoise"),
     ("S3", "S3_func_init_and_crop"),
     ("S4", "S4_func_motion_correction"),
     ("S5", "S5_func_distortion_correction"),
@@ -801,6 +804,63 @@ def _detect_sct_version() -> Optional[str]:
     return None
 
 
+def _detect_ants_version() -> Optional[str]:
+    """ANTs version (S5 SyN distortion correction). Prefers a standalone
+    ``antsRegistration``; falls back to the copy SCT bundles as
+    ``isct_antsRegistration``. SCT's build strips the version to ``0.0.0.0`` --
+    in that case we anchor on the compile date (the real provenance is "the ANTs
+    bundled with this SCT", which the receipt already records via sct_version)."""
+    import re as _re
+    for binary in ("antsRegistration", "isct_antsRegistration"):
+        try:
+            out = subprocess.run([binary, "--version"], capture_output=True,
+                                 text=True, timeout=10)
+            merged = (out.stdout or "") + "\n" + (out.stderr or "")
+            ver = None
+            compiled = None
+            for line in merged.splitlines():
+                low = line.lower()
+                if "ants version" in low:
+                    m = _re.search(r"\d+\.\d+(?:\.\d+){0,2}", line)
+                    if m:
+                        ver = m.group(0)
+                elif low.strip().startswith("compiled"):
+                    compiled = line.split(":", 1)[-1].strip()
+            if ver:
+                # SCT's bundled build reports the 0.0.0.0 placeholder; tag it so
+                # the receipt isn't misread as a real upstream release.
+                if set(ver.split(".")) <= {"0"}:
+                    label = "SCT-bundled" if binary.startswith("isct_") else "unknown-build"
+                    return (f"{ver} ({label}; compiled {compiled})" if compiled
+                            else f"{ver} ({label})")
+                return ver
+            parsed = _parse_version_lines(merged)
+            if parsed:
+                return parsed
+        except Exception:
+            pass
+    return None
+
+
+def _detect_mrtrix_version() -> Optional[str]:
+    """MRtrix3 version (used for S2B MP-PCA denoising via dwidenoise). dwidenoise
+    -version prints '== dwidenoise <ver> =='."""
+    try:
+        out = subprocess.run(["dwidenoise", "-version"], capture_output=True,
+                             text=True, timeout=10)
+        merged = (out.stdout or "") + "\n" + (out.stderr or "")
+        import re as _re
+        m = _re.search(r"dwidenoise\s+(\d+\.\d+(?:\.\d+)?)", merged)
+        if m:
+            return m.group(1)
+        parsed = _parse_version_lines(merged)
+        if parsed:
+            return parsed
+    except Exception:
+        pass
+    return None
+
+
 def _hash_policy_yaml(project_root: Path, step_full: str) -> Optional[str]:
     """SHA256 of the step's policy YAML — source of truth regardless of
     chain-runner symlink topology (audit B6).
@@ -837,6 +897,8 @@ def _build_reproducibility_receipt(
         "python_version": platform.python_version(),
         "sct_version": _detect_sct_version(),
         "fsl_version": _detect_fsl_version(),
+        "ants_version": _detect_ants_version(),      # S5 SyN distortion correction
+        "mrtrix_version": _detect_mrtrix_version(),   # S2B MP-PCA denoise (dwidenoise)
     }
     # Python package versions
     recipe["package_versions"] = {}
@@ -905,6 +967,16 @@ def _build_references_bib(out_path: Path) -> None:
   journal={Imaging Neuroscience},
   year={2023},
   doi={10.1162/imag_a_00073}
+}
+
+@article{veraart2016,
+  title={Denoising of diffusion MRI using random matrix theory},
+  author={Veraart, J. and Novikov, D.S. and Christiaens, D. and Ades-Aron, B. and Sijbers, J. and Fieremans, E.},
+  journal={NeuroImage},
+  volume={142},
+  pages={394--406},
+  year={2016},
+  doi={10.1016/j.neuroimage.2016.08.016}
 }
 
 @article{hemmerling2025,
@@ -1208,7 +1280,33 @@ def _build_methods_manifest(
     pipeline_v = recipe.get("pipeline_git_describe") or "0.0.0"
     sct_v = recipe.get("sct_version") or "n/a"
     fsl_v = recipe.get("fsl_version") or "n/a"
+    mrtrix_v = recipe.get("mrtrix_version") or "n/a"
     nibabel_v = recipe.get("package_versions", {}).get("nibabel") or "n/a"
+
+    # MP-PCA denoising (S2B) is opt-in and per-scope. Only describe it if it
+    # actually ran in THIS release -- scan the release's S2B QC rather than the
+    # shared policy default (which says off), so the boilerplate stays truthful.
+    denoise_ran = False
+    s2b_logs = out_dir / "logs" / "S2B_func_denoise"
+    if s2b_logs.exists():
+        for qc_path in s2b_logs.glob("*/qc.json"):
+            try:
+                import json as _json
+                q = _json.loads(qc_path.read_text())
+                if q.get("enabled") and q.get("runs"):
+                    denoise_ran = True
+                    break
+            except Exception:
+                continue
+    denoise_para = (
+        f"""**Thermal-noise denoising (S2B)**: Marchenko-Pastur PCA (MP-PCA)
+denoising of the raw 4D BOLD via MRtrix3 `dwidenoise` {mrtrix_v}
+(Veraart 2016 [@veraart2016]; Cordero-Grande 2019), applied before any
+interpolation/realignment to preserve the i.i.d.-noise assumption, per
+the cord-fMRI precedent of Kaptan 2023 [@kaptan2023]. A noise map and
+in-cord tSNR gain are emitted per run.
+
+""" if denoise_ran else "")
 
     md = f"""# Methods boilerplate (auto-generated by SpinalfMRIprep S11)
 
@@ -1217,7 +1315,7 @@ def _build_methods_manifest(
 > here reflect what actually ran (read live from policy YAMLs).
 
 **Pipeline**: SpinalfMRIprep {pipeline_v}.
-**Tools**: Spinal Cord Toolbox {sct_v}; FSL {fsl_v}; NiBabel {nibabel_v}.
+**Tools**: Spinal Cord Toolbox {sct_v}; FSL {fsl_v}; NiBabel {nibabel_v}{"; MRtrix3 " + mrtrix_v if denoise_ran else ""}.
 
 ## Preprocessing
 
@@ -1234,7 +1332,7 @@ Dual-role anatomical model: full-FOV primary anat (T1w/T2w) for
 labeling and template registration; T2\\*-MEGRE secondary cordref for
 functional registration.
 
-**Functional initialization (S3)**: BOLD reference image discovered via
+{denoise_para}**Functional initialization (S3)**: BOLD reference image discovered via
 fast cord segmentation; volume cropped to a cord-centered FOV.
 Frame-level QC metrics (DVARS, refRMS) computed per Power 2014
 [@power2014].
@@ -1285,7 +1383,9 @@ methods listed in `CITATION.bib` (auto-generated alongside this file).
 
 Per-step policy SHA256 + pipeline Git SHA captured in
 `reproducibility_receipt.json`. Tool versions: SCT {sct_v}, FSL {fsl_v},
-NiBabel {nibabel_v}.
+NiBabel {nibabel_v}{", MRtrix3 " + mrtrix_v if denoise_ran else ""}. The
+JSON receipt additionally records the detected ANTs and MRtrix3 versions
+for the full environment inventory.
 """
 
     out_md.parent.mkdir(parents=True, exist_ok=True)

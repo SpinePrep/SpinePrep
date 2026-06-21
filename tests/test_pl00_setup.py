@@ -8,12 +8,9 @@ import yaml
 from spinalfmriprep.S0_setup import EnvCheck, check_S0_setup, run_S0_setup
 
 
-REQUIRED_V1_KEYS = {
-    "openneuro_ds005884_cospine_motor",
-    "openneuro_ds005883_cospine_pain",
-    "openneuro_ds004386_spinalcord_rest_testretest",
-    "openneuro_ds004616_spinalcord_handgrasp_task",
-}
+# Import the canonical set from the source so the test can never drift from it
+# (the previous hardcoded copy went stale and masked a real S0-gate failure).
+from spinalfmriprep.policy.datasets import REQUIRED_V1_KEYS  # noqa: E402,F401
 
 
 def _make_project_root(tmp_path: Path) -> Path:
