@@ -50,10 +50,18 @@ active pipeline: the former S10 (analyst-owned region-of-interest timeseries and
 connectivity analysis) was removed on 2026-06-11. That analysis belongs to the
 analyst downstream, not to the preprocessing release.
 
-The pipeline performs **no slice-timing correction**. This is a deliberate
-choice for cord fMRI, following the field standard (Eippert 2017; Kaptan 2023):
-slice-timing metadata is used only by RETROICOR in S8 (to phase the cardiac and
-respiratory regressors), never to temporally resample the BOLD series.
+The pipeline performs **no slice-timing correction (STC)**, following the
+field standard for cord-only fMRI — every reference cord pipeline omits it
+(Eippert 2017; Barry 2014; Kaptan 2023; Spinal Cord Toolbox). The reasons:
+resting-state and block-design signal is low-frequency (below 0.1 Hz), where
+STC barely matters; event-related task timing is instead handled with a
+temporal-derivative regressor in the GLM; and STC's temporal interpolation
+interacts badly with the slice-wise motion and physiological correction that
+dominate the cord noise budget (the same reason the HCP pipeline skips it).
+Slice-timing metadata is used only by RETROICOR in S8 (to phase the cardiac
+and respiratory regressors), never to resample the BOLD series. This is a
+defensible trade-off, not a hard rule: at these TRs STC would give a small
+benefit for event-related designs, which the GLM temporal derivative recovers.
 
 ## Design Principles
 

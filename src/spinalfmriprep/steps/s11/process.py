@@ -1341,12 +1341,18 @@ Frame-level QC metrics (DVARS, refRMS) computed per Power 2014
 `sct_fmri_moco`, regularized along Z. Per-slice translation parameters
 emitted as 4D NIfTI for downstream confound use.
 
-**No slice-timing correction is performed.** This is a deliberate choice
-for cervical cord BOLD: the field's reference pipelines do not slice-time
-correct cord data (Eippert 2017 [@eippert2017]; Kaptan 2023 [@kaptan2023]),
-and interpolating the short slice stack would correlate the thermal noise.
-Slice-timing metadata (when present in the BIDS sidecar) is used only to
-phase the cardiac/respiratory RETROICOR regressors in S8.
+**No slice-timing correction (STC) is performed**, following standard
+spinal-cord fMRI practice: the field's reference cord-only pipelines omit
+it (Eippert 2017 [@eippert2017]; Kaptan 2023 [@kaptan2023]; Spinal Cord
+Toolbox). The rationale is that resting-state and block-design signal is
+low-frequency (< 0.1 Hz), where STC has little effect; event-related task
+sensitivity is instead recovered with a hemodynamic temporal-derivative
+regressor in the GLM; and STC's temporal interpolation interacts poorly
+with the slice-wise motion and physiological correction that dominate the
+cord noise budget (the reason the HCP minimal pipeline also omits STC).
+Slice-timing metadata, when present in the BIDS sidecar, is used only to
+assign each slice its cardiac/respiratory phase for the S8 RETROICOR
+regressors.
 
 **Distortion correction (S5)**: Per-run mode is chosen automatically from
 the available fieldmaps: reversed-phase EPI pair -> TopUp; image-only ->
