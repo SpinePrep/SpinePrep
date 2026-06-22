@@ -58,12 +58,24 @@ outputs) is the one step that does NOT complete reliably on these datasets.
   long 4D series, gated by run length.
 - Fix `--start S9` resume so a partial S9 can continue without redoing runs.
 
-## Current cohort state (2026-06-22)
+## Current cohort state (2026-06-23)
 
-- ds005075: full S1→S11 (S6 registration weak on whole-CNS FOV: 14/30 FAIL;
-  S9 16/30). Release report generated.
+- ds005075: full S1→S11 ran once. The 14/30 attrition on this dataset was
+  **root-caused to S5 distortion, not S6 registration** — whole-CNS (brain+cord)
+  acquisition with no reverse-PE fieldmap → image-based SyN fallback can't reach
+  TopUp quality, and the lung-adjacent lower cord (C6-T2) is uncorrectable. Fixed
+  at S5 (commit 3a360d5): cervical-bounded cord ROI + mode-aware distortion-
+  limited flag. **Re-ran S5 on ds005075 (wf_brainspine_014): 14 FAIL → 1 FAIL**
+  (26 WARN distortion-limited, 3 PASS; the lone FAIL is sub-A034, cord Dice 0.28
+  = genuine registration failure). `done/brainspine/S5` now points at the new
+  workfolder.
+  - **PENDING:** S6→S11 still point at workfolders built on the OLD S5, so the 13
+    newly-rescued WARN runs have not yet flowed downstream (old S6 cohort was the
+    ~16 surviving runs). Re-running S6→S11 to propagate them is gated on the S9
+    defect below. Do it as part of the single full-cohort release run, not a
+    standalone churn (principle #8).
 - ds004926: S1→S8 complete, **RETROICOR validated** (te40 + integrated physio;
   16 regressors/run). S9 NOT complete — blocked by this defect. S11 not run.
 - Related finding: S6 func→anat registration robustness on large/whole-CNS FOV
-  is the other weak point (see the per-step attrition: 80→66 at S6 for ds004926;
-  14/30 S6 FAIL for ds005075).
+  is a separate weak point (per-step attrition 80→66 at S6 for ds004926); do not
+  conflate it with the ds005075 S5 distortion issue now fixed above.
