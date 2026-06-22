@@ -139,6 +139,42 @@ def _find_cord_mask_for(
     return None
 
 
+def _find_vertebral_labels_for(
+    subject: str, session: Optional[str],
+    out_path: Path, dataset_key: str = "",
+) -> Optional[Path]:
+    """S2 TotalSpineSeg vertebral labels (anat space), used to bound the S5
+    cord ROI to the cervical cord (drops the lung-adjacent thoracic tail in
+    whole-CNS acquisitions). Unlike the cord mask, these live in the S2 WORK
+    tree, not derivatives:
+      work/S2_anat_cordref/<dataset>/sub-XX_ses-YY/totalspineseg/vertebral_labels_sct.nii.gz
+    Best-effort: returns None if not found (S5 then runs unbounded, as before).
+    """
+    sub_norm = subject[4:] if subject and subject.startswith("sub-") else subject
+    ses_norm = (session[4:] if session and str(session).startswith("ses-")
+                else session)
+    sub_ses_globs = [f"sub-{sub_norm}_ses-{ses_norm}"] if ses_norm else [
+        f"sub-{sub_norm}_ses-none", f"sub-{sub_norm}"]
+    bases = [out_path]
+    _scope = chain_scope(out_path)
+    for cand in (out_path / "work" / "done" / _scope / "S2",
+                 Path("work") / "done" / _scope / "S2",
+                 out_path.parent / "done" / _scope / "S2"):
+        if cand.exists():
+            try:
+                bases.append(cand.resolve())
+            except Exception:
+                pass
+    for base in bases:
+        for sub_ses in sub_ses_globs:
+            hits = sorted(base.glob(
+                f"work/S2_anat_cordref/*/{sub_ses}/totalspineseg/"
+                "vertebral_labels_sct.nii.gz"))
+            if hits:
+                return hits[0]
+    return None
+
+
 # ---------------------------------------------------------------------------
 # run_S5: process every PASS/WARN BOLD run from S4
 # ---------------------------------------------------------------------------
@@ -268,6 +304,8 @@ def run_S5(
                               out_path, dataset_key)
         cord_mask = _find_cord_mask_for(s4_run.get("subject"), s4_run.get("session"),
                                         out_path, dataset_key)
+        vert_labels = _find_vertebral_labels_for(
+            s4_run.get("subject"), s4_run.get("session"), out_path, dataset_key)
 
         res = run_S5_func_distortion_correction(
             bold_path=mocoref,
@@ -280,6 +318,7 @@ def run_S5(
             work_dir=out_path / "work",
             dataset_key=dataset_key,
             policy=policy,
+            vertebral_labels_path=vert_labels,
         )
         results.append(res)
 

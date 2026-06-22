@@ -628,6 +628,8 @@ def _compute_cospine_metrics(
     min_voxels_per_slice: int = 5,
     smooth_window: int = 5,
     smooth_poly_order: int = 2,
+    vertebral_labels_path: Optional[Path] = None,
+    cord_roi_max_level: Optional[int] = None,
 ) -> dict[str, Any]:
     """Per-Z A–P cord-centerline displacement and 2D cord-Dice, Before
     and After distortion correction. Closely follows CoSpine
@@ -713,6 +715,39 @@ def _compute_cospine_metrics(
         out["cospine_skip_reason"] = "registered anat cord mask is empty"
         return out
 
+    # Vertebral-level ROI bound: a whole-CNS (brain+cord) acquisition drags the
+    # cord ROI down past the cervical cord into the lung-adjacent thoracic cord,
+    # where susceptibility distortion is uncorrectable without a fieldmap (per-
+    # slice A-P displacement of 10-17 mm vs ~0.4 mm in the cervical cord). That
+    # caudal tail drags the run-level metric over the threshold even though the
+    # cervical correction is excellent. We warp the S2 vertebral labels into
+    # BOLD space (same warp as the anat cord mask) and exclude Z slices whose
+    # vertebral level exceeds ``cord_roi_max_level`` (e.g. T1 → drop T2+). For
+    # cervical-only acquisitions all slices are <= the cutoff, so this is a
+    # no-op. Excluded slices are reported, not silently dropped.
+    excluded_z: set[int] = set()
+    n_z_full = anat_arr.shape[2]
+    if (cord_roi_max_level is not None and vertebral_labels_path is not None
+            and Path(vertebral_labels_path).exists()):
+        vert_in_bold = work_dir / "vertebral_labels_in_bold.nii.gz"
+        if _sct_apply_warp_nn(Path(vertebral_labels_path), mean_a_path,
+                              warp, vert_in_bold):
+            vlab = nib.load(vert_in_bold).get_fdata().astype(int)
+            for z in range(min(n_z_full, vlab.shape[2])):
+                sl = vlab[:, :, z]
+                nz = sl[sl > 0]
+                if nz.size == 0:
+                    continue  # no level info for this slice -> keep it
+                # dominant (most frequent) vertebral level on this slice
+                levels, counts = np.unique(nz, return_counts=True)
+                level = int(levels[int(np.argmax(counts))])
+                if level > cord_roi_max_level:
+                    excluded_z.add(z)
+            out["cord_roi_max_level"] = int(cord_roi_max_level)
+            out["n_slices_excluded_caudal"] = len(excluded_z)
+        else:
+            out["cord_roi_bound_skip_reason"] = "vertebral-label warp failed"
+
     # Voxel size along Y (AP) from BOLD header. Assumption: data is in
     # RPI/RAS (axis 1 = AP). The pipeline standardizes to RPI in S2; we
     # log a warning if the BOLD affine indicates otherwise.
@@ -733,6 +768,8 @@ def _compute_cospine_metrics(
     y_b = np.full(n_z, np.nan, dtype=float)
     y_a = np.full(n_z, np.nan, dtype=float)
     for z in range(n_z):
+        if z in excluded_z:
+            continue  # caudal/thoracic slice beyond the cervical ROI cutoff
         a_sl = anat_arr[:, :, z]
         b_sl = epi_b[:, :, z]
         a2_sl = epi_a[:, :, z]
@@ -858,11 +895,19 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
     Plus the legacy MI sanity check (a catastrophic drop fails
     outright only when geometric metrics also disagree).
 
-    Mode (topup / fugue / syn) is recorded on the run but no longer
-    gates status — geometric Dice + displacement decide PASS/WARN/FAIL
-    for every mode (2026-05-28). The earlier SyN-always-WARN rule was
-    too conservative given empirical Dice 0.72-0.87 / disp 0.33-0.71 mm
-    on SyN-fallback runs across the reg cohort.
+    Mode (topup / fugue / syn) is recorded on the run. Geometric Dice +
+    displacement decide PASS/WARN/FAIL for every mode (the 2026-05-28
+    SyN-always-WARN rule was removed as too conservative given empirical
+    Dice 0.72-0.87 / disp 0.33-0.71 mm on SyN-fallback runs). The one
+    mode-aware exception (2026-06-23): the displacement bands were
+    calibrated on TOPUP data, and image-based SyN (no fieldmap) cannot
+    reach TopUp quality. So a SyN run that exceeds the displacement
+    ceiling *but whose cord still registered* (Dice passed the warn
+    floor) is flagged "distortion-limited" (WARN, kept) rather than
+    hard-FAILed — the limitation is acquisition-side (no reverse-PE
+    pair), and the reliable upper-cervical levels remain usable. Gated
+    by ``syn_displacement_distortion_limited`` (default true). TopUp and
+    FUGUE keep the hard FAIL.
 
     When the CoSpine metrics could not be computed (anat unavailable),
     fall back to MI gating alone so the step still meaningfully runs.
@@ -920,9 +965,27 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
                 return "FAIL", [f"cord Dice after = {dice_a:.2f} < "
                                 f"warn floor {warn_dice:.2f}"]
             if disp_a > warn_disp:
-                return "FAIL", [f"cord A–P displacement after = "
-                                f"{disp_a:.2f} mm > warn ceiling "
-                                f"{warn_disp:.2f} mm"]
+                # Mode-aware ceiling. The displacement bands were calibrated on
+                # TOPUP data (post-TopUp ~0.13 mm); image-based SyN (no fieldmap,
+                # no reverse-PE pair) physically cannot reach TopUp quality,
+                # especially on whole-CNS acquisitions where the lung-adjacent
+                # lower cord (C6-T2) is uncorrectable. When the cord still
+                # REGISTERED (Dice passed the gate above), flag a SyN run as
+                # distortion-limited (WARN, kept) rather than FAIL — the
+                # reliable upper-cervical levels remain usable, and the failure
+                # is acquisition-side (request reverse-PE), not a pipeline bug.
+                if (mode == "syn"
+                        and bool(thresholds.get(
+                            "syn_displacement_distortion_limited", True))):
+                    reasons.append(
+                        f"distortion-limited (SyN fallback, no fieldmap): cord "
+                        f"A–P displacement after = {disp_a:.2f} mm > "
+                        f"{warn_disp:.2f} mm ceiling — fieldmap-less SDC cannot "
+                        f"fully correct; upper-cervical levels remain reliable")
+                else:
+                    return "FAIL", [f"cord A–P displacement after = "
+                                    f"{disp_a:.2f} mm > warn ceiling "
+                                    f"{warn_disp:.2f} mm"]
             if dice_a < pass_dice:
                 reasons.append(f"cord Dice after = {dice_a:.2f} < pass "
                                f"floor {pass_dice:.2f}")
@@ -964,6 +1027,7 @@ def run_S5_func_distortion_correction(
     work_dir: Path,
     dataset_key: str,
     policy: dict[str, Any],
+    vertebral_labels_path: Optional[Path] = None,
 ) -> dict[str, Any]:
     """Run distortion correction for a single BOLD run.
 
@@ -1141,6 +1205,8 @@ def run_S5_func_distortion_correction(
             "cospine_smooth_window", 5)),
         smooth_poly_order=int(cospine_thresholds.get(
             "cospine_smooth_poly_order", 2)),
+        vertebral_labels_path=vertebral_labels_path,
+        cord_roi_max_level=cospine_thresholds.get("cord_roi_max_level"),
     )
     metrics.update(cospine)
 

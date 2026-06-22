@@ -54,6 +54,27 @@ qc_thresholds:
   warn_displacement_max_mm: 2.0    # above this on After: FAIL
   epsilon_dice: 0.02               # tolerance for "did not degrade"
   epsilon_displacement_mm: 0.2     # tolerance for "did not worsen"
+  # Cervical-ROI bound on the displacement/Dice metric (SCT vertebral label:
+  # 1=C1..7=C7, 8=T1, 9=T2, ...). Whole-CNS (brain+cord) acquisitions drag the
+  # cord ROI into the lung-adjacent thoracic cord, where susceptibility
+  # distortion is uncorrectable without a fieldmap (10-17 mm A-P vs ~0.4 mm in
+  # the cervical cord) and unfairly drags the run metric past the threshold.
+  # We exclude slices with vertebral level > this cutoff from the metric. T1=8
+  # keeps the cervical cord + the C7/T1 junction, drops T2+. Cervical-only
+  # acquisitions are entirely <= the cutoff, so this is a no-op for them. Set
+  # null to disable (evaluate the full captured cord).
+  cord_roi_max_level: 8            # keep C1..T1; drop T2+ (lung-region thoracic)
+  # Mode-aware ceiling. The displacement bands above were calibrated on TOPUP
+  # data (post-TopUp ~0.13 mm). Image-based SyN (no fieldmap, no reverse-PE
+  # pair) physically cannot reach TopUp quality — on whole-CNS acquisitions the
+  # lung-adjacent lower cord (C6-T2) is uncorrectable. When a SyN-fallback run
+  # exceeds the displacement ceiling but its cord still registered (Dice passed
+  # the warn floor), flag it "distortion-limited" (WARN, kept) instead of FAIL:
+  # the reliable upper-cervical levels remain usable and the limitation is
+  # acquisition-side (request a reverse-PE pair), not a pipeline failure. TopUp
+  # and FUGUE runs keep the hard FAIL — they are expected to meet the ceiling.
+  # Set false to hard-FAIL SyN runs too.
+  syn_displacement_distortion_limited: true
   # Legacy MI: catastrophic-drop fail still applies as sanity check.
   # MI is no longer the primary gate.
   fail_mi_max_drop_pct: 10.0

@@ -202,9 +202,40 @@ def test_fail_when_dice_below_warn_floor():
 
 
 def test_fail_when_displacement_above_warn_ceiling():
+    # TopUp/FUGUE keep the hard FAIL — they are expected to meet the
+    # TopUp-calibrated ceiling.
     from spinalfmriprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.80, "displacement_mean_after_mm": 2.5}
+    status, _ = _classify_run_status(metrics, "topup", _GATE_THR)
+    assert status == "FAIL"
+
+
+def test_syn_above_ceiling_is_distortion_limited_warn_not_fail():
+    # Image-based SyN (no fieldmap) cannot reach TopUp quality. When the cord
+    # still registered (Dice OK) but displacement exceeds the ceiling, flag the
+    # run distortion-limited (WARN, kept) rather than FAIL.
+    from spinalfmriprep.steps.s5.process import _classify_run_status
+    metrics = {"dice_mean_after": 0.80, "displacement_mean_after_mm": 2.5}
+    status, reasons = _classify_run_status(metrics, "syn", _GATE_THR)
+    assert status == "WARN"
+    assert any("distortion-limited" in r for r in reasons)
+
+
+def test_syn_above_ceiling_with_bad_dice_still_fails():
+    # If even the cord did not register (Dice below the warn floor), it is a
+    # genuine failure regardless of mode — the Dice gate fails first.
+    from spinalfmriprep.steps.s5.process import _classify_run_status
+    metrics = {"dice_mean_after": 0.20, "displacement_mean_after_mm": 2.5}
     status, _ = _classify_run_status(metrics, "syn", _GATE_THR)
+    assert status == "FAIL"
+
+
+def test_syn_distortion_limited_can_be_disabled():
+    # Setting the policy flag false restores the hard FAIL for SyN too.
+    from spinalfmriprep.steps.s5.process import _classify_run_status
+    thr = dict(_GATE_THR, syn_displacement_distortion_limited=False)
+    metrics = {"dice_mean_after": 0.80, "displacement_mean_after_mm": 2.5}
+    status, _ = _classify_run_status(metrics, "syn", thr)
     assert status == "FAIL"
 
 
