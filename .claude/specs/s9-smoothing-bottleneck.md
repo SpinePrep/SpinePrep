@@ -1,13 +1,49 @@
 ---
-status: open
+status: characterized
 ---
 
-# Spec: S9 cord-smoothing bottleneck + restart stall (open defect)
+# Spec: S9 cord-smoothing bottleneck + restart stall
+
+> **Resolution (2026-06-23): NOT an algorithm defect.** A single S9 run in
+> isolation smooths in **14.9 s** (instrumented probe on a real ds004926 run,
+> 34×33×15×176). The historical "0 runs in 112 min" was **stale-process cache
+> contention** — leftover workers from an externally-killed chain holding the
+> machine — plus, on a shared lab server, other users' jobs (antsRegistration,
+> mri_segreg, svc-* services) competing for cores. On a clean machine S9
+> parallelizes fine: ds004926 (66 runs, small PAM50 grid) finished in ~3 min
+> (33 runs in the first 75 s). What remains is a *real, non-bug* cost on
+> large-grid datasets — see "Genuine cost" below. Both datasets now complete
+> S9→S11 (2026-06-23 run). Keep this spec as the reference for why S9 looks
+> slow and what is/isn't worth optimizing.
+
+## Genuine cost (not a bug): PAM50 4D emission on large grids
+
+The expensive part of S9 is NOT the cord-aware *smoothing* (the straighten-once
+batched path is ~15 s/run). It is the **PAM50-space 4D emission**: one
+`sct_apply_transfo` (spline) per emitted 4D, warping every volume to the PAM50
+cord-FOV grid. Cost scales with `n_volumes × n_PAM50_slices × 2`
+(smoothed + unsmoothed, policy `emit_unsmoothed: true`):
+- **ds004926** (dorsal-horn): 176 vol × 175-slice PAM50 grid → fast (~seconds).
+- **ds005075** (brain+spine): 261 vol × **286**-slice grid → ~4-5 min of
+  single-threaded CPU **per apply**, ×2 outputs ≈ ~10 min/run. Measured: one
+  apply accumulated 100% CPU for 4+ min and was still going (working, not hung).
+  27 runs at ~10 min/run, 6-wide ≈ ~40 min total. Slow but correct.
+
+If this ever needs to be faster (it currently does not — it runs ~once per
+release), the lever is the PAM50 emission, not the smoother: skip the
+`desc-unsmoothed` PAM50 4D when not needed, or vectorize the per-volume warp
+(load the displacement field once, apply to all T volumes via
+`scipy.ndimage.map_coordinates`) instead of N sequential ANTs spawns.
+
+---
+
+# Original report (2026-06-22) — kept for context
 
 Discovered while running the v1_validation chain on the two new datasets
 (ds005075 brain+cord rest, ds004926 dorsal-horn pain) on 2026-06-22. S9
 (`S9_primary_functional_derivatives`, cord-aware smoothing → PAM50 GLM-ready
-outputs) is the one step that does NOT complete reliably on these datasets.
+outputs) is the one step that did NOT complete reliably at the time — now
+explained above.
 
 ## Symptoms (evidence)
 
