@@ -1,6 +1,6 @@
-"""Unit tests for S11 QC-aggregation pure helpers.
+"""Unit tests for S10 QC-aggregation pure helpers.
 
-S11 is the read-only "release" step: it walks per-step qc.json files,
+S10 is the read-only "release" step: it walks per-step qc.json files,
 builds a subject x step status matrix, computes pass rates, and writes a
 reproducibility receipt + methods boilerplate + references bib. These
 tests pin the deterministic, side-effect-free helpers — the parts a
@@ -13,7 +13,7 @@ import shutil
 
 import pytest
 
-from spinalfmriprep.steps.s11 import process as s11
+from spinalfmriprep.steps.s10 import process as s11
 
 
 # ---------------------------------------------------------------------------
@@ -91,7 +91,7 @@ def _repo_root() -> "object":
 
 def test_hash_policy_yaml_is_stable_64hex():
     """SHA256 of an existing policy file is a 64-char hex string and is
-    identical across two calls (determinism is the whole point of S11)."""
+    identical across two calls (determinism is the whole point of S10)."""
     root = _repo_root()
     h1 = s11._hash_policy_yaml(root, "S2B_func_denoise")
     assert h1 is not None

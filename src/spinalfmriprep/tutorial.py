@@ -8,7 +8,7 @@ The page documents every algorithm + metric the operator encounters
 when reading reportlets: DVARS, DVARS-ref, Tukey outlier rule, robust
 funcref, sct_deepseg seg_sc_contrast_agnostic, brain-contamination
 check, FD, cord-aware smoothing, PAM50 cord Dice, RETROICOR / PNM,
-MP-PCA. One section per step (S1–S11) with concept summaries and
+MP-PCA. One section per step (S1–S10) with concept summaries and
 literature references.
 """
 
@@ -86,7 +86,7 @@ def render_tutorial_html() -> str:
         _section_S7(),
         _section_S8(),
         _section_S9(),
-        _section_S11(),
+        _section_S10(),
     ]
 
     body = "\n".join(body_sections)
@@ -126,7 +126,7 @@ citations.</p>
 <a href="#S7">S7 — template normalisation</a>
 <a href="#S8">S8 — confounds &amp; physio</a>
 <a href="#S9">S9 — primary functional derivatives</a>
-<a href="#S11">S11 — QC aggregation &amp; release</a>
+<a href="#S10">S10 — QC aggregation &amp; release</a>
 </div>
 
 {body}
@@ -608,16 +608,16 @@ Eippert F et al., NeuroImage 2017.</p>
 """
 
 
-def _section_S11() -> str:
+def _section_S10() -> str:
     return """
-<h2 id="S11">S11 — QC aggregation &amp; release</h2>
+<h2 id="S10">S10 — QC aggregation &amp; release</h2>
 <div class="step">
 <p>The cohort-level release report. Aggregates per-step QC across
 all subjects + sessions, emits the methods-paper-ready summary
 (coverage matrix, per-step pass fractions, runtime estimates),
 and ships the reproducibility receipt (policy SHA + git SHA +
 tool versions).</p>
-<p>S11 is a release deliverable, not an engineering tool
+<p>S10 is a release deliverable, not an engineering tool
 (CLAUDE.md dev principle §8): we run it twice in the project life
 — mid-pipeline sanity check and final methods table. Never to
 decide between algorithms.</p>

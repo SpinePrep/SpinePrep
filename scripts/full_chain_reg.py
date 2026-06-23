@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Full chain runner: S1 -> S2 -> ... -> S9 -> S11 on a set of dataset keys.
+"""Full chain runner: S1 -> S2 -> ... -> S9 -> S10 on a set of dataset keys.
 
 The regression dev cohort was retired 2026-06-16: the pipeline now runs full
 datasets only. Defaults:
@@ -46,8 +46,9 @@ ALL_CHAIN_STEPS = [
     ("S7", "S7_template_normalization"),
     ("S8", "S8_confounds_and_physio_regressors"),
     ("S9", "S9_primary_functional_derivatives"),
-    # S10 removed from the active pipeline 2026-06-11 (analyst-owned analysis).
-    ("S11", "S11_qc_aggregation_and_release"),
+    # The former S10 (ROI timeseries + connectivity, analyst-owned) was removed
+    # 2026-06-11; the QC-aggregation/release step was renumbered S11 -> S10.
+    ("S10", "S10_qc_aggregation_and_release"),
 ]
 
 
@@ -95,7 +96,7 @@ def link_chain(wf: Path, scope: str, predecessors: list[str], current_code: str)
                 (wf / "derivatives").symlink_to(deriv)
                 break
     # runs/ is S3-specific. Only link for downstream consumers (S4+).
-    if current_code in ("S4", "S5", "S6", "S7", "S8", "S9", "S11"):
+    if current_code in ("S4", "S5", "S6", "S7", "S8", "S9", "S10"):
         s3_runs = (done / "S3").resolve() / "runs"
         if s3_runs.exists() and not (wf / "runs").exists():
             (wf / "runs").symlink_to(s3_runs)
@@ -126,7 +127,7 @@ def mark_done(scope: str, code: str, wf: Path) -> None:
 def main() -> int:
     import argparse
     p = argparse.ArgumentParser()
-    p.add_argument("--start", default="S1", help="First step to run (S1..S11)")
+    p.add_argument("--start", default="S1", help="First step to run (S1..S10)")
     p.add_argument("--stop", default=None,
                    help="Last step to run (inclusive). Default: run to the end. "
                         "Use e.g. --start S8 --stop S8 to re-run a single step "

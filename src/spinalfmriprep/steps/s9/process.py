@@ -388,7 +388,7 @@ def _write_bold_sidecar(
 
 def _ensure_dataset_description(deriv_spinalprep_root: Path) -> None:
     """Minimal BIDS-Derivatives manifest so S9 outputs are self-contained.
-    Idempotent: S11 later overwrites with the richer (CITATION-linked) version."""
+    Idempotent: S10 later overwrites with the richer (CITATION-linked) version."""
     dd = deriv_spinalprep_root / "dataset_description.json"
     if dd.exists():
         return

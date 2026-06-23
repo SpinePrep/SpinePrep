@@ -37,10 +37,11 @@ def build_parser() -> argparse.ArgumentParser:
 def _add_S0_arguments(subparser: argparse.ArgumentParser) -> None:
     subparser.add_argument(
         "step",
-        # S10 (ROI timeseries + connectivity) was retired from the active pipeline
+        # The former S10 (ROI timeseries + connectivity) was retired from the active
+        # pipeline (analyst-owned); the release step is now S10 (was S11).
         # 2026-06-11 — it is analyst-owned downstream analysis, not preprocessing.
         # The module stays importable as a library; it is no longer a runnable step.
-        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S2B_func_denoise", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives", "S11_qc_aggregation_and_release"],
+        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S2B_func_denoise", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives", "S10_qc_aggregation_and_release"],
         help="Pipeline step code",
     )
     subparser.add_argument(
@@ -139,8 +140,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _run_S8(args)
         elif step == "S9_primary_functional_derivatives":
             result = _run_S9(args)
-        elif step == "S11_qc_aggregation_and_release":
-            result = _run_S11(args)
+        elif step == "S10_qc_aggregation_and_release":
+            result = _run_S10(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -170,8 +171,8 @@ def main(argv: list[str] | None = None) -> int:
             result = _check_S8(args)
         elif step == "S9_primary_functional_derivatives":
             result = _check_S9(args)
-        elif step == "S11_qc_aggregation_and_release":
-            result = _check_S11(args)
+        elif step == "S10_qc_aggregation_and_release":
+            result = _check_S10(args)
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
@@ -893,15 +894,15 @@ def _check_S9(args):
     )
 
 
-def _run_S11(args):
-    """S11 is global (cross-dataset). dataset_key + scope are accepted
-    for CLI uniformity but ignored — S11 always aggregates the entire
+def _run_S10(args):
+    """S10 is global (cross-dataset). dataset_key + scope are accepted
+    for CLI uniformity but ignored — S10 always aggregates the entire
     chain at out_dir/logs.
     """
-    from spinalfmriprep.S11_qc_aggregation_and_release import run_S11, StepResult
+    from spinalfmriprep.S10_qc_aggregation_and_release import run_S10, StepResult
     if args.out is None:
         return StepResult("FAIL", "--out is required")
-    return run_S11(
+    return run_S10(
         dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
         datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
         out=str(args.out),
@@ -909,11 +910,11 @@ def _run_S11(args):
     )
 
 
-def _check_S11(args):
-    from spinalfmriprep.S11_qc_aggregation_and_release import (
-        check_S11_qc_aggregation_and_release,
+def _check_S10(args):
+    from spinalfmriprep.S10_qc_aggregation_and_release import (
+        check_S10_qc_aggregation_and_release,
     )
-    return check_S11_qc_aggregation_and_release(
+    return check_S10_qc_aggregation_and_release(
         dataset_key=args.dataset_key if hasattr(args, "dataset_key") else None,
         datasets_local=args.datasets_local if hasattr(args, "datasets_local") else None,
         out=args.out if hasattr(args, "out") else None,

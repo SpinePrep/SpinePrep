@@ -4,13 +4,18 @@ implemented_in: wf_reg_089
 implemented_at: 2026-05-28
 ---
 
-# S10 reportlet+metric-set audit — redundancy + field-standard composition
+# Former S10 (ROI/connectivity) reportlet+metric-set audit — redundancy + field-standard composition
 
-Examines whether S10's 3 emitted reportlets and 5 metrics are
-well-chosen, non-redundant, and complete, against the cord-fMRI /
+> This audit concerns the **former S10 (ROI/connectivity)** step, which was
+> removed from the active pipeline on 2026-06-11. Its step number has since been
+> reused for QC aggregation & release (the new S10). All bare "former S10"
+> references below mean the removed ROI/connectivity step, not the release step.
+
+Examines whether the former S10's (ROI/connectivity) 3 emitted reportlets and
+5 metrics are well-chosen, non-redundant, and complete, against the cord-fMRI /
 brain-fMRI functional-connectivity QC literature.
 
-## Current S10 outputs
+## Current former-S10 (ROI/connectivity) outputs
 
 ### Reportlets (emitted to qc.json `reportlets` dict)
 
@@ -56,7 +61,7 @@ Reviewed 7 published tools / pipelines:
 2. **Connectivity heatmap, clustered/ordered** — required (every tool)
 3. **Reliability ICC + Dice** — cord-specific signature (Kaptan 2023 is the headline cord reliability paper; we declare the metric in policy + render code but don't wire it)
 4. **Per-ROI quality (voxel count + tSNR)** — observability
-5. **NOT typically shown**: per-ROI tSNR — the per-vertebra tSNR is owned by S9 (Kaptan 2023 / CoSpine 2025 Fig 6 lives at the preprocessing stage). S10 should focus on FC, not tSNR (which would duplicate S9).
+5. **NOT typically shown**: per-ROI tSNR — the per-vertebra tSNR is owned by S9 (Kaptan 2023 / CoSpine 2025 Fig 6 lives at the preprocessing stage). The former S10 (ROI/connectivity) should focus on FC, not tSNR (which would duplicate S9).
 
 ## Reportlet redundancy analysis
 
@@ -70,16 +75,16 @@ Reviewed 7 published tools / pipelines:
 
 S9's `cord_dice_per_level` (renamed `tsnr_per_level` after S9 audit)
 already shows per-vertebra median tSNR — using the same input
-(smoothed BOLD + PAM50_spinal_levels). S10 recomputes the same
+(smoothed BOLD + PAM50_spinal_levels). The former S10 (ROI/connectivity) recomputes the same
 quantity on the unsmoothed BOLD and renders the same figure with
 slightly different defaults.
 
 Even semantically:
 - S9 = "preprocessing QC: is each level usable for analysis?"
-- S10 = "ROI/connectivity output"
+- former S10 = "ROI/connectivity output"
 
 The per-vertebra tSNR is a preprocessing diagnostic, not an
-ROI/FC output. **Drop from S10; keep in S9.**
+ROI/FC output. **Drop from the former S10 (ROI/connectivity); keep in S9.**
 
 ### Issue 2 — Reliability reportlets defined but not wired
 
@@ -90,7 +95,7 @@ never imports or calls them. The reliability data IS computed
 reportlets stay un-rendered.
 
 This is the cord-specific FC signature (Kaptan 2023 ICC + Dice
-test-retest reliability) — the **most field-distinctive** S10
+test-retest reliability) — the **most field-distinctive** former-S10 (ROI/connectivity)
 diagnostic. Missing it is a real gap.
 
 **Wire them up** when subject has multi-session data
@@ -134,7 +139,7 @@ But three metrics MISSING that the literature highlights:
 These would land in metrics and could be visualized as a 3-bar
 summary in the connectivity reportlet legend.
 
-## Cohort empirics (wf_reg_070 locked S10)
+## Cohort empirics (wf_reg_070 locked former S10, ROI/connectivity)
 
 11/11 runs WARN — same `dropped_rois WARN` reason on every run.
 Range of dropped_rois: 4-50 (out of 16-46 total ROIs).
@@ -209,8 +214,8 @@ ADD:
 
 | Claim | True? |
 |---|---|
-| "3 reportlets is the S10 QC set" | ⚠️ — emitted yes, but 2 more renderers exist as dead code that should be wired |
-| "vertlvl_tsnr is the S10 per-level signal" | ❌ — duplicates S9 tsnr_per_level; per-ROI tSNR is S9's job |
+| "3 reportlets is the former-S10 (ROI/connectivity) QC set" | ⚠️ — emitted yes, but 2 more renderers exist as dead code that should be wired |
+| "vertlvl_tsnr is the former-S10 (ROI/connectivity) per-level signal" | ❌ — duplicates S9 tsnr_per_level; per-ROI tSNR is S9's job |
 | "dropped_rois gate flags real coverage problems" | ❌ — fires on every cohort run (range 4-50); doesn't distinguish FOV coverage from real coverage gaps |
 | "condition_number_pearson_hemicord is the design-matrix degeneracy gate" | ✅ |
 | "n_rois_* metrics surface ROI catalog coverage" | ✅ |
@@ -223,7 +228,7 @@ ADD:
 | 2 | Wire `render_s10_reliability_icc` — per-subject reportlet rendered by orchestrator into `sub-XX/figures/` and back-attached to every run of that subject so the per-run dashboard shows it; fires only when ≥2 sessions exist (handgrasp sub-02 in current cohort) | DONE |
 | 2b | Wire `render_s10_reliability_dice` (spatial Dice across sessions) | DEFERRED — requires building seed-to-voxel maps per session in a shared space; orchestrator has `_seed_to_voxel_map` + `_spatial_dice` helpers but no data pipe wired. Not blocking S10 lock; tracked separately |
 | 3 | Reorder ROIs in `hemicord_connectivity` heatmap — group by hemicord (VL → VR → DL → DR) with block divider lines | DONE |
-| 4 | Apply chain-wide visual standard (dark theme + status pill) to all S10 reportlets | DONE |
+| 4 | Apply chain-wide visual standard (dark theme + status pill) to all former-S10 (ROI/connectivity) reportlets | DONE |
 | 5 | Drop the `n_rois_dropped_low_voxels` gate (kept as informational metric; was WARN 11/11 on every cohort run — no signal) | DONE |
 | 6 | Add metrics: `fc_mean_strength`, `pct_significant_connections` (per-run, from hemicord Pearson off-diagonals); reliability metrics (`pooled_icc31`, `icc_good_or_excellent_fraction`) already emitted by orchestrator per-subject reliability JSON | DONE |
 

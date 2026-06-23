@@ -2,7 +2,7 @@
 
 **Step Code:** `S1_input_verify`  
 **Depends on:** S0 (Setup)  
-**Required by:** S2-S11 (all downstream steps)
+**Required by:** S2-S10 (all downstream steps)
 
 ---
 

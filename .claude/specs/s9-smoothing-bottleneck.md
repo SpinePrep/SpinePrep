@@ -13,7 +13,7 @@ status: characterized
 > parallelizes fine: ds004926 (66 runs, small PAM50 grid) finished in ~3 min
 > (33 runs in the first 75 s). What remains is a *real, non-bug* cost on
 > large-grid datasets — see "Genuine cost" below. Both datasets now complete
-> S9→S11 (2026-06-23 run). Keep this spec as the reference for why S9 looks
+> S9→S10 (2026-06-23 run). Keep this spec as the reference for why S9 looks
 > slow and what is/isn't worth optimizing.
 
 ## Genuine cost (not a bug): PAM50 4D emission on large grids
@@ -48,7 +48,7 @@ explained above.
 ## Symptoms (evidence)
 
 - **ds004926 (te40, 66 runs at S8, 160 vols/run):** S9 re-run via
-  `full_chain_reg.py --start S9 --stop S11 --batch-workers {3,10}` produced
+  `full_chain_reg.py --start S9 --stop S10 --batch-workers {3,10}` produced
   **0 completed `desc-preproc_bold` in ~112 min** wall-clock, repeatedly. ANTs
   (`isct_antsApplyTransforms`) shows ~90% CPU intermittently (it IS computing),
   but runs never finish and worker parallelism collapses (10 workers → ~1 busy,
@@ -96,7 +96,7 @@ explained above.
 
 ## Current cohort state (2026-06-23)
 
-- ds005075: full S1→S11 ran once. The 14/30 attrition on this dataset was
+- ds005075: full S1→S10 ran once. The 14/30 attrition on this dataset was
   **root-caused to S5 distortion, not S6 registration** — whole-CNS (brain+cord)
   acquisition with no reverse-PE fieldmap → image-based SyN fallback can't reach
   TopUp quality, and the lung-adjacent lower cord (C6-T2) is uncorrectable. Fixed
@@ -105,17 +105,17 @@ explained above.
   (26 WARN distortion-limited, 3 PASS; the lone FAIL is sub-A034, cord Dice 0.28
   = genuine registration failure). `done/brainspine/S5` now points at the new
   workfolder.
-  - **DONE (2026-06-23):** S6→S11 re-run on the corrected S5 cohort. The 13
+  - **DONE (2026-06-23):** S6→S10 re-run on the corrected S5 cohort. The 13
     rescued runs all flowed through cleanly. Final per-step (wf_brainspine_015..019):
     S6 **21 PASS / 8 WARN / 0 FAIL** (29 runs, vs the old 16) — confirming the
     attrition was S5, not S6: once S5 stopped dropping the runs, S6 registered all
-    29 with zero failures. S7 30, S8 27, **S9 27 PASS / 0 WARN / 0 FAIL**, S11
-    release report at `done/brainspine/S11/release/release_report.html`.
+    29 with zero failures. S7 30, S8 27, **S9 27 PASS / 0 WARN / 0 FAIL**, S10
+    release report at `done/brainspine/S10/release/release_report.html`.
 - ds004926: S1→S8 complete, **RETROICOR validated** (te40 + integrated physio;
-  16 regressors/run). **S9→S11 DONE (2026-06-23):** the prior `done/dorsalhorn/S9`
+  16 regressors/run). **S9→S10 DONE (2026-06-23):** the prior `done/dorsalhorn/S9`
   was a bogus force-mark (0 outputs); re-ran for real → **S9 65 PASS / 1 WARN /
-  0 FAIL** (66 runs), S11 release report at
-  `done/dorsalhorn/S11/release/release_report.html`. The "S9 blocked" status was
+  0 FAIL** (66 runs), S10 release report at
+  `done/dorsalhorn/S10/release/release_report.html`. The "S9 blocked" status was
   contention, not a defect (see Resolution at top).
 - Related finding: S6 func→anat registration robustness on large/whole-CNS FOV
   is a separate weak point (per-step attrition 80→66 at S6 for ds004926); do not

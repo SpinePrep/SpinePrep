@@ -3,23 +3,25 @@ status: deferred
 supersedes: private/SPEC/S10_roi_timeseries_and_reliability.md
 ---
 
-> **DEFERRED 2026-06-11 — removed from the active pipeline.** ROI timeseries,
+> **DEFERRED 2026-06-11 — removed from the active pipeline.** This step was
+> the **former S10 (ROI/connectivity)**; its step number has since been reused
+> for the QC aggregation & release step (the new S10). ROI timeseries,
 > connectivity, and ICC reliability are downstream **analysis**, not
 > preprocessing. SpinalfMRIprep's contract is preprocess → confounds → release
-> (S1–S9, S11); the analyst owns the GLM/connectivity on their own design
-> (the same boundary S8 states: "S8 emits the matrix; the analyst regresses").
-> S10 was also the pipeline's only persistent FAIL source (hemicord-ROI "no
+> (S1–S10, with S10 = QC aggregation & release); the analyst owns the
+> GLM/connectivity on their own design (the same boundary S8 states: "S8 emits
+> the matrix; the analyst regresses"). The former S10 (ROI/connectivity) was
+> also the pipeline's only persistent FAIL source (hemicord-ROI "no
 > ROIs survived" on cospine_motor). Removed from the chain runner, the dashboard
-> registry, and S11's consumption (cohort FC summary, `max_condition_number`,
-> the S10 methods paragraph). The step **code is retained** (not deleted) so it
-> can return as an analyst-side module / v2 — re-add the `("S10", …)` entry to
-> `full_chain_reg.ALL_CHAIN_STEPS` and `S11._STEPS`, and the dashboard registry
-> block, to reactivate. Reason it was kept around historically below.
+> registry, and the release step's consumption (cohort FC summary,
+> `max_condition_number`, the ROI methods paragraph). The step **code is
+> retained** (not deleted) so it can return as an analyst-side module / v2.
+> Reason it was kept around historically below.
 
-# Scope Spec: S10 ROI Timeseries + Connectivity + Reliability v2
+# Scope Spec: Former S10 (ROI/connectivity) — ROI Timeseries + Connectivity + Reliability v2
 
 ## Objective
-Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matrices (Pearson + partial, raw + Fisher-z) for three PAM50-derived ROI catalogs, plus per-subject reliability summary (ICC(3,1) + spatial Dice) when multi-session, and a `_summary.json` enabling group-level aggregation at S11 without re-touching 4D BOLD.
+Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matrices (Pearson + partial, raw + Fisher-z) for three PAM50-derived ROI catalogs, plus per-subject reliability summary (ICC(3,1) + spatial Dice) when multi-session, and a `_summary.json` enabling group-level aggregation at S10 (QC aggregation & release) without re-touching 4D BOLD.
 
 ## Constraints
 - **Native func space extraction** using S7's `*_desc-PAM50spinallevels.nii.gz` already in native + PAM50 horn atlases warped on demand via S7's saved `from-PAM50_to-bold_xfm.nii.gz`. No 4D BOLD in PAM50 (S9 deliberately doesn't emit it).
@@ -36,7 +38,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 - **Connectivity types**: Pearson (correlation) + partial correlation (Ledoit-Wolf shrinkage when nv < nROI). Both emitted.
 - **Min-voxel guards**: ROI skipped if total voxels < `min_voxels_per_roi` (default 10). Per-slice analysis (if enabled) skips slices with < 3 voxels.
 - **Per-dataset ROI catalog** depends on cord coverage (Balgrist 11-slice covers ~3 spinal segments; OpenNeuro 35-slice covers ~8). Emit ROIs only when present in the BOLD FOV.
-- **No statistical modelling** beyond ICC + correlation. Group-level outputs are S11's job.
+- **No statistical modelling** beyond ICC + correlation. Group-level outputs are S10's (QC aggregation & release) job.
 - **No regression of confounds out of BOLD itself** — only the TSV timeseries are confound-cleaned. Analyst still gets raw BOLD from S5/S9.
 - Per-dataset isolation: `logs/S10_roi_timeseries_and_connectivity/<dataset_key>/qc.json`.
 
@@ -63,7 +65,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 
 ### Per-subject derivatives (`derivatives/spinalfmriprep/<ds>/sub-XX/`)
 
-- `sub-XX_summary.json` — per-ROI mean tSNR, per-connection mean Fisher-z, list of run_ids contributing. Always emitted; aggregable by S11.
+- `sub-XX_summary.json` — per-ROI mean tSNR, per-connection mean Fisher-z, list of run_ids contributing. Always emitted; aggregable by S10 (QC aggregation & release).
 - `sub-XX_reliability.json` — multi-session only:
   - `icc31_per_connection` — ICC(3,1) for each connection across sessions.
   - `dice_per_seed` — spatial Dice on thresholded seed-to-voxel maps per seed.
@@ -102,7 +104,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 
 - **BOLD source**: S5 `*_desc-undistorted_bold.nii.gz` (native; default) or S9 `*_desc-preproc_bold.nii.gz` (smoothed; analyst choice via policy `bold_source`).
 - **PAM50 levels (segmental) in native**: S7 `*_desc-PAM50spinallevels.nii.gz` (already in derivatives).
-- **PAM50 vertebral levels + horn atlases**: warp at S10 time using S7's `from-PAM50_to-bold_xfm.nii.gz` (saved) — source files: `$SCT_DIR/data/PAM50/template/PAM50_levels.nii.gz` and `$SCT_DIR/data/PAM50/atlas/PAM50_atlas_{30,31,34,35}.nii.gz`.
+- **PAM50 vertebral levels + horn atlases**: warp at former-S10 (ROI/connectivity) time using S7's `from-PAM50_to-bold_xfm.nii.gz` (saved) — source files: `$SCT_DIR/data/PAM50/template/PAM50_levels.nii.gz` and `$SCT_DIR/data/PAM50/atlas/PAM50_atlas_{30,31,34,35}.nii.gz`.
 - **Cord mask**: S3 `func_ref_fast_seg_crop.nii.gz` (BOLD geometry).
 - **Confound TSV**: S8 `*_desc-confounds_timeseries.tsv`.
 - **Policy**: `policy/S10_roi_timeseries_and_connectivity.yaml`.
@@ -120,7 +122,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 - **FAIL**: ICC undefined (insufficient variance) for > 50% of connections.
 
 ### Dataset-level acceptance (v1 release)
-1. All 5 v1_validation datasets emit per-run S10 outputs (3 catalogs × 2 modes = 6 TSVs + 9 connectivity TSVs + JSON sidecars).
+1. All 5 v1_validation datasets emit per-run former-S10 (ROI/connectivity) outputs (3 catalogs × 2 modes = 6 TSVs + 9 connectivity TSVs + JSON sidecars).
 2. Hemicord × spinal-segmental ROIs present for all cord-bearing segments per dataset coverage (Balgrist ~C5–C7, OpenNeuro full ~C2–C8).
 3. For multi-session subjects (ds004386 rest 2 sessions, ds004616 handgrasp 2 sessions): reliability JSON emitted, ICC + Dice computed.
 4. Dashboard renders all 5 reportlet types.
@@ -148,7 +150,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 7. Implement `reportlets.py`: 5 PNGs.
 8. CLI + dashboard registry + chain script wiring.
 9. Smoke test on pain dataset (1 run, no reliability); then handgrasp dataset (2 sessions → reliability test).
-10. Run full chain S2→S10 on 5 reg datasets; verify all PASS/WARN.
+10. Run full chain S2→former-S10 (ROI/connectivity) on 5 reg datasets; verify all PASS/WARN.
 
 ## Decision Log
 
@@ -160,10 +162,10 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 | D4 | Pearson + partial correlation matrices | Pearson is universal; partial (Marrelec 2006, Ledoit-Wolf shrinkage) is more interpretable for network analysis. Both are 1-liner Nilearn. |
 | D5 | ICC(3,1) (NOT ICC(2,1)) | Kaptan 2023 cord-convention. Two-way mixed effects, consistency, single rater. Spec's original ICC(2,1) was wrong. |
 | D6 | Spatial Dice on seed-to-voxel maps as supplementary reliability | Kaptan 2023 explicit recommendation: voxel ICC is poor (cord), spatial localization (Dice) is good (~0.88). |
-| D7 | Warp PAM50 horn atlases at S10 time (not extend S7) | Self-contained S10; ~30s overhead; S7's emit list stays minimal. |
+| D7 | Warp PAM50 horn atlases at former-S10 (ROI/connectivity) time (not extend S7) | Self-contained step; ~30s overhead; S7's emit list stays minimal. |
 | D8 | Bandpass 0.01–0.1 Hz default (configurable) | Resting-state cord convention since Eippert 2014. For task data, analyst can disable. |
 | D9 | min_voxels_per_roi = 10 default | Cord cross-section is small; some hemicord-segment combinations have only 5–15 voxels. Below 10 the mean is too noisy. |
-| D10 | Per-subject `summary.json` for S11 aggregation | Decouples per-run vs group-level; S11 can build group reports without touching 4D BOLD. |
+| D10 | Per-subject `summary.json` for S10 (QC aggregation & release) | Decouples per-run vs group-level; S10 can build group reports without touching 4D BOLD. |
 
 ## Out of scope (deferred to v2 / analyst-side)
 
@@ -172,7 +174,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 - Coherence-based FC in 0.01–0.1 Hz.
 - WM tract timeseries (PAM50_atlas labels 0–29) — feasible but not in the round-2 design; can be added by extending policy's ROI catalog.
 - Per-task GLM (events-based contrasts).
-- Group-level statistics (S11 owns).
+- Group-level statistics (S10, QC aggregation & release, owns).
 - Brain-cord joint FC.
 
 ## References (verified in round-2/3 audit)
@@ -191,7 +193,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 
 # Principles audit (May 2026)
 
-Post-implementation audit of S10 against the `CLAUDE.md` dev principles.
+Post-implementation audit of the former S10 (ROI/connectivity) against the `CLAUDE.md` dev principles.
 The scope spec above is the *redesign rationale* (Nilearn NiftiMapsMasker
 on PAM50 horn atlases, hemicord + spinalseg + vertlvl extraction);
 this section is the principles-alignment check.
@@ -206,7 +208,7 @@ this section is the principles-alignment check.
 | 4 | Diagnostic reportlet | ✅ 3 PNGs emitted per single-session run (`hemicord_timeseries`, `hemicord_connectivity`, `vertlvl_tsnr`) + 2 multi-session reportlets (`reliability_icc`, `reliability_dice`) that fire only when a subject has ≥2 same-task sessions |
 | 5 | Visual QC validator | ✅ |
 | 6 | Lock and ship | ✅ scope spec + policy w/ thresholds |
-| 7 | No chain backtracking | ✅ consumes S8 confound TSVs + S9 smoothed BOLD + S7 PAM50-in-native atlases; S10 metrics are self-contained |
+| 7 | No chain backtracking | ✅ consumes S8 confound TSVs + S9 smoothed BOLD + S7 PAM50-in-native atlases; former-S10 (ROI/connectivity) metrics are self-contained |
 | 8 | Full cohort = deliverable | ✅ |
 | 9 | Reproducible | ✅ schema + policy + spec all versioned |
 | 10 | Heterogeneity is the test | ✅ **11/11 WARN — all due to `dropped_rois > 0`**. The dropped-ROI counts vary by dataset (rest: 4; balgrist_motor: 14; cospine_motor: 48–50), encoding the actual cord coverage variability across the 5 datasets. **This is the principle §10 signal**: heterogeneity surfacing as quantitative coverage differences. |
@@ -215,7 +217,7 @@ this section is the principles-alignment check.
 
 | Metric | What it answers |
 |---|---|
-| `n_rois_dropped_low_voxels` | **Headline gauge.** Number of PAM50 ROIs that fell below the minimum-voxel floor in this run's cord coverage. Encodes "how much of the cord did this EPI cover?" — a coverage-faithfulness measure that the cohort-level S11 coverage matrix builds on. |
+| `n_rois_dropped_low_voxels` | **Headline gauge.** Number of PAM50 ROIs that fell below the minimum-voxel floor in this run's cord coverage. Encodes "how much of the cord did this EPI cover?" — a coverage-faithfulness measure that the cohort-level S10 (QC aggregation & release) coverage matrix builds on. |
 | `n_rois_hemicord` / `_spinalseg` / `_vertlvl` | Per-atlas usable ROI count. Drops below the atlas's nominal label count (8/30/20 respectively) signal coverage limits. |
 | `condition_number_pearson_hemicord` | Connectivity matrix conditioning. High κ ⇒ some hemicord ROIs are near-collinear (small ROI with shared variance). Brain-heuristic gate; cord recalibration deferred. |
 | `n_volumes` | Pass-through context: short runs (n < 80) have unreliable connectivity. |
@@ -236,13 +238,13 @@ of the cervical cord (rest test-retest). With 30 spinal_levels +
 20 vertebral_levels + 8 hemicord ROIs available in PAM50 and a
 strict-zero PASS gate, any run that doesn't span the full cord WARNs
 on `dropped_rois`. **This is the metric working as designed** — flagging
-coverage gaps so cohort-level aggregation (S11) can stratify by
+coverage gaps so cohort-level aggregation (S10, QC aggregation & release) can stratify by
 coverage rather than blindly average. The dropped-ROI count is itself
 the heterogeneity signal of principle §10.
 
 ## Decision: no code change
 
-S10 already satisfies all 10 principles. The 11/11 WARN bias carries
+The former S10 (ROI/connectivity) already satisfies all 10 principles. The 11/11 WARN bias carries
 information (per-dataset coverage variability), not noise. Loosening
 the gate to "PASS any coverage > 50%" would hide the heterogeneity
 that the cohort needs to be aware of. Lock and ship (principle §6).
@@ -254,6 +256,6 @@ that the cohort needs to be aware of. Lock and ship (principle §6).
 - Per-vertebral-level connectivity matrix (currently only hemicord
   connectivity is plotted). Tracked in scope spec; not blocking.
 - The 50-ROI drop on cospine_motor reflects a known coverage gap in
-  that dataset; the S11 cohort coverage matrix surfaces this to the
+  that dataset; the S10 (QC aggregation & release) cohort coverage matrix surfaces this to the
   analyst directly.
 

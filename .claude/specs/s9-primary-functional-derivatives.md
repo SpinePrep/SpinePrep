@@ -137,7 +137,7 @@ principles-alignment check.
 | `cord_dice_pre_post` | Did cord-aware smoothing preserve cord boundary? Cord-LOCALIZED smoothing should round-trip the cord seg exactly; Dice < 0.95 ⇒ straighten/destraighten introduced shape drift. **Headline gate.** |
 | `fwhm_*_measured_mm` vs `_requested_mm` | Smoothness validation. Measured FWHM is typically smaller than requested kernel because cord-localized smoothing operates in straightened space and projects back; the gap is informative, not a bug (see scope spec). |
 | `tsnr_pre/post_median` + `tsnr_ratio_median` | The headline benefit metric — smoothing should ~2× tSNR. The 1.5 PASS gate (and 1.2 WARN) catches the case where smoothing happened but added no SNR (algorithm failure). |
-| `n_levels_with_tsnr` | Vertebral-level coverage of the per-level tSNR breakdown; ensures the cohort-aggregation in S11 has enough levels. |
+| `n_levels_with_tsnr` | Vertebral-level coverage of the per-level tSNR breakdown; ensures the cohort-aggregation in S10 has enough levels. |
 | `smoothing_runtime_s` | Observability for when the long-pole step starts to drift (typical 5–25 min). |
 
 ## Threshold rationale (`policy/S9_primary_functional_derivatives.yaml`)
@@ -179,5 +179,5 @@ calibrated correctly.
   acceptable at L2 dev scale.
 - Per-level tSNR threshold (`n_levels_with_tsnr < N` → WARN) could
   replace the global `median_in_cord_tsnr` gate for cohorts with
-  variable cord coverage. Deferred until S11 cohort-coverage matrix
+  variable cord coverage. Deferred until S10 cohort-coverage matrix
   proves coverage is a real bottleneck.

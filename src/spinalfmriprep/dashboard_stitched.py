@@ -33,7 +33,7 @@ MAX_STEP = 11
 
 # Steps removed from the active pipeline. They are skipped entirely in the
 # stitched view (even via the latest-wf fallback) so retired-step outputs in
-# old wf folders don't resurface. S10 (roi_timeseries_and_connectivity) was
+# old wf folders don't resurface. The former S10 (roi_timeseries_and_connectivity) was
 # removed 2026-06-11 — analyst-owned analysis, not preprocessing. Re-add the
 # step here (delete from the set) if it returns to the pipeline.
 REMOVED_STEPS: frozenset[int] = frozenset({10})
@@ -44,7 +44,7 @@ def _step_logs_subdir(wf: Path, step_num: int) -> Optional[Path]:
 
     Accepts both layouts:
       - per-dataset: ``S{n}_<name>/<dataset>/qc.json`` (S1–S9, incl. S2B)
-      - aggregate:  ``S{n}_<name>/qc.json``           (S11 release report)
+      - aggregate:  ``S{n}_<name>/qc.json``           (S10 release report)
     """
     logs = wf / "logs"
     if not logs.exists():
@@ -62,7 +62,7 @@ def _step_logs_subdir(wf: Path, step_num: int) -> Optional[Path]:
             continue
         if not real.is_dir():
             continue
-        # Aggregate layout (S11) — qc.json sits directly under the step dir
+        # Aggregate layout (S10) — qc.json sits directly under the step dir
         if (real / "qc.json").exists():
             candidates.append(entry)
             continue
@@ -130,15 +130,15 @@ def _clear_stale_step_links(view_logs: Path) -> None:
 
 
 def _link_cohort_deliverables(view_root: Path, source_wf: Path) -> None:
-    """Symlink S11's cohort-level deliverables into the view.
+    """Symlink S10's cohort-level deliverables into the view.
 
-    S11 emits its release artifacts to one of two places (audit F11):
+    S10 emits its release artifacts to one of two places (audit F11):
       * ``source_wf/release/`` when the chain runner sym-linked
         ``source_wf/derivatives`` (current behaviour)
       * ``source_wf/derivatives/spinalfmriprep/`` (legacy)
 
     The dashboard banner reads ``deliverables.release_report`` from
-    S11's qc.json verbatim, so we mirror whichever directory exists
+    S10's qc.json verbatim, so we mirror whichever directory exists
     into the view at the SAME relative path. This keeps
     ``out_dir / deliverables['release_report']`` resolvable from the
     stitched view too.
@@ -243,7 +243,7 @@ def build_view(scope: str, work_root: Path) -> tuple[Path, set[str], dict[str, s
         if is_locked:
             locked.add(step_dir.name)
 
-        # S11's release banner needs the cohort-tier deliverables
+        # S10's release banner needs the cohort-tier deliverables
         # (release_report.html / group_qc_dashboard.html) reachable
         # via the dashboard's ``../derivatives/spinalfmriprep/`` path.
         if n == 11:

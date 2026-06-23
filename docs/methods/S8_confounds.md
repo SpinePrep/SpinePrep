@@ -7,7 +7,7 @@ search:
 
 **Step Code:** `S8_confounds_and_physio_regressors`
 **Depends on:** S3 (frame metrics), S4 (motion), S6 (warps), S7 (PAM50 levels)
-**Required by:** S11 (QC Aggregation & Release)
+**Required by:** S10 (QC Aggregation & Release)
 
 ---
 

@@ -4,17 +4,17 @@ implemented_in: wf_reg_093
 implemented_at: 2026-05-28
 ---
 
-# S11 algorithm + release-aggregation audit
+# S10 algorithm + release-aggregation audit
 
-Audit of S11 as it shipped at `wf_reg_090` (chain S2..S10 locked → S11
+Audit of S10 as it shipped at `wf_reg_090` (chain S2..S9 locked → S10
 auto-run). 23 deliverables across 4 tiers, 1121 lines in
-`steps/s11/process.py`. Compared against fMRIPrep, MRIQC, BIDS-
+`steps/s10/process.py`. Compared against fMRIPrep, MRIQC, BIDS-
 Derivatives spec, NiPreps boilerplate convention, CoSpine 2025
 (Wei Sci Data), Kaptan 2023 (cord rs-fMRI reliability).
 
-## Current state — what S11 emits
+## Current state — what S10 emits
 
-`wf_reg_090/logs/S11_qc_aggregation_and_release/qc.json` reports
+`wf_reg_090/logs/S10_qc_aggregation_and_release/qc.json` reports
 `status=PASS` with 22 deliverables landing in
 `derivatives/spinalfmriprep/` plus per-subject HTML reports under
 `<dataset>/sub-XX/`. Top-line metrics:
@@ -44,7 +44,7 @@ never consumed anyway (see B7).
 ### B2 — `subject="all"` leaks into participants/inventory
 
 S1 emits one synthetic row per dataset with `subject="all"`; S9 and
-S10 inherit it via their orchestrators. `_flat_run_records` normalises
+the former S10 (ROI/connectivity) inherit it via their orchestrators. `_flat_run_records` normalises
 `sub-` prefix but doesn't filter `"all"`. Result: `participants.tsv`
 contains a `sub-all` row per dataset (10 → 5 real + 5 synthetic),
 and run_inventory counts inflate.
@@ -57,8 +57,8 @@ Steps disagree on ID encoding:
 ```
 S2:  ("02", None), ("ZS002", None), ("02", "01"), ("02", "02")
 S4:  + ("sub-02", None), ("sub-02", "ses-01")
-S9:  + ("all", None)
-S10: same as S9
+S9:         + ("all", None)
+former S10: same as S9
 ```
 
 `_flat_run_records` strips the leading `sub-` but never normalises
@@ -208,21 +208,21 @@ literal `[org]` placeholder in the released file.
 **Fix:** Either resolve from `git remote get-url origin` or remove the
 field.
 
-### B15 — S11 writes into upstream symlinked derivatives
+### B15 — S10 writes into upstream symlinked derivatives
 
 Chain runner sets `wf_reg_090/derivatives -> wf_reg_089/derivatives
--> wf_reg_088/derivatives`. S11 writes to
+-> wf_reg_088/derivatives`. S10 writes to
 `out_dir/derivatives/spinalfmriprep/` — which resolves to
 `wf_reg_088/derivatives/spinalfmriprep/`. The release artifacts land
-in the S8-locked workfolder, not the S11 one. From the user's POV,
-running S11 silently mutates a previous step's directory.
+in the S8-locked workfolder, not the S10 one. From the user's POV,
+running S10 silently mutates a previous step's directory.
 
-This is a chain-runner symlink design issue, but it's also S11's
+This is a chain-runner symlink design issue, but it's also S10's
 responsibility to either (a) detect the symlink and materialise its
 own derivatives, or (b) emit to a separate `release/` directory it
 owns.
 
-**Fix:** In `run_S11`, if `out_dir/derivatives` is a symlink, switch
+**Fix:** In `run_S10`, if `out_dir/derivatives` is a symlink, switch
 to `out_dir/release/` for all aggregation outputs. Per-subject HTML
 can remain in the upstream `<dataset>/sub-XX/` paths since they
 reference upstream artifacts anyway.
@@ -239,7 +239,7 @@ fakes and `sub-02`/`02` dupes. Real value is 5.
 
 From the literature scan (full sources in audit file):
 
-| Item | Field convention | S11 today |
+| Item | Field convention | S10 today |
 |---|---|---|
 | Per-subject HTML | fMRIPrep `sub-XX.html` — segmentation, registration, fieldmap, carpet, **CITATION boilerplate embedded** | step pivot × thumbnails, no boilerplate inline |
 | Group HTML | fMRIPrep has NONE; MRIQC has `group_<modality>.html` driven by `group_<modality>.tsv` long-format `(iqm, value, label, units)` with **boxplots per IQM** | status heatmap + pass-rate bars only; declared boxplots unimplemented |
@@ -253,7 +253,7 @@ From the literature scan (full sources in audit file):
 | sidecar audit | bids-validator (Markiewicz 2021) | reportlet PNG existence only — misnamed |
 | Reproducibility receipt | fMRIPrep: tool versions + Singularity hash in `GeneratedBy.Container.Tag`; no separate receipt file | separate JSON file with policy SHAs (useful extension); fsl_version parsing buggy |
 
-## Proposed S11 redesign
+## Proposed S10 redesign
 
 ### Drop / rename
 - **Drop**: `sidecar_audit_{json,html}` (replace with `bids_validator.json`
@@ -309,8 +309,8 @@ Total: ~495 lines of code change across ~13 focused fixes.
 
 | Claim | True? |
 |---|---|
-| "S11 emits 23 deliverables" | ✓ as counted by qc.json `deliverables` dict |
-| "S11 status PASS" | ⚠ PASS is reported but reflects only existence of files; multiple are broken (B1, B5, B7, B8) |
+| "S10 emits 23 deliverables" | ✓ as counted by qc.json `deliverables` dict |
+| "S10 status PASS" | ⚠ PASS is reported but reflects only existence of files; multiple are broken (B1, B5, B7, B8) |
 | "n_subjects_aggregated: 10" | ❌ real cohort is 5; ID hygiene bug inflates |
 | "cohort FC summary informative" | ❌ intersection collapses to 1 ROI |
 | "sidecar audit clean" | ❌ no sidecar audit actually performed |
@@ -333,5 +333,5 @@ Total: ~495 lines of code change across ~13 focused fixes.
 - MRIQC group module —
   https://mriqc.readthedocs.io/en/stable/_modules/mriqc/reports/group.html
 - Internal: `.claude/specs/s11-qc-aggregation-and-release.md`,
-  `policy/S11_qc_aggregation_and_release.yaml`,
+  `policy/S10_qc_aggregation_and_release.yaml`,
   `src/spinalfmriprep/steps/s11/process.py`

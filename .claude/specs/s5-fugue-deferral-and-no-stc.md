@@ -30,7 +30,7 @@ fall-through is no longer silent:
 - The run record carries both `mode` (what ran) and `requested_mode` (what the
   data implied), and appends a `failure_reasons` note
   "distortion mode fell back from fugue to syn (FUGUE not implemented in v1)".
-- The S11 methods boilerplate states the FUGUE path is specified-but-not-
+- The S10 methods boilerplate states the FUGUE path is specified-but-not-
   implemented and that GRE-only data falls back to SyN.
 
 **To finish FUGUE later.** Implement `_run_fugue` with the standard FSL recipe
@@ -98,7 +98,7 @@ opt-in), applied after motion/distortion correction per the HCP ordering, and
 validated on a task dataset. Not implemented now — the marginal, contested
 benefit does not justify the STC x motion-correction risk by default.
 
-**Declared in.** The S11 auto methods boilerplate states that no STC is performed
+**Declared in.** The S10 auto methods boilerplate states that no STC is performed
 and gives the corrected rationale, so downstream users are not left guessing.
 
 **Key sources.** Eippert 2017 (PMC5315056); Barry 2014 (PMC4120419 / eLife

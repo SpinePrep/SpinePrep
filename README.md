@@ -46,12 +46,12 @@ SpinalfMRIprep is designed with validity-first principles: spinal cord measureme
     │   └──────────────┘    └──────────────┘    └──────────────────────────┘  │
     │                                                   │                     │
     │                                                   ▼                     │
-    │                       ┌──────────────┐    ┌──────────────────────────┐  │
-    │                       │ S11: QC      │◀───│ S10: ROI Timeseries +    │  │
-    │                       │     Dashboard│    │      Reliability         │  │
-    │                       └──────────────┘    └──────────────────────────┘  │
-    │                              │                                          │
-    │                              ▼                                          │
+    │                                            ┌──────────────────────────┐  │
+    │                                            │ S10: QC Aggregation +    │  │
+    │                                            │      Release             │  │
+    │                                            └──────────────────────────┘  │
+    │                                                   │                     │
+    │                                                   ▼                     │
     │                     GLM-Ready Derivatives                               │
     │                     + QC Reports                                        │
     │                                                                         │

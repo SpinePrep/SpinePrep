@@ -7,7 +7,7 @@ search:
 
 **Step Code:** `S9_primary_functional_derivatives`
 **Depends on:** S7 (PAM50 warps and spinal levels)
-**Required by:** S11 (QC Aggregation & Release)
+**Required by:** S10 (QC Aggregation & Release)
 
 ---
 
@@ -57,7 +57,7 @@ reference (temporal mean) and a PAM50 tSNR map.
 ### 3. Per-level tSNR
 
 Using S7's PAM50 spinal-level labels, S9 writes a table of mean and standard-
-deviation tSNR per vertebral level — the cohort-comparison metric S11 plots as a
+deviation tSNR per vertebral level — the cohort-comparison metric S10 plots as a
 heatmap.
 
 ---
