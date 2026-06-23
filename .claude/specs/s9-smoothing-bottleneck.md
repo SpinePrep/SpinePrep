@@ -105,13 +105,18 @@ explained above.
   (26 WARN distortion-limited, 3 PASS; the lone FAIL is sub-A034, cord Dice 0.28
   = genuine registration failure). `done/brainspine/S5` now points at the new
   workfolder.
-  - **PENDING:** S6→S11 still point at workfolders built on the OLD S5, so the 13
-    newly-rescued WARN runs have not yet flowed downstream (old S6 cohort was the
-    ~16 surviving runs). Re-running S6→S11 to propagate them is gated on the S9
-    defect below. Do it as part of the single full-cohort release run, not a
-    standalone churn (principle #8).
+  - **DONE (2026-06-23):** S6→S11 re-run on the corrected S5 cohort. The 13
+    rescued runs all flowed through cleanly. Final per-step (wf_brainspine_015..019):
+    S6 **21 PASS / 8 WARN / 0 FAIL** (29 runs, vs the old 16) — confirming the
+    attrition was S5, not S6: once S5 stopped dropping the runs, S6 registered all
+    29 with zero failures. S7 30, S8 27, **S9 27 PASS / 0 WARN / 0 FAIL**, S11
+    release report at `done/brainspine/S11/release/release_report.html`.
 - ds004926: S1→S8 complete, **RETROICOR validated** (te40 + integrated physio;
-  16 regressors/run). S9 NOT complete — blocked by this defect. S11 not run.
+  16 regressors/run). **S9→S11 DONE (2026-06-23):** the prior `done/dorsalhorn/S9`
+  was a bogus force-mark (0 outputs); re-ran for real → **S9 65 PASS / 1 WARN /
+  0 FAIL** (66 runs), S11 release report at
+  `done/dorsalhorn/S11/release/release_report.html`. The "S9 blocked" status was
+  contention, not a defect (see Resolution at top).
 - Related finding: S6 func→anat registration robustness on large/whole-CNS FOV
   is a separate weak point (per-step attrition 80→66 at S6 for ds004926); do not
   conflate it with the ds005075 S5 distortion issue now fixed above.
