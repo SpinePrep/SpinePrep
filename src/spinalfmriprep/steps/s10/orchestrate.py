@@ -24,15 +24,14 @@ from .process import (
     _build_metrics_index,
     _build_metrics_index_tsv,
     _build_participants_tsv,
-    _build_per_subject_html,
     _build_references_bib,
-    _build_release_report,
     _build_reproducibility_receipt,
     _build_run_inventory,
     _flat_run_records,
     _render_group_dashboard_html,
     _walk_chain_qc,
 )
+from . import reports
 
 logger = logging.getLogger(__name__)
 
@@ -181,51 +180,78 @@ def run_S10(
         failures.append(f"dataset_description: {e}")
 
     # 10. participants.tsv + .json
+    participants_rows: list[dict] = []
     try:
         p_tsv = deriv_root / "participants.tsv"
         p_json = deriv_root / "participants.json"
         n_part = _build_participants_tsv(out_path, records, policy, p_tsv, p_json)
         deliverables["participants_tsv"] = str(p_tsv.relative_to(out_path))
         deliverables["participants_json"] = str(p_json.relative_to(out_path))
+        # Read the rows back so the group reports can render the inclusion table
+        # (avoids recomputing the include/review logic in two places).
+        try:
+            import pandas as _pd
+            participants_rows = _pd.read_csv(p_tsv, sep="\t").to_dict("records")
+        except Exception:
+            participants_rows = []
     except Exception as e:
         failures.append(f"participants_tsv: {e}")
 
     # 11. CITATION.{md,tex,html} (NiPreps convention; was methods_manifest.*)
+    citation_html = ""
     try:
         m_md = logs_root / "CITATION.md"
         m_tex = logs_root / "CITATION.tex"
         m_html = logs_root / "CITATION.html"
-        methods_md_text = _build_methods_manifest(out_path, recipe, policy,
-                                                  m_md, m_tex, m_html)
+        _build_methods_manifest(out_path, recipe, policy, m_md, m_tex, m_html)
         deliverables["citation_md"] = str(m_md.relative_to(out_path))
         deliverables["citation_tex"] = str(m_tex.relative_to(out_path))
         deliverables["citation_html"] = str(m_html.relative_to(out_path))
+        # Reuse the already-rendered HTML body for embedding in subject reports
+        # (deterministic; no per-subject pandoc re-run).
+        try:
+            citation_html = m_html.read_text(encoding="utf-8")
+        except Exception:
+            citation_html = ""
     except Exception as e:
         failures.append(f"citation_md: {e}")
-        methods_md_text = ""
 
-    # 12. (was sidecar_audit; dropped per audit B11 / F10 — function
-    # was misnamed and bids-validator isn't installed.)
-
-    # 12b. Per-subject HTML reports — NOW we have methods_md_text to embed.
-    subject_report_paths: list[Path] = []
+    # 12. Subject-level reports (reports.py — figure-first per-run cards).
+    #     subject_reports keyed (dataset, subject) for the overview index.
+    subject_reports: dict[tuple, Path] = {}
     for ds, sub in sorted(subjects):
         try:
-            p = _build_per_subject_html(
-                out_path, ds, sub, records, policy,
-                citation_md=methods_md_text,
+            p = reports.build_subject_report(
+                out_path, deriv_root, ds, sub, records, policy, recipe,
+                citation_html=citation_html,
             )
             if p:
-                subject_report_paths.append(p)
+                subject_reports[(ds, sub)] = p
         except Exception as e:
-            failures.append(f"per_subject {ds}/{sub}: {e}")
-    n_subject_reports = len(subject_report_paths)
+            failures.append(f"subject_report {ds}/{sub}: {e}")
+    n_subject_reports = len(subject_reports)
     fraction = (n_subject_reports / n_subjects) if n_subjects else 0.0
 
-    # 13. release_report.html
+    # 12b. Group-level reports — one per dataset (Principle 10: not pooled).
+    group_reports: dict[str, Path] = {}
+    datasets = sorted({r.get("dataset_key") for r in records if r.get("dataset_key")})
+    for ds in datasets:
+        try:
+            ds_subjects = {s: p for (d, s), p in subject_reports.items() if d == ds}
+            gp = reports.build_group_report(
+                out_path, deriv_root, ds, records, policy, recipe,
+                participants_rows, ds_subjects,
+            )
+            if gp:
+                group_reports[ds] = gp
+        except Exception as e:
+            failures.append(f"group_report {ds}: {e}")
+
+    # 13. Cross-dataset overview (release_report.html)
     try:
         rr_path = deriv_root / "release_report.html"
-        _build_release_report(out_path, subject_report_paths, deliverables, rr_path)
+        reports.build_overview(out_path, deriv_root, records, group_reports,
+                               subject_reports, deliverables, recipe, rr_path)
         deliverables["release_report"] = str(rr_path.relative_to(out_path))
     except Exception as e:
         failures.append(f"release_report: {e}")
