@@ -219,3 +219,79 @@ def test_detect_fsl_version_str_or_none():
     # When present it must not be the env-var banner that B10 fixed.
     if v is not None:
         assert not v.upper().startswith("FSLDIR")
+
+
+# ---------------------------------------------------------------------------
+# reports.py — subject/group report model (redesign 2026-06-23)
+# ---------------------------------------------------------------------------
+
+from spinalfmriprep.steps.s10 import reports as s10r
+
+
+def test_recommendation_include_when_clean():
+    rec, reason = s10r._recommendation(mean_fd=0.2, median_tsnr=12.0,
+                                       n_failed=0, fd_thr=0.5, tsnr_thr=5.0)
+    assert rec == "include"
+    assert "passes" in reason
+
+
+def test_recommendation_review_on_high_fd():
+    rec, reason = s10r._recommendation(mean_fd=0.9, median_tsnr=12.0,
+                                       n_failed=0, fd_thr=0.5, tsnr_thr=5.0)
+    assert rec == "review"
+    assert "FD" in reason
+
+
+def test_recommendation_review_on_low_tsnr():
+    rec, _ = s10r._recommendation(mean_fd=0.2, median_tsnr=3.0,
+                                  n_failed=0, fd_thr=0.5, tsnr_thr=5.0)
+    assert rec == "review"
+
+
+def test_recommendation_exclude_on_fail_plus_metric():
+    # a failed run AND a bad metric escalates to exclude
+    rec, _ = s10r._recommendation(mean_fd=0.9, median_tsnr=12.0,
+                                  n_failed=1, fd_thr=0.5, tsnr_thr=5.0)
+    assert rec == "exclude"
+
+
+def test_worst_status_precedence():
+    assert s10r._worst(["PASS", "WARN", "FAIL"]) == "FAIL"
+    assert s10r._worst(["PASS", "WARN"]) == "WARN"
+    assert s10r._worst(["PASS", "PASS"]) == "PASS"
+    assert s10r._worst([]) == "NA"
+
+
+def test_pick_orders_and_dedupes(tmp_path):
+    figs = {"motion_traces": tmp_path / "a.png",
+            "tsnr_comparison": tmp_path / "b.png",
+            "dvars_plot": tmp_path / "c.png"}
+    picked = s10r._pick(figs, ["motion", "tsnr"])
+    assert [k for k, _ in picked] == ["motion_traces", "tsnr_comparison"]
+
+
+def test_step_figs_resolves_by_convention(tmp_path):
+    figdir = tmp_path / "sub-01" / "figures"
+    figdir.mkdir(parents=True)
+    (figdir / "sub-01_task-rest_desc-S4_motion_traces.png").write_bytes(b"x")
+    (figdir / "sub-01_task-rest_desc-S4_tsnr_comparison.png").write_bytes(b"x")
+    (figdir / "sub-01_task-rest_desc-S5_distortion_effectiveness.png").write_bytes(b"x")
+    figs = s10r._step_figs([figdir], "sub-01_task-rest", "S4")
+    assert set(figs.keys()) == {"motion_traces", "tsnr_comparison"}
+
+
+def test_attrition_reconciles_with_fail_drops(tmp_path):
+    # 3 runs enter S3; one FAILs at S4 -> S5 has 2; matches the audit invariant.
+    recs = []
+    def add(step, rid, status):
+        recs.append({"dataset_key": "ds", "subject": "01", "session": None,
+                     "run_id": rid, "step": step, "status": status, "metrics": {}})
+    for rid in ("r1", "r2", "r3"):
+        add("S3", rid, "PASS")
+    add("S4", "r1", "PASS"); add("S4", "r2", "PASS"); add("S4", "r3", "FAIL")
+    add("S5", "r1", "PASS"); add("S5", "r2", "PASS")
+    wf = s10r._attrition_waterfall_png(recs, "ds", tmp_path / "att.png")
+    assert wf["counts"]["S3"] == 3
+    assert wf["counts"]["S5"] == 2
+    drop = wf["counts"]["S4"] - wf["counts"]["S5"]
+    assert drop == wf["fails"]["S4"] == 1
