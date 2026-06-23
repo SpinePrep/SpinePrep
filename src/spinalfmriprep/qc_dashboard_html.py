@@ -112,7 +112,8 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
         "tsnr_per_level":               "S9 - tSNR per Vertebral Level",
         "smoothness_summary":           "S9 - Requested vs Measured FWHM",
     },
-    # S10 removed from the active pipeline 2026-06-11 (analyst-owned analysis).
+    # The former S10 (ROI timeseries + connectivity, analyst-owned) was removed
+    # 2026-06-11; the QC-aggregation/release step was renumbered S11 -> S10.
 }
 
 
@@ -149,8 +150,8 @@ def _generate_index_html(
 ) -> None:
     """Generate main index.html listing all steps and their reportlets.
 
-    If `out_dir` is provided and S11 has produced a release report, a banner
-    is prepended linking to it (S11 emits no per-run reportlets so it would
+    If `out_dir` is provided and S10 has produced a release report, a banner
+    is prepended linking to it (S10 emits no per-run reportlets so it would
     otherwise not appear).
 
     ``locked_step_codes`` marks steps whose source was pinned via the
@@ -221,7 +222,7 @@ def _generate_index_html(
         ".step .links a:hover { background: #2a2e36; }",
         ".step .empty { color: #6b7280; font-style: italic;"
         " font-size: 12px; }",
-        # S11 release banner (compact)
+        # S10 release banner (compact)
         ".release { background: #14301e; border: 1px solid #2a623d;"
         " border-radius: 4px; padding: 10px 14px; margin: 6px 0 14px 0;"
         " display: flex; gap: 16px; align-items: center;"
@@ -292,12 +293,12 @@ def _generate_index_html(
             except Exception:
                 pass
 
-    # Compact S11 release banner — single row instead of header + list.
-    # S11 emits its deliverable paths into qc.json; trust that rather
+    # Compact S10 release banner — single row instead of header + list.
+    # S10 emits its deliverable paths into qc.json; trust that rather
     # than hard-coding a directory (F11 moves output to release/ when
     # derivatives is a chain-runner symlink).
     if out_dir is not None:
-        s11_qc_path = out_dir / "logs" / "S11_qc_aggregation_and_release" / "qc.json"
+        s11_qc_path = out_dir / "logs" / "S10_qc_aggregation_and_release" / "qc.json"
         s11_qc: dict = {}
         if s11_qc_path.exists():
             try:
@@ -336,7 +337,7 @@ def _generate_index_html(
                 )
             lines.append(
                 f"<div class=\"release\">"
-                f"<b>S11 release</b>"
+                f"<b>S10 release</b>"
                 f"<span class=\"release-status status-{status}\">{status}</span>"
                 f"<a href=\"{rel_link}\">open report</a>{group_html}"
                 f"{''.join(stats)}"
@@ -465,7 +466,7 @@ def _infer_scope_from_wfname(workfolder_name: Optional[str]) -> Optional[str]:
 
 
 def _step_sort_key(step_code: str) -> tuple[int, str]:
-    """Numeric-aware sort: S1 < S2 < … < S9 < S10 < S11. Falls back to
+    """Numeric-aware sort: S1 < S2 < … < S9 < S10. Falls back to
     a high sentinel + lexicographic for unrecognised codes."""
     if step_code.startswith("S") and len(step_code) > 1:
         head = step_code[1:].split("_", 1)[0]

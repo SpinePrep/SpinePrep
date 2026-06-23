@@ -40,15 +40,17 @@ flowchart LR
     S6 --> S7[S7: Template Normalization]
     S7 --> S8[S8: Confounds & Physio]
     S8 --> S9[S9: Functional Derivatives]
-    S9 --> S11[S11: QC & Release]
+    S9 --> S10[S10: QC & Release]
     style S2B stroke-dasharray: 4 4
 ```
 
 S2B is an optional thermal-noise denoising step that is OFF by default; when
-disabled it passes the raw data straight through to S3. There is no S10 in the
-active pipeline: the former S10 (analyst-owned region-of-interest timeseries and
-connectivity analysis) was removed on 2026-06-11. That analysis belongs to the
-analyst downstream, not to the preprocessing release.
+disabled it passes the raw data straight through to S3. The chain now runs
+S1–S10 contiguously, with **S10 (QC Aggregation & Release)** as the final step.
+An earlier step S10 — analyst-owned region-of-interest timeseries and
+connectivity analysis — was removed on 2026-06-11 and its number reused for the
+release step. That analysis belongs to the analyst downstream, not to the
+preprocessing release.
 
 The pipeline performs **no slice-timing correction (STC)**, following the
 field standard for cord-only fMRI — every reference cord pipeline omits it
@@ -87,10 +89,12 @@ benefit for event-related designs, which the GLM temporal derivative recovers.
 | S7 | Template Normalization | Compose warps to PAM50 template space |
 | S8 | Confounds & Physio Regressors | Motion, spike, CSF, RETROICOR, cosine drift, SpinalCompCor regressors |
 | S9 | Primary Functional Derivatives | Cord-aware smoothing, PAM50 GLM-ready BOLD, per-level tSNR |
-| S11 | QC Aggregation & Release | Cross-dataset QC, reproducibility receipt, methods boilerplate, BIDS-derivatives release |
+| S10 | QC Aggregation & Release | Cross-dataset QC, reproducibility receipt, methods boilerplate, BIDS-derivatives release |
 
-*S10 (analyst-owned ROI timeseries and connectivity) was removed from the active
-pipeline on 2026-06-11 and is no longer part of the preprocessing release.*
+*The analyst-owned ROI timeseries and connectivity analysis that was formerly
+step S10 was removed from the active pipeline on 2026-06-11 and is no longer
+part of the preprocessing release. Its step number has been reused for the
+QC aggregation & release step above.*
 
 ---
 

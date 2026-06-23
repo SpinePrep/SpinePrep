@@ -10,7 +10,7 @@ status: implemented
 
 ## Separate step (S2B)
 - New step **S2B_func_denoise** between S2 and S3 in `ALL_CHAIN_STEPS` (inserted
-  without renumbering S3-S11, so all existing promotions stay valid).
+  without renumbering S3-S10, so all existing promotions stay valid).
 - `steps/s2b/` (orchestrate + reportlets), top-level `S2B_func_denoise.py`, CLI
   `run/check` dispatch + choices, `policy/S2B_func_denoise.yaml`.
 - Runs on the raw per-run 4D BOLD (after S1 inventory). Writes
@@ -43,7 +43,7 @@ BOLD, off by default, literature-faithful and minimal.
 - **Tool — MRtrix3 `dwidenoise`** (Veraart 2016 + Cordero-Grande 2019), shelled
   out like SCT/FSL/ANTs. It is the reference implementation, auto-sizes the
   patch (7^3 for ~200-343 vols; the recommended voxels>=volumes regime), and
-  emits a noise map. Captured in the per-run provenance for the S11 receipt.
+  emits a noise map. Captured in the per-run provenance for the S10 receipt.
 - **Not NORDIC** — NORDIC needs complex/phase data or a noise scan; on this
   magnitude-only BOLD its advantages collapse (it falls back to MP-PCA
   internally), so plain MP-PCA is the simpler, equally-justified, better-tooled
@@ -80,7 +80,7 @@ this each call grabs all cores and oversubscribes when combined with run-level
 batch-workers parallelism.
 
 ## Validated result (exp, June 2026)
-Enabled on the balgrist `exp` scope, full chain re-run S3->S11. Real in-cord
+Enabled on the balgrist `exp` scope, full chain re-run S3->S10. Real in-cord
 tSNR gain (denoised vs raw, same cord masks, all 89 runs): median **5.72 ->
 8.55, +50%** (per-run range +5%..+77%; motor runs ~+56%). Lower than Kaptan's
 ~140% because that is gray-matter-only while this is the whole cord seg

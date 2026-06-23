@@ -63,7 +63,7 @@ once for the methods table. **Never to decide between algorithms.**
 
 ### 9. Reproducible by default.
 Policy YAML versioned in git. BIDS-Derivatives compliant outputs.
-Reproducibility receipt (tool versions + policy SHA + git SHA) at S11.
+Reproducibility receipt (tool versions + policy SHA + git SHA) at S10.
 Anyone re-runs and gets the same numbers — this is the baseline
 scientific contract.
 
@@ -101,4 +101,4 @@ cohort is just to convince the reviewer.
 - **Promotion**: `python scripts/mark_done.py reg S<N> work/wf_reg_NNN
   --force` after a chain step completes.
 - **Dashboards**: every step contributes to per-workfolder
-  `dashboard/index.html`; S11 emits the cross-dataset release report.
+  `dashboard/index.html`; S10 emits the cross-dataset release report.

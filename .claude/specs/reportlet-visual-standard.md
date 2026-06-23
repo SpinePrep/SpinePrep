@@ -199,7 +199,7 @@ Dice, S6 cord_dice_per_slice, S9 tsnr_per_level):
 | S8 | `steps/s8/reportlets.py` | ⚠️ partial | adopt on next touch |
 | S9 | `steps/s9/reportlets.py` | ⚠️ partial | adopt on next touch |
 | S10 | `steps/s10/reportlets.py` | ⚠️ partial | adopt on next touch |
-| S11 | (HTML release report) | N/A | none |
+| S10 | (HTML release report) | N/A | none |
 
 We do not refactor working renderers solely to adopt the standard
 (principle §6: lock and ship). The next time any step's renderer

@@ -14,7 +14,7 @@ link lists. Every redundant element and label gets removed.
   shared links keep working.
 - Must keep all three cache-bust mechanisms intact (HTTP no-cache
   header, HTML meta, image `?v=mtime`).
-- Must not regress the S1 HTML iframe embed or S11 release banner —
+- Must not regress the S1 HTML iframe embed or S10 release banner —
   those are content, not chrome.
 - Must not lose information needed for QC (status counts per step,
   reportlet links). Only the *presentation* tightens.

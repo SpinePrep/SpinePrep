@@ -1,6 +1,6 @@
 version: 1
 
-# S11 aggregates S1-S9 outputs into release-readiness deliverables.
+# S10 aggregates S1-S9 outputs into release-readiness deliverables.
 # (S10 ROI-timeseries/connectivity was removed from the active pipeline
 # 2026-06-11 — analyst-owned analysis, not preprocessing.)
 # 13 items across 4 tiers: aggregation core, cord-novel cohort views,
@@ -132,5 +132,5 @@ reproducibility:
   capture_provenance: true
 
 cost_controls:
-  estimate_per_run_minutes: 0.2      # S11 is fast; walks finished QC files
+  estimate_per_run_minutes: 0.2      # S10 is fast; walks finished QC files
   skip_existing_pass: false          # always re-aggregate (cheap)

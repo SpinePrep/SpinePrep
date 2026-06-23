@@ -1,6 +1,6 @@
-# S11: QC Aggregation & Release
+# S10: QC Aggregation & Release
 
-**Step Code:** `S11_qc_aggregation_and_release`
+**Step Code:** `S10_qc_aggregation_and_release`
 **Depends on:** S1–S9 (all finished per-run QC and outputs)
 **Required by:** — (final step)
 
@@ -8,7 +8,7 @@
 
 ## Purpose
 
-S11 turns the per-run results of the whole pipeline into a **release**: a set of
+S10 turns the per-run results of the whole pipeline into a **release**: a set of
 cross-dataset quality-control views, a reproducibility receipt, ready-to-paste
 methods text, and a BIDS-Derivatives compliant manifest. It runs no image
 processing; it walks the QC files every earlier step wrote and assembles them
@@ -54,7 +54,7 @@ into human- and machine-readable deliverables.
 
 ## Step Metric and QC
 
-S11's checks are about completeness of the release, not image quality.
+S10's checks are about completeness of the release, not image quality.
 
 | Metric | PASS | WARN |
 |--------|------|------|

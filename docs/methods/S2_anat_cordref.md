@@ -2,7 +2,7 @@
 
 **Step Code:** `S2_anat_cordref`  
 **Depends on:** S1 (Input Verification)  
-**Required by:** S3-S11 (all downstream steps)
+**Required by:** S3-S10 (all downstream steps)
 
 ---
 
