@@ -155,3 +155,7 @@ test_sch2D_2dof.sch
 test_flirt_params.py
 test_flirt_speed.py
 test_flirt_z_proj.py
+
+# SCT straightening cache artifact (generated, never track)
+straightening.cache
+**/straightening.cache
