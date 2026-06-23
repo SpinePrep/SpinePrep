@@ -32,6 +32,16 @@ pam50_4d_output:
   enabled: true                    # 4D BOLD in PAM50, cropped to cord FOV
   emit_unsmoothed: true            # also emit the unsmoothed PAM50 4D (Q2: both)
   fov_pad_vox: 4                   # padding (PAM50 voxels) around cord coverage
+  # parallel_emit: run the smoothed + unsmoothed PAM50 4D warps CONCURRENTLY.
+  # Byte-identical output, ~halves per-run PAM50 time — but within-run
+  # parallelism multiplies with the orchestrator's --batch-workers, so under
+  # batched releases it oversubscribes the machine (measured load ~52 on 32
+  # cores) and is net SLOWER. DEFAULT OFF. Enable only for single-run / low-batch
+  # contexts; for batched releases, scale --batch-workers instead. The PAM50
+  # spline warp of the large 4D grid is the inherent S9 cost (the cord-smoothing
+  # itself is ~15 s/run); set emit_unsmoothed:false to skip the second 4D apply
+  # when the unsmoothed PAM50 series isn't needed.
+  parallel_emit: false
 
 # Output of per-vertebral-level tSNR — uses S7's
 # *_desc-PAM50spinallevels.nii.gz (already in native func grid). Emits

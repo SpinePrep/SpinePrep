@@ -795,20 +795,37 @@ def run_S9_primary_functional_derivatives(
             else:
                 cropped_ref = s9_work_dir / "pam50_ref_cropfov.nii.gz"
                 _crop_to_bbox(pam50_ref, bbox, cropped_ref)
-                ok, err = _warp_4d_to_pam50(
-                    smoothed_native, warp_bold_to_pam50, cropped_ref,
-                    pam50_smoothed, interp="spline",
-                )
-                if not ok:
-                    failure_reasons.append(f"PAM50 4D smoothed warp failed: {err}")
+                # The smoothed and unsmoothed PAM50 4D warps are INDEPENDENT
+                # sct_apply_transfo calls — same warp + cropped reference, but
+                # distinct inputs/outputs and each with its own tmp dir. They are
+                # the S9 wall-clock bottleneck on large PAM50 grids (~5 min each;
+                # see .claude/specs/s9-smoothing-bottleneck.md).
+                #
+                # `parallel_emit` runs the two concurrently — byte-identical
+                # output, ~halved per-run PAM50 time. DEFAULT OFF: within-run
+                # parallelism MULTIPLIES with the orchestrator's --batch-workers
+                # (across-run parallelism), so enabling it under batched runs
+                # oversubscribes the machine (measured load ~52 on 32 cores with
+                # batch-workers=4 -> each apply CPU-starved, net SLOWER). Use it
+                # only for single-run / low-batch contexts; for batched releases,
+                # scale --batch-workers instead.
+                from concurrent.futures import ThreadPoolExecutor
+                jobs: dict[str, tuple] = {"smoothed": (smoothed_native, pam50_smoothed)}
                 if p4d_cfg.get("emit_unsmoothed", True):
-                    ok2, err2 = _warp_4d_to_pam50(
-                        bold_path, warp_bold_to_pam50, cropped_ref,
-                        pam50_unsmoothed, interp="spline",
-                    )
-                    if not ok2:
-                        failure_reasons.append(
-                            f"PAM50 4D unsmoothed warp failed: {err2}")
+                    jobs["unsmoothed"] = (bold_path, pam50_unsmoothed)
+                _mw = len(jobs) if p4d_cfg.get("parallel_emit", False) else 1
+                with ThreadPoolExecutor(max_workers=_mw) as _ex:
+                    _futs = {
+                        name: _ex.submit(_warp_4d_to_pam50, src,
+                                         warp_bold_to_pam50, cropped_ref, dst,
+                                         "spline")
+                        for name, (src, dst) in jobs.items()
+                    }
+                    for name, fut in _futs.items():
+                        ok_w, err_w = fut.result()
+                        if not ok_w:
+                            failure_reasons.append(
+                                f"PAM50 4D {name} warp failed: {err_w}")
                 # Co-gridded cord mask: crop PAM50_cord with the SAME bbox so it
                 # shares the cropped grid (identical affine+shape) with the 4D.
                 try:

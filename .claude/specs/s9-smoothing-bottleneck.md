@@ -30,10 +30,22 @@ cord-FOV grid. Cost scales with `n_volumes × n_PAM50_slices × 2`
   27 runs at ~10 min/run, 6-wide ≈ ~40 min total. Slow but correct.
 
 If this ever needs to be faster (it currently does not — it runs ~once per
-release), the lever is the PAM50 emission, not the smoother: skip the
-`desc-unsmoothed` PAM50 4D when not needed, or vectorize the per-volume warp
-(load the displacement field once, apply to all T volumes via
-`scipy.ndimage.map_coordinates`) instead of N sequential ANTs spawns.
+release), the lever is the PAM50 emission, not the smoother:
+
+- **`emit_unsmoothed: false`** (S9 policy) skips the second 4D apply — halves the
+  per-run PAM50 cost when the unsmoothed PAM50 series isn't needed.
+- **`parallel_emit: true`** (S9 policy, default OFF) runs the smoothed +
+  unsmoothed PAM50 warps concurrently within a run — byte-identical output. BUT:
+  tested 2026-06-24 — within-run parallelism MULTIPLIES with the orchestrator's
+  `--batch-workers` (across-run parallelism). Enabling it under a batched release
+  (batch-workers=4) drove load to ~52 on 32 cores; the two applies were
+  CPU-starved (0% CPU each) and the run got *slower*, not faster. So it is gated
+  off by default and is only useful for single-run / low-batch contexts. For
+  batched releases the correct axis is `--batch-workers`, not within-run
+  concurrency. (A `scipy.ndimage.map_coordinates` vectorization of the warp was
+  considered and rejected: reimplementing the ANTs composite-warp application in
+  numpy is error-prone and would risk the validated PAM50 derivatives for a step
+  that runs once per release.)
 
 ---
 
