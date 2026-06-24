@@ -18,7 +18,7 @@ version: 1
 smoothing:
   method: "sct_cord"               # sct_smooth_spinalcord (cord-aware)
                                    # alternative: "gaussian_inplane" (scipy)
-  sigma_mm: [1.0, 1.0, 8.0]        # R-L, A-P, S-I  (CoSpi spi14_2)
+  sigma_mm: [1.0, 1.0, 5.0]        # R-L, A-P, S-I  (CoSpi spi14_2)
   # When method == "gaussian_inplane", only the first 2 sigmas are used
   # (in-plane Gaussian) and σ_z is forced to 0 (no through-slice blur).
 

@@ -64,3 +64,14 @@ def test_normative_summary_stats():
     s = nq._summary(np.array([1.0, 2.0, 3.0, 4.0, 5.0]))
     assert s["n"] == 5 and s["median"] == 3.0
     assert s["mean"] == 3.0 and s["p5"] is not None and s["p95"] is not None
+
+
+def test_headtohead_dice():
+    import headtohead_sct_default as hh
+    import numpy as np
+    a = np.zeros((4, 4, 4)); a[1:3, 1:3, 1:3] = 1
+    assert hh.dice(a, a) == 1.0          # identical
+    b = np.zeros((4, 4, 4)); b[2:4, 2:4, 2:4] = 1
+    d = hh.dice(a, b)
+    assert 0.0 < d < 1.0                  # partial overlap
+    assert np.isnan(hh.dice(np.zeros((2, 2, 2)), np.zeros((2, 2, 2))))
