@@ -2,18 +2,22 @@ version: 1
 
 # Per-run final preprocessed 4D BOLD outputs in native + PAM50, plus
 # tSNR refs and per-vertebral-level tSNR. Cord-aware smoothing via
-# sct_smooth_spinalcord (CoSpi spi14_2 lineage). No high-pass on BOLD
-# (cosine basis from S8 handles it). No confound regression (S10/GLM).
+# sct_smooth_spinalcord. No high-pass on BOLD (cosine basis from S8
+# handles it). No confound regression (left to the analyst's GLM).
 #
 # Sigma values are in mm, order R-L, A-P, S-I (SCT convention).
-# σ = 1,1,5 → FWHM ≈ 2.35×2.35×11.8 mm. Heavy S-I emphasis exploits
-# cord-axis signal repetition; minimal in-plane preserves cord
-# cross-section.
+# σ = 0.5, 0.5, 5.0 → FWHM ≈ 1.18 × 1.18 × 11.77 mm (FWHM = 2.3548·σ).
+# Anisotropic cord-aligned smoothing is the field convention (Eippert 2017;
+# CoSpine): minimal in-plane (sub-voxel; ~1.2 mm FWHM) preserves the small cord
+# cross-section and avoids blurring cord signal into adjacent CSF/partial-volume,
+# while heavy S-I (~11.8 mm FWHM) exploits the cord's columnar/segmental
+# organisation to boost SNR without crossing functional boundaries. The exact
+# kernel is reported in the methods + reproducibility receipt.
 
 smoothing:
   method: "sct_cord"               # sct_smooth_spinalcord (cord-aware)
                                    # alternative: "gaussian_inplane" (scipy)
-  sigma_mm: [1.0, 1.0, 5.0]        # R-L, A-P, S-I  (CoSpi spi14_2)
+  sigma_mm: [0.5, 0.5, 5.0]        # R-L, A-P, S-I  (CoSpi spi14_2)
   # When method == "gaussian_inplane", only the first 2 sigmas are used
   # (in-plane Gaussian) and σ_z is forced to 0 (no through-slice blur).
 
