@@ -30,10 +30,18 @@ import pandas as pd
 
 from reliability_tsnr import icc_2_1, _level_name  # reuse the ICC + naming
 
-TEST_RETEST_SCOPES = {
-    "dorsalhorn": "dorsalhorn pain (heat task)",
-    "handgrasp": "handgrasp motor",
+# (scope -> (repeat dimension, reliability type label, human label)). The cohort's
+# repeated measures are NOT uniform — only dorsalhorn/handgrasp are true
+# between-session test-retest; rest is cross-shim (auto vs manual z-shim). Each is
+# labelled honestly (no run/cross-shim repeat is called "test-retest").
+RELIABILITY_SCOPES = {
+    "dorsalhorn": ("ses", "test-retest", "dorsalhorn pain (heat task, ses-01 vs ses-02)"),
+    "handgrasp":  ("ses", "test-retest", "handgrasp motor (ses-01 vs ses-02)"),
+    "rest":       ("acq", "cross-shim reproducibility",
+                   "rest (auto vs manual z-shim — NOT test-retest)"),
 }
+# back-compat alias
+TEST_RETEST_SCOPES = {k: v[2] for k, v in RELIABILITY_SCOPES.items()}
 
 
 def _per_level_timeseries(bold_path: Path, atlas_path: Path) -> dict[int, np.ndarray]:
@@ -69,32 +77,38 @@ def _edges(ts_by_level: dict[int, np.ndarray], levels: list[int]) -> dict[tuple[
     return edges
 
 
-def _runs(scope: str):
-    """Yield (subject, session, bold_path, atlas_path) for a scope's runs."""
+def _runs(scope: str, repeat_key: str = "ses"):
+    """Yield (subject, repeat_label, bold_path, atlas_path). The repeat label is
+    drawn from the BIDS entity that indexes the repeated measure for this scope
+    (``ses``/``acq``/``run``)."""
     s9 = Path(f"work/done/{scope}/S9/derivatives/spinalfmriprep")
     s7 = Path(f"work/done/{scope}/S7/derivatives/spinalfmriprep")
+    pat = {"ses": r"_ses-([A-Za-z0-9]+)", "acq": r"_acq-([A-Za-z0-9]+)",
+           "run": r"_run-([A-Za-z0-9]+)"}[repeat_key]
     for bold in glob.glob(str(s9 / "**" / "*_desc-preproc_bold.nii.gz"), recursive=True):
         if "PAM50" in Path(bold).name:
             continue
         run_id = Path(bold).name.replace("_desc-preproc_bold.nii.gz", "")
-        m = re.search(r"(sub-[A-Za-z0-9]+)_(ses-[0-9]+)?", run_id)
-        if not m:
+        ms = re.search(r"(sub-[A-Za-z0-9]+)", run_id)
+        mr = re.search(pat, run_id)
+        if not ms or not mr:
             continue
-        sub, ses = m.group(1), (m.group(2) or "ses-01")
+        sub, rep = ms.group(1), mr.group(1)
         atlas = glob.glob(str(s7 / "**" / f"{run_id}_desc-PAM50spinallevels.nii.gz"),
                           recursive=True)
         if atlas:
-            yield sub, ses, Path(bold), Path(atlas[0])
+            yield sub, rep, Path(bold), Path(atlas[0])
 
 
 def run(scopes: list[str], out_tsv: Path | None = None) -> pd.DataFrame:
     results = []
     for scope in scopes:
-        label = TEST_RETEST_SCOPES.get(scope, scope)
-        # collect edges per (subject, session); average runs within a session
+        repeat_key, rtype, label = RELIABILITY_SCOPES.get(
+            scope, ("ses", "test-retest", scope))
+        # collect edges per (subject, repeat); average any runs within a repeat
         per_ss: dict[tuple[str, str], list[dict]] = {}
         all_levels: set[int] = set()
-        for sub, ses, bold, atlas in _runs(scope):
+        for sub, ses, bold, atlas in _runs(scope, repeat_key):
             ts = _per_level_timeseries(bold, atlas)
             if len(ts) < 2:
                 continue
@@ -126,12 +140,12 @@ def run(scopes: list[str], out_tsv: Path | None = None) -> pd.DataFrame:
                 icc, n = icc_2_1(np.array(rows, dtype=float))
                 if not np.isnan(icc):
                     edge_iccs.append(icc)
-                    results.append({"scope": scope,
+                    results.append({"scope": scope, "type": rtype,
                                     "edge": f"{_level_name(a)}-{_level_name(b)}",
                                     "icc_2_1": round(icc, 3), "n": n})
         if edge_iccs:
-            print(f"\n{label}: connectivity test-retest — {len(edge_iccs)} edges, "
-                  f"sessions {sessions}")
+            print(f"\n{label}: connectivity {rtype} — {len(edge_iccs)} edges, "
+                  f"repeats {sessions}")
             print(f"   mean edge ICC(2,1) = {np.mean(edge_iccs):.2f} "
                   f"(median {np.median(edge_iccs):.2f}, "
                   f"max {np.max(edge_iccs):.2f})")
@@ -144,6 +158,6 @@ def run(scopes: list[str], out_tsv: Path | None = None) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    scopes = sys.argv[1:] or list(TEST_RETEST_SCOPES)
+    scopes = sys.argv[1:] or list(RELIABILITY_SCOPES)
     print("Test-retest reliability of intra-cord connectivity — ICC(2,1) per edge")
     run(scopes, out_tsv=Path("validation/results/reliability_connectivity.tsv"))
