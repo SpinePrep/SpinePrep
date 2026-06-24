@@ -56,3 +56,11 @@ def test_per_level_timeseries_extracts_means(tmp_path):
     assert 6 in ts and 5 not in ts      # C5 dropped (only 2 voxels)
     assert ts[6].shape == (20,)
     assert abs(ts[6].std() - 1.0) < 1e-5  # z-scored
+
+
+def test_normative_summary_stats():
+    import normative_qc_db as nq
+    import numpy as np
+    s = nq._summary(np.array([1.0, 2.0, 3.0, 4.0, 5.0]))
+    assert s["n"] == 5 and s["median"] == 3.0
+    assert s["mean"] == 3.0 and s["p5"] is not None and s["p95"] is not None
