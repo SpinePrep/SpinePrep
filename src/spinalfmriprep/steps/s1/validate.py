@@ -213,12 +213,14 @@ def _apply_fieldmap_matching(
             run.setdefault("details", {})
             run["details"]["fmap_match_method"] = match["method"]
             run["details"]["fmap_ref"] = match["path"]
-        elif policy_entry.spec.has_fmap:
+        elif policy_entry is not None and policy_entry.spec.has_fmap:
             run.setdefault("issues", []).append(
                 {"severity": "WARN", "message": "Expected fieldmap match not found."}
             )
 
-    expected = policy_entry.spec.has_fmap
+    # Ad-hoc datasets (BIDS-App on an unregistered bids_dir) have no policy
+    # spec to compare against — skip the "expected fieldmap" expectation.
+    expected = policy_entry.spec.has_fmap if policy_entry is not None else False
     fmap_check = {
         "name": "fmap_expected",
         "passed": (not expected) or fmap_present,

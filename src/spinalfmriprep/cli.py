@@ -97,6 +97,16 @@ def _add_S1_arguments(subparser: argparse.ArgumentParser) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Standard BIDS-App invocation: `spinalfmriprep BIDS_DIR OUTPUT_DIR LEVEL`.
+    # Routed here (before the run/check subparser) when the first token is not a
+    # known subcommand or flag — i.e. a positional bids_dir path. The per-step
+    # `run`/`check` subcommands remain the internal interface.
+    import sys as _sys
+    _argv = list(_sys.argv[1:] if argv is None else argv)
+    if _argv and _argv[0] not in ("run", "check") and not _argv[0].startswith("-"):
+        from spinalfmriprep.bids_app import main_bids_app
+        return main_bids_app(_argv)
+
     parser = build_parser()
     args = parser.parse_args(argv)
 
