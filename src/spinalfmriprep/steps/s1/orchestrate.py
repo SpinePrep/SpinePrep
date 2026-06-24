@@ -243,6 +243,11 @@ def _format_command_line(
 def _load_policy_entry(dataset_key: Optional[str]):
     if dataset_key is None:
         return None
+    # Ad-hoc datasets (BIDS-App on an unregistered bids_dir) carry a synthetic
+    # key and have no policy spec — run without one (no fmap/physio expectation
+    # checks). Registered-style keys must still exist, so a typo still errors.
+    if dataset_key.startswith(("bidsapp_", "ad_hoc", "adhoc")):
+        return None
     try:
         policy = load_dataset_policy(Path("policy") / "datasets.yaml")
     except DatasetPolicyError as err:
