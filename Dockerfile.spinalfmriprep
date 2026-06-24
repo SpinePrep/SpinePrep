@@ -1,5 +1,17 @@
+# SpinalfMRIprep BIDS-App image.
+#
+# NOTE (T5 container gap, tracked in GOAL.md): this stage installs the Python
+# package + its standard BIDS-App ENTRYPOINT, but does NOT yet bundle the
+# neuro-imaging dependencies (Spinal Cord Toolbox, FSL, ANTs) the pipeline calls.
+# A complete BIDS-App image must build FROM a base that provides those (see
+# Dockerfile.sct) or install them here. Until then this image runs the CLI /
+# argument handling and any pure-Python steps (e.g. S1), but the full chain needs
+# SCT/FSL/ANTs on PATH. Completing the bundling is the remaining T5 rung.
 FROM python:3.11-slim
 WORKDIR /app
 COPY pyproject.toml README.md /app/
 COPY src /app/src
 RUN pip install --no-cache-dir .
+
+# Standard BIDS-App entrypoint: `docker run <img> BIDS_DIR OUTPUT_DIR LEVEL`.
+ENTRYPOINT ["spinalfmriprep"]
