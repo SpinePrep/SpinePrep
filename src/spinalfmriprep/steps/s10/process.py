@@ -1249,10 +1249,11 @@ assign each slice its cardiac/respiratory phase for the S8 RETROICOR
 regressors.
 
 **Distortion correction (S5)**: Per-run mode is chosen automatically from
-the available fieldmaps: reversed-phase EPI pair -> TopUp; image-only ->
-SyN. (A GRE-fieldmap FUGUE path is specified but not implemented in v1, so
-GRE-only data falls back to SyN; the fall-back is recorded per run.) Cord
-A-P displacement per slice + cord Dice per slice emitted as QC.
+the available fieldmaps: a reversed-phase EPI pair drives FSL TopUp;
+otherwise image-based SyN (ANTs) is used. Runs without a fieldmap that
+exceed the TopUp-calibrated displacement ceiling are flagged
+"distortion-limited" rather than failed. Cord A-P displacement per slice +
+cord Dice per slice emitted as QC.
 
 **Functional-to-anat registration (S6)**: SCT `sct_register_multimodal`
 with the cord-driven Kaptan 2023 recipe [@kaptan2023]:

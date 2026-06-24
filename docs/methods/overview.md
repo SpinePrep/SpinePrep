@@ -22,7 +22,7 @@ Traditional brain fMRI pipelines (including fMRIPrep) are not designed for these
 | **Template** | MNI152 | PAM50 spinal cord template |
 | **Segmentation** | Brain tissue classes | Cord, canal, vertebrae, rootlets |
 | **Motion model** | Rigid-body 6-DOF | Cord-specific with slice-wise options |
-| **Distortion correction** | TOPUP/FUGUE | Cord-optimized field mapping |
+| **Distortion correction** | TopUp / SyN | Reverse-PE fieldmap or image-based fallback |
 
 SpinalfMRIprep follows fMRIPrep's design philosophy—BIDS-native, containerized, QC-first—but implements entirely different algorithms tailored for the spinal cord.
 
@@ -84,7 +84,7 @@ benefit for event-related designs, which the GLM temporal derivative recovers.
 | S2B | Func Denoise *(optional)* | MP-PCA thermal-noise denoising; OFF by default |
 | S3 | Func Init & Crop | Dummy drop, cord localization, FOV cropping, frame QC |
 | S4 | Motion Correction | Slice-wise 2D motion correction |
-| S5 | Distortion Correction | Susceptibility artifact correction (topup → fugue → SyN) |
+| S5 | Distortion Correction | Susceptibility artifact correction (topup → SyN) |
 | S6 | Func→Anat Registration | Functional-to-anatomical alignment (cord-driven) |
 | S7 | Template Normalization | Compose warps to PAM50 template space |
 | S8 | Confounds & Physio Regressors | Motion, spike, CSF, RETROICOR, cosine drift, SpinalCompCor regressors |

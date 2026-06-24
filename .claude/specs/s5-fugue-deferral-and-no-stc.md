@@ -1,5 +1,5 @@
 ---
-status: approved
+status: superseded   # FUGUE removed in v1 (v1-claims-ledger.md); STC section still valid
 ---
 
 # Spec: FUGUE deferral + no slice-timing correction (S4/S5)

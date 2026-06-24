@@ -74,12 +74,15 @@ def test_mode_select_rejects_two_same_pe_fmaps():
     assert mode == "syn", "two same-PE fmaps must fall through to SyN"
 
 
-def test_mode_select_picks_fugue_for_gre_pair():
+def test_mode_select_gre_pair_falls_through_to_syn():
+    # FUGUE was removed in v1 (no GRE-fieldmap data in the cohort); GRE
+    # phasediff/magnitude pairs now fall through to image-based SyN.
     from spinalfmriprep.steps.s5.mode import select_mode
     bold = _func_run()
     fmaps = [_fmap_gre_phase(), _fmap_gre_mag()]
-    mode, _ = select_mode(bold, fmaps)
-    assert mode == "fugue"
+    mode, eligible = select_mode(bold, fmaps)
+    assert mode == "syn"
+    assert eligible == []
 
 
 def test_mode_select_falls_back_to_syn_when_no_fmaps():
@@ -181,7 +184,7 @@ def test_geometry_pass_regardless_of_mode():
     from spinalfmriprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.85, "dice_mean_before": 0.78,
                "displacement_mean_after_mm": 0.5, "displacement_mean_before_mm": 1.6}
-    for mode in ("syn", "topup", "fugue"):
+    for mode in ("syn", "topup"):
         status, reasons = _classify_run_status(metrics, mode, _GATE_THR)
         assert status == "PASS", f"{mode}: {reasons}"
 
@@ -202,7 +205,7 @@ def test_fail_when_dice_below_warn_floor():
 
 
 def test_fail_when_displacement_above_warn_ceiling():
-    # TopUp/FUGUE keep the hard FAIL — they are expected to meet the
+    # TopUp keeps the hard FAIL — they are expected to meet the
     # TopUp-calibrated ceiling.
     from spinalfmriprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.80, "displacement_mean_after_mm": 2.5}
