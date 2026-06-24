@@ -6,18 +6,19 @@ version: 1
 # handles it). No confound regression (left to the analyst's GLM).
 #
 # Sigma values are in mm, order R-L, A-P, S-I (SCT convention).
-# σ = 0.5, 0.5, 5.0 → FWHM ≈ 1.18 × 1.18 × 11.77 mm (FWHM = 2.3548·σ).
+# σ = 1.0, 1.0, 8.0 → FWHM ≈ 2.35 × 2.35 × 18.84 mm (FWHM = 2.3548·σ).
 # Anisotropic cord-aligned smoothing is the field convention (Eippert 2017;
-# CoSpine): minimal in-plane (sub-voxel; ~1.2 mm FWHM) preserves the small cord
-# cross-section and avoids blurring cord signal into adjacent CSF/partial-volume,
-# while heavy S-I (~11.8 mm FWHM) exploits the cord's columnar/segmental
-# organisation to boost SNR without crossing functional boundaries. The exact
-# kernel is reported in the methods + reproducibility receipt.
+# CoSpine spi14_2): light in-plane (~2.35 mm FWHM, ~1-2 voxels) preserves the
+# small cord cross-section and avoids blurring cord signal into adjacent
+# CSF/partial-volume, while heavy S-I (~18.8 mm FWHM) exploits the cord's
+# columnar/segmental organisation to boost SNR without crossing functional
+# boundaries. The exact kernel is reported in the methods + reproducibility
+# receipt.
 
 smoothing:
   method: "sct_cord"               # sct_smooth_spinalcord (cord-aware)
                                    # alternative: "gaussian_inplane" (scipy)
-  sigma_mm: [0.5, 0.5, 5.0]        # R-L, A-P, S-I  (CoSpi spi14_2)
+  sigma_mm: [1.0, 1.0, 8.0]        # R-L, A-P, S-I  (CoSpi spi14_2)
   # When method == "gaussian_inplane", only the first 2 sigmas are used
   # (in-plane Gaussian) and σ_z is forced to 0 (no through-slice blur).
 
@@ -64,7 +65,7 @@ fwhm_estimate:
   tolerance_mm_z_warn: 2.0
 
 qc_thresholds:
-  # tSNR ratio post/pre, median in cord mask. Cord-aware σ=1,1,5 should
+  # tSNR ratio post/pre, median in cord mask. Cord-aware σ=1,1,8 should
   # raise tSNR by 1.5-2.5× on typical 1×1×5 acquisitions.
   pass_tsnr_ratio_min: 1.5
   warn_tsnr_ratio_min: 1.2
