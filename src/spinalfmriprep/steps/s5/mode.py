@@ -1,6 +1,6 @@
 """S5 mode selection: per-run decision tree for distortion correction.
 
-Picks one of {"topup", "fugue", "syn"} from S1 inventory metadata + the
+Picks one of {"topup", "syn"} from S1 inventory metadata + the
 BIDS `IntendedFor` field. Pure functions; no I/O beyond reading qc/runs
 JSON the caller already loaded.
 
@@ -83,7 +83,7 @@ def select_mode(
             that target the same subject/session as bold_run.
 
     Returns:
-        mode: one of "topup", "fugue", "syn".
+        mode: one of "topup", "syn".
         eligible_fmaps: the fmap entries that drove the decision (empty for
             syn). The orchestrator uses these to build acqparams.
     """
@@ -117,20 +117,9 @@ def select_mode(
                     acq.setdefault("PhaseEncodingDirection", pe)
                 return "topup", [epi_fmaps[i], epi_fmaps[j]]
 
-    # Fugue: a GRE phasediff (or phase1+phase2) + magnitude pair.
-    has_phase = any(
-        "phasediff" in f.get("path", "") or "_phase" in f.get("path", "")
-        for f in intended
-    )
-    has_magnitude = any("_magnitude" in f.get("path", "") for f in intended)
-    if has_phase and has_magnitude:
-        gre = [
-            f for f in intended
-            if "phasediff" in f.get("path", "")
-            or "_phase" in f.get("path", "")
-            or "_magnitude" in f.get("path", "")
-        ]
-        return "fugue", gre
-
-    # Fallback: image-only SyN.
+    # Image-only SyN otherwise. (GRE phasediff/magnitude fieldmaps would in
+    # principle drive a FUGUE path, but FUGUE was removed in v1: no GRE-fieldmap
+    # data exists in the validation cohort and the path was never exercised. Such
+    # data falls through to SyN — recorded honestly as the image-based fallback.
+    # See .claude/specs/v1-claims-ledger.md.)
     return "syn", []

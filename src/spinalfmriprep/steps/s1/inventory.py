@@ -36,7 +36,7 @@ def _build_inventory(bids_root: Path, dataset_key: str, policy_entry) -> dict:
         # Pull acquisition timing/distortion metadata from BIDS sidecars so
         # downstream steps don't have to re-parse BIDS. Applies to both
         # functional BOLD (for STC / motion / S5 SyN fallback eligibility) and
-        # fmap volumes (S5 topup/fugue input). HEADER.md "Slice-timing
+        # fmap volumes (S5 topup input). HEADER.md "Slice-timing
         # correction (deliberately skipped in v1)" + S5 spec rely on this.
         if (
             (modality == "func" and classification == "cord_likely")

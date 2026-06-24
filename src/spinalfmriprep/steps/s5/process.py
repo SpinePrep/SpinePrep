@@ -1,4 +1,4 @@
-"""S5.x: per-run distortion correction (topup, fugue, or SyN).
+"""S5.x: per-run distortion correction (topup or SyN).
 
 Spec: private/SPEC/S5_func_distortion_correction.md
 """
@@ -271,13 +271,6 @@ def _run_topup(
             "acqparams_path": str(acqparams),
             "topup_basename": str(topup_base),
             "trt": trt}
-
-
-def _run_fugue(*args, **kwargs) -> dict[str, Any]:
-    """Mode = fugue. Not exercised by v1_validation; spec'd for completeness.
-    Implementation deferred to follow-up; falls back to syn for v1.0."""
-    return {"status": "FAIL", "mode": "fugue",
-            "failure_message": "FUGUE mode not implemented in v1.0 - falls back to SyN"}
 
 
 def _run_syn(
@@ -895,7 +888,7 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
     Plus the legacy MI sanity check (a catastrophic drop fails
     outright only when geometric metrics also disagree).
 
-    Mode (topup / fugue / syn) is recorded on the run. Geometric Dice +
+    Mode (topup / syn) is recorded on the run. Geometric Dice +
     displacement decide PASS/WARN/FAIL for every mode (the 2026-05-28
     SyN-always-WARN rule was removed as too conservative given empirical
     Dice 0.72-0.87 / disp 0.33-0.71 mm on SyN-fallback runs). The one
@@ -906,8 +899,8 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
     floor) is flagged "distortion-limited" (WARN, kept) rather than
     hard-FAILed — the limitation is acquisition-side (no reverse-PE
     pair), and the reliable upper-cervical levels remain usable. Gated
-    by ``syn_displacement_distortion_limited`` (default true). TopUp and
-    FUGUE keep the hard FAIL.
+    by ``syn_displacement_distortion_limited`` (default true). TopUp
+    keeps the hard FAIL.
 
     When the CoSpine metrics could not be computed (anat unavailable),
     fall back to MI gating alone so the step still meaningfully runs.
@@ -1104,7 +1097,7 @@ def run_S5_func_distortion_correction(
     from .mode import select_mode
     mode, eligible_fmaps = select_mode(bold_run, fmap_runs)
     # Remember what the data made us *eligible* for, before any fall-through. The
-    # run record exposes both so a fugue->syn or topup->syn fallback is visible,
+    # run record exposes both so a topup->syn fallback is visible,
     # not silently relabelled as a plain SyN run.
     selected_mode = mode
 
@@ -1127,16 +1120,6 @@ def run_S5_func_distortion_correction(
         if modeinfo.get("status") != "OK":
             print(f"[S5 dispatcher] topup FAILED on {run_id}, falling to SyN: "
                   f"{modeinfo.get('failure_message', '<no message>')}",
-                  flush=True)
-            mode = "syn"
-    elif mode == "fugue":
-        modeinfo = _run_fugue()
-        # FUGUE is a deliberate stub in v1 (no v1_validation dataset ships a GRE
-        # phasediff fieldmap, so it can't be validated). Fall through to SyN, but
-        # log it loudly like the topup fallback so the substitution isn't silent.
-        if modeinfo.get("status") != "OK":
-            print(f"[S5 dispatcher] fugue not implemented on {run_id}, falling to "
-                  f"SyN: {modeinfo.get('failure_message', '<no message>')}",
                   flush=True)
             mode = "syn"
 
@@ -1212,13 +1195,11 @@ def run_S5_func_distortion_correction(
 
     thresholds = policy.get("qc_thresholds", {})
     status, reasons = _classify_run_status(metrics, mode, thresholds)
-    # Record any mode fall-through (e.g. fugue/topup -> syn) so the QC trail is
-    # truthful about which correction actually ran versus what the data implied.
+    # Record any mode fall-through (topup -> syn) so the QC trail is truthful
+    # about which correction actually ran versus what the data implied.
     if mode != selected_mode:
         reasons.append(
-            f"distortion mode fell back from {selected_mode} to {mode}"
-            + (" (FUGUE not implemented in v1)" if selected_mode == "fugue" else "")
-        )
+            f"distortion mode fell back from {selected_mode} to {mode}")
 
     # Save funcref (temporal mean) for downstream chain consumers
     mean_path = func_dir / f"{prefix}_desc-undistorted_funcref.nii.gz"

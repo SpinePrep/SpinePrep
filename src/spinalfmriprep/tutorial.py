@@ -476,7 +476,7 @@ def _section_S5() -> str:
 phase-encode direction. In cord this manifests as A–P (anterior-
 posterior) compression / expansion of the cord cross-section at
 vertebral-disc and lung-tissue interfaces. We follow the fMRIPrep
-hierarchy: <b>topup</b> &gt; <b>fugue</b> &gt; <b>SyN fallback</b>
+hierarchy: <b>topup</b> (reverse-PE pair) &gt; <b>SyN</b> (image-based fallback),
 depending on which fieldmap data is available.</p>
 <p><b>Step-local truth metric</b> (Wei 2025 / CoSpine v2): per-slice
 A–P cord-centerline displacement between EPI and anat, and
@@ -490,7 +490,7 @@ slice (CoSpine convention).</li>
 (EPI ∩ anat).</li>
 </ul>
 <p class="ref">Andersson JLR et al., NeuroImage 2003 (topup).
-Jenkinson M et al., 2001 (FUGUE). Wei H et al., 2025 (CoSpine v2).</p>
+Wei H et al., 2025 (CoSpine v2).</p>
 </div>
 """
 
