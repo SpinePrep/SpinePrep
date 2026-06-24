@@ -33,28 +33,36 @@ This downloads ~500 MB of data to `data/ds005884/`.
 docker pull vnmd/spinalcordtoolbox_7.2:20251215
 ```
 
-## Run Preprocessing
+## Run Preprocessing (BIDS-App)
+
+SpinalfMRIprep is a standard BIDS-App: `<bids_dir> <output_dir> <analysis_level>`.
 
 ```bash
-# Run all steps on the sample data
-poetry run spinalfmriprep run all \
-  --bids-root data/ds005884 \
-  --out work/tryit
+# participant level: per-subject preprocessing (S1..S9)
+poetry run spinalfmriprep data/ds005884 work/tryit participant
+
+# group level: cross-subject QC aggregation + release reports (S10)
+poetry run spinalfmriprep data/ds005884 work/tryit group
 ```
+
+The same interface works from the container or via `python -m spinalfmriprep`.
+`--participant-label` is accepted for convention (v1 processes all subjects in
+`bids_dir`).
 
 ## View Results
 
-Open the QC dashboard in your browser:
+Open the release report in your browser:
 
 ```bash
-open work/tryit/derivatives/spinalfmriprep/qc_dashboard.html
+open work/tryit/release/release_report.html        # group-level overview
+# per-subject reports:
+open work/tryit/release/*/sub-*/sub-*_qc_report.html
 ```
 
-You should see:
-- ✅ S0 Setup: PASS
-- ✅ S1 Input Verify: PASS  
-- ✅ S2 Anat Cord Ref: PASS
-- ✅ S3 Func Init: PASS
+Each subject report shows an Include/Review/Exclude recommendation, per-run
+functional cards with the step reportlets embedded, and the confound model;
+the group report adds the inclusion table, QC-metric distributions, the
+attrition waterfall, and per-vertebral-level views.
 
 ---
 

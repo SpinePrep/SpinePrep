@@ -1,71 +1,81 @@
 # Validation
 
-SpinalfMRIprep is validated on multiple public and internal datasets spanning diverse acquisition protocols and clinical populations.
+SpinalfMRIprep is validated end-to-end on **8 datasets / 384 functional runs /
+5 paradigms** (rest, motor, pain/heat, hand-grasp, dorsal-horn) spanning public
+(OpenNeuro) and internal cohorts, multiple vendors, and a range of acquisition
+protocols (with and without fieldmaps; cervical-only and whole-CNS FOV).
 
-## Validation Strategy
+> **Note.** The reliability and normative numbers below are **provisional**: the
+> on-disk derivatives predate the locked smoothing kernel (σ = 1/1/8 mm). They
+> are refreshed by a single full-cohort re-run at the locked policy before final
+> publication. The validation *machinery* (reproducible scripts under
+> `validation/`) is the deliverable; the tables are illustrative.
 
-SpinalfMRIprep uses a two-tier validation approach:
+## 1. Coverage & robustness
 
-| Tier | Description | Purpose |
-|------|-------------|---------|
-| **Benchmark** | 1 subject × all sessions per dataset | Fast cross-dataset coverage for continuous testing |
-| **Full** | All subjects × all sessions | Complete validation (in progress) |
+All 8 datasets run S1→S10 to completion. Attrition is fully reconciled — the
+number of runs dropped between any two steps equals the number that FAILed the
+earlier step's QC (no silent losses); every surviving derivative is PASS or WARN.
 
-## Benchmark Datasets
+| Scope | Dataset | Paradigm | Runs (S9) | Distortion mode |
+|---|---|---|---|---|
+| cospain | ds005883 | pain | 33 | TopUp (reverse-PE) |
+| cosmotor | ds005884 | motor | 30 | TopUp |
+| rest | ds004386 | rest | 90 | SyN (no fieldmap) |
+| handgrasp | ds004616 | hand-grasp | 35 | SyN |
+| dorsalhorn | ds004926 | heat/pain | 66 | SyN |
+| brainspine | ds005075 | rest (whole-CNS) | 27 | SyN |
+| exp | balgrist motor + painmotor | motor | 75 | SyN |
 
-Benchmark validation runs 1 representative subject from each dataset with all available sessions.
+**79 % of runs (304/384) use the image-based SyN fallback** — the field reality
+(most cord-fMRI data ships no fieldmap). Runs that exceed the TopUp-calibrated
+displacement ceiling without a fieldmap are flagged *distortion-limited*, not
+failed.
 
-| Dataset | Source | Subjects | Sessions | Task | Status |
-|---------|--------|----------|----------|------|--------|
-| ds005884 | OpenNeuro | 1 | 1 | Motor | ✅ Benchmark |
-| ds005883 | OpenNeuro | 1 | 1 | Pain | ✅ Benchmark |
-| ds004386 | OpenNeuro | 1 | 2 | Rest | ✅ Benchmark |
-| ds004616 | OpenNeuro | 1 | 2 | Hand Grasp | ✅ Benchmark |
-| Balgrist Motor | Internal | 1 | 4 | Motor | ✅ Benchmark |
+## 2. Test-retest reliability (the rigour)
 
-**Benchmark totals**: 5 subjects, 10 subject-sessions
+A preprocessing pipeline must yield reproducible science. We measure the
+test-retest reliability of pipeline-derived measures via ICC(2,1) (Shrout &
+Fleiss 1979), computed by `validation/reliability_*.py`.
 
-## Full Validation Datasets
+The cohort's repeated measures are not uniform, and we label each honestly:
 
-Full validation will process all selected subjects across all sessions.
+- **Between-session test-retest** (task data): dorsalhorn, handgrasp.
+- **Cross-shim reproducibility** (same session, auto vs manual z-shim): rest
+  ds004386 — *not* test-retest.
+- **Within-session run reliability**: balgrist motor (run-01..04).
 
-| Dataset | Source | Subjects | Sessions | Task | Status |
-|---------|--------|----------|----------|------|--------|
-| ds005884 | OpenNeuro | 38 | 1 | Motor | 🔄 In Progress |
-| ds005883 | OpenNeuro | 38 | 1 | Pain | 🔄 In Progress |
-| ds004386 | OpenNeuro | 48 | 2 | Rest | 🔄 In Progress |
-| ds004616 | OpenNeuro | 24 | 2 | Hand Grasp | 🔄 In Progress |
-| Balgrist Motor | Internal | 11 | 4 | Motor | 🔄 In Progress |
+**Per-vertebral-level cord tSNR** (test-retest): dorsalhorn ICC(2,1) 0.45–0.75
+(mean 0.56, n = 30) — moderate-to-good.
 
-**Full validation totals**: 159 subjects, 264 subject-sessions
+**Intra-cord functional connectivity** (rostro-caudal level×level edges):
 
-## Aggregate Metrics
+![Connectivity reliability](../../validation/results/figures/reliability_connectivity.png)
 
-!!! info "Validation In Progress"
-    - **5 datasets** under benchmark testing
-    - **5 subjects** (10 subject-sessions) in benchmark suite
-    - **159 subjects** (264 subject-sessions) planned for full validation
-    - Full validation metrics will be reported upon completion
+- Test-retest: dorsalhorn mean edge ICC 0.37 (max 0.72); handgrasp 0.24 (max 0.79).
+- Cross-shim reproducibility: rest 0.53 (median 0.57, max 0.93).
 
-## Quality Control Outputs
+These fair-to-moderate values are **consistent with the known difficulty of
+cord-fMRI reliability** (Hemmerling 2023; Dabbagh 2024) — and cross-shim
+reproducibility exceeding between-session test-retest is exactly as expected
+(same-session is easier than across-day).
 
-Every preprocessing step generates:
+## 3. Normative per-vertebral-level QC reference
 
-1. **`qc_status.json`** - Machine-readable status (PASS/WARN/FAIL) with failure classification
-2. **Reportlets** - Visual PNG figures for human inspection
+The first multi-site, multi-paradigm **normative QC database** for cord fMRI
+(`validation/normative_qc_db.py`): the cohort-wide distribution of every QC
+metric, resolved per vertebral level where applicable.
 
-### Example QC Reportlet
+![Normative per-level tSNR](../../validation/results/figures/normative_tsnr_per_level.png)
 
-*QC reportlet examples will be added after initial validation runs.*
+Median in-cord tSNR (post anisotropic smoothing) follows the expected
+rostro-caudal decline — highest at C6/C7, dropping into the thoracic cord. Full
+tables: `validation/results/normative_qc_metrics.tsv`,
+`normative_tsnr_per_level.tsv` (n, mean, SD, median, IQR, p5, p95).
 
-## Reproducibility
+## 4. Reproducibility
 
-SpinalfMRIprep guarantees deterministic outputs:
-
-- Containerized execution (Docker/Apptainer)
-- Pinned dependency versions
-- Seed-controlled randomization where applicable
-
----
-
-*For detailed QC specifications, see [Reference → Schemas](../reference/schemas.md).*
+Every release ships a `reproducibility_receipt.json` (tool versions, per-step
+policy SHA-256, pipeline git SHA), BIDS-Derivatives `dataset_description.json`,
+auto-generated methods boilerplate, and `CITATION.cff`. Same chain + same policy
++ same git SHA → byte-identical re-run.
