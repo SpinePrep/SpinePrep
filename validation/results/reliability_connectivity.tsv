@@ -1,30 +1,75 @@
-scope	edge	icc_2_1	n
-dorsalhorn	C5-C6	0.715	30
-dorsalhorn	C5-C7	0.246	30
-dorsalhorn	C5-C8	0.38	30
-dorsalhorn	C5-T1	0.193	30
-dorsalhorn	C5-T2	0.552	20
-dorsalhorn	C6-C7	0.524	30
-dorsalhorn	C6-C8	0.176	30
-dorsalhorn	C6-T1	0.338	30
-dorsalhorn	C6-T2	0.699	20
-dorsalhorn	C7-C8	0.234	30
-dorsalhorn	C7-T1	0.282	30
-dorsalhorn	C7-T2	0.477	20
-dorsalhorn	C8-T1	0.372	30
-dorsalhorn	C8-T2	0.042	20
-dorsalhorn	T1-T2	0.296	20
-handgrasp	C4-C5	-0.187	4
-handgrasp	C4-C6	-0.178	4
-handgrasp	C4-C7	0.795	4
-handgrasp	C4-C8	-1.097	3
-handgrasp	C5-C6	0.096	11
-handgrasp	C5-C7	0.652	11
-handgrasp	C5-C8	-0.136	10
-handgrasp	C5-T1	0.46	9
-handgrasp	C6-C7	0.512	12
-handgrasp	C6-C8	0.686	11
-handgrasp	C6-T1	0.767	10
-handgrasp	C7-C8	0.487	11
-handgrasp	C7-T1	-0.018	10
-handgrasp	C8-T1	0.523	10
+scope	type	edge	icc_2_1	n
+dorsalhorn	test-retest	C5-C6	0.715	30
+dorsalhorn	test-retest	C5-C7	0.246	30
+dorsalhorn	test-retest	C5-C8	0.38	30
+dorsalhorn	test-retest	C5-T1	0.193	30
+dorsalhorn	test-retest	C5-T2	0.552	20
+dorsalhorn	test-retest	C6-C7	0.524	30
+dorsalhorn	test-retest	C6-C8	0.176	30
+dorsalhorn	test-retest	C6-T1	0.338	30
+dorsalhorn	test-retest	C6-T2	0.699	20
+dorsalhorn	test-retest	C7-C8	0.234	30
+dorsalhorn	test-retest	C7-T1	0.282	30
+dorsalhorn	test-retest	C7-T2	0.477	20
+dorsalhorn	test-retest	C8-T1	0.372	30
+dorsalhorn	test-retest	C8-T2	0.042	20
+dorsalhorn	test-retest	T1-T2	0.296	20
+handgrasp	test-retest	C4-C5	-0.187	4
+handgrasp	test-retest	C4-C6	-0.178	4
+handgrasp	test-retest	C4-C7	0.795	4
+handgrasp	test-retest	C4-C8	-1.097	3
+handgrasp	test-retest	C5-C6	0.096	11
+handgrasp	test-retest	C5-C7	0.652	11
+handgrasp	test-retest	C5-C8	-0.136	10
+handgrasp	test-retest	C5-T1	0.46	9
+handgrasp	test-retest	C6-C7	0.512	12
+handgrasp	test-retest	C6-C8	0.686	11
+handgrasp	test-retest	C6-T1	0.767	10
+handgrasp	test-retest	C7-C8	0.487	11
+handgrasp	test-retest	C7-T1	-0.018	10
+handgrasp	test-retest	C8-T1	0.523	10
+rest	cross-shim reproducibility	C1-C2	0.307	3
+rest	cross-shim reproducibility	C1-C3	-0.147	3
+rest	cross-shim reproducibility	C1-C4	0.289	3
+rest	cross-shim reproducibility	C1-C5	0.37	3
+rest	cross-shim reproducibility	C1-C6	0.281	3
+rest	cross-shim reproducibility	C1-C7	0.048	3
+rest	cross-shim reproducibility	C1-C8	0.926	3
+rest	cross-shim reproducibility	C1-T1	0.003	3
+rest	cross-shim reproducibility	C1-T2	0.652	3
+rest	cross-shim reproducibility	C2-C3	0.512	16
+rest	cross-shim reproducibility	C2-C4	0.548	16
+rest	cross-shim reproducibility	C2-C5	0.605	16
+rest	cross-shim reproducibility	C2-C6	0.581	16
+rest	cross-shim reproducibility	C2-C7	0.532	16
+rest	cross-shim reproducibility	C2-C8	0.574	16
+rest	cross-shim reproducibility	C2-T1	0.385	16
+rest	cross-shim reproducibility	C2-T2	0.817	16
+rest	cross-shim reproducibility	C3-C4	0.775	44
+rest	cross-shim reproducibility	C3-C5	0.738	44
+rest	cross-shim reproducibility	C3-C6	0.607	44
+rest	cross-shim reproducibility	C3-C7	0.475	44
+rest	cross-shim reproducibility	C3-C8	0.629	44
+rest	cross-shim reproducibility	C3-T1	0.459	44
+rest	cross-shim reproducibility	C3-T2	0.8	43
+rest	cross-shim reproducibility	C4-C5	0.592	44
+rest	cross-shim reproducibility	C4-C6	0.701	44
+rest	cross-shim reproducibility	C4-C7	0.632	44
+rest	cross-shim reproducibility	C4-C8	0.563	44
+rest	cross-shim reproducibility	C4-T1	0.46	44
+rest	cross-shim reproducibility	C4-T2	0.685	43
+rest	cross-shim reproducibility	C5-C6	0.832	44
+rest	cross-shim reproducibility	C5-C7	0.826	44
+rest	cross-shim reproducibility	C5-C8	0.665	44
+rest	cross-shim reproducibility	C5-T1	0.678	44
+rest	cross-shim reproducibility	C5-T2	0.722	43
+rest	cross-shim reproducibility	C6-C7	0.521	44
+rest	cross-shim reproducibility	C6-C8	0.316	44
+rest	cross-shim reproducibility	C6-T1	0.293	44
+rest	cross-shim reproducibility	C6-T2	0.471	43
+rest	cross-shim reproducibility	C7-C8	0.595	44
+rest	cross-shim reproducibility	C7-T1	0.513	44
+rest	cross-shim reproducibility	C7-T2	0.583	43
+rest	cross-shim reproducibility	C8-T1	0.434	44
+rest	cross-shim reproducibility	C8-T2	0.378	43
+rest	cross-shim reproducibility	T1-T2	0.662	43
