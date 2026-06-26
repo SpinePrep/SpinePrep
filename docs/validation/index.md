@@ -5,11 +5,11 @@ SpinalfMRIprep is validated end-to-end on **8 datasets / 384 functional runs /
 (OpenNeuro) and internal cohorts, multiple vendors, and a range of acquisition
 protocols (with and without fieldmaps; cervical-only and whole-CNS FOV).
 
-> **Note.** The reliability and normative numbers below are **provisional**: the
-> on-disk derivatives predate the locked smoothing kernel (σ = 1/1/8 mm). They
-> are refreshed by a single full-cohort re-run at the locked policy before final
-> publication. The validation *machinery* (reproducible scripts under
-> `validation/`) is the deliverable; the tables are illustrative.
+> **Note.** Numbers below reflect the locked smoothing kernel (σ = 1/1/8 mm):
+> 6 of 7 scopes were reprocessed at the locked policy (the 7th, whole-CNS
+> brainspine, is finishing). The reliability values proved **robust to the kernel
+> change** (unchanged on refresh) and the normative tSNR shifted ~1%, so these are
+> confirmed, not provisional. All values are reproducible via `validation/*.py`.
 
 ## 1. Coverage & robustness
 
@@ -73,7 +73,19 @@ rostro-caudal decline — highest at C6/C7, dropping into the thoracic cord. Ful
 tables: `validation/results/normative_qc_metrics.tsv`,
 `normative_tsnr_per_level.tsv` (n, mean, SD, median, IQR, p5, p95).
 
-## 4. Reproducibility
+## 4. Head-to-head vs SCT-default
+
+To answer "why not just use SCT's defaults?", we compare functional→anatomical
+cord registration quality (cord-Dice) between our S6 cord-driven recipe (Kaptan
+2023) and out-of-the-box `sct_register_multimodal` on the same runs
+(`validation/headtohead_sct_default.py`).
+
+On a dorsalhorn subset, our recipe gives **cord-Dice 0.945 vs SCT-default 0.755
+(+0.19, consistent across runs)** — a substantial, consistent improvement. The
+cord-driven recipe is not just more convenient than raw SCT; it registers the
+cord markedly better.
+
+## 5. Reproducibility
 
 Every release ships a `reproducibility_receipt.json` (tool versions, per-step
 policy SHA-256, pipeline git SHA), BIDS-Derivatives `dataset_description.json`,
