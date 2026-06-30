@@ -29,3 +29,22 @@ the normative side of the visual-QC + metrics framework.
   under-powered and flagged by n. Cervical (C1–T1) is well-powered.
 - Distributions pool paradigms; a per-paradigm split is a straightforward
   extension when framing against published per-paradigm values.
+
+## Framing against published values (T3/R2)
+
+- **In-cord tSNR.** Our post-smoothing per-level medians (~50–65 in the cervical
+  cord, declining to ~28 at T2) sit above commonly-reported *unsmoothed* cord-EPI
+  tSNR (~5–20; Kaptan 2023, Cohen-Adad cord-fMRI work) — expected, since these are
+  after heavy anisotropic S-I smoothing (σ_z = 8 mm). The rostro-caudal pattern
+  (peak C6/C7, thoracic drop) matches the field's signal-distribution reports.
+- **Framewise displacement.** Cohort mean FD ≈ 0.32 mm (p95 ≈ 0.51) is within the
+  range that motivates the Kaptan 2023 FD > 0.5 mm censoring threshold.
+- **Registration Dice.** S6 func→anat cord-Dice (~0.91) and S7 PAM50 cord-Dice
+  (~0.87) are in line with good cord-registration agreement and exceed SCT-default
+  here (see the head-to-head, +0.20).
+- **Distortion (post-SDC A-P displacement).** Median ≈ 0.58 mm aligns with the
+  CoSpine 2025 post-correction figure (~0.13 mm TopUp; higher for the SyN fallback,
+  flagged distortion-limited).
+
+These are provisional alignments for the manuscript; the per-paradigm split and
+exact citations are finalised in the Results.
