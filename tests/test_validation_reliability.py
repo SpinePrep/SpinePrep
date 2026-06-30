@@ -75,3 +75,17 @@ def test_headtohead_dice():
     d = hh.dice(a, b)
     assert 0.0 < d < 1.0                  # partial overlap
     assert np.isnan(hh.dice(np.zeros((2, 2, 2)), np.zeros((2, 2, 2))))
+
+
+def test_activation_task_regressor_recovers_signal():
+    import reliability_activation as ra
+    import numpy as np, nibabel as nib, pandas as pd, tempfile
+    from pathlib import Path
+    tmp = Path(tempfile.mkdtemp())
+    # 30-vol run, TR=2; task block design
+    ev = tmp / "ev.tsv"
+    pd.DataFrame({"onset": [0, 30], "duration": [15, 15],
+                  "trial_type": ["task", "task"]}).to_csv(ev, sep="\t", index=False)
+    reg = ra._task_regressor(ev, n_vol=30, tr=2.0)
+    assert reg is not None and len(reg) == 30
+    assert np.std(reg) > 0  # a real time-varying regressor
