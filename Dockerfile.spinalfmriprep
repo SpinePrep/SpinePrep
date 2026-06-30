@@ -1,17 +1,48 @@
-# SpinalfMRIprep BIDS-App image.
+# SpinalfMRIprep BIDS-App — production container recipe.
 #
-# NOTE (T5 container gap, tracked in GOAL.md): this stage installs the Python
-# package + its standard BIDS-App ENTRYPOINT, but does NOT yet bundle the
-# neuro-imaging dependencies (Spinal Cord Toolbox, FSL, ANTs) the pipeline calls.
-# A complete BIDS-App image must build FROM a base that provides those (see
-# Dockerfile.sct) or install them here. Until then this image runs the CLI /
-# argument handling and any pure-Python steps (e.g. S1), but the full chain needs
-# SCT/FSL/ANTs on PATH. Completing the bundling is the remaining T5 rung.
-FROM python:3.11-slim
+# Bundles the neuro-imaging dependencies the pipeline calls (Spinal Cord Toolbox,
+# FSL, ANTs) plus the Python package, and exposes the standard BIDS-App
+# ENTRYPOINT: `docker run <img> BIDS_DIR OUTPUT_DIR {participant,group}`.
+#
+# BUILD NOTE: this is a HEAVY image (SCT ~3 GB incl. its bundled ANTs, FSL ~5 GB,
+# PAM50 template). The build pulls SCT + FSL installers from the network and takes
+# tens of minutes; it is not built in CI sandboxes. Pin the tool versions to match
+# the reproducibility receipt before a release build.
+#
+# Tool roles in the pipeline (so a slimmer image can drop what it doesn't need):
+#   SCT  — S2 seg/labeling, S5 SyN, S6/S7 registration, S9 cord smoothing (+ bundled ANTs)
+#   FSL  — S5 topup/applytopup (reverse-PE), S8 PNM popp/pnm_evs (RETROICOR)
+#   ANTs — S5 SyN (the copy SCT bundles as isct_antsRegistration is sufficient)
+
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git curl ca-certificates python3 python3-pip python3-venv \
+        bzip2 unzip libgomp1 bc dc && \
+    rm -rf /var/lib/apt/lists/*
+
+# --- Spinal Cord Toolbox (pin to the receipt's sct_version) -----------------
+ENV SCT_VERSION=7.1
+RUN git clone --depth 1 --branch ${SCT_VERSION} \
+        https://github.com/spinalcordtoolbox/spinalcordtoolbox.git /opt/sct && \
+    cd /opt/sct && yes | ./install_sct -iy
+ENV PATH=/opt/sct/bin:$PATH SCT_DIR=/opt/sct
+
+# --- FSL (topup/applytopup + PNM) -------------------------------------------
+# Use FSL's official installer; accept the license non-interactively per FSL ToU.
+RUN curl -fsSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.py \
+        -o /tmp/fslinstaller.py && \
+    python3 /tmp/fslinstaller.py -d /opt/fsl -V 6.0.7.9 && rm /tmp/fslinstaller.py
+ENV FSLDIR=/opt/fsl PATH=/opt/fsl/bin:$PATH FSLOUTPUTTYPE=NIFTI_GZ
+
+# --- SpinalfMRIprep package -------------------------------------------------
 WORKDIR /app
 COPY pyproject.toml README.md /app/
 COPY src /app/src
-RUN pip install --no-cache-dir .
+COPY policy /app/policy
+COPY schemas /app/schemas
+RUN pip3 install --no-cache-dir .
 
 # Standard BIDS-App entrypoint: `docker run <img> BIDS_DIR OUTPUT_DIR LEVEL`.
 ENTRYPOINT ["spinalfmriprep"]
