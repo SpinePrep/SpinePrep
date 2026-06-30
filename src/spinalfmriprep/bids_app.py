@@ -87,12 +87,44 @@ def run_bids_app(
     output_dir.mkdir(parents=True, exist_ok=True)
     dataset_key = _dataset_key_for(bids_dir)
 
-    if participant_label:
-        # Honest v1 limitation: the per-step engine processes every subject in
-        # bids_dir (subject-subset filtering is not yet wired into the steps).
-        print(f"[bids-app] NOTE: --participant-label {participant_label} accepted "
-              "but v1 processes ALL subjects in bids_dir (subject filtering is a "
-              "documented limitation).", flush=True)
+    if participant_label and analysis_level == "participant":
+        # Honor --participant-label without touching the steps: build a filtered
+        # BIDS view (symlink dataset_description.json + only the requested
+        # sub-XX dirs) and run the chain against that. group level ignores it
+        # (it aggregates whatever is already in output_dir).
+        import os as _os
+        import shutil
+        view = output_dir / ".bids_view"
+        if view.exists():
+            shutil.rmtree(view)
+        view.mkdir(parents=True)
+        # top-level metadata files
+        for f in list(bids_dir.glob("*.json")) + list(bids_dir.glob("*.tsv")):
+            (view / f.name).symlink_to(f.resolve())
+
+        def _mirror(src: Path, dst: Path) -> None:
+            # Mirror the directory tree with FILE-level symlinks so S1's rglob
+            # (which does not descend symlinked dirs) discovers every file.
+            dst.mkdir(parents=True, exist_ok=True)
+            for entry in src.iterdir():
+                if entry.is_dir():
+                    _mirror(entry, dst / entry.name)
+                else:
+                    (dst / entry.name).symlink_to(entry.resolve())
+
+        n = 0
+        for lab in participant_label:
+            sub = f"sub-{lab.replace('sub-', '')}"
+            src = bids_dir / sub
+            if src.is_dir():
+                _mirror(src, view / sub)
+                n += 1
+        if n == 0:
+            print(f"[bids-app] ERROR: none of --participant-label {participant_label} "
+                  f"found under {bids_dir}")
+            return 2
+        print(f"[bids-app] filtered to {n} participant(s): {participant_label}")
+        bids_dir = view
 
     steps = PARTICIPANT_STEPS if analysis_level == "participant" else [GROUP_STEP]
     for step in steps:
