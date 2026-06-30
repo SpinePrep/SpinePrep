@@ -80,10 +80,13 @@ cord registration quality (cord-Dice) between our S6 cord-driven recipe (Kaptan
 2023) and out-of-the-box `sct_register_multimodal` on the same runs
 (`validation/headtohead_sct_default.py`).
 
-On a dorsalhorn subset, our recipe gives **cord-Dice 0.945 vs SCT-default 0.755
-(+0.19, consistent across runs)** — a substantial, consistent improvement. The
-cord-driven recipe is not just more convenient than raw SCT; it registers the
-cord markedly better.
+Across **24 runs / 4 cervical scopes** (dorsalhorn, handgrasp, cosmotor, cospain),
+our recipe gives **cord-Dice 0.904 ± 0.03 vs SCT-default 0.704 ± 0.10 (+0.20;
+Wilcoxon p = 1.2×10⁻⁷; ours higher in 24/24 runs)** — a large, consistent, highly
+significant improvement. The cord-driven recipe is not just more convenient than
+raw SCT; it registers the cord markedly better.
+
+![Head-to-head cord Dice](../../validation/results/figures/headtohead_dice.png)
 
 ## 5. Reproducibility
 
