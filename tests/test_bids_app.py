@@ -70,3 +70,21 @@ def test_bids_app_participant_runs_s1_adhoc(tmp_path, monkeypatch):
     assert qc, "S1 should emit a qc.json for the ad-hoc dataset"
     d = json.loads(qc[0].read_text())
     assert d.get("status") in ("PASS", "WARN", "FAIL")
+
+
+def test_participant_label_builds_filtered_view(tmp_path, monkeypatch):
+    """--participant-label restricts the chain to a symlinked BIDS view."""
+    from spinalfmriprep import bids_app
+    bids = _tiny_bids(tmp_path / "ds")
+    # add a second subject so filtering is observable
+    func2 = bids / "sub-02" / "func"; func2.mkdir(parents=True)
+    import nibabel as nib, numpy as np, json
+    nib.save(nib.Nifti1Image(np.zeros((4, 4, 4, 5), dtype=np.float32), np.eye(4)),
+             func2 / "sub-02_task-rest_bold.nii.gz")
+    (func2 / "sub-02_task-rest_bold.json").write_text(json.dumps({"RepetitionTime": 2.0}))
+    out = tmp_path / "out"
+    monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["S1_input_verify"])
+    rc = bids_app.run_bids_app(bids, out, "participant", participant_label=["01"])
+    assert rc == 0
+    view = out / ".bids_view"
+    assert (view / "sub-01").exists() and not (view / "sub-02").exists()
