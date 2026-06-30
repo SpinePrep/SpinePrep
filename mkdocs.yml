@@ -98,6 +98,7 @@ nav:
     - S10 QC Aggregation & Release: methods/S10_qc_aggregation_and_release.md
     - ROI/Connectivity (removed): methods/roi_timeseries_connectivity_removed.md
   - Validation: validation/index.md
+  - QC Reports: reports.md
   - Usage:
     - Try It: quickstart.md
     - Install & Use: tutorial.md
