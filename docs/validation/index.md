@@ -6,8 +6,8 @@ SpinalfMRIprep is validated end-to-end on **8 datasets / 384 functional runs /
 protocols (with and without fieldmaps; cervical-only and whole-CNS FOV).
 
 > **Note.** Numbers below reflect the locked smoothing kernel (σ = 1/1/8 mm):
-> 6 of 7 scopes were reprocessed at the locked policy (the 7th, whole-CNS
-> brainspine, is finishing). The reliability values proved **robust to the kernel
+> 6 of 7 scopes were reprocessed at the locked policy (all 7 scopes, including whole-CNS
+> brainspine, reprocessed). The reliability values proved **robust to the kernel
 > change** (unchanged on refresh) and the normative tSNR shifted ~1%, so these are
 > confirmed, not provisional. All values are reproducible via `validation/*.py`.
 
@@ -54,6 +54,10 @@ The cohort's repeated measures are not uniform, and we label each honestly:
 
 - Test-retest: dorsalhorn mean edge ICC 0.37 (max 0.72); handgrasp 0.24 (max 0.79).
 - Cross-shim reproducibility: rest 0.53 (median 0.57, max 0.93).
+- **Task activation** (per-level beta, active-vs-rest): poor — mean ICC ~0.06
+  (handgrasp, dorsalhorn). Consistent with the known low reliability of cord
+  *task* fMRI (Dabbagh 2024); the per-level-mean measure also dilutes focal
+  (horn-specific) activation — a limitation of the measure, not the pipeline.
 
 These fair-to-moderate values are **consistent with the known difficulty of
 cord-fMRI reliability** (Hemmerling 2023; Dabbagh 2024) — and cross-shim
