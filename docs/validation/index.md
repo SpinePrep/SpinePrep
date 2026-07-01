@@ -60,7 +60,10 @@ The cohort's repeated measures are not uniform, and we label each honestly:
   (horn-specific) activation — a limitation of the measure, not the pipeline.
 
 These fair-to-moderate values are **consistent with the known difficulty of
-cord-fMRI reliability** (Hemmerling 2023; Dabbagh 2024) — and cross-shim
+cord-fMRI reliability** — connectivity ICC is predominantly poor in the field
+(Kaptan 2023; Kowalczyk 2024) and task-activation reliability is poor (Dabbagh
+2024). Note split-half temporal stability (Ricchi 2024) runs higher but is
+inflated relative to true test-retest; we report between-session ICC. Cross-shim
 reproducibility exceeding between-session test-retest is exactly as expected
 (same-session is easier than across-day).
 
@@ -87,8 +90,12 @@ cord registration quality (cord-Dice) between our S6 cord-driven recipe (Kaptan
 Across **24 runs / 4 cervical scopes** (dorsalhorn, handgrasp, cosmotor, cospain),
 our recipe gives **cord-Dice 0.904 ± 0.03 vs SCT-default 0.704 ± 0.10 (+0.20;
 Wilcoxon p = 1.2×10⁻⁷; ours higher in 24/24 runs)** — a large, consistent, highly
-significant improvement. The cord-driven recipe is not just more convenient than
-raw SCT; it registers the cord markedly better.
+significant improvement. Note the comparator is SCT's *out-of-the-box* defaults,
+not SCT at its best: SCT itself recommends cord-segmentation-driven registration
+with structural-warp initialization — the very recipe SpinalfMRIprep automates.
+So this quantifies the cost of naive default usage and the value of baking the
+recommended recipe into a turnkey pipeline, not a claim to out-register SCT's
+best practice.
 
 ![Head-to-head cord Dice](../../validation/results/figures/headtohead_dice.png)
 

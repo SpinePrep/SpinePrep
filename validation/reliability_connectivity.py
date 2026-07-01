@@ -4,7 +4,7 @@ CENTERPIECE validation (T2/R2-R3; the venue-mover). A BENCHMARK module, not a
 pipeline step: it consumes the pipeline's GLM-ready derivatives and asks whether
 the *scientific output* — resting-state / task functional connectivity along the
 cord — is reproducible across sessions. This is the rigour a preprocessing
-pipeline must show (cf. Hemmerling 2023; Dabbagh 2024).
+pipeline must show (cf. Kaptan 2023; Kowalczyk 2024; Dabbagh 2024).
 
 Method (all in native func space, where the smoothed BOLD and the PAM50
 spinal-level atlas already share a grid — no resampling):
