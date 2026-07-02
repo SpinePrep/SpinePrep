@@ -51,6 +51,21 @@ RUN curl -fsSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinst
     python3 /tmp/fslinstaller.py -d /opt/fsl -V 6.0.7.9 && rm /tmp/fslinstaller.py
 ENV FSLDIR=/opt/fsl PATH=/opt/fsl/bin:$PATH FSLOUTPUTTYPE=NIFTI_GZ
 
+# --- Pre-install SCT deep-learning models -----------------------------------
+# The pipeline calls these sct_deepseg tasks; SCT downloads each model on first
+# use to /opt/sct/data/deepseg_models. That works in a writable Docker layer but
+# FAILS under Apptainer's read-only image ("Read-only file system"), and makes the
+# Docker image depend on the network at runtime with unpinned models. Baking them
+# in at build time makes the image self-contained, reproducible, and Apptainer-safe.
+#   spinalcord     — S2/S3 contrast-agnostic cord segmentation
+#   sc_epi         — cord segmentation on EPI-BOLD (S3/S5)
+#   totalspineseg  — S2 vertebral labelling
+#   rootlets       — S2 rootlets-based PAM50 registration
+RUN for task in spinalcord sc_epi totalspineseg rootlets; do \
+        echo "==> installing sct_deepseg model: $task" && \
+        sct_deepseg $task -install || exit 1; \
+    done
+
 # --- Reportlet rendering deps ------------------------------------------------
 # QC reportlets across S2..S10 shell out to ImageMagick (`convert`) for figure
 # resize/montage/GIF, and draw banner text with DejaVu fonts. Missing these makes

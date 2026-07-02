@@ -42,10 +42,27 @@ hand-tuning. Audited against the code 2026-07-01.
     `test_activation_task_regressor_recovers_signal` — `reliability_activation.
     _task_regressor` returns None (nilearn design-matrix path). Affects the paper's
     task-activation validation (V2); fix separately.
-- **T0.2 — Also ship an Apptainer/Singularity image.** HPC clusters (where most new
-  users run) forbid Docker. Apptainer is present on this host; convert the working
-  Docker image (`apptainer build spinalfmriprep.sif docker-daemon://spinalfmriprep:7.1`)
-  and run the same one-subject chain to verify. **← next**
+- **T0.2 — Apptainer/Singularity image. ✅ DONE (2026-07-02).** Built
+  `spinalfmriprep_7.1.sif` from the Docker image
+  (`apptainer build … docker-daemon://spinalfmriprep:7.1`) and ran the same
+  one-subject S1→S10 chain to completion (all PASS; GLM-ready derivatives +
+  reports + receipt). Apptainer's read-only image surfaced two more issues, both
+  fixed:
+  - *SCT models downloaded at runtime* into the read-only image → **baked all
+    four in at build** (spinalcord, sc_epi, totalspineseg, rootlets). This also
+    makes the Docker image self-contained + reproducible (no runtime network,
+    models pinned). Image 15.5 GB → 17 GB.
+  - *SCT tools write temp files to CWD*, and `--pwd /app` (needed for the
+    CWD-relative policy/config resolution) is read-only under Apptainer →
+    run with **`--writable-tmpfs`**.
+  - **Required Apptainer invocation:**
+    `apptainer run --cleanenv --writable-tmpfs --pwd /app --bind <BIDS>:/bids:ro
+    --bind <OUT>:/out spinalfmriprep_7.1.sif /bids /out {participant,group}`.
+  - **Hardening follow-up:** decouple policy/config resolution from the working
+    directory (resolve by install path / env var instead of `Path("policy")`
+    CWD-relative). That would remove the `--pwd /app` + `--writable-tmpfs`
+    requirement and let the pipeline run from any writable CWD — cleaner for both
+    runtimes. Ties to T2.2.
 - **T0.3 — Real input validation with actionable errors.** `--skip-bids-validator`
   is currently a no-op. Wrap the BIDS validator (or a documented lightweight
   structural check) so a malformed dataset fails fast with a clear message, not a
