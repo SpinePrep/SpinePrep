@@ -24,13 +24,28 @@ hand-tuning. Audited against the code 2026-07-01.
 
 ## Tier 0 — BLOCKERS (without these it does not run portably on new data)
 
-- **T0.1 — Build + verify the container end-to-end.** Recipe exists
-  (Dockerfile.spinalfmriprep: SCT 7.1 + FSL 6.0.7.9 + ANTs + package) but the heavy
-  image has never been built and run through the full chain. Build it, run S1→S10 on
-  one dataset inside the container, publish the image. *This is the #1 portability
-  blocker — "run on new datasets" is not real without a working image.*
+- **T0.1 — Build + verify the container end-to-end. ✅ DONE (2026-07-02, commit
+  613f98c).** Image `spinalfmriprep:7.1` (15.4 GB) built and run through a full
+  S1→S10 chain on a real subject via the BIDS-App interface (participant + group);
+  produces complete BIDS-Derivatives + QC reports + reproducibility receipt.
+  Fixed 8 real portability/packaging bugs the host suite could not catch
+  (.dockerignore; gcc/g++/make; install_sct headless GUI self-check; ImageMagick
+  + fonts; COPY config/; f-string SyntaxError on py<3.12; moco schedule path;
+  S5 ANTs-via-docker → local isct_ binaries; S8 cord-mask BIDS-App runs/ layout).
+  Container moco reproduced the host result exactly (no numerical drift).
+  **Follow-ups discovered:**
+  - *Receipt gap:* `pipeline_git_sha`/`git_describe` are null in the container
+    (no repo, only installed package). Bake the git SHA into the image at build
+    (ENV/version file) so the reproducibility receipt stamps the pipeline version.
+  - *Publish the image* (registry push) — currently local only; ties to release.
+  - *Pre-existing unrelated test failure* (NOT from this work):
+    `test_activation_task_regressor_recovers_signal` — `reliability_activation.
+    _task_regressor` returns None (nilearn design-matrix path). Affects the paper's
+    task-activation validation (V2); fix separately.
 - **T0.2 — Also ship an Apptainer/Singularity image.** HPC clusters (where most new
-  users run) forbid Docker. Convert + test.
+  users run) forbid Docker. Apptainer is present on this host; convert the working
+  Docker image (`apptainer build spinalfmriprep.sif docker-daemon://spinalfmriprep:7.1`)
+  and run the same one-subject chain to verify. **← next**
 - **T0.3 — Real input validation with actionable errors.** `--skip-bids-validator`
   is currently a no-op. Wrap the BIDS validator (or a documented lightweight
   structural check) so a malformed dataset fails fast with a clear message, not a
