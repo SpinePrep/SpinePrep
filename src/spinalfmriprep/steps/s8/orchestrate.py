@@ -175,6 +175,7 @@ def _find_cord_mask(out_dir: Path, run_id: str) -> Optional[Path]:
     rel_local = (Path("S3_func_init_and_crop") / run_id
                  / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz")
     for cand in (
+        out_dir / rel,  # BIDS-App flat layout: <out>/runs/S3_.../.../seg_crop.nii.gz
         out_dir / "work" / rel_local,
         project_root / "work" / "done" / chain_scope(out_dir) / "S3" / rel,
         Path("work") / "done" / chain_scope(out_dir) / "S3" / rel,

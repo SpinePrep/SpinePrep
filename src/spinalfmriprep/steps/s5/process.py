@@ -21,35 +21,47 @@ from spinalfmriprep.lib.chain_scope import chain_scope
 
 
 _ANTS_DOCKER_IMAGE = "vnmd/ants_2.6.0:20250424"
-_ANTS_LOCAL_AVAILABLE: Optional[bool] = None
+_ANTS_BIN_CACHE: dict[str, Optional[str]] = {}
 
 
-def _ants_local_available() -> bool:
-    """Cache the result of looking up antsRegistration on PATH."""
-    global _ANTS_LOCAL_AVAILABLE
-    if _ANTS_LOCAL_AVAILABLE is None:
-        _ANTS_LOCAL_AVAILABLE = shutil.which("antsRegistration") is not None
-    return _ANTS_LOCAL_AVAILABLE
+def _resolve_ants_binary(tool: str) -> Optional[str]:
+    """Resolve an ANTs tool to a local binary on PATH: the plain name
+    (``antsRegistration``) or SCT's bundled ``isct_``-prefixed copy
+    (``isct_antsRegistration``, as shipped in the SpinalfMRIprep container).
+    Returns None if neither is available, so callers fall back to Docker.
+    """
+    if tool not in _ANTS_BIN_CACHE:
+        found = None
+        for name in (tool, f"isct_{tool}"):
+            if shutil.which(name):
+                found = name
+                break
+        _ANTS_BIN_CACHE[tool] = found
+    return _ANTS_BIN_CACHE[tool]
 
 
 def _ants_command(cmd: list[str]) -> list[str]:
-    """Wrap an ANTs command in a Docker invocation if no local install.
+    """Run an ANTs command with a local binary when available, else via Docker.
 
-    Mounts the SpinalfMRIprep project root so absolute paths inside cmd
-    resolve identically inside the container. The S0_SETUP spec already
-    pins the image; this just makes S5 use it when needed.
+    Prefers a local ANTs install, rewriting the tool name to the resolved
+    binary so SCT's ``isct_``-prefixed copy is used when that is what exists
+    (the container case). Only when no local binary is found does it fall back
+    to the pinned Docker image.
 
-    Pass ``--user $(id -u):$(id -g)`` so files created inside the
-    container are owned by the host user — not root. Without this
-    flag, subsequent non-Docker tools (FSL applytopup, Python nibabel)
-    fail with "cant open file" when they try to overwrite a root-
-    owned output from an earlier SyN run, which silently flips the
-    dispatcher from topup back to SyN. (Diagnosed 2026-05-27 after
-    every cospine_pain / cospine_motor run was collapsing to SyN
-    even with a valid topup-eligible reversed-PE pair available.)
+    The Docker path mounts the SpinalfMRIprep project root so absolute paths
+    inside cmd resolve identically inside the container, and passes
+    ``--user $(id -u):$(id -g)`` so files created inside the container are
+    owned by the host user — not root. Without this flag, subsequent
+    non-Docker tools (FSL applytopup, Python nibabel) fail with "cant open
+    file" when they try to overwrite a root-owned output from an earlier SyN
+    run, which silently flips the dispatcher from topup back to SyN.
+    (Diagnosed 2026-05-27 after every cospine_pain / cospine_motor run was
+    collapsing to SyN even with a valid topup-eligible reversed-PE pair.)
     """
-    if _ants_local_available():
-        return cmd
+    if cmd:
+        local = _resolve_ants_binary(cmd[0])
+        if local is not None:
+            return [local, *cmd[1:]]
     project_root = Path(__file__).resolve().parents[4]
     uid = os.getuid() if hasattr(os, "getuid") else 0
     gid = os.getgid() if hasattr(os, "getgid") else 0
