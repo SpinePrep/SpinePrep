@@ -387,9 +387,12 @@ def _generate_index_html(
                         if src_wf else "")
 
             lines.append("<div class=\"step\">")
+            # Hoisted out of the f-string below: pre-3.12 Python forbids
+            # backslashes in an f-string expression part (the container runs 3.10/3.11).
+            badges_html = "".join(badges) if badges else '<span class="empty">—</span>'
             lines.append(
                 f"<div><div class=\"name\">{step_code}</div>"
-                f"<div class=\"badges\">{''.join(badges) if badges else '<span class=\"empty\">—</span>'}</div>"
+                f"<div class=\"badges\">{badges_html}</div>"
                 f"{src_html}</div>"
             )
             if links_html:

@@ -59,13 +59,21 @@ def coarse_bulk_xy_correction(
     ref_path = flirt_dir / "ref_2d.nii.gz"
     nib.save(ref_nii, ref_path)
 
-    # We need the schedule file location. It should be tracked in the repo config.
-    # We find it relative to this file's position `src/spinalfmriprep/lib/moco.py` -> `../../../config/...`
-    repo_root = Path(__file__).resolve().parent.parent.parent.parent
-    schedule_path = repo_root / "config" / "flirt_XY_only.sch"
-    
-    if not schedule_path.exists():
-        raise FileNotFoundError(f"FLIRT schedule file not found at {schedule_path}")
+    # Locate the FLIRT schedule file. In a source checkout it sits at
+    # <repo>/config/; in the installed container it is COPYed to the working dir
+    # (WORKDIR /app) alongside policy/ and schemas/ — the same CWD-relative
+    # convention the policy loader uses. Try both so dev and container both work.
+    _sched_name = "flirt_XY_only.sch"
+    _candidates = [
+        Path(__file__).resolve().parents[3] / "config" / _sched_name,  # source checkout
+        Path.cwd() / "config" / _sched_name,                           # installed (container WORKDIR)
+    ]
+    schedule_path = next((p for p in _candidates if p.exists()), None)
+    if schedule_path is None:
+        raise FileNotFoundError(
+            f"FLIRT schedule file '{_sched_name}' not found in any of: "
+            f"{[str(c) for c in _candidates]}"
+        )
 
     def register_volume(t: int) -> dict:
         vol = bold_4d[..., t]
