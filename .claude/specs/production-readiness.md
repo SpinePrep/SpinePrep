@@ -63,10 +63,16 @@ hand-tuning. Audited against the code 2026-07-01.
     CWD-relative). That would remove the `--pwd /app` + `--writable-tmpfs`
     requirement and let the pipeline run from any writable CWD — cleaner for both
     runtimes. Ties to T2.2.
-- **T0.3 — Real input validation with actionable errors.** `--skip-bids-validator`
-  is currently a no-op. Wrap the BIDS validator (or a documented lightweight
-  structural check) so a malformed dataset fails fast with a clear message, not a
-  mid-chain crash.
+- **T0.3 — Real input validation with actionable errors. ✅ DONE (2026-07-02,
+  commit 4308c09).** Added a fast front-door structural check (participant level)
+  that reports ALL problems at once and fails fast (exit 2) before heavy
+  processing: no sub-* dirs; unknown --participant-label; per-subject missing
+  func/anat; empty or unreadable NIfTI (header-only load). Non-fatal warnings for
+  missing dataset_description.json and missing physio. `--skip-bids-validator`
+  now genuinely bypasses. Verified through the container entrypoint; 7 new tests
+  (suite 233). Chose a lightweight structural check over the full deno/node BIDS
+  validator deliberately — it targets exactly the malformations that cause
+  mid-chain crashes without the heavy dependency or over-rejection.
 
 ## Tier 1 — CORRECTNESS on unseen data (runs, but may mislead)
 
