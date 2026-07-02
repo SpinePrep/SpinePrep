@@ -46,6 +46,97 @@ def _dataset_key_for(bids_dir: Path) -> str:
     return f"bidsapp_{name or 'dataset'}"
 
 
+def _validate_bids_input(
+    bids_dir: Path, participant_label: Optional[list[str]] = None
+) -> tuple[list[str], list[str]]:
+    """Fast front-door check of the BIDS input, before any heavy processing.
+
+    Catches the malformations that otherwise surface as cryptic mid-chain
+    crashes, and reports ALL of them at once with actionable messages. This is a
+    lightweight structural validator (not the full BIDS validator): it verifies
+    the dataset has subjects, that requested participants exist, and that each
+    participant has the func + anat the cord pipeline needs and that those NIfTIs
+    are readable. Returns (errors, warnings); a non-empty ``errors`` should stop
+    the run (unless --skip-bids-validator).
+    """
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    if not (bids_dir / "dataset_description.json").exists():
+        warnings.append(
+            "dataset_description.json not found at the dataset root "
+            "(BIDS requires it; processing will still be attempted)."
+        )
+
+    all_subs = sorted(p.name for p in bids_dir.glob("sub-*") if p.is_dir())
+    if not all_subs:
+        errors.append(
+            f"No 'sub-*' directories found under {bids_dir} — this does not look "
+            "like a BIDS dataset. Check the path, or pass --skip-bids-validator."
+        )
+        return errors, warnings
+
+    if participant_label:
+        want = [f"sub-{lab.replace('sub-', '')}" for lab in participant_label]
+        missing = [s for s in want if s not in all_subs]
+        if missing:
+            preview = ", ".join(all_subs[:10]) + ("…" if len(all_subs) > 10 else "")
+            errors.append(
+                f"Requested --participant-label not found: {', '.join(missing)}. "
+                f"Available subjects: {preview}"
+            )
+        subs = [s for s in want if s in all_subs]
+    else:
+        subs = all_subs
+
+    try:
+        import nibabel as nib  # noqa
+    except Exception:
+        nib = None  # header check becomes a size-only check
+
+    for sub in subs:
+        sd = bids_dir / sub
+        bolds = [p for p in sd.rglob("*_bold.nii*") if "/func/" in p.as_posix() + "/"]
+        anats = [
+            p for p in sd.rglob("*.nii*")
+            if "/anat/" in p.as_posix() + "/"
+            and any(t in p.name.lower() for t in ("t2w", "t1w", "t2star", "t2s"))
+        ]
+        if not bolds:
+            errors.append(
+                f"{sub}: no functional BOLD found (expected sub-*/[ses-*/]func/"
+                "*_bold.nii[.gz]) — nothing to preprocess."
+            )
+        if not anats:
+            errors.append(
+                f"{sub}: no anatomical image found (expected sub-*/[ses-*/]anat/"
+                "*_T2w|T1w|T2star.nii[.gz]) — S2 cord reference needs one."
+            )
+        for f in bolds + anats:
+            try:
+                empty = f.stat().st_size == 0
+            except OSError:
+                errors.append(f"{sub}: cannot stat {f.name}.")
+                continue
+            if empty:
+                errors.append(f"{sub}: {f.name} is empty (0 bytes).")
+            elif nib is not None:
+                try:
+                    nib.load(str(f)).header  # cheap: header only, no data load
+                except Exception as exc:
+                    errors.append(
+                        f"{sub}: {f.name} is not a readable NIfTI "
+                        f"({type(exc).__name__})."
+                    )
+        if bolds and not list(sd.rglob("*_physio.tsv*")):
+            warnings.append(
+                f"{sub}: no physio (*_physio.tsv.gz) — RETROICOR physiological "
+                "regressors (S8) will be skipped for this subject."
+            )
+
+    return errors, warnings
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="spinalfmriprep",
@@ -64,7 +155,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--batch-workers", type=int, default=1, dest="batch_workers",
                    help="Per-step subject/run parallelism.")
     p.add_argument("--skip-bids-validator", action="store_true",
-                   help="Accepted for BIDS-App convention (no external validator is run).")
+                   help="Skip the built-in input validation (subjects present, "
+                        "func + anat present and readable). Bypass at your own risk.")
     p.add_argument("--version", action="store_true", help="Print version and exit.")
     return p
 
@@ -75,6 +167,7 @@ def run_bids_app(
     analysis_level: str,
     participant_label: Optional[list[str]] = None,
     batch_workers: int = 1,
+    skip_bids_validator: bool = False,
 ) -> int:
     """Drive the chain in-process via the per-step CLI. Returns an exit code."""
     from spinalfmriprep import cli  # in-process: no PATH/poetry dependency
@@ -84,6 +177,26 @@ def run_bids_app(
     if not bids_dir.is_dir():
         print(f"ERROR: bids_dir does not exist: {bids_dir}")
         return 2
+
+    # Front-door input validation (participant level only; group aggregates
+    # existing outputs, not the raw BIDS inputs). Fails fast with actionable
+    # messages instead of a cryptic mid-chain crash.
+    if analysis_level == "participant":
+        if skip_bids_validator:
+            print("[bids-app] --skip-bids-validator: skipping input checks.")
+        else:
+            errors, warnings = _validate_bids_input(bids_dir, participant_label)
+            for w in warnings:
+                print(f"[bids-app] WARNING: {w}")
+            if errors:
+                print("[bids-app] input validation FAILED:")
+                for e in errors:
+                    print(f"  ERROR: {e}")
+                print("[bids-app] Fix the above, or pass --skip-bids-validator "
+                      "to bypass these checks.")
+                return 2
+            print("[bids-app] input validation passed.")
+
     output_dir.mkdir(parents=True, exist_ok=True)
     dataset_key = _dataset_key_for(bids_dir)
 
@@ -155,4 +268,5 @@ def main_bids_app(argv: Optional[list[str]] = None) -> int:
         analysis_level=args.analysis_level,
         participant_label=args.participant_label,
         batch_workers=args.batch_workers,
+        skip_bids_validator=args.skip_bids_validator,
     )
