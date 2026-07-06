@@ -175,3 +175,70 @@ def test_validation_blocks_bad_tree(tmp_path, monkeypatch):
     monkeypatch.setattr("spinalfmriprep.cli.main", fake_main)
     rc = bids_app.run_bids_app(bids, out, "participant")
     assert rc == 2 and called["ran"] is False
+
+
+# --- T1.4: per-subject failure isolation ------------------------------------
+
+def _write_step_qc(out: Path, step: str, statuses: list[str]) -> None:
+    d = out / "logs" / f"{step}_qc.json"
+    d.parent.mkdir(parents=True, exist_ok=True)
+    runs = [{"subject": f"{i:02d}", "status": s} for i, s in enumerate(statuses)]
+    d.write_text(json.dumps({"status": "FAIL" if "FAIL" in statuses else "PASS",
+                             "runs": runs}))
+
+
+def test_step_run_outcome_counts_survivors(tmp_path):
+    from spinalfmriprep.bids_app import _step_run_outcome
+    out = tmp_path / "out"
+    _write_step_qc(out, "S4x", ["PASS", "WARN", "FAIL"])
+    assert _step_run_outcome(out, "S4x") == (2, 1)
+    assert _step_run_outcome(out, "S9x") is None  # no qc.json -> crash signal
+
+
+def test_chain_continues_when_a_subject_fails(tmp_path, monkeypatch):
+    """A step returning rc=1 with surviving runs must NOT halt the chain."""
+    from spinalfmriprep import bids_app
+    bids = _tiny_bids(tmp_path / "ds")
+    out = tmp_path / "out"
+    monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["StepA", "StepB"])
+    ran = []
+
+    def fake_main(argv):
+        step = argv[1]
+        ran.append(step)
+        # StepA: one subject fails, one survives -> rc=1 but survivors exist
+        _write_step_qc(out, step, ["PASS", "FAIL"] if step == "StepA" else ["PASS"])
+        return 1 if step == "StepA" else 0
+    monkeypatch.setattr("spinalfmriprep.cli.main", fake_main)
+    rc = bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
+    assert ran == ["StepA", "StepB"] and rc == 0  # StepB ran despite StepA's failure
+
+
+def test_chain_stops_when_all_runs_fail(tmp_path, monkeypatch):
+    """Zero survivors at a step stops the chain cleanly (rc=1)."""
+    from spinalfmriprep import bids_app
+    bids = _tiny_bids(tmp_path / "ds")
+    out = tmp_path / "out"
+    monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["StepA", "StepB"])
+    ran = []
+
+    def fake_main(argv):
+        ran.append(argv[1])
+        _write_step_qc(out, argv[1], ["FAIL", "FAIL"])
+        return 1
+    monkeypatch.setattr("spinalfmriprep.cli.main", fake_main)
+    rc = bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
+    assert ran == ["StepA"] and rc == 1  # StepB never ran; stopped at StepA
+
+
+def test_chain_stops_on_crash(tmp_path, monkeypatch):
+    """A step that writes no qc.json (crash) stops the chain."""
+    from spinalfmriprep import bids_app
+    bids = _tiny_bids(tmp_path / "ds")
+    out = tmp_path / "out"
+    monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["StepA", "StepB"])
+    ran = []
+    monkeypatch.setattr("spinalfmriprep.cli.main",
+                        lambda argv: (ran.append(argv[1]), 1)[1])
+    rc = bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
+    assert ran == ["StepA"] and rc == 1
