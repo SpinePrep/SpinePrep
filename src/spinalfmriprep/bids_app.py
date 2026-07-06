@@ -310,6 +310,20 @@ def run_bids_app(
         print(f"[bids-app] filtered to {n} participant(s): {participant_label}")
         bids_dir = view
 
+    # Machine-readable run manifest (written at every exit) for pipeline integration.
+    manifest: dict = {"analysis_level": analysis_level, "dataset_key": dataset_key,
+                      "steps": [], "status": "running", "exit_code": None}
+
+    def _finish(status: str, code: int) -> int:
+        manifest["status"] = status
+        manifest["exit_code"] = code
+        try:
+            (output_dir / "spinalfmriprep_run_manifest.json").write_text(
+                __import__("json").dumps(manifest, indent=2))
+        except Exception:
+            pass
+        return code
+
     steps = PARTICIPANT_STEPS if analysis_level == "participant" else [GROUP_STEP]
     for step in steps:
         argv = ["run", step, "--out", str(output_dir),
@@ -323,9 +337,10 @@ def run_bids_app(
 
         # Group level: a non-zero rc is fatal (nothing to isolate).
         if step == GROUP_STEP:
+            manifest["steps"].append({"step": step, "rc": rc})
             if rc not in (0, None):
                 print(f"[bids-app] {step} failed (rc={rc}); stopping.")
-                return int(rc)
+                return _finish("group_failed", int(rc))
             continue
 
         # Participant level: per-subject failure isolation. A step reports FAIL
@@ -334,19 +349,22 @@ def run_bids_app(
         # on a true crash (no qc.json) or zero survivors (nothing left downstream).
         outcome = _step_run_outcome(output_dir, step)
         if outcome is None:
+            manifest["steps"].append({"step": step, "rc": rc, "crashed": True})
             print(f"[bids-app] step {step} crashed (rc={rc}; no per-run QC written); "
                   f"stopping.")
-            return int(rc) if rc not in (0, None) else 1
+            return _finish("crashed", int(rc) if rc not in (0, None) else 1)
         survived, failed = outcome
+        manifest["steps"].append({"step": step, "rc": rc,
+                                  "survived": survived, "failed": failed})
         if failed:
             print(f"[bids-app] {step}: {survived} run(s) ok, {failed} failed QC "
                   f"(attrited; survivors continue).")
         if survived == 0:
             print(f"[bids-app] step {step}: all runs failed QC — nothing to continue; "
                   f"stopping. See the QC reports for per-run reasons.")
-            return 1
+            return _finish("all_runs_failed", 1)
     print(f"[bids-app] {analysis_level} level complete -> {output_dir}")
-    return 0
+    return _finish("complete", 0)
 
 
 def main_bids_app(argv: Optional[list[str]] = None) -> int:

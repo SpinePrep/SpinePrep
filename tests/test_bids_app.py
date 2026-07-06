@@ -279,3 +279,22 @@ def test_envelope_silent_on_3t_epi(tmp_path):
     sc.write_text(json.dumps({"RepetitionTime": 2.0, "MagneticFieldStrength": 3,
                               "ScanningSequence": "EP"}))
     assert _acquisition_envelope_warnings(bids, ["sub-01"]) == []
+
+
+# --- T2.3: machine-readable run manifest ------------------------------------
+
+def test_run_manifest_written(tmp_path, monkeypatch):
+    from spinalfmriprep import bids_app
+    bids = _tiny_bids(tmp_path / "ds")
+    out = tmp_path / "out"
+    monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["StepA", "StepB"])
+
+    def fake_main(argv):
+        _write_step_qc(out, argv[1], ["PASS", "FAIL"])
+        return 1
+    monkeypatch.setattr("spinalfmriprep.cli.main", fake_main)
+    bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
+    man = json.loads((out / "spinalfmriprep_run_manifest.json").read_text())
+    assert man["status"] == "complete" and man["exit_code"] == 0
+    assert man["steps"][0]["survived"] == 1 and man["steps"][0]["failed"] == 1
+    assert [s["step"] for s in man["steps"]] == ["StepA", "StepB"]
