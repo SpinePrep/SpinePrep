@@ -310,3 +310,25 @@ def test_smoothing_sigma_override_sets_env(monkeypatch):
     bids_app.main_bids_app(["/b", "/o", "participant",
                             "--smoothing-sigma-mm", "2", "2", "6"])
     assert os.environ["SPINALFMRIPREP_SIGMA_MM"] == "2.0 2.0 6.0"
+
+
+# --- T2.4: BIDS-Derivatives compliance check --------------------------------
+
+def test_validate_derivatives(tmp_path):
+    from spinalfmriprep.bids_app import validate_derivatives
+    root = tmp_path / "derivatives" / "spinalfmriprep"
+    (root / "sub-01" / "func").mkdir(parents=True)
+    assert validate_derivatives(root)  # missing dataset_description -> problems
+    (root / "dataset_description.json").write_text(json.dumps({
+        "Name": "x", "BIDSVersion": "1.11.0", "DatasetType": "derivative",
+        "GeneratedBy": [{"Name": "SpinalfMRIprep"}]}))
+    nib.save(nib.Nifti1Image(np.zeros((2, 2, 2), dtype=np.float32), np.eye(4)),
+             root / "sub-01" / "func" / "sub-01_task-rest_desc-preproc_bold.nii.gz")
+    assert validate_derivatives(root) == []  # now compliant
+    # a badly-named derivative (no entity) is flagged
+    (root / "sub-02" / "anat").mkdir(parents=True)
+    nib.save(nib.Nifti1Image(np.zeros((2, 2, 2), dtype=np.float32), np.eye(4)),
+             root / "sub-02" / "anat" / "raw.nii.gz")
+    # remove the compliant one so no NIfTI carries an entity
+    (root / "sub-01" / "func" / "sub-01_task-rest_desc-preproc_bold.nii.gz").unlink()
+    assert any("entity" in p for p in validate_derivatives(root))
