@@ -257,3 +257,25 @@ def test_derive_adhoc_entry_from_data():
     # no fmap/physio present -> expectations False (no false "missing" warnings)
     e2 = _derive_adhoc_entry({"a": {"modality": "func"}})
     assert e2.spec.has_fmap is False and e2.spec.has_physio is False
+
+
+# --- T1.2: acquisition-envelope warnings ------------------------------------
+
+def test_envelope_warns_off_3t_and_non_epi(tmp_path):
+    from spinalfmriprep.bids_app import _acquisition_envelope_warnings
+    bids = _tiny_bids(tmp_path / "ds")
+    sc = bids / "sub-01" / "func" / "sub-01_task-rest_bold.json"
+    sc.write_text(json.dumps({"RepetitionTime": 2.0, "MagneticFieldStrength": 7,
+                              "ScanningSequence": "GR"}))
+    w = _acquisition_envelope_warnings(bids, ["sub-01"])
+    assert any("7" in x and "envelope" in x for x in w)
+    assert any("EPI" in x for x in w)
+
+
+def test_envelope_silent_on_3t_epi(tmp_path):
+    from spinalfmriprep.bids_app import _acquisition_envelope_warnings
+    bids = _tiny_bids(tmp_path / "ds")
+    sc = bids / "sub-01" / "func" / "sub-01_task-rest_bold.json"
+    sc.write_text(json.dumps({"RepetitionTime": 2.0, "MagneticFieldStrength": 3,
+                              "ScanningSequence": "EP"}))
+    assert _acquisition_envelope_warnings(bids, ["sub-01"]) == []

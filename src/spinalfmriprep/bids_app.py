@@ -134,7 +134,49 @@ def _validate_bids_input(
                 "regressors (S8) will be skipped for this subject."
             )
 
+    warnings.extend(_acquisition_envelope_warnings(bids_dir, subs))
     return errors, warnings
+
+
+def _acquisition_envelope_warnings(
+    bids_dir: Path, subs: list[str]
+) -> list[str]:
+    """Warn when the acquisition falls outside the validated envelope.
+
+    SpinalfMRIprep is validated on cervical-cord EPI-BOLD at 3T. We warn on what
+    the JSON sidecars reliably carry — field strength and (leniently) a clearly
+    non-EPI sequence. Region (cervical vs thoracic/lumbar/brain) is NOT reliably
+    detectable from sidecars, so it stays a documented-envelope note; the covered
+    vertebral levels are surfaced by the S2/S10 QC reports instead.
+    """
+    import json
+
+    warnings: list[str] = []
+    seen_field: set = set()
+    for sub in subs:
+        sd = bids_dir / sub
+        sidecars = sorted(p for p in sd.rglob("*_bold.json")
+                          if "/func/" in p.as_posix() + "/")
+        if not sidecars:
+            continue
+        try:
+            meta = json.loads(sidecars[0].read_text())
+        except Exception:
+            continue
+        fs = meta.get("MagneticFieldStrength")
+        if isinstance(fs, (int, float)) and not (2.7 <= float(fs) <= 3.3):
+            key = round(float(fs), 1)
+            if key not in seen_field:
+                seen_field.add(key)
+                warnings.append(
+                    f"field strength {key} T is outside the validated 3 T envelope "
+                    f"(e.g. {sub}); defaults are 3 T-tuned — review results.")
+        seq = str(meta.get("ScanningSequence", "")).upper()
+        if seq and "EP" not in seq:
+            warnings.append(
+                f"{sub}: ScanningSequence '{meta.get('ScanningSequence')}' does not "
+                "look like EPI; SpinalfMRIprep is validated on EPI-BOLD.")
+    return warnings
 
 
 def _step_run_outcome(output_dir: Path, step: str) -> Optional[tuple[int, int]]:
