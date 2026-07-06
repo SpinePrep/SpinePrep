@@ -78,6 +78,11 @@ def test_headtohead_dice():
 
 
 def test_activation_task_regressor_recovers_signal():
+    import pytest
+    pytest.importorskip(
+        "nilearn",
+        reason="nilearn builds the task design matrix; it ships in the container "
+               "but is not a host/test dependency.")
     import reliability_activation as ra
     import numpy as np, nibabel as nib, pandas as pd, tempfile
     from pathlib import Path

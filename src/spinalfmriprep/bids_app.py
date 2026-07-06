@@ -137,6 +137,35 @@ def _validate_bids_input(
     return errors, warnings
 
 
+def _step_run_outcome(output_dir: Path, step: str) -> Optional[tuple[int, int]]:
+    """Read a step's per-run verdicts from its aggregate qc.json.
+
+    Returns (n_survived, n_failed) where survived = PASS or WARN, or None if no
+    aggregate qc.json is found (the step crashed rather than judged runs). Used for
+    per-subject failure isolation: a step that ran and judged runs should not halt
+    the chain just because some runs failed QC — the survivors flow downstream.
+    """
+    import glob
+    import json
+
+    logs = output_dir / "logs"
+    candidates = [logs / f"{step}_qc.json"]
+    candidates += [Path(p) for p in glob.glob(str(logs / step / "**" / "qc.json"),
+                                              recursive=True)]
+    for cand in candidates:
+        try:
+            data = json.loads(Path(cand).read_text())
+        except Exception:
+            continue
+        runs = data.get("runs")
+        if not isinstance(runs, list):
+            continue
+        survived = sum(1 for r in runs if r.get("status") in ("PASS", "WARN"))
+        failed = sum(1 for r in runs if r.get("status") == "FAIL")
+        return survived, failed
+    return None
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="spinalfmriprep",
@@ -249,9 +278,31 @@ def run_bids_app(
             argv += ["--bids-root", str(bids_dir), "--dataset-key", dataset_key]
         print(f"[bids-app] {analysis_level}: {step}", flush=True)
         rc = cli.main(argv)
-        if rc not in (0, None):
-            print(f"[bids-app] step {step} failed (rc={rc}); stopping.")
-            return int(rc)
+
+        # Group level: a non-zero rc is fatal (nothing to isolate).
+        if step == GROUP_STEP:
+            if rc not in (0, None):
+                print(f"[bids-app] {step} failed (rc={rc}); stopping.")
+                return int(rc)
+            continue
+
+        # Participant level: per-subject failure isolation. A step reports FAIL
+        # (rc=1) whenever ANY run fails QC; that must NOT halt the other subjects.
+        # Continue as long as the step judged at least one surviving run; stop only
+        # on a true crash (no qc.json) or zero survivors (nothing left downstream).
+        outcome = _step_run_outcome(output_dir, step)
+        if outcome is None:
+            print(f"[bids-app] step {step} crashed (rc={rc}; no per-run QC written); "
+                  f"stopping.")
+            return int(rc) if rc not in (0, None) else 1
+        survived, failed = outcome
+        if failed:
+            print(f"[bids-app] {step}: {survived} run(s) ok, {failed} failed QC "
+                  f"(attrited; survivors continue).")
+        if survived == 0:
+            print(f"[bids-app] step {step}: all runs failed QC — nothing to continue; "
+                  f"stopping. See the QC reports for per-run reasons.")
+            return 1
     print(f"[bids-app] {analysis_level} level complete -> {output_dir}")
     return 0
 
