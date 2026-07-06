@@ -807,20 +807,29 @@ def _build_reproducibility_receipt(
     # Pipeline Git SHA
     project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
                     else Path.cwd())
-    try:
-        out = subprocess.run(
-            ["git", "-C", str(project_root), "rev-parse", "HEAD"],
-            capture_output=True, text=True, timeout=5,
-        )
-        recipe["pipeline_git_sha"] = out.stdout.strip() or None
-        out = subprocess.run(
-            ["git", "-C", str(project_root), "describe", "--always", "--tags"],
-            capture_output=True, text=True, timeout=5,
-        )
-        recipe["pipeline_git_describe"] = out.stdout.strip() or None
-    except Exception:
-        recipe["pipeline_git_sha"] = None
-        recipe["pipeline_git_describe"] = None
+    # Prefer a build-time stamp (baked into the container by the Dockerfile
+    # --build-arg GIT_SHA), since the image has no .git to query. Fall back to a
+    # live git query for source checkouts.
+    env_sha = os.environ.get("SPINALFMRIPREP_GIT_SHA")
+    if env_sha:
+        recipe["pipeline_git_sha"] = env_sha
+        recipe["pipeline_git_describe"] = (
+            os.environ.get("SPINALFMRIPREP_GIT_DESCRIBE") or env_sha)
+    else:
+        try:
+            out = subprocess.run(
+                ["git", "-C", str(project_root), "rev-parse", "HEAD"],
+                capture_output=True, text=True, timeout=5,
+            )
+            recipe["pipeline_git_sha"] = out.stdout.strip() or None
+            out = subprocess.run(
+                ["git", "-C", str(project_root), "describe", "--always", "--tags"],
+                capture_output=True, text=True, timeout=5,
+            )
+            recipe["pipeline_git_describe"] = out.stdout.strip() or None
+        except Exception:
+            recipe["pipeline_git_sha"] = None
+            recipe["pipeline_git_describe"] = None
     # Per-step policy SHA: hash the YAML directly so symlinked workfolders
     # don't shadow upstream steps.
     recipe["policy_sha256_per_step"] = {
