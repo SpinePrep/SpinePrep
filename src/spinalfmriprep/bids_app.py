@@ -179,6 +179,38 @@ def _acquisition_envelope_warnings(
     return warnings
 
 
+def validate_derivatives(deriv_root: Path) -> list[str]:
+    """Lightweight BIDS-Derivatives compliance check on the output tree.
+
+    Not the full BIDS validator — checks the requirements most likely to break:
+    a dataset_description.json with DatasetType=derivative + GeneratedBy +
+    BIDSVersion, and that derivative NIfTIs carry a BIDS entity (desc-/space-).
+    Returns a list of problems (empty = compliant). A regression guard for the
+    'BIDS-Derivatives compliant' claim.
+    """
+    import json
+
+    problems: list[str] = []
+    dd = deriv_root / "dataset_description.json"
+    if not dd.exists():
+        return [f"missing dataset_description.json at {deriv_root}"]
+    try:
+        meta = json.loads(dd.read_text())
+    except Exception as e:
+        return [f"dataset_description.json is not valid JSON ({e})"]
+    if meta.get("DatasetType") != "derivative":
+        problems.append("dataset_description.json: DatasetType must be 'derivative'.")
+    if not meta.get("GeneratedBy"):
+        problems.append("dataset_description.json: GeneratedBy is required.")
+    if not meta.get("BIDSVersion"):
+        problems.append("dataset_description.json: BIDSVersion is required.")
+    niftis = [p for p in deriv_root.rglob("*.nii.gz")
+              if "/func/" in p.as_posix() or "/anat/" in p.as_posix()]
+    if niftis and not any(("desc-" in p.name or "space-" in p.name) for p in niftis):
+        problems.append("derivative NIfTIs carry no BIDS entity (desc-/space-).")
+    return problems
+
+
 def _step_run_outcome(output_dir: Path, step: str) -> Optional[tuple[int, int]]:
     """Read a step's per-run verdicts from its aggregate qc.json.
 
@@ -345,6 +377,11 @@ def run_bids_app(
             if rc not in (0, None):
                 print(f"[bids-app] {step} failed (rc={rc}); stopping.")
                 return _finish("group_failed", int(rc))
+            deriv_problems = validate_derivatives(
+                output_dir / "derivatives" / "spinalfmriprep")
+            for p in deriv_problems:
+                print(f"[bids-app] WARNING: BIDS-Derivatives: {p}")
+            manifest["derivatives_compliant"] = not deriv_problems
             continue
 
         # Participant level: per-subject failure isolation. A step reports FAIL
