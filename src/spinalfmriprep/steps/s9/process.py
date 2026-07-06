@@ -692,7 +692,17 @@ def run_S9_primary_functional_derivatives(
     prefix = run_id
     sm = policy.get("smoothing", {})
     method = str(sm.get("method", "sct_cord"))
+    # Cord-smoothing sigma (mm). Overridable at runtime via the
+    # SPINALFMRIPREP_SIGMA_MM env var (set by the BIDS-App --smoothing-sigma-mm
+    # flag) so a user can tune the kernel without editing policy YAML.
+    import os
+    _env_sigma = os.environ.get("SPINALFMRIPREP_SIGMA_MM")
     sigma_xyz = list(sm.get("sigma_mm", [1.0, 1.0, 5.0]))
+    if _env_sigma:
+        try:
+            sigma_xyz = [float(x) for x in _env_sigma.replace(",", " ").split()][:3]
+        except Exception:
+            pass
     sigma_fwhm = [s * 2.3548 for s in sigma_xyz]
 
     # --- 1. Native un-smoothed: copy S5 BOLD to canonical name -----------
