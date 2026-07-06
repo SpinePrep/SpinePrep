@@ -1,75 +1,95 @@
-# Try It
+# Run it on your data
 
-Run SpinalfMRIprep on sample data in under 5 minutes.
+SpinalfMRIprep is a standard **BIDS-App**: it takes a BIDS dataset and produces
+GLM-ready, BIDS-Derivatives outputs plus QC reports.
 
-## Prerequisites
-
-- Docker Desktop (or Apptainer/Singularity)
-- 10 GB free disk space
-
-## One-Command Install
-
-```bash
-# Clone and install
-git clone https://github.com/SpinalfMRIprep/SpinalfMRIprep.git
-cd SpinalfMRIprep
-pip install poetry && poetry install
+```
+spinalfmriprep <bids_dir> <output_dir> {participant,group} [options]
 ```
 
-## Download Sample Data
+- **participant** — per-subject preprocessing (S1–S9), writing derivatives + QC.
+- **group** — cross-subject QC aggregation + release reports (S10).
 
-SpinalfMRIprep provides a script to download a minimal test dataset from OpenNeuro:
+## What it's validated on (supported envelope)
 
-```bash
-# Download 1 subject from ds005884 (Motor task)
-poetry run spinalfmriprep download-sample --dataset ds005884 --subjects 1
-```
+SpinalfMRIprep is validated on **cervical spinal-cord EPI-BOLD at 3 T**. It will
+still *run* outside that envelope, but the pipeline warns you and you should treat
+results with care for: non-3 T data, non-EPI sequences, or fields of view outside
+the cervical cord (thoracic/lumbar-only or whole-brain). The QC report shows the
+vertebral levels actually covered.
 
-This downloads ~500 MB of data to `data/ds005884/`.
-
-## Pull Container Images
-
-```bash
-docker pull vnmd/spinalcordtoolbox_7.2:20251215
-```
-
-## Run Preprocessing (BIDS-App)
-
-SpinalfMRIprep is a standard BIDS-App: `<bids_dir> <output_dir> <analysis_level>`.
+## Run with Apptainer (HPC — no Docker needed)
 
 ```bash
-# participant level: per-subject preprocessing (S1..S9)
-poetry run spinalfmriprep data/ds005884 work/tryit participant
+# Build the .sif from the published image (or from your local Docker build):
+apptainer build spinalfmriprep.sif docker://spinalfmriprep:7.1
 
-# group level: cross-subject QC aggregation + release reports (S10)
-poetry run spinalfmriprep data/ds005884 work/tryit group
+apptainer run --cleanenv --writable-tmpfs --pwd /app \
+  --bind /path/to/bids:/bids:ro --bind /path/to/out:/out \
+  spinalfmriprep.sif /bids /out participant --participant-label 01
+# then the group level:
+apptainer run --cleanenv --writable-tmpfs --pwd /app \
+  --bind /path/to/bids:/bids:ro --bind /path/to/out:/out \
+  spinalfmriprep.sif /bids /out group
 ```
 
-The same interface works from the container or via `python -m spinalfmriprep`.
-`--participant-label` is accepted for convention (v1 processes all subjects in
-`bids_dir`).
+`--writable-tmpfs` and `--pwd /app` are required: SCT tools write temporary files
+to the working directory, and the pipeline resolves its policy/config there.
 
-## View Results
-
-Open the release report in your browser:
+## Run with Docker
 
 ```bash
-open work/tryit/release/release_report.html        # group-level overview
-# per-subject reports:
-open work/tryit/release/*/sub-*/sub-*_qc_report.html
+docker run --rm \
+  -v /path/to/bids:/bids:ro -v /path/to/out:/out \
+  spinalfmriprep:7.1 /bids /out participant --participant-label 01
+docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
+  spinalfmriprep:7.1 /bids /out group
 ```
 
-Each subject report shows an Include/Review/Exclude recommendation, per-run
-functional cards with the step reportlets embedded, and the confound model;
-the group report adds the inclusion table, QC-metric distributions, the
-attrition waterfall, and per-vertebral-level views.
+Tip: pass `--user $(id -u):$(id -g)` so outputs are owned by you, not root.
 
----
+## Useful options
 
-## Next Steps
+- `--participant-label 01 07 12` — process only these subjects (default: all).
+- `--batch-workers N` — per-step parallelism across subjects/runs.
+- `--smoothing-sigma-mm RL AP SI` — override the S9 cord-smoothing kernel (mm)
+  without editing policy YAML (default from policy).
+- `--skip-bids-validator` — bypass the built-in input checks (at your own risk).
 
-| Goal | Page |
-|------|------|
-| Process your own data | [Install & Use](tutorial.md) |
-| Understand the algorithms | [Methods](methods/overview.md) |
-| Contribute to development | [Contribute](contributing.md) |
+## Resources & runtime
+
+- **Disk:** the image is ~17 GB; budget a few GB of outputs per subject.
+- **Memory:** ~8–16 GB RAM is comfortable for one subject at a time.
+- **GPU (optional):** SCT's deep-learning segmentation uses the GPU when available
+  (`SCT_USE_GPU=1` + a CUDA-enabled torch); CPU works but is slower.
+- **Runtime:** roughly tens of minutes per functional run on CPU (motion
+  correction, distortion correction, registration, smoothing).
+
+## Read the results
+
+```bash
+# group-level overview + cross-dataset release report:
+open <output_dir>/derivatives/spinalfmriprep/release_report.html
+# per-subject QC reports:
+open <output_dir>/derivatives/spinalfmriprep/*/sub-*/sub-*_qc_report.html
+```
+
+Each run also produces the GLM-ready `desc-preproc_bold`, a
+`desc-confounds_timeseries.tsv`, PAM50-space masks + the spinal-level atlas,
+per-level tSNR, and the bold↔PAM50 transforms. A machine-readable
+`spinalfmriprep_run_manifest.json` records per-step pass/fail/skip counts and the
+exit code, and a `reproducibility_receipt.json` records tool versions + policy
+hashes + the pipeline version.
+
+## Troubleshooting
+
+- **"input validation FAILED"** — the front-door check found a real problem
+  (no subjects, an unknown `--participant-label`, a subject missing func or anat,
+  or an empty/corrupt NIfTI). Fix the listed issue, or `--skip-bids-validator` to
+  bypass.
+- **A subject fails a step** — it is skipped-and-reported; other subjects continue.
+  Open that subject's QC report for the per-run reason (e.g. "distortion-limited,
+  no fieldmap" or "high censored fraction"). The run manifest lists what was
+  attrited.
+- **The whole run stops** — either the step crashed, or *all* runs failed QC at
+  that step (nothing left downstream). The message says which.
