@@ -242,3 +242,18 @@ def test_chain_stops_on_crash(tmp_path, monkeypatch):
                         lambda argv: (ran.append(argv[1]), 1)[1])
     rc = bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
     assert ran == ["StepA"] and rc == 1
+
+
+# --- T1.1: auto-derived spec for unregistered datasets ----------------------
+
+def test_derive_adhoc_entry_from_data():
+    from spinalfmriprep.steps.s1.validate import _derive_adhoc_entry
+    runs = {
+        "a": {"modality": "func"}, "b": {"modality": "anat"},
+        "c": {"modality": "fmap"}, "d": {"modality": "physio"},
+    }
+    e = _derive_adhoc_entry(runs)
+    assert e.spec.has_fmap is True and e.spec.has_physio is True
+    # no fmap/physio present -> expectations False (no false "missing" warnings)
+    e2 = _derive_adhoc_entry({"a": {"modality": "func"}})
+    assert e2.spec.has_fmap is False and e2.spec.has_physio is False

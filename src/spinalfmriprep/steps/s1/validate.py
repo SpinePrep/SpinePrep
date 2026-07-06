@@ -11,6 +11,25 @@ import numpy as np
 from jsonschema import Draft7Validator
 
 
+def _derive_adhoc_entry(run_records: Dict[str, dict]):
+    """Derive a minimal dataset spec from the data itself, for unregistered
+    (BIDS-App / ad-hoc) datasets that have no policy entry. Lets the fieldmap
+    matching and physio checks run — most importantly it enables fieldmap
+    matching so S5 can select TopUp on an ad-hoc dataset that ships a reverse-PE
+    pair, instead of silently falling back to SyN. Expectations are set to what
+    the data actually contains, so no false "expected X missing" warnings fire.
+    """
+    from types import SimpleNamespace
+
+    mods = {r.get("modality") for r in run_records.values()}
+    spec = SimpleNamespace(
+        has_fmap=("fmap" in mods),
+        has_physio=("physio" in mods),
+        domains=[], modalities=sorted(m for m in mods if m), paradigms=[], tasks=[],
+    )
+    return SimpleNamespace(spec=spec, selection=None, derived=True)
+
+
 def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dict, dict]:
     runs = []
     issues: list[dict] = []
@@ -49,8 +68,11 @@ def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dic
         )
         issues.append({"severity": "FAIL", "message": "No runs detected in BIDS root."})
 
-    _apply_fieldmap_matching(root, run_records, policy_entry, issues, checks)
-    _apply_physio_checks(root, run_records, policy_entry, issues, checks)
+    # Unregistered datasets have no policy entry; derive a minimal spec from the
+    # data so the fieldmap/physio checks still run (esp. fieldmap matching → TopUp).
+    effective_entry = policy_entry if policy_entry is not None else _derive_adhoc_entry(run_records)
+    _apply_fieldmap_matching(root, run_records, effective_entry, issues, checks)
+    _apply_physio_checks(root, run_records, effective_entry, issues, checks)
     _apply_session_requirements(run_records, checks, issues)
 
     for run in run_records.values():
