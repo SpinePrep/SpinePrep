@@ -152,16 +152,19 @@ def _ensure_rpi_orientation(image_path: Path, work_dir: Path) -> Optional[Path]:
     """
     work_dir.mkdir(parents=True, exist_ok=True)
 
-    # Check current orientation
-    ok, output = _run_command(["sct_image", "-i", str(image_path), "-header"])
+    # Get the current 3-letter orientation code. `sct_image -getorient` prints the
+    # code (e.g. "RPI", "LAS"); `-header` (used previously) dumps the qform/sform
+    # matrices and does NOT contain the orientation string, so the old check was
+    # effectively dead and reoriented every image. Parse the code robustly from any
+    # banner text by matching a valid 3-axis permutation.
+    import re
+    ok, output = _run_command(["sct_image", "-i", str(image_path), "-getorient"])
     if not ok:
         return None
-
-    # Parse orientation from header output (look for "orientation" or "qform" info)
-    # sct_image -header typically shows orientation in the output
-    # If output contains "RPI" or orientation is already correct, return original
-    if "RPI" in output.upper() or "orientation.*RPI" in output:
-        return image_path
+    codes = re.findall(r"\b([RLAPIS]{3})\b", (output or "").upper())
+    current = codes[-1] if codes else ""
+    if current == "RPI":
+        return image_path  # already RPI — no reorientation needed
 
     # Reorient to RPI
     rpi_path = work_dir / f"{image_path.stem}_rpi{image_path.suffix}"
