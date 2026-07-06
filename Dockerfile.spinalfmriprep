@@ -85,5 +85,13 @@ COPY schemas /app/schemas
 COPY config /app/config
 RUN pip3 install --no-cache-dir .
 
+# Stamp the pipeline version into the image so the reproducibility receipt records
+# it (the image has no .git to query). Pass at build time:
+#   docker build --build-arg GIT_SHA=$(git rev-parse HEAD) \
+#                --build-arg GIT_DESCRIBE=$(git describe --always --tags) ...
+ARG GIT_SHA=unknown
+ARG GIT_DESCRIBE=unknown
+ENV SPINALFMRIPREP_GIT_SHA=${GIT_SHA} SPINALFMRIPREP_GIT_DESCRIBE=${GIT_DESCRIBE}
+
 # Standard BIDS-App entrypoint: `docker run <img> BIDS_DIR OUTPUT_DIR LEVEL`.
 ENTRYPOINT ["spinalfmriprep"]
