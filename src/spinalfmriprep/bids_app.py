@@ -225,6 +225,10 @@ def build_parser() -> argparse.ArgumentParser:
                         "Default: all subjects in bids_dir.")
     p.add_argument("--batch-workers", type=int, default=1, dest="batch_workers",
                    help="Per-step subject/run parallelism.")
+    p.add_argument("--smoothing-sigma-mm", nargs=3, type=float, default=None,
+                   metavar=("RL", "AP", "SI"), dest="smoothing_sigma_mm",
+                   help="Override the S9 cord-smoothing sigma (mm) as RL AP SI, "
+                        "without editing policy YAML (default from policy).")
     p.add_argument("--skip-bids-validator", action="store_true",
                    help="Skip the built-in input validation (subjects present, "
                         "func + anat present and readable). Bypass at your own risk.")
@@ -373,6 +377,12 @@ def main_bids_app(argv: Optional[list[str]] = None) -> int:
         from spinalfmriprep import __version__ as v  # noqa
         print(v)
         return 0
+    if getattr(args, "smoothing_sigma_mm", None):
+        import os
+        os.environ["SPINALFMRIPREP_SIGMA_MM"] = " ".join(
+            str(x) for x in args.smoothing_sigma_mm)
+        print(f"[bids-app] smoothing sigma overridden to "
+              f"{args.smoothing_sigma_mm} mm (RL AP SI).")
     return run_bids_app(
         bids_dir=args.bids_dir,
         output_dir=args.output_dir,

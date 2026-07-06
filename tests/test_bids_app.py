@@ -298,3 +298,15 @@ def test_run_manifest_written(tmp_path, monkeypatch):
     assert man["status"] == "complete" and man["exit_code"] == 0
     assert man["steps"][0]["survived"] == 1 and man["steps"][0]["failed"] == 1
     assert [s["step"] for s in man["steps"]] == ["StepA", "StepB"]
+
+
+# --- T2.2: documented smoothing-sigma override ------------------------------
+
+def test_smoothing_sigma_override_sets_env(monkeypatch):
+    import os
+    from spinalfmriprep import bids_app
+    monkeypatch.delenv("SPINALFMRIPREP_SIGMA_MM", raising=False)
+    monkeypatch.setattr(bids_app, "run_bids_app", lambda **kw: 0)
+    bids_app.main_bids_app(["/b", "/o", "participant",
+                            "--smoothing-sigma-mm", "2", "2", "6"])
+    assert os.environ["SPINALFMRIPREP_SIGMA_MM"] == "2.0 2.0 6.0"
