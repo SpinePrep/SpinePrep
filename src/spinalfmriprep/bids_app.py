@@ -400,7 +400,11 @@ def run_bids_app(
         if failed:
             print(f"[bids-app] {step}: {survived} run(s) ok, {failed} failed QC "
                   f"(attrited; survivors continue).")
-        if survived == 0:
+        # Halt only when runs actually existed and every one failed QC. A step
+        # that judged zero runs is a no-op passthrough (e.g. S2B denoise disabled,
+        # rc=0, runs=[]) — it flows the raw inputs through to the next step and
+        # must NOT be mistaken for "all runs failed".
+        if survived == 0 and failed > 0:
             print(f"[bids-app] step {step}: all runs failed QC — nothing to continue; "
                   f"stopping. See the QC reports for per-run reasons.")
             return _finish("all_runs_failed", 1)
