@@ -344,26 +344,61 @@ def _cord_dice_per_level(
 
 
 def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
-    """Cord Dice in native func is the only gating metric for v1.
+    """Registration-quality gate, scored PER VERTEBRAL LEVEL (coverage-independent).
 
-    Label offset and round-trip are observability-only — PAM50_spinal_levels
-    and S2 vertebral_labels use different label schemes, and the
-    intensity-weighted COM round-trip is dominated by FOV/background noise.
+    The whole-volume ``cord_dice_native_func`` is confounded by how many cord
+    levels the FUNCTIONAL FOV covers: a corticospinal / brain+cord acquisition
+    images only a few cervical levels, so the whole-volume overlap tops out
+    ~0.84 even for a perfect registration (a run covering 3 levels perfectly
+    still scores ~0.5 overall). Gating on it therefore rejects good runs for
+    having a naturally short cord extent.
+
+    We instead gate on the MEDIAN per-level cord Dice — registration quality
+    where the cord actually is — with a min-per-level guard for a single broken
+    edge level. Calibrated on CoSpiGVS: good runs cluster at per-level median
+    0.95-1.00; genuine failures sit at 0.87-0.88. The whole-volume Dice is kept
+    as an observability metric. Falls back to the legacy overall-Dice gate when
+    per-level Dice is unavailable.
     """
+    import statistics as _stats
+
     reasons: list[str] = []
     worst = "PASS"
 
-    dice = metrics.get("cord_dice_native_func")
+    per_level = metrics.get("cord_dice_per_level") or {}
+    pl_vals = [v for v in per_level.values() if isinstance(v, (int, float))]
+    ov = metrics.get("cord_dice_native_func")
+
+    if pl_vals:
+        pass_med = thresholds.get("per_level_pass_min", 0.90)
+        broken_below = thresholds.get("per_level_broken_below", 0.50)
+        med = _stats.median(pl_vals)
+        lo = min(pl_vals)
+        if med < pass_med:
+            reasons.append(f"per-level median cord Dice FAIL: {med:.3f} (< {pass_med:.2f})")
+            worst = "FAIL"
+        elif lo < broken_below:
+            reasons.append(
+                f"per-level median cord Dice OK ({med:.3f}) but one level Dice={lo:.3f} "
+                f"(< {broken_below:.2f}) — exclude that level")
+            worst = "WARN"
+        if ov is not None:
+            reasons.append(
+                f"whole-volume cord_dice_native_func={ov:.3f} (observability; "
+                f"coverage-confounded, not gated)")
+        return worst, reasons
+
+    # Fallback: legacy whole-volume gate when per-level Dice is missing.
     pass_dice = thresholds.get("pass_dice_min", 0.80)
     fail_below = thresholds.get("fail_dice_below", 0.65)
-    if dice is None:
+    if ov is None:
         reasons.append("cord_dice_native_func not computed")
         worst = "WARN"
-    elif dice < fail_below:
-        reasons.append(f"cord_dice_native_func FAIL: {dice:.3f}")
+    elif ov < fail_below:
+        reasons.append(f"cord_dice_native_func FAIL: {ov:.3f}")
         worst = "FAIL"
-    elif dice < pass_dice:
-        reasons.append(f"cord_dice_native_func WARN: {dice:.3f}")
+    elif ov < pass_dice:
+        reasons.append(f"cord_dice_native_func WARN: {ov:.3f}")
         if worst == "PASS":
             worst = "WARN"
 

@@ -62,6 +62,21 @@ qc_thresholds:
   # native Dice cap + the additional PAM50<->anat composition step).
   # Used both for the overall `cord_dice_native_func` gate AND for the
   # per-level `cord_dice_per_level` reportlet color bands.
+  # PER-LEVEL gate (primary, coverage-independent). The whole-volume Dice
+  # below is confounded by functional cord COVERAGE: a corticospinal /
+  # brain+cord acquisition images only a few cervical levels, capping the
+  # whole-volume overlap ~0.84 even for a perfect registration. So gate on
+  # the MEDIAN per-level cord Dice (registration quality where the cord is
+  # covered), with a min-per-level guard for a single broken edge level.
+  # Calibrated on CoSpiGVS: good runs cluster at per-level median 0.95-1.00;
+  # genuine failures at 0.87-0.88. When cord_dice_per_level is present the
+  # classifier uses these; the whole-volume keys below are the legacy
+  # fallback + observability.
+  per_level_pass_min: 0.90          # median per-level cord Dice >= this = PASS
+  per_level_broken_below: 0.50      # any single level < this = WARN (exclude that level)
+  # Whole-volume cord Dice (legacy fallback / observability only when
+  # per-level Dice is unavailable). PAM50_cord warped to func vs S6 func
+  # cord_seg. Compose-only typically lands at 0.80–0.85.
   pass_dice_min: 0.80
   fail_dice_below: 0.65              # < this = FAIL; [fail, pass) = WARN; >= pass = PASS
   # Cord-restricted round-trip drift on native func (audit Finding 4 in
