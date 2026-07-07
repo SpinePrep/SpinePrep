@@ -249,11 +249,32 @@ def run_S9(
     if pam50_ref is None or not pam50_ref.exists():
         return StepResult("FAIL", "PAM50_t2s.nii.gz not found ($SCT_DIR missing?)")
 
+    # Resumability: reuse a run's prior S9 result when its final derivative
+    # already exists, so a re-run only materialises newly-surviving runs
+    # (S9 is the most expensive step). Set SPINALFMRIPREP_S9_FORCE=1 to
+    # force full recomputation.
+    import os as _os
+    _force_s9 = _os.environ.get("SPINALFMRIPREP_S9_FORCE") == "1"
+    _prior_s9 = {
+        (_norm_sub(r.get("subject")), r.get("run_id")): r
+        for r in _load_qc(out_path, "S9_primary_functional_derivatives",
+                          dataset_key).get("runs", [])
+    }
+
     results: list[dict] = []
     for u in upstream_runs:
         run_id = u.get("run_id")
         subject = u.get("subject")
         session = u.get("session")
+
+        if not _force_s9:
+            _done = _find_first(
+                _func_dir_candidates(out_path, subject, session, dataset_key),
+                f"{run_id}_desc-preproc_bold.nii.gz")
+            _prev = _prior_s9.get((_norm_sub(subject), run_id))
+            if _done is not None and _prev is not None:
+                results.append(_prev)
+                continue
 
         bold = _find_bold(out_path, subject, session, run_id, dataset_key)
         cord_mask = _find_cord_mask(out_path, run_id)
