@@ -594,3 +594,32 @@ datasets:
     subjects: []
     sessions: []
   notes: original_source=requested
+- key: internal_balgrist_cospigvs_11
+  title: balgrist_cospigvs_11
+  source: private
+  accession: internal_balgrist_cospigvs_11
+  doi: null
+  homepage: null
+  license: unknown
+  intended_use:
+  - v1_validation
+  counts:
+    participants: 11
+    sessions: 1
+  spec:
+    domains:
+    - brain_spine
+    modalities:
+    - anat
+    - func
+    paradigms:
+    - task
+    tasks:
+    - gvs
+    has_fmap: false
+    has_physio: true
+  selection:
+    mode: all
+    subjects: []
+    sessions: []
+  notes: 'CoSpiGVS: cervical cord task-fMRI, GVS/Hand/Combined vs Rest (P1_CoSpiGVS/bids). 11 subjects, 43 complete runs (363 vol, TR 1.66s); MC001 has 3 runs. Anat T1w(brain+spine)+T2w(C-spine); cardiac+respiratory physio per run.'

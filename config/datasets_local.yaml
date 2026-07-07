@@ -6,3 +6,4 @@ internal_balgrist_motor_11: /mnt/hdd2/P1_CoSpi/pilot_motor/spine/rawdata
 internal_balgrist_painmotor_21: /mnt/hdd2/P1_CoSpi/main_painmotor/spine/rawdata
 openneuro_ds004926_dorsalhorn_pain: datasets/openneuro_ds004926_dorsalhorn_pain
 openneuro_ds005075_brain_spine_rest: datasets/openneuro_ds005075_brainspine_rest
+internal_balgrist_cospigvs_11: /mnt/hdd2/P1_CoSpiGVS/bids
