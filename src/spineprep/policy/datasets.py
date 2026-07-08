@@ -85,6 +85,7 @@ REQUIRED_V1_KEYS = {
     "internal_balgrist_painmotor_21",
     "openneuro_ds004926_dorsalhorn_pain",
     "openneuro_ds005075_brain_spine_rest",
+    "internal_balgrist_cospigvs_11",
 }
 
 
