@@ -15,7 +15,7 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spinalfmriprep.workfolder import get_next_workfolder
+from spineprep.workfolder import get_next_workfolder
 
 
 def check_sct() -> None:
@@ -65,7 +65,7 @@ def main() -> int:
     print(f"\n[3/5] Running S1_input_verify (prerequisite)...")
     s1_result = subprocess.run(
         [
-            "poetry", "run", "spinalfmriprep", "run", "S1_input_verify",
+            "poetry", "run", "spineprep", "run", "S1_input_verify",
             "--dataset-key", dataset_key,
             "--datasets-local", str(datasets_local),
             "--out", str(wf),
@@ -82,7 +82,7 @@ def main() -> int:
     print(f"\n[4/5] Running S2_anat_cordref on {dataset_key}...")
     run_result = subprocess.run(
         [
-            "poetry", "run", "spinalfmriprep", "run", "S2_anat_cordref",
+            "poetry", "run", "spineprep", "run", "S2_anat_cordref",
             "--dataset-key", dataset_key,
             "--datasets-local", str(datasets_local),
             "--out", str(wf),
@@ -99,7 +99,7 @@ def main() -> int:
     print(f"\n[5/5] Running S2_anat_cordref check...")
     check_result = subprocess.run(
         [
-            "poetry", "run", "spinalfmriprep", "check", "S2_anat_cordref",
+            "poetry", "run", "spineprep", "check", "S2_anat_cordref",
             "--dataset-key", dataset_key,
             "--out", str(wf),
         ],

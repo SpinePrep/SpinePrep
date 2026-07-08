@@ -58,7 +58,7 @@
     "heuristics": {"type": "object"},
     "metrics": {
       "type": "object",
-      "description": "Quantitative aggregate gauges (SpinalfMRIprep dev principle §3)",
+      "description": "Quantitative aggregate gauges (SpinePrep dev principle §3)",
       "properties": {
         "n_checks_total": {"type": "integer"},
         "n_checks_passed": {"type": "integer"},

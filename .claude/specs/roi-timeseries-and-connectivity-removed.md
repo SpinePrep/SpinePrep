@@ -7,7 +7,7 @@ supersedes: private/SPEC/S10_roi_timeseries_and_reliability.md
 > the **former S10 (ROI/connectivity)**; its step number has since been reused
 > for the QC aggregation & release step (the new S10). ROI timeseries,
 > connectivity, and ICC reliability are downstream **analysis**, not
-> preprocessing. SpinalfMRIprep's contract is preprocess → confounds → release
+> preprocessing. SpinePrep's contract is preprocess → confounds → release
 > (S1–S10, with S10 = QC aggregation & release); the analyst owns the
 > GLM/connectivity on their own design (the same boundary S8 states: "S8 emits
 > the matrix; the analyst regresses"). The former S10 (ROI/connectivity) was
@@ -44,7 +44,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 
 ## Deliverables
 
-### Per-run derivatives (`derivatives/spinalfmriprep/<ds>/sub-XX/[ses-YY]/func/`)
+### Per-run derivatives (`derivatives/spineprep/<ds>/sub-XX/[ses-YY]/func/`)
 
 **ROI timeseries TSVs** (one per catalog × confound mode = up to 6):
 - `*_desc-vertlvl_rawts_timeseries.tsv` — vertebral-level (PAM50_levels) raw, columns C1..L1 (coverage-filtered).
@@ -63,7 +63,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 
 **JSON sidecars** alongside each TSV: ROI labels, n_voxels per ROI, confound strategy, bandpass, computation method.
 
-### Per-subject derivatives (`derivatives/spinalfmriprep/<ds>/sub-XX/`)
+### Per-subject derivatives (`derivatives/spineprep/<ds>/sub-XX/`)
 
 - `sub-XX_summary.json` — per-ROI mean tSNR, per-connection mean Fisher-z, list of run_ids contributing. Always emitted; aggregable by S10 (QC aggregation & release).
 - `sub-XX_reliability.json` — multi-session only:
@@ -87,11 +87,11 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 - `*_desc-S10_reliability_dice.png` (subject-level, multi-session) — bar of spatial Dice per seed.
 
 ### Code (new package, mirrors S6–S9 layout)
-- `src/spinalfmriprep/steps/s10/__init__.py`
-- `src/spinalfmriprep/steps/s10/process.py` — masker setup, extraction, connectivity, ICC, Dice, summary JSON.
-- `src/spinalfmriprep/steps/s10/orchestrate.py` — per-dataset, per-run + per-subject (multi-session) aggregation.
-- `src/spinalfmriprep/steps/s10/reportlets.py` — 5 PNGs.
-- `src/spinalfmriprep/S10_roi_timeseries_and_connectivity.py` — CLI re-export.
+- `src/spineprep/steps/s10/__init__.py`
+- `src/spineprep/steps/s10/process.py` — masker setup, extraction, connectivity, ICC, Dice, summary JSON.
+- `src/spineprep/steps/s10/orchestrate.py` — per-dataset, per-run + per-subject (multi-session) aggregation.
+- `src/spineprep/steps/s10/reportlets.py` — 5 PNGs.
+- `src/spineprep/S10_roi_timeseries_and_connectivity.py` — CLI re-export.
 
 ### Policy + schema
 - `policy/S10_roi_timeseries_and_connectivity.yaml`
@@ -137,7 +137,7 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 1. Mark `private/SPEC/S10_roi_timeseries_and_reliability.md` superseded.
 2. Write `policy/S10_roi_timeseries_and_connectivity.yaml` (ROI catalogs, confound modes, bandpass, ICC thresholds, min-voxel guards).
 3. Write `schemas/qc_S10_roi_timeseries_and_connectivity.schema.json`.
-4. Scaffold `src/spinalfmriprep/steps/s10/` (`__init__`, `process`, `orchestrate`, `reportlets`).
+4. Scaffold `src/spineprep/steps/s10/` (`__init__`, `process`, `orchestrate`, `reportlets`).
 5. Implement core helpers in `process.py`:
    - `_warp_pam50_atlas_to_native()` — sct_apply_transfo of PAM50_levels + PAM50_atlas_{30,31,34,35} via S7 xfm.
    - `_build_hemicord_parcellation()` — threshold horn probs > 0.5, intersect with segmental levels, combine to multi-label NIfTI.

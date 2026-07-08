@@ -105,13 +105,13 @@ We must quantify the success of motion correction. Two key metrics are used:
 ### Derivatives
 
 ```
-derivatives/spinalfmriprep/{dataset}/sub-{id}/func/
+derivatives/spineprep/{dataset}/sub-{id}/func/
 ├── sub-{id}_task-{task}_desc-moco_bold.nii.gz        # Motion-corrected 4D data
 ├── sub-{id}_task-{task}_desc-moco_mean.nii.gz        # Mean of moco_bold
 ├── sub-{id}_task-{task}_desc-moco_params.tsv         # Motion parameters (Tx, Ty per frame)
 └── sub-{id}_task-{task}_desc-confounds_timeseries.tsv # Updated with FD/DVARS
 
-derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
+derivatives/spineprep/{dataset}/sub-{id}/figures/
 ├── sub-{id}_..._desc-S4_motion_traces.png
 ├── sub-{id}_..._desc-S4_dvars_plot.png
 └── sub-{id}_..._desc-S4_tsnr_comparison.png
@@ -123,7 +123,7 @@ derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
 
 ```bash
 # Run S4 for a single dataset
-poetry run spinalfmriprep run S4_motion_correction \
+poetry run spineprep run S4_motion_correction \
   --dataset-key <KEY> \
   --datasets-local config/datasets_local.yaml \
   --out work/wf_reg_001

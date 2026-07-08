@@ -164,7 +164,7 @@ This animated GIF alternates between subject anatomy and template overlay.
 ### Derivatives
 
 ```
-derivatives/spinalfmriprep/{dataset}/sub-{id}/anat/
+derivatives/spineprep/{dataset}/sub-{id}/anat/
 ├── sub-{id}_desc-cordref_{T1w|T2w}.nii.gz
 ├── sub-{id}_desc-cord_dseg_{T1w|T2w}.nii.gz
 ├── sub-{id}_desc-canal_dseg_{T1w|T2w}.nii.gz
@@ -173,11 +173,11 @@ derivatives/spinalfmriprep/{dataset}/sub-{id}/anat/
 ├── sub-{id}_desc-disc_labels_{T1w|T2w}.nii.gz
 └── sub-{id}_desc-rootlets_dseg_{T1w|T2w}.nii.gz (if eligible)
 
-derivatives/spinalfmriprep/{dataset}/sub-{id}/xfm/
+derivatives/spineprep/{dataset}/sub-{id}/xfm/
 ├── sub-{id}_from-cordref_to-PAM50_warp.nii.gz
 └── sub-{id}_from-PAM50_to-cordref_warp.nii.gz
 
-derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
+derivatives/spineprep/{dataset}/sub-{id}/figures/
 ├── sub-{id}_desc-S2_crop_box_sagittal.png
 ├── sub-{id}_desc-S2_cordmask_montage.png
 ├── sub-{id}_desc-S2_totalspineseg_montage.png
@@ -191,19 +191,19 @@ derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
 
 ```bash
 # Run S2 for a single dataset
-poetry run spinalfmriprep run S2_anat_cordref \
+poetry run spineprep run S2_anat_cordref \
   --dataset-key <KEY> \
   --datasets-local config/datasets_local.yaml \
   --out work/wf_001
 
 # Run S2 for all regression datasets
-poetry run spinalfmriprep run S2_anat_cordref \
+poetry run spineprep run S2_anat_cordref \
   --scope reg \
   --datasets-local config/datasets_local.yaml \
   --out work/wf_001
 
 # Validate outputs
-poetry run spinalfmriprep check S2_anat_cordref --out work/wf_001
+poetry run spineprep check S2_anat_cordref --out work/wf_001
 ```
 
 ---

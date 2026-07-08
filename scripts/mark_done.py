@@ -230,9 +230,9 @@ def main() -> int:
     try:
         import sys as _sys
         _sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-        from spinalfmriprep.qc_dashboard import generate_dashboard_safe
-        from spinalfmriprep.dashboard_latest import write_latest_landing
-        from spinalfmriprep.dashboard_stitched import render_view
+        from spineprep.qc_dashboard import generate_dashboard_safe
+        from spineprep.dashboard_latest import write_latest_landing
+        from spineprep.dashboard_stitched import render_view
         generate_dashboard_safe(workfolder.resolve())
         write_latest_landing(work_root.resolve())
         # Build the stitched per-scope view for any scope (reg/full/exp/per-

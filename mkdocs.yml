@@ -1,7 +1,7 @@
-site_name: SpinalfMRIprep
-site_url: https://spinalfmriprep.com/
-repo_url: https://github.com/SpinalfMRIprep/SpinalfMRIprep
-repo_name: SpinalfMRIprep/SpinalfMRIprep
+site_name: SpinePrep
+site_url: https://spineprep.com/
+repo_url: https://github.com/SpinePrep/SpinePrep
+repo_name: SpinePrep/SpinePrep
 edit_uri: edit/main/docs/
 
 theme:

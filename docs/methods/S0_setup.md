@@ -56,7 +56,7 @@ For each required image, verifies:
 
 | Image | Purpose | Verification Command |
 |-------|---------|---------------------|
-| `spinalfmriprep` | Main pipeline | `spinalfmriprep --version` |
+| `spineprep` | Main pipeline | `spineprep --version` |
 | `vnmd/spinalcordtoolbox_7.2` | SCT tools | `sct_version` |
 | `vnmd/fsl_6.0.7.18` | FSL tools | `fslversion` |
 | `vnmd/ants_2.6.0` | ANTs registration | `antsRegistration --version` |
@@ -73,10 +73,10 @@ Searches for PAM50 templates in order:
 
 ```bash
 # Run S0 setup
-spinalfmriprep run S0_SETUP --project-root /path/to/project
+spineprep run S0_SETUP --project-root /path/to/project
 
 # Check S0 (verify artifacts exist)
-spinalfmriprep check S0_SETUP --project-root /path/to/project
+spineprep check S0_SETUP --project-root /path/to/project
 ```
 
 ## QC Status Schema

@@ -81,7 +81,7 @@ mask and checking it against the requested kernel within tolerance.
 ## Outputs
 
 ```
-derivatives/spinalfmriprep/{dataset}/sub-{id}/func/
+derivatives/spineprep/{dataset}/sub-{id}/func/
 ├── sub-{id}_..._space-PAM50_desc-smoothed_bold.nii.gz     # GLM-ready, template space
 ├── sub-{id}_..._space-PAM50_desc-unsmoothed_bold.nii.gz
 ├── sub-{id}_..._space-PAM50_desc-funcref.nii.gz           # temporal mean
@@ -89,7 +89,7 @@ derivatives/spinalfmriprep/{dataset}/sub-{id}/func/
 ├── sub-{id}_..._space-PAM50_desc-cordmask.nii.gz          # co-gridded cord mask
 └── sub-{id}_..._desc-tsnr_per_level.tsv                   # per-vertebral-level tSNR
 
-derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
+derivatives/spineprep/{dataset}/sub-{id}/figures/
 └── sub-{id}_..._desc-S9_tsnr_map_axial.png
 ```
 

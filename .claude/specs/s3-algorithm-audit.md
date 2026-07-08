@@ -48,7 +48,7 @@ brain-leak failure mode for cord-fMRI EPI.
 | `absolute_area_cap_mm2` | 200.0 | Cervical cord CSA never exceeds ~80 mm²; 200 mm² is comfortably above the upper bound of healthy cord with margin for swelling or pathology. | ✅ defensible |
 | `superior_slices_check` | 5 | Brain leak happens at the top of FOV first; checking the top 5 cord-bearing slices catches early drift without false-flagging mid-cord. | ✅ defensible |
 
-The brain-contamination check (a.k.a. drift gate) is a SpinalfMRIprep contribution. We documented it as
+The brain-contamination check (a.k.a. drift gate) is a SpinePrep contribution. We documented it as
 "NOT in the literature; pipeline-specific guard" — that's truthful.
 It catches a real failure mode the principle §10 reg-cohort surfaced
 (4 KombiShimZBrain runs in balgrist_motor). Worth a methods-paper
@@ -140,7 +140,7 @@ But it IS a deviation. The audit doc flags it for explicit decision.
 
 3. **Drift gate documentation.** It's a real, principled innovation
    that catches a documented failure mode. Document it in the
-   principles spec as a SpinalfMRIprep contribution; cite the
+   principles spec as a SpinePrep contribution; cite the
    failure mode (brain CSA >> cord CSA + SCT seg behavior at FOV
    edge).
 

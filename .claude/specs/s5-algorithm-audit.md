@@ -145,7 +145,7 @@ No truthfulness violations. The two flagged deviations (anat→BOLD-after regist
    comparison (SCT vs FLIRT-6DOF) once and recording the result, so
    the choice is empirically justified rather than only theoretically.
 
-3. **Savitzky-Golay smoothing of per-slice Y(z) is a SpinalfMRIprep
+3. **Savitzky-Golay smoothing of per-slice Y(z) is a SpinePrep
    contribution**, not in CoSpine. Already documented as additive
    denoising of finite-voxel centroid jitter. Defensible because the
    smoothing scale (5 slices, poly 2) is much shorter than the spatial

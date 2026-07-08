@@ -34,7 +34,7 @@ TEST_RETEST_SCOPES = {
 
 def _load_per_level(scope: str) -> pd.DataFrame:
     rows = []
-    pat = f"work/done/{scope}/S9/derivatives/spinalfmriprep/**/*desc-tsnr_per_level.tsv"
+    pat = f"work/done/{scope}/S9/derivatives/spineprep/**/*desc-tsnr_per_level.tsv"
     for f in glob.glob(pat, recursive=True):
         m = re.search(r"(sub-[A-Za-z0-9]+)_(ses-[0-9]+)?", f)
         if not m:

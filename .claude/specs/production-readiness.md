@@ -1,11 +1,11 @@
 ---
 status: approved
 created: 2026-07-01
-locks: the task list to make SpinalfMRIprep runnable end-to-end on arbitrary new
+locks: the task list to make SpinePrep runnable end-to-end on arbitrary new
   BIDS datasets by an external user (not our fixed cohort)
 ---
 
-# SpinalfMRIprep — Production Readiness for New Datasets
+# SpinePrep — Production Readiness for New Datasets
 
 Goal: a new user points the BIDS-App at *their* cervical cord-fMRI BIDS dataset and
 gets GLM-ready BIDS-Derivatives + QC reports, reproducibly, without our per-dataset
@@ -13,7 +13,7 @@ hand-tuning. Audited against the code 2026-07-01.
 
 ## Already works (verified) — do NOT redo
 
-- BIDS-App entrypoint `spinalfmriprep <bids> <out> {participant,group}`; `--participant-label`.
+- BIDS-App entrypoint `spineprep <bids> <out> {participant,group}`; `--participant-label`.
 - S5 auto-selects TopUp vs SyN from PhaseEncodingDirection metadata — no per-dataset config.
 - QC thresholds in policy/S*.yaml are literature-grounded GENERIC values, not cohort-tuned.
 - S2 reorients arbitrary input to RPI (`sct_image -setorient`).
@@ -25,7 +25,7 @@ hand-tuning. Audited against the code 2026-07-01.
 ## Tier 0 — BLOCKERS (without these it does not run portably on new data)
 
 - **T0.1 — Build + verify the container end-to-end. ✅ DONE (2026-07-02, commit
-  613f98c).** Image `spinalfmriprep:7.1` (15.4 GB) built and run through a full
+  613f98c).** Image `spineprep:7.1` (15.4 GB) built and run through a full
   S1→S10 chain on a real subject via the BIDS-App interface (participant + group);
   produces complete BIDS-Derivatives + QC reports + reproducibility receipt.
   Fixed 8 real portability/packaging bugs the host suite could not catch
@@ -43,8 +43,8 @@ hand-tuning. Audited against the code 2026-07-01.
     _task_regressor` returns None (nilearn design-matrix path). Affects the paper's
     task-activation validation (V2); fix separately.
 - **T0.2 — Apptainer/Singularity image. ✅ DONE (2026-07-02).** Built
-  `spinalfmriprep_7.1.sif` from the Docker image
-  (`apptainer build … docker-daemon://spinalfmriprep:7.1`) and ran the same
+  `spineprep_7.1.sif` from the Docker image
+  (`apptainer build … docker-daemon://spineprep:7.1`) and ran the same
   one-subject S1→S10 chain to completion (all PASS; GLM-ready derivatives +
   reports + receipt). Apptainer's read-only image surfaced two more issues, both
   fixed:
@@ -57,7 +57,7 @@ hand-tuning. Audited against the code 2026-07-01.
     run with **`--writable-tmpfs`**.
   - **Required Apptainer invocation:**
     `apptainer run --cleanenv --writable-tmpfs --pwd /app --bind <BIDS>:/bids:ro
-    --bind <OUT>:/out spinalfmriprep_7.1.sif /bids /out {participant,group}`.
+    --bind <OUT>:/out spineprep_7.1.sif /bids /out {participant,group}`.
   - **Hardening follow-up:** decouple policy/config resolution from the working
     directory (resolve by install path / env var instead of `Path("policy")`
     CWD-relative). That would remove the `--pwd /app` + `--writable-tmpfs`

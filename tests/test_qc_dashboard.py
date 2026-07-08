@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from spinalfmriprep.qc_dashboard import generate_dashboard
+from spineprep.qc_dashboard import generate_dashboard
 
 
 def test_generate_dashboard_writes_index_and_reportlet_pages(tmp_path: Path) -> None:
@@ -15,7 +15,7 @@ def test_generate_dashboard_writes_index_and_reportlet_pages(tmp_path: Path) -> 
     qc_dir.mkdir(parents=True, exist_ok=True)
 
     # Dummy reportlet file
-    fig_rel = "derivatives/spinalfmriprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
+    fig_rel = "derivatives/spineprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
     fig_path = out / fig_rel
     fig_path.parent.mkdir(parents=True, exist_ok=True)
     fig_path.write_bytes(b"not_a_real_png")
@@ -61,7 +61,7 @@ def test_generate_dashboard_without_workfolder(tmp_path: Path) -> None:
     qc_dir.mkdir(parents=True, exist_ok=True)
 
     # Dummy reportlet file
-    fig_rel = "derivatives/spinalfmriprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
+    fig_rel = "derivatives/spineprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
     fig_path = out / fig_rel
     fig_path.parent.mkdir(parents=True, exist_ok=True)
     fig_path.write_bytes(b"not_a_real_png")
@@ -129,7 +129,7 @@ def test_chain_workfolder_materialises_upstream_reportlets(tmp_path: Path) -> No
     # Upstream: real S2 qc.json + figure
     up_qc_dir = upstream / "logs" / "S2_anat_cordref" / "ds_test"
     up_qc_dir.mkdir(parents=True)
-    fig_rel = "derivatives/spinalfmriprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
+    fig_rel = "derivatives/spineprep/sub-01/figures/sub-01_desc-S2_cordmask_montage.png"
     (upstream / fig_rel).parent.mkdir(parents=True)
     (upstream / fig_rel).write_bytes(b"upstream-png")
     (up_qc_dir / "qc.json").write_text(json.dumps({

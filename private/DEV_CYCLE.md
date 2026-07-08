@@ -1,6 +1,6 @@
-# SpinalfMRIprep Development Cycle Contract
+# SpinePrep Development Cycle Contract
 
-> **Authority**: This document is the single source of truth for the SpinalfMRIprep development cycle.
+> **Authority**: This document is the single source of truth for the SpinePrep development cycle.
 > Scope definitions are canonical in `private/SPEC/HEADER.md`.
 
 ---
@@ -142,7 +142,7 @@ New S3 run:
 | reads_from | `work/done/reg/S{N-1}/` (previous step) |
 | writes_to | `work/wf_reg_XXX/` |
 | s1_prerequisite | S1 must be done for all 5 datasets in reg chain |
-| command | `poetry run spinalfmriprep run S{N}_{step} --scope regression --datasets-local config/datasets_local.yaml --out work/${WF}` |
+| command | `poetry run spineprep run S{N}_{step} --scope regression --datasets-local config/datasets_local.yaml --out work/${WF}` |
 | on_success | proceed to Stage 3.1 |
 | on_failure | STOP, report per-dataset status |
 
@@ -257,7 +257,7 @@ Dashboard auto-regenerates on step completion. For visualization-only changes:
 
 ```bash
 # Regenerate reportlets without re-running expensive processing
-poetry run spinalfmriprep run S{N}_{step} --reportlets-only --out {workfolder}
+poetry run spineprep run S{N}_{step} --reportlets-only --out {workfolder}
 ```
 
 ---
@@ -297,7 +297,7 @@ poetry run spinalfmriprep run S{N}_{step} --reportlets-only --out {workfolder}
 | runs.jsonl | `{wf}/logs/S{N}_*_runs.jsonl` |
 | per-dataset QC | `{wf}/logs/S{N}_*/{dataset_key}/qc.json` |
 | dashboard | `{wf}/dashboard/` |
-| derivatives | `{wf}/derivatives/spinalfmriprep/{dataset_key}/` |
+| derivatives | `{wf}/derivatives/spineprep/{dataset_key}/` |
 
 ### Done Symlinks
 
@@ -358,13 +358,13 @@ Regenerate visualizations without re-running expensive processing. Useful when:
 
 ```bash
 # Single dataset
-poetry run spinalfmriprep run S2_anat_cordref --dataset-key {key} --reportlets-only --out {workfolder}
+poetry run spineprep run S2_anat_cordref --dataset-key {key} --reportlets-only --out {workfolder}
 
 # Batch mode (reg scope)
-poetry run spinalfmriprep run S2_anat_cordref --scope reg --reportlets-only --out {workfolder}
+poetry run spineprep run S2_anat_cordref --scope reg --reportlets-only --out {workfolder}
 
 # Batch mode (full scope)
-poetry run spinalfmriprep run S2_anat_cordref --scope full --reportlets-only --out {workfolder}
+poetry run spineprep run S2_anat_cordref --scope full --reportlets-only --out {workfolder}
 ```
 
 ### Requirements

@@ -13,7 +13,7 @@ import shutil
 
 import pytest
 
-from spinalfmriprep.steps.s10 import process as s11
+from spineprep.steps.s10 import process as s11
 
 
 # ---------------------------------------------------------------------------
@@ -225,7 +225,7 @@ def test_detect_fsl_version_str_or_none():
 # reports.py — subject/group report model (redesign 2026-06-23)
 # ---------------------------------------------------------------------------
 
-from spinalfmriprep.steps.s10 import reports as s10r
+from spineprep.steps.s10 import reports as s10r
 
 
 def test_recommendation_include_when_clean():

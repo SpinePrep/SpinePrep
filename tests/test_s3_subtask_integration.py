@@ -15,11 +15,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 import pytest
 
-from spinalfmriprep.S3_func_init_and_crop import (
+from spineprep.S3_func_init_and_crop import (
     _process_s3_1_dummy_drop_and_localization,
     run_S3_func_init_and_crop,
 )
-from spinalfmriprep.subtask import ExecutionContext, set_execution_context, should_exit_after_subtask
+from spineprep.subtask import ExecutionContext, set_execution_context, should_exit_after_subtask
 
 
 def test_s3_1_subtask_execution(tmp_path):
@@ -125,7 +125,7 @@ def test_s3_1_skips_later_subtasks(tmp_path):
     set_execution_context(ExecutionContext(target_subtask="S3.1"))
 
     try:
-        from spinalfmriprep.S3_func_init_and_crop import (
+        from spineprep.S3_func_init_and_crop import (
             _process_s3_2_outlier_gating,
             _process_s3_3_crop_and_qc,
         )

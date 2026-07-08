@@ -13,7 +13,7 @@ import yaml
 
 # Add src to path for workfolder helper
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-from spinalfmriprep.workfolder import get_next_workfolder
+from spineprep.workfolder import get_next_workfolder
 
 
 def main():
@@ -93,8 +93,8 @@ def main():
     # S5 reads:
     #   logs/S1_input_verify/.../bids_inventory.json (chain)
     #   logs/S4_func_motion_correction/<ds>/qc.json
-    #   derivatives/spinalfmriprep/sub-XX/[ses-YY/]func/*_desc-mocoref_bold.nii.gz
-    #   derivatives/spinalfmriprep/sub-XX/[ses-YY/]anat/*.nii.gz
+    #   derivatives/spineprep/sub-XX/[ses-YY/]func/*_desc-mocoref_bold.nii.gz
+    #   derivatives/spineprep/sub-XX/[ses-YY/]anat/*.nii.gz
     # plus the S1 work/ tree for bids_inventory.
 
     def link_tree(source_wf: Path, sub: str):
@@ -131,7 +131,7 @@ def main():
 
     # 6. Run S5
     cmd = [
-        "poetry", "run", "spinalfmriprep", "run", "S5_func_distortion_correction",
+        "poetry", "run", "spineprep", "run", "S5_func_distortion_correction",
         "--dataset-key", dataset_key,
         "--out", str(wf),
         "--datasets-local", str(project_root / "config" / "datasets_local.yaml"),

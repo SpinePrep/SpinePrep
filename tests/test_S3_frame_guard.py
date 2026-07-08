@@ -9,9 +9,9 @@ import numpy as np
 import nibabel as nib
 import pytest
 
-from spinalfmriprep.steps.s3 import crop as crop_mod
-from spinalfmriprep.steps.s3.crop import _process_s3_3_crop_and_qc
-from spinalfmriprep.subtask import set_execution_context
+from spineprep.steps.s3 import crop as crop_mod
+from spineprep.steps.s3.crop import _process_s3_3_crop_and_qc
+from spineprep.subtask import set_execution_context
 
 
 def _save(path, shape):

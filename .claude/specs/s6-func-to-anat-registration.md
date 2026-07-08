@@ -4,7 +4,7 @@ status: implemented
 
 # S6 func→anat registration — audit against dev principles
 
-Step-local audit of S6 against the SpinalfMRIprep development principles
+Step-local audit of S6 against the SpinePrep development principles
 (`CLAUDE.md`). Implementation spec lives in `private/SPEC/S6_func_to_anat_registration.md`.
 
 ## Objective

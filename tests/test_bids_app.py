@@ -30,22 +30,22 @@ def _tiny_bids(root: Path) -> Path:
 
 
 def test_dataset_key_sanitizes_folder_name():
-    from spinalfmriprep.bids_app import _dataset_key_for
+    from spineprep.bids_app import _dataset_key_for
     assert _dataset_key_for(Path("/data/ds-004 926!")) == "bidsapp_ds_004_926"
     assert _dataset_key_for(Path("/data/My.Cohort")) == "bidsapp_my_cohort"
 
 
 def test_cli_routes_bids_app_invocation(monkeypatch, tmp_path):
-    """`spinalfmriprep BIDS_DIR OUT participant` routes to the BIDS-App, not the
+    """`spineprep BIDS_DIR OUT participant` routes to the BIDS-App, not the
     run/check subparser."""
-    from spinalfmriprep import cli
+    from spineprep import cli
     captured = {}
 
     def fake(argv):
         captured["argv"] = argv
         return 0
 
-    monkeypatch.setattr("spinalfmriprep.bids_app.main_bids_app", fake)
+    monkeypatch.setattr("spineprep.bids_app.main_bids_app", fake)
     rc = cli.main([str(tmp_path / "bids"), str(tmp_path / "out"), "participant"])
     assert rc == 0
     assert captured["argv"][2] == "participant"
@@ -53,10 +53,10 @@ def test_cli_routes_bids_app_invocation(monkeypatch, tmp_path):
 
 def test_run_check_still_works_as_subcommand(monkeypatch):
     """The internal run/check subcommands are not shadowed by the router."""
-    from spinalfmriprep import cli
+    from spineprep import cli
     # --version short-circuits; just confirm it doesn't route to bids_app
     monkeypatch.setattr(
-        "spinalfmriprep.bids_app.main_bids_app",
+        "spineprep.bids_app.main_bids_app",
         lambda argv: (_ for _ in ()).throw(AssertionError("should not route")))
     assert cli.main(["--version"]) == 0
 
@@ -64,7 +64,7 @@ def test_run_check_still_works_as_subcommand(monkeypatch):
 def test_bids_app_participant_runs_s1_adhoc(tmp_path, monkeypatch):
     """End-to-end through the entrypoint, limited to S1 (no SCT): an
     unregistered bids_dir runs ad-hoc and produces an S1 qc.json."""
-    from spinalfmriprep import bids_app
+    from spineprep import bids_app
     bids = _tiny_bids(tmp_path / "ds")
     out = tmp_path / "out"
     # Limit the participant chain to S1 so the test needs no SCT/FSL.
@@ -79,7 +79,7 @@ def test_bids_app_participant_runs_s1_adhoc(tmp_path, monkeypatch):
 
 def test_participant_label_builds_filtered_view(tmp_path, monkeypatch):
     """--participant-label restricts the chain to a symlinked BIDS view."""
-    from spinalfmriprep import bids_app
+    from spineprep import bids_app
     bids = _tiny_bids(tmp_path / "ds")
     # add a second subject so filtering is observable
     func2 = bids / "sub-02" / "func"; func2.mkdir(parents=True)
@@ -99,21 +99,21 @@ def test_participant_label_builds_filtered_view(tmp_path, monkeypatch):
 # --- T0.3: front-door input validation --------------------------------------
 
 def test_validate_passes_on_valid_tree(tmp_path):
-    from spinalfmriprep.bids_app import _validate_bids_input
+    from spineprep.bids_app import _validate_bids_input
     bids = _tiny_bids(tmp_path / "ds")
     errors, warnings = _validate_bids_input(bids)
     assert errors == []
 
 
 def test_validate_errors_when_not_bids(tmp_path):
-    from spinalfmriprep.bids_app import _validate_bids_input
+    from spineprep.bids_app import _validate_bids_input
     empty = tmp_path / "notbids"; empty.mkdir()
     errors, _ = _validate_bids_input(empty)
     assert any("sub-*" in e for e in errors)
 
 
 def test_validate_errors_missing_anat(tmp_path):
-    from spinalfmriprep.bids_app import _validate_bids_input
+    from spineprep.bids_app import _validate_bids_input
     bids = _tiny_bids(tmp_path / "ds")
     # remove the anat -> S2 would crash; validation must catch it
     for f in (bids / "sub-01" / "anat").glob("*"):
@@ -123,7 +123,7 @@ def test_validate_errors_missing_anat(tmp_path):
 
 
 def test_validate_errors_missing_bold(tmp_path):
-    from spinalfmriprep.bids_app import _validate_bids_input
+    from spineprep.bids_app import _validate_bids_input
     bids = _tiny_bids(tmp_path / "ds")
     for f in (bids / "sub-01" / "func").glob("*_bold.nii*"):
         f.unlink()
@@ -132,14 +132,14 @@ def test_validate_errors_missing_bold(tmp_path):
 
 
 def test_validate_errors_unknown_participant(tmp_path):
-    from spinalfmriprep.bids_app import _validate_bids_input
+    from spineprep.bids_app import _validate_bids_input
     bids = _tiny_bids(tmp_path / "ds")
     errors, _ = _validate_bids_input(bids, participant_label=["99"])
     assert any("not found" in e for e in errors)
 
 
 def test_validate_errors_corrupt_nifti(tmp_path):
-    from spinalfmriprep.bids_app import _validate_bids_input
+    from spineprep.bids_app import _validate_bids_input
     bids = _tiny_bids(tmp_path / "ds")
     # truncate the bold to a non-empty but unreadable file
     bold = next((bids / "sub-01" / "func").glob("*_bold.nii.gz"))
@@ -150,7 +150,7 @@ def test_validate_errors_corrupt_nifti(tmp_path):
 
 def test_skip_bids_validator_bypasses(tmp_path, monkeypatch):
     """--skip-bids-validator runs the chain even on an invalid tree."""
-    from spinalfmriprep import bids_app
+    from spineprep import bids_app
     bids = _tiny_bids(tmp_path / "ds")
     for f in (bids / "sub-01" / "anat").glob("*"):
         f.unlink()  # invalid (no anat), but we skip validation
@@ -162,7 +162,7 @@ def test_skip_bids_validator_bypasses(tmp_path, monkeypatch):
 
 def test_validation_blocks_bad_tree(tmp_path, monkeypatch):
     """Without the skip flag, an invalid tree returns non-zero before the chain."""
-    from spinalfmriprep import bids_app
+    from spineprep import bids_app
     bids = _tiny_bids(tmp_path / "ds")
     for f in (bids / "sub-01" / "anat").glob("*"):
         f.unlink()
@@ -172,7 +172,7 @@ def test_validation_blocks_bad_tree(tmp_path, monkeypatch):
     def fake_main(argv):
         called["ran"] = True
         return 0
-    monkeypatch.setattr("spinalfmriprep.cli.main", fake_main)
+    monkeypatch.setattr("spineprep.cli.main", fake_main)
     rc = bids_app.run_bids_app(bids, out, "participant")
     assert rc == 2 and called["ran"] is False
 
@@ -188,7 +188,7 @@ def _write_step_qc(out: Path, step: str, statuses: list[str]) -> None:
 
 
 def test_step_run_outcome_counts_survivors(tmp_path):
-    from spinalfmriprep.bids_app import _step_run_outcome
+    from spineprep.bids_app import _step_run_outcome
     out = tmp_path / "out"
     _write_step_qc(out, "S4x", ["PASS", "WARN", "FAIL"])
     assert _step_run_outcome(out, "S4x") == (2, 1)
@@ -197,7 +197,7 @@ def test_step_run_outcome_counts_survivors(tmp_path):
 
 def test_chain_continues_when_a_subject_fails(tmp_path, monkeypatch):
     """A step returning rc=1 with surviving runs must NOT halt the chain."""
-    from spinalfmriprep import bids_app
+    from spineprep import bids_app
     bids = _tiny_bids(tmp_path / "ds")
     out = tmp_path / "out"
     monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["StepA", "StepB"])
@@ -209,14 +209,14 @@ def test_chain_continues_when_a_subject_fails(tmp_path, monkeypatch):
         # StepA: one subject fails, one survives -> rc=1 but survivors exist
         _write_step_qc(out, step, ["PASS", "FAIL"] if step == "StepA" else ["PASS"])
         return 1 if step == "StepA" else 0
-    monkeypatch.setattr("spinalfmriprep.cli.main", fake_main)
+    monkeypatch.setattr("spineprep.cli.main", fake_main)
     rc = bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
     assert ran == ["StepA", "StepB"] and rc == 0  # StepB ran despite StepA's failure
 
 
 def test_chain_stops_when_all_runs_fail(tmp_path, monkeypatch):
     """Zero survivors at a step stops the chain cleanly (rc=1)."""
-    from spinalfmriprep import bids_app
+    from spineprep import bids_app
     bids = _tiny_bids(tmp_path / "ds")
     out = tmp_path / "out"
     monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["StepA", "StepB"])
@@ -226,19 +226,19 @@ def test_chain_stops_when_all_runs_fail(tmp_path, monkeypatch):
         ran.append(argv[1])
         _write_step_qc(out, argv[1], ["FAIL", "FAIL"])
         return 1
-    monkeypatch.setattr("spinalfmriprep.cli.main", fake_main)
+    monkeypatch.setattr("spineprep.cli.main", fake_main)
     rc = bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
     assert ran == ["StepA"] and rc == 1  # StepB never ran; stopped at StepA
 
 
 def test_chain_stops_on_crash(tmp_path, monkeypatch):
     """A step that writes no qc.json (crash) stops the chain."""
-    from spinalfmriprep import bids_app
+    from spineprep import bids_app
     bids = _tiny_bids(tmp_path / "ds")
     out = tmp_path / "out"
     monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["StepA", "StepB"])
     ran = []
-    monkeypatch.setattr("spinalfmriprep.cli.main",
+    monkeypatch.setattr("spineprep.cli.main",
                         lambda argv: (ran.append(argv[1]), 1)[1])
     rc = bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
     assert ran == ["StepA"] and rc == 1
@@ -247,7 +247,7 @@ def test_chain_stops_on_crash(tmp_path, monkeypatch):
 # --- T1.1: auto-derived spec for unregistered datasets ----------------------
 
 def test_derive_adhoc_entry_from_data():
-    from spinalfmriprep.steps.s1.validate import _derive_adhoc_entry
+    from spineprep.steps.s1.validate import _derive_adhoc_entry
     runs = {
         "a": {"modality": "func"}, "b": {"modality": "anat"},
         "c": {"modality": "fmap"}, "d": {"modality": "physio"},
@@ -262,7 +262,7 @@ def test_derive_adhoc_entry_from_data():
 # --- T1.2: acquisition-envelope warnings ------------------------------------
 
 def test_envelope_warns_off_3t_and_non_epi(tmp_path):
-    from spinalfmriprep.bids_app import _acquisition_envelope_warnings
+    from spineprep.bids_app import _acquisition_envelope_warnings
     bids = _tiny_bids(tmp_path / "ds")
     sc = bids / "sub-01" / "func" / "sub-01_task-rest_bold.json"
     sc.write_text(json.dumps({"RepetitionTime": 2.0, "MagneticFieldStrength": 7,
@@ -273,7 +273,7 @@ def test_envelope_warns_off_3t_and_non_epi(tmp_path):
 
 
 def test_envelope_silent_on_3t_epi(tmp_path):
-    from spinalfmriprep.bids_app import _acquisition_envelope_warnings
+    from spineprep.bids_app import _acquisition_envelope_warnings
     bids = _tiny_bids(tmp_path / "ds")
     sc = bids / "sub-01" / "func" / "sub-01_task-rest_bold.json"
     sc.write_text(json.dumps({"RepetitionTime": 2.0, "MagneticFieldStrength": 3,
@@ -284,7 +284,7 @@ def test_envelope_silent_on_3t_epi(tmp_path):
 # --- T2.3: machine-readable run manifest ------------------------------------
 
 def test_run_manifest_written(tmp_path, monkeypatch):
-    from spinalfmriprep import bids_app
+    from spineprep import bids_app
     bids = _tiny_bids(tmp_path / "ds")
     out = tmp_path / "out"
     monkeypatch.setattr(bids_app, "PARTICIPANT_STEPS", ["StepA", "StepB"])
@@ -292,9 +292,9 @@ def test_run_manifest_written(tmp_path, monkeypatch):
     def fake_main(argv):
         _write_step_qc(out, argv[1], ["PASS", "FAIL"])
         return 1
-    monkeypatch.setattr("spinalfmriprep.cli.main", fake_main)
+    monkeypatch.setattr("spineprep.cli.main", fake_main)
     bids_app.run_bids_app(bids, out, "participant", skip_bids_validator=True)
-    man = json.loads((out / "spinalfmriprep_run_manifest.json").read_text())
+    man = json.loads((out / "spineprep_run_manifest.json").read_text())
     assert man["status"] == "complete" and man["exit_code"] == 0
     assert man["steps"][0]["survived"] == 1 and man["steps"][0]["failed"] == 1
     assert [s["step"] for s in man["steps"]] == ["StepA", "StepB"]
@@ -304,24 +304,24 @@ def test_run_manifest_written(tmp_path, monkeypatch):
 
 def test_smoothing_sigma_override_sets_env(monkeypatch):
     import os
-    from spinalfmriprep import bids_app
-    monkeypatch.delenv("SPINALFMRIPREP_SIGMA_MM", raising=False)
+    from spineprep import bids_app
+    monkeypatch.delenv("SPINEPREP_SIGMA_MM", raising=False)
     monkeypatch.setattr(bids_app, "run_bids_app", lambda **kw: 0)
     bids_app.main_bids_app(["/b", "/o", "participant",
                             "--smoothing-sigma-mm", "2", "2", "6"])
-    assert os.environ["SPINALFMRIPREP_SIGMA_MM"] == "2.0 2.0 6.0"
+    assert os.environ["SPINEPREP_SIGMA_MM"] == "2.0 2.0 6.0"
 
 
 # --- T2.4: BIDS-Derivatives compliance check --------------------------------
 
 def test_validate_derivatives(tmp_path):
-    from spinalfmriprep.bids_app import validate_derivatives
-    root = tmp_path / "derivatives" / "spinalfmriprep"
+    from spineprep.bids_app import validate_derivatives
+    root = tmp_path / "derivatives" / "spineprep"
     (root / "sub-01" / "func").mkdir(parents=True)
     assert validate_derivatives(root)  # missing dataset_description -> problems
     (root / "dataset_description.json").write_text(json.dumps({
         "Name": "x", "BIDSVersion": "1.11.0", "DatasetType": "derivative",
-        "GeneratedBy": [{"Name": "SpinalfMRIprep"}]}))
+        "GeneratedBy": [{"Name": "SpinePrep"}]}))
     nib.save(nib.Nifti1Image(np.zeros((2, 2, 2), dtype=np.float32), np.eye(4)),
              root / "sub-01" / "func" / "sub-01_task-rest_desc-preproc_bold.nii.gz")
     assert validate_derivatives(root) == []  # now compliant

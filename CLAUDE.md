@@ -1,4 +1,4 @@
-# SpinalfMRIprep — Development Principles
+# SpinePrep — Development Principles
 
 > Distilled from fMRIPrep, BIDS-Apps, SCT, CoSpine, and the cord-fMRI
 > literature. Each principle is a behaviour to check yourself against
@@ -77,7 +77,7 @@ of evidence, not as a sample size to pool away.
 
 Mimic the field's working pipelines (fMRIPrep, MRIQC, SCT). Don't invent
 process; the existing patterns are battle-tested over a decade of
-community use. Where SpinalfMRIprep deviates, document why in
+community use. Where SpinePrep deviates, document why in
 `.claude/specs/` and cite the literature reason.
 
 ## One-line summary

@@ -14,7 +14,7 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spinalfmriprep.workfolder import get_next_workfolder
+from spineprep.workfolder import get_next_workfolder
 
 
 def main() -> int:
@@ -47,7 +47,7 @@ def main() -> int:
     print(f"\n[2/3] Running S1_input_verify on {dataset_key}...")
     run_result = subprocess.run(
         [
-            "poetry", "run", "spinalfmriprep", "run", "S1_input_verify",
+            "poetry", "run", "spineprep", "run", "S1_input_verify",
             "--dataset-key", dataset_key,
             "--datasets-local", str(datasets_local),
             "--out", str(wf),
@@ -64,7 +64,7 @@ def main() -> int:
     print(f"\n[3/3] Running S1_input_verify check...")
     check_result = subprocess.run(
         [
-            "poetry", "run", "spinalfmriprep", "check", "S1_input_verify",
+            "poetry", "run", "spineprep", "check", "S1_input_verify",
             "--dataset-key", dataset_key,
             "--datasets-local", str(datasets_local),
             "--out", str(wf),

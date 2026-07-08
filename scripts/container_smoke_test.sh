@@ -1,7 +1,7 @@
 #!/bin/bash
 # Container integration smoke test (T2.1 / T3.2).
 #
-# Runs the SpinalfMRIprep container end-to-end (participant + group) on ONE
+# Runs the SpinePrep container end-to-end (participant + group) on ONE
 # subject and asserts the expected BIDS-Derivatives + QC + reproducibility
 # artifacts are produced. Use this to verify a fresh build or a new install
 # reproduces known-good outputs. Not a CI unit test — it needs the built image
@@ -10,7 +10,7 @@
 # Usage:
 #   scripts/container_smoke_test.sh <IMAGE> <BIDS_DIR> <SUBJECT_LABEL> [OUT_DIR] [docker|apptainer]
 # Example:
-#   scripts/container_smoke_test.sh spinalfmriprep:7.1 /data/ds004616 06
+#   scripts/container_smoke_test.sh spineprep:7.1 /data/ds004616 06
 
 set -euo pipefail
 
@@ -38,7 +38,7 @@ run() {  # run <level>
 echo "== participant =="; run participant
 echo "== group =="; run group
 
-D="$OUT/derivatives/spinalfmriprep"
+D="$OUT/derivatives/spineprep"
 fail=0
 check() {  # check <glob-description> <path-or-glob>
   if compgen -G "$2" > /dev/null; then echo "  OK   $1"; else echo "  MISS $1 ($2)"; fail=1; fi
@@ -51,7 +51,7 @@ check "per-level tSNR"                "$D/*/sub-$SUB/**/func/*desc-tsnr_per_leve
 check "dataset_description.json"      "$D/dataset_description.json"
 check "reproducibility receipt"       "$D/reproducibility_receipt.json"
 check "release report"               "$D/release_report.html"
-check "run manifest"                 "$OUT/spinalfmriprep_run_manifest.json"
+check "run manifest"                 "$OUT/spineprep_run_manifest.json"
 
 if [ "$fail" -eq 0 ]; then
   echo "SMOKE TEST PASSED  (outputs in $OUT)"

@@ -3,7 +3,7 @@ from pathlib import Path
 import nibabel as nib
 import numpy as np
 
-from spinalfmriprep.S1_input_verify import check_S1_input_verify, run_S1_input_verify
+from spineprep.S1_input_verify import check_S1_input_verify, run_S1_input_verify
 
 
 def _write_mapping(path: Path, dataset_key: str, bids_root: Path) -> Path:
@@ -144,7 +144,7 @@ def test_inventory_records_func_acquisition_metadata(tmp_path):
     """S1 must extract BIDS sidecar timing fields for cord_likely func runs
     so a future opt-in slice-timing correction has data ready."""
     import json
-    from spinalfmriprep.steps.s1.inventory import _build_inventory
+    from spineprep.steps.s1.inventory import _build_inventory
 
     bids = tmp_path / "ds_X"
     func = bids / "sub-01" / "func"
@@ -181,7 +181,7 @@ def test_inventory_records_fmap_acquisition_metadata(tmp_path):
     """S1 must read fmap sidecars too so S5 (distortion correction) can
     pull PE direction + TRT without re-parsing BIDS."""
     import json
-    from spinalfmriprep.steps.s1.inventory import _build_inventory
+    from spineprep.steps.s1.inventory import _build_inventory
 
     bids = tmp_path / "ds_Y"
     fmap = bids / "sub-01" / "fmap"
@@ -215,7 +215,7 @@ def test_inventory_records_fmap_acquisition_metadata(tmp_path):
 def test_inventory_records_trt_for_func(tmp_path):
     """A5 follow-up: TotalReadoutTime is in the func-sidecar allowlist."""
     import json
-    from spinalfmriprep.steps.s1.inventory import _build_inventory
+    from spineprep.steps.s1.inventory import _build_inventory
 
     bids = tmp_path / "ds_Z"
     func = bids / "sub-01" / "func"

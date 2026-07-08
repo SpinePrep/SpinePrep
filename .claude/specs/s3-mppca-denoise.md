@@ -60,11 +60,11 @@ BOLD, off by default, literature-faithful and minimal.
   (never silently corrupts the chain).
 
 ## Deliverables (implemented)
-- `src/spinalfmriprep/lib/denoise.py` — `mppca_denoise()` shells dwidenoise
+- `src/spineprep/lib/denoise.py` — `mppca_denoise()` shells dwidenoise
   (`-noise`, optional `-extent`, `-force`), returns (ok, noise_map, meta) with
   provenance (tool/version/extent), the step-local metric (tissue median tSNR
   pre/post + % gain), and noise median.
-- `src/spinalfmriprep/steps/s3/session.py` — gated stage before S3.1; denoised
+- `src/spineprep/steps/s3/session.py` — gated stage before S3.1; denoised
   series feeds the chain, raw BOLD untouched on disk (provenance).
 - `policy/S3_func_init_and_crop.yaml` — `denoise: {enabled: false, extent: null}`
   with citations + caveats.

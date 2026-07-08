@@ -4,7 +4,7 @@ status: implemented
 
 # S4 func motion correction — audit against dev principles
 
-Step-local audit of S4 against the SpinalfMRIprep development principles
+Step-local audit of S4 against the SpinePrep development principles
 (`CLAUDE.md`). Implementation spec lives in `private/SPEC/S4_func_motion_correction.md`.
 The earlier `.claude/specs/s4-moco-comparison-axial.md` is a *reportlet
 redesign* scope, not this principles audit.

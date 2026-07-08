@@ -1,4 +1,4 @@
-# Normative cord-fMRI QC database (SpinalfMRIprep v1)
+# Normative cord-fMRI QC database (SpinePrep v1)
 
 The first multi-site, multi-paradigm **normative QC reference** for spinal-cord
 fMRI: the cohort-wide distribution of each pipeline QC metric across the v1

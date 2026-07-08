@@ -19,7 +19,7 @@ Emit a BIDS-Derivatives `*_desc-confounds_timeseries.tsv` + JSON sidecar per BOL
 - Per-dataset isolation: `logs/S8_confounds_and_physio_regressors/<dataset_key>/qc.json`.
 
 ## Deliverables
-**Per-run derivatives** (`derivatives/spinalfmriprep/<dataset_key>/sub-XX/[ses-YY]/func/`):
+**Per-run derivatives** (`derivatives/spineprep/<dataset_key>/sub-XX/[ses-YY]/func/`):
 - `*_desc-confounds_timeseries.tsv` — flat-column TSV.
 - `*_desc-confounds_timeseries.json` — per-column metadata.
 
@@ -36,7 +36,7 @@ Emit a BIDS-Derivatives `*_desc-confounds_timeseries.tsv` + JSON sidecar per BOL
 - `*_desc-S8_pnm_peaks.png` — cardiac + respiratory traces with detected peaks (when physio present).
 - `*_desc-S8_correlation_heatmap.png` — Pearson correlation across the full confound matrix.
 
-**Code**: `src/spinalfmriprep/steps/s8/` mirroring s6/s7 layout (`__init__`, `process`, `orchestrate`, `reportlets`).
+**Code**: `src/spineprep/steps/s8/` mirroring s6/s7 layout (`__init__`, `process`, `orchestrate`, `reportlets`).
 
 **Policy + schema**: `policy/S8_confounds.yaml`, `schemas/qc_S8_confounds.schema.json`.
 
@@ -64,7 +64,7 @@ Emit a BIDS-Derivatives `*_desc-confounds_timeseries.tsv` + JSON sidecar per BOL
 1. Mark old spec superseded (done in this PR).
 2. Write `policy/S8_confounds.yaml`.
 3. Write `schemas/qc_S8_confounds.schema.json`.
-4. Scaffold `src/spinalfmriprep/steps/s8/`.
+4. Scaffold `src/spineprep/steps/s8/`.
 5. Implement process: motion → CSF slicewise → RETROICOR (FSL PNM) → cosine → SpinalCompCor (opt-in).
 6. Implement orchestrate (per-dataset, S6/S7-style).
 7. Implement reportlets (5 PNGs).

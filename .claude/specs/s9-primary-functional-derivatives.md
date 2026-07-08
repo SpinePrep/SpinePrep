@@ -20,7 +20,7 @@ Emit the final preprocessed 4D BOLD outputs (native + PAM50, smoothed; un-smooth
 
 ## Deliverables
 
-**Per-run derivatives** (`derivatives/spinalfmriprep/<dataset_key>/sub-XX/[ses-YY]/func/`):
+**Per-run derivatives** (`derivatives/spineprep/<dataset_key>/sub-XX/[ses-YY]/func/`):
 - `*_desc-preproc_bold.nii.gz` — native, smoothed (FINAL native BOLD for GLM).
 - `*_desc-unsmoothed_bold.nii.gz` — native, unsmoothed (S5 undistorted, repacked under canonical name).
 - `*_desc-preproc_funcref.nii.gz` — temporal mean of native smoothed.
@@ -42,7 +42,7 @@ map already carries the smoothing signal):
 - `*_desc-S9_tsnr_per_level.png` — bar chart of tSNR per PAM50 vertebral level.
 - `*_desc-S9_smoothness_summary.png` — measured vs requested FWHM bars.
 
-**Code**: `src/spinalfmriprep/steps/s9/` mirroring s7/s8 layout (`__init__`, `process`, `orchestrate`, `reportlets`).
+**Code**: `src/spineprep/steps/s9/` mirroring s7/s8 layout (`__init__`, `process`, `orchestrate`, `reportlets`).
 
 **Policy + schema**: `policy/S9_primary_functional_derivatives.yaml`, `schemas/qc_S9_primary_functional_derivatives.schema.json`.
 
@@ -71,7 +71,7 @@ map already carries the smoothing signal):
 1. Mark `private/SPEC/S9_primary_functional_derivatives.md` superseded (done in this PR).
 2. Write `policy/S9_primary_functional_derivatives.yaml` (sigma defaults, qc thresholds, method toggle).
 3. Write `schemas/qc_S9_primary_functional_derivatives.schema.json`.
-4. Scaffold `src/spinalfmriprep/steps/s9/` (`__init__`, `process`, `orchestrate`, `reportlets`).
+4. Scaffold `src/spineprep/steps/s9/` (`__init__`, `process`, `orchestrate`, `reportlets`).
 5. Implement:
    - `_run_sct_smooth` — invoke `sct_smooth_spinalcord -i undistorted_bold -s cord_seg -smooth σ -o desc-preproc_bold`.
    - `_warp_to_pam50_4d` — `sct_apply_transfo -i {smoothed,unsmoothed}_bold -d PAM50_t2s -w from-bold_to-PAM50_xfm -x spline`.

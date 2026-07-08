@@ -23,7 +23,7 @@ import pytest
 
 
 def test_build_param_string_defaults_are_cospi_recipe():
-    from spinalfmriprep.steps.s6.process import _build_param_string
+    from spineprep.steps.s6.process import _build_param_string
     s = _build_param_string({})
     steps = s.split(":")
     assert len(steps) == 3
@@ -37,7 +37,7 @@ def test_build_param_string_defaults_are_cospi_recipe():
 
 
 def test_build_param_string_overrides_are_applied():
-    from spinalfmriprep.steps.s6.process import _build_param_string
+    from spineprep.steps.s6.process import _build_param_string
     s = _build_param_string({"step3": {"iter": 5, "algo": "syn"}})
     step3 = s.split(":")[2]
     assert "iter=5" in step3 and "algo=syn" in step3
@@ -51,7 +51,7 @@ def test_build_param_string_overrides_are_applied():
 
 
 def test_binarize_threshold_is_strict_greater_than():
-    from spinalfmriprep.steps.s6.process import _binarize
+    from spineprep.steps.s6.process import _binarize
     arr = np.array([0.0, 0.5, 0.50001, 1.0])
     out = _binarize(arr)
     # threshold 0.5 with strict > : 0.5 stays False, 0.50001 becomes True
@@ -60,14 +60,14 @@ def test_binarize_threshold_is_strict_greater_than():
 
 
 def test_dice_identical_masks_is_one():
-    from spinalfmriprep.steps.s6.process import _dice
+    from spineprep.steps.s6.process import _dice
     a = np.zeros((8, 8, 4))
     a[2:6, 2:6, 1:3] = 1.0
     assert _dice(a, a) == pytest.approx(1.0)
 
 
 def test_dice_disjoint_masks_is_zero():
-    from spinalfmriprep.steps.s6.process import _dice
+    from spineprep.steps.s6.process import _dice
     a = np.zeros((8, 8, 2)); a[0:3, 0:3, :] = 1.0
     b = np.zeros((8, 8, 2)); b[5:8, 5:8, :] = 1.0
     assert _dice(a, b) == 0.0
@@ -75,13 +75,13 @@ def test_dice_disjoint_masks_is_zero():
 
 def test_dice_both_empty_returns_zero():
     """n == 0 guard: two empty masks have no overlap and no volume."""
-    from spinalfmriprep.steps.s6.process import _dice
+    from spineprep.steps.s6.process import _dice
     z = np.zeros((4, 4, 4))
     assert _dice(z, z) == 0.0
 
 
 def test_dice_half_overlap_matches_formula():
-    from spinalfmriprep.steps.s6.process import _dice
+    from spineprep.steps.s6.process import _dice
     # a = 4 voxels, b = 4 voxels, intersection = 2 -> 2*2/(4+4) = 0.5
     a = np.zeros((4, 4)); a[0, 0:4] = 1.0
     b = np.zeros((4, 4)); b[0, 2:4] = 1.0; b[1, 0:2] = 1.0
@@ -95,7 +95,7 @@ def test_dice_half_overlap_matches_formula():
 
 def test_mi_identical_signal_exceeds_shuffled():
     """MI of an array with itself must exceed MI with a shuffled copy."""
-    from spinalfmriprep.steps.s6.process import _mutual_information
+    from spineprep.steps.s6.process import _mutual_information
     rng = np.random.default_rng(0)
     a = rng.normal(size=4000)
     shuffled = rng.permutation(a)
@@ -106,7 +106,7 @@ def test_mi_identical_signal_exceeds_shuffled():
 
 
 def test_mi_empty_after_nan_filter_is_zero():
-    from spinalfmriprep.steps.s6.process import _mutual_information
+    from spineprep.steps.s6.process import _mutual_information
     a = np.array([np.nan, np.nan])
     b = np.array([1.0, 2.0])
     # every paired sample has a NaN in a -> no finite pairs -> 0.0
@@ -119,7 +119,7 @@ def test_mi_empty_after_nan_filter_is_zero():
 
 
 def test_hd95_asd_zero_for_identical_masks():
-    from spinalfmriprep.steps.s6.process import _hd95_and_asd
+    from spineprep.steps.s6.process import _hd95_and_asd
     m = np.zeros((10, 10, 3), dtype=bool)
     m[3:7, 3:7, :] = True
     hd95, asd = _hd95_and_asd(m, m, (1.0, 1.0, 1.0))
@@ -128,7 +128,7 @@ def test_hd95_asd_zero_for_identical_masks():
 
 
 def test_hd95_returns_none_for_empty_mask():
-    from spinalfmriprep.steps.s6.process import _hd95_and_asd
+    from spineprep.steps.s6.process import _hd95_and_asd
     full = np.zeros((6, 6, 2), dtype=bool); full[1:4, 1:4, :] = True
     empty = np.zeros((6, 6, 2), dtype=bool)
     hd95, asd = _hd95_and_asd(full, empty, (1.0, 1.0, 1.0))
@@ -137,7 +137,7 @@ def test_hd95_returns_none_for_empty_mask():
 
 def test_hd95_scales_with_zooms():
     """Surface distances are in mm; doubling the in-plane zoom doubles HD95."""
-    from spinalfmriprep.steps.s6.process import _hd95_and_asd
+    from spineprep.steps.s6.process import _hd95_and_asd
     a = np.zeros((12, 12, 2), dtype=bool); a[3:9, 3:9, :] = True
     # b shifted by 2 voxels in X
     b = np.zeros((12, 12, 2), dtype=bool); b[5:11, 3:9, :] = True
@@ -165,14 +165,14 @@ _GOOD = {
 
 
 def test_classify_all_good_is_pass():
-    from spinalfmriprep.steps.s6.process import _classify
+    from spineprep.steps.s6.process import _classify
     status, reasons = _classify(dict(_GOOD), {}, syn_fallback=False)
     assert status == "PASS"
     assert reasons == []
 
 
 def test_classify_dice_below_pass_floor_warns():
-    from spinalfmriprep.steps.s6.process import _classify
+    from spineprep.steps.s6.process import _classify
     m = dict(_GOOD, cord_dice=0.80)  # >= fail 0.65 but < pass 0.85
     status, reasons = _classify(m, {}, syn_fallback=False)
     assert status == "WARN"
@@ -180,7 +180,7 @@ def test_classify_dice_below_pass_floor_warns():
 
 
 def test_classify_dice_below_fail_floor_fails():
-    from spinalfmriprep.steps.s6.process import _classify
+    from spineprep.steps.s6.process import _classify
     m = dict(_GOOD, cord_dice=0.60)  # < fail 0.65
     status, reasons = _classify(m, {}, syn_fallback=False)
     assert status == "FAIL"
@@ -190,7 +190,7 @@ def test_classify_dice_below_fail_floor_fails():
 def test_classify_syn_fallback_relaxes_dice_pass_floor():
     """A 0.82 Dice WARNs under the strict 0.85 floor but PASSes under the
     relaxed 0.80 syn-fallback floor."""
-    from spinalfmriprep.steps.s6.process import _classify
+    from spineprep.steps.s6.process import _classify
     m = dict(_GOOD, cord_dice=0.82)
     strict, _ = _classify(m, {}, syn_fallback=False)
     relaxed, _ = _classify(m, {}, syn_fallback=True)
@@ -201,7 +201,7 @@ def test_classify_syn_fallback_relaxes_dice_pass_floor():
 def test_classify_hd95_can_only_warn_never_fail():
     """HD95 is observability-only: a huge HD95 with good Dice/centerline must
     not push status past WARN (CLAUDE.md principle #3, exp pain sub-19)."""
-    from spinalfmriprep.steps.s6.process import _classify
+    from spineprep.steps.s6.process import _classify
     m = dict(_GOOD, cord_hd95_mm=50.0)
     status, reasons = _classify(m, {}, syn_fallback=False)
     assert status == "WARN"
@@ -209,14 +209,14 @@ def test_classify_hd95_can_only_warn_never_fail():
 
 
 def test_classify_centerline_max_above_warn_ceiling_fails():
-    from spinalfmriprep.steps.s6.process import _classify
+    from spineprep.steps.s6.process import _classify
     m = dict(_GOOD, centerline_round_trip_max_vox=12.0)  # > warn 10.0
     status, _ = _classify(m, {}, syn_fallback=False)
     assert status == "FAIL"
 
 
 def test_classify_missing_dice_warns_not_fail():
-    from spinalfmriprep.steps.s6.process import _classify
+    from spineprep.steps.s6.process import _classify
     m = {k: v for k, v in _GOOD.items() if k != "cord_dice"}
     status, reasons = _classify(m, {}, syn_fallback=False)
     assert status == "WARN"
@@ -225,7 +225,7 @@ def test_classify_missing_dice_warns_not_fail():
 
 def test_classify_missing_centerline_is_warn_via_tier():
     """_tier returns WARN for a None metric value (and never FAIL)."""
-    from spinalfmriprep.steps.s6.process import _classify
+    from spineprep.steps.s6.process import _classify
     m = {"cord_dice": 0.90, "cord_hd95_mm": 2.0}  # no centerline keys
     status, _ = _classify(m, {}, syn_fallback=False)
     assert status == "WARN"
@@ -237,7 +237,7 @@ def test_classify_missing_centerline_is_warn_via_tier():
 
 
 def test_sync_sform_qform_copies_qform_into_sform(tmp_path):
-    from spinalfmriprep.steps.s6.process import _sync_sform_qform
+    from spineprep.steps.s6.process import _sync_sform_qform
     aff = np.diag([2.0, 2.0, 3.0, 1.0])
     img = nib.Nifti1Image(np.zeros((4, 4, 4), dtype=np.float32), aff)
     img.set_qform(aff, code=1)
@@ -259,7 +259,7 @@ def test_sync_sform_qform_copies_qform_into_sform(tmp_path):
 
 
 def test_norm_sub_strips_prefix_idempotently():
-    from spinalfmriprep.steps.s6.orchestrate import _norm_sub
+    from spineprep.steps.s6.orchestrate import _norm_sub
     assert _norm_sub("sub-01") == "01"
     assert _norm_sub("01") == "01"
     assert _norm_sub("") == ""
@@ -267,7 +267,7 @@ def test_norm_sub_strips_prefix_idempotently():
 
 
 def test_norm_ses_strips_prefix_and_handles_empty():
-    from spinalfmriprep.steps.s6.orchestrate import _norm_ses
+    from spineprep.steps.s6.orchestrate import _norm_ses
     assert _norm_ses("ses-pre") == "pre"
     assert _norm_ses("pre") == "pre"
     assert _norm_ses(None) is None

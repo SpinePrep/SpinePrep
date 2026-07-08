@@ -1,4 +1,4 @@
-"""Head-to-head: SpinalfMRIprep S6 registration recipe vs SCT-default (T4; V3).
+"""Head-to-head: SpinePrep S6 registration recipe vs SCT-default (T4; V3).
 
 Pre-empts the #1 reviewer objection ("why not just use SCT defaults?"). Compares
 functional->anatomical cord registration quality (cord-Dice) between:

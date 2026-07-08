@@ -1,6 +1,6 @@
 # Install & Use
 
-A complete guide to installing SpinalfMRIprep and processing your own data.
+A complete guide to installing SpinePrep and processing your own data.
 
 ## System Requirements
 
@@ -17,8 +17,8 @@ A complete guide to installing SpinalfMRIprep and processing your own data.
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/SpinalfMRIprep/SpinalfMRIprep.git
-cd SpinalfMRIprep
+git clone https://github.com/SpinePrep/SpinePrep.git
+cd SpinePrep
 ```
 
 ### Step 2: Install Python Dependencies
@@ -27,13 +27,13 @@ cd SpinalfMRIprep
 # Install Poetry (if not already installed)
 pip install poetry
 
-# Install SpinalfMRIprep
+# Install SpinePrep
 poetry install
 ```
 
 ### Step 3: Pull Container Images
 
-SpinalfMRIprep uses containerized neuroimaging tools:
+SpinePrep uses containerized neuroimaging tools:
 
 ```bash
 # Required: Spinal Cord Toolbox
@@ -47,7 +47,7 @@ docker pull vnmd/ants_2.6.0_20250424
 ### Step 4: Verify Installation
 
 ```bash
-poetry run spinalfmriprep run S0_SETUP --project-root .
+poetry run spineprep run S0_SETUP --project-root .
 ```
 
 Expected output: `status: PASS`
@@ -90,17 +90,17 @@ For a one-off dataset not in the manifest:
 
 ```bash
 # Step 1: Validate inputs
-poetry run spinalfmriprep run S1_input_verify \
+poetry run spineprep run S1_input_verify \
   --bids-root /path/to/my_dataset \
   --out work/my_analysis
 
 # Step 2: Anatomical processing
-poetry run spinalfmriprep run S2_anat_cordref \
+poetry run spineprep run S2_anat_cordref \
   --bids-root /path/to/my_dataset \
   --out work/my_analysis
 
 # Step 3: Functional initialization
-poetry run spinalfmriprep run S3_func_init_and_crop \
+poetry run spineprep run S3_func_init_and_crop \
   --bids-root /path/to/my_dataset \
   --out work/my_analysis
 ```
@@ -114,7 +114,7 @@ For datasets registered in `policy/datasets.yaml`:
 echo "my_dataset_key: /path/to/my_dataset" >> config/datasets_local.yaml
 
 # Run with dataset key
-poetry run spinalfmriprep run S1_input_verify \
+poetry run spineprep run S1_input_verify \
   --dataset-key my_dataset_key \
   --datasets-local config/datasets_local.yaml \
   --out work/my_analysis
@@ -124,14 +124,14 @@ poetry run spinalfmriprep run S1_input_verify \
 
 ## Sample Datasets
 
-SpinalfMRIprep includes built-in access to OpenNeuro validation datasets:
+SpinePrep includes built-in access to OpenNeuro validation datasets:
 
 | Dataset | Task | Download Command |
 |---------|------|------------------|
-| ds005884 | Motor | `poetry run spinalfmriprep download-sample --dataset ds005884` |
-| ds005883 | Pain | `poetry run spinalfmriprep download-sample --dataset ds005883` |
-| ds004386 | Rest | `poetry run spinalfmriprep download-sample --dataset ds004386` |
-| ds004616 | Hand Grasp | `poetry run spinalfmriprep download-sample --dataset ds004616` |
+| ds005884 | Motor | `poetry run spineprep download-sample --dataset ds005884` |
+| ds005883 | Pain | `poetry run spineprep download-sample --dataset ds005883` |
+| ds004386 | Rest | `poetry run spineprep download-sample --dataset ds004386` |
+| ds004616 | Hand Grasp | `poetry run spineprep download-sample --dataset ds004616` |
 
 ---
 
@@ -142,7 +142,7 @@ SpinalfMRIprep includes built-in access to OpenNeuro validation datasets:
 ```
 work/my_analysis/
 ├── derivatives/
-│   └── spinalfmriprep/
+│   └── spineprep/
 │       ├── dataset_description.json
 │       ├── qc_dashboard.html          # Interactive QC viewer
 │       └── sub-01/

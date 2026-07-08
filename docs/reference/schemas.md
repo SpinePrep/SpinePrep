@@ -1,6 +1,6 @@
 # Schemas Reference
 
-SpinalfMRIprep uses well-defined schemas for data exchange and quality control.
+SpinePrep uses well-defined schemas for data exchange and quality control.
 
 ## QC Status Schema
 
@@ -38,11 +38,11 @@ Every step produces a `qc_status.json` file with the following structure:
 
 ## BIDS Derivatives
 
-SpinalfMRIprep outputs follow [BIDS Derivatives](https://bids-specification.readthedocs.io/en/stable/derivatives/introduction.html) conventions:
+SpinePrep outputs follow [BIDS Derivatives](https://bids-specification.readthedocs.io/en/stable/derivatives/introduction.html) conventions:
 
 ```
 derivatives/
-└── spinalfmriprep/
+└── spineprep/
     ├── dataset_description.json
     └── sub-XX/
         └── ses-YY/

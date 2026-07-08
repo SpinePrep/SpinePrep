@@ -77,7 +77,7 @@ publication:
   citation_cff:
     enabled: true
     # Self-citation template — fill at runtime
-    name: "SpinalfMRIprep"
+    name: "SpinePrep"
     description: "Cervical spinal cord fMRI preprocessing pipeline"
 
   references_bib:

@@ -30,30 +30,30 @@ Aggregate **S1–S9** per-step outputs into the v1 release-readiness deliverable
 - **No new step-level QC metrics.** S10 surfaces what S1–S9 already computed; doesn't compute new ones.
 - **fMRIPrep convention adopted where applicable** — CC0 boilerplate text pattern (per-step `__desc__` concatenation), per-subject HTML structure, `metrics_index.jsonl` flat table.
 - Per-dataset isolation: `logs/S10_qc_aggregation_and_release/<dataset_key>/qc.json`.
-- Top-level (cross-dataset) outputs land at `derivatives/spinalfmriprep/` directly, NOT under a `<dataset_key>/` prefix.
+- Top-level (cross-dataset) outputs land at `derivatives/spineprep/` directly, NOT under a `<dataset_key>/` prefix.
 
 ## Deliverables (14 items)
 
 ### Tier 1 — Aggregation core
-1. **Per-subject HTML report** (`derivatives/spinalfmriprep/<ds>/sub-XX/sub-XX_qc_report.html`)
+1. **Per-subject HTML report** (`derivatives/spineprep/<ds>/sub-XX/sub-XX_qc_report.html`)
    - Step × run pivot, embedded reportlet thumbnails (link to existing PNGs).
    - Status badge (PASS/WARN/FAIL) per cell.
    - Failure messages inlined for any non-PASS cell.
-2. **Group QC dashboard** (`derivatives/spinalfmriprep/group_qc_dashboard.html`)
+2. **Group QC dashboard** (`derivatives/spineprep/group_qc_dashboard.html`)
    - Step × subject status heatmap (rows = subjects, cols = S2..**S9**, colour = status).
    - Per-step pass-rate bar chart.
    - Per-step metric boxplots (FD, tSNR, cord Dice) from `metrics_index.jsonl`. (The `condition_number` boxplot was a former-S10 input and is dropped with the former S10.)
-3. **`metrics_index.jsonl`** (`derivatives/spinalfmriprep/metrics_index.jsonl`)
+3. **`metrics_index.jsonl`** (`derivatives/spineprep/metrics_index.jsonl`)
    - One row per (step, dataset_key, subject, session, run_id).
    - Fields: `step, dataset_key, subject, session, run_id, status, failure_message, metrics: {...}`.
-4. **Run inventory** (`derivatives/spinalfmriprep/run_inventory.tsv` + `.png`)
+4. **Run inventory** (`derivatives/spineprep/run_inventory.tsv` + `.png`)
    - subjects × runs × tasks × sessions × overall pass/warn/fail pivot.
 
 ### Tier 2 — Cord-novel cohort transparency
-5. **Per-vertebral-level coverage matrix** (`derivatives/spinalfmriprep/cohort_coverage_matrix.png` + `.tsv`)
+5. **Per-vertebral-level coverage matrix** (`derivatives/spineprep/cohort_coverage_matrix.png` + `.tsv`)
    - Rows = subject (within each dataset), cols = vertebral levels C1..T1.
    - Cell = "covered" / "partial" / "absent" based on S9 `*_desc-tsnr_per_level.tsv` row presence.
-6. **Cohort cord SNR heatmap by segment** (`derivatives/spinalfmriprep/cohort_tsnr_heatmap.png` + `.tsv`)
+6. **Cohort cord SNR heatmap by segment** (`derivatives/spineprep/cohort_tsnr_heatmap.png` + `.tsv`)
    - Rows = subjects, cols = vertebral levels, cell colour = median in-cord tSNR post-smoothing (from S9).
 7. ~~**Cohort FC summary**~~ — **REMOVED 2026-06-11 with the former S10.** This
    deliverable consumed the former S10's hemicord connectivity TSVs (group-mean
@@ -63,47 +63,47 @@ Aggregate **S1–S9** per-step outputs into the v1 release-readiness deliverable
    to 13.)
 
 ### Tier 3 — Publication & reproducibility
-8. **Reproducibility receipt** (`derivatives/spinalfmriprep/reproducibility_receipt.json`)
+8. **Reproducibility receipt** (`derivatives/spineprep/reproducibility_receipt.json`)
    - `sct_version`, `fsl_version`, `python_version`.
    - `package_versions`: nilearn, nibabel, scipy, numpy, pandas, matplotlib, scikit-image, scikit-learn, joblib.
    - `policy_sha256` per step (read from S2..S9's qc_metrics.json provenance).
    - `pipeline_git_sha` (current HEAD), `pipeline_git_describe` (latest tag if any).
    - `os`, `hostname`, `timestamp_utc`.
-9. **`CITATION.cff` + `references.bib`** (`derivatives/spinalfmriprep/CITATION.cff` + `.../references.bib`)
-   - SpinalfMRIprep self-citation (template).
+9. **`CITATION.cff` + `references.bib`** (`derivatives/spineprep/CITATION.cff` + `.../references.bib`)
+   - SpinePrep self-citation (template).
    - Auto-bibliography of every methods reference the chain depends on:
      Kaptan 2023, Hemmerling 2025/2023, Eippert 2017, Brooks 2008, De Leener 2018 (PAM50), Valošek 2024 (rootlets registration), Shrout & Fleiss 1979 (ICC), Cicchetti 1994 (ICC thresholds), Marrelec 2006 (partial correlation), Dabbagh 2024, Forman 1995 (FWHM estimation), Schreiber & Schmitz 1996 (IAAFT), Behzadi 2007 (CompCor), Power 2014 (FD/DVARS).
-10. **`dataset_description.json`** (`derivatives/spinalfmriprep/dataset_description.json`)
+10. **`dataset_description.json`** (`derivatives/spineprep/dataset_description.json`)
     - `Name`, `BIDSVersion: "1.10.0"`, `DatasetType: "derivative"`.
-    - `GeneratedBy`: list with `Name: "SpinalfMRIprep"`, `Version`, `Container`, `Description`.
+    - `GeneratedBy`: list with `Name: "SpinePrep"`, `Version`, `Container`, `Description`.
     - `SourceDatasets`: list of BIDS source datasets (from S1 qc.json `bids_root` fields).
-11. **`participants.tsv` + `participants.json`** (`derivatives/spinalfmriprep/participants.tsv` + `.json`)
+11. **`participants.tsv` + `participants.json`** (`derivatives/spineprep/participants.tsv` + `.json`)
     - Columns: `participant_id, dataset_key, n_runs, n_sessions, n_passed, n_warn, n_failed, mean_fd_mm, median_in_cord_tsnr, included_recommendation`. (`max_condition_number` was a former-S10-derived column and is dropped with the former S10.)
     - `participants.json` sidecar describes each column (BIDS requires sidecar for non-standard columns).
-12. **Methods manifest** (`derivatives/spinalfmriprep/methods_manifest.md` + `.tex` + `.html`)
+12. **Methods manifest** (`derivatives/spineprep/methods_manifest.md` + `.tex` + `.html`)
     - fMRIPrep-style: one paragraph per step, citing the method, listing key parameters from the policy YAML.
     - CC0 boilerplate adapted for cord pipeline.
     - Pipeline_version + policy_SHA stamp in header.
 
 ### Tier 4 — Compliance + navigation
-13. **Internal sidecar audit** (`derivatives/spinalfmriprep/sidecar_audit.json` + `.html`)
+13. **Internal sidecar audit** (`derivatives/spineprep/sidecar_audit.json` + `.html`)
     - For each emitted `.nii.gz`: matching `.json` (where expected per family — confounds, xfm, atlas, level-tsnr, etc.).
     - For each emitted `.tsv`: header row + matching `.json` sidecar OR documented schema column.
     - NIfTI dtype + shape + affine validity sanity check.
     - Cross-check expected output paths from each step's QC `output_paths` against actual files on disk.
     - Output: count of files audited, count of missing sidecars, count of malformed NIfTIs, list of issues. Non-blocking.
-14. **`release_report.html`** (`derivatives/spinalfmriprep/release_report.html`)
+14. **`release_report.html`** (`derivatives/spineprep/release_report.html`)
     - Single-page index linking items 1–13.
     - Sections: "Per-subject reports" (N links), "Cohort views" (links to group dashboard + coverage matrix + tSNR heatmap; the FC summary link is removed with the former S10), "Release artifacts" (CITATION.cff, methods, reproducibility), "Compliance" (sidecar audit).
     - Embedded summary stats: total subjects, total runs, pipeline version, dataset list.
 
 ### Code + policy + schema
-- `src/spinalfmriprep/steps/s11/__init__.py`
-- `src/spinalfmriprep/steps/s11/process.py` — all 14 generators.
-- `src/spinalfmriprep/steps/s11/orchestrate.py` — global walk + per-dataset coordination.
-- `src/spinalfmriprep/steps/s11/reportlets.py` — boxplots, heatmaps used in group dashboard.
-- `src/spinalfmriprep/steps/s11/templates/` — Jinja-like or f-string HTML templates for per-subject report + release_report + methods manifest.
-- `src/spinalfmriprep/S10_qc_aggregation_and_release.py` (CLI re-export).
+- `src/spineprep/steps/s11/__init__.py`
+- `src/spineprep/steps/s11/process.py` — all 14 generators.
+- `src/spineprep/steps/s11/orchestrate.py` — global walk + per-dataset coordination.
+- `src/spineprep/steps/s11/reportlets.py` — boxplots, heatmaps used in group dashboard.
+- `src/spineprep/steps/s11/templates/` — Jinja-like or f-string HTML templates for per-subject report + release_report + methods manifest.
+- `src/spineprep/S10_qc_aggregation_and_release.py` (CLI re-export).
 - `policy/S10_qc_aggregation_and_release.yaml`
 - `schemas/qc_S10_qc_aggregation_and_release.schema.json`
 
@@ -140,7 +140,7 @@ Aggregate **S1–S9** per-step outputs into the v1 release-readiness deliverable
 1. Mark `private/SPEC/S10_qc_aggregation_and_reports.md` superseded.
 2. Write `policy/S10_qc_aggregation_and_release.yaml`.
 3. Write `schemas/qc_S10_qc_aggregation_and_release.schema.json`.
-4. Scaffold `src/spinalfmriprep/steps/s11/` (process, orchestrate, reportlets, templates).
+4. Scaffold `src/spineprep/steps/s11/` (process, orchestrate, reportlets, templates).
 5. Implement 14 generators in `process.py`:
    - `_walk_chain_qc()` — load all step qc.jsons across datasets.
    - `_build_metrics_index_jsonl()`.
@@ -214,7 +214,7 @@ principles-alignment check.
 | 1 | Small dev cohort | ✅ runs on 11-run reg set (5 subjects × {1–4} runs) |
 | 2 | Literature defaults | ✅ BIDS-Derivatives spec, CFF v1.2.0, fMRIPrep CC0 boilerplate, Citation File Format v1.2.0, Kaptan / Hemmerling / Eippert / Brooks / De Leener / Cicchetti / Shrout-&-Fleiss bibliography |
 | 3 | Step-local truth metric | ✅ `n_subjects_aggregated`, `n_runs_aggregated`, `n_datasets`, `n_subject_reports`, `subject_report_fraction` (headline gate), `missing_step_qc_count`, `sidecar_audit_issues`. (`cohort_fc_n_common_rois` was a former-S10/FC-summary metric and is dropped with the former S10, 2026-06-11.) |
-| 4 | Diagnostic reportlet | ✅ **dashboard banner** (not per-run reportlet — S10 is global). Banner shows status badge + links to `release_report.html` and `group_qc_dashboard.html` + headline metrics. Plus the release-grade deliverables under `derivatives/spinalfmriprep/` (per-subject HTML reports, cohort coverage matrix, tSNR heatmap, methods manifest, CITATION.cff, references.bib, reproducibility receipt, …). (The cohort FC summary is no longer among them — removed with the former S10, 2026-06-11.) |
+| 4 | Diagnostic reportlet | ✅ **dashboard banner** (not per-run reportlet — S10 is global). Banner shows status badge + links to `release_report.html` and `group_qc_dashboard.html` + headline metrics. Plus the release-grade deliverables under `derivatives/spineprep/` (per-subject HTML reports, cohort coverage matrix, tSNR heatmap, methods manifest, CITATION.cff, references.bib, reproducibility receipt, …). (The cohort FC summary is no longer among them — removed with the former S10, 2026-06-11.) |
 | 5 | Visual QC validator | ✅ The release_report.html is the single-page index linking all 23 artifacts. A human opens it and eyeballs everything. |
 | 6 | Lock and ship | ✅ policy + schema + 3-round-audited spec |
 | 7 | No chain backtracking | ✅ S10 *consumes* the entire chain's qc.json files but emits self-contained release artifacts; nothing downstream of S10 |
@@ -228,7 +228,7 @@ S10 is **global / cross-dataset**, not per-run. The dashboard layer
 (qc_dashboard_html.py:331+) adds a top-of-index "S10 — Release
 Readiness" banner with status + links rather than trying to fit S10
 into the per-run reportlet gallery. The per-subject HTML reports
-under `derivatives/spinalfmriprep/<ds>/sub-XX/sub-XX_qc_report.html`
+under `derivatives/spineprep/<ds>/sub-XX/sub-XX_qc_report.html`
 ARE the per-subject views; release_report.html is the cohort index.
 
 ## Step-local truth metric rationale

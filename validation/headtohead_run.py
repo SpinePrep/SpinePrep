@@ -73,7 +73,7 @@ def _figure(df: pd.DataFrame, out: Path) -> None:
     for _, r in df.iterrows():
         ax.plot([0, 1], [r["sct_default"], r["ours"]], "-", color="#bbb", lw=0.7, zorder=1)
     ax.scatter(np.zeros(len(df)), df["sct_default"], s=22, color="#cc6666", zorder=2, label="SCT-default")
-    ax.scatter(np.ones(len(df)), df["ours"], s=22, color="#1f9d57", zorder=2, label="SpinalfMRIprep (S6 recipe)")
+    ax.scatter(np.ones(len(df)), df["ours"], s=22, color="#1f9d57", zorder=2, label="SpinePrep (S6 recipe)")
     ax.set_xticks([0, 1]); ax.set_xticklabels(["SCT-default", "ours"])
     ax.set_ylabel("func→anat cord Dice"); ax.set_ylim(0, 1)
     ax.set_title(f"Head-to-head cord registration (paired, n={len(df)})", fontsize=10)

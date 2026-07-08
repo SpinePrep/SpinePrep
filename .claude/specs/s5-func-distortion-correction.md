@@ -4,7 +4,7 @@ status: implemented
 
 # S5 func distortion correction — audit against dev principles
 
-Step-local audit of S5 against the SpinalfMRIprep development principles
+Step-local audit of S5 against the SpinePrep development principles
 (`CLAUDE.md`). Implementation spec lives in `private/SPEC/S5_func_distortion_correction.md`.
 
 S5 received the deepest audit-and-rework in the May 2026 cycle —

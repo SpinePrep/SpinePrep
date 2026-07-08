@@ -38,8 +38,8 @@ image-level confirmation that the cord moved where it should.
 ## Deliverables
 
 - New renderer `render_s5_distortion_effectiveness(metrics, output_path, mode, work_dir)`
-  in `src/spinalfmriprep/steps/s5/reportlets.py`.
-- Wire-up in `src/spinalfmriprep/steps/s5/process.py`:
+  in `src/spineprep/steps/s5/reportlets.py`.
+- Wire-up in `src/spineprep/steps/s5/process.py`:
   - Emit a third PNG path under `figures_dir / f"{prefix}_desc-S5_distortion_effectiveness.png"`.
   - Add `distortion_effectiveness` key to the `reportlets:` dict in
     `run_S5_func_distortion_correction`'s return.
@@ -47,7 +47,7 @@ image-level confirmation that the cord moved where it should.
   `qc:` block, add three knobs (n_axial_tiles, contour width, dpi).
 - `schemas/qc_S5_func_distortion_correction.schema.json` — add
   `distortion_effectiveness` to the required `reportlets` keys.
-- `src/spinalfmriprep/qc_dashboard_html.py` `REPORTLET_ORDER` +
+- `src/spineprep/qc_dashboard_html.py` `REPORTLET_ORDER` +
   `REPORTLET_LABELS` for `S5_func_distortion_correction` — append
   the new key with label "S5 - Distortion Correction (Before vs After)".
 - Update `.claude/specs/s5-func-distortion-correction.md` reportlet
@@ -86,7 +86,7 @@ placeholder PNG explaining why (same pattern as the other two).
 
 ```
 +----------------------------------------------------------+
-|  HEADER: SpinalfMRIprep · S5 — Distortion Effectiveness  |
+|  HEADER: SpinePrep · S5 — Distortion Effectiveness  |
 |  pill: mode=topup | sub-02 | task-pain | dice 0.81       |
 +----------------------------------------------------------+
 |                                                          |
@@ -124,7 +124,7 @@ Implementation notes:
 
 ## Next Steps
 
-1. Read `src/spinalfmriprep/reportlets_common.py` to identify the
+1. Read `src/spineprep/reportlets_common.py` to identify the
    right primitive (`render_sagittal_plus_montage` vs lower-level
    `render_sagittal` + `render_axial_tile`).
 2. Implement `render_s5_distortion_effectiveness` in

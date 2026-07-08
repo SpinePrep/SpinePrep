@@ -111,7 +111,7 @@ correlates strongly with anatomy fails the run.
 ├── desc-denoised_bold.nii.gz    # denoised 4D series (S3 reads this when present)
 └── denoise_noise_map.nii.gz     # estimated noise (sigma) map
 
-derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
+derivatives/spineprep/{dataset}/sub-{id}/figures/
 ├── sub-{id}_..._desc-S2B_noise_sigma.png
 ├── sub-{id}_..._desc-S2B_tsnr_before_after.png
 └── sub-{id}_..._desc-S2B_residual_structure.png

@@ -22,7 +22,7 @@ Bring the PAM50 template, cord/WM/GM/CSF masks, and white-matter atlas into nati
 
 ## Deliverables
 
-### Per-run derivative artifacts (`derivatives/spinalfmriprep/<dataset_key>/sub-XX/[ses-YY]/`)
+### Per-run derivative artifacts (`derivatives/spineprep/<dataset_key>/sub-XX/[ses-YY]/`)
 
 **func/**
 - `*_from-bold_to-PAM50_xfm.h5` — composite warp (S6 ∘ S2 ∘ S7-refine), forward.
@@ -54,12 +54,12 @@ Bring the PAM50 template, cord/WM/GM/CSF masks, and white-matter atlas into nati
 - `policy/S7_template_normalization.yaml` — interpolation choices, QC thresholds, refinement on/off (default on).
 
 ### Code (new package, mirrors S6 layout)
-- `src/spinalfmriprep/steps/s7/__init__.py`
-- `src/spinalfmriprep/steps/s7/policy.py` — load + validate `S7_template_normalization.yaml`.
-- `src/spinalfmriprep/steps/s7/io.py` — derivative paths, per-dataset keying, helpers.
-- `src/spinalfmriprep/steps/s7/process.py` — `_compose_init_warps`, `_run_refinement`, `_warp_template_to_native`, `_compute_qc`.
-- `src/spinalfmriprep/steps/s7/orchestrate.py` — runs S7 per dataset/subject/session/run; writes qc.json, reportlets, dashboards.
-- `src/spinalfmriprep/steps/s7/reportlets.py` — sagittal + axial overlays from on-disk artifacts (dev-loop re-render path matching `regen_S2_reportlets.py`).
+- `src/spineprep/steps/s7/__init__.py`
+- `src/spineprep/steps/s7/policy.py` — load + validate `S7_template_normalization.yaml`.
+- `src/spineprep/steps/s7/io.py` — derivative paths, per-dataset keying, helpers.
+- `src/spineprep/steps/s7/process.py` — `_compose_init_warps`, `_run_refinement`, `_warp_template_to_native`, `_compute_qc`.
+- `src/spineprep/steps/s7/orchestrate.py` — runs S7 per dataset/subject/session/run; writes qc.json, reportlets, dashboards.
+- `src/spineprep/steps/s7/reportlets.py` — sagittal + axial overlays from on-disk artifacts (dev-loop re-render path matching `regen_S2_reportlets.py`).
 
 ### Schema (new)
 - `schemas/qc_S7_template_normalization.schema.json` — JSON Schema for per-run qc.json.
@@ -112,7 +112,7 @@ Bring the PAM50 template, cord/WM/GM/CSF masks, and white-matter atlas into nati
 1. Mark `private/SPEC/S7_template_normalization.md` status → `superseded`, add `superseded_by: .claude/specs/s7-template-normalization.md` to its frontmatter.
 2. Write `policy/S7_template_normalization.yaml` with the interpolation map, refinement params, QC thresholds.
 3. Add `schemas/qc_S7_template_normalization.schema.json`.
-4. Scaffold `src/spinalfmriprep/steps/s7/` mirroring S6 layout (policy.py, io.py, process.py, orchestrate.py, reportlets.py).
+4. Scaffold `src/spineprep/steps/s7/` mirroring S6 layout (policy.py, io.py, process.py, orchestrate.py, reportlets.py).
 5. Implement `_compose_init_warps` using `sct_apply_transfo -concatenate` (or ANTs `ComposeMultiTransform`) to fuse S2+S6 warps into `composed_init_warp`.
 6. Implement `_run_refinement` — `sct_register_multimodal` with the SCT-canonical param string above, initialised from the composed warps, refined against funcref.
 7. Implement `_warp_template_to_native` — `sct_warp_template -d funcref -w warp_PAM50_to_func.nii.gz -a 1` to emit the full PAM50 atlas pack.

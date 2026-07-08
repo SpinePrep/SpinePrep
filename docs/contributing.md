@@ -1,6 +1,6 @@
 # Contribute
 
-Guidelines for contributing to SpinalfMRIprep development.
+Guidelines for contributing to SpinePrep development.
 
 ## Getting Started
 
@@ -8,8 +8,8 @@ Guidelines for contributing to SpinalfMRIprep development.
 
 ```bash
 # Clone the repository
-git clone https://github.com/SpinalfMRIprep/SpinalfMRIprep.git
-cd SpinalfMRIprep
+git clone https://github.com/SpinePrep/SpinePrep.git
+cd SpinePrep
 
 # Install in development mode
 pip install poetry
@@ -29,7 +29,7 @@ poetry run pytest
 poetry run pytest tests/test_S1_input_verify.py
 
 # Run with coverage
-poetry run pytest --cov=spinalfmriprep
+poetry run pytest --cov=spineprep
 ```
 
 ---
@@ -90,7 +90,7 @@ The repository uses pre-commit for automated checks:
 
 To add a new processing step (e.g., S12):
 
-1. **Create the module**: `src/spinalfmriprep/S12_new_step.py`
+1. **Create the module**: `src/spineprep/S12_new_step.py`
 
 2. **Implement required functions**:
    ```python
@@ -103,7 +103,7 @@ To add a new processing step (e.g., S12):
        ...
    ```
 
-3. **Add CLI integration**: Update `src/spinalfmriprep/cli.py`
+3. **Add CLI integration**: Update `src/spineprep/cli.py`
 
 4. **Add tests**: Create `tests/test_S12_new_step.py`
 
@@ -119,7 +119,7 @@ To add a new processing step (e.g., S12):
 
 Please include:
 
-- SpinalfMRIprep version (`poetry run spinalfmriprep --version`)
+- SpinePrep version (`poetry run spineprep --version`)
 - Operating system
 - Container runtime and version
 - Minimal reproducible example
@@ -137,9 +137,9 @@ Open a GitHub issue with:
 
 ## Contact
 
-- **GitHub Issues**: [SpinalfMRIprep/SpinalfMRIprep](https://github.com/SpinalfMRIprep/SpinalfMRIprep/issues)
+- **GitHub Issues**: [SpinePrep/SpinePrep](https://github.com/SpinePrep/SpinePrep/issues)
 - **Discussions**: Use GitHub Discussions for questions
 
 ---
 
-*Thank you for contributing to SpinalfMRIprep!*
+*Thank you for contributing to SpinePrep!*
