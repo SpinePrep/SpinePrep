@@ -81,8 +81,8 @@ def _runs(scope: str, repeat_key: str = "ses"):
     """Yield (subject, repeat_label, bold_path, atlas_path). The repeat label is
     drawn from the BIDS entity that indexes the repeated measure for this scope
     (``ses``/``acq``/``run``)."""
-    s9 = Path(f"work/done/{scope}/S9/derivatives/spinalfmriprep")
-    s7 = Path(f"work/done/{scope}/S7/derivatives/spinalfmriprep")
+    s9 = Path(f"work/done/{scope}/S9/derivatives/spineprep")
+    s7 = Path(f"work/done/{scope}/S7/derivatives/spineprep")
     pat = {"ses": r"_ses-([A-Za-z0-9]+)", "acq": r"_acq-([A-Za-z0-9]+)",
            "run": r"_run-([A-Za-z0-9]+)"}[repeat_key]
     for bold in glob.glob(str(s9 / "**" / "*_desc-preproc_bold.nii.gz"), recursive=True):

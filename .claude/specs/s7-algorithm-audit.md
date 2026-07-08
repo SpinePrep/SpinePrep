@@ -197,8 +197,8 @@ not SCT's).
 ### Finding 7 — S7 figures dir is `<dataset_key>/sub-XX/figures` (S6 uses `sub-XX/figures`)
 
 S7 puts reportlet PNGs under
-`derivatives/spinalfmriprep/<dataset_key>/sub-XX/figures/`.
-S2, S5, S6 use `derivatives/spinalfmriprep/sub-XX/figures/` (no
+`derivatives/spineprep/<dataset_key>/sub-XX/figures/`.
+S2, S5, S6 use `derivatives/spineprep/sub-XX/figures/` (no
 dataset_key prefix in the path).
 
 The S2 anat outputs already use the dataset_key prefix, so S7 inherits

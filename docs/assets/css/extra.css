@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SpinalfMRIprep Documentation Styles
+   SpinePrep Documentation Styles
    Best practices: responsive, accessible, performant
    ========================================================================== */
 
@@ -21,7 +21,7 @@
   --md-shadow-z1: none;
   --md-shadow-z2: none;
 
-  /* SpinalfMRIprep Brand Colors */
+  /* SpinePrep Brand Colors */
   --tx-brand-spinal: rgb(120, 150, 200);
   --tx-brand-fmri: rgb(231, 130, 49);
   --tx-brand-prep: rgb(70, 130, 150);
@@ -103,7 +103,7 @@ a:focus-visible {
 }
 
 /* ==========================================================================
-   5. SpinalfMRIprep 3-Color Branding
+   5. SpinePrep 3-Color Branding
    ========================================================================== */
 
 .tx-brand-spinal {
@@ -153,21 +153,21 @@ a:focus-visible {
   width: auto;
 }
 
-/* Custom SpinalfMRIprep logo for GitHub/source link */
-.md-source__icon--spinalfmriprep {
+/* Custom SpinePrep logo for GitHub/source link */
+.md-source__icon--spineprep {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.md-source__icon--spinalfmriprep img {
+.md-source__icon--spineprep img {
   height: 1.2rem;
   width: auto;
   filter: brightness(0) invert(1); /* Make logo white for dark header */
 }
 
 /* Ensure source icon container is properly sized */
-.md-source__icon--spinalfmriprep svg {
+.md-source__icon--spineprep svg {
   display: none; /* Hide any default SVG icons */
 }
 

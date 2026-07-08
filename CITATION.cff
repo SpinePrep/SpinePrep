@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use SpinalfMRIprep, please cite it as below, and also cite the underlying tools (SCT, FSL, ANTs, PAM50)."
-title: SpinalfMRIprep
+message: "If you use SpinePrep, please cite it as below, and also cite the underlying tools (SCT, FSL, ANTs, PAM50)."
+title: SpinePrep
 abstract: >-
   A containerised BIDS-App for reproducible spinal-cord fMRI preprocessing with
   cord-specific quality control.
@@ -12,8 +12,8 @@ authors:
 version: 1.0.0
 date-released: "2026-07-08"
 license: Apache-2.0
-repository-code: "https://github.com/SpinalfMRIprep/SpinalfMRIprep"
-url: "https://spinalfmriprep.com"
+repository-code: "https://github.com/SpinePrep/SpinePrep"
+url: "https://spineprep.com"
 keywords:
   - spinal cord
   - functional MRI

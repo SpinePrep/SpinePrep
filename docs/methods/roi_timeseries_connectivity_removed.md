@@ -5,7 +5,7 @@
 This step — formerly step S10 — used to perform region-of-interest (ROI)
 timeseries extraction, functional connectivity, and reliability analysis. This is
 **analyst-owned analysis**, not preprocessing, so it was removed from
-SpinalfMRIprep's preprocessing release. The pipeline now goes directly from
+SpinePrep's preprocessing release. The pipeline now goes directly from
 **S9 (Primary Functional Derivatives)** to **S10 (QC Aggregation & Release)**,
 which has reused the S10 step number for the release step.
 

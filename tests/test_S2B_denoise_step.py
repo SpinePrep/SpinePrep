@@ -11,8 +11,8 @@ import nibabel as nib
 import yaml
 import pytest
 
-import spinalfmriprep.steps.s2b.orchestrate as s2b
-import spinalfmriprep.steps.s3.io as s3io
+import spineprep.steps.s2b.orchestrate as s2b
+import spineprep.steps.s3.io as s3io
 
 _HAVE_DWI = shutil.which("dwidenoise") is not None
 

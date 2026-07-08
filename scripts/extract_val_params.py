@@ -10,32 +10,32 @@ import os
 datasets = [
     {
         "id": "ds005884",
-        "nii_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds005884_cospine_motor/sub-01/func/sub-01_task-motorL_bold.nii.gz",
-        "json_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds005884_cospine_motor/sub-01/func/sub-01_task-motorL_bold.json",
-        "events_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds005884_cospine_motor/sub-01/func/sub-01_task-motorL_events.tsv"
+        "nii_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds005884_cospine_motor/sub-01/func/sub-01_task-motorL_bold.nii.gz",
+        "json_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds005884_cospine_motor/sub-01/func/sub-01_task-motorL_bold.json",
+        "events_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds005884_cospine_motor/sub-01/func/sub-01_task-motorL_events.tsv"
     },
     {
         "id": "ds005883",
-        "nii_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds005883_cospine_pain/sub-01/func/sub-01_task-pain_bold.nii.gz",
-        "json_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds005883_cospine_pain/sub-01/func/sub-01_task-pain_bold.json",
-        "events_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds005883_cospine_pain/sub-01/func/sub-01_task-pain_events.tsv"
+        "nii_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds005883_cospine_pain/sub-01/func/sub-01_task-pain_bold.nii.gz",
+        "json_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds005883_cospine_pain/sub-01/func/sub-01_task-pain_bold.json",
+        "events_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds005883_cospine_pain/sub-01/func/sub-01_task-pain_events.tsv"
     },
     {
         "id": "ds004386",
-        "nii_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds004386_spinalcord_rest_testretest/sub-ZS001/func/sub-ZS001_task-rest_acq-autozshim_bold.nii.gz",
-        "json_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds004386_spinalcord_rest_testretest/sub-ZS001/func/sub-ZS001_task-rest_acq-autozshim_bold.json",
+        "nii_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds004386_spinalcord_rest_testretest/sub-ZS001/func/sub-ZS001_task-rest_acq-autozshim_bold.nii.gz",
+        "json_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds004386_spinalcord_rest_testretest/sub-ZS001/func/sub-ZS001_task-rest_acq-autozshim_bold.json",
         "events_path": None 
     },
     {
         "id": "ds004616",
-        "nii_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds004616_spinalcord_handgrasp_task/sub-01/ses-01/func/sub-01_ses-01_task-handgrasp_bold.nii.gz",
-        "json_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds004616_spinalcord_handgrasp_task/sub-01/ses-01/func/sub-01_ses-01_task-handgrasp_bold.json",
-        "events_path": "/mnt/ssd1/SpinalfMRIprep/datasets/openneuro_ds004616_spinalcord_handgrasp_task/sub-01/ses-01/func/sub-01_ses-01_task-handgrasp_events.tsv"
+        "nii_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds004616_spinalcord_handgrasp_task/sub-01/ses-01/func/sub-01_ses-01_task-handgrasp_bold.nii.gz",
+        "json_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds004616_spinalcord_handgrasp_task/sub-01/ses-01/func/sub-01_ses-01_task-handgrasp_bold.json",
+        "events_path": "/mnt/ssd1/SpinePrep/datasets/openneuro_ds004616_spinalcord_handgrasp_task/sub-01/ses-01/func/sub-01_ses-01_task-handgrasp_events.tsv"
     },
     {
         "id": "Balgrist_11",
-        "nii_path": "/mnt/ssd1/SpinalfMRIprep/datasets/internal_balgrist_motor_11/sub-01/func/sub-01_task-motor_acq-KombiShimZSpine_run-01_bold.nii.gz",
-        "json_path": "/mnt/ssd1/SpinalfMRIprep/datasets/internal_balgrist_motor_11/sub-01/func/sub-01_task-motor_acq-KombiShimZSpine_run-01_bold.json",
+        "nii_path": "/mnt/ssd1/SpinePrep/datasets/internal_balgrist_motor_11/sub-01/func/sub-01_task-motor_acq-KombiShimZSpine_run-01_bold.nii.gz",
+        "json_path": "/mnt/ssd1/SpinePrep/datasets/internal_balgrist_motor_11/sub-01/func/sub-01_task-motor_acq-KombiShimZSpine_run-01_bold.json",
         "events_path": None
     }
 ]

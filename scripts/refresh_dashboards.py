@@ -17,8 +17,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spinalfmriprep.dashboard_latest import write_latest_landing
-from spinalfmriprep.qc_dashboard import generate_dashboard
+from spineprep.dashboard_latest import write_latest_landing
+from spineprep.qc_dashboard import generate_dashboard
 
 
 def main() -> int:

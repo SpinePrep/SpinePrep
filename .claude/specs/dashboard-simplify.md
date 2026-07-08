@@ -32,7 +32,7 @@ link lists. Every redundant element and label gets removed.
    Just the labeled link.
 4. **Workfolder dropdown removed** entirely (CSS + HTML + JS). Cross-wf
    navigation lives in the scope banner only.
-5. **Header**: replace `<h1>SpinalfMRIprep QC Dashboard</h1>` (24 px
+5. **Header**: replace `<h1>SpinePrep QC Dashboard</h1>` (24 px
    default) with a tighter `<h1>` (≈ 16 px) plus a small `<code>` chip
    showing the current wf name on the same line.
 6. **Drop the `Reportlets` section sub-header** and any other
@@ -41,9 +41,9 @@ link lists. Every redundant element and label gets removed.
    inline the badges into the step `<h2>` row.
 
 ## Inputs
-- `src/spinalfmriprep/qc_dashboard_html.py`
+- `src/spineprep/qc_dashboard_html.py`
   (`_generate_index_html`, `_generate_workfolder_dropdown_html`)
-- `src/spinalfmriprep/dashboard_latest.py`
+- `src/spineprep/dashboard_latest.py`
   (`render_scope_banner`, `_scope_card_html`, `_SCOPE_CSS`)
 - Existing live dashboards in `work/wf_reg_*/dashboard/`
 

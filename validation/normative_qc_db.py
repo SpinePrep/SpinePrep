@@ -89,7 +89,7 @@ def build_tsnr_norms(out_tsv: Path) -> pd.DataFrame:
     convention) from the S9 per-level TSVs."""
     rows = []
     for s in SCOPES:
-        for f in glob.glob(f"work/done/{s}/S9/derivatives/spinalfmriprep/**/"
+        for f in glob.glob(f"work/done/{s}/S9/derivatives/spineprep/**/"
                            f"*desc-tsnr_per_level.tsv", recursive=True):
             try:
                 df = pd.read_csv(f, sep="\t")

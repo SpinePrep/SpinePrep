@@ -5,7 +5,7 @@ status: implemented
 # S1 input verify — audit against dev principles
 
 This is the *step-local* spec for S1, written when applying the
-SpinalfMRIprep development principles (`CLAUDE.md`) to each step in
+SpinePrep development principles (`CLAUDE.md`) to each step in
 turn. It records the audit findings, the literature backing, and the
 remaining gaps.
 
@@ -21,12 +21,12 @@ a human eyeball the outcome.
 - **BIDS spec** (Gorgolewski et al., Sci Data 2016) for the file layout,
   filename entities, sidecar conventions, and IntendedFor matching.
 - **bids-validator** is the field-standard tool for BIDS conformance.
-  SpinalfMRIprep does **not** call it because (a) its derivatives
+  SpinePrep does **not** call it because (a) its derivatives
   support is incomplete (issue tracked since 2023) and (b) we need
   cord-specific classification (cord-likely vs not) that bids-validator
   doesn't compute. S1 supplements bids-validator, it does not replace
   it; users are expected to have run bids-validator on the raw BIDS
-  root before invoking SpinalfMRIprep.
+  root before invoking SpinePrep.
 
 ## Constraints
 
@@ -44,7 +44,7 @@ a human eyeball the outcome.
 | Runs JSONL | `logs/S1_input_verify/<ds>/runs.jsonl` | Per-run records |
 | QC JSON | `logs/S1_input_verify/<ds>/qc.json` | Status, checks, counts, metrics, reportlets |
 | Fix plan | `work/S1_input_verify/<ds>/fix_plan.yaml` | Actionable issue list |
-| Reportlet | `derivatives/spinalfmriprep/_S1/<ds>/figures/<ds>_desc-S1_dataset_summary.png` | One PNG: subject×modality grid + check badges + counts (principle §4) |
+| Reportlet | `derivatives/spineprep/_S1/<ds>/figures/<ds>_desc-S1_dataset_summary.png` | One PNG: subject×modality grid + check badges + counts (principle §4) |
 
 ## Step-local truth metric (principle §3)
 

@@ -9,7 +9,7 @@ from on-disk artifacts. Source priority per dataset:
   2. Shared work dir at `work/S2_anat_cordref/<run_id>/` (legacy; whichever
      S2 run wrote last wins, so the modality reflected may not be this
      dataset's).
-  3. Derivative anat at `derivatives/spinalfmriprep/<dataset_key>/sub-XX/.../anat/`
+  3. Derivative anat at `derivatives/spineprep/<dataset_key>/sub-XX/.../anat/`
      (modality-correct per dataset, but no discovery seg / crop box overlay).
 
 This is a dev-loop tool. Each dataset is rendered separately so 3
@@ -25,12 +25,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from spinalfmriprep.steps.s2.io import (
+from spineprep.steps.s2.io import (
     _copy_file,
     _derivatives_figures_dir,
     _format_reportlet_name,
 )
-from spinalfmriprep.steps.s2.reportlets_montage import _render_crop_box_sagittal
+from spineprep.steps.s2.reportlets_montage import _render_crop_box_sagittal
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -102,9 +102,9 @@ def _render_for_dataset(
     # 3. Last-resort: per-dataset derivative cordref (may be cross-dataset
     #    duplicated due to legacy shared-work-dir bug).
     for anat_dir in (
-        out_root / "derivatives" / "spinalfmriprep" / dataset_key
+        out_root / "derivatives" / "spineprep" / dataset_key
             / f"sub-{subject}" / (f"ses-{session}" if session else "") / "anat",
-        out_root / "derivatives" / "spinalfmriprep"
+        out_root / "derivatives" / "spineprep"
             / f"sub-{subject}" / (f"ses-{session}" if session else "") / "anat",
     ):
         if not anat_dir.exists():
@@ -184,7 +184,7 @@ def main() -> int:
     # Refresh the dashboard HTML for every workfolder so the ?v=<mtime>
     # cachebusters update. Without this, the browser keeps showing the
     # previous PNGs because the URLs in HTML still embed the OLD mtime.
-    from spinalfmriprep.qc_dashboard import generate_dashboard_safe
+    from spineprep.qc_dashboard import generate_dashboard_safe
     work_root = PROJECT_ROOT / "work"
     refreshed_dashboards = 0
     for wf in sorted(work_root.glob("wf_*"), key=lambda p: p.stat().st_mtime,

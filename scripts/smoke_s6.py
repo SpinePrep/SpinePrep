@@ -15,7 +15,7 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-from spinalfmriprep.workfolder import get_next_workfolder
+from spineprep.workfolder import get_next_workfolder
 
 
 def main():
@@ -89,7 +89,7 @@ def main():
 
     # Run S6
     cmd = [
-        "poetry", "run", "spinalfmriprep", "run",
+        "poetry", "run", "spineprep", "run",
         "S6_func_to_anat_registration",
         "--dataset-key", dataset_key,
         "--out", str(wf),

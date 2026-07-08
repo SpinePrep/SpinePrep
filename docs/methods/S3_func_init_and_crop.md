@@ -138,14 +138,14 @@ Processing the full field-of-view (FOV) is unnecessary and computationally expen
 ### Derivatives
 
 ```
-derivatives/spinalfmriprep/{dataset}/sub-{id}/func/
+derivatives/spineprep/{dataset}/sub-{id}/func/
 ├── sub-{id}_task-{task}_desc-funcref.nii.gz          # Robust reference
 ├── sub-{id}_task-{task}_desc-funccrop_bold.nii.gz    # Cropped 4D data
 ├── sub-{id}_task-{task}_desc-funccrop_mask.nii.gz    # Binary crop mask
 ├── sub-{id}_task-{task}_desc-confounds_timeseries.tsv # Frame metrics (DVARS, etc.)
 └── sub-{id}_task-{task}_desc-outliers.json           # List of outlier indices
 
-derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
+derivatives/spineprep/{dataset}/sub-{id}/figures/
 ├── sub-{id}_..._desc-S3_func_localization_crop_box_sagittal.png
 ├── sub-{id}_..._desc-S3_frame_metrics.png
 ├── sub-{id}_..._desc-S3_crop_box_sagittal.png
@@ -158,13 +158,13 @@ derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
 
 ```bash
 # Run S3 for a single dataset
-poetry run spinalfmriprep run S3_func_init_and_crop \
+poetry run spineprep run S3_func_init_and_crop \
   --dataset-key <KEY> \
   --datasets-local config/datasets_local.yaml \
   --out work/wf_reg_001
 
 # Run S3 with parallel workers
-poetry run spinalfmriprep run S3_func_init_and_crop \
+poetry run spineprep run S3_func_init_and_crop \
   --scope reg \
   --out work/wf_reg_001 \
   --batch-workers 8

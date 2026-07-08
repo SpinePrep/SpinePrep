@@ -7,7 +7,7 @@ Specifically targets the sagittal underlay for:
 - centerline montage
 
 For each run with status=PASS, we re-render those reportlets and overwrite the existing
-`derivatives/spinalfmriprep/.../figures/*_desc-S2_{cordmask,centerline}_montage.png` files.
+`derivatives/spineprep/.../figures/*_desc-S2_{cordmask,centerline}_montage.png` files.
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ def main() -> int:
     ]
 
     # Local import so this script stays lightweight.
-    from spinalfmriprep.S2_anat_cordref import _render_reportlets  # noqa: PLC0415
+    from spineprep.S2_anat_cordref import _render_reportlets  # noqa: PLC0415
 
     only = {"cordmask_montage", "centerline_montage"}
     failures = 0

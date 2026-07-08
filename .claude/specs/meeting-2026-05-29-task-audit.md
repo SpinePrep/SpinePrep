@@ -17,7 +17,7 @@ pending) · **DOC** (code right, docs stale) · **STRATEGY** (non-code) ·
 ## Headline corrections to the meeting record
 1. **"FLIRT 2D is the only step not done" — false.** The FLIRT 2-DOF (X/Y-only)
    bulk MoCo is already implemented, committed, fast, and working
-   (`src/spinalfmriprep/lib/moco.py:79-89`, schedule `config/flirt_XY_only.sch`).
+   (`src/spineprep/lib/moco.py:79-89`, schedule `config/flirt_XY_only.sch`).
    The s4 specs/policy still *describe* the old `phase_cross_correlation` method
    — docs are stale, not the code.
 2. **"S9+ not ready yet" — outdated.** S9 (smoothing, tSNR, per-level tSNR,
@@ -345,11 +345,11 @@ sub with `sessions:[01,02]`) so reliability is smoke-tested. (Completes meeting
 ICC ask — pooled ICC already works in S10.)
 
 ### FEAT-6 — Real BIDS-App entrypoint for external-dataset pilots
-README advertises `spinalfmriprep /bids /out participant` but the CLI is
+README advertises `spineprep /bids /out participant` but the CLI is
 dataset-key-driven (`cli.py:38-93`) — the documented command fails. **Fix:** add
 a positional BIDS-App entrypoint wrapping the chain (or document the
 manifest+`--bids-root` path and fix README:76-103); flesh out the stub
-`Dockerfile.spinalfmriprep`. Needed for the PI's "send us one dataset" outreach.
+`Dockerfile.spineprep`. Needed for the PI's "send us one dataset" outreach.
 
 ---
 

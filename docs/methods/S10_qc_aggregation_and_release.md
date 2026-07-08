@@ -66,7 +66,7 @@ S10's checks are about completeness of the release, not image quality.
 ## Outputs
 
 ```
-derivatives/spinalfmriprep/{dataset}/
+derivatives/spineprep/{dataset}/
 ├── release_report.html              # top-level index
 ├── group_dashboard.html
 ├── dataset_description.json          # BIDS-Derivatives manifest
@@ -76,7 +76,7 @@ derivatives/spinalfmriprep/{dataset}/
 ├── methods.{md,tex,html}             # methods boilerplate
 └── reproducibility_receipt.json      # tool/package versions, policy + git SHA
 
-derivatives/spinalfmriprep/{dataset}/sub-{id}/
+derivatives/spineprep/{dataset}/sub-{id}/
 └── sub-{id}_report.html              # per-subject aggregated report
 ```
 

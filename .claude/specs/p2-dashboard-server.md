@@ -15,19 +15,19 @@ Wrap the existing static QC dashboard in a lightweight web server on localhost:9
 - Must run as a persistent systemd service
 
 ## Deliverables
-- `src/spinalfmriprep/dashboard_server.py` — FastAPI app
+- `src/spineprep/dashboard_server.py` — FastAPI app
   - `GET /` redirects to `/dashboard/index.html`
   - Static file serving from latest workfolder's `dashboard/` dir
-  - `GET /__spinalfmriprep__/workfolders.json` — lists available workfolders
+  - `GET /__spineprep__/workfolders.json` — lists available workfolders
   - `GET /wf_{name}/dashboard/...` — serves from specific workfolder
   - Serves images from workfolder trees (resolving relative paths to PNGs)
 - `scripts/p2-dashboard.service` — systemd unit file
 - CLI entrypoint or standalone script
 
 ## Inputs
-- Workfolders at `/mnt/ssd1/SpinalfMRIprep/work/wf_*`
+- Workfolders at `/mnt/ssd1/SpinePrep/work/wf_*`
 - Pre-generated `dashboard/` HTML in each workfolder
-- Existing `qc_dashboard_html.py` already emits JS that fetches `/__spinalfmriprep__/workfolders.json`
+- Existing `qc_dashboard_html.py` already emits JS that fetches `/__spineprep__/workfolders.json`
 
 ## Success Criteria
 - `curl localhost:9002/` returns redirect to dashboard

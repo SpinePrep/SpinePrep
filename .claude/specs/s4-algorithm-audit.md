@@ -82,7 +82,7 @@ extra stage is harmless), but it doubles compute on the bulk stage.
 
 | Choice | Value | Literature | Verdict |
 |---|---|---|---|
-| `z_shift_correction.enabled` | `false` (default) | No published cord-fMRI pipeline applies inter-run Z-shift correction routinely; this is a SpinalfMRIprep guard for cohorts where the table position drifted between runs. | ✅ disabled by default — correct (don't apply unless cohort-specific need) |
+| `z_shift_correction.enabled` | `false` (default) | No published cord-fMRI pipeline applies inter-run Z-shift correction routinely; this is a SpinePrep guard for cohorts where the table position drifted between runs. | ✅ disabled by default — correct (don't apply unless cohort-specific need) |
 | `z_shift_correction.threshold_mm` | 2.0 | One-slice-thickness threshold (typical cord-fMRI slice ≈ 3-5 mm). 2 mm catches bulk shifts but not pulsation. | ✅ defensible |
 
 ### QC thresholds

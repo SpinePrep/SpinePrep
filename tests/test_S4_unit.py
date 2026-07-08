@@ -2,7 +2,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from spinalfmriprep.lib import moco
+from spineprep.lib import moco
 
 def generate_synthetic_data(shape=(20, 20, 10, 5), offset=(0, 0)):
     """Generate 4D data with a moving 'cord'"""
@@ -173,7 +173,7 @@ def test_run_S4_filters_runs_by_dataset_via_s3_qc(tmp_path, monkeypatch):
     }))
 
     # Avoid touching the real ProcessPoolExecutor / processing
-    from spinalfmriprep.steps.s4 import orchestrate as orch
+    from spineprep.steps.s4 import orchestrate as orch
 
     seen = []
     def fake_run(*, s3_run_dir, **kwargs):
@@ -231,7 +231,7 @@ def test_s4_reportlets_only_locates_work_dir_via_run_id(tmp_path, monkeypatch):
 
     # Spy: replace the viz_s4 imports inside the function so we don't need
     # SCT / real data, and confirm the orchestrator hits the work dir.
-    from spinalfmriprep.steps.s4 import orchestrate as orch
+    from spineprep.steps.s4 import orchestrate as orch
 
     seen_work_dirs = []
 

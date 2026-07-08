@@ -21,7 +21,7 @@ import pytest
 
 def test_slicetiming_bids_exact_passthrough():
     """When BIDS SliceTiming length matches n_slices, it is used verbatim."""
-    from spinalfmriprep.steps.s8.orchestrate import _slicetiming_for_bold
+    from spineprep.steps.s8.orchestrate import _slicetiming_for_bold
     bids = [0.0, 0.5, 1.0, 1.5]
     timing, source = _slicetiming_for_bold(bids, tr_s=2.0, n_slices=4)
     assert source == "bids_exact"
@@ -35,7 +35,7 @@ def test_slicetiming_mismatch_falls_back_to_uniform_interleaved():
     acquisition order is [1, 3, 0, 2], and slice s gets time
     i * TR / n_slices where i is its position in that order.
     """
-    from spinalfmriprep.steps.s8.orchestrate import _slicetiming_for_bold
+    from spineprep.steps.s8.orchestrate import _slicetiming_for_bold
     # BIDS array has length 2, BOLD has 4 slices -> mismatch
     timing, source = _slicetiming_for_bold([0.0, 0.5], tr_s=2.0, n_slices=4)
     assert source == "approx_uniform_interleaved"
@@ -47,7 +47,7 @@ def test_slicetiming_mismatch_falls_back_to_uniform_interleaved():
 
 def test_slicetiming_ascending_order():
     """Ascending order assigns monotonically increasing times by slice index."""
-    from spinalfmriprep.steps.s8.orchestrate import _slicetiming_for_bold
+    from spineprep.steps.s8.orchestrate import _slicetiming_for_bold
     timing, source = _slicetiming_for_bold(
         None, tr_s=2.0, n_slices=4, slice_order="ascending")
     assert source == "approx_uniform_interleaved"
@@ -57,7 +57,7 @@ def test_slicetiming_ascending_order():
 
 def test_slicetiming_odd_interleaved_order():
     """Odd slice count -> odd-first interleave [0,2,4,1,3]."""
-    from spinalfmriprep.steps.s8.orchestrate import _slicetiming_for_bold
+    from spineprep.steps.s8.orchestrate import _slicetiming_for_bold
     timing, _ = _slicetiming_for_bold(None, tr_s=5.0, n_slices=5)
     # order [0,2,4,1,3], step TR/n = 1.0: slice0->0, slice2->1, slice4->2,
     # slice1->3, slice3->4
@@ -70,7 +70,7 @@ def test_slicetiming_odd_interleaved_order():
 
 
 def test_tr_and_slicetiming_reads_sidecar(tmp_path):
-    from spinalfmriprep.steps.s8.orchestrate import _tr_and_slicetiming
+    from spineprep.steps.s8.orchestrate import _tr_and_slicetiming
     p = tmp_path / "bold.json"
     p.write_text(json.dumps({"RepetitionTime": 2.0,
                              "SliceTiming": [0, 0.5, 1.0]}))
@@ -80,7 +80,7 @@ def test_tr_and_slicetiming_reads_sidecar(tmp_path):
 
 
 def test_tr_and_slicetiming_missing_slicetiming_is_none(tmp_path):
-    from spinalfmriprep.steps.s8.orchestrate import _tr_and_slicetiming
+    from spineprep.steps.s8.orchestrate import _tr_and_slicetiming
     p = tmp_path / "bold.json"
     p.write_text(json.dumps({"RepetitionTime": 1.5}))
     tr, st = _tr_and_slicetiming(p)
@@ -89,7 +89,7 @@ def test_tr_and_slicetiming_missing_slicetiming_is_none(tmp_path):
 
 
 def test_tr_and_slicetiming_absent_or_none_path():
-    from spinalfmriprep.steps.s8.orchestrate import _tr_and_slicetiming
+    from spineprep.steps.s8.orchestrate import _tr_and_slicetiming
     assert _tr_and_slicetiming(None) == (None, None)
 
 
@@ -99,7 +99,7 @@ def test_tr_and_slicetiming_absent_or_none_path():
 
 
 def test_write_pnm_slicetiming_one_line_six_decimals(tmp_path):
-    from spinalfmriprep.steps.s8.process import _write_pnm_slicetiming
+    from spineprep.steps.s8.process import _write_pnm_slicetiming
     dest = tmp_path / "slicetiming.txt"
     _write_pnm_slicetiming([0.0, 0.5, 1.25], dest)
     text = dest.read_text()
@@ -114,7 +114,7 @@ def test_write_pnm_slicetiming_one_line_six_decimals(tmp_path):
 
 def test_cosine_basis_shape_and_count():
     """n_keep = floor(2 * N * TR * cutoff). N=200, TR=2, cutoff=0.01 -> 8."""
-    from spinalfmriprep.steps.s8.process import _cosine_basis
+    from spineprep.steps.s8.process import _cosine_basis
     cols = _cosine_basis(n_volumes=200, tr_s=2.0, cutoff_hz=0.01)
     assert len(cols) == 8
     # columns are zero-indexed cosine_00 .. cosine_07
@@ -126,13 +126,13 @@ def test_cosine_basis_shape_and_count():
 
 def test_cosine_basis_empty_below_frequency_cutoff():
     """A cutoff too low to admit even one basis term yields no columns."""
-    from spinalfmriprep.steps.s8.process import _cosine_basis
+    from spineprep.steps.s8.process import _cosine_basis
     # 2 * 10 * 2 * 0.001 = 0.04 -> floor = 0 -> no columns
     assert _cosine_basis(n_volumes=10, tr_s=2.0, cutoff_hz=0.001) == {}
 
 
 def test_cosine_basis_degenerate_inputs_return_empty():
-    from spinalfmriprep.steps.s8.process import _cosine_basis
+    from spineprep.steps.s8.process import _cosine_basis
     assert _cosine_basis(n_volumes=1, tr_s=2.0, cutoff_hz=0.1) == {}
     assert _cosine_basis(n_volumes=200, tr_s=2.0, cutoff_hz=0.0) == {}
 
@@ -144,7 +144,7 @@ def test_cosine_basis_degenerate_inputs_return_empty():
 
 def test_tukey_outlier_mask_flags_only_upper_fence():
     """Tukey flags values above Q3 + k*IQR; symmetric noise stays unflagged."""
-    from spinalfmriprep.steps.s8.process import _tukey_outlier_mask
+    from spineprep.steps.s8.process import _tukey_outlier_mask
     x = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 100.0])
     mask = _tukey_outlier_mask(x, k=1.5)
     # only the 100.0 exceeds Q3 + 1.5*IQR
@@ -164,7 +164,7 @@ def _flat_metrics(n, dvars=5.0, refrms=3.0):
 
 def test_outlier_columns_all_good_run_has_zero_spikes():
     """A run with sub-threshold FD and flat DVARS/refRMS -> 0 spike regressors."""
-    from spinalfmriprep.steps.s8.process import _build_outlier_columns
+    from spineprep.steps.s8.process import _build_outlier_columns
     n = 20
     cols, n_out = _build_outlier_columns(
         _flat_metrics(n), fd=np.zeros(n), fd_thresh=0.5)
@@ -177,7 +177,7 @@ def test_outlier_columns_all_good_run_has_zero_spikes():
 
 def test_outlier_columns_one_spike_per_outlier_frame_via_fd():
     """One FD-over-threshold frame -> exactly one one-hot column on that frame."""
-    from spinalfmriprep.steps.s8.process import _build_outlier_columns
+    from spineprep.steps.s8.process import _build_outlier_columns
     n = 20
     fd = np.zeros(n)
     fd[7] = 1.0  # above 0.5 mm
@@ -198,7 +198,7 @@ def test_outlier_columns_count_matches_number_of_outlier_frames():
     Two FD spikes plus one DVARS Tukey outlier on a separate frame ->
     three one-hot columns.
     """
-    from spinalfmriprep.steps.s8.process import _build_outlier_columns
+    from spineprep.steps.s8.process import _build_outlier_columns
     n = 30
     fd = np.zeros(n)
     fd[5] = 1.0
@@ -222,7 +222,7 @@ def test_outlier_columns_count_matches_number_of_outlier_frames():
 
 def test_detrend_dct_removes_constant_and_linear_trend():
     """Detrending removes the DC + low-frequency drift, leaving ~zero mean."""
-    from spinalfmriprep.steps.s8.process import _detrend_dct
+    from spineprep.steps.s8.process import _detrend_dct
     T = 50
     # row 0 is a pure linear ramp; row 1 is a constant offset
     ts = np.vstack([np.linspace(0.0, 10.0, T), np.full(T, 5.0)])
@@ -235,7 +235,7 @@ def test_detrend_dct_removes_constant_and_linear_trend():
 
 
 def test_detrend_dct_requires_2d():
-    from spinalfmriprep.steps.s8.process import _detrend_dct
+    from spineprep.steps.s8.process import _detrend_dct
     with pytest.raises(ValueError, match="2D"):
         _detrend_dct(np.zeros(10), tr_s=2.0, cutoff_hz=0.01)
 
@@ -246,7 +246,7 @@ def test_detrend_dct_requires_2d():
 
 
 def test_slice_of_column_distinguishes_slicewise_from_global():
-    from spinalfmriprep.steps.s8.process import _slice_of_column
+    from spineprep.steps.s8.process import _slice_of_column
     assert _slice_of_column("csf_slice03_pc02") == 3
     assert _slice_of_column("retroicor_evX_slice07") == 7
     # global regressors carry no slice token
@@ -256,7 +256,7 @@ def test_slice_of_column_distinguishes_slicewise_from_global():
 
 def test_condition_number_slicewise_flat_when_no_per_slice_family():
     """With only global columns, headline == global_only and no worst slice."""
-    from spinalfmriprep.steps.s8.process import _condition_number_slicewise
+    from spineprep.steps.s8.process import _condition_number_slicewise
     rng = np.random.default_rng(0)
     df = pd.DataFrame({"trans_x": rng.standard_normal(20),
                        "cosine_00": rng.standard_normal(20)})
@@ -269,7 +269,7 @@ def test_condition_number_slicewise_flat_when_no_per_slice_family():
 
 def test_condition_number_slicewise_scores_each_slice_design():
     """Per-slice columns are scored slice-locally; headline = worst slice."""
-    from spinalfmriprep.steps.s8.process import _condition_number_slicewise
+    from spineprep.steps.s8.process import _condition_number_slicewise
     rng = np.random.default_rng(1)
     df = pd.DataFrame({
         "trans_x": rng.standard_normal(20),
@@ -285,7 +285,7 @@ def test_condition_number_slicewise_scores_each_slice_design():
 
 
 def test_condition_number_slicewise_empty_df():
-    from spinalfmriprep.steps.s8.process import _condition_number_slicewise
+    from spineprep.steps.s8.process import _condition_number_slicewise
     info = _condition_number_slicewise(pd.DataFrame())
     assert info["worst_slice"] is None
     assert np.isnan(info["condition_number"])
@@ -301,7 +301,7 @@ _QC_THR = {"pass_condition_number": 1000.0, "warn_condition_number": 10000.0,
 
 
 def test_classify_pass_good_design():
-    from spinalfmriprep.steps.s8.process import _classify
+    from spineprep.steps.s8.process import _classify
     status, reasons = _classify(
         {"condition_number": 50.0, "outlier_fraction": 0.1}, _QC_THR)
     assert status == "PASS"
@@ -309,7 +309,7 @@ def test_classify_pass_good_design():
 
 
 def test_classify_warn_then_fail_on_condition_number():
-    from spinalfmriprep.steps.s8.process import _classify
+    from spineprep.steps.s8.process import _classify
     warn, _ = _classify(
         {"condition_number": 5000.0, "outlier_fraction": 0.1}, _QC_THR)
     fail, _ = _classify(
@@ -320,7 +320,7 @@ def test_classify_warn_then_fail_on_condition_number():
 
 def test_classify_high_outlier_fraction_is_warn_never_fail():
     """Outlier fraction is observability-only: elevated -> WARN, never FAIL."""
-    from spinalfmriprep.steps.s8.process import _classify
+    from spineprep.steps.s8.process import _classify
     status, reasons = _classify(
         {"condition_number": 50.0, "outlier_fraction": 0.5}, _QC_THR)
     assert status == "WARN"
@@ -328,7 +328,7 @@ def test_classify_high_outlier_fraction_is_warn_never_fail():
 
 
 def test_classify_uncomputed_condition_number_is_warn():
-    from spinalfmriprep.steps.s8.process import _classify
+    from spineprep.steps.s8.process import _classify
     status, reasons = _classify(
         {"condition_number": float("nan"), "outlier_fraction": 0.1}, _QC_THR)
     assert status == "WARN"
@@ -341,7 +341,7 @@ def test_classify_uncomputed_condition_number_is_warn():
 
 
 def test_normalize_physio_channel_aliases():
-    from spinalfmriprep.steps.s8.process import _normalize_physio_channel
+    from spineprep.steps.s8.process import _normalize_physio_channel
     for alias in ("cardiac", "PULS", "ecg", "PPG"):
         assert _normalize_physio_channel(alias) == "cardiac"
     for alias in ("respiratory", "RESP", "breathing"):

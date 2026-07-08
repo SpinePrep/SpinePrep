@@ -8,9 +8,9 @@ import sys, glob, shutil
 from pathlib import Path
 import numpy as np, pandas as pd, nibabel as nib, yaml
 
-ROOT = Path("/mnt/ssd1/SpinalfMRIprep")
+ROOT = Path("/mnt/ssd1/SpinePrep")
 sys.path.insert(0, str(ROOT / "src"))
-from spinalfmriprep.lib import moco, viz_s4
+from spineprep.lib import moco, viz_s4
 
 s4 = (ROOT / "work" / "done" / "reg" / "S4").resolve()
 pol = yaml.safe_load((ROOT / "policy" / "S4_func_motion_correction.yaml").read_text())
@@ -37,7 +37,7 @@ for d in run_dirs:
         fd = moco.compute_framewise_displacement(params)
 
         # after BOLD (mocoref) for DVARS + mask
-        cands = glob.glob(str(s4 / "derivatives" / "spinalfmriprep" / "**" / f"{name}_desc-mocoref_bold.nii.gz"), recursive=True)
+        cands = glob.glob(str(s4 / "derivatives" / "spineprep" / "**" / f"{name}_desc-mocoref_bold.nii.gz"), recursive=True)
         after = nib.load(cands[0]).get_fdata()
         mask = np.mean(after, axis=-1) > 0
         dvars = moco.compute_dvars(after, mask)

@@ -27,7 +27,7 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from spinalfmriprep.workfolder import get_next_workfolder
+from spineprep.workfolder import get_next_workfolder
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 POLICY = PROJECT_ROOT / "policy" / "datasets.yaml"
@@ -107,7 +107,7 @@ def run_step(step_full: str, wf: Path, keys: list[str], batch_workers: int = 1) 
     results = {}
     for k in keys:
         print(f"\n--- {step_full} :: {k} ---", flush=True)
-        cmd = ["poetry", "run", "spinalfmriprep", "run", step_full,
+        cmd = ["poetry", "run", "spineprep", "run", step_full,
                "--dataset-key", k,
                "--datasets-local", str(LOCAL_MAP),
                "--batch-workers", str(batch_workers),

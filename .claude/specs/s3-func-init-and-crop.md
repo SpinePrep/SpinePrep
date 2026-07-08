@@ -4,7 +4,7 @@ status: implemented
 
 # S3 func init and crop — audit against dev principles
 
-Step-local audit of S3 against the SpinalfMRIprep development principles
+Step-local audit of S3 against the SpinePrep development principles
 (`CLAUDE.md`). Implementation spec for the *algorithms* lives in
 `private/SPEC/S3_func_init_and_crop.md`.
 
@@ -99,7 +99,7 @@ already-computed `outlier_mask.json` and S3.1 / S3.3 sub-step returns):
 
 The S3.1 brain-contamination check (internal symbol: `drift_gate` —
 implemented as `_check_drift_gate` in `localize.py`) is a
-**SpinalfMRIprep contribution**, not a published cord-fMRI
+**SpinePrep contribution**, not a published cord-fMRI
 convention.
 
 **Why it exists**: `sct_deepseg seg_sc_contrast_agnostic` can drift

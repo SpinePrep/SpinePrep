@@ -1,6 +1,6 @@
 # QC reports
 
-Every run of SpinalfMRIprep produces self-contained HTML QC reports (no server
+Every run of SpinePrep produces self-contained HTML QC reports (no server
 needed) — the human-facing layer of the "visual QC is the validator" philosophy.
 There are two, mirroring the BIDS-App levels.
 

@@ -162,18 +162,18 @@ The `qc.json` contains:
 
 ```bash
 # Validate a single dataset by key
-poetry run spinalfmriprep run S1_input_verify \
+poetry run spineprep run S1_input_verify \
   --dataset-key openneuro_ds005884 \
   --datasets-local config/datasets_local.yaml \
   --out work/wf_001
 
 # Validate an ad-hoc BIDS directory
-poetry run spinalfmriprep run S1_input_verify \
+poetry run spineprep run S1_input_verify \
   --bids-root /path/to/my/bids \
   --out work/wf_001
 
 # Check existing validation artifacts
-poetry run spinalfmriprep check S1_input_verify \
+poetry run spineprep check S1_input_verify \
   --dataset-key openneuro_ds005884 \
   --out work/wf_001
 ```

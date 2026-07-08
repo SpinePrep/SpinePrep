@@ -1,6 +1,6 @@
 # Methods Overview
 
-SpinalfMRIprep implements an end-to-end preprocessing pipeline for spinal cord fMRI, designed for robustness against the unique challenges of spinal imaging: physiological noise, small anatomical targets, and susceptibility artifacts.
+SpinePrep implements an end-to-end preprocessing pipeline for spinal cord fMRI, designed for robustness against the unique challenges of spinal imaging: physiological noise, small anatomical targets, and susceptibility artifacts.
 
 ## Why Spinal Cord fMRI Needs Specialized Preprocessing
 
@@ -11,11 +11,11 @@ Spinal cord fMRI presents fundamentally different challenges compared to brain i
 - **Susceptibility artifacts**: The cord's proximity to vertebral bodies, lungs, and air-tissue interfaces creates severe B0 inhomogeneities.
 - **Motion complexity**: Head, neck, and swallowing motions introduce non-rigid deformations that standard brain motion correction cannot handle.
 
-Traditional brain fMRI pipelines (including fMRIPrep) are not designed for these challenges. SpinalfMRIprep addresses them with spinal-cord-specific algorithms built on the [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/).
+Traditional brain fMRI pipelines (including fMRIPrep) are not designed for these challenges. SpinePrep addresses them with spinal-cord-specific algorithms built on the [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/).
 
 ## Comparison with fMRIPrep
 
-| Aspect | fMRIPrep | SpinalfMRIprep |
+| Aspect | fMRIPrep | SpinePrep |
 |--------|----------|----------------|
 | **Target anatomy** | Brain | Spinal cord |
 | **Registration** | FreeSurfer + ANTs | SCT cord-specific algorithms |
@@ -24,7 +24,7 @@ Traditional brain fMRI pipelines (including fMRIPrep) are not designed for these
 | **Motion model** | Rigid-body 6-DOF | Cord-specific with slice-wise options |
 | **Distortion correction** | TopUp / SyN | Reverse-PE fieldmap or image-based fallback |
 
-SpinalfMRIprep follows fMRIPrep's design philosophy—BIDS-native, containerized, QC-first—but implements entirely different algorithms tailored for the spinal cord.
+SpinePrep follows fMRIPrep's design philosophy—BIDS-native, containerized, QC-first—but implements entirely different algorithms tailored for the spinal cord.
 
 ## Pipeline Architecture
 

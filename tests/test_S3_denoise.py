@@ -9,7 +9,7 @@ import numpy as np
 import nibabel as nib
 import pytest
 
-from spinalfmriprep.lib import denoise
+from spineprep.lib import denoise
 
 
 def _synthetic_bold(path: Path, n_t: int = 20):

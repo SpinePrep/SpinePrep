@@ -5,8 +5,8 @@ cohort, applying the BUG-4 (affine-derived S/I/A/P markers) + FEAT-3
 matching derivatives figures dir (same filenames the qc.json already lists)."""
 import sys, glob, json
 from pathlib import Path
-ROOT = Path("/mnt/ssd1/SpinalfMRIprep"); sys.path.insert(0, str(ROOT / "src"))
-from spinalfmriprep.steps.s6.reportlets import render_s6_composite, render_s6_dice_per_slice
+ROOT = Path("/mnt/ssd1/SpinePrep"); sys.path.insert(0, str(ROOT / "src"))
+from spineprep.steps.s6.reportlets import render_s6_composite, render_s6_dice_per_slice
 
 s6 = (ROOT / "work" / "done" / "reg" / "S6").resolve()
 thr = {"pass_dice_min": 0.85, "fail_dice_below": 0.65}
@@ -24,7 +24,7 @@ print(f"{len(runs)} S6 runs")
 for d in runs:
     name = d.name
     # figures dir: find the run's derivatives func dir via the bold_on_anat target
-    cands = glob.glob(str(s6 / "derivatives" / "spinalfmriprep" / "**" /
+    cands = glob.glob(str(s6 / "derivatives" / "spineprep" / "**" /
                           f"{name}_desc-S6_cord_dice_per_slice.png"), recursive=True)
     if not cands:
         print(f"  SKIP {name}: no derivatives figures dir"); continue

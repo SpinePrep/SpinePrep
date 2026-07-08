@@ -12,7 +12,7 @@ import shutil
 
 # Add src to path for workfolder helper
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-from spinalfmriprep.workfolder import get_next_workfolder
+from spineprep.workfolder import get_next_workfolder
 
 def main():
     project_root = Path(__file__).parent.parent
@@ -62,17 +62,17 @@ def main():
     print(f"Using S3 input from: {s3_done.resolve()}")
     
     # Link input logs/work from S3 to smoke folder?
-    # spinalfmriprep usually expects input in 'work/S1...' or 'derivatives'.
+    # spineprep usually expects input in 'work/S1...' or 'derivatives'.
     # If S3 is done, its outputs are in S3's workfolder.
     # We need to point S4 to that output?
-    # spinalfmriprep CLI doesn't easily chain diff workfolders unless we init new WF with old data?
+    # spineprep CLI doesn't easily chain diff workfolders unless we init new WF with old data?
     # Actually, CLI usually takes `--out` and works within it.
     # But if S3 is in `wf_smoke_s3`, and we run S4 in `wf_smoke_s4`...
     # S4 needs S3 derivatives.
     # We can symlink S3 derivatives into `wf_smoke_s4/derivatives`?
     # Or just reuse S3 workfolder?
     # DEV_CYCLE says: "WF=$(python3 scripts/get_next_workfolder.py reg)" ... new folder.
-    # spinalfmriprep likely resolves inputs via `layout` or `out` dir containing previous steps?
+    # spineprep likely resolves inputs via `layout` or `out` dir containing previous steps?
     # If we run with `--out wf_smoke_s4`, it looks for S3 in `wf_smoke_s4`.
     # So we MUST copy/symlink S3 outputs to `wf_smoke_s4`.
     
@@ -120,7 +120,7 @@ def main():
     
     # 5. Run S4
     cmd = [
-        "poetry", "run", "spinalfmriprep", "run", "S4_func_motion_correction",
+        "poetry", "run", "spineprep", "run", "S4_func_motion_correction",
         "--dataset-key", dataset_key,
         "--out", str(wf),
         "--datasets-local", str(project_root / "config" / "datasets_local.yaml")

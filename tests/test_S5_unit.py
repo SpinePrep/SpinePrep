@@ -55,7 +55,7 @@ def _fmap_gre_mag(subject="01"):
 
 
 def test_mode_select_picks_topup_for_opposite_pe_pair():
-    from spinalfmriprep.steps.s5.mode import select_mode
+    from spineprep.steps.s5.mode import select_mode
     bold = _func_run()
     fmaps = [_fmap_epi("AP", "j-"), _fmap_epi("PA", "j")]
     mode, eligible = select_mode(bold, fmaps)
@@ -67,7 +67,7 @@ def test_mode_select_picks_topup_for_opposite_pe_pair():
 
 def test_mode_select_rejects_two_same_pe_fmaps():
     """Spec §S5.1: two AP fmaps with zero PA is NOT topup-eligible."""
-    from spinalfmriprep.steps.s5.mode import select_mode
+    from spineprep.steps.s5.mode import select_mode
     bold = _func_run()
     fmaps = [_fmap_epi("AP_run1", "j-"), _fmap_epi("AP_run2", "j-")]
     mode, _ = select_mode(bold, fmaps)
@@ -77,7 +77,7 @@ def test_mode_select_rejects_two_same_pe_fmaps():
 def test_mode_select_gre_pair_falls_through_to_syn():
     # FUGUE was removed in v1 (no GRE-fieldmap data in the cohort); GRE
     # phasediff/magnitude pairs now fall through to image-based SyN.
-    from spinalfmriprep.steps.s5.mode import select_mode
+    from spineprep.steps.s5.mode import select_mode
     bold = _func_run()
     fmaps = [_fmap_gre_phase(), _fmap_gre_mag()]
     mode, eligible = select_mode(bold, fmaps)
@@ -86,7 +86,7 @@ def test_mode_select_gre_pair_falls_through_to_syn():
 
 
 def test_mode_select_falls_back_to_syn_when_no_fmaps():
-    from spinalfmriprep.steps.s5.mode import select_mode
+    from spineprep.steps.s5.mode import select_mode
     bold = _func_run()
     mode, eligible = select_mode(bold, [])
     assert mode == "syn"
@@ -94,7 +94,7 @@ def test_mode_select_falls_back_to_syn_when_no_fmaps():
 
 
 def test_opposite_pe_detection():
-    from spinalfmriprep.steps.s5.mode import _opposite_pe
+    from spineprep.steps.s5.mode import _opposite_pe
     assert _opposite_pe("j", "j-")
     assert _opposite_pe("i-", "i")
     assert _opposite_pe("k", "k-")
@@ -109,7 +109,7 @@ def test_opposite_pe_detection():
 
 
 def test_trt_prefers_bids_sidecar_value():
-    from spinalfmriprep.steps.s5.process import _trt_for
+    from spineprep.steps.s5.process import _trt_for
     run = {"acquisition": {"TotalReadoutTime": 0.0406401,
                            "EffectiveEchoSpacing": 0.00032,
                            "ReconMatrixPE": 128}}
@@ -119,7 +119,7 @@ def test_trt_prefers_bids_sidecar_value():
 def test_trt_fallback_follows_BIDS_convention_no_GRAPPA_division():
     """The fallback path must compute TRT as (matrix_PE - 1) * EES, NOT
     (N_PE / f_acc - 1) * EES. See round-2 audit findings."""
-    from spinalfmriprep.steps.s5.process import _trt_for
+    from spineprep.steps.s5.process import _trt_for
     run = {"acquisition": {
         "EffectiveEchoSpacing": 0.000320001,
         "ReconMatrixPE": 128,
@@ -131,7 +131,7 @@ def test_trt_fallback_follows_BIDS_convention_no_GRAPPA_division():
 
 
 def test_trt_returns_none_when_no_data():
-    from spinalfmriprep.steps.s5.process import _trt_for
+    from spineprep.steps.s5.process import _trt_for
     assert _trt_for({}) is None
     assert _trt_for({"acquisition": {}}) is None
 
@@ -142,7 +142,7 @@ def test_trt_returns_none_when_no_data():
 
 
 def test_write_acqparams_bids_pe_to_fsl_mapping(tmp_path):
-    from spinalfmriprep.steps.s5.process import _write_acqparams
+    from spineprep.steps.s5.process import _write_acqparams
     out = tmp_path / "acqparams.txt"
     _write_acqparams(out, ["j-", "j"], 0.0406)
     content = out.read_text().strip()
@@ -157,7 +157,7 @@ def test_write_acqparams_bids_pe_to_fsl_mapping(tmp_path):
 
 
 def test_write_acqparams_rejects_unsupported_pe(tmp_path):
-    from spinalfmriprep.steps.s5.process import _write_acqparams
+    from spineprep.steps.s5.process import _write_acqparams
     with pytest.raises(ValueError, match="Unsupported"):
         _write_acqparams(tmp_path / "bad.txt", ["unknown"], 0.04)
 
@@ -181,7 +181,7 @@ _GATE_THR = {
 
 def test_geometry_pass_regardless_of_mode():
     """Good geometry PASSes for every mode (SyN included)."""
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.85, "dice_mean_before": 0.78,
                "displacement_mean_after_mm": 0.5, "displacement_mean_before_mm": 1.6}
     for mode in ("syn", "topup"):
@@ -190,7 +190,7 @@ def test_geometry_pass_regardless_of_mode():
 
 
 def test_warn_when_dice_below_pass_floor():
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.45, "displacement_mean_after_mm": 0.5}
     status, reasons = _classify_run_status(metrics, "syn", _GATE_THR)
     assert status == "WARN"
@@ -198,7 +198,7 @@ def test_warn_when_dice_below_pass_floor():
 
 
 def test_fail_when_dice_below_warn_floor():
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.20, "displacement_mean_after_mm": 0.5}
     status, _ = _classify_run_status(metrics, "topup", _GATE_THR)
     assert status == "FAIL"
@@ -207,7 +207,7 @@ def test_fail_when_dice_below_warn_floor():
 def test_fail_when_displacement_above_warn_ceiling():
     # TopUp keeps the hard FAIL — they are expected to meet the
     # TopUp-calibrated ceiling.
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.80, "displacement_mean_after_mm": 2.5}
     status, _ = _classify_run_status(metrics, "topup", _GATE_THR)
     assert status == "FAIL"
@@ -217,7 +217,7 @@ def test_syn_above_ceiling_is_distortion_limited_warn_not_fail():
     # Image-based SyN (no fieldmap) cannot reach TopUp quality. When the cord
     # still registered (Dice OK) but displacement exceeds the ceiling, flag the
     # run distortion-limited (WARN, kept) rather than FAIL.
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.80, "displacement_mean_after_mm": 2.5}
     status, reasons = _classify_run_status(metrics, "syn", _GATE_THR)
     assert status == "WARN"
@@ -227,7 +227,7 @@ def test_syn_above_ceiling_is_distortion_limited_warn_not_fail():
 def test_syn_above_ceiling_with_bad_dice_still_fails():
     # If even the cord did not register (Dice below the warn floor), it is a
     # genuine failure regardless of mode — the Dice gate fails first.
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     metrics = {"dice_mean_after": 0.20, "displacement_mean_after_mm": 2.5}
     status, _ = _classify_run_status(metrics, "syn", _GATE_THR)
     assert status == "FAIL"
@@ -235,7 +235,7 @@ def test_syn_above_ceiling_with_bad_dice_still_fails():
 
 def test_syn_distortion_limited_can_be_disabled():
     # Setting the policy flag false restores the hard FAIL for SyN too.
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     thr = dict(_GATE_THR, syn_displacement_distortion_limited=False)
     metrics = {"dice_mean_after": 0.80, "displacement_mean_after_mm": 2.5}
     status, _ = _classify_run_status(metrics, "syn", thr)
@@ -243,7 +243,7 @@ def test_syn_distortion_limited_can_be_disabled():
 
 
 def test_catastrophic_mi_drop_fails_only_when_geometry_not_improved():
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     # No geometry metrics -> not improved -> MI drop fails outright
     status, _ = _classify_run_status({"mi_delta_pct": -20.0}, "topup", _GATE_THR)
     assert status == "FAIL"
@@ -251,7 +251,7 @@ def test_catastrophic_mi_drop_fails_only_when_geometry_not_improved():
 
 def test_mi_drop_ignored_when_geometry_improved():
     """Geometry is ground truth (cospine_pain topup: MI -12.9% but Dice +0.07)."""
-    from spinalfmriprep.steps.s5.process import _classify_run_status
+    from spineprep.steps.s5.process import _classify_run_status
     metrics = {"mi_delta_pct": -15.0, "dice_delta": 0.07,
                "displacement_delta_mm": -1.3, "dice_mean_after": 0.82,
                "displacement_mean_after_mm": 0.6}
@@ -281,14 +281,14 @@ def _dice_metrics():
 
 
 def test_s5_slice_displacement_renders(tmp_path):
-    from spinalfmriprep.steps.s5.reportlets import render_s5_slice_displacement
+    from spineprep.steps.s5.reportlets import render_s5_slice_displacement
     out = tmp_path / "disp.png"
     render_s5_slice_displacement(_disp_metrics(), out, "syn")
     assert out.exists() and out.stat().st_size > 1000
 
 
 def test_s5_cord_dice_per_slice_renders(tmp_path):
-    from spinalfmriprep.steps.s5.reportlets import render_s5_cord_dice_per_slice
+    from spineprep.steps.s5.reportlets import render_s5_cord_dice_per_slice
     out = tmp_path / "dice.png"
     render_s5_cord_dice_per_slice(_dice_metrics(), out, "topup")
     assert out.exists() and out.stat().st_size > 1000
@@ -296,7 +296,7 @@ def test_s5_cord_dice_per_slice_renders(tmp_path):
 
 def test_s5_reportlets_handle_missing_keys(tmp_path):
     """Both metric-driven reportlets degrade to a placeholder, never raise."""
-    from spinalfmriprep.steps.s5.reportlets import (
+    from spineprep.steps.s5.reportlets import (
         render_s5_slice_displacement, render_s5_cord_dice_per_slice)
     d = tmp_path / "d.png"; c = tmp_path / "c.png"
     render_s5_slice_displacement({}, d, "syn")

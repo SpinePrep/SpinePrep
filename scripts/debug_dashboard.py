@@ -3,7 +3,7 @@ import json
 import os
 from pathlib import Path
 
-work_dir = Path("/mnt/ssd1/SpinalfMRIprep/work/wf_reg_033")
+work_dir = Path("/mnt/ssd1/SpinePrep/work/wf_reg_033")
 logs_dir = work_dir / "logs"
 
 print(f"Checking logs in: {logs_dir}")
@@ -14,7 +14,7 @@ for step_dir in logs_dir.glob("S*"):
     
     # Check for qc.json files (recursively or flat?)
     # Usually structure is logs/STEP/dataset/qc.json OR logs/STEP/qc.json (agg)
-    # spinalfmriprep puts per-run qc.json in subdirectories?
+    # spineprep puts per-run qc.json in subdirectories?
     
     qc_files = list(step_dir.glob("**/qc.json"))
     if not qc_files:

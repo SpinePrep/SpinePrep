@@ -12,7 +12,7 @@ import csv
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from spinalfmriprep.S3_func_init_and_crop import (
+from spineprep.S3_func_init_and_crop import (
     _process_s3_2_outlier_gating,
     _process_s3_3_crop_and_qc,
     _extract_subject_session_from_work_dir
@@ -111,8 +111,8 @@ def test_s3_3_crop_command_generation(mock_work_dir):
     
     policy = {"crop": {"mask_diameter_mm": 35}}
     
-    with patch("spinalfmriprep.steps.s3.crop._run_command") as mock_run:
-        with patch("spinalfmriprep.steps.s3.crop.Image") as mock_PIL:
+    with patch("spineprep.steps.s3.crop._run_command") as mock_run:
+        with patch("spineprep.steps.s3.crop.Image") as mock_PIL:
             # Mock success
             mock_run.return_value = (True, "Success")
             
@@ -165,7 +165,7 @@ def test_s3_3_crop_command_generation(mock_work_dir):
 
 def test_drift_gate_passes_cord_like_segmentation():
     """Cord-sized segmentation (~50 mm² per slice) passes the gate."""
-    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+    from spineprep.steps.s3.localize import _check_drift_gate
 
     # 1mm isotropic, axial; Z axis is superior. Build a thin cord (5x5 voxels = 25 mm²)
     # over 30 slices.
@@ -187,7 +187,7 @@ def test_drift_gate_passes_cord_like_segmentation():
 
 def test_drift_gate_rejects_brain_blob():
     """A segmentation that opens up into a brain-sized cross-section is rejected."""
-    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+    from spineprep.steps.s3.localize import _check_drift_gate
 
     data = np.zeros((60, 60, 40), dtype=np.float32)
     # Cord-sized portion at slices 5-25 (~25 mm² per slice)
@@ -210,7 +210,7 @@ def test_drift_gate_rejects_brain_blob():
 
 def test_drift_gate_disabled_returns_pass():
     """When the policy disables the gate it never fails, even on obvious brain."""
-    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+    from spineprep.steps.s3.localize import _check_drift_gate
 
     data = np.zeros((60, 60, 40), dtype=np.float32)
     data[5:55, 5:55, 30:36] = 1  # huge blob
@@ -223,7 +223,7 @@ def test_drift_gate_disabled_returns_pass():
 
 def test_drift_gate_rejects_cord_too_short():
     """A few-slice ribbon of cord is dropped via the min_z_slices guard."""
-    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+    from spineprep.steps.s3.localize import _check_drift_gate
 
     data = np.zeros((40, 40, 40), dtype=np.float32)
     data[18:23, 18:23, 5:8] = 1  # only 3 slices, well below min
@@ -247,7 +247,7 @@ def test_drift_gate_rejects_cord_too_short():
 
 def test_drift_gate_min_extent_off_when_zero():
     """min_z_slices=0 disables only the min-extent guard, not the gate itself."""
-    from spinalfmriprep.steps.s3.localize import _check_drift_gate
+    from spineprep.steps.s3.localize import _check_drift_gate
 
     data = np.zeros((40, 40, 40), dtype=np.float32)
     data[18:23, 18:23, 5:8] = 1  # 3 slices, cord-sized

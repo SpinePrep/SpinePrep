@@ -1,14 +1,14 @@
 # Validation
 
 !!! info "Methods validation in progress"
-    This page reports SpinalfMRIprep's **completed** validation — end-to-end
+    This page reports SpinePrep's **completed** validation — end-to-end
     robustness, the normative per-level QC reference, test–retest reliability
     characterisation, and the head-to-head vs SCT defaults. A **systematic
     reliability × validity study of preprocessing choices** (the manuscript
     centerpiece) is under way; its results will be added here and may refine the
     recommended defaults. Numbers below are reproducible via `validation/*.py`.
 
-SpinalfMRIprep is validated end-to-end on **8 datasets / 384 functional runs /
+SpinePrep is validated end-to-end on **8 datasets / 384 functional runs /
 5 paradigms** (rest, motor, pain/heat, hand-grasp, dorsal-horn) spanning public
 (OpenNeuro) and internal cohorts, multiple vendors, and a range of acquisition
 protocols (with and without fieldmaps; cervical-only and whole-CNS FOV).
@@ -100,7 +100,7 @@ our recipe gives **cord-Dice 0.904 ± 0.03 vs SCT-default 0.704 ± 0.10 (+0.20;
 Wilcoxon p = 1.2×10⁻⁷; ours higher in 24/24 runs)** — a large, consistent, highly
 significant improvement. Note the comparator is SCT's *out-of-the-box* defaults,
 not SCT at its best: SCT itself recommends cord-segmentation-driven registration
-with structural-warp initialization — the very recipe SpinalfMRIprep automates.
+with structural-warp initialization — the very recipe SpinePrep automates.
 So this quantifies the cost of naive default usage and the value of baking the
 recommended recipe into a turnkey pipeline, not a claim to out-register SCT's
 best practice.

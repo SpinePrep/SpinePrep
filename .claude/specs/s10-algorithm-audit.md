@@ -16,7 +16,7 @@ Derivatives spec, NiPreps boilerplate convention, CoSpine 2025
 
 `wf_reg_090/logs/S10_qc_aggregation_and_release/qc.json` reports
 `status=PASS` with 22 deliverables landing in
-`derivatives/spinalfmriprep/` plus per-subject HTML reports under
+`derivatives/spineprep/` plus per-subject HTML reports under
 `<dataset>/sub-XX/`. Top-line metrics:
 ```
 n_subjects_aggregated: 10   (real cohort = 5)
@@ -179,12 +179,12 @@ coverage. Don't promise what isn't delivered.
 NiPreps (fMRIPrep / sMRIPrep / ASLPrep / dMRIPrep / NiBabies) all
 emit `logs/CITATION.{md,bib,tex,html}` and the user is told to reuse
 it verbatim (CC0). Our `methods_manifest.*` is the same content under
-a non-standard name and lives in `derivatives/spinalfmriprep/` not
+a non-standard name and lives in `derivatives/spineprep/` not
 `logs/`. Diverges from the convention the field already standardised
 on.
 
 **Fix:** Rename to `CITATION.{md,bib,tex,html}` and write to
-`derivatives/spinalfmriprep/logs/` to match NiPreps. Keep the
+`derivatives/spineprep/logs/` to match NiPreps. Keep the
 filename `references.bib` for the auto-bibliography (or merge into
 `CITATION.bib` per convention).
 
@@ -201,7 +201,7 @@ CITATION.cff is being emitted. Or omit one of the two.
 ### B14 — `dataset_description.json` has placeholder CodeURL
 
 ```json
-"CodeURL": "https://github.com/[org]/SpinalfMRIprep"
+"CodeURL": "https://github.com/[org]/SpinePrep"
 ```
 literal `[org]` placeholder in the released file.
 
@@ -212,8 +212,8 @@ field.
 
 Chain runner sets `wf_reg_090/derivatives -> wf_reg_089/derivatives
 -> wf_reg_088/derivatives`. S10 writes to
-`out_dir/derivatives/spinalfmriprep/` — which resolves to
-`wf_reg_088/derivatives/spinalfmriprep/`. The release artifacts land
+`out_dir/derivatives/spineprep/` — which resolves to
+`wf_reg_088/derivatives/spineprep/`. The release artifacts land
 in the S8-locked workfolder, not the S10 one. From the user's POV,
 running S10 silently mutates a previous step's directory.
 
@@ -334,4 +334,4 @@ Total: ~495 lines of code change across ~13 focused fixes.
   https://mriqc.readthedocs.io/en/stable/_modules/mriqc/reports/group.html
 - Internal: `.claude/specs/s11-qc-aggregation-and-release.md`,
   `policy/S10_qc_aggregation_and_release.yaml`,
-  `src/spinalfmriprep/steps/s11/process.py`
+  `src/spineprep/steps/s11/process.py`

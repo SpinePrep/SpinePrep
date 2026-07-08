@@ -1,4 +1,4 @@
-# Build context = ONLY what Dockerfile.spinalfmriprep COPYs. Everything else
+# Build context = ONLY what Dockerfile.spineprep COPYs. Everything else
 # (esp. work/ = ~700G of derivatives) must never enter the Docker context.
 *
 !pyproject.toml

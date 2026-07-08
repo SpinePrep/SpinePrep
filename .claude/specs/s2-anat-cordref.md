@@ -4,7 +4,7 @@ status: implemented
 
 # S2 anat cordref — audit against dev principles
 
-Step-local audit of S2 against the SpinalfMRIprep development principles
+Step-local audit of S2 against the SpinePrep development principles
 (`CLAUDE.md`). Implementation spec for the *algorithms* lives in
 `private/SPEC/S2_anat_cordref.md`; this document records the
 **principles-alignment** audit and the changes that came out of it.

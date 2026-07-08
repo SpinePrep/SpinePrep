@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 # Import the orchestrator
-from spinalfmriprep.S4_func_motion_correction import run_S4_func_motion_correction
+from spineprep.S4_func_motion_correction import run_S4_func_motion_correction
 
 @pytest.fixture
 def s4_test_env(tmp_path):
@@ -148,10 +148,10 @@ def test_S4_integration_flow(s4_test_env):
         )
         
         # Verify derivatives output
-        deriv_func = out_dir / "derivatives" / "spinalfmriprep" / "sub-01" / "ses-01" / "func"
+        deriv_func = out_dir / "derivatives" / "spineprep" / "sub-01" / "ses-01" / "func"
         # run_name = "sub-01_ses-01_task-rest_run-01", used as prefix
         assert (deriv_func / "sub-01_ses-01_task-rest_run-01_desc-mocoref_bold.nii.gz").exists()
         
         # Verify Figures
-        figs_dir = out_dir / "derivatives" / "spinalfmriprep" / "sub-01" / "ses-01" / "figures"
+        figs_dir = out_dir / "derivatives" / "spineprep" / "sub-01" / "ses-01" / "figures"
         assert (figs_dir / "sub-01_ses-01_task-rest_run-01_desc-S4_motion_traces.png").exists()

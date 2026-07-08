@@ -103,11 +103,11 @@ the analyst's call at GLM time.
 ## Outputs
 
 ```
-derivatives/spinalfmriprep/{dataset}/sub-{id}/func/
+derivatives/spineprep/{dataset}/sub-{id}/func/
 ├── sub-{id}_task-{task}_desc-confounds_timeseries.tsv   # all regressor columns
 └── sub-{id}_task-{task}_desc-confounds_timeseries.json  # column descriptions
 
-derivatives/spinalfmriprep/{dataset}/sub-{id}/figures/
+derivatives/spineprep/{dataset}/sub-{id}/figures/
 └── sub-{id}_..._desc-S8_confound_columns.png            # regressor overview
 ```
 

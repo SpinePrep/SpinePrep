@@ -6,7 +6,7 @@ status: approved
 
 Every PNG reportlet emitted by S2 onward shares one visual language.
 This standard is the single source of truth — shared helpers in
-`src/spinalfmriprep/reportlets_common.py` implement it; new renderers
+`src/spineprep/reportlets_common.py` implement it; new renderers
 import from there; existing renderers adopt at their next touch.
 
 ## Why one standard
@@ -209,7 +209,7 @@ helpers.
 
 ## Shared module API
 
-`src/spinalfmriprep/reportlets_common.py` exports:
+`src/spineprep/reportlets_common.py` exports:
 
 | Helper | Purpose |
 |---|---|

@@ -84,9 +84,9 @@ def _activation_betas(bold: Path, atlas: Path, events: Path, confounds: Path,
 
 
 def _runs(scope: str, ev_glob: str, tr_default):
-    s9 = Path(f"work/done/{scope}/S9/derivatives/spinalfmriprep")
-    s7 = Path(f"work/done/{scope}/S7/derivatives/spinalfmriprep")
-    s8 = Path(f"work/done/{scope}/S8/derivatives/spinalfmriprep")
+    s9 = Path(f"work/done/{scope}/S9/derivatives/spineprep")
+    s7 = Path(f"work/done/{scope}/S7/derivatives/spineprep")
+    s8 = Path(f"work/done/{scope}/S8/derivatives/spineprep")
     for bold in glob.glob(str(s9 / "**" / "*_desc-preproc_bold.nii.gz"), recursive=True):
         if "PAM50" in Path(bold).name:
             continue

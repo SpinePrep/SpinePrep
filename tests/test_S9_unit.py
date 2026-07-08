@@ -32,7 +32,7 @@ def test_cord_fov_bbox_tightly_bounds_blob_plus_margin(tmp_path):
     """A known cord blob must produce a bbox that, in x/y, equals the cord
     extent expanded by xy_margin on each side; in z it tracks the funcref
     nonzero extent clamped to the cord z-range."""
-    from spinalfmriprep.steps.s9.process import _cord_fov_bbox
+    from spineprep.steps.s9.process import _cord_fov_bbox
 
     shape = (40, 40, 30)
     # Cord blob occupies x in [18,21], y in [19,22], z in [10,19].
@@ -69,7 +69,7 @@ def test_cord_fov_bbox_tightly_bounds_blob_plus_margin(tmp_path):
 def test_cord_fov_bbox_xy_margin_clamps_at_volume_edge(tmp_path):
     """A cord touching the x=0 face must clamp the lower bound to 0 rather
     than going negative."""
-    from spinalfmriprep.steps.s9.process import _cord_fov_bbox
+    from spineprep.steps.s9.process import _cord_fov_bbox
 
     shape = (20, 20, 20)
     cord = np.zeros(shape, dtype=np.float32)
@@ -88,7 +88,7 @@ def test_cord_fov_bbox_xy_margin_clamps_at_volume_edge(tmp_path):
 
 def test_cord_fov_bbox_returns_none_for_empty_cord(tmp_path):
     """No cord voxels -> no bbox."""
-    from spinalfmriprep.steps.s9.process import _cord_fov_bbox
+    from spineprep.steps.s9.process import _cord_fov_bbox
 
     shape = (16, 16, 16)
     cord = np.zeros(shape, dtype=np.float32)  # empty
@@ -102,7 +102,7 @@ def test_cord_fov_bbox_returns_none_for_empty_cord(tmp_path):
 def test_cord_fov_bbox_returns_none_when_z_ranges_disjoint(tmp_path):
     """If functional coverage and the cord share no z, hi[2] <= lo[2] -> None.
     Cord in z [2,5], funcref in z [15,18]: clamped z window collapses."""
-    from spinalfmriprep.steps.s9.process import _cord_fov_bbox
+    from spineprep.steps.s9.process import _cord_fov_bbox
 
     shape = (16, 16, 20)
     cord = np.zeros(shape, dtype=np.float32)
@@ -121,7 +121,7 @@ def test_cord_fov_bbox_returns_none_when_z_ranges_disjoint(tmp_path):
 
 def test_bold_tr_reads_pixdim4_from_header(tmp_path):
     """_bold_tr returns the 4th zoom (pixdim[4]) when it is a positive TR."""
-    from spinalfmriprep.steps.s9.process import _bold_tr
+    from spineprep.steps.s9.process import _bold_tr
 
     data = np.zeros((4, 4, 4, 3), dtype=np.float32)
     img = nib.Nifti1Image(data, np.eye(4))
@@ -133,7 +133,7 @@ def test_bold_tr_reads_pixdim4_from_header(tmp_path):
 
 def test_bold_tr_none_when_zooms_lack_time(tmp_path):
     """A 3D image has no pixdim[4]; _bold_tr returns None."""
-    from spinalfmriprep.steps.s9.process import _bold_tr
+    from spineprep.steps.s9.process import _bold_tr
 
     p = _save(np.zeros((4, 4, 4), dtype=np.float32), tmp_path / "bold3d.nii.gz")
     assert _bold_tr(p) is None
@@ -141,7 +141,7 @@ def test_bold_tr_none_when_zooms_lack_time(tmp_path):
 
 def test_run_repetition_time_reads_run_sidecar(tmp_path):
     """The authoritative TR comes from the run's own raw BIDS sidecar."""
-    from spinalfmriprep.steps.s9.orchestrate import _run_repetition_time
+    from spineprep.steps.s9.orchestrate import _run_repetition_time
 
     run_id = "sub-01_task-rest_run-01"
     sub = tmp_path / "sub-01" / "func"
@@ -153,7 +153,7 @@ def test_run_repetition_time_reads_run_sidecar(tmp_path):
 def test_run_repetition_time_falls_back_to_task_sidecar(tmp_path):
     """With no run sidecar, BIDS inheritance reads the task-level sidecar at
     the dataset root."""
-    from spinalfmriprep.steps.s9.orchestrate import _run_repetition_time
+    from spineprep.steps.s9.orchestrate import _run_repetition_time
 
     run_id = "sub-07_task-motor_run-02"
     (tmp_path / "task-motor_bold.json").write_text(
@@ -163,14 +163,14 @@ def test_run_repetition_time_falls_back_to_task_sidecar(tmp_path):
 
 def test_run_repetition_time_none_when_no_sidecar(tmp_path):
     """No sidecar anywhere -> None (caller then falls back to the header)."""
-    from spinalfmriprep.steps.s9.orchestrate import _run_repetition_time
+    from spineprep.steps.s9.orchestrate import _run_repetition_time
 
     assert _run_repetition_time(str(tmp_path), "sub-01_task-rest_run-01") is None
 
 
 def test_run_repetition_time_none_when_root_missing():
     """A nonexistent / empty bids_root yields None rather than raising."""
-    from spinalfmriprep.steps.s9.orchestrate import _run_repetition_time
+    from spineprep.steps.s9.orchestrate import _run_repetition_time
 
     assert _run_repetition_time(None, "sub-01_task-rest") is None
     assert _run_repetition_time("/no/such/path/xyz", "sub-01_task-rest") is None
@@ -184,7 +184,7 @@ def test_run_repetition_time_none_when_root_missing():
 def test_per_vertebral_level_tsnr_matches_mean_over_std(tmp_path):
     """For a synthetic 4D series, per-level mean tSNR must equal the mean of
     voxelwise mean/std over the voxels labelled with that level."""
-    from spinalfmriprep.steps.s9.process import _per_vertebral_level_tsnr
+    from spineprep.steps.s9.process import _per_vertebral_level_tsnr
 
     shape = (4, 4, 4)
     n_t = 6
@@ -226,7 +226,7 @@ def test_per_vertebral_level_tsnr_matches_mean_over_std(tmp_path):
 
 def test_per_vertebral_level_tsnr_header_only_on_shape_mismatch(tmp_path):
     """Mismatched levels/bold geometry -> header-only TSV and zero levels."""
-    from spinalfmriprep.steps.s9.process import _per_vertebral_level_tsnr
+    from spineprep.steps.s9.process import _per_vertebral_level_tsnr
 
     data = np.ones((4, 4, 4, 3), dtype=np.float32)
     levels = np.ones((4, 4, 5), dtype=np.int32)  # wrong z-extent
@@ -246,7 +246,7 @@ def test_per_vertebral_level_tsnr_header_only_on_shape_mismatch(tmp_path):
 def test_tsnr_map_median_equals_mean_over_std(tmp_path):
     """tSNR = mean/std along time; the returned scalar is the median of the
     positive finite voxels, and the saved map matches voxelwise mean/std."""
-    from spinalfmriprep.steps.s9.process import _tsnr_map
+    from spineprep.steps.s9.process import _tsnr_map
 
     rng = np.random.default_rng(1)
     data = rng.normal(50.0, 4.0, size=(3, 3, 3, 8)).astype(np.float32)
@@ -264,7 +264,7 @@ def test_tsnr_map_median_equals_mean_over_std(tmp_path):
 
 def test_tsnr_map_none_for_single_timepoint(tmp_path):
     """A 4D image with < 2 timepoints cannot define a temporal std -> None."""
-    from spinalfmriprep.steps.s9.process import _tsnr_map
+    from spineprep.steps.s9.process import _tsnr_map
 
     data = np.ones((3, 3, 3, 1), dtype=np.float32)
     assert _tsnr_map(_save(data, tmp_path / "b.nii.gz"),
@@ -273,7 +273,7 @@ def test_tsnr_map_none_for_single_timepoint(tmp_path):
 
 def test_median_tsnr_in_mask_restricts_to_mask(tmp_path):
     """The in-mask median must reflect only the masked voxels."""
-    from spinalfmriprep.steps.s9.process import _median_tsnr_in_mask
+    from spineprep.steps.s9.process import _median_tsnr_in_mask
 
     rng = np.random.default_rng(2)
     data = rng.normal(80.0, 6.0, size=(5, 5, 5, 10)).astype(np.float32)
@@ -304,7 +304,7 @@ _THR = {
 
 
 def test_classify_all_gates_pass():
-    from spinalfmriprep.steps.s9.process import _classify
+    from spineprep.steps.s9.process import _classify
     metrics = {"tsnr_ratio_median": 1.7, "cord_dice_pre_post": 0.97,
                "tsnr_post_median": 9.0}
     status, reasons = _classify(metrics, _THR)
@@ -313,7 +313,7 @@ def test_classify_all_gates_pass():
 
 
 def test_classify_tsnr_ratio_below_fail_floor_is_fail():
-    from spinalfmriprep.steps.s9.process import _classify
+    from spineprep.steps.s9.process import _classify
     metrics = {"tsnr_ratio_median": 0.9, "cord_dice_pre_post": 0.97,
                "tsnr_post_median": 9.0}
     status, reasons = _classify(metrics, _THR)
@@ -323,7 +323,7 @@ def test_classify_tsnr_ratio_below_fail_floor_is_fail():
 
 def test_classify_low_cord_dice_fails():
     """cord_dice below the warn floor is a FAIL gate."""
-    from spinalfmriprep.steps.s9.process import _classify
+    from spineprep.steps.s9.process import _classify
     metrics = {"tsnr_ratio_median": 1.7, "cord_dice_pre_post": 0.80,
                "tsnr_post_median": 9.0}
     status, reasons = _classify(metrics, _THR)
@@ -333,7 +333,7 @@ def test_classify_low_cord_dice_fails():
 
 def test_classify_missing_tsnr_ratio_warns():
     """Absent tsnr_ratio_median downgrades to WARN, not FAIL."""
-    from spinalfmriprep.steps.s9.process import _classify
+    from spineprep.steps.s9.process import _classify
     status, reasons = _classify({"cord_dice_pre_post": 0.97,
                                  "tsnr_post_median": 9.0}, _THR)
     assert status == "WARN"
@@ -343,7 +343,7 @@ def test_classify_missing_tsnr_ratio_warns():
 def test_classify_low_median_cord_tsnr_warn_then_fail():
     """Median in-cord tSNR between warn and pass floors -> WARN; below the
     warn floor -> FAIL."""
-    from spinalfmriprep.steps.s9.process import _classify
+    from spineprep.steps.s9.process import _classify
     base = {"tsnr_ratio_median": 1.7, "cord_dice_pre_post": 0.97}
     warn_status, _ = _classify({**base, "tsnr_post_median": 4.0}, _THR)
     assert warn_status == "WARN"
@@ -357,14 +357,14 @@ def test_classify_low_median_cord_tsnr_warn_then_fail():
 
 
 def test_task_from_run_id():
-    from spinalfmriprep.steps.s9.process import _task_from_run_id
+    from spineprep.steps.s9.process import _task_from_run_id
     assert _task_from_run_id("sub-01_task-rest_run-01") == "rest"
     assert _task_from_run_id("sub-02_task-handgrasp_acq-foo") == "handgrasp"
     assert _task_from_run_id("sub-03_run-01") is None
 
 
 def test_write_bold_sidecar_contains_glm_fields(tmp_path):
-    from spinalfmriprep.steps.s9.process import _write_bold_sidecar
+    from spineprep.steps.s9.process import _write_bold_sidecar
     bold = tmp_path / "sub-01_task-rest_desc-preproc_bold.nii.gz"
     bold.write_bytes(b"stub")
     _write_bold_sidecar(bold, tr=2.0, task="rest", space="PAM50",
@@ -380,7 +380,7 @@ def test_write_bold_sidecar_contains_glm_fields(tmp_path):
 
 
 def test_write_bold_sidecar_omits_absent_optionals(tmp_path):
-    from spinalfmriprep.steps.s9.process import _write_bold_sidecar
+    from spineprep.steps.s9.process import _write_bold_sidecar
     bold = tmp_path / "sub-01_task-rest_bold.nii.gz"
     bold.write_bytes(b"stub")
     _write_bold_sidecar(bold, tr=None, task=None)
@@ -393,8 +393,8 @@ def test_write_bold_sidecar_omits_absent_optionals(tmp_path):
 
 def test_ensure_dataset_description_idempotent(tmp_path):
     """Writes a derivative manifest once and does not overwrite an existing one."""
-    from spinalfmriprep.steps.s9.process import _ensure_dataset_description
-    root = tmp_path / "derivatives" / "spinalfmriprep"
+    from spineprep.steps.s9.process import _ensure_dataset_description
+    root = tmp_path / "derivatives" / "spineprep"
     _ensure_dataset_description(root)
     dd = root / "dataset_description.json"
     assert dd.exists()
@@ -409,7 +409,7 @@ def test_ensure_dataset_description_idempotent(tmp_path):
 def test_resolve_bids_root_from_datasets_yaml(tmp_path):
     """_resolve_bids_root maps a dataset_key to its local BIDS path, accepting
     both the bare-string and the {path: ...} dict forms."""
-    from spinalfmriprep.steps.s9.orchestrate import _resolve_bids_root
+    from spineprep.steps.s9.orchestrate import _resolve_bids_root
     y = tmp_path / "datasets_local.yaml"
     y.write_text(
         "datasets:\n"
