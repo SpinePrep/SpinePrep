@@ -1,5 +1,13 @@
 # Validation
 
+!!! info "Methods validation in progress"
+    This page reports SpinalfMRIprep's **completed** validation — end-to-end
+    robustness, the normative per-level QC reference, test–retest reliability
+    characterisation, and the head-to-head vs SCT defaults. A **systematic
+    reliability × validity study of preprocessing choices** (the manuscript
+    centerpiece) is under way; its results will be added here and may refine the
+    recommended defaults. Numbers below are reproducible via `validation/*.py`.
+
 SpinalfMRIprep is validated end-to-end on **8 datasets / 384 functional runs /
 5 paradigms** (rest, motor, pain/heat, hand-grasp, dorsal-horn) spanning public
 (OpenNeuro) and internal cohorts, multiple vendors, and a range of acquisition

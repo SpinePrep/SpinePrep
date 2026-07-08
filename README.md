@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/spinalfmriprep/spinalfmriprep/releases"><img src="https://img.shields.io/badge/version-0.0.1-blue" alt="Version"></a>
+  <a href="https://github.com/SpinalfMRIprep/SpinalfMRIprep/releases"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://spinalfmriprep.github.io/spinalfmriprep/"><img src="https://img.shields.io/badge/docs-online-brightgreen" alt="Documentation"></a>
@@ -35,8 +35,8 @@ SpinalfMRIprep is designed with validity-first principles: spinal cord measureme
     │                                                   │                     │
     │                                                   ▼                     │
     │   ┌──────────────┐    ┌──────────────┐    ┌──────────────────────────┐  │
-    │   │ S6: Func→    │◀───│ S5: Cord/CSF │◀───│ S4: Motion Correction    │  │
-    │   │    Anat Reg  │    │    Masking   │    │     (cord-aware)         │  │
+    │   │ S6: Func→    │◀───│ S5: Distortion│◀──│ S4: Motion Correction    │  │
+    │   │    Anat Reg  │    │    Correction │   │     (cord-aware)         │  │
     │   └──────────────┘    └──────────────┘    └──────────────────────────┘  │
     │          │                                                              │
     │          ▼                                                              │
@@ -68,31 +68,36 @@ SpinalfMRIprep is designed with validity-first principles: spinal cord measureme
 
 ## Installation
 
-### Docker (recommended)
+### Container (recommended) — build it yourself
+
+SpinalfMRIprep ships as a **build recipe**, not a prebuilt image, because the
+container installs FSL, whose binaries are licensed for non-commercial use and are
+not freely redistributable. Build it locally (Docker or, for HPC, convert to
+Apptainer):
 
 ```bash
-docker pull spinalfmriprep/spinalfmriprep:latest
+git clone https://github.com/SpinalfMRIprep/SpinalfMRIprep.git
+cd SpinalfMRIprep
+docker build -f Dockerfile.spinalfmriprep \
+  --build-arg GIT_SHA=$(git rev-parse HEAD) \
+  --build-arg GIT_DESCRIBE=$(git describe --always --tags) \
+  -t spinalfmriprep:1.0.0 .
 
-docker run -v /path/to/bids:/data:ro \
-           -v /path/to/output:/out \
-           spinalfmriprep/spinalfmriprep:latest \
-           /data /out participant
+docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
+  spinalfmriprep:1.0.0 /bids /out participant
 ```
 
-### Local installation
+See the [quickstart](docs/quickstart.md) for the Apptainer invocation and options.
 
-SpinalfMRIprep requires [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/) to be installed and available in your `PATH`.
+### Local installation (advanced)
+
+The Python package installs with `pip install .` from the repo, but the pipeline
+also needs **SCT, FSL, and ANTs** on your `PATH` (the container installs these for
+you). Not published to PyPI yet.
 
 ```bash
-# Install SCT first (see https://spinalcordtoolbox.com/installation.html)
-
-# Install SpinalfMRIprep
-pip install spinalfmriprep
-
-# Or for development
-git clone https://github.com/spinalfmriprep/spinalfmriprep.git
-cd spinalfmriprep
-pip install -e .
+git clone https://github.com/SpinalfMRIprep/SpinalfMRIprep.git
+cd SpinalfMRIprep && pip install .
 ```
 
 ## Quick Start
@@ -123,12 +128,16 @@ If you use SpinalfMRIprep in your research, please cite:
 
 ```bibtex
 @software{spinalfmriprep,
-  title = {SpinalfMRIprep: Robust preprocessing for human spinal cord fMRI},
-  author = {SpinalfMRIprep Developers},
-  year = {2026},
-  url = {https://github.com/spinalfmriprep/spinalfmriprep}
+  title   = {SpinalfMRIprep: a containerised BIDS-App for reproducible spinal cord fMRI preprocessing},
+  author  = {Sharifi, Kiomars},
+  year    = {2026},
+  version = {1.0.0},
+  url     = {https://github.com/SpinalfMRIprep/SpinalfMRIprep}
 }
 ```
+
+Please also cite the underlying tools (SCT, FSL, ANTs, PAM50) — see the
+`NOTICE` file and the auto-generated methods boilerplate.
 
 See also [How to Cite](https://spinalfmriprep.github.io/spinalfmriprep/cite/) for related tools (SCT, PAM50) that should be cited.
 

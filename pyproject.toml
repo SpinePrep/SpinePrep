@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spinalfmriprep"
-version = "0.0.1"
+version = "1.0.0"
 description = "SpinalfMRIprep pipeline utilities"
 authors = ["SpinalfMRIprep Team <dev@spinalfmriprep.local>"]
 readme = "README.md"
