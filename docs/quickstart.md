@@ -18,11 +18,30 @@ results with care for: non-3 T data, non-EPI sequences, or fields of view outsid
 the cervical cord (thoracic/lumbar-only or whole-brain). The QC report shows the
 vertebral levels actually covered.
 
+## Build the image
+
+SpinalfMRIprep is distributed as a **build recipe**, not a prebuilt image,
+because the container installs FSL — whose binaries are licensed for
+non-commercial use and are not freely redistributable. You build the image
+locally (and thereby accept FSL's licence yourself):
+
+```bash
+git clone https://github.com/SpinalfMRIprep/SpinalfMRIprep.git
+cd SpinalfMRIprep
+docker build -f Dockerfile.spinalfmriprep \
+  --build-arg GIT_SHA=$(git rev-parse HEAD) \
+  --build-arg GIT_DESCRIBE=$(git describe --always --tags) \
+  -t spinalfmriprep:1.0.0 .
+```
+
+The `--build-arg` values stamp the pipeline version into the reproducibility
+receipt. The build pulls SCT + FSL and takes tens of minutes.
+
 ## Run with Apptainer (HPC — no Docker needed)
 
 ```bash
-# Build the .sif from the published image (or from your local Docker build):
-apptainer build spinalfmriprep.sif docker://spinalfmriprep:7.1
+# Convert your locally-built Docker image to a .sif:
+apptainer build spinalfmriprep.sif docker-daemon://spinalfmriprep:1.0.0
 
 apptainer run --cleanenv --writable-tmpfs --pwd /app \
   --bind /path/to/bids:/bids:ro --bind /path/to/out:/out \
@@ -41,9 +60,9 @@ to the working directory, and the pipeline resolves its policy/config there.
 ```bash
 docker run --rm \
   -v /path/to/bids:/bids:ro -v /path/to/out:/out \
-  spinalfmriprep:7.1 /bids /out participant --participant-label 01
+  spinalfmriprep:1.0.0 /bids /out participant --participant-label 01
 docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
-  spinalfmriprep:7.1 /bids /out group
+  spinalfmriprep:1.0.0 /bids /out group
 ```
 
 Tip: pass `--user $(id -u):$(id -g)` so outputs are owned by you, not root.

@@ -1,0 +1,29 @@
+SpinalfMRIprep
+Copyright 2026 Kiomars Sharifi and the SpinalfMRIprep contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+------------------------------------------------------------------------------
+Third-party software
+------------------------------------------------------------------------------
+
+SpinalfMRIprep is an integration pipeline: it calls, and its container recipe
+installs, third-party neuroimaging tools that are distributed under THEIR OWN
+licenses, not Apache-2.0. The SpinalfMRIprep license covers only the
+SpinalfMRIprep code in this repository.
+
+  - Spinal Cord Toolbox (SCT)      — https://spinalcordtoolbox.com  (MIT-family)
+  - PAM50 template (bundled w/ SCT) — De Leener et al. 2018
+  - FSL (topup, PNM)               — https://fsl.fmrib.ox.ac.uk
+        FSL is licensed for non-commercial / academic use and its binaries are
+        NOT freely redistributable. See the FSL Software License. Because of
+        this, SpinalfMRIprep is distributed as a BUILD RECIPE
+        (Dockerfile.spinalfmriprep): each user builds the image locally and
+        thereby obtains FSL under FSL's own license terms. Do not redistribute a
+        prebuilt image that bundles FSL without complying with the FSL license.
+  - ANTs                           — https://github.com/ANTsX/ANTs  (Apache-2.0;
+        the copy SCT bundles as isct_antsRegistration is used)
+
+Users are responsible for complying with the license terms of each bundled tool.
+Please cite the underlying tools (SCT, FSL, ANTs, PAM50) alongside SpinalfMRIprep;
+the auto-generated methods boilerplate and CITATION.cff list them.
