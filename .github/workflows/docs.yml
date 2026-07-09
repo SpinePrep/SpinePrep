@@ -7,10 +7,15 @@ name: docs
 # One-time human setup: in repo Settings -> Pages, set Source = "Deploy from a
 # branch" -> branch `gh-pages` / `/ (root)`, and set the custom domain. See
 # RELEASE.md.
+#
+# NOTE: auto-deploy on push to main is intentionally disabled during the
+# SpinalfMRIprep->SpinePrep + domain migration so a code push does not reshape
+# the live site before Pages/domain are cut over. After the cutover, re-enable
+# dev docs by adding back:
+#   push:
+#     branches: [main]
 
 on:
-  push:
-    branches: [main]
   release:
     types: [published]
   workflow_dispatch:
