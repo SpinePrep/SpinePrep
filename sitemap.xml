@@ -1,103 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://spinalfmriprep.com/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/cite/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/cite/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/contributing/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/contributing/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/quickstart/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/quickstart/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/setup/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/reports/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/tutorial/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/setup/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S0_setup/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/tutorial/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S10_confounds/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S0_setup/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S11_export/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S10_qc_aggregation_and_release/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S1_input_verify/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S1_input_verify/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S2_anat_cordref/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S2B_func_denoise/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S3_func_init_and_crop/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S2_anat_cordref/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S4_motion_correction/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S3_func_init_and_crop/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S5_distortion_correction/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S4_motion_correction/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S6_registration/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S5_distortion_correction/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S7_normalization/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S6_registration/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S8_segmentation/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S7_normalization/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/S9_smoothing/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S8_confounds/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/methods/overview/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/S9_primary_functional_derivatives/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/pipeline/overview/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/overview/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/reference/api/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/methods/roi_timeseries_connectivity_removed/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/reference/cli/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/pipeline/overview/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/reference/config/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/reference/api/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/reference/schemas/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/reference/cli/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
     <url>
-         <loc>https://spinalfmriprep.com/validation/</loc>
-         <lastmod>2026-02-16</lastmod>
+         <loc>https://spineprep.com/reference/config/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://spineprep.com/reference/schemas/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://spineprep.com/validation/</loc>
+         <lastmod>2026-07-09</lastmod>
     </url>
 </urlset>
