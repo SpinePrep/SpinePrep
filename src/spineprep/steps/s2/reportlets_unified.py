@@ -384,8 +384,12 @@ def _render_sagittal(
     ax.text(0.97, 0.5, "P", transform=ax.transAxes, color="#facc15",
             fontsize=14, fontweight="bold", ha="right", va="center", bbox=_bbox)
     if z_label_levels:
+        # `disp = np.rot90(sag_yz)` puts superior (max Z) at the top. A level
+        # whose voxels centre on superior index `z` therefore sits at axes
+        # fraction (z + 0.5)/n_z from the BOTTOM (transAxes y: 0=bottom, 1=top).
+        # The earlier `1 - z/n_z` mirrored this, printing C1 at the bottom.
         for z, lbl in z_label_levels.items():
-            ax.text(0.99, 1.0 - (z / sag_yz.shape[1]),
+            ax.text(0.99, (z + 0.5) / sag_yz.shape[1],
                     lbl, transform=ax.transAxes, color=_TEXT,
                     fontsize=10, family="monospace", fontweight="bold",
                     ha="right", va="center",
