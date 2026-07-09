@@ -152,6 +152,192 @@ def _check_drift_gate(
     return True, "ok", info
 
 
+def _caudal_union(
+    deepseg: np.ndarray,
+    propseg: np.ndarray,
+    affine: np.ndarray,
+    lateral_tol_vox: float,
+    max_gap: int = 0,
+    area_mult: float = 3.0,
+    axis_tol_vox: float = 3.1,
+) -> tuple[np.ndarray, list[int]]:
+    """Extend a deepseg cord mask caudally using propseg's cord.
+
+    `sct_deepseg spinalcord` on the *coarse* full-FOV functional reference
+    sometimes gives up on the caudal (lower) cord where coil sensitivity /
+    SNR is poor, so the mask stops partway down and the cord-focused crop
+    derived from it cuts off real cord. `sct_propseg` is a deformable
+    propagation model that tracks the cord as a tube; it reaches slightly
+    further caudally and — critically — stays cord-shaped (it does not leak
+    into the bright anterior airway/pharynx, which is the classic
+    false-positive when extending a mask by brightness alone).
+
+    This unions propseg's cord voxels onto deepseg for the *contiguous*
+    stretch of slices immediately caudal to deepseg's caudal end, with four
+    guards that keep it safe:
+
+    - **Caudal-only, never cranial.** We only ever add slices below
+      deepseg's caudal end, so propseg's habit of over-reaching up into the
+      brainstem is discarded and the superior brain-contamination gate is
+      untouched.
+    - **Axis-deviation guard.** A genuine short caudal cord continuation is
+      near-straight — it stays within a couple of voxels of the deepseg
+      cord centreline extrapolated linearly downward. propseg sometimes
+      keeps propagating past the true cord end onto a bright prevertebral
+      vessel / airway that curves progressively off-axis; the added slice's
+      centroid must stay within `axis_tol_vox` of the extrapolated axis, so
+      that runaway is cut off. (Empirically genuine extensions deviate
+      <2 vox; runaways cross 3+.)
+    - **Lateral-jump guard.** Each added slice's propseg centroid must also
+      lie within `lateral_tol_vox` of the *previous* accepted centroid,
+      catching an abrupt single-slice jump.
+    - **Area guard.** A propseg slice larger than `area_mult` × the median
+      deepseg cord area is a bright CSF pool / non-cord blob, not cord.
+
+    Stops at the first gap (> `max_gap`), off-axis slice, lateral jump, or
+    ballooned slice. On runs whose deepseg mask already reaches the imaged
+    cord end / FOV edge, propseg has nothing contiguous below to add, so
+    this is a no-op (0 slices).
+
+    Returns (completed_mask, added_slice_indices).
+    """
+    try:
+        axcodes = nib.orientations.aff2axcodes(affine)
+    except Exception:
+        return deepseg, []
+    iax = next((i for i, c in enumerate(axcodes) if c in ("S", "I")), None)
+    if iax is None:
+        return deepseg, []
+    s_pos = axcodes[iax] == "S"
+
+    D = np.moveaxis(deepseg > 0, iax, 2)
+    P = np.moveaxis(propseg > 0, iax, 2)
+    out = D.copy()
+
+    dcoords = np.argwhere(D)
+    dz = np.unique(dcoords[:, 2])
+    if dz.size == 0:
+        return deepseg, []
+    # Median deepseg cord cross-section area — used to reject a propseg slice
+    # that balloons well beyond cord size (a large bright CSF pool / airway).
+    med_area = float(np.median([(dcoords[:, 2] == z).sum() for z in dz]))
+    area_cap = area_mult * med_area
+    # Caudal = most-inferior imaged slice of the deepseg mask.
+    step = -1 if s_pos else 1
+    z_caud = int(dz.min()) if s_pos else int(dz.max())
+
+    def _centroid(mask3d, z):
+        pts = np.argwhere(mask3d[:, :, z])
+        return pts[:, :2].mean(axis=0) if pts.size else None
+
+    ref_c = _centroid(D, z_caud)
+    if ref_c is None:
+        return deepseg, []
+
+    # Linear fit of the deepseg cord centreline (in-plane x,y vs slice z),
+    # extrapolated caudally to bound how far propseg may wander off-axis.
+    d_cents = np.array([_centroid(D, int(z)) for z in dz])
+    if dz.size >= 2:
+        fit_x = np.polyfit(dz, d_cents[:, 0], 1)
+        fit_y = np.polyfit(dz, d_cents[:, 1], 1)
+    else:
+        fit_x = np.array([0.0, float(ref_c[0])])
+        fit_y = np.array([0.0, float(ref_c[1])])
+
+    added: list[int] = []
+    gap = 0
+    z = z_caud + step
+    nz = D.shape[2]
+    while 0 <= z < nz:
+        pc = _centroid(P, z)
+        if pc is None:
+            gap += 1
+            if gap > max_gap:
+                break
+            z += step
+            continue
+        axis_pt = np.array([np.polyval(fit_x, z), np.polyval(fit_y, z)])
+        if float(np.hypot(*(pc - axis_pt))) > axis_tol_vox:
+            break  # propseg drifted off the extrapolated cord axis (non-cord)
+        if float(np.hypot(*(pc - ref_c))) > lateral_tol_vox:
+            break  # propseg jumped off the cord axis (e.g. onto the airway)
+        if float(P[:, :, z].sum()) > area_cap:
+            break  # propseg ballooned beyond cord size (bright CSF pool / airway)
+        out[:, :, z] |= P[:, :, z]
+        added.append(z)
+        ref_c = pc
+        gap = 0
+        z += step
+
+    if not added:
+        return deepseg, []
+    completed = np.moveaxis(out, 2, iax).astype(deepseg.dtype)
+    return completed, [int(z) for z in added]
+
+
+def _extend_caudal_via_propseg(
+    func_ref_fast_path: Path,
+    discovery_seg_path: Path,
+    qc_dir: Path,
+    policy: dict[str, Any],
+) -> list[int]:
+    """Run propseg and union its caudal cord onto the deepseg discovery seg.
+
+    Overwrites `discovery_seg_path` in place with the completed mask when it
+    adds any slices. Returns the list of added slice indices ([] = no-op).
+    Any failure (propseg missing/errored, empty output) is swallowed and
+    leaves the deepseg mask untouched — the completion is strictly additive
+    and must never make localization worse.
+    """
+    cfg = (
+        policy.get("func_localization", {})
+        .get("discover", {})
+        .get("caudal_completion", {})
+    )
+    if not cfg.get("enabled", True):
+        return []
+
+    disc_img = nib.load(discovery_seg_path)
+    disc_data = disc_img.get_fdata()
+    zooms = np.sqrt((disc_img.affine[:3, :3] ** 2).sum(axis=0))
+    in_plane_mm = float(min(zooms[0], zooms[1])) or 1.0
+    lateral_tol_vox = float(cfg.get("lateral_tol_mm", 8.0)) / in_plane_mm
+    max_gap = int(cfg.get("max_gap", 0))
+    area_mult = float(cfg.get("area_mult", 3.0))
+    axis_tol_vox = float(cfg.get("axis_tol_mm", 5.0)) / in_plane_mm
+
+    propseg_path = qc_dir / "func_ref_fast_propseg.nii.gz"
+    propseg_path.parent.mkdir(parents=True, exist_ok=True)
+    contrast = str(cfg.get("propseg_contrast", "t2"))
+    cmd = [
+        "sct_propseg",
+        "-i", str(func_ref_fast_path),
+        "-c", contrast,
+        "-o", str(propseg_path),
+        "-v", "0",
+    ]
+    ok, _out = _run_command(cmd)
+    if not ok or not propseg_path.exists():
+        return []
+
+    try:
+        prop_img = nib.load(propseg_path)
+        prop_data = prop_img.get_fdata()
+        if prop_data.shape != disc_data.shape:
+            return []
+        completed, added = _caudal_union(
+            disc_data, prop_data, disc_img.affine, lateral_tol_vox, max_gap,
+            area_mult, axis_tol_vox,
+        )
+    except Exception:
+        return []
+
+    if added:
+        nib.save(nib.Nifti1Image(completed, disc_img.affine, disc_img.header),
+                 discovery_seg_path)
+    return added
+
+
 def _create_dummy_discovery(data: np.ndarray, affine: np.ndarray, seg_path: Path, roi_path: Path) -> None:
     """Fallback: Center-of-image dummy discovery."""
     discovery_seg_data = np.zeros_like(data)
@@ -348,6 +534,20 @@ def _process_s3_1_dummy_drop_and_localization(
 
     if ok and discovery_seg_path.exists():
          roi_mask_path = discovery_seg_path
+         # Robust caudal completion: deepseg on the coarse full-FOV reference
+         # under-segments the lower cord on low-SNR/low-coil-sensitivity runs,
+         # so the cord-focused crop derived from this mask cuts off real caudal
+         # cord. Union propseg's contiguous caudal cord onto the deepseg mask
+         # (caudal-only, lateral-jump-guarded) before it drives the crop.
+         try:
+             added_caudal = _extend_caudal_via_propseg(
+                 func_ref_fast_path, discovery_seg_path, work_dir / "qc", policy
+             )
+             if added_caudal:
+                 print(f"S3.1 caudal completion: +{len(added_caudal)} slices "
+                       f"(z={sorted(added_caudal)})")
+         except Exception:
+             pass  # strictly additive; never fail localization on completion
     else:
          return {
              "func_ref_fast_path": func_ref_fast_path,

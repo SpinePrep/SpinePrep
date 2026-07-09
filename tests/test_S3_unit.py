@@ -266,3 +266,66 @@ def test_drift_gate_min_extent_off_when_zero():
     passed, _, _ = _check_drift_gate(data, affine, policy)
     assert passed
             
+
+
+# ---------------------------------------------------------------------------
+# S3.1 caudal completion (deepseg under-segments the lower cord on low-SNR
+# functional references; propseg's contiguous caudal cord is unioned on).
+# ---------------------------------------------------------------------------
+
+from spineprep.steps.s3.localize import _caudal_union
+
+
+def _disc(cx, cy, z, r=2):
+    """Small filled cord disc of radius r at (cx, cy) on slice z."""
+    yy, xx = np.mgrid[0:40, 0:40]
+    return (xx - cx) ** 2 + (yy - cy) ** 2 <= r ** 2, z
+
+
+def _build(shape, slices):
+    v = np.zeros(shape, dtype=np.float32)
+    for mask2d, z in slices:
+        v[:, :, z][mask2d] = 1
+    return v
+
+
+def test_caudal_union_extends_genuine_cord():
+    """propseg cord contiguous below the deepseg caudal end is added."""
+    shape = (40, 40, 30)
+    aff = np.diag([1.6, 1.6, 4.4, 1.0])  # RAS: axis 2 = S+
+    # deepseg present on z=20..25 (cord at x=20,y=20)
+    deep = _build(shape, [_disc(20, 20, z) for z in range(20, 26)])
+    # propseg tracks the same axis and continues to z=17..25
+    prop = _build(shape, [_disc(20, 20, z) for z in range(17, 26)])
+    out, added = _caudal_union(deep, prop, aff, lateral_tol_vox=5, max_gap=0,
+                               area_mult=3.0, axis_tol_vox=3.1)
+    assert sorted(added) == [17, 18, 19]
+    assert (out[:, :, 17] > 0).any()
+
+
+def test_caudal_union_rejects_offaxis_runaway():
+    """propseg that curves progressively off the cord axis (vessel/airway) is cut."""
+    shape = (40, 40, 30)
+    aff = np.diag([1.6, 1.6, 4.4, 1.0])
+    deep = _build(shape, [_disc(20, 20, z) for z in range(20, 26)])
+    # propseg drifts +4 vox/slice in y after z=19 -> off-axis quickly
+    prop_slices = [_disc(20, 20, 19)]
+    for i, z in enumerate(range(18, 12, -1)):
+        prop_slices.append(_disc(20, 20 + 4 * (i + 1), z))
+    prop = _build(shape, prop_slices)
+    out, added = _caudal_union(deep, prop, aff, lateral_tol_vox=5, max_gap=0,
+                               area_mult=3.0, axis_tol_vox=3.1)
+    # z=19 stays on-axis and is kept; the runaway below is rejected
+    assert added == [19]
+
+
+def test_caudal_union_noop_when_nothing_below():
+    """A mask already reaching the FOV / cord end gets no caudal addition."""
+    shape = (40, 40, 30)
+    aff = np.diag([1.6, 1.6, 4.4, 1.0])
+    deep = _build(shape, [_disc(20, 20, z) for z in range(2, 26)])
+    prop = _build(shape, [_disc(20, 20, z) for z in range(10, 26)])  # above deep caudal end
+    out, added = _caudal_union(deep, prop, aff, lateral_tol_vox=5, max_gap=0,
+                               area_mult=3.0, axis_tol_vox=3.1)
+    assert added == []
+    assert np.array_equal(out > 0, deep > 0)

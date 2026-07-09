@@ -25,6 +25,22 @@ func_localization:
     # Narrow-FOV acquisitions (e.g. KombiShimZSpine with 12 BOLD slices) are valid
     # and must not be dropped. The brain-contamination tests below carry the load.
     min_z_slices: 5
+    # Robust caudal completion. sct_deepseg spinalcord on the COARSE full-FOV
+    # functional reference under-segments the lower cord on low-SNR / low
+    # coil-sensitivity runs; the cord-focused crop derived from the mask then
+    # cuts off real caudal cord (observed 5-6 slices on AS002, 1-2 on CO001).
+    # We union sct_propseg's contiguous caudal cord onto the deepseg mask.
+    # It is caudal-only (never cranial, so the brainstem/drift gate is
+    # untouched) and lateral-jump-guarded (rejects the bright anterior airway,
+    # which sits well off the cord axis). No-op on runs whose deepseg mask
+    # already reaches the imaged cord end / FOV edge.
+    caudal_completion:
+      enabled: true
+      propseg_contrast: t2   # func EPI reads as T2-like (bright CSF)
+      axis_tol_mm: 5.0       # max deviation from the extrapolated deepseg cord axis; genuine caudal cord is near-straight (<3 mm), a vessel/airway runaway curves past this
+      lateral_tol_mm: 8.0    # max per-slice cord-centroid shift; airway is ~15+ mm off-axis
+      max_gap: 0             # stop at the first slice with no contiguous propseg cord
+      area_mult: 3.0         # stop if a propseg slice balloons > 3x the median cord area
     drift_gate:
       enabled: true
       superior_slices_check: 5
