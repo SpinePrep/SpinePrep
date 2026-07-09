@@ -11,7 +11,7 @@ Spinal cord fMRI presents fundamentally different challenges compared to brain i
 - **Susceptibility artifacts**: The cord's proximity to vertebral bodies, lungs, and air-tissue interfaces creates severe B0 inhomogeneities.
 - **Motion complexity**: Head, neck, and swallowing motions introduce non-rigid deformations that standard brain motion correction cannot handle.
 
-Traditional brain fMRI pipelines (including fMRIPrep) are not designed for these challenges. SpinePrep addresses them with spinal-cord-specific algorithms built on the [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/).
+Brain fMRI pipelines such as fMRIPrep are built for a different problem and are not designed for these challenges. SpinePrep addresses them by automating the spinal-cord-specific methods of the [Spinal Cord Toolbox (SCT)](https://spinalcordtoolbox.com/) and related tools — it integrates and orchestrates those methods rather than introducing new algorithms of its own.
 
 ## Comparison with fMRIPrep
 
@@ -24,7 +24,7 @@ Traditional brain fMRI pipelines (including fMRIPrep) are not designed for these
 | **Motion model** | Rigid-body 6-DOF | Cord-specific with slice-wise options |
 | **Distortion correction** | TopUp / SyN | Reverse-PE fieldmap or image-based fallback |
 
-SpinePrep follows fMRIPrep's design philosophy—BIDS-native, containerized, QC-first—but implements entirely different algorithms tailored for the spinal cord.
+SpinePrep follows fMRIPrep's design philosophy — BIDS-native, containerised, QC-first — but wraps the spinal-cord-specific methods of SCT and related tools rather than the brain algorithms fMRIPrep uses. The contribution is the integration, automation, reproducibility, and standardised QC, not the underlying algorithms.
 
 ## Pipeline Architecture
 
