@@ -367,7 +367,7 @@ def run_S3_func_init_and_crop_reportlets_only(
 
     # Re-render reportlets for each run
     for run in runs:
-        if run.get("status") != "PASS":
+        if run.get("status") not in ("PASS", "WARN"):
             continue
 
         subject = run.get("subject")
@@ -397,59 +397,40 @@ def run_S3_func_init_and_crop_reportlets_only(
         # Find S2 cordref_std
         cordref_std_path = _find_s2_cordref_std(out_path, subject, session)
 
-        # Re-render S3.1 localization figure
-        if func_ref_fast_path.exists() and discovery_seg_path.exists():
-            try:
-                policy_path = Path("policy") / "S3_func_init_and_crop.yaml"
-                policy = yaml.safe_load(policy_path.read_text()) if policy_path.exists() else {}
-                fig_path = figures_dir / f"{prefix}_desc-S3_func_localization.png"
-                _render_s3_1_simple_func_with_mask(
-                    func_path=func_ref_fast_path,
-                    mask_path=discovery_seg_path,
-                    output_path=fig_path,
-                    policy=policy,
-                    crop_box=None,
-                    padding_mm=10.0,
-                )
-            except Exception:
-                pass
-
-        # Re-render S3.3 funcref montage
-        if func_ref_path.exists() and discovery_seg_path.exists():
-            try:
-                import nibabel.processing
-                fig2_path = figures_dir / f"{prefix}_desc-S3_funcref_montage.png"
-                ref_img = nib.as_closest_canonical(nib.load(func_ref_path))
-                ref_data = ref_img.get_fdata()
-                zooms = ref_img.header.get_zooms()
-                mask_raw = nib.as_closest_canonical(nib.load(discovery_seg_path))
-                mask_img = nib.processing.resample_from_to(mask_raw, ref_img, order=0)
-                mask_data = mask_img.get_fdata()
-
-                z_indices = np.unique(np.where(mask_data > 0)[2])
-                z_min = int(z_indices.min()) if len(z_indices) > 0 else 0
-                z_max = int(z_indices.max()) if len(z_indices) > 0 else ref_data.shape[2] - 1
-                z_min = max(0, z_min)
-                z_max = min(ref_data.shape[2] - 1, z_max)
-                slices = np.linspace(z_min, z_max, 11)[1:-1].astype(int)
-
-                tile_size_px = 128
-                grid_img = Image.new("RGB", (tile_size_px * 3, tile_size_px * 3))
-                for i, z in enumerate(slices[:9]):
-                    row, col = i // 3, i % 3
-                    sl = ref_data[:, :, z]
-                    vmin, vmax = np.percentile(sl, [1, 99])
-                    if vmax > vmin:
-                        sl_norm = np.clip((sl - vmin) / (vmax - vmin), 0, 1)
-                    else:
-                        sl_norm = sl
-                    sl_disp = np.rot90(sl_norm)
-                    rgb_sl = np.repeat((sl_disp * 255).astype(np.uint8)[..., np.newaxis], 3, axis=2)
-                    pil_sl = Image.fromarray(rgb_sl).resize((tile_size_px, tile_size_px), resample=Image.Resampling.NEAREST)
-                    grid_img.paste(pil_sl, (col * tile_size_px, row * tile_size_px))
-                grid_img.save(fig2_path)
-            except Exception:
-                pass
+        # Re-render S3.1/S3.2/S3.3 reportlets via the UNIFIED renderer so
+        # --reportlets-only produces the same chain-wide standard figures as
+        # the full step (session.py): sagittal (centerline-following curved
+        # reformat) + axial montage + header + legend. The previous legacy
+        # single-panel renderers here emitted a stripped portrait
+        # func_localization and a bare 3x3 funcref grid, which regressed the
+        # dashboard composition whenever --reportlets-only was run.
+        crop_mask_path = work_dir / "funccrop_mask.nii.gz"
+        cord_mask_crop_path = (
+            work_dir / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz"
+        )
+        frame_metrics_tsv = work_dir / "metrics" / "frame_metrics.tsv"
+        outlier_mask_json = work_dir / "metrics" / "outlier_mask.json"
+        try:
+            from .reportlets_unified import regenerate_s3_reportlets
+            regenerate_s3_reportlets(
+                run_id=run_id,
+                subject=subject,
+                session=session,
+                dataset_key=ds_key,
+                status=run.get("status", "PASS"),
+                metrics=run.get("metrics", {}) or {},
+                figures_dir=figures_dir,
+                cordref_std_path=cordref_std_path,
+                func_ref_fast_path=func_ref_fast_path if func_ref_fast_path.exists() else None,
+                func_ref_path=func_ref_path if func_ref_path.exists() else None,
+                discovery_seg_path=discovery_seg_path if discovery_seg_path.exists() else None,
+                cord_mask_path=cord_mask_crop_path if cord_mask_crop_path.exists() else None,
+                crop_mask_path=crop_mask_path if crop_mask_path.exists() else None,
+                frame_metrics_tsv=frame_metrics_tsv if frame_metrics_tsv.exists() else None,
+                outlier_mask_json=outlier_mask_json if outlier_mask_json.exists() else None,
+            )
+        except Exception:
+            pass
 
         # Re-render T2-to-func overlay
         if func_ref_path.exists() and cordmask_func_path.exists():
