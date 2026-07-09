@@ -1,63 +1,74 @@
 name: docs
 
+# Versioned documentation via `mike`. Pushes to `main` update the `dev` version;
+# publishing a GitHub Release deploys that version and moves the `latest` alias.
+# mike writes the built site to the `gh-pages` branch.
+#
+# One-time human setup: in repo Settings -> Pages, set Source = "Deploy from a
+# branch" -> branch `gh-pages` / `/ (root)`, and set the custom domain. See
+# RELEASE.md.
+
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write   # mike pushes to the gh-pages branch
 
 concurrency:
-  group: "pages"
+  group: docs-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Configure Git Credentials
+      - name: Configure git
         run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          version: 1.8.3
+          version: 2.2.1
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      - name: Install dependencies
-        run: poetry install --with docs
+      - name: Install docs dependencies
+        run: |
+          poetry install --with docs
+          poetry run pip install "mike>=2.1,<3"
 
-      - name: Build MkDocs
-        run: poetry run mkdocs build
+      - name: Deploy dev docs (push to main)
+        if: github.event_name == 'push'
+        run: poetry run mike deploy --push dev
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./site
+      - name: Deploy released docs + move 'latest'
+        if: github.event_name == 'release'
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          poetry run mike deploy --push --update-aliases "$VERSION" latest
+          poetry run mike set-default --push latest
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Ensure custom-domain CNAME persists at gh-pages root
+        run: |
+          git fetch origin gh-pages
+          git worktree add ../ghpages gh-pages
+          echo "spineprep.com" > ../ghpages/CNAME
+          if ! git -C ../ghpages diff --quiet -- CNAME; then
+            git -C ../ghpages add CNAME
+            git -C ../ghpages commit -m "ci: keep CNAME at gh-pages root"
+            git -C ../ghpages push origin gh-pages
+          fi

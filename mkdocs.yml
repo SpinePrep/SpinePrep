@@ -59,6 +59,10 @@ plugins:
           options:
             docstring_style: google
 
+extra:
+  version:
+    provider: mike
+
 extra_css:
   - assets/css/extra.css
 

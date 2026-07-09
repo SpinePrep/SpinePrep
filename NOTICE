@@ -15,12 +15,15 @@ SpinePrep code in this repository.
   - Spinal Cord Toolbox (SCT)      — https://spinalcordtoolbox.com  (MIT-family)
   - PAM50 template (bundled w/ SCT) — De Leener et al. 2018
   - FSL (topup, PNM)               — https://fsl.fmrib.ox.ac.uk
-        FSL is licensed for non-commercial / academic use and its binaries are
-        NOT freely redistributable. See the FSL Software License. Because of
-        this, SpinePrep is distributed as a BUILD RECIPE
-        (Dockerfile.spineprep): each user builds the image locally and
-        thereby obtains FSL under FSL's own license terms. Do not redistribute a
-        prebuilt image that bundles FSL without complying with the FSL license.
+        FSL is free for academic / non-commercial use and MAY be redistributed
+        (including inside a container) under those non-commercial terms — the
+        full FSL license must travel with it and no fee may be charged. See the
+        FSL Software License. SpinePrep nonetheless distributes as a BUILD RECIPE
+        (Dockerfile.spineprep) BY CHOICE: each user builds the image locally and
+        obtains FSL directly under FSL's own terms, which keeps SpinePrep's
+        Apache-2.0 distribution unencumbered by FSL's non-commercial restriction.
+        If you redistribute a prebuilt image that bundles FSL, you must comply
+        with the FSL license (non-commercial only, license included, no fee).
   - ANTs                           — https://github.com/ANTsX/ANTs  (Apache-2.0;
         the copy SCT bundles as isct_antsRegistration is used)
 
