@@ -9,6 +9,9 @@ theme:
   custom_dir: docs/overrides
   logo: assets/images/logo.svg
   favicon: assets/images/favicon.png
+  font:
+    text: IBM Plex Sans
+    code: IBM Plex Mono
   palette:
     # Palette toggle for light mode
     - scheme: default
@@ -82,6 +85,11 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Get started:
+    - Quickstart: quickstart.md
+    - Install & use: tutorial.md
+    - Setup: setup.md
+    - Contribute: contributing.md
   - Methods:
     - Overview: methods/overview.md
     - S0 Setup: methods/S0_setup.md
@@ -98,11 +106,7 @@ nav:
     - S10 QC Aggregation & Release: methods/S10_qc_aggregation_and_release.md
     - ROI/Connectivity (removed): methods/roi_timeseries_connectivity_removed.md
   - Validation: validation/index.md
-  - QC Reports: reports.md
-  - Usage:
-    - Try It: quickstart.md
-    - Install & Use: tutorial.md
-    - Contribute: contributing.md
+  - Gallery: reports.md
   - Reference:
     - CLI: reference/cli.md
     - API: reference/api.md

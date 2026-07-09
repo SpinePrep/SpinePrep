@@ -1,35 +1,159 @@
 {% extends "main.html" %}
 
-{% block tabs %}
-{{ super() }}
-{% endblock %}
-
 {% block content %}
-<div id="main-content" class="tx-hero">
-  <div class="tx-hero__container">
-    <div class="tx-hero__logo">
-      <img src="{{ 'assets/images/logo.svg' | url }}" alt="SpinePrep logo">
-    </div>
-    <div class="tx-hero__content">
-      <h1><span class="tx-brand-spinal">Spinal</span><span class="tx-brand-fmri">fMRI</span><span class="tx-brand-prep">prep</span></h1>
-      <p>Robust, automated preprocessing<br>for spinal cord fMRI.</p>
+<div class="tx-landing" id="main-content">
 
-      <div class="tx-badges">
-        <span class="tx-badge tx-badge--primary">BIDS-App</span>
-        <span class="tx-badge tx-badge--secondary">Validating on 5 datasets</span>
+  <!-- HERO -->
+  <header class="sp-hero">
+    <div class="sp-wrap sp-hero__grid">
+      <div class="sp-hero__copy">
+        <div class="sp-eyebrow">BIDS-App · spinal-cord fMRI</div>
+        <h1>Robust, reproducible preprocessing for the <span class="sp-accent">spinal cord</span>.</h1>
+        <p class="sp-lede">The first turnkey, containerised BIDS-App for human cord fMRI. A BIDS dataset in — GLM-ready derivatives and per-step quality control out.</p>
+
+        <div class="sp-install" role="group" aria-label="Run SpinePrep">
+          <code id="sp-cmd"><span class="sp-tok">spineprep</span> /data/bids /out participant</code>
+          <button class="sp-copy" id="sp-copy" aria-label="Copy command">COPY</button>
+        </div>
+        <p class="sp-subnote">Container recipe (Docker / Apptainer). Literature-grounded defaults: SCT · FSL · PAM50.</p>
+
+        <div class="sp-cta">
+          <a class="sp-btn sp-btn--primary" href="{{ 'quickstart/' | url }}">Get started →</a>
+          <a class="sp-btn sp-btn--ghost" href="#sp-evidence">See the evidence</a>
+        </div>
+
+        <div class="sp-works"><span>WORKS WITH</span><b>SCT</b><b>FSL</b><b>ANTs</b><b>PAM50</b></div>
       </div>
 
-      <div class="tx-cta-buttons">
-        <a href="methods/overview/" class="tx-btn tx-btn-primary">View Methods</a>
-        <a href="validation/" class="tx-btn tx-btn-secondary">See Validation</a>
+      <div class="sp-scan">
+        <div class="sp-rail" aria-hidden="true"><span>C1</span><span>C4</span><span>C7</span><span>T2</span></div>
+        <div class="sp-frame">
+          <img src="{{ 'assets/qc/S2_totalspineseg_montage_example.png' | url }}" alt="SpinePrep S2.2 reportlet: sagittal spinal cord with TotalSpineSeg vertebrae and disc labels" loading="eager">
+          <div class="sp-cap"><span><span class="sp-dot">●</span> sub-01 · S2.2 TotalSpineSeg</span><span>PASS</span></div>
+        </div>
       </div>
     </div>
-  </div>
+  </header>
+
+  <!-- EVIDENCE -->
+  <section class="sp-evidence" id="sp-evidence"><div class="sp-wrap sp-evidence__grid">
+    <div class="sp-stat"><div class="sp-n">8</div><div class="sp-l">datasets</div></div>
+    <div class="sp-stat"><div class="sp-n">384</div><div class="sp-l">functional runs</div></div>
+    <div class="sp-stat"><div class="sp-n">5</div><div class="sp-l">paradigms</div></div>
+    <div class="sp-stat"><div class="sp-n">~250</div><div class="sp-l">subjects</div></div>
+    <div class="sp-note">First per-vertebral-level normative QC reference for cord fMRI, with reconciled QC attrition and test–retest reliability of the derivatives.</div>
+  </div></section>
+
+  <!-- FEATURES -->
+  <section class="sp-sec"><div class="sp-wrap">
+    <div class="sp-head">
+      <div class="sp-eyebrow">Why SpinePrep</div>
+      <h2>The rigor the brain has had for a decade — now for the cord.</h2>
+      <p>SpinePrep mirrors the field's working pipelines (fMRIPrep, MRIQC, SCT), tuned for a 5–7 mm structure that moves, distorts, and spans vertebral levels.</p>
+    </div>
+    <div class="sp-grid4">
+      <div class="sp-card"><div class="sp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+        <h3>BIDS-native &amp; automatic</h3><p>One command. BIDS in, BIDS-Derivatives out — no manual masking, no bespoke lab scripts.</p></div>
+      <div class="sp-card"><div class="sp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+        <h3>Built for the cord</h3><p>Cord-focused segmentation, motion, distortion and PAM50 normalization — not adapted from brain defaults.</p></div>
+      <div class="sp-card"><div class="sp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <h3>QC you can read</h3><p>Every step emits one step-local truth metric and one diagnostic reportlet. You see what failed and why.</p></div>
+      <div class="sp-card"><div class="sp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12a8 8 0 0114-5m2-3v4h-4M20 12a8 8 0 01-14 5m-2 3v-4h4"/></svg></div>
+        <h3>Reproducible by contract</h3><p>Deterministic runs, versioned policy, a provenance receipt of tool + policy + git SHAs. Re-run, get the same numbers.</p></div>
+    </div>
+  </div></section>
+
+  <!-- PIPELINE -->
+  <section class="sp-sec sp-band" id="sp-pipeline"><div class="sp-wrap">
+    <div class="sp-head">
+      <div class="sp-eyebrow">The chain · S1 → S10</div>
+      <h2>Ten steps. One truth metric and one reportlet each.</h2>
+    </div>
+    <div class="sp-piperail">
+      <div class="sp-step"><div class="sp-s">S1</div><div class="sp-t">Input verify</div><div class="sp-d">BIDS + acquisition envelope</div></div>
+      <div class="sp-step"><div class="sp-s">S2</div><div class="sp-t">Anat cordref</div><div class="sp-d">cord seg · TotalSpineSeg</div></div>
+      <div class="sp-step"><div class="sp-s">S3</div><div class="sp-t">Func ref + crop</div><div class="sp-d">cord-focused FOV</div></div>
+      <div class="sp-step"><div class="sp-s">S4</div><div class="sp-t">Motion</div><div class="sp-d">cord-aware moco · FD</div></div>
+      <div class="sp-step"><div class="sp-s">S5</div><div class="sp-t">Distortion</div><div class="sp-d">topup / PNM</div></div>
+      <div class="sp-step"><div class="sp-s">S6</div><div class="sp-t">Func → anat</div><div class="sp-d">cord-seg-driven reg</div></div>
+      <div class="sp-step"><div class="sp-s">S7</div><div class="sp-t">PAM50</div><div class="sp-d">template normalization</div></div>
+      <div class="sp-step"><div class="sp-s">S8</div><div class="sp-t">Confounds</div><div class="sp-d">physio · aCompCor</div></div>
+      <div class="sp-step"><div class="sp-s">S9</div><div class="sp-t">Derivatives</div><div class="sp-d">native + PAM50 · tSNR</div></div>
+      <div class="sp-step"><div class="sp-s">S10</div><div class="sp-t">QC release</div><div class="sp-d">aggregate + receipt</div></div>
+    </div>
+  </div></section>
+
+  <!-- GALLERY -->
+  <section class="sp-sec" id="sp-gallery"><div class="sp-wrap">
+    <div class="sp-head">
+      <div class="sp-eyebrow">Visual QC is the validator</div>
+      <h2>A reportlet for every step.</h2>
+      <p>The human eyeballs the HTML; the numbers quantify the call. One PNG should tell you what failed and why.</p>
+    </div>
+    <div class="sp-gal">
+      <figure class="sp-shot"><img src="{{ 'assets/qc/S2_cordmask_montage_example.png' | url }}" alt="Cord segmentation montage reportlet" loading="lazy"><figcaption class="sp-shotcap"><b>Cord segmentation</b><span>S2 · Dice</span></figcaption></figure>
+      <figure class="sp-shot"><img src="{{ 'assets/qc/S4_tsnr_comparison_example.png' | url }}" alt="Temporal SNR before and after preprocessing" loading="lazy"><figcaption class="sp-shotcap"><b>Temporal SNR</b><span>S4 · before/after</span></figcaption></figure>
+      <figure class="sp-shot"><img src="{{ 'assets/qc/S4_motion_traces_example.png' | url }}" alt="Motion traces and framewise displacement" loading="lazy"><figcaption class="sp-shotcap"><b>Motion &amp; FD</b><span>S4 · traces</span></figcaption></figure>
+    </div>
+  </div></section>
+
+  <!-- GET STARTED -->
+  <section class="sp-sec sp-band" id="sp-start"><div class="sp-wrap">
+    <div class="sp-head">
+      <div class="sp-eyebrow">Get started</div>
+      <h2>Build it, point it at your BIDS data, read the report.</h2>
+      <p>SpinePrep ships as a build recipe — by choice — so its Apache-2.0 distribution stays free of FSL's non-commercial terms. You build once and obtain FSL under its own licence.</p>
+    </div>
+    <div class="sp-paths">
+      <div class="sp-path">
+        <h3>Container <span class="sp-tag">RECOMMENDED</span></h3>
+        <pre><span class="sp-tok">docker build</span> -f Dockerfile.spineprep -t spineprep:1.0.0 .
+<span class="sp-tok">docker run</span> -v /bids:/bids:ro -v /out:/out \
+  spineprep:1.0.0 /bids /out participant</pre>
+        <p>Docker locally, or convert to Apptainer for HPC. Everything (SCT, FSL, ANTs, PAM50) is inside.</p>
+      </div>
+      <div class="sp-path">
+        <h3>Python layer <span class="sp-tag">ADVANCED</span></h3>
+        <pre><span class="sp-tok">pip install</span> spineprep
+<span class="sp-tok">spineprep</span> /bids /out participant</pre>
+        <p>The orchestration layer installs from PyPI; the full pipeline still needs SCT, FSL and ANTs on your PATH.</p>
+      </div>
+    </div>
+    <div class="sp-cta" style="margin-top:1.4rem"><a class="sp-btn sp-btn--primary" href="{{ 'quickstart/' | url }}">Read the quickstart →</a><a class="sp-btn sp-btn--ghost" href="{{ 'methods/overview/' | url }}">Browse the methods</a></div>
+  </div></section>
+
+  <!-- CITE -->
+  <section class="sp-sec" id="sp-cite"><div class="sp-wrap">
+    <div class="sp-citebox">
+      <div>
+        <div class="sp-eyebrow">Cite</div>
+        <h2>The first BIDS-App for cord fMRI.</h2>
+        <p>If SpinePrep is part of your analysis, cite it — and the tools it stands on (SCT, FSL, ANTs, PAM50). A per-release archival DOI is minted via Zenodo.</p>
+        <div class="sp-chips"><span class="sp-chip">Apache-2.0</span><span class="sp-chip">CITATION.cff</span><span class="sp-chip">DOI: pending</span><span class="sp-chip">NeuroStars: spineprep</span></div>
+      </div>
+      <pre class="sp-bib">@software{<span class="sp-v">spineprep</span>,
+  <span class="sp-k">title</span>   = {SpinePrep: a containerised BIDS-App
+             for spinal-cord fMRI preprocessing},
+  <span class="sp-k">author</span>  = {Sharifi, Kiomars},
+  <span class="sp-k">year</span>    = {2026},
+  <span class="sp-k">version</span> = {1.0.0},
+  <span class="sp-k">url</span>     = {https://spineprep.com}
+}</pre>
+    </div>
+  </div></section>
+
 </div>
 
-<div class="md-container">
-  <div class="md-grid md-typeset tx-home-content">
-    {{ super() }}
-  </div>
-</div>
+<script>
+(function(){
+  var b=document.getElementById('sp-copy');
+  if(b&&navigator.clipboard){b.addEventListener('click',function(){
+    navigator.clipboard.writeText(document.getElementById('sp-cmd').innerText.trim()).then(function(){
+      var o=b.textContent;b.textContent='COPIED';setTimeout(function(){b.textContent=o;},1400);});});}
+  if(!window.matchMedia||!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('sp-in');io.unobserve(e.target);}});},{threshold:.12});
+    document.querySelectorAll('.sp-scan,.sp-card,.sp-shot').forEach(function(el){el.classList.add('sp-reveal');io.observe(el);});
+  }
+})();
+</script>
 {% endblock %}
