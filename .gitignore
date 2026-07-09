@@ -171,3 +171,9 @@ HANDOFF.md
 .claude/specs/v1-publication-roadmap.md
 .claude/specs/v2-finalization-plan.md
 .claude/specs/v2-highest-venue-claims.md
+
+# Core dumps (never track)
+core
+core.*
+*.core
+vgcore.*
