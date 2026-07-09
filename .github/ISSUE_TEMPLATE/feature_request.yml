@@ -1,0 +1,34 @@
+name: Feature request
+description: Propose a new capability, step option, or QC output
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        SpinePrep tracks the field's working pipelines and literature-grounded
+        defaults. Proposals land faster when they cite the method they implement.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: The scientific or practical motivation. What can't you do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should SpinePrep do? Which step(s) does it touch?
+    validations:
+      required: true
+  - type: textarea
+    id: literature
+    attributes:
+      label: Literature / precedent
+      description: >-
+        Paper(s) describing the method, or how fMRIPrep / MRIQC / SCT / CoSpine
+        handle it. New algorithms need a citation.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered (optional)

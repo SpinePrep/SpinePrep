@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & usage help
+    url: https://neurostars.org/tag/spineprep
+    about: >-
+      For "how do I…", installation, or interpretation questions, please post on
+      NeuroStars with the `spineprep` tag. Answers there are searchable by the
+      whole community. The issue tracker is for bugs and feature requests only.
+  - name: Documentation
+    url: https://spineprep.com
+    about: Read the SpinePrep documentation before opening an issue.

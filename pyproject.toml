@@ -1,10 +1,31 @@
 [tool.poetry]
 name = "spineprep"
 version = "1.0.0"
-description = "SpinePrep pipeline utilities"
-authors = ["SpinePrep Team <dev@spineprep.local>"]
+description = "A containerised BIDS-App for reproducible spinal-cord fMRI preprocessing with per-vertebral-level quality control"
+license = "Apache-2.0"
+authors = ["Kiomars Sharifi <sharifikiomars@gmail.com>"]
+maintainers = ["Kiomars Sharifi <sharifikiomars@gmail.com>"]
 readme = "README.md"
+homepage = "https://spineprep.com"
+repository = "https://github.com/SpinePrep/SpinePrep"
+documentation = "https://spineprep.com"
+keywords = ["spinal cord", "fMRI", "preprocessing", "BIDS-App", "neuroimaging", "quality-control", "PAM50"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
 packages = [{ include = "spineprep", from = "src" }]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/SpinePrep/SpinePrep/issues"
+"Changelog" = "https://github.com/SpinePrep/SpinePrep/blob/main/CHANGELOG.md"
+"Community (NeuroStars)" = "https://neurostars.org/tag/spineprep"
 
 [tool.poetry.scripts]
 spineprep = "spineprep.cli:main"

@@ -20,10 +20,11 @@ vertebral levels actually covered.
 
 ## Build the image
 
-SpinePrep is distributed as a **build recipe**, not a prebuilt image,
-because the container installs FSL — whose binaries are licensed for
-non-commercial use and are not freely redistributable. You build the image
-locally (and thereby accept FSL's licence yourself):
+SpinePrep is distributed as a **build recipe**, not a prebuilt image — by
+choice. The container installs FSL, which is free for academic/non-commercial
+use and *may* be redistributed under those terms, but building the image
+yourself keeps SpinePrep's Apache-2.0 distribution free of FSL's non-commercial
+restriction and lets you accept FSL's licence directly:
 
 ```bash
 git clone https://github.com/SpinePrep/SpinePrep.git

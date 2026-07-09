@@ -159,3 +159,15 @@ test_flirt_z_proj.py
 # SCT straightening cache artifact (generated, never track)
 straightening.cache
 **/straightening.cache
+
+# --- Kept local, NOT published (manuscript + publication strategy + internal
+#     planning logs). Purged from public git history during the 2026 migration. ---
+paper/
+DONE.md
+GOAL.md
+HANDOFF.md
+.claude/specs/publication-strategy.md
+.claude/specs/v1-claims-ledger.md
+.claude/specs/v1-publication-roadmap.md
+.claude/specs/v2-finalization-plan.md
+.claude/specs/v2-highest-venue-claims.md

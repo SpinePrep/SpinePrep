@@ -1,0 +1,67 @@
+name: release
+
+# Build the Python distribution and publish it to PyPI when a GitHub Release is
+# published. Uses PyPI Trusted Publishing (OIDC) — no stored API token. The
+# workflow_dispatch path publishes to TestPyPI for dry runs.
+#
+# One-time human setup (cannot be scripted): register this workflow as a Trusted
+# Publisher at https://pypi.org/manage/project/spineprep/settings/publishing/
+# (workflow filename: release.yml, environment: pypi) and, for dry runs, at
+# https://test.pypi.org/ (environment: testpypi). See RELEASE.md.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build sdist and wheel
+        run: pipx run build
+      - name: Check metadata
+        run: pipx run twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi:
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write        # OIDC — mint a short-lived token, no secret
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  testpypi:
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/

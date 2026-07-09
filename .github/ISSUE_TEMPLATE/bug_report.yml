@@ -1,0 +1,64 @@
+name: Bug report
+description: Report a defect in SpinePrep (a crash, a wrong result, or a bad QC reportlet)
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. For usage questions ("how do I…"), please use
+        the [NeuroStars `spineprep` tag](https://neurostars.org/tag/spineprep)
+        instead — this tracker is for defects.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+      placeholder: S6 registration produced a visibly misaligned cord in the reportlet…
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: SpinePrep version
+      description: Output of `spineprep --version` (or the image tag / git SHA you built).
+      placeholder: "1.0.0 (git abc1234)"
+    validations:
+      required: true
+  - type: dropdown
+    id: how-run
+    attributes:
+      label: How are you running SpinePrep?
+      options:
+        - Container built from Dockerfile.spineprep (Docker)
+        - Container converted to Apptainer/Singularity (HPC)
+        - Local install (SCT/FSL/ANTs on PATH)
+        - Other (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command
+      description: The full `spineprep …` command you ran. This is auto-formatted as code.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output / logs
+      description: >-
+        Paste the traceback and, if the problem is a bad result, the failing
+        step's `qc.json` and reportlet PNG (drag-and-drop the image).
+      render: shell
+  - type: input
+    id: dataset
+    attributes:
+      label: Dataset (optional)
+      description: Vendor, field strength, resolution, coverage — or an OpenNeuro accession if public.
+      placeholder: "Siemens 3T, 0.9mm iso, C1–C7, ds004616"
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (optional)
+      description: OS, Docker/Apptainer version, HPC scheduler if relevant.
