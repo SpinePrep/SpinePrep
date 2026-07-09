@@ -1,30 +1,22 @@
 name: docs
 
-# Versioned documentation via `mike`. Pushes to `main` update the `dev` version;
-# publishing a GitHub Release deploys that version and moves the `latest` alias.
-# mike writes the built site to the `gh-pages` branch.
-#
-# One-time human setup: in repo Settings -> Pages, set Source = "Deploy from a
-# branch" -> branch `gh-pages` / `/ (root)`, and set the custom domain. See
-# RELEASE.md.
-#
-# NOTE: auto-deploy on push to main is intentionally disabled during the
-# SpinalfMRIprep->SpinePrep + domain migration so a code push does not reshape
-# the live site before Pages/domain are cut over. After the cutover, re-enable
-# dev docs by adding back:
-#   push:
-#     branches: [main]
+# Build the MkDocs site and publish it to the `gh-pages` branch (which GitHub
+# Pages serves at spineprep.com). Runs on every push to main, on published
+# releases, and on demand. `docs/CNAME` (spineprep.com) is copied into the
+# build, so the custom domain persists across deploys.
 
 on:
+  push:
+    branches: [main]
   release:
     types: [published]
   workflow_dispatch:
 
 permissions:
-  contents: write   # mike pushes to the gh-pages branch
+  contents: write   # gh-deploy pushes to the gh-pages branch
 
 concurrency:
-  group: docs-${{ github.ref }}
+  group: docs
   cancel-in-progress: false
 
 jobs:
@@ -52,28 +44,7 @@ jobs:
           virtualenvs-in-project: true
 
       - name: Install docs dependencies
-        run: |
-          poetry install --with docs
-          poetry run pip install "mike>=2.1,<3"
+        run: poetry install --with docs
 
-      - name: Deploy dev docs (push to main)
-        if: github.event_name == 'push'
-        run: poetry run mike deploy --push dev
-
-      - name: Deploy released docs + move 'latest'
-        if: github.event_name == 'release'
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          poetry run mike deploy --push --update-aliases "$VERSION" latest
-          poetry run mike set-default --push latest
-
-      - name: Ensure custom-domain CNAME persists at gh-pages root
-        run: |
-          git fetch origin gh-pages
-          git worktree add ../ghpages gh-pages
-          echo "spineprep.com" > ../ghpages/CNAME
-          if ! git -C ../ghpages diff --quiet -- CNAME; then
-            git -C ../ghpages add CNAME
-            git -C ../ghpages commit -m "ci: keep CNAME at gh-pages root"
-            git -C ../ghpages push origin gh-pages
-          fi
+      - name: Deploy docs to gh-pages
+        run: poetry run mkdocs gh-deploy --force
