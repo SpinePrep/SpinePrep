@@ -87,6 +87,7 @@ def render_s7_pam50_on_func(
         BG, TEXT, MARKER_YELLOW, SEMANTIC,
         intensity_window, cord_bbox_xy, cord_zrange, uniform_z_picks,
         midcord_sagittal_slice, per_slice_centered_crop,
+        cord_centerline_x, curved_sagittal_reformat,
         add_header, add_footer, render_sagittal, render_axial_tile,
         stub_figure,
     )
@@ -131,6 +132,8 @@ def render_s7_pam50_on_func(
                     "S7 composite: no cord-bearing Z slices found")
         return
     x_mid = midcord_sagittal_slice(pam_cord)
+    # Centerline-following sagittal reformat (whole curved cord in view).
+    x_center = cord_centerline_x(pam_cord)
     global_bbox = cord_bbox_xy(pam_cord, margin=6)
 
     pool = func[np.isfinite(func) & (func > 0)].ravel()
@@ -165,9 +168,11 @@ def render_s7_pam50_on_func(
     ax_sag_f.set_facecolor(BG)
     ax_sag_l.set_facecolor(BG)
 
-    sag_func = func[x_mid, :, :]
-    sag_pam = pam_cord[x_mid, :, :]
-    sag_epi = epi_cord[x_mid, :, :]
+    sag_func = curved_sagittal_reformat(func, x_center)
+    sag_pam = curved_sagittal_reformat(pam_cord.astype(float), x_center,
+                                       reduce="any") > 0.5
+    sag_epi = curved_sagittal_reformat(epi_cord.astype(float), x_center,
+                                       reduce="any") > 0.5
     sag_overlays = [
         (sag_pam, MARKER_YELLOW, 0.0, contour_lw),
         (sag_epi, epi_cyan, 0.0, contour_lw),
@@ -179,7 +184,8 @@ def render_s7_pam50_on_func(
     # block backdrop, with the cord contour drawn on top so the user
     # sees BOTH "which level is each Z" AND "is the cord aligned".
     if has_levels and levels.any():
-        sag_lvl = levels[x_mid, :, :]
+        sag_lvl = curved_sagittal_reformat(
+            levels.astype(float), x_center, reduce="max").astype(int)
         disp = np.rot90(sag_lvl)
         masked = np.ma.masked_where(disp == 0, disp)
         n_lvls = max(int(sag_lvl.max()), 1)
@@ -264,7 +270,7 @@ def render_s7_pam50_on_func(
             (epi_cyan, "EPI cord seg"),
         ],
         metric_lines=[
-            f"sagittal: midcord X={x_mid}",
+            "sagittal: cord-centerline reformat",
             f"axial Z picks: {list(z_picks)}",
         ],
     )

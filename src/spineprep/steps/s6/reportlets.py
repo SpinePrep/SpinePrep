@@ -78,6 +78,7 @@ def render_s6_composite(
         BG, TEXT, MARKER_YELLOW, SEMANTIC,
         intensity_window, cord_bbox_xy, cord_zrange, uniform_z_picks,
         midcord_sagittal_slice, per_slice_centered_crop,
+        cord_centerline_x, curved_sagittal_reformat,
         add_header, add_footer, render_sagittal, render_axial_tile,
         stub_figure,
     )
@@ -127,6 +128,10 @@ def render_s6_composite(
         return
 
     x_mid = midcord_sagittal_slice(anat_cord)
+    # Centerline-following sagittal reformat: sample each SI level at the
+    # cord's own L–R centroid so a curved cord shows in full (a single flat
+    # sagittal plane truncates it wherever it drifts out of plane).
+    x_center = cord_centerline_x(anat_cord)
     global_bbox = cord_bbox_xy(anat_cord, margin=6)
 
     # Per-image intensity windows (each modality has its own range).
@@ -165,12 +170,16 @@ def render_s6_composite(
     ax_sag_a.set_facecolor(BG)
 
     sag_overlays = [
-        (anat_cord[x_mid, :, :], MARKER_YELLOW, 0.0, contour_lw),
-        (epi_cord[x_mid, :, :], epi_cyan, 0.0, contour_lw),
+        (curved_sagittal_reformat(anat_cord.astype(float), x_center,
+                                  reduce="any") > 0.5, MARKER_YELLOW, 0.0, contour_lw),
+        (curved_sagittal_reformat(epi_cord.astype(float), x_center,
+                                  reduce="any") > 0.5, epi_cyan, 0.0, contour_lw),
     ]
-    render_sagittal(ax_sag_b, bold[x_mid, :, :], sag_overlays, vmin_b, vmax_b,
+    render_sagittal(ax_sag_b, curved_sagittal_reformat(bold, x_center),
+                    sag_overlays, vmin_b, vmax_b,
                     pixel_aspect=sag_aspect, affine=bold_img.affine)
-    render_sagittal(ax_sag_a, anat[x_mid, :, :], sag_overlays, vmin_a, vmax_a,
+    render_sagittal(ax_sag_a, curved_sagittal_reformat(anat, x_center),
+                    sag_overlays, vmin_a, vmax_a,
                     pixel_aspect=sag_aspect, affine=bold_img.affine)
     sag_label_y = sag_y0 + sag_h + 0.012
     fig.text(sag_x_b + sag_w_each / 2, sag_label_y, "BOLD",
@@ -237,7 +246,7 @@ def render_s6_composite(
             (epi_cyan, "EPI cord seg"),
         ],
         metric_lines=[
-            f"sagittal: midcord X={x_mid}",
+            "sagittal: cord-centerline reformat",
             f"axial Z picks: {list(z_picks)}",
             ("BOLD top / Anat bottom — same warped seg on both"
              if has_anat else "anat-in-BOLD unavailable, BOLD shown twice"),

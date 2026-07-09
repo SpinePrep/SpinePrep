@@ -138,6 +138,71 @@ def midcord_sagittal_slice(mask: np.ndarray) -> int:
     return int(np.median(xs))
 
 
+def cord_centerline_x(cord_mask: np.ndarray) -> np.ndarray:
+    """Per-SI-level L–R (X) centroid of the cord — the cord centerline.
+
+    Returns a float array of length ``n_z`` giving, for every superior–
+    inferior (Z) level, the cord's mean X (left–right) index. Levels with
+    no cord voxels are filled by linear interpolation from the nearest
+    cord-bearing levels (and extrapolated as a constant at the ends), so
+    the result is finite everywhere. When the mask is entirely empty the
+    centerline is the mid-X plane.
+
+    This is the geometric basis for the curved (centerline-following)
+    sagittal reformat: a single flat sagittal plane truncates a cord that
+    curves in L–R as it descends (drift up to ~11 mm across subjects here),
+    so wherever the cord leaves that plane its anatomy disappears. Sampling
+    each level at its own X centroid instead keeps the whole cord in view.
+    """
+    nz = cord_mask.shape[2]
+    xc = np.full(nz, np.nan, dtype=float)
+    for z in range(nz):
+        sl = cord_mask[:, :, z]
+        if sl.any():
+            xc[z] = float(np.nonzero(sl)[0].mean())
+    valid = np.isfinite(xc)
+    if not valid.any():
+        xc[:] = cord_mask.shape[0] / 2.0
+        return xc
+    idx = np.arange(nz)
+    xc = np.interp(idx, idx[valid], xc[valid])
+    return xc
+
+
+def curved_sagittal_reformat(
+    vol: np.ndarray, x_center: np.ndarray,
+    slab_halfwidth: int = 0, reduce: str = "max",
+) -> np.ndarray:
+    """Centerline-following sagittal reformat of a 3D volume.
+
+    For each SI level ``z``, samples the A–P column at that level's cord
+    X-centroid (``x_center[z]``) and assembles the columns into one 2D
+    ``(n_y, n_z)`` sagittal image that follows the curving cord. With
+    ``slab_halfwidth > 0`` it reduces over ``x_center[z] ± k`` (``reduce``
+    ∈ {"max", "mean", "any"}) — a thickened slab for off-midline features
+    (e.g. rootlets). This is a drop-in replacement for the old single
+    ``vol[x_mid, :, :]`` slice (which truncated curved cords).
+    """
+    nx, ny, nz = vol.shape
+    xc = np.clip(np.rint(np.asarray(x_center, dtype=float)).astype(int), 0, nx - 1)
+    out = np.zeros((ny, nz), dtype=float)
+    k = max(0, int(slab_halfwidth))
+    for z in range(nz):
+        x = int(xc[z])
+        if k > 0:
+            lo, hi = max(0, x - k), min(nx, x + k + 1)
+            col = vol[lo:hi, :, z]
+            if reduce == "mean":
+                out[:, z] = col.mean(axis=0)
+            elif reduce == "any":
+                out[:, z] = col.any(axis=0)
+            else:
+                out[:, z] = col.max(axis=0)
+        else:
+            out[:, z] = vol[x, :, z]
+    return out
+
+
 def per_slice_centered_crop(
     cord_mask: np.ndarray, z: int,
     window_vox: tuple[int, int] = (22, 22),
@@ -434,15 +499,34 @@ def render_sagittal_plus_montage(
     z_picks = uniform_z_picks(z0, z1, n_axial)
 
     k = max(0, int(sag_slab_halfwidth_x))
-    x_lo, x_hi = max(0, x_mid - k), min(anat.shape[0], x_mid + k + 1)
-    sag = anat[x_lo:x_hi, :, :].max(axis=0)
     sag_overlays_slab: list[tuple[np.ndarray, str, float, float]] = []
-    for m, color, alpha, lw in sag_overlays:
-        if m.ndim == 2:
-            sag_overlays_slab.append((m, color, alpha, lw))
-        else:
-            sag_overlays_slab.append(
-                (m[x_lo:x_hi, :, :].any(axis=0), color, alpha, lw))
+    if cord_mask.any():
+        # Centerline-following (curved) sagittal reformat: sample each SI
+        # level at the cord's own X-centroid so a cord that curves in L–R
+        # stays fully in view (a single flat plane truncates it — the QC
+        # bug this fixes). 3D overlay masks are reformatted the same way;
+        # 2D overlays (pre-sliced by the caller) pass through unchanged.
+        x_center = cord_centerline_x(cord_mask)
+        sag = curved_sagittal_reformat(anat, x_center, slab_halfwidth=k,
+                                       reduce="max")
+        for m, color, alpha, lw in sag_overlays:
+            if m.ndim == 2:
+                sag_overlays_slab.append((m, color, alpha, lw))
+            else:
+                slab = curved_sagittal_reformat(
+                    m.astype(float), x_center, slab_halfwidth=k,
+                    reduce="any") > 0.5
+                sag_overlays_slab.append((slab, color, alpha, lw))
+    else:
+        # No cord mask → fall back to the original single median-X slab.
+        x_lo, x_hi = max(0, x_mid - k), min(anat.shape[0], x_mid + k + 1)
+        sag = anat[x_lo:x_hi, :, :].max(axis=0)
+        for m, color, alpha, lw in sag_overlays:
+            if m.ndim == 2:
+                sag_overlays_slab.append((m, color, alpha, lw))
+            else:
+                sag_overlays_slab.append(
+                    (m[x_lo:x_hi, :, :].any(axis=0), color, alpha, lw))
     lo_pct, hi_pct = intensity_pct
     vmin_sag, vmax_sag = intensity_window(sag, lo_pct, hi_pct)
     mid_z = (z0 + z1) // 2

@@ -405,6 +405,56 @@ def _midcord_sagittal_slice(mask: np.ndarray) -> int:
     return int(np.median(xs))
 
 
+def _cord_centerline_x(cord_mask: np.ndarray) -> np.ndarray:
+    """Per-SI-level L–R (X) centroid of the cord — the cord centerline.
+
+    Length-``n_z`` float array; empty levels filled by interpolation so it
+    is finite everywhere. Basis for the curved sagittal reformat that keeps
+    a cord which curves in L–R fully in view (a single flat plane truncates
+    it wherever it drifts out of plane).
+    """
+    nz = cord_mask.shape[2]
+    xc = np.full(nz, np.nan, dtype=float)
+    for z in range(nz):
+        sl = cord_mask[:, :, z]
+        if sl.any():
+            xc[z] = float(np.nonzero(sl)[0].mean())
+    valid = np.isfinite(xc)
+    if not valid.any():
+        xc[:] = cord_mask.shape[0] / 2.0
+        return xc
+    idx = np.arange(nz)
+    return np.interp(idx, idx[valid], xc[valid])
+
+
+def _curved_sagittal_reformat(
+    vol: np.ndarray, x_center: np.ndarray,
+    slab_halfwidth: int = 0, reduce: str = "max",
+) -> np.ndarray:
+    """Centerline-following sagittal reformat: for each SI level, sample the
+    A–P column at that level's cord X-centroid and assemble into one 2D
+    ``(n_y, n_z)`` image that follows the curving cord. ``slab_halfwidth>0``
+    reduces over ``x_center[z] ± k`` (reduce ∈ {"max","mean","any"})."""
+    nx, ny, nz = vol.shape
+    xc = np.clip(np.rint(np.asarray(x_center, dtype=float)).astype(int), 0, nx - 1)
+    out = np.zeros((ny, nz), dtype=float)
+    k = max(0, int(slab_halfwidth))
+    for z in range(nz):
+        x = int(xc[z])
+        if k > 0:
+            lo, hi = max(0, x - k), min(nx, x + k + 1)
+            col = vol[lo:hi, :, z]
+            if reduce == "mean":
+                out[:, z] = col.mean(axis=0)
+            elif reduce == "any":
+                out[:, z] = col.any(axis=0)
+            else:
+                out[:, z] = col.max(axis=0)
+        else:
+            out[:, z] = vol[x, :, z]
+    return out
+
+
 def _layout_figure(fig_w: float = 13.0, fig_h: float = 7.0) -> plt.Figure:
     fig = plt.figure(figsize=(fig_w, fig_h), facecolor=_BG)
     fig.patch.set_facecolor(_BG)
@@ -458,8 +508,16 @@ def render_crop_box_sagittal(
             ref_mask = np.zeros_like(anat, dtype=bool)
             ref_mask[anat.shape[0]//2-2:anat.shape[0]//2+2, :, :] = True
 
-        x_mid = _midcord_sagittal_slice(ref_mask)
-        sag = anat[x_mid, :, :]
+        # Centerline-following reformat so a cord that curves in L–R shows
+        # in full (single flat plane truncates it). Falls back to the median
+        # slice when there is no usable mask.
+        if ref_mask.any():
+            _xc = _cord_centerline_x(ref_mask)
+            sag = _curved_sagittal_reformat(anat, _xc)
+        else:
+            _xc = None
+            x_mid = _midcord_sagittal_slice(ref_mask)
+            sag = anat[x_mid, :, :]
         vmin, vmax = _intensity_window(sag)
 
         bbox_extent = ""
@@ -494,11 +552,17 @@ def render_crop_box_sagittal(
         body_x0 = (1.0 - body_w_frac) / 2.0
         ax = fig.add_axes((body_x0, 0.08, body_w_frac, body_h_frac))
         ax.set_facecolor(_BG)
+        def _sag_overlay(mask3d: np.ndarray) -> np.ndarray:
+            if _xc is not None:
+                return _curved_sagittal_reformat(
+                    mask3d.astype(float), _xc, reduce="any") > 0.5
+            return mask3d[x_mid, :, :]
+
         overlays = []
         if discovery is not None:
-            overlays.append((discovery[x_mid, :, :], _C_DISCOVERY, 0.0, 1.4))
+            overlays.append((_sag_overlay(discovery), _C_DISCOVERY, 0.0, 1.4))
         if crop_mask is not None:
-            overlays.append((crop_mask[x_mid, :, :], _C_CROP_BOX, 0.15, 1.8))
+            overlays.append((_sag_overlay(crop_mask), _C_CROP_BOX, 0.15, 1.8))
         _render_sagittal(ax, sag, overlays, vmin, vmax)
 
         _add_footer(fig, [
@@ -551,20 +615,34 @@ def _render_sagittal_plus_montage(
     z0, z1 = _cord_zrange(cord_mask)
     z_picks = _uniform_z_picks(z0, z1, n_axial)
 
-    # Sagittal slab: max over X ± slab voxels so features off the cord
-    # centerline (e.g. dorsal rootlets) still project into the sagittal view.
+    # Sagittal: centerline-following (curved) reformat so a cord that curves
+    # in L–R as it descends stays fully in view. `sag_slab_halfwidth_x`
+    # thickens the slab around the centerline for off-midline features
+    # (e.g. rootlets). 3D overlay masks follow the same reformat; 2D
+    # overlays (pre-sliced by the caller) pass through unchanged.
     k = max(0, int(sag_slab_halfwidth_x))
-    x_lo, x_hi = max(0, x_mid - k), min(anat.shape[0], x_mid + k + 1)
-    sag = anat[x_lo:x_hi, :, :].max(axis=0)
     sag_overlays_slab: list[tuple[np.ndarray, str, float, float]] = []
-    for m, color, alpha, lw in sag_overlays:
-        # Expand mask projection across the same slab range if it's
-        # supplied as a 2D YxZ; otherwise leave as-is.
-        if m.ndim == 2:
-            sag_overlays_slab.append((m, color, alpha, lw))
-        else:
-            slab = m[x_lo:x_hi, :, :].any(axis=0)
-            sag_overlays_slab.append((slab, color, alpha, lw))
+    if cord_mask.any():
+        x_center = _cord_centerline_x(cord_mask)
+        sag = _curved_sagittal_reformat(anat, x_center, slab_halfwidth=k,
+                                        reduce="max")
+        for m, color, alpha, lw in sag_overlays:
+            if m.ndim == 2:
+                sag_overlays_slab.append((m, color, alpha, lw))
+            else:
+                slab = _curved_sagittal_reformat(
+                    m.astype(float), x_center, slab_halfwidth=k,
+                    reduce="any") > 0.5
+                sag_overlays_slab.append((slab, color, alpha, lw))
+    else:
+        x_lo, x_hi = max(0, x_mid - k), min(anat.shape[0], x_mid + k + 1)
+        sag = anat[x_lo:x_hi, :, :].max(axis=0)
+        for m, color, alpha, lw in sag_overlays:
+            if m.ndim == 2:
+                sag_overlays_slab.append((m, color, alpha, lw))
+            else:
+                slab = m[x_lo:x_hi, :, :].any(axis=0)
+                sag_overlays_slab.append((slab, color, alpha, lw))
     vmin_sag, vmax_sag = _intensity_window(sag)
     mid_z = (z0 + z1) // 2
     vmin_ax, vmax_ax = _intensity_window(anat[:, :, mid_z])
@@ -658,8 +736,9 @@ def render_cordmask_montage(
         if cord_vol is not None:
             metric_header += f"  •  vol {cord_vol/1000:.1f} cm³"
 
-        x_mid = _midcord_sagittal_slice(cord_mask)
-        sag_overlays = [(cord_mask[x_mid, :, :], _C_CORD, 0.0, 1.4)]
+        # 3D mask → reformatted along the cord centerline by the shared
+        # montage helper (whole curved cord shows in the sagittal panel).
+        sag_overlays = [(cord_mask, _C_CORD, 0.0, 1.4)]
 
         def axial_overlays(z):
             return [(cord_mask[:, :, z], _C_CORD, 1.5)]
@@ -746,14 +825,15 @@ def render_totalspineseg_montage(
                 if name:
                     z_labels[z_med] = name
 
-        x_mid = _midcord_sagittal_slice(cord_mask)
-        sag_overlays = [(cord_mask[x_mid, :, :], _C_CORD, 0.0, 1.0)]
+        # 3D masks → reformatted along the cord centerline by the shared
+        # montage helper (cord + canal/vertebrae/discs follow the curve).
+        sag_overlays = [(cord_mask, _C_CORD, 0.0, 1.0)]
         if canal_mask is not None:
-            sag_overlays.append((canal_mask[x_mid, :, :], _C_CANAL, 0.18, 0.0))
+            sag_overlays.append((canal_mask, _C_CANAL, 0.18, 0.0))
         if vert_mask is not None:
-            sag_overlays.append((vert_mask[x_mid, :, :], "#22c55e", 0.30, 0.0))
+            sag_overlays.append((vert_mask, "#22c55e", 0.30, 0.0))
         if disc_mask is not None:
-            sag_overlays.append((disc_mask[x_mid, :, :], _C_DISC, 0.45, 0.0))
+            sag_overlays.append((disc_mask, _C_DISC, 0.45, 0.0))
 
         def axial_overlays(z):
             # Tuple format: (mask, color, contour_lw, fill_alpha).
@@ -902,9 +982,8 @@ def render_rootlets_montage(
             })
 
         # Sagittal panel: wide slab across X so off-midline rootlets project in.
-        x_mid = _midcord_sagittal_slice(cord_mask)
         sag_overlays: list[tuple[np.ndarray, str, float, float]] = [
-            (cord_mask[x_mid, :, :], _C_CORD, 0.0, 1.2),
+            (cord_mask, _C_CORD, 0.0, 1.2),
         ]
         for info in level_info:
             sag_overlays.append(
@@ -991,18 +1070,32 @@ def _render_rootlets_custom_layout(
 ) -> None:
     """Rootlets-specific layout: one tile per detected level, per-tile
     crop centered between cord and rootlet centroids."""
-    x_mid = _midcord_sagittal_slice(cord_mask)
-
     k = max(0, int(sag_slab_halfwidth_x))
-    x_lo, x_hi = max(0, x_mid - k), min(anat.shape[0], x_mid + k + 1)
-    sag = anat[x_lo:x_hi, :, :].max(axis=0)
     sag_overlays_slab: list[tuple[np.ndarray, str, float, float]] = []
-    for m, color, alpha, lw in sag_overlays:
-        if m.ndim == 2:
-            sag_overlays_slab.append((m, color, alpha, lw))
-        else:
-            sag_overlays_slab.append(
-                (m[x_lo:x_hi, :, :].any(axis=0), color, alpha, lw))
+    if cord_mask.any():
+        # Centerline-following reformat with a wide X slab so off-midline
+        # dorsal rootlets still project in while the curved cord stays whole.
+        x_center = _cord_centerline_x(cord_mask)
+        sag = _curved_sagittal_reformat(anat, x_center, slab_halfwidth=k,
+                                        reduce="max")
+        for m, color, alpha, lw in sag_overlays:
+            if m.ndim == 2:
+                sag_overlays_slab.append((m, color, alpha, lw))
+            else:
+                slab = _curved_sagittal_reformat(
+                    m.astype(float), x_center, slab_halfwidth=k,
+                    reduce="any") > 0.5
+                sag_overlays_slab.append((slab, color, alpha, lw))
+    else:
+        x_mid = _midcord_sagittal_slice(cord_mask)
+        x_lo, x_hi = max(0, x_mid - k), min(anat.shape[0], x_mid + k + 1)
+        sag = anat[x_lo:x_hi, :, :].max(axis=0)
+        for m, color, alpha, lw in sag_overlays:
+            if m.ndim == 2:
+                sag_overlays_slab.append((m, color, alpha, lw))
+            else:
+                sag_overlays_slab.append(
+                    (m[x_lo:x_hi, :, :].any(axis=0), color, alpha, lw))
     vmin_sag, vmax_sag = _intensity_window(sag)
 
     # Axial intensity windowing from a mid-cord slice
@@ -1153,10 +1246,11 @@ def render_pam50_reg_overlay(
         dice = m.get("pam50_cord_dice")
         metric_header = f"Dice {dice:.2f}" if dice is not None else "Dice n/a"
 
-        x_mid = _midcord_sagittal_slice(cord_mask)
-        sag_overlays = [(cord_mask[x_mid, :, :], _C_CORD, 0.0, 1.0)]
+        # 3D masks → reformatted along the cord centerline by the shared
+        # montage helper (subject + PAM50 cords follow the curve).
+        sag_overlays = [(cord_mask, _C_CORD, 0.0, 1.0)]
         if pam50_mask is not None:
-            sag_overlays.append((pam50_mask[x_mid, :, :], _C_PAM50, 0.0, 1.4))
+            sag_overlays.append((pam50_mask, _C_PAM50, 0.0, 1.4))
 
         def axial_overlays(z):
             ov = [(cord_mask[:, :, z], _C_CORD, 1.0)]
