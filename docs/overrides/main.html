@@ -1,5 +1,24 @@
 {% extends "base.html" %}
 
+{% block extrahead %}
+  {%- set og_title = (page.title if page and page.title else config.site_name) -%}
+  {%- set og_desc = (page.meta.description if page and page.meta and page.meta.description else config.site_description) -%}
+  {%- set og_image = config.site_url ~ 'assets/og.png' -%}
+  {%- set og_url = config.site_url ~ (page.url if page else '') -%}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SpinePrep">
+  <meta property="og:title" content="{{ og_title }}">
+  <meta property="og:description" content="{{ og_desc }}">
+  <meta property="og:image" content="{{ og_image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="{{ og_url }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ og_title }}">
+  <meta name="twitter:description" content="{{ og_desc }}">
+  <meta name="twitter:image" content="{{ og_image }}">
+{% endblock %}
+
 {% block body %}
 <!-- Skip to content link for accessibility -->
 <a href="#main-content" class="tx-skip-link">Skip to main content</a>

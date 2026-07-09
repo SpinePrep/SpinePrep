@@ -1,4 +1,6 @@
 site_name: SpinePrep
+site_description: An open, containerised BIDS-App for reproducible, QC-first preprocessing of human spinal-cord fMRI.
+site_author: Kiomars Sharifi
 site_url: https://spineprep.com/
 repo_url: https://github.com/SpinePrep/SpinePrep
 repo_name: SpinePrep/SpinePrep
