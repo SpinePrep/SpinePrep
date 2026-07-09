@@ -375,6 +375,7 @@ def render_s5_distortion_effectiveness(
         BG, TEXT, MARKER_YELLOW,
         intensity_window, cord_bbox_xy, cord_zrange, uniform_z_picks,
         midcord_sagittal_slice, per_slice_centered_crop,
+        cord_centerline_x, curved_sagittal_reformat,
         add_header, add_footer, render_sagittal, render_axial_tile,
     )
 
@@ -392,6 +393,8 @@ def render_s5_distortion_effectiveness(
         return
 
     x_mid = midcord_sagittal_slice(anat_cord)
+    # Centerline-following sagittal reformat (whole curved cord in view).
+    x_center = cord_centerline_x(anat_cord)
     global_bbox = cord_bbox_xy(anat_cord, margin=6)
 
     # Pooled intensity window so Before/After share the same scale.
@@ -440,9 +443,10 @@ def render_s5_distortion_effectiveness(
     ax_sag_b.set_facecolor(BG)
     ax_sag_a.set_facecolor(BG)
 
-    sag_b = before[x_mid, :, :]
-    sag_a = after[x_mid, :, :]
-    sag_anat = anat_cord[x_mid, :, :]
+    sag_b = curved_sagittal_reformat(before, x_center)
+    sag_a = curved_sagittal_reformat(after, x_center)
+    sag_anat = curved_sagittal_reformat(anat_cord.astype(float), x_center,
+                                        reduce="any") > 0.5
     sag_overlays = [(sag_anat, MARKER_YELLOW, 0.0, contour_lw)]
 
     render_sagittal(ax_sag_b, sag_b, sag_overlays, vmin, vmax,

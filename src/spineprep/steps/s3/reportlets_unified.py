@@ -66,9 +66,11 @@ def render_func_localization(
             stub_figure(output_path, "discovery seg empty (drift gate)")
             return
 
-        x_mid = midcord_sagittal_slice(disc_mask)
+        # Pass the 3D cord mask (not a single flat slice) so the shared
+        # renderer reformats the overlay along the cord centerline and the
+        # whole cord shows even when it curves in L–R.
         sag_overlays: list[tuple[np.ndarray, str, float, float]] = [
-            (disc_mask[x_mid, :, :], SEMANTIC["discovery"], 0.0, 2.6),
+            (disc_mask, SEMANTIC["discovery"], 0.0, 2.6),
         ]
 
         def axial_overlays(z):
@@ -296,10 +298,11 @@ def render_crop_box_sagittal_s3(
         z0, z1 = int(zs.min()), int(zs.max())
         crop_mask[x0:x1, y0:y1, z0:z1 + 1] = True
 
-        x_mid = midcord_sagittal_slice(disc_mask)
+        # 3D masks → reformatted along the cord centerline by the shared
+        # renderer (whole curved cord + crop bbox stay in view).
         sag_overlays: list[tuple[np.ndarray, str, float, float]] = [
-            (disc_mask[x_mid, :, :], SEMANTIC["discovery"], 0.0, 2.4),
-            (crop_mask[x_mid, :, :], SEMANTIC["crop_box"], 0.15, 2.8),
+            (disc_mask, SEMANTIC["discovery"], 0.0, 2.4),
+            (crop_mask, SEMANTIC["crop_box"], 0.15, 2.8),
         ]
 
         def axial_overlays(z):
