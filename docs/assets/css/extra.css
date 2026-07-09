@@ -208,3 +208,49 @@ body, html { overflow-x:hidden; }
 
 /* keep the "made with" footer tidy under the landing */
 .md-content:has(.tx-landing) + * .md-footer__inner{ }
+
+/* ==========================================================================
+   Refinements pass — button contrast, anchor offset, rail affordance,
+   card interactivity, mobile robustness
+   ========================================================================== */
+
+/* Buttons: Material's `.md-typeset a` (0,1,1) was overriding button text
+   colour (teal on teal). These higher-specificity rules win in both themes. */
+.tx-landing a.sp-btn{ text-decoration:none; }
+.tx-landing a.sp-btn--primary{ color:#fff; }
+.tx-landing a.sp-btn--primary:hover{ color:#fff; }
+[data-md-color-scheme="slate"] .tx-landing a.sp-btn--primary,
+[data-md-color-scheme="slate"] .tx-landing a.sp-btn--primary:hover{ color:#04141a; }
+.tx-landing a.sp-btn--ghost{ color:var(--sp-ink); }
+.tx-landing a.sp-btn--ghost:hover{ color:var(--sp-teal-br); }
+
+/* Anchor targets clear the sticky header instead of hiding under it */
+.tx-landing section[id]{ scroll-margin-top:84px; }
+
+/* Pipeline rail: scroll snap + a soft right-edge fade that signals "more" */
+.sp-piperail{ scroll-snap-type:x proximity;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);
+          mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent); }
+.sp-step{ scroll-snap-align:start; min-width:140px; }
+@media (max-width:720px){ .sp-piperail{ -webkit-mask-image:none; mask-image:none; } }
+
+/* Cards feel alive on hover */
+.sp-card{ transition:border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
+@media (prefers-reduced-motion:no-preference){
+  .sp-card:hover{ transform:translateY(-3px); border-color:color-mix(in srgb,var(--sp-teal-br) 55%,var(--sp-line)); }
+}
+.sp-shot{ transition:transform .16s ease, box-shadow .16s ease; }
+@media (prefers-reduced-motion:no-preference){ .sp-shot:hover{ transform:translateY(-2px); } }
+
+/* Install box: let the command shrink so the COPY button always stays visible */
+.sp-install code{ min-width:0; }
+.sp-install{ width:100%; }
+
+/* Eyebrow contrast: nudge the mono labels a touch darker on light ground */
+[data-md-color-scheme="default"] .sp-eyebrow{ color:#1a6472; }
+
+/* Install box on narrow screens: shrink the command so COPY stays visible */
+@media (max-width:520px){
+  .sp-install code{ font-size:12.5px; padding:12px; min-width:0; }
+  .sp-copy{ padding:0 11px; flex:0 0 auto; }
+}
