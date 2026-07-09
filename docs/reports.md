@@ -33,9 +33,9 @@ and a reproducibility panel.
 
 These are produced by the same machinery that feeds the reports:
 
-![Normative per-level tSNR](../validation/results/figures/normative_tsnr_per_level.png)
-![Connectivity reliability](../validation/results/figures/reliability_connectivity.png)
-![Head-to-head vs SCT-default](../validation/results/figures/headtohead_dice.png)
+![Normative per-level tSNR](assets/validation/normative_tsnr_per_level.png)
+![Connectivity reliability](assets/validation/reliability_connectivity.png)
+![Head-to-head vs SCT-default](assets/validation/headtohead_dice.png)
 
 > A fully interactive gallery (live subject + group reports embedded) ships with
 > the hosted site; the report HTML lives in each run's `derivatives/.../release/`.

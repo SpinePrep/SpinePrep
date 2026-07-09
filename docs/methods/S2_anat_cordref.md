@@ -196,7 +196,7 @@ poetry run spineprep run S2_anat_cordref \
   --datasets-local config/datasets_local.yaml \
   --out work/wf_001
 
-# Run S2 for all regression datasets
+# Run S2 for a batch of datasets
 poetry run spineprep run S2_anat_cordref \
   --scope reg \
   --datasets-local config/datasets_local.yaml \
