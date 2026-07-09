@@ -126,7 +126,7 @@ derivatives/spineprep/{dataset}/sub-{id}/figures/
 poetry run spineprep run S4_motion_correction \
   --dataset-key <KEY> \
   --datasets-local config/datasets_local.yaml \
-  --out work/wf_reg_001
+  --out work/example
 ```
 
 ---

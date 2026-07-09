@@ -1,27 +1,28 @@
 # Validation
 
-!!! info "Methods validation in progress"
-    This page reports SpinePrep's **completed** validation — end-to-end
-    robustness, the normative per-level QC reference, test–retest reliability
-    characterisation, and the head-to-head vs SCT defaults. A **systematic
-    reliability × validity study of preprocessing choices** (the manuscript
-    centerpiece) is under way; its results will be added here and may refine the
-    recommended defaults. Numbers below are reproducible via `validation/*.py`.
+!!! info "Preliminary — validation is ongoing"
+    This page reports SpinePrep's **current** validation evidence: end-to-end
+    robustness across the test cohort, a per-vertebral-level QC reference, a
+    test–retest reliability characterisation, and a head-to-head against SCT's
+    out-of-the-box defaults. A systematic **reliability × validity study of
+    preprocessing choices** is under way and may refine the recommended defaults,
+    so treat the numbers below as preliminary. All values are reproducible via the
+    scripts in `validation/`.
 
-SpinePrep is validated end-to-end on **8 datasets / 384 functional runs /
-5 paradigms** (rest, motor, pain/heat, hand-grasp, dorsal-horn) spanning public
-(OpenNeuro) and internal cohorts, multiple vendors, and a range of acquisition
-protocols (with and without fieldmaps; cervical-only and whole-CNS FOV).
+So far, SpinePrep has been run end to end across **eight datasets (~360 functional
+runs)** spanning rest and four task types (motor, pain/heat, hand-grasp,
+dorsal-horn), drawn from public (OpenNeuro) and internal cohorts, across multiple
+vendors and acquisition protocols (with and without fieldmaps; cervical-only and
+whole-CNS field of view).
 
-> **Note.** Numbers below reflect the locked smoothing kernel (σ = 1/1/8 mm):
-> 6 of 7 scopes were reprocessed at the locked policy (all 7 scopes, including whole-CNS
-> brainspine, reprocessed). The reliability values proved **robust to the kernel
-> change** (unchanged on refresh) and the normative tSNR shifted ~1%, so these are
-> confirmed, not provisional. All values are reproducible via `validation/*.py`.
+> **Note.** Numbers below reflect the locked smoothing kernel (σ = 1/1/8 mm), at
+> which all scopes were reprocessed. The reliability values appeared **robust to
+> the kernel change** (essentially unchanged on refresh) and the normative tSNR
+> shifted by ~1%. All values are reproducible via the scripts in `validation/`.
 
 ## 1. Coverage & robustness
 
-All 8 datasets run S1→S10 to completion. Attrition is fully reconciled — the
+All eight datasets run S1→S10 to completion. Attrition is fully reconciled — the
 number of runs dropped between any two steps equals the number that FAILed the
 earlier step's QC (no silent losses); every surviving derivative is PASS or WARN.
 
@@ -35,10 +36,10 @@ earlier step's QC (no silent losses); every surviving derivative is PASS or WARN
 | brainspine | ds005075 | rest (whole-CNS) | 27 | SyN |
 | exp | balgrist motor + painmotor | motor | 75 | SyN |
 
-**79 % of runs (304/384) use the image-based SyN fallback** — the field reality
-(most cord-fMRI data ships no fieldmap). Runs that exceed the TopUp-calibrated
-displacement ceiling without a fieldmap are flagged *distortion-limited*, not
-failed.
+**Most runs (roughly four in five) use the image-based SyN fallback** — the field
+reality is that most cord-fMRI data ships no fieldmap. Runs that exceed the
+TopUp-calibrated displacement ceiling without a fieldmap are flagged
+*distortion-limited*, not failed.
 
 ## 2. Test-retest reliability (the rigour)
 
@@ -58,7 +59,7 @@ The cohort's repeated measures are not uniform, and we label each honestly:
 
 **Intra-cord functional connectivity** (rostro-caudal level×level edges):
 
-![Connectivity reliability](../../validation/results/figures/reliability_connectivity.png)
+![Connectivity reliability](../assets/validation/reliability_connectivity.png)
 
 - Test-retest: dorsalhorn mean edge ICC 0.37 (max 0.72); handgrasp 0.24 (max 0.79).
 - Cross-shim reproducibility: rest 0.53 (median 0.57, max 0.93).
@@ -77,11 +78,13 @@ reproducibility exceeding between-session test-retest is exactly as expected
 
 ## 3. Normative per-vertebral-level QC reference
 
-The first multi-site, multi-paradigm **normative QC database** for cord fMRI
+A multi-site, multi-paradigm **normative QC reference** for cord fMRI
 (`validation/normative_qc_db.py`): the cohort-wide distribution of every QC
-metric, resolved per vertebral level where applicable.
+metric, resolved per vertebral level where applicable. We are not aware of a
+comparable per-level reference for cord fMRI, but the cohort is modest and these
+distributions should be read as a starting point, not a definitive norm.
 
-![Normative per-level tSNR](../../validation/results/figures/normative_tsnr_per_level.png)
+![Normative per-level tSNR](../assets/validation/normative_tsnr_per_level.png)
 
 Median in-cord tSNR (post anisotropic smoothing) follows the expected
 rostro-caudal decline — highest at C6/C7, dropping into the thoracic cord. Full
@@ -105,7 +108,7 @@ So this quantifies the cost of naive default usage and the value of baking the
 recommended recipe into a turnkey pipeline, not a claim to out-register SCT's
 best practice.
 
-![Head-to-head cord Dice](../../validation/results/figures/headtohead_dice.png)
+![Head-to-head cord Dice](../assets/validation/headtohead_dice.png)
 
 ## 5. Reproducibility
 

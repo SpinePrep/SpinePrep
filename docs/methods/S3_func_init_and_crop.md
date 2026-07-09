@@ -161,12 +161,12 @@ derivatives/spineprep/{dataset}/sub-{id}/figures/
 poetry run spineprep run S3_func_init_and_crop \
   --dataset-key <KEY> \
   --datasets-local config/datasets_local.yaml \
-  --out work/wf_reg_001
+  --out work/example
 
 # Run S3 with parallel workers
 poetry run spineprep run S3_func_init_and_crop \
   --scope reg \
-  --out work/wf_reg_001 \
+  --out work/example \
   --batch-workers 8
 ```
 

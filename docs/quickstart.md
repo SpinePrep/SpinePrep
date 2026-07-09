@@ -10,10 +10,10 @@ spineprep <bids_dir> <output_dir> {participant,group} [options]
 - **participant** — per-subject preprocessing (S1–S9), writing derivatives + QC.
 - **group** — cross-subject QC aggregation + release reports (S10).
 
-## What it's validated on (supported envelope)
+## What it's been tested on (supported envelope)
 
-SpinePrep is validated on **cervical spinal-cord EPI-BOLD at 3 T**. It will
-still *run* outside that envelope, but the pipeline warns you and you should treat
+SpinePrep has been developed and tested on **cervical spinal-cord EPI-BOLD at
+3 T**. It will still *run* outside that envelope, but the pipeline warns you and you should treat
 results with care for: non-3 T data, non-EPI sequences, or fields of view outside
 the cervical cord (thoracic/lumbar-only or whole-brain). The QC report shows the
 vertebral levels actually covered.

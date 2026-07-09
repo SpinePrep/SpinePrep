@@ -70,7 +70,7 @@ benefit for event-related designs, which the GLM temporal derivative recovers.
 | Principle | Implementation |
 |-----------|----------------|
 | **Validity-first** | Spinal cord measurement validity takes precedence over processing speed |
-| **Determinism** | Same inputs + policy → identical outputs, guaranteed |
+| **Determinism** | Same inputs + policy + tool versions → identical outputs, by design |
 | **Fail-fast** | No silent downgrades; clear error messages on failure |
 | **QC-embedded** | Every step emits machine-readable QC JSON and visual reportlets |
 

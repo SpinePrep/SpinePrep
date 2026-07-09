@@ -48,8 +48,7 @@ plugins:
       minify_html: true
   - redirects:
       redirect_maps:
-        # Redirects from old paths if needed
-        # 'old.md': 'new.md'
+        pipeline/overview.md: methods/overview.md
   - git-revision-date-localized:
       enable_creation_date: true
       exclude:
