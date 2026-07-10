@@ -8,7 +8,7 @@ perform). Do the steps in order.
 
 ## Locked decisions
 - **License:** Apache-2.0 (code) — `LICENSE` + `NOTICE`.
-- **Version:** 1.0.0, Semantic Versioning going forward.
+- **Version:** 26.0.0, calendar versioning (CalVer, YY.MINOR.PATCH) going forward.
 - **GitHub home:** org `SpinePrep`, repo `SpinePrep/SpinePrep` (rename of the
   existing `SpinalfMRIprep/SpinalfMRIprep`).
 - **Public content:** code, docs, pipeline, and technical specs are public. The
@@ -82,8 +82,8 @@ publishing a release publishes the versioned docs and moves `latest`.
    `release.yml`, environment `pypi`. (First verify the name `spineprep` is free
    on PyPI; if taken, pick a new name and update `pyproject.toml`.) Optionally add
    a `testpypi` publisher on test.pypi.org for dry runs.
-2. **[AUTO] Publish** by creating a GitHub Release for the tag `v1.0.0`
-   (`gh release create v1.0.0 --generate-notes`). The `release` workflow builds
+2. **[AUTO] Publish** by creating a GitHub Release for the tag `v26.0.0`
+   (`gh release create v26.0.0 --generate-notes`). The `release` workflow builds
    and uploads to PyPI automatically. Dry-run first via the workflow's manual
    `workflow_dispatch` (TestPyPI).
 
@@ -141,8 +141,8 @@ NeuroStars post, the GitHub Release, and OHBM/BrainHack if attending.
 docker build -f Dockerfile.spineprep \
   --build-arg GIT_SHA=$(git rev-parse HEAD) \
   --build-arg GIT_DESCRIBE=$(git describe --always --tags) \
-  -t spineprep:1.0.0 .
-scripts/container_smoke_test.sh spineprep:1.0.0 /path/to/bids <subject>
+  -t spineprep:26.0.0 .
+scripts/container_smoke_test.sh spineprep:26.0.0 /path/to/bids <subject>
 ```
 
 ## Not required for the software release

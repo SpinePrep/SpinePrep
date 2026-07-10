@@ -16,7 +16,7 @@ Until a peer-reviewed paper is available, cite the software release:
                  spinal-cord fMRI preprocessing},
       author  = {Sharifi, Kiomars},
       year    = {2026},
-      version = {1.0.0},
+      version = {26.0.0},
       url     = {https://spineprep.com},
       note    = {https://github.com/SpinePrep/SpinePrep}
     }

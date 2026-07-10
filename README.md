@@ -30,7 +30,7 @@ template. **SpinePrep's contribution is the integration, automation,
 reproducibility, and standardised quality control around them**, not new algorithms.
 
 > [!NOTE]
-> SpinePrep is at **v1.0.0** and methods validation is **ongoing**. It has been
+> SpinePrep is at **v26.0.0** and methods validation is **ongoing**. It has been
 > developed and tested on cervical spinal-cord EPI-BOLD at 3 T across eight public
 > and internal datasets; it runs outside that envelope but warns you. See the
 > [validation page](https://spineprep.com/validation/) for current evidence and
@@ -86,7 +86,7 @@ cd SpinePrep
 docker build -f Dockerfile.spineprep \
   --build-arg GIT_SHA=$(git rev-parse HEAD) \
   --build-arg GIT_DESCRIBE=$(git describe --always --tags) \
-  -t spineprep:1.0.0 .
+  -t spineprep:26.0.0 .
 ```
 
 For HPC, convert the image to Apptainer — see the
@@ -110,11 +110,11 @@ SpinePrep uses the standard BIDS-App interface:
 ```bash
 # participant level: preprocess each subject
 docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
-  spineprep:1.0.0 /bids /out participant --participant-label sub-01
+  spineprep:26.0.0 /bids /out participant --participant-label sub-01
 
 # group level: aggregate QC and write the release report
 docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
-  spineprep:1.0.0 /bids /out group
+  spineprep:26.0.0 /bids /out group
 ```
 
 See the [documentation](https://spineprep.com/) for options, configuration, and the
@@ -151,7 +151,7 @@ lists them, and [How to cite](https://spineprep.com/cite/) gives the references.
              spinal-cord fMRI preprocessing},
   author  = {Sharifi, Kiomars},
   year    = {2026},
-  version = {1.0.0},
+  version = {26.0.0},
   url     = {https://spineprep.com}
 }
 ```

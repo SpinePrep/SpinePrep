@@ -32,7 +32,7 @@ cd SpinePrep
 docker build -f Dockerfile.spineprep \
   --build-arg GIT_SHA=$(git rev-parse HEAD) \
   --build-arg GIT_DESCRIBE=$(git describe --always --tags) \
-  -t spineprep:1.0.0 .
+  -t spineprep:26.0.0 .
 ```
 
 The `--build-arg` values stamp the pipeline version into the reproducibility
@@ -42,7 +42,7 @@ receipt. The build pulls SCT + FSL and takes tens of minutes.
 
 ```bash
 # Convert your locally-built Docker image to a .sif:
-apptainer build spineprep.sif docker-daemon://spineprep:1.0.0
+apptainer build spineprep.sif docker-daemon://spineprep:26.0.0
 
 apptainer run --cleanenv --writable-tmpfs --pwd /app \
   --bind /path/to/bids:/bids:ro --bind /path/to/out:/out \
@@ -61,9 +61,9 @@ to the working directory, and the pipeline resolves its policy/config there.
 ```bash
 docker run --rm \
   -v /path/to/bids:/bids:ro -v /path/to/out:/out \
-  spineprep:1.0.0 /bids /out participant --participant-label 01
+  spineprep:26.0.0 /bids /out participant --participant-label 01
 docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
-  spineprep:1.0.0 /bids /out group
+  spineprep:26.0.0 /bids /out group
 ```
 
 Tip: pass `--user $(id -u):$(id -g)` so outputs are owned by you, not root.

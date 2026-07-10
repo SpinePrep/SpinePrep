@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spineprep"
-version = "1.0.0"
+version = "26.0.0"
 description = "A containerised BIDS-App for reproducible spinal-cord fMRI preprocessing with per-vertebral-level quality control"
 license = "Apache-2.0"
 authors = ["Kiomars Sharifi <sharifikiomars@gmail.com>"]

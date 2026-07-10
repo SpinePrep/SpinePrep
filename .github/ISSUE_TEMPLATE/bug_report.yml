@@ -21,7 +21,7 @@ body:
     attributes:
       label: SpinePrep version
       description: Output of `spineprep --version` (or the image tag / git SHA you built).
-      placeholder: "1.0.0 (git abc1234)"
+      placeholder: "26.0.0 (git abc1234)"
     validations:
       required: true
   - type: dropdown
