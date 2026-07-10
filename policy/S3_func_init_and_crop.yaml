@@ -57,8 +57,12 @@ func_localization:
         intensity_frac: 0.5    # bright-cord threshold = frac x caudal cord intensity; below this = noise floor -> stop
         radius_vox: 6          # in-plane search half-window (~10 mm at 1.6 mm) around the previous cord centroid
         lateral_tol_mm: 5.0    # max per-slice centroid shift; the anterior airway is ~15 mm off and is rejected
-        core_area_max: 1.7     # reject if the compact bright core > 1.7x the run's robust cord area (CSF band)
-        band_area_max: 2.5     # reject if the full bright component > 2.5x cord area (wide CSF canal fills the window)
+        core_area_max: 2.2     # reject if the compact bright core > 2.2x the run's robust cord area (CSF band)
+        band_area_max: 3.0     # reject if the full bright component > 3.0x cord area (wide CSF canal fills the window).
+                               # 3.0 is the empirical separatrix: the genuine caudal cord blob on CO001/WY001 sits at
+                               # ~2.8x while the CSF terminus just below AS002/LK001's true end sits at ~3.1x. It is a
+                               # narrow margin -- these are near-identical at this SNR -- so the trace is intentionally
+                               # scoped by policy to run only where deepseg under-segments; treat as a tunable knob.
         min_area_vox: 6        # ignore sub-cord specks
         core_peak_frac: 0.6    # compact core = component voxels >= 0.6 x local peak (isolates cord from a dim halo)
         max_gap: 1             # bridge a single faint slice; two consecutive rejects stop the trace
