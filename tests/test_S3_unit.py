@@ -329,3 +329,68 @@ def test_caudal_union_noop_when_nothing_below():
                                area_mult=3.0, axis_tol_vox=3.1)
     assert added == []
     assert np.array_equal(out > 0, deep > 0)
+
+
+# ---------------------------------------------------------------------------
+# S3.1 caudal completion, second stage: intensity-guided trace on the reference
+# for the lowest-SNR tails where neither deepseg nor propseg re-activate.
+# ---------------------------------------------------------------------------
+
+from spineprep.steps.s3.localize import _caudal_trace
+
+
+def _ref_with_cord(shape, cord_slices, cord_val=300.0, bg=30.0, cx=20, cy=20, r=2):
+    """Reference image: bright cord discs on the given slices over a dim bg."""
+    img = np.full(shape, bg, dtype=np.float32)
+    yy, xx = np.mgrid[0:shape[0], 0:shape[1]]
+    for z in cord_slices:
+        img[:, :, z][(xx - cx) ** 2 + (yy - cy) ** 2 <= r ** 2] = cord_val
+    return img
+
+
+def test_caudal_trace_extends_faint_cord():
+    """A compact bright cord continuing below the mask is traced and added."""
+    shape = (40, 40, 30)
+    aff = np.diag([1.6, 1.6, 4.4, 1.0])  # axis 2 = S+, caudal = low z
+    deep = _build(shape, [_disc(20, 20, z) for z in range(20, 26)])
+    # reference has cord all the way down to z=15
+    img = _ref_with_cord(shape, list(range(15, 26)))
+    out, added = _caudal_trace(deep, img, aff)
+    assert sorted(added) == [15, 16, 17, 18, 19]
+    assert (out[:, :, 15] > 0).any()
+
+
+def test_caudal_trace_noop_on_pure_noise():
+    """No bright cord below the terminus -> nothing added (honest noise floor)."""
+    shape = (40, 40, 30)
+    aff = np.diag([1.6, 1.6, 4.4, 1.0])
+    deep = _build(shape, [_disc(20, 20, z) for z in range(20, 26)])
+    img = _ref_with_cord(shape, list(range(20, 26)))  # cord only where deepseg is
+    out, added = _caudal_trace(deep, img, aff)
+    assert added == []
+    assert np.array_equal(out > 0, deep > 0)
+
+
+def test_caudal_trace_rejects_bright_csf_band():
+    """A wide, uniformly-bright CSF band below the terminus is rejected."""
+    shape = (40, 40, 30)
+    aff = np.diag([1.6, 1.6, 4.4, 1.0])
+    deep = _build(shape, [_disc(20, 20, z) for z in range(20, 26)])
+    img = _ref_with_cord(shape, list(range(20, 26)))
+    # a wide bright band (cord-canal CSF) on z=17..19 spanning many voxels
+    img[14:27, 18:23, 17:20] = 320.0
+    out, added = _caudal_trace(deep, img, aff)
+    assert added == []
+
+
+def test_caudal_trace_stops_at_airway_lateral_jump():
+    """A bright blob well off the cord axis (airway) is not followed."""
+    shape = (40, 40, 30)
+    aff = np.diag([1.6, 1.6, 4.4, 1.0])
+    deep = _build(shape, [_disc(20, 20, z) for z in range(20, 26)])
+    img = _ref_with_cord(shape, list(range(20, 26)))
+    # bright compact blob 12 vox (~19 mm) off-axis below the terminus
+    img_off = _ref_with_cord(shape, list(range(15, 20)), cx=20, cy=32)
+    img = np.maximum(img, img_off)
+    out, added = _caudal_trace(deep, img, aff)
+    assert added == []
