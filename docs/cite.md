@@ -17,6 +17,7 @@ Until a peer-reviewed paper is available, cite the software release:
       author  = {Sharifi, Kiomars},
       year    = {2026},
       version = {26.0.0},
+  doi     = {10.5281/zenodo.21294696},
       url     = {https://spineprep.com},
       note    = {https://github.com/SpinePrep/SpinePrep}
     }
@@ -31,7 +32,7 @@ form.
 Each tagged release is archived on Zenodo and receives its own DOI. The archival
 DOI will be shown here once the first release is deposited.
 
-*DOI: pending first Zenodo deposit.*
+**DOI (all versions):** [`10.5281/zenodo.21294696`](https://doi.org/10.5281/zenodo.21294696). Each tagged release also gets its own version DOI.
 
 ## Tools you should also cite
 

@@ -10,7 +10,7 @@
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python"></a>
   <a href="https://spineprep.com/"><img src="https://img.shields.io/badge/docs-spineprep.com-brightgreen" alt="Documentation"></a>
   <a href="https://neurostars.org/tag/spineprep"><img src="https://img.shields.io/badge/help-NeuroStars-orange" alt="NeuroStars"></a>
-  <!-- Zenodo DOI badge added after the first archived release. -->
+  <a href="https://doi.org/10.5281/zenodo.21294696"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.21294696.svg" alt="DOI"></a>
 </p>
 
 <p align="center">
@@ -151,6 +151,7 @@ lists them, and [How to cite](https://spineprep.com/cite/) gives the references.
   author  = {Sharifi, Kiomars},
   year    = {2026},
   version = {26.0.0},
+  doi     = {10.5281/zenodo.21294696},
   url     = {https://spineprep.com}
 }
 ```
