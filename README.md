@@ -9,7 +9,6 @@
   <a href="https://github.com/SpinePrep/SpinePrep/releases"><img src="https://img.shields.io/github/v/release/SpinePrep/SpinePrep?color=1f6f7f&label=release" alt="Release"></a>
   <a href="https://github.com/SpinePrep/SpinePrep/commits/main"><img src="https://img.shields.io/github/last-commit/SpinePrep/SpinePrep?color=1f6f7f" alt="Last commit"></a>
   <a href="https://pypi.org/project/spineprep/"><img src="https://img.shields.io/pypi/v/spineprep?color=1f6f7f&label=PyPI" alt="PyPI"></a>
-  <a href="https://pepy.tech/project/spineprep"><img src="https://static.pepy.tech/badge/spineprep" alt="PyPI downloads"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://pypi.org/project/spineprep/"><img src="https://img.shields.io/pypi/pyversions/spineprep?color=1f6f7f" alt="Python versions"></a>
   <a href="https://spineprep.com/"><img src="https://img.shields.io/badge/docs-spineprep.com-brightgreen" alt="Documentation"></a>
