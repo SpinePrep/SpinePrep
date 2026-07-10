@@ -1,85 +1,72 @@
 <p align="center">
-  <img src="logo.svg" alt="SpinePrep" width="400">
-</p>
-
-<p align="center">
-  <strong>Robust preprocessing for human spinal cord fMRI</strong>
+  <a href="https://spineprep.com"><img src="docs/assets/og.png" alt="SpinePrep — reproducible, QC-first preprocessing for spinal-cord fMRI" width="820"></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/SpinePrep/SpinePrep/actions/workflows/ci.yml"><img src="https://github.com/SpinePrep/SpinePrep/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/SpinePrep/SpinePrep/releases"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python"></a>
+  <a href="https://github.com/SpinePrep/SpinePrep/releases"><img src="https://img.shields.io/github/v/release/SpinePrep/SpinePrep?color=1f6f7f&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
-  <a href="https://spineprep.com/"><img src="https://img.shields.io/badge/docs-online-brightgreen" alt="Documentation"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python"></a>
+  <a href="https://spineprep.com/"><img src="https://img.shields.io/badge/docs-spineprep.com-brightgreen" alt="Documentation"></a>
   <a href="https://neurostars.org/tag/spineprep"><img src="https://img.shields.io/badge/help-NeuroStars-orange" alt="NeuroStars"></a>
-  <!-- DOI badge added after the first Zenodo-archived release:
-  <a href="https://doi.org/10.5281/zenodo.XXXXXXX"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg" alt="DOI"></a> -->
+  <!-- Zenodo DOI badge added after the first archived release. -->
+</p>
+
+<p align="center">
+  <strong>Reproducible, QC-first preprocessing for human spinal-cord fMRI.</strong><br>
+  An open, containerised BIDS-App — a BIDS dataset in, GLM-ready derivatives and per-step quality control out.
 </p>
 
 ---
 
-## About
+SpinePrep automates the field's recommended cord-fMRI recipe end to end, with **one
+step-local truth metric and one visual reportlet at every step**. It follows the
+design of the established brain pipelines (fMRIPrep, MRIQC, SCT) and applies it to
+a 5–7 mm structure that moves, distorts, and spans vertebral levels.
 
-**SpinePrep** is an open-source pipeline for preprocessing spinal cord functional MRI data. Given a BIDS-compliant dataset, SpinePrep produces **GLM-ready derivatives** with comprehensive quality control outputs.
+The scientific methods belong to the tools SpinePrep integrates — the
+[Spinal Cord Toolbox](https://spinalcordtoolbox.com/), FSL, ANTs, and the PAM50
+template. **SpinePrep's contribution is the integration, automation,
+reproducibility, and standardised quality control around them**, not new algorithms.
 
-SpinePrep is designed with validity-first principles: spinal cord measurement robustness comes before speed or convenience. Every processing step emits machine-readable QC and visual reportlets for transparent, auditable preprocessing.
+> [!NOTE]
+> SpinePrep is at **v1.0.0** and methods validation is **ongoing**. It has been
+> developed and tested on cervical spinal-cord EPI-BOLD at 3 T across eight public
+> and internal datasets; it runs outside that envelope but warns you. See the
+> [validation page](https://spineprep.com/validation/) for current evidence and
+> known limits.
 
-```
-                              SpinePrep Pipeline
-    ┌─────────────────────────────────────────────────────────────────────────┐
-    │                                                                         │
-    │   BIDS Input                                                            │
-    │       │                                                                 │
-    │       ▼                                                                 │
-    │   ┌──────────────┐    ┌──────────────┐    ┌──────────────────────────┐  │
-    │   │ S1: Input    │───▶│ S2: Anat     │───▶│ S3: Func Reference +     │  │
-    │   │    Verify    │    │    Cordref   │    │     Cord-Focused Crop    │  │
-    │   └──────────────┘    └──────────────┘    └──────────────────────────┘  │
-    │                                                   │                     │
-    │                                                   ▼                     │
-    │   ┌──────────────┐    ┌──────────────┐    ┌──────────────────────────┐  │
-    │   │ S6: Func→    │◀───│ S5: Distortion│◀──│ S4: Motion Correction    │  │
-    │   │    Anat Reg  │    │    Correction │   │     (cord-aware)         │  │
-    │   └──────────────┘    └──────────────┘    └──────────────────────────┘  │
-    │          │                                                              │
-    │          ▼                                                              │
-    │   ┌──────────────┐    ┌──────────────┐    ┌──────────────────────────┐  │
-    │   │ S7: Template │───▶│ S8: Confounds│───▶│ S9: Primary Derivatives  │  │
-    │   │    Warp      │    │    + Physio  │    │     (native + PAM50)     │  │
-    │   └──────────────┘    └──────────────┘    └──────────────────────────┘  │
-    │                                                   │                     │
-    │                                                   ▼                     │
-    │                                            ┌──────────────────────────┐  │
-    │                                            │ S10: QC Aggregation +    │  │
-    │                                            │      Release             │  │
-    │                                            └──────────────────────────┘  │
-    │                                                   │                     │
-    │                                                   ▼                     │
-    │                     GLM-Ready Derivatives                               │
-    │                     + QC Reports                                        │
-    │                                                                         │
-    └─────────────────────────────────────────────────────────────────────────┘
+## Pipeline
+
+```mermaid
+flowchart LR
+  IN([BIDS]) --> S1[S1 Input verify] --> S2[S2 Anat cordref] --> S3[S3 Func ref + crop]
+  S3 --> S4[S4 Motion] --> S5[S5 Distortion] --> S6[S6 Func to anat]
+  S6 --> S7[S7 PAM50 normalize] --> S8[S8 Confounds] --> S9[S9 Derivatives] --> S10[S10 QC release]
+  S10 --> OUT([GLM-ready derivatives + QC report])
 ```
 
-## Features
+Each step measures itself in isolation (its own pass/warn/fail metric) and emits a
+diagnostic reportlet, so a failure is attributable to the step that caused it.
 
-- **BIDS-native**: Input BIDS, output BIDS-Derivatives
-- **Cord-focused**: Optimized for cervical spinal cord (C1–T1)
-- **Transparent QC**: Every step produces visual reportlets and machine-readable QC JSON
-- **Template normalization**: PAM50 template registration via SCT
-- **Reproducible**: Deterministic processing with full provenance tracking
+## Quality control is the validator
+
+Every run produces self-contained HTML reports — the human eyeballs the figures;
+the numbers quantify the call. One reportlet should tell you *what failed and why*.
+
+<p align="center">
+  <img src="docs/assets/qc/S4_tsnr_comparison_example.png" alt="Temporal SNR before and after preprocessing (S4 reportlet)" width="760">
+</p>
 
 ## Installation
 
-### Container (recommended) — build it yourself
+### Container (recommended)
 
-SpinePrep ships as a **build recipe**, not a prebuilt image — a deliberate
-choice. The container installs FSL, which is free for academic and non-commercial
-use but carries non-commercial license terms. By having you build the image
-locally instead of redistributing one that bundles FSL, SpinePrep's own Apache-2.0
-distribution stays unencumbered by FSL's terms, and you obtain FSL directly under
-its own license. Build it locally (Docker or, for HPC, convert to Apptainer):
+SpinePrep ships as a **build recipe**, not a prebuilt image — a deliberate choice.
+The container installs FSL, which is free for academic/non-commercial use but
+carries non-commercial licence terms. Building the image yourself (rather than us
+redistributing one that bundles FSL) keeps SpinePrep's own Apache-2.0 distribution
+unencumbered, and you obtain FSL directly under its own licence.
 
 ```bash
 git clone https://github.com/SpinePrep/SpinePrep.git
@@ -88,72 +75,93 @@ docker build -f Dockerfile.spineprep \
   --build-arg GIT_SHA=$(git rev-parse HEAD) \
   --build-arg GIT_DESCRIBE=$(git describe --always --tags) \
   -t spineprep:1.0.0 .
-
-docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
-  spineprep:1.0.0 /bids /out participant
 ```
 
-See the [quickstart](docs/quickstart.md) for the Apptainer invocation and options.
+For HPC, convert the image to Apptainer — see the
+[quickstart](https://spineprep.com/quickstart/).
 
-### Local installation (advanced)
+### Local (advanced)
 
-The Python package installs with `pip install .` from the repo, but the pipeline
-also needs **SCT, FSL, and ANTs** on your `PATH` (the container installs these for
-you). Not published to PyPI yet.
+The Python orchestration layer installs with `pip`, but the full pipeline also
+needs **SCT, FSL, and ANTs** on your `PATH` (the container provides these). A PyPI
+release is planned; for now, install from a clone:
 
 ```bash
 git clone https://github.com/SpinePrep/SpinePrep.git
 cd SpinePrep && pip install .
 ```
 
-## Quick Start
+## Quickstart
+
+SpinePrep uses the standard BIDS-App interface:
 
 ```bash
-spineprep /path/to/bids /path/to/output participant \
-    --participant-label sub-01
+# participant level: preprocess each subject
+docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
+  spineprep:1.0.0 /bids /out participant --participant-label sub-01
+
+# group level: aggregate QC and write the release report
+docker run --rm -v /path/to/bids:/bids:ro -v /path/to/out:/out \
+  spineprep:1.0.0 /bids /out group
 ```
 
-For detailed usage, configuration options, and tutorials, see the **[Documentation](https://spineprep.com/)**.
+See the [documentation](https://spineprep.com/) for options, configuration, and the
+full walkthrough.
+
+## What you get
+
+- **BIDS-native** — a BIDS dataset in, BIDS-Derivatives out; no manual masking.
+- **Cord-focused** — segmentation, motion, distortion and PAM50 normalization tuned
+  for the cord, not adapted from brain defaults.
+- **Readable QC** — one truth metric and one reportlet per step, plus subject- and
+  group-level HTML reports with a reconciled attrition waterfall.
+- **Reproducible** — deterministic runs, versioned policy, and a provenance receipt
+  (tool + policy + git SHAs); a re-run reproduces the same numbers under the same
+  tool versions.
 
 ## Documentation
 
-Full documentation is available at **[spineprep.com](https://spineprep.com/)**, including:
+Full documentation lives at **[spineprep.com](https://spineprep.com/)**:
 
-- [Quickstart](https://spineprep.com/quickstart/)
-- [Install & Use](https://spineprep.com/tutorial/)
-- [Processing Methods](https://spineprep.com/methods/overview/)
-- [API Reference](https://spineprep.com/reference/api/)
-
-## License
-
-SpinePrep is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) for details.
+- [Quickstart](https://spineprep.com/quickstart/) · [Install & use](https://spineprep.com/tutorial/)
+- [Methods (S1–S10)](https://spineprep.com/methods/overview/) · [Validation](https://spineprep.com/validation/)
+- [CLI](https://spineprep.com/reference/cli/) · [Configuration](https://spineprep.com/reference/config/) · [Cite](https://spineprep.com/cite/)
 
 ## Citation
 
-If you use SpinePrep in your research, please cite:
+If you use SpinePrep, please cite the software and the tools it builds on
+(SCT, FSL, ANTs, PAM50) — the auto-generated methods boilerplate in each report
+lists them, and [How to cite](https://spineprep.com/cite/) gives the references.
 
 ```bibtex
 @software{spineprep,
-  title   = {SpinePrep: a containerised BIDS-App for reproducible spinal cord fMRI preprocessing},
+  title   = {SpinePrep: a containerised BIDS-App for reproducible
+             spinal-cord fMRI preprocessing},
   author  = {Sharifi, Kiomars},
   year    = {2026},
   version = {1.0.0},
-  url     = {https://github.com/SpinePrep/SpinePrep}
+  url     = {https://spineprep.com}
 }
 ```
 
-Please also cite the underlying tools (SCT, FSL, ANTs, PAM50) — see the
-`NOTICE` file and the auto-generated methods boilerplate.
-
-See also [How to Cite](https://spineprep.com/cite/) for related tools (SCT, PAM50) that should be cited.
+GitHub's "Cite this repository" button reads
+[`CITATION.cff`](CITATION.cff) and always gives the current form.
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines,
-and the [Code of Conduct](CODE_OF_CONDUCT.md). For usage questions, use the
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md). For **usage questions**, please post on the
 [NeuroStars `spineprep` tag](https://neurostars.org/tag/spineprep) rather than the
-issue tracker.
+issue tracker, so answers stay searchable for the next person.
 
 ## Acknowledgements
 
-SpinePrep builds upon the excellent [Spinal Cord Toolbox](https://spinalcordtoolbox.com/) and is inspired by [fMRIPrep](https://fmriprep.org/).
+SpinePrep builds directly on the [Spinal Cord Toolbox](https://spinalcordtoolbox.com/),
+FSL, ANTs, and the PAM50 template, and follows the design philosophy of
+[fMRIPrep](https://fmriprep.org/). We are grateful to those projects and their
+communities.
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE). SpinePrep integrates third-party tools under
+their own licences; see [NOTICE](NOTICE).
