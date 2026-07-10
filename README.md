@@ -39,11 +39,23 @@ reproducibility, and standardised quality control around them**, not new algorit
 ## Pipeline
 
 ```mermaid
-flowchart LR
-  IN([BIDS]) --> S1[S1 Input verify] --> S2[S2 Anat cordref] --> S3[S3 Func ref + crop]
-  S3 --> S4[S4 Motion] --> S5[S5 Distortion] --> S6[S6 Func to anat]
-  S6 --> S7[S7 PAM50 normalize] --> S8[S8 Confounds] --> S9[S9 Derivatives] --> S10[S10 QC release]
-  S10 --> OUT([GLM-ready derivatives + QC report])
+flowchart TB
+  IN([BIDS dataset]) --> P
+  subgraph P ["Set up"]
+    direction LR
+    S1[S1 Input verify] --> S2[S2 Anat cordref] --> S3[S3 Func ref + crop]
+  end
+  P --> C
+  subgraph C ["Align & correct"]
+    direction LR
+    S4[S4 Motion] --> S5[S5 Distortion] --> S6[S6 Func to anat]
+  end
+  C --> N
+  subgraph N ["Normalize & derive"]
+    direction LR
+    S7[S7 PAM50 normalize] --> S8[S8 Confounds] --> S9[S9 Derivatives]
+  end
+  N --> S10["S10 QC & release"] --> OUT([GLM-ready derivatives + QC report])
 ```
 
 Each step measures itself in isolation (its own pass/warn/fail metric) and emits a
