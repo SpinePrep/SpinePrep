@@ -9,8 +9,8 @@ authors:
   - family-names: Sharifi
     given-names: Kiomars
     affiliation: "ETH Zurich; University of Zurich; Balgrist University Hospital"
-version: 1.0.0
-date-released: "2026-07-08"
+version: 26.0.0
+date-released: "2026-07-10"
 license: Apache-2.0
 repository-code: "https://github.com/SpinePrep/SpinePrep"
 url: "https://spineprep.com"

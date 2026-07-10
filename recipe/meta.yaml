@@ -1,5 +1,5 @@
 {% set name = "spineprep" %}
-{% set version = "1.0.0" %}
+{% set version = "26.0.0" %}
 
 # conda-forge recipe for the SpinePrep Python orchestration layer.
 #
