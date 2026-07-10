@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://github.com/SpinePrep/SpinePrep/actions/workflows/ci.yml"><img src="https://github.com/SpinePrep/SpinePrep/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/SpinePrep/SpinePrep/releases"><img src="https://img.shields.io/github/v/release/SpinePrep/SpinePrep?color=1f6f7f&label=release" alt="Release"></a>
+  <a href="https://pypi.org/project/spineprep/"><img src="https://img.shields.io/pypi/v/spineprep?color=1f6f7f&label=PyPI" alt="PyPI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python"></a>
   <a href="https://spineprep.com/"><img src="https://img.shields.io/badge/docs-spineprep.com-brightgreen" alt="Documentation"></a>
@@ -94,13 +95,11 @@ For HPC, convert the image to Apptainer — see the
 
 ### Local (advanced)
 
-The Python orchestration layer installs with `pip`, but the full pipeline also
-needs **SCT, FSL, and ANTs** on your `PATH` (the container provides these). A PyPI
-release is planned; for now, install from a clone:
+The Python orchestration layer is on PyPI, but the full pipeline also needs
+**SCT, FSL, and ANTs** on your `PATH` (the container provides these):
 
 ```bash
-git clone https://github.com/SpinePrep/SpinePrep.git
-cd SpinePrep && pip install .
+pip install spineprep
 ```
 
 ## Quickstart
