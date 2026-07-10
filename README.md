@@ -4,10 +4,14 @@
 
 <p align="center">
   <a href="https://github.com/SpinePrep/SpinePrep/actions/workflows/ci.yml"><img src="https://github.com/SpinePrep/SpinePrep/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/SpinePrep/SpinePrep/actions/workflows/container.yml"><img src="https://github.com/SpinePrep/SpinePrep/actions/workflows/container.yml/badge.svg" alt="Container"></a>
+  <a href="https://codecov.io/gh/SpinePrep/SpinePrep"><img src="https://codecov.io/gh/SpinePrep/SpinePrep/branch/main/graph/badge.svg" alt="Coverage"></a>
   <a href="https://github.com/SpinePrep/SpinePrep/releases"><img src="https://img.shields.io/github/v/release/SpinePrep/SpinePrep?color=1f6f7f&label=release" alt="Release"></a>
+  <a href="https://github.com/SpinePrep/SpinePrep/commits/main"><img src="https://img.shields.io/github/last-commit/SpinePrep/SpinePrep?color=1f6f7f" alt="Last commit"></a>
   <a href="https://pypi.org/project/spineprep/"><img src="https://img.shields.io/pypi/v/spineprep?color=1f6f7f&label=PyPI" alt="PyPI"></a>
+  <a href="https://pepy.tech/project/spineprep"><img src="https://static.pepy.tech/badge/spineprep" alt="PyPI downloads"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python"></a>
+  <a href="https://pypi.org/project/spineprep/"><img src="https://img.shields.io/pypi/pyversions/spineprep?color=1f6f7f" alt="Python versions"></a>
   <a href="https://spineprep.com/"><img src="https://img.shields.io/badge/docs-spineprep.com-brightgreen" alt="Documentation"></a>
   <a href="https://neurostars.org/tag/spineprep"><img src="https://img.shields.io/badge/help-NeuroStars-orange" alt="NeuroStars"></a>
   <a href="https://doi.org/10.5281/zenodo.21294696"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.21294696.svg" alt="DOI"></a>

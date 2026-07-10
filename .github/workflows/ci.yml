@@ -34,7 +34,19 @@ jobs:
       - name: Validate packaging
         run: poetry check
 
-      - name: Run tests
-        run: poetry run pytest -q
+      - name: Run tests with coverage
+        # pytest-cov is installed into the Poetry venv here rather than added to
+        # pyproject, to avoid churning poetry.lock (which `poetry check` guards).
+        run: |
+          poetry run pip install pytest-cov
+          poetry run pytest -q --cov=spineprep --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          flags: unittests
+          fail_ci_if_error: false
 
 
