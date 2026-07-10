@@ -5,7 +5,6 @@
 <p align="center">
   <a href="https://github.com/SpinePrep/SpinePrep/actions/workflows/ci.yml"><img src="https://github.com/SpinePrep/SpinePrep/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/SpinePrep/SpinePrep/actions/workflows/container.yml"><img src="https://github.com/SpinePrep/SpinePrep/actions/workflows/container.yml/badge.svg" alt="Container"></a>
-  <a href="https://codecov.io/gh/SpinePrep/SpinePrep"><img src="https://codecov.io/gh/SpinePrep/SpinePrep/branch/main/graph/badge.svg" alt="Coverage"></a>
   <a href="https://github.com/SpinePrep/SpinePrep/releases"><img src="https://img.shields.io/github/v/release/SpinePrep/SpinePrep?color=1f6f7f&label=release" alt="Release"></a>
   <a href="https://github.com/SpinePrep/SpinePrep/commits/main"><img src="https://img.shields.io/github/last-commit/SpinePrep/SpinePrep?color=1f6f7f" alt="Last commit"></a>
   <a href="https://pypi.org/project/spineprep/"><img src="https://img.shields.io/pypi/v/spineprep?color=1f6f7f&label=PyPI" alt="PyPI"></a>
