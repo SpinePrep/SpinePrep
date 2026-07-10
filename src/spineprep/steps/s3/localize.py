@@ -275,6 +275,222 @@ def _caudal_union(
     return completed, [int(z) for z in added]
 
 
+def _robust_cord_area(disc: np.ndarray, iax: int, s_pos: bool) -> float:
+    """Robust per-slice cord cross-section (voxels) of a deepseg mask.
+
+    A trimmed median over the mask's slices: the biggest slices (the
+    medulla / cervico-medullary junction, which dwarf the cord) and the
+    single tapering caudal sliver are dropped, leaving the representative
+    cervical cord area. Used to scale the caudal-trace area gates so they
+    adapt to each run's cord size rather than a fixed absolute.
+    """
+    D = np.moveaxis(disc > 0, iax, 2)
+    dz = np.unique(np.argwhere(D)[:, 2])
+    a = np.array([int(D[:, :, int(z)].sum()) for z in dz], dtype=float)
+    a = a[a > 0]
+    if a.size == 0:
+        return 20.0
+    lo, hi = np.percentile(a, [15, 75])
+    core = a[(a >= lo) & (a <= hi)]
+    return float(np.median(core)) if core.size else float(np.median(a))
+
+
+def _caudal_trace(
+    deepseg: np.ndarray,
+    refimg: np.ndarray,
+    affine: np.ndarray,
+    intensity_frac: float = 0.5,
+    radius_vox: int = 6,
+    lateral_tol_mm: float = 5.0,
+    core_area_max: float = 1.7,
+    band_area_max: float = 2.5,
+    min_area_vox: int = 6,
+    core_peak_frac: float = 0.6,
+    max_gap: int = 1,
+    ref_slices: int = 5,
+) -> tuple[np.ndarray, list[int]]:
+    """Extend a cord mask caudally by tracing the cord on the reference image.
+
+    `sct_deepseg spinalcord` (and `sct_propseg`) give up on the caudal cord
+    where SNR / coil sensitivity is poor, so the mask stops partway down and
+    the crop derived from it cuts real cord. Neither model re-activates on the
+    faint tail, so this stage traces the cord directly on the coarse functional
+    reference, slice by slice, starting from the (propseg-completed) caudal end.
+
+    At each caudal slice it looks in a window around the previous cord centroid
+    and thresholds at `intensity_frac` × the caudal cord intensity. The nearest
+    bright connected component to the axis is the candidate. Two size gates,
+    both scaled by the run's own robust cord area, separate genuine caudal cord
+    from the bright CSF-filled spinal canal (the dominant false positive at this
+    SNR):
+
+    - **band gate** — the full component (thresholded at the intensity floor)
+      must not exceed `band_area_max` × cord area. A wide, uniformly-bright CSF
+      band fills the window and trips this; an isolated cord blob does not.
+    - **core gate** — the compact bright *core* (component ∩ ≥ `core_peak_frac`
+      × local peak) must not exceed `core_area_max` × cord area. This isolates
+      the cord peak from a dim halo on low-SNR runs, yet a uniformly-bright CSF
+      band still yields a large core and is rejected.
+
+    A per-slice **lateral-jump** guard keeps the trace on the cord axis (the
+    anterior airway sits ~15 mm off and is rejected). `max_gap` bridges a single
+    faint/noisy slice; two consecutive rejects stop the trace — so a run whose
+    caudal signal is CSF-dominated immediately below the terminus is a no-op.
+    Only the compact core is painted into the mask (never the CSF band).
+
+    Stops honestly at the noise / CSF floor: where the caudal cord fades into
+    noise or is inseparable from CSF, the trace stops rather than fabricate cord.
+
+    Returns (completed_mask, added_slice_indices). No-op ([]) when nothing
+    cord-like persists below the caudal end.
+    """
+    from scipy import ndimage  # optional dep; keep module import light
+
+    try:
+        axcodes = nib.orientations.aff2axcodes(affine)
+    except Exception:
+        return deepseg, []
+    iax = next((i for i, c in enumerate(axcodes) if c in ("S", "I")), None)
+    if iax is None:
+        return deepseg, []
+    s_pos = axcodes[iax] == "S"
+
+    D = np.moveaxis(deepseg > 0, iax, 2)
+    IM = np.moveaxis(refimg, iax, 2)
+    zooms = np.sqrt((affine[:3, :3] ** 2).sum(axis=0))
+    in_plane = [i for i in (0, 1, 2) if i != iax]
+    px, py = float(zooms[in_plane[0]]), float(zooms[in_plane[1]])
+
+    coords = np.argwhere(D)
+    if coords.size == 0:
+        return deepseg, []
+    dz = np.unique(coords[:, 2])
+    step = -1 if s_pos else 1
+    z_caud = int(dz.min()) if s_pos else int(dz.max())
+    order = sorted(dz.tolist(), key=lambda z: z, reverse=(not s_pos))  # caudal-first
+
+    robust = _robust_cord_area(deepseg, iax, s_pos)
+    core_cap = core_area_max * robust
+    band_cap = band_area_max * robust
+    # Cord intensity learned from the caudal-most deepseg slices (the low-SNR
+    # operating point), not the bright rostral medulla.
+    cordI = float(np.median([
+        np.median(IM[:, :, int(z)][D[:, :, int(z)]]) for z in order[:ref_slices]
+    ]))
+    floor = intensity_frac * cordI
+
+    out = D.copy()
+    added: list[int] = []
+    gap = 0
+    prev = np.argwhere(D[:, :, z_caud]).mean(axis=0)
+    z = z_caud + step
+    R = int(radius_vox)
+    nz = D.shape[2]
+    while 0 <= z < nz:
+        sl = IM[:, :, z]
+        cx, cy = prev
+        x0 = max(0, int(round(cx)) - R); x1 = min(sl.shape[0], int(round(cx)) + R + 1)
+        y0 = max(0, int(round(cy)) - R); y1 = min(sl.shape[1], int(round(cy)) + R + 1)
+        win = sl[x0:x1, y0:y1]
+        if win.size == 0:
+            break
+        peak = float(win.max())
+        if peak < floor:
+            gap += 1
+            if gap > max_gap:
+                break  # faded into noise
+            z += step
+            continue
+        m = win >= floor
+        lab, n = ndimage.label(m)
+        pc = (cx - x0, cy - y0)
+        best = None
+        for lbl in range(1, n + 1):
+            comp = lab == lbl
+            band_a = int(comp.sum())
+            yy, xx = ndimage.center_of_mass(comp)
+            d = float(np.hypot((yy - pc[0]) * px, (xx - pc[1]) * py))
+            if best is None or d < best[0]:
+                best = (d, band_a, comp)
+        _d, band_a, comp = best
+        core = comp & (win >= max(floor, core_peak_frac * peak))
+        if int(core.sum()) < min_area_vox:
+            core = comp
+        core_a = int(core.sum())
+        yy, xx = ndimage.center_of_mass(core)
+        gx, gy = yy + x0, xx + y0
+        latd = float(np.hypot((gx - cx) * px, (gy - cy) * py))
+        reject = (
+            core_a < min_area_vox
+            or core_a > core_cap
+            or band_a > band_cap
+            or latd > lateral_tol_mm
+        )
+        if reject:
+            gap += 1
+            if gap > max_gap:
+                break
+            z += step
+            continue
+        full = np.zeros_like(sl, dtype=bool)
+        full[x0:x1, y0:y1] = core
+        out[:, :, z] |= full
+        added.append(int(z))
+        prev = np.array([gx, gy])
+        gap = 0
+        z += step
+
+    if not added:
+        return deepseg, []
+    completed = np.moveaxis(out, 2, iax).astype(deepseg.dtype)
+    return completed, sorted(added)
+
+
+def _extend_caudal_via_trace(
+    func_ref_fast_path: Path,
+    discovery_seg_path: Path,
+    policy: dict[str, Any],
+) -> list[int]:
+    """Trace the caudal cord on the reference and union it onto the seg.
+
+    Second stage of caudal completion, run after the propseg union. Overwrites
+    `discovery_seg_path` in place when it adds slices. Strictly additive and
+    failure-swallowing: any error leaves the mask untouched. Gated by
+    ``func_localization.discover.caudal_completion.trace.enabled``.
+    """
+    cfg = (
+        policy.get("func_localization", {})
+        .get("discover", {})
+        .get("caudal_completion", {})
+        .get("trace", {})
+    )
+    if not cfg.get("enabled", True):
+        return []
+    try:
+        disc_img = nib.load(discovery_seg_path)
+        disc_data = disc_img.get_fdata()
+        ref_data = nib.load(func_ref_fast_path).get_fdata()
+        if ref_data.shape != disc_data.shape:
+            return []
+        completed, added = _caudal_trace(
+            disc_data, ref_data, disc_img.affine,
+            intensity_frac=float(cfg.get("intensity_frac", 0.5)),
+            radius_vox=int(cfg.get("radius_vox", 6)),
+            lateral_tol_mm=float(cfg.get("lateral_tol_mm", 5.0)),
+            core_area_max=float(cfg.get("core_area_max", 1.7)),
+            band_area_max=float(cfg.get("band_area_max", 2.5)),
+            min_area_vox=int(cfg.get("min_area_vox", 6)),
+            core_peak_frac=float(cfg.get("core_peak_frac", 0.6)),
+            max_gap=int(cfg.get("max_gap", 1)),
+        )
+    except Exception:
+        return []
+    if added:
+        nib.save(nib.Nifti1Image(completed, disc_img.affine, disc_img.header),
+                 discovery_seg_path)
+    return added
+
+
 def _extend_caudal_via_propseg(
     func_ref_fast_path: Path,
     discovery_seg_path: Path,
@@ -544,8 +760,20 @@ def _process_s3_1_dummy_drop_and_localization(
                  func_ref_fast_path, discovery_seg_path, work_dir / "qc", policy
              )
              if added_caudal:
-                 print(f"S3.1 caudal completion: +{len(added_caudal)} slices "
-                       f"(z={sorted(added_caudal)})")
+                 print(f"S3.1 caudal completion (propseg): +{len(added_caudal)} "
+                       f"slices (z={sorted(added_caudal)})")
+         except Exception:
+             pass  # strictly additive; never fail localization on completion
+         # Second stage: trace the low-SNR caudal tail directly on the reference
+         # where neither deepseg nor propseg re-activate. Additive, guarded so
+         # it stops at the noise/CSF floor rather than grab CSF/airway/noise.
+         try:
+             added_trace = _extend_caudal_via_trace(
+                 func_ref_fast_path, discovery_seg_path, policy
+             )
+             if added_trace:
+                 print(f"S3.1 caudal completion (trace): +{len(added_trace)} "
+                       f"slices (z={sorted(added_trace)})")
          except Exception:
              pass  # strictly additive; never fail localization on completion
     else:

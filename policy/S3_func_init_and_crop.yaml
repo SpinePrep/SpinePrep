@@ -41,6 +41,27 @@ func_localization:
       lateral_tol_mm: 8.0    # max per-slice cord-centroid shift; airway is ~15+ mm off-axis
       max_gap: 0             # stop at the first slice with no contiguous propseg cord
       area_mult: 3.0         # stop if a propseg slice balloons > 3x the median cord area
+      # Second stage: intensity-guided caudal trace on the reference itself.
+      # On the lowest-SNR runs neither deepseg nor propseg re-activate on the
+      # faint caudal tail (observed MC001, WY001), so the propseg union above
+      # is a no-op and real cord is still cut off. This stage traces the cord
+      # slice-by-slice on the coarse functional reference from the caudal end,
+      # separating cord from the bright CSF-filled canal with two size gates
+      # scaled by the run's own cord area (band + compact-core), a lateral-jump
+      # guard (rejects the anterior airway), and an intensity floor learned from
+      # the caudal cord. It STOPS at the noise/CSF floor: where the tail is
+      # CSF-dominated immediately below the terminus it is a no-op (verified
+      # no-op on the 31 good runs, AS002 and LK001 already fixed by propseg).
+      trace:
+        enabled: true
+        intensity_frac: 0.5    # bright-cord threshold = frac x caudal cord intensity; below this = noise floor -> stop
+        radius_vox: 6          # in-plane search half-window (~10 mm at 1.6 mm) around the previous cord centroid
+        lateral_tol_mm: 5.0    # max per-slice centroid shift; the anterior airway is ~15 mm off and is rejected
+        core_area_max: 1.7     # reject if the compact bright core > 1.7x the run's robust cord area (CSF band)
+        band_area_max: 2.5     # reject if the full bright component > 2.5x cord area (wide CSF canal fills the window)
+        min_area_vox: 6        # ignore sub-cord specks
+        core_peak_frac: 0.6    # compact core = component voxels >= 0.6 x local peak (isolates cord from a dim halo)
+        max_gap: 1             # bridge a single faint slice; two consecutive rejects stop the trace
     drift_gate:
       enabled: true
       superior_slices_check: 5
