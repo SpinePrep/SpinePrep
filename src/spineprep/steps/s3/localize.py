@@ -575,6 +575,73 @@ def _create_dummy_discovery(data: np.ndarray, affine: np.ndarray, seg_path: Path
     nib.save(nib.Nifti1Image(discovery_seg_data, affine), roi_path)
 
 
+def _cleanup_epi_cordseg(seg_path: Path, policy: dict[str, Any]) -> dict[str, Any]:
+    """Clean the raw EPISeg (``sct_deepseg sc_epi``) cord mask in place.
+
+    EPISeg follows the full cord (including the anterior cervical curve) but
+    (a) can split the cord into two on-axis components across the low-SNR/
+    high-distortion curve gap, and (b) emits a few off-axis specks up in the
+    brain when the FOV includes it. A naive ``-largest 1`` would keep only the
+    bigger cord fragment and re-truncate the cord — the exact failure this fix
+    exists to remove. So instead we **bridge** the cord fragments along Z (a
+    short Z-only dilation closes the 1-2 slice curve gap while leaving the
+    superior, off-axis brain specks in separate components), pick the bridged
+    group holding the most original cord voxels, and keep only the original
+    voxels in that group. This preserves the exact cord voxels (no erosion),
+    unions the upper+lower fragments, and drops the specks.
+
+    Returns a small stats dict for the QC json; never raises on a degenerate
+    mask (empty or single-component → no-op).
+    """
+    from scipy import ndimage
+
+    bridge_z = int(
+        policy.get("func_localization", {})
+        .get("cleanup", {})
+        .get("bridge_z_slices", 2)
+    )
+    img = nib.load(seg_path)
+    data = np.asarray(img.get_fdata()) > 0
+    stats: dict[str, Any] = {
+        "cord_seg_model": "sc_epi",
+        "bridge_z_slices": bridge_z,
+        "n_components": 0,
+        "components_kept": 0,
+        "components_dropped": 0,
+        "voxels_dropped": 0,
+    }
+    if data.sum() == 0:
+        return stats
+
+    struct26 = ndimage.generate_binary_structure(3, 3)
+    lab0, n0 = ndimage.label(data, structure=struct26)
+    stats["n_components"] = int(n0)
+    if n0 <= 1:
+        stats["components_kept"] = int(n0)
+        return stats
+
+    # Bridge along Z only, so cord fragments across the curve gap merge but
+    # superior off-axis specks stay separate.
+    z_struct = np.zeros((3, 3, 3), dtype=bool)
+    z_struct[1, 1, :] = True
+    bridged = ndimage.binary_dilation(data, structure=z_struct, iterations=bridge_z)
+    lab_b, n_b = ndimage.label(bridged, structure=struct26)
+    # Cord group = bridged component holding the most ORIGINAL cord voxels.
+    orig_counts = ndimage.sum(data, lab_b, index=np.arange(1, n_b + 1))
+    cord_group = int(np.argmax(orig_counts)) + 1
+    keep = data & (lab_b == cord_group)
+
+    kept_labels = set(int(v) for v in np.unique(lab0[keep])) - {0}
+    stats["components_kept"] = len(kept_labels)
+    stats["components_dropped"] = int(n0 - len(kept_labels))
+    stats["voxels_dropped"] = int(data.sum() - keep.sum())
+
+    nib.save(
+        nib.Nifti1Image(keep.astype(np.uint8), img.affine, img.header), seg_path
+    )
+    return stats
+
+
 # ---------------------------------------------------------------------------
 # S3.1 main processing function
 # ---------------------------------------------------------------------------
@@ -737,19 +804,45 @@ def _process_s3_1_dummy_drop_and_localization(
     func_ref0_img = nib.Nifti1Image(func_ref0_data, bold_affine)
     nib.save(func_ref0_img, func_ref0_path)
 
-    # Real Localization: Contrast-agnostic model (SCT 7.x syntax)
+    # Real localization: EPISeg (`sct_deepseg sc_epi`, Valošek 2025) — the
+    # EPI-BOLD-specific cord model. It follows the anterior cervical curve
+    # where the contrast-agnostic `spinalcord` model (trained on anatomical
+    # scans) quits, so it segments the WHOLE imaged cord on the functional
+    # reference instead of the upper ~half. Config-driven task with an
+    # sc_epi default; the legacy `spinalcord` path keeps `-largest 1`.
+    # See .claude/specs/s3-episeg-localization.md.
+    seg_task = policy.get("func_localization", {}).get("task", "sc_epi")
     cmd_seg = [
-        "sct_deepseg", "spinalcord",
+        "sct_deepseg", seg_task,
         "-i", str(func_ref_fast_path),
         "-o", str(discovery_seg_path),
-        "-largest", "1",
         "-qc", str(work_dir / "qc"),
         "-v", "0",
     ]
+    if seg_task == "spinalcord":
+        # Legacy contrast-agnostic path: SCT's own largest-component keep.
+        cmd_seg += ["-largest", "1"]
     ok, out = _run_command(cmd_seg)
 
     if ok and discovery_seg_path.exists():
          roi_mask_path = discovery_seg_path
+         # EPISeg cleanup: union the on-axis cord fragments across the curve
+         # gap and drop off-axis brain specks WITHOUT a naive largest-component
+         # keep (which would re-truncate the fragmented cord). No-op for a
+         # single clean component. See _cleanup_epi_cordseg.
+         if seg_task == "sc_epi":
+             try:
+                 clean_stats = _cleanup_epi_cordseg(discovery_seg_path, policy)
+                 if clean_stats.get("components_dropped"):
+                     print(
+                         f"S3.1 EPISeg cleanup: kept "
+                         f"{clean_stats['components_kept']} on-axis cord "
+                         f"component(s), dropped "
+                         f"{clean_stats['components_dropped']} off-axis "
+                         f"speck(s), {clean_stats['voxels_dropped']} vox"
+                     )
+             except Exception:
+                 pass  # best-effort; raw sc_epi mask still usable
          # Robust caudal completion: deepseg on the coarse full-FOV reference
          # under-segments the lower cord on low-SNR/low-coil-sensitivity runs,
          # so the cord-focused crop derived from this mask cuts off real caudal
@@ -784,7 +877,7 @@ def _process_s3_1_dummy_drop_and_localization(
              "roi_mask_path": roi_mask_path,
              "func_ref_fast_crop_path": localize_dir / "func_ref_fast_crop.nii.gz",
              "localization_status": "FAIL",
-             "failure_message": f"sct_deepseg seg_sc_contrast_agnostic failed: {out}",
+             "failure_message": f"sct_deepseg {seg_task} failed: {out}",
              "figure_path": None,
              "crop_bbox": None,
          }

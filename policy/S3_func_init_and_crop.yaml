@@ -19,7 +19,19 @@ coarse_reference:
 func_localization:
   enabled: true  # Mandatory (no optional flag)
   method: deepseg
-  task: spinalcord
+  # EPISeg (sct_deepseg sc_epi, Valošek 2025): the EPI-BOLD-specific cord
+  # model. On BOLD EPI the contrast-agnostic `spinalcord` model (trained on
+  # anatomical scans) quits where the cord curves anteriorly (lower cervical),
+  # segmenting only the upper ~half; sc_epi follows the curve to the FOV edge.
+  # S5-S9 already use sc_epi, so this aligns S3's crop with the rest of the
+  # chain. See .claude/specs/s3-episeg-localization.md.
+  task: sc_epi
+  # EPISeg output cleanup (localize._cleanup_epi_cordseg). sc_epi can split the
+  # cord into two on-axis components across the low-SNR curve gap and emit
+  # off-axis brain specks; we bridge the fragments along Z and drop the specks
+  # WITHOUT a naive largest-component keep (which would re-truncate the cord).
+  cleanup:
+    bridge_z_slices: 2   # Z-only dilation to close the curve gap between cord fragments
   discover:
     # Floor to reject "a couple of stray cord voxels" - not a coverage requirement.
     # Narrow-FOV acquisitions (e.g. KombiShimZSpine with 12 BOLD slices) are valid
@@ -35,7 +47,14 @@ func_localization:
     # which sits well off the cord axis). No-op on runs whose deepseg mask
     # already reaches the imaged cord end / FOV edge.
     caudal_completion:
-      enabled: true
+      # RETIRED 2026-07-13. These straight-line caudal patches (propseg union +
+      # intensity trace) compensated for the weak `spinalcord` model by
+      # extrapolating the centreline STRAIGHT DOWN — which walks off the
+      # forward-curving cord and stops in the same place. EPISeg (task: sc_epi)
+      # follows the curve natively, so they are obsolete and risk re-introducing
+      # off-axis leakage. Disabled by default; kept behind this flag for one
+      # release as a fallback before deletion. Do NOT re-enable with sc_epi.
+      enabled: false
       propseg_contrast: t2   # func EPI reads as T2-like (bright CSF)
       axis_tol_mm: 5.0       # max deviation from the extrapolated deepseg cord axis; genuine caudal cord is near-straight (<3 mm), a vessel/airway runaway curves past this
       lateral_tol_mm: 8.0    # max per-slice cord-centroid shift; airway is ~15+ mm off-axis
@@ -53,7 +72,7 @@ func_localization:
       # CSF-dominated immediately below the terminus it is a no-op (verified
       # no-op on the 31 good runs, AS002 and LK001 already fixed by propseg).
       trace:
-        enabled: true
+        enabled: false         # RETIRED 2026-07-13 with caudal_completion (see above); sc_epi follows the curve
         intensity_frac: 0.5    # bright-cord threshold = frac x caudal cord intensity; below this = noise floor -> stop
         radius_vox: 6          # in-plane search half-window (~10 mm at 1.6 mm) around the previous cord centroid
         lateral_tol_mm: 5.0    # max per-slice centroid shift; the anterior airway is ~15 mm off and is rejected
