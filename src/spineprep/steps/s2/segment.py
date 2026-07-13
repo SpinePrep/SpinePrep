@@ -187,13 +187,12 @@ def _run_totalspineseg(
     # Create SCT-compatible disc labels (point labels at disc centers)
     # SCT uses: disc below C2 = 3, disc below C3 = 4, etc.
     sct_disc_data = np.zeros_like(tss_data, dtype=np.uint8)
+    placed_discs: list[tuple[int, int]] = []  # (sct_label, S-I index) for the sanity check
     for name, tss_label in TSS_LABELS["discs"].items():
         mask = tss_data == tss_label
         if not mask.any():
             continue
-        # Get centroid of disc
         coords = np.argwhere(mask)
-        centroid = coords.mean(axis=0).astype(int)
         # Convert disc name to SCT label (disc C2/C3 = 3, C3/C4 = 4, etc.)
         upper, lower = name.split("/")
         if upper.startswith("C"):
@@ -204,10 +203,23 @@ def _run_totalspineseg(
             sct_label = int(upper[1:]) + 20  # L1/L2 = 21
         else:
             continue
-        # Place single voxel at centroid
-        sct_disc_data[tuple(centroid)] = sct_label
+        # SCT convention: the single-voxel disc label sits at the POSTERIOR TIP
+        # of the disc at its S-I mid-level (this is what sct_label_vertebrae
+        # emits and what sct_register_to_template -ldisc expects), NOT the mask
+        # centroid. The images here are RPI-standardized, so axis 1 increases
+        # toward Posterior and axis 2 toward Inferior: posterior tip = the
+        # max-axis-1 voxel on the disc's mid S-I slice.
+        cz = int(round(float(coords[:, 2].mean())))
+        at_z = coords[coords[:, 2] == cz]
+        if at_z.size == 0:  # no voxel exactly at mid-slice; use the nearest S-I slice
+            cz = int(coords[int(np.argmin(np.abs(coords[:, 2] - cz))), 2])
+            at_z = coords[coords[:, 2] == cz]
+        tip = at_z[int(np.argmax(at_z[:, 1]))]
+        sct_disc_data[tuple(tip)] = sct_label
+        placed_discs.append((sct_label, int(tip[2])))
     sct_disc_path = tss_dir / "disc_labels_sct.nii.gz"
     nib.save(nib.Nifti1Image(sct_disc_data, affine, header), sct_disc_path)
+    labeling_sanity = _check_labeling_sanity(placed_discs)
 
     # Compute metrics
     present_vertebrae = sorted([TSS_VERTEBRA_NAMES[int(v)] for v in np.unique(vertebrae_data) if v > 0])
@@ -242,5 +254,50 @@ def _run_totalspineseg(
             "present_discs": present_discs,
             "cord_volume_vox": cord_volume_vox,
             "canal_volume_vox": canal_volume_vox,
+            "labeling_sanity": labeling_sanity,
         },
+    }
+
+
+def _check_labeling_sanity(placed_discs: list[tuple[int, int]]) -> dict:
+    """Sanity-check TotalSpineSeg disc labeling for the classic failure modes.
+
+    TSS is a single network and is the linchpin for template registration: an
+    off-by-one shifts every downstream level. There is no second labeling
+    backend to cross-check against (sct_label_vertebrae is not wired), so this
+    catches the tell-tale signatures of a mislabel from the labels alone:
+
+    - **Internal gap**: the SCT disc values covering the imaged span should be
+      contiguous (e.g. 3,4,5,6). A missing value in the middle (3,4,6) means a
+      disc was skipped or mislabeled.
+    - **Non-monotonic S-I ordering**: a higher disc number is more caudal, so in
+      RPI its S-I index must increase monotonically. A reversal is a mislabel.
+    - **Too few levels**: fewer than 3 discs is too little to anchor a reliable
+      registration.
+
+    Returns {ok, reasons, n_discs, internal_gaps}. `ok=False` drives a WARN in
+    S2 (never a hard FAIL — visual QC on the TSS montage is the validator).
+    """
+    reasons: list[str] = []
+    discs = sorted(placed_discs, key=lambda t: t[0])
+    labels = [d[0] for d in discs]
+    n = len(labels)
+    internal_gaps = 0
+    if n < 3:
+        reasons.append(f"only {n} disc label(s) placed (< 3) — too few to anchor registration")
+    else:
+        expected = set(range(labels[0], labels[-1] + 1))
+        missing = sorted(expected - set(labels))
+        internal_gaps = len(missing)
+        if missing:
+            reasons.append(f"non-contiguous disc labels — missing {missing} between {labels[0]} and {labels[-1]}")
+        # S-I index must increase with disc number (higher number = more caudal = larger RPI z).
+        zs = [d[1] for d in discs]
+        if any(zs[i + 1] <= zs[i] for i in range(len(zs) - 1)):
+            reasons.append("disc S-I ordering is non-monotonic with disc number — likely mislabel")
+    return {
+        "ok": len(reasons) == 0,
+        "reasons": reasons,
+        "n_discs": n,
+        "internal_gaps": internal_gaps,
     }

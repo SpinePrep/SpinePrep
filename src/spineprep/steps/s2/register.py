@@ -88,6 +88,76 @@ def _find_pam50_cord_mask(pam50_dir: Path) -> Optional[Path]:
     return None
 
 
+def _find_pam50_levels(pam50_dir: Path) -> Optional[Path]:
+    """Find the PAM50 vertebral-levels label file (integer per level)."""
+    for name in ("PAM50_levels.nii.gz", "PAM50_spinal_levels.nii.gz"):
+        for candidate in (pam50_dir / "template" / name, pam50_dir / name):
+            if candidate.exists():
+                return candidate
+    return None
+
+
+def compute_pam50_cord_dice_per_level(
+    native_cord_seg: Path,
+    warp_template2anat: Path,
+    work_dir: Path,
+) -> Optional[dict[int, float]]:
+    """Per-vertebral-level 3D cord Dice in native anat space.
+
+    Whole-cord Dice (``compute_pam50_cord_dice``) is confounded by cord
+    COVERAGE: a subject whose imaged cord extends below where the cervically-
+    anchored registration reaches is penalised for uncovered cord that is not a
+    registration error, and a single 3D Dice on a tube is blind to along-cord
+    (S-I) misalignment. So we bin by vertebral level and score cord overlap
+    WHERE the cord actually is — the same coverage-independent metric S7 uses on
+    the functional side (Kaptan 2023 / Valošek 2025 per-level convention).
+
+    Warps PAM50_cord and PAM50_levels into native via the run's template->anat
+    warp, then for each level computes Dice between the warped PAM50 cord and
+    the native cord seg over that level's S-I slices. Returns {level_id: dice}
+    or None on any failure (never raises).
+    """
+    try:
+        import nibabel as nib
+
+        pam50_dir = _resolve_pam50_dir()
+        if pam50_dir is None or not warp_template2anat.exists():
+            return None
+        pam50_cord = _find_pam50_cord_mask(pam50_dir)
+        pam50_levels = _find_pam50_levels(pam50_dir)
+        if pam50_cord is None or pam50_levels is None:
+            return None
+        work_dir.mkdir(parents=True, exist_ok=True)
+        cord_in_native = work_dir / "pam50_cord_in_native_pl.nii.gz"
+        lvls_in_native = work_dir / "pam50_levels_in_native.nii.gz"
+        for src, dst in ((pam50_cord, cord_in_native), (pam50_levels, lvls_in_native)):
+            ok, _ = _run_command([
+                "sct_apply_transfo", "-i", str(src), "-d", str(native_cord_seg),
+                "-w", str(warp_template2anat), "-x", "nn", "-o", str(dst),
+            ])
+            if not ok or not dst.exists():
+                return None
+        cord_pam = nib.load(cord_in_native).get_fdata() > 0.5
+        cord_nat = nib.load(native_cord_seg).get_fdata() > 0.5
+        lvls = nib.load(lvls_in_native).get_fdata().astype(np.int32)
+        if not (cord_pam.shape == cord_nat.shape == lvls.shape):
+            return None
+        per_level: dict[int, float] = {}
+        for lvl in sorted(int(v) for v in np.unique(lvls) if v > 0):
+            z_mask = (lvls == lvl).any(axis=(0, 1))
+            if not z_mask.any():
+                continue
+            a = cord_pam[:, :, z_mask]
+            b = cord_nat[:, :, z_mask]
+            denom = int(a.sum()) + int(b.sum())
+            if denom == 0:
+                continue
+            per_level[lvl] = float(2 * int((a & b).sum()) / denom)
+        return per_level or None
+    except Exception:
+        return None
+
+
 def compute_pam50_cord_dice(
     native_cord_seg: Path,
     warp_template2anat: Path,

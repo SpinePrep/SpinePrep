@@ -87,11 +87,25 @@ registration:
   template: PAM50
   prefer_rootlets: true
 
-# Step-local truth gate (CLAUDE.md dev principle §3). pam50_cord_dice
-# is 3D Dice between PAM50_cord warped to native anat space and the
-# native cord_dseg. Initial bands set conservatively; retune on the
-# 11-run reg cohort when v1 lock approaches.
+# Step-local truth gate (CLAUDE.md dev principle §3).
+#
+# PRIMARY gate: per-vertebral-level median cord Dice (coverage-independent).
+# Whole-cord 3D Dice (pam50_cord_dice) is confounded by cord COVERAGE — a
+# subject whose imaged cord runs below the cervically-anchored registration is
+# penalised for uncovered cord that is not a registration error — and a single
+# Dice on a tube is blind to S-I misalignment. Empirically on CoSpiGVS whole-
+# cord Dice WARNed 10/11 good subjects at the old 0.80 bar (range 0.74-0.80),
+# so it is now demoted to observability and the gate moved to per-level, the
+# same convention S7 uses on the functional side. See
+# .claude/specs/s2-algorithm-audit.md F1.
 qc_thresholds:
-  pam50_cord_dice_pass_min: 0.80   # well-registered cord overlap
+  # Per-level primary gate (S7 band: good runs cluster 0.95-1.00).
+  per_level_pass_min: 0.90         # median per-level cord Dice >= this = PASS
+  per_level_broken_below: 0.50     # any single level < this = WARN (exclude that level)
+  # Whole-cord Dice — observability + legacy fallback ONLY when per-level is
+  # unavailable. Bands are NOT literature-anchored (no published cord-reg Dice
+  # band exists); recalibrate on the full 8-dataset cohort, do not cite as
+  # validated.
+  pam50_cord_dice_pass_min: 0.80
   pam50_cord_dice_warn_min: 0.60   # below = WARN; below this is FAIL
   min_vertebral_levels: 5          # already enforced in labeling.qc_thresholds
