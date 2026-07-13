@@ -128,8 +128,24 @@ def _synthesize_t2star(
         _copy_file(per_run_imgs[0], out_path)
         return True, ""
 
+    # Rigidly align each subsequent run to the first BEFORE averaging.
+    # A naive voxelwise mean of separately-acquired runs blurs the cord if
+    # there is any between-run motion; a within-run rigid alignment removes it.
+    # Strictly additive: if a run fails to register we keep its original image,
+    # so this is never worse than the previous unaligned mean.
+    aligned_imgs: list[Path] = [per_run_imgs[0]]
+    for i, mov in enumerate(per_run_imgs[1:], start=1):
+        reg_out = work_dir / f"megre_run{i}_to_run0.nii.gz"
+        ok, _ = _run_command([
+            "sct_register_multimodal",
+            "-i", str(mov), "-d", str(per_run_imgs[0]),
+            "-param", "step=1,type=im,algo=rigid,metric=MeanSquares,iter=10",
+            "-x", "spline", "-o", str(reg_out),
+        ])
+        aligned_imgs.append(reg_out if (ok and reg_out.exists()) else mov)
+
     concat_runs = work_dir / "megre_runs_concat.nii.gz"
-    ok, msg = _run_command(["sct_image", "-i", *[str(p) for p in per_run_imgs],
+    ok, msg = _run_command(["sct_image", "-i", *[str(p) for p in aligned_imgs],
                             "-concat", "t", "-o", str(concat_runs)])
     if not ok or not concat_runs.exists():
         return False, f"sct_image run-concat failed: {msg[:160]}"
@@ -552,6 +568,15 @@ def _process_session(
         work_dir=work_dir / "reg_disc",
     )
 
+    # Selection is by DESIGN a completion-preference for rootlets, NOT a
+    # quality comparison: rootlets mark the true spinal level (which vertebral
+    # discs only approximate), so when the rootlet registration COMPLETES
+    # (status PASS = exit 0 + warps written, see register.py) we always prefer
+    # it; disc-based is the fallback only when rootlets are absent or the
+    # rootlet registration failed. The downstream per-level Dice gate is what
+    # actually judges the selected registration's quality. (Do not describe
+    # this as "select best by overlap" — it is not; see
+    # .claude/specs/s2-algorithm-audit.md F2.)
     selected_variant: str
     selected_reg: dict
     if reg_rootlet and reg_rootlet.get("status") == "PASS":
@@ -581,7 +606,7 @@ def _process_session(
     # between PAM50 cord warped to native anat space and the native
     # cord_dseg. Quantifies PAM50 registration quality; complements
     # the visual pam50_reg_overlay reportlet.
-    from .register import compute_pam50_cord_dice
+    from .register import compute_pam50_cord_dice, compute_pam50_cord_dice_per_level
     pam50_cord_dice = compute_pam50_cord_dice(
         native_cord_seg=seg_path,
         warp_template2anat=Path(selected_reg["warp_template2anat"]),
@@ -589,6 +614,17 @@ def _process_session(
     )
     if pam50_cord_dice is not None:
         metrics["pam50_cord_dice"] = pam50_cord_dice
+    # Per-vertebral-level cord Dice — the PRIMARY registration-quality gate
+    # (coverage-independent; whole-cord Dice above is coverage-confounded and
+    # blind to S-I misalignment). Same S7 per-level convention. See
+    # .claude/specs/s2-algorithm-audit.md F1.
+    pam50_dice_per_level = compute_pam50_cord_dice_per_level(
+        native_cord_seg=seg_path,
+        warp_template2anat=Path(selected_reg["warp_template2anat"]),
+        work_dir=work_dir / "pam50_dice_per_level",
+    )
+    if pam50_dice_per_level:
+        metrics["pam50_cord_dice_per_level"] = {str(k): v for k, v in pam50_dice_per_level.items()}
 
     # Vertebral / rootlets coverage gauges — count how many distinct
     # levels were detected. Easy to compute, hard to fake.
@@ -632,14 +668,44 @@ def _process_session(
     run_status = "PASS"
     run_fail_msg = None
     _qt = policy.get("qc_thresholds", {})
-    _dice = metrics.get("pam50_cord_dice")
-    if _dice is not None:
-        if _dice < _qt.get("pam50_cord_dice_warn_min", 0.60):
+    _reasons: list[str] = []
+    _pl = metrics.get("pam50_cord_dice_per_level") or {}
+    _pl_vals = [v for v in _pl.values() if isinstance(v, (int, float))]
+    if _pl_vals:
+        # PRIMARY gate: median per-level cord Dice (coverage-independent).
+        import statistics as _stats
+        _med = _stats.median(_pl_vals)
+        _lo = min(_pl_vals)
+        _pass_med = _qt.get("per_level_pass_min", 0.90)
+        _broken = _qt.get("per_level_broken_below", 0.50)
+        if _med < _pass_med:
             run_status = "FAIL"
-            run_fail_msg = f"pam50_cord_dice FAIL: {_dice:.3f}"
-        elif _dice < _qt.get("pam50_cord_dice_pass_min", 0.80):
+            _reasons.append(f"per-level median cord Dice FAIL: {_med:.3f} (< {_pass_med:.2f})")
+        elif _lo < _broken:
             run_status = "WARN"
-            run_fail_msg = f"pam50_cord_dice WARN: {_dice:.3f}"
+            _reasons.append(f"per-level median OK ({_med:.3f}) but one level Dice={_lo:.3f} (< {_broken:.2f})")
+        _wc = metrics.get("pam50_cord_dice")
+        if _wc is not None:
+            _reasons.append(f"whole-cord Dice={_wc:.3f} (observability; coverage-confounded, not gated)")
+    else:
+        # Fallback: legacy whole-cord Dice gate when per-level is unavailable.
+        _dice = metrics.get("pam50_cord_dice")
+        if _dice is not None:
+            if _dice < _qt.get("pam50_cord_dice_warn_min", 0.60):
+                run_status = "FAIL"
+                _reasons.append(f"pam50_cord_dice FAIL: {_dice:.3f}")
+            elif _dice < _qt.get("pam50_cord_dice_pass_min", 0.80):
+                run_status = "WARN"
+                _reasons.append(f"pam50_cord_dice WARN: {_dice:.3f}")
+    # F4: TotalSpineSeg labeling sanity — WARN (never downgrade a FAIL) when the
+    # disc labeling shows a mislabel signature; visual QC on the TSS montage is
+    # the validator. See .claude/specs/s2-algorithm-audit.md F4.
+    _san = ((tss_info or {}).get("metrics", {}) or {}).get("labeling_sanity", {})
+    if isinstance(_san, dict) and _san.get("ok") is False:
+        if run_status == "PASS":
+            run_status = "WARN"
+        _reasons.append("labeling sanity: " + "; ".join(_san.get("reasons", [])))
+    run_fail_msg = "; ".join(_reasons) if _reasons else None
 
     return {
         "subject": subject,
