@@ -336,7 +336,7 @@ def _run_s3_test_harness(out: Optional[str]) -> StepResult:
 
     policy = {
         "dummy": {"drop_count": 4},
-        "func_localization": {"enabled": True, "method": "deepseg", "task": "spinalcord"},
+        "func_localization": {"enabled": True, "method": "deepseg", "task": "sc_epi"},
         "crop": {"mask_diameter_mm": 40},
     }
 
