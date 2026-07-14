@@ -28,6 +28,14 @@ def test_sanity_flags_internal_gap():
     assert any("missing" in reason for reason in r["reasons"])
 
 
+def test_sanity_ok_on_monotonic_DECREASING_si():
+    # S-I index decreasing with disc number is fine — direction depends on
+    # image orientation; only a reversal is a mislabel. (Regression: the first
+    # version assumed increasing and false-flagged every real subject.)
+    r = _check_labeling_sanity([(3, 417), (4, 370), (5, 324), (6, 278), (7, 232)])
+    assert r["ok"] is True
+
+
 def test_sanity_flags_non_monotonic_si_ordering():
     # disc 4 sits ABOVE disc 3 in S-I (index 5 < 10) — a mislabel signature.
     r = _check_labeling_sanity([(3, 10), (4, 5), (5, 30), (6, 40)])
