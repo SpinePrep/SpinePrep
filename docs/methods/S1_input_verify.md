@@ -19,7 +19,8 @@ downstream.
 - **No tunable parameters:** S1 has **no `policy/` file** by design. Its checks
   encode the BIDS spec, not preferences, so there is nothing to tune.
 - **Step-local QC:** the `status` (worst severity across all checks) plus the
-  `S1_dataset_summary` reportlet — a subject × modality grid with check badges.
+  `S1_dataset_summary` reportlet — an HTML page with a counts table, a
+  subject × modality grid, and the check table with PASS/WARN/FAIL badges.
 
 ## What it does
 
@@ -124,7 +125,7 @@ stored in the inventory so downstream steps need not re-parse BIDS.
 | Fix plan | `work/S1_input_verify/{ds}/fix_plan.yaml` | Actionable list of issues to resolve |
 | Per-run records | `logs/S1_input_verify/{ds}/runs.jsonl` | One JSON object per run, with its issues |
 | QC summary | `logs/S1_input_verify/{ds}/qc.json` | `status`, `checks[]`, `counts`, `metrics`, `issues` |
-| Reportlet | `derivatives/spineprep/_S1/{ds}/figures/{ds}_desc-S1_dataset_summary.png` | The diagnostic figure |
+| Reportlet | `derivatives/spineprep/_S1/{ds}/reports/{ds}_desc-S1_dataset_summary.html` | The diagnostic report (HTML tables) |
 
 ## Quality control
 
@@ -135,18 +136,19 @@ input quality without re-parsing the checks:
 `n_func_cord_runs / n_anat_runs / n_fmap_runs`.
 The overall `status` is the worst severity across all checks.
 
-**Reportlet — `S1_dataset_summary`.** One PNG per dataset with three panels:
+**Reportlet — `S1_dataset_summary`.** One HTML page per dataset (S1 emits purely
+tabular data — no imaging — so the report is plain tables), with three tables:
 
-- **Left** — subject × modality presence grid (`anat` / `func` / `fmap` /
-  `physio`), each cell showing a file count.
-- **Centre** — the check table with PASS / WARN / FAIL badges.
-- **Right** — counts summary (files, runs, subjects, sessions, classification).
+- **Counts** — files, runs, subjects, sessions, and the classification breakdown.
+- **Subject × modality grid** — a cell per (subject, `anat`/`func`/`fmap`/`physio`)
+  showing the file count.
+- **Checks** — every check with a PASS / WARN / FAIL badge.
 
-**What failure looks like:** an empty column in the grid (a modality missing for a
+**What failure looks like:** an empty cell in the grid (a modality missing for a
 subject), a red badge in the check table (e.g. a session with no cord fMRI ⇒ FAIL,
-or a BOLD run missing `RepetitionTime` ⇒ WARN), or a run flagged with a header
-problem. The figure is designed so a human can accept or reject a dataset at a
-glance. See the [Gallery](../reports.md) for live examples.
+or a BOLD run missing `RepetitionTime` ⇒ WARN). The report is designed so a human
+can accept or reject a dataset at a glance. See the [Gallery](../reports.md) for
+live examples.
 
 ## Limitations & assumptions
 

@@ -49,7 +49,7 @@ a human eyeball the outcome.
 | Runs JSONL | `logs/S1_input_verify/<ds>/runs.jsonl` | Per-run records |
 | QC JSON | `logs/S1_input_verify/<ds>/qc.json` | Status, checks, counts, metrics, reportlets |
 | Fix plan | `work/S1_input_verify/<ds>/fix_plan.yaml` | Actionable issue list |
-| Reportlet | `derivatives/spineprep/_S1/<ds>/figures/<ds>_desc-S1_dataset_summary.png` | One PNG: subject×modality grid + check badges + counts (principle §4) |
+| Reportlet | `derivatives/spineprep/_S1/<ds>/reports/<ds>_desc-S1_dataset_summary.html` | HTML tables: subject×modality grid + check badges + counts (principle §4) |
 
 ## Step-local truth metric (principle §3)
 
