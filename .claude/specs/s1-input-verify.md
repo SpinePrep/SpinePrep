@@ -21,12 +21,17 @@ a human eyeball the outcome.
 - **BIDS spec** (Gorgolewski et al., Sci Data 2016) for the file layout,
   filename entities, sidecar conventions, and IntendedFor matching.
 - **bids-validator** is the field-standard tool for BIDS conformance.
-  SpinePrep does **not** call it because (a) its derivatives
-  support is incomplete (issue tracked since 2023) and (b) we need
-  cord-specific classification (cord-likely vs not) that bids-validator
-  doesn't compute. S1 supplements bids-validator, it does not replace
-  it; users are expected to have run bids-validator on the raw BIDS
-  root before invoking SpinePrep.
+  SpinePrep does **not** call it because (a) its derivatives support is
+  incomplete (issue tracked since 2023) and (b) S1 does cord-pipeline-specific
+  bookkeeping bids-validator doesn't — fmap→BOLD IntendedFor matching for TopUp
+  eligibility, physio presence, MEGRE/T2* anat inventory, and the acquisition
+  fields downstream steps need. S1 supplements bids-validator, it does not
+  replace it; users are expected to have run bids-validator on the raw BIDS
+  root first.
+  NOTE (truthfulness, per s1-algorithm-audit.md F1): the `cord_likely` label is
+  NOT a cord-vs-brain classifier — it marks any `func/` BOLD. The real
+  cord-vs-not determination happens at S3 (cord localization), where brain-only
+  runs fail. Do not describe S1 as performing cord-specific image classification.
 
 ## Constraints
 
