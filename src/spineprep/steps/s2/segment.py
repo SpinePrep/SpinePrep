@@ -291,9 +291,16 @@ def _check_labeling_sanity(placed_discs: list[tuple[int, int]]) -> dict:
         internal_gaps = len(missing)
         if missing:
             reasons.append(f"non-contiguous disc labels — missing {missing} between {labels[0]} and {labels[-1]}")
-        # S-I index must increase with disc number (higher number = more caudal = larger RPI z).
+        # Disc S-I position must be strictly MONOTONIC with disc number. The
+        # direction (increasing or decreasing z) depends on image orientation,
+        # so we do NOT assume one — we only flag a REVERSAL (mixed signs) or a
+        # tie, which is the actual mislabel signature. (Assuming "increasing"
+        # false-flagged every subject whose S-I axis runs the other way.)
         zs = [d[1] for d in discs]
-        if any(zs[i + 1] <= zs[i] for i in range(len(zs) - 1)):
+        diffs = [zs[i + 1] - zs[i] for i in range(len(zs) - 1)]
+        has_up = any(dz > 0 for dz in diffs)
+        has_down = any(dz < 0 for dz in diffs)
+        if any(dz == 0 for dz in diffs) or (has_up and has_down):
             reasons.append("disc S-I ordering is non-monotonic with disc number — likely mislabel")
     return {
         "ok": len(reasons) == 0,
