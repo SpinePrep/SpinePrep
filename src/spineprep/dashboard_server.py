@@ -16,6 +16,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, RedirectResponse, Response
+from fastapi.staticfiles import StaticFiles
 
 WORK_ROOT = Path(os.environ.get("SFMRI_WORK_ROOT", "/mnt/ssd1/SpinePrep/work"))
 # reg/smoke dev cohorts retired 2026-06-16; production scopes are the full
@@ -129,13 +130,13 @@ def _build_stitched_view(scope: str) -> Path | None:
 
 @app.get("/")
 async def root():
-    """Unified entry point — redirect to the default scope's stitched
-    dashboard. The stitched view pulls each step from its approved
-    (work/done/<scope>/Sn) wf, falling back to latest-wf-with-step for
-    unapproved steps. One URL, always shows the latest meaningful
-    state."""
+    """Unified entry point — the single cohort dashboard (all datasets +
+    subjects together). The old reg/smoke/scope stitched views are retired
+    (2026-07-14): SFMRI_WORK_ROOT now points at the cohort output root and the
+    dashboard is served statically from `<root>/dashboard/`. The legacy
+    `/<scope>/dashboard` routes remain but have no data."""
     return RedirectResponse(
-        url=f"{DEFAULT_SCOPE}/dashboard/index.html",
+        url="dashboard/index.html",
         headers=_NO_CACHE_HEADERS,
     )
 
@@ -242,6 +243,15 @@ async def serve_derivatives(prefix: str, path: str):
     if resolved is None:
         return Response(status_code=404)
     return _file_response(resolved)
+
+
+# Static mount for the cohort output root (SFMRI_WORK_ROOT). Serves the unified
+# dashboard at /dashboard/index.html and its reportlet PNGs under /derivatives/…
+# (the gallery pages reference images by relative ../../../derivatives/… paths).
+# Mounted LAST so the explicit routes above still match first; with scopes
+# retired those routes are inert and this static mount is what actually serves.
+if WORK_ROOT.is_dir():
+    app.mount("/", StaticFiles(directory=str(WORK_ROOT), html=True), name="cohort")
 
 
 if __name__ == "__main__":
