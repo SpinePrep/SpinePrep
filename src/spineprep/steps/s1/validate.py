@@ -52,6 +52,7 @@ def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dic
             "session": ses,
             "modality": base_run["modality"],
             "classification": base_run["classification"],
+            "acquisition": base_run.get("acquisition", {}),
         }
         run_record["issues"] = []
         _validate_run_file(root, run_record)
@@ -73,6 +74,7 @@ def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dic
     effective_entry = policy_entry if policy_entry is not None else _derive_adhoc_entry(run_records)
     _apply_fieldmap_matching(root, run_records, effective_entry, issues, checks)
     _apply_physio_checks(root, run_records, effective_entry, issues, checks)
+    _apply_acquisition_metadata_checks(run_records, checks, issues)
     _apply_session_requirements(run_records, checks, issues)
 
     for run in run_records.values():
@@ -158,6 +160,45 @@ def _validate_run_file(root: Path, run_record: dict) -> None:
     if run_record["modality"] in {"func", "anat", "fmap"} and abs_path.suffix.endswith((".nii", ".gz")):
         expect_4d = run_record["modality"] == "func" and run_record["classification"] == "cord_likely"
         issues.extend(_validate_nifti(abs_path, expect_4d=expect_4d))
+
+
+def _apply_acquisition_metadata_checks(
+    run_records: Dict[str, dict], checks: list[dict], issues: list[dict]
+) -> None:
+    """Pre-flight the sidecar fields downstream steps require, so a dataset that
+    is missing them fails HERE (with a clear message) instead of silently
+    breaking at S5/topup or later. See .claude/specs/s1-algorithm-audit.md F3.
+
+    - Every cord fMRI run needs RepetitionTime (used everywhere downstream).
+    - Every fieldmap needs PhaseEncodingDirection + TotalReadoutTime (FSL topup
+      acqparams); without them S5 topup cannot run.
+    All WARN (not FAIL): the analyst may still proceed with a fallback path
+    (e.g. S5 SyN), so this surfaces the gap without blocking.
+    """
+    n_bold_missing_tr = 0
+    for run in run_records.values():
+        acq = run.get("acquisition") or {}
+        if run["modality"] == "func" and run["classification"] == "cord_likely":
+            if "RepetitionTime" not in acq:
+                n_bold_missing_tr += 1
+                run.setdefault("issues", []).append(
+                    {"severity": "WARN", "message": "BOLD sidecar missing RepetitionTime."})
+        elif run["modality"] == "fmap":
+            missing = [k for k in ("PhaseEncodingDirection", "TotalReadoutTime") if k not in acq]
+            if missing:
+                run.setdefault("issues", []).append(
+                    {"severity": "WARN",
+                     "message": f"Fieldmap sidecar missing {', '.join(missing)} (needed for topup)."})
+    checks.append({
+        "name": "bold_repetition_time_present",
+        "passed": n_bold_missing_tr == 0,
+        "severity": "WARN",
+        "message": "All cord fMRI runs declare RepetitionTime."
+        if n_bold_missing_tr == 0 else f"{n_bold_missing_tr} cord fMRI run(s) missing RepetitionTime.",
+    })
+    if n_bold_missing_tr:
+        issues.append({"severity": "WARN",
+                       "message": f"{n_bold_missing_tr} cord fMRI run(s) missing RepetitionTime."})
 
 
 def _apply_session_requirements(run_records: Dict[str, dict], checks: list[dict], issues: list[dict]) -> None:

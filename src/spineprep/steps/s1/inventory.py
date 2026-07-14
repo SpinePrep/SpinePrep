@@ -124,7 +124,12 @@ def _classify_path(rel_path: Path) -> tuple[Optional[str], Optional[str]]:
         if name_lower.endswith(".nii") or name_lower.endswith(".nii.gz"):
             return "func", "unknown"
         return None, None
-    if "/anat/" in path_str and ("t1w" in name_lower or "t2w" in name_lower) and (
+    # Any NIfTI under anat/ is anatomical (BIDS rule). Restricting to T1w/T2w
+    # silently dropped the cord pipeline's own contrasts — T2*/MEGRE, PSIR,
+    # MP2RAGE/UNIT1, MTS — from the inventory (verified: 336 T2star files on the
+    # balgrist MEGRE dataset were invisible), and would false-WARN "no anat" on a
+    # T2*-only dataset. See .claude/specs/s1-algorithm-audit.md F2.
+    if "/anat/" in path_str and (
         name_lower.endswith(".nii") or name_lower.endswith(".nii.gz")
     ):
         return "anat", "non_cord_likely"
