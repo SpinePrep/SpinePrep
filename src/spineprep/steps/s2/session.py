@@ -559,14 +559,20 @@ def _process_session(
             work_dir=work_dir / "reg_rootlet",
         )
 
-    reg_disc: dict = _run_register_to_template(
-        cordref_path=cordref_path,
-        seg_path=seg_path,
-        disc_labels_path=disc_labels_path,
-        rootlets_path=None,
-        contrast=contrast,
-        work_dir=work_dir / "reg_disc",
-    )
+    # Always-prefer-rootlets: run the disc registration ONLY as a fallback when
+    # the rootlet registration is absent or did not pass. Running both every
+    # time and discarding disc doubled the (CPU-bound) registration cost — the
+    # step's dominant wall-time — for no benefit. See s2-algorithm-audit.md F2.
+    reg_disc: Optional[dict] = None
+    if not (reg_rootlet and reg_rootlet.get("status") == "PASS"):
+        reg_disc = _run_register_to_template(
+            cordref_path=cordref_path,
+            seg_path=seg_path,
+            disc_labels_path=disc_labels_path,
+            rootlets_path=None,
+            contrast=contrast,
+            work_dir=work_dir / "reg_disc",
+        )
 
     # Selection is by DESIGN a completion-preference for rootlets, NOT a
     # quality comparison: rootlets mark the true spinal level (which vertebral
