@@ -77,6 +77,10 @@ document why in a `.claude/specs/` spec and cite the literature reason.
 - **Commits:** atomic per feature, with the *why* in the message. Auto-commit verified work.
 - **Claims discipline:** the paper's locked claims live in the v2 specs; **never ship a
   claim above its evidence** — reword the claim or do the work, never stretch the numbers.
+- **Public writing:** any text SpinePrep publishes (docs, README, method pages, release
+  notes, paper prose, report copy) MUST follow `.claude/writing-rubric.md` — field register
+  (fMRIPrep/SCT docs + cord-fMRI paper style), not AI-explainer prose. Run its AI-tell
+  checklist + grep before publishing.
 
 > Note: the old small-cohort dev workflow (`reg`/`smoke` cohorts, `wf_reg_NNN` workfolders,
 > `scripts/full_chain_reg.py`, `scripts/mark_done.py reg …`) was **retired 2026-06-16**.
