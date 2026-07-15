@@ -58,7 +58,7 @@ mention as an example of the gain from per-acquisition QC.
 
 | Choice | Value | Literature | Verdict |
 |---|---|---|---|
-| **DVARS within cord mask** | Power 2014 RMS of temporal derivative, restricted to cord voxels | Power 2014 (brain) + Smyser 2019 / Kaptan 2023 cord adaptation | ✅ standard |
+| **DVARS within cord mask** | Power 2014 RMS of temporal derivative, restricted to cord voxels | Power 2014 (defines DVARS within a spatial mask; cord-restricted mask is SpinePrep's choice, tighter than Kaptan 2023's 41 mm cord-centred cylinder) | ✅ standard |
 | **DVARS-ref within cord mask** (Kaptan 2023 "refRMS") | RMS of (frame − reference) | Standard fMRIPrep / MRIQC; Kaptan 2023 / Dabbagh 2024 cord | ✅ standard |
 | **Outlier threshold: Tukey 1.5-IQR boxplot** | `Q3 + 1.5·IQR` | **Different family from literature standard.** Kaptan 2023 / Dabbagh 2024 use **3σ above the time-series mean**. | ⚠️ **Deviates from cord literature**. See remediation below. |
 | **Combination rule** | DVARS OR DVARS-ref above threshold | Standard dual-criterion (Power 2014 brain + Kaptan 2023 cord) | ✅ standard |

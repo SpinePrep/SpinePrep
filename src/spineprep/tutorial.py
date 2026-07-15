@@ -154,13 +154,16 @@ caused by motion, physiology, or transient artifacts.</p>
 <div class="formula">
 DVARS(t) = sqrt( mean_voxels-in-cord( (Y(v, t) - Y(v, t-1))^2 ) )
 </div>
-<p>For a brain-fMRI analog with the same restriction-to-mask logic,
-see Power 2014. In SpinePrep we restrict the mean to the cord
-voxels (Smyser 2019 / Kaptan 2023 cord adaptation), otherwise the
-metric is dominated by background noise / shim drift outside the
-cord.</p>
-<p class="ref">Power JD et al., NeuroImage 2014. Smyser CD et al.,
-NeuroImage 2019. Kaptan M et al., NeuroImage 2023.</p>
+<p>Power 2014 defines DVARS within a spatial mask and notes it can be
+computed over any collection of voxels. SpinePrep restricts the mean to
+the cord segmentation, otherwise the metric is dominated by background
+noise and shim drift outside the cord. This is tighter than the cord
+literature: Kaptan 2023 computes its frame metrics inside a 41 mm
+cord-centred cylinder, which also contains CSF, muscle and vertebrae.
+The cord-restricted mask is SpinePrep's choice, not a published
+convention.</p>
+<p class="ref">Power JD et al., NeuroImage 2014. Kaptan M et al.,
+NeuroImage 2023.</p>
 </div>
 
 <div class="step">
@@ -179,7 +182,7 @@ under the name <code>refRMS</code>; we use the literature-aligned
 <code>ref_rms</code> for backwards compatibility with the S8 confound
 contract.</p>
 <p class="ref">Kaptan M et al., NeuroImage 2023. Dabbagh A et al.,
-NeuroImage 2024.</p>
+Imaging Neuroscience 2024.</p>
 </div>
 
 <div class="step">

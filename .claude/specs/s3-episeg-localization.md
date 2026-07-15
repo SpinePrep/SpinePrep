@@ -30,7 +30,7 @@ model, and one knob (`band_area_max: 3.0`, "the empirical separatrix") was tuned
 to a 0.3× margin on four named dev runs — fragile.
 
 The rest of the pipeline (S5–S9) **already** uses `sct_deepseg sc_epi` (EPISeg,
-Valošek 2025, *Imaging Neuroscience*), the EPI-specific model (nnU-Net 3D, 406
+Banerjee et al. 2025, *Imaging Neuroscience*), the EPI-specific model (nnU-Net 3D, 406
 subjects, 15 sites; Dice 0.87 on EPI vs 0.83 contrast-agnostic, 0.77 deepseg,
 0.56 propseg). Only S3 lagged — so S3 truncated the cord *before* the good model
 ever ran.
@@ -77,6 +77,6 @@ fuller crop).
 
 - Persist the `_cleanup_epi_cordseg` stats into S3 `qc.json` (+ schema) and the
   `func_localization` reportlet caption.
-- Add EPISeg (Valošek 2025) to the S10 methods manifest / `references.bib` for
+- Add EPISeg (Banerjee et al. 2025) to the S10 methods manifest / `references.bib` for
   S3 as well as S5–S9.
 - Optional: segment a cheap rigid-moco mean instead of the pre-moco median.
