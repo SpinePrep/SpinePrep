@@ -157,7 +157,7 @@ metric has. Differencing changed *which* frames are censored (real motion rather
 than slow drift — the correctness win) but not *how many*. Any argument for this
 fix must be made on correctness, not on flagging fewer frames.
 
-### F11 — the censoring rate is ~3x the field's, and the OR-union is ours — OPEN
+### F11 — censoring rate is ~3x the cord papers' — KEEP (verified; my criticism was wrong)
 Measured over 261 completed cohort runs (58,735 frames):
 
 | rule | frames flagged |
@@ -167,21 +167,54 @@ Measured over 261 completed cohort runs (58,735 frames):
 | **union, `dvars \| ref_rms` (shipped)** | **6.32%** |
 | both metrics agree | 2.09% |
 
-Reported cohort `outlier_fraction`: median 5.68%, p90 10.16%, max 19.11%.
+Reported cohort `outlier_fraction`: median 5.68%, p90 10.16%, max 19.11%, vs
+Kaptan 2023 "<2%" and Dabbagh 2024 "2% [0.6–5.6%]".
 
-Two concerns, both bearing on invariant 1 (use the field's choice; don't invent):
-- Kaptan 2023 (~1.9%) and Dabbagh 2024 (~2%, [0.6–5.6%]) censor far less. Our p90
-  sits above Dabbagh's reported ceiling. The policy cites both papers while
-  censoring at a rate neither would recognise.
-- The OR of two metrics appears to be a SpinePrep invention: `fsl_motion_outliers`
-  takes ONE metric (`--refrms` or `--dvars`). The two agree on only a third of what
-  they flag, so the union nearly doubles the rate versus DVARS alone. This costs
-  degrees of freedom at GLM time, since `frame_metrics.tsv` feeds S8's confounds.
+**The OR-union is NOT a SpinePrep invention — this audit's first draft was wrong.**
+Verified against primary sources:
+- Kaptan 2023: "Volumes presenting with dVARS **or** refRMS values two standard
+  deviations above the mean values of each run were selected as outliers."
+- Dabbagh 2024: same OR, 3 SD.
+- fMRIPrep ORs FD with standardised DVARS —
+  `mask = reduce(operator.or_, mask.values())` in
+  `niworkflows/interfaces/confounds.py`, defaults `--fd-spike-threshold 0.5`,
+  `--dvars-spike-threshold 1.5`.
 
-Under verification before any change (metric, threshold rule, and reported
-percentages for both papers; whether any paper ORs two metrics; whether a
-per-run relative fence is a recognised criticism). **Do not change the rule on
-recollection of these papers.**
+`policy/S3_func_init_and_crop.yaml` already credited the OR to Kaptan and already
+gave the correct rationale; the draft finding contradicted our own policy.
+
+**The real difference is the threshold rule, and it explains the rate.** They use
+mean + k·SD; we use the box-plot fence. SD is **not robust**: the spikes censoring
+exists to catch inflate the SD and so raise the threshold, which is why 2 SD flags
+~2% on heavy-tailed cord data. The IQR is robust, so the fence stays tight and
+flags more. Our higher rate is largely SD-inflation in the comparator, not
+over-aggression in ours — and this is exactly the reason the policy already gives
+("robust to the non-Gaussian heavy-tailed cord DVARS distribution"). **Keep.**
+
+Honest caveats to carry into the paper:
+- Both cord numbers come from the **same group** (Eippert lab). "The field censors
+  ~2%" is really "one lab reports ~2% under its own SD rule." Do not state it as a
+  field-wide norm.
+- Our metrics + OR follow Kaptan/Dabbagh; our fence follows FSL's default. That
+  hybrid is defensible but should be stated plainly, not implied to be one source.
+- FSL's box-plot fence is the **fallback when `--thresh` is omitted**, not "the
+  `--thresh` default"; `--thresh` replaces it with an absolute value. FSL's default
+  *metric* is refRMS, and it takes ONE metric per call, so the OR comes from the
+  papers, not from FSL.
+- The 6.32% union does cost degrees of freedom at GLM time (S8 consumes
+  `frame_metrics.tsv`). That is a real trade, made deliberately.
+
+**Rejected argument (do not revive):** "a per-run relative fence flags a similar
+fraction on clean and noisy runs, so it isn't really outlier detection." It is
+scale-invariant, not shape-invariant — under *spiky* degradation (the case that
+matters) the fence still catches the spikes; it only holds under *uniform*
+degradation. It is also not a published criticism: Power 2014 does not make it,
+and Jones 2022 (Aperture Neuro, DOI 10.52294/ApertureNeuro.2022.2.NXOR2026) argues
+the other way ("any absolute threshold would necessarily be metric specific").
+Kaptan's 2 SD is per-run relative too, so the argument would hit the comparator
+equally. The one defensible version — per-run relative discards between-run
+differences, where Jones computes the fence "across the entire dataset" — is our
+argument to make and defend, not a citation.
 
 ### F12 — the run-level gate is inert — OPEN
 `outlier_fraction_pass_max: 0.20` fires on 0 of 261 runs (max 19.11%). It is a
@@ -193,7 +226,8 @@ backstop, not a QC criterion.
 ## Open items, by priority
 
 1. **F3** — recompute DVARS/refRMS in S8 on the S5 output.
-2. **F11** — decide the OR-union / censoring-rate question (pending citations).
+   (F11 is CLOSED: the OR is Kaptan's, the fence is FSL's, the rate gap is
+   SD-inflation in the comparator. Keep as shipped.)
 3. **F5** — replace the area cap with a gradient or PMJ-referenced test.
    (Gradient test added; the cap remains as a gross backstop.)
 4. **F6** — benchmark the Z-bridge against `fitseg` / small-object removal.
