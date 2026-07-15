@@ -143,23 +143,75 @@ acquisition therefore applies to our own data and should say so.
   not transfer, because SpinePrep's metric differs (tighter mask, MP-PCA-denoised
   input).
 
-### F10 — refRMS is not the literature's refRMS — OPEN (decision)
+### F10 — refRMS is not the literature's refRMS — FIXED (code)
 FSL computes RMS-to-reference and then **differences it** ("to remove slow
-trends"), so Kaptan's and Dabbagh's refRMS is differenced. SpinePrep thresholds
-the **raw** RMS-to-reference, which therefore carries scanner drift. Either
-difference it to match, or document plainly that DVARS-ref is the undifferenced
-RMS-to-reference and partly indexes drift.
+trends"), so Kaptan's and Dabbagh's refRMS is differenced. SpinePrep thresholded
+the **raw** RMS-to-reference, which therefore carried scanner drift. Now
+differenced to match (`outlier.py`, verified against the FSL source).
+
+**Measured, and it corrected a prediction.** The fix did *not* reduce the
+censoring rate: cohort median went 5.28% → 5.68%. This was expected to fall and
+did not, for a reason worth recording: the Tukey fence is **distribution-relative**
+(P75+1.5·IQR on the run's own values), so it re-centres on whatever spread the
+metric has. Differencing changed *which* frames are censored (real motion rather
+than slow drift — the correctness win) but not *how many*. Any argument for this
+fix must be made on correctness, not on flagging fewer frames.
+
+### F11 — the censoring rate is ~3x the field's, and the OR-union is ours — OPEN
+Measured over 261 completed cohort runs (58,735 frames):
+
+| rule | frames flagged |
+|---|---|
+| DVARS alone | 3.44% |
+| refRMS alone | 4.96% |
+| **union, `dvars \| ref_rms` (shipped)** | **6.32%** |
+| both metrics agree | 2.09% |
+
+Reported cohort `outlier_fraction`: median 5.68%, p90 10.16%, max 19.11%.
+
+Two concerns, both bearing on invariant 1 (use the field's choice; don't invent):
+- Kaptan 2023 (~1.9%) and Dabbagh 2024 (~2%, [0.6–5.6%]) censor far less. Our p90
+  sits above Dabbagh's reported ceiling. The policy cites both papers while
+  censoring at a rate neither would recognise.
+- The OR of two metrics appears to be a SpinePrep invention: `fsl_motion_outliers`
+  takes ONE metric (`--refrms` or `--dvars`). The two agree on only a third of what
+  they flag, so the union nearly doubles the rate versus DVARS alone. This costs
+  degrees of freedom at GLM time, since `frame_metrics.tsv` feeds S8's confounds.
+
+Under verification before any change (metric, threshold rule, and reported
+percentages for both papers; whether any paper ORs two metrics; whether a
+per-run relative fence is a recognised criticism). **Do not change the rule on
+recollection of these papers.**
+
+### F12 — the run-level gate is inert — OPEN
+`outlier_fraction_pass_max: 0.20` fires on 0 of 261 runs (max 19.11%). It is a
+round number, not derived from the cohort, and neither cited paper proposes a
+run-level gate. It is currently a catastrophe backstop that has never fired.
+Either calibrate it to the cohort distribution or state plainly that it is a
+backstop, not a QC criterion.
 
 ## Open items, by priority
 
-1. **F2** — propagate the dummy drop: emit `StartTime` +
-   `NumberOfVolumesDiscardedByUser` on the derivative BOLD sidecar, and decide on
-   `events.tsv` onsets. (Physio arm already fixed.)
-2. **F3** — recompute DVARS/refRMS in S8 on the S5 output.
-3. **F1** — read `NumberOfVolumesDiscardedByScanner` (83 runs declare it).
-4. **F10** — decide the refRMS differencing question.
-5. **F5** — replace the area cap with a gradient or PMJ-referenced test.
-6. **F6** — benchmark the Z-bridge against `fitseg` / small-object removal.
-7. **F4** — A/B the moco mask (cord-seg vs 35 mm cylinder) on cord tSNR.
-8. **F7** — name CoSpine in the no-STC spec.
-9. Recalibrate `outlier_fraction_pass_max` on the cohort distribution.
+1. **F3** — recompute DVARS/refRMS in S8 on the S5 output.
+2. **F11** — decide the OR-union / censoring-rate question (pending citations).
+3. **F5** — replace the area cap with a gradient or PMJ-referenced test.
+   (Gradient test added; the cap remains as a gross backstop.)
+4. **F6** — benchmark the Z-bridge against `fitseg` / small-object removal.
+5. **F4** — A/B the moco mask (cord-seg vs 35 mm cylinder) on cord tSNR.
+6. **F7** — name CoSpine in the no-STC spec.
+7. **F12** — calibrate or re-scope `outlier_fraction_pass_max`.
+8. `docs/methods/S3_func_init_and_crop.md` is still stale.
+
+### Fixed since the audit
+- **F1** — `NumberOfVolumesDiscardedByScanner` now read (83 runs declare 6).
+  The first fix was incomplete: the applied count never left S3.1, so qc.json
+  reported the policy default and S8 would have re-applied the 4-TR physio
+  misalignment F1 existed to remove. Now carried through localize → session →
+  outlier, including both skip paths.
+- **F2** — `StartTime` + `NumberOfVolumesDiscardedByUser` on the derivative sidecar.
+- **F10** — refRMS differenced (see above).
+- Cached S3.2 no longer hardcodes `PASS`; the gate is re-applied from the cached
+  fraction, so a verdict cannot depend on whether the work was redone.
+- The multi-dataset batch path ignored `batch_workers` while printing "with N
+  workers"; it now parallelises, collecting by session index so `runs.jsonl`
+  stays byte-identical regardless of worker count.
