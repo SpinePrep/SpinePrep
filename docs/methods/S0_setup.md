@@ -5,115 +5,85 @@ search:
 
 # S0: Setup
 
-Environment validation, container bootstrapping, and policy gate verification.
+S0 verifies the dataset policy and the processing environment before any data is
+read. It writes a QC record and an environment fingerprint, and fails the run if a
+prerequisite is missing. No imaging data is touched and no derivatives are
+produced.
 
-## Purpose
+## What it does
 
-S0 ensures the processing environment is properly configured before any data processing begins. It validates:
+S0 runs two groups of checks. The dataset policy gate validates
+`policy/datasets.yaml`. The environment checks confirm that a container runtime is
+available, that the required container images are present and runnable, and that
+the PAM50 template data can be found. A single failed check fails the step: S0
+reports either PASS or FAIL, and the failure message names the first check that
+failed. There is no warning state.
 
-1. **Container runtime** availability (Docker or Apptainer)
-2. **Required container images** are present and functional
-3. **Dataset policy** passes the v1 gate
-4. **Template data** (PAM50) is accessible
+## Dataset policy gate
 
-## Inputs
+`policy/datasets.yaml` is loaded and validated against the v1 gate, which requires
+the mandatory fields, unique dataset keys, valid selection constraints, and
+boolean specification flags. A schema violation fails the step and is reported
+with the offending field.
 
-| Input | Source | Required |
-|-------|--------|----------|
-| `policy/datasets.yaml` | Project root | Yes |
-| Container runtime | System PATH | Yes |
-| PAM50 templates | `$PAM50_PATH` or SCT installation | Yes |
+## Container runtime and images
 
-## Outputs
+A container runtime is located by searching for `docker`, then `apptainer`. If
+neither is present the runtime check fails.
 
-| Output | Path | Description |
-|--------|------|-------------|
-| QC JSON | `logs/S0_setup_qc.json` | Detailed check results |
-| State YAML | `state/setup_state.yaml` | Environment fingerprint |
-| Evidence | `logs/S0_evidence/` | Audit trail artifacts |
+Image verification is implemented for docker only. On a host whose runtime is
+apptainer, the `container_images` check fails with the message "Image checks
+require docker; apptainer path not implemented". Apptainer is therefore usable to
+run the pipeline itself but not to satisfy S0's image verification.
 
-## Algorithm
+Four images are checked. Each is inspected with `docker image inspect` to confirm
+it is present locally and to record its repository digest, and a version command
+is then executed inside it with `docker run --rm`:
 
-### 1. Policy Gate
+`SPINEPREP_IMAGE` (environment variable, no default): verified with `spineprep --version` and `python --version`.
+`vnmd/spinalcordtoolbox_7.2:20251215`: verified with `sct_version`.
+`vnmd/fsl_6.0.7.18_20250928`: verified with `fslversion`.
+`vnmd/ants_2.6.0_20250424`: verified with `antsRegistration --version`.
 
-Loads `policy/datasets.yaml` and validates against the v1 schema:
+## PAM50 template
 
-- All required fields present
-- Dataset keys are unique
-- Selection constraints are valid
-- Spec fields (has_fmap, has_physio) are boolean
+The PAM50 template directory (De Leener et al., 2018) is searched in order: the
+`PAM50_PATH` environment variable, then `$SCT_DIR/data/PAM50`, then
+`~/sct_7.1/data/PAM50`. The first existing path is recorded in the environment
+fingerprint. If none exists the check fails and instructs the user to set
+`PAM50_PATH` or install the SCT data.
 
-### 2. Container Runtime Detection
+## Inputs and outputs
 
-Checks for available container runtimes in order:
+The inputs are `policy/datasets.yaml` and the host environment. Under the project
+root, S0 writes the QC record (`logs/S0_setup_qc.json`), an environment
+fingerprint (`state/setup_state.yaml`) recording the runtime, image digests, and
+resolved template path, and an audit trail (`logs/S0_evidence/`).
 
-1. `docker` — preferred
-2. `apptainer` — fallback for HPC environments
+## Quality control
 
-### 3. Container Image Verification
+The QC record carries the step code, the status, the failure message, and the list
+of checks, each with its name, outcome, message, and collected information such as
+the runtime version or an image digest. The recorded image digests and template
+path pin the environment that produced a given run, and feed the reproducibility
+receipt at S10. S0 emits no reportlet, since it produces no images.
 
-For each required image, verifies:
+## Limitations
 
-| Image | Purpose | Verification Command |
-|-------|---------|---------------------|
-| `spineprep` | Main pipeline | `spineprep --version` |
-| `vnmd/spinalcordtoolbox_7.2` | SCT tools | `sct_version` |
-| `vnmd/fsl_6.0.7.18` | FSL tools | `fslversion` |
-| `vnmd/ants_2.6.0` | ANTs registration | `antsRegistration --version` |
+S0 confirms that tools are present and report a version; it does not test that
+they compute correctly. Image verification requires docker, so an apptainer-only
+host fails this check even when the pipeline would run. The SpinePrep image has no
+default and must be named through `SPINEPREP_IMAGE`. The policy gate validates the
+schema of `policy/datasets.yaml`, not whether the referenced datasets exist on
+disk, which S1 checks.
 
-### 4. PAM50 Template Check
+## References
 
-Searches for PAM50 templates in order:
+- De Leener, B., et al. (2018). PAM50: unbiased multimodal template of the
+  brainstem and spinal cord. NeuroImage.
 
-1. `$PAM50_PATH` environment variable
-2. `$SCT_DIR/data/PAM50`
-3. `~/sct_7.1/data/PAM50`
+Running S0: see the [CLI reference](../reference/cli.md).
 
-## CLI Usage
-
-```bash
-# Run S0 setup
-spineprep run S0_SETUP --project-root /path/to/project
-
-# Check S0 (verify artifacts exist)
-spineprep check S0_SETUP --project-root /path/to/project
-```
-
-## QC Status Schema
-
-```json
-{
-  "step": "S0_SETUP",
-  "status": "PASS | FAIL",
-  "failure_message": null,
-  "checks": [
-    {
-      "name": "dataset_policy_gate",
-      "passed": true,
-      "message": "Dataset policy gate passed.",
-      "details": { ... }
-    },
-    {
-      "name": "container_runtime",
-      "passed": true,
-      "message": "Container runtime available.",
-      "info": { "runtime": "docker", "version": "24.0.7" }
-    }
-  ]
-}
-```
-
-## Edge Cases
-
-| Condition | Behavior |
-|-----------|----------|
-| No container runtime | FAIL with "No container runtime found" |
-| Missing image | FAIL with "Required image not found locally" |
-| Policy validation error | FAIL with specific schema violation |
-| PAM50 not found | FAIL with "PAM50 templates not found" |
-
-## Dependencies
-
-- Docker Engine ≥ 20.10 or Apptainer ≥ 1.0
-- Python 3.11+
-- Valid `policy/datasets.yaml`
+---
+*Behaviour reflects `src/spineprep/S0_setup.py` (no `policy/S0*.yaml` by design);
+verified against code 2026-07-15.*
