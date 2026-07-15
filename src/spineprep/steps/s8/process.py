@@ -394,6 +394,7 @@ def _load_bids_physio(
 def _physio_to_pnm_input(
     physio: dict[str, Any], work_dir: Path,
     tr_s: Optional[float] = None, n_volumes: Optional[int] = None,
+    n_dummy_dropped: int = 0,
 ) -> tuple[Optional[Path], dict[str, Any]]:
     """Write a 2-column PNM-readable physio text file (cardiac, respiratory).
 
@@ -402,11 +403,19 @@ def _physio_to_pnm_input(
     validator rejects them ("Time per trigger / TR ≈ 0.3"). Instead we
     crop the physio to the BOLD-acquisition window using the first
     trigger as the BOLD start (typical Siemens cardiac/respiratory log
-    starts before scan; first trigger ≈ first volume).
+    starts before scan; first trigger ≈ first ACQUIRED volume).
+
+    The window then skips ``n_dummy_dropped`` TRs, because S3 removed that many
+    initial volumes: the first trigger marks the first acquired volume, while
+    the BOLD handed to S8 begins ``n_dummy_dropped`` volumes later. Sample 0 of
+    the written file therefore corresponds to volume 0 of the BOLD S8 analyses.
 
     Returns (path, info) where info has the cropping provenance.
     """
-    info: dict[str, Any] = {"trigger_used_for_crop": False, "crop_samples": None}
+    info: dict[str, Any] = {
+        "trigger_used_for_crop": False, "crop_samples": None,
+        "dummy_offset_samples": 0, "n_dummy_dropped": int(n_dummy_dropped or 0),
+    }
     fs = float(physio.get("sampling_frequency_hz", 0)) or 1.0
     cardiac = np.asarray(physio.get("cardiac", np.array([])), dtype=np.float64)
     respiratory = np.asarray(physio.get("respiratory", np.array([])), dtype=np.float64)
@@ -426,6 +435,15 @@ def _physio_to_pnm_input(
         if trig_idx.size:
             start = int(trig_idx[0])
             info["trigger_used_for_crop"] = True
+    # The first trigger marks the first ACQUIRED volume, but S3 removed the
+    # first `n_dummy_dropped` volumes, so the BOLD reaching S8 starts that many
+    # TRs later. Skip the same interval here. Without this the physio leads the
+    # BOLD by n_dummy_dropped x TR (e.g. 4 x 1.66 s = 6.6 s, ~7 cardiac cycles),
+    # and RETROICOR assigns every slice the wrong cardiac/respiratory phase.
+    if n_dummy_dropped and tr_s:
+        offset = int(round(float(n_dummy_dropped) * float(tr_s) * fs))
+        start += offset
+        info["dummy_offset_samples"] = offset
     bold_window = None
     if tr_s and n_volumes:
         bold_window = int(round(tr_s * n_volumes * fs))
@@ -1098,6 +1116,7 @@ def run_S8_confounds_and_physio_regressors(
     tr_s: float,
     slice_timing_s: Optional[list[float]],
     physio_pairs: Optional[list[tuple[Path, Path]]],
+    n_dummy_dropped: int,
     bold_run: dict,
     out_dir: Path,
     work_dir: Path,
@@ -1257,6 +1276,7 @@ def run_S8_confounds_and_physio_regressors(
             physio_present = True
             physio_pnm_path, physio_info = _physio_to_pnm_input(
                 physio, s8_work_dir, tr_s=tr_s, n_volumes=n_volumes,
+                n_dummy_dropped=n_dummy_dropped,
             )
             pnm_meta["physio_info"] = physio_info
             if physio_pnm_path is None:
