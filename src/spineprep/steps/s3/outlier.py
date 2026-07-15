@@ -26,6 +26,7 @@ def _process_s3_2_outlier_gating(
     cordmask_func_path: Path,
     work_dir: Path,
     policy: dict[str, Any],
+    n_dummy_dropped: Optional[int] = None,
 ) -> dict[str, Any]:
     """
     S3.2: Mask-aware outlier gating + robust reference.
@@ -88,8 +89,18 @@ def _process_s3_2_outlier_gating(
 
     # Dummies were ALREADY dropped in S3.1 — this input (func_bold_coarse) is
     # post-drop. Do NOT drop again (the old re-drop discarded the first real
-    # volumes). dummy_count is read only for reporting/labels.
-    dummy_count = policy.get("dummy", {}).get("drop_count", 4)
+    # volumes).
+    #
+    # This is REPORTED as metrics.n_dummy_dropped in qc.json (session.py), which
+    # S8 uses to offset physio and S9 to write StartTime. It must therefore be
+    # the count S3.1 ACTUALLY applied, passed in by the caller. Reading the
+    # policy default here claimed 4 on the runs whose scanner had already
+    # discarded (drop=0), silently re-introducing the 4-TR physio misalignment.
+    # The policy default is only a fallback for direct/legacy callers.
+    if n_dummy_dropped is None:
+        dummy_count = policy.get("dummy", {}).get("drop_count", 4)
+    else:
+        dummy_count = int(n_dummy_dropped)
 
     n_frames = bold_data.shape[3]
 

@@ -257,9 +257,8 @@ def run_S3_func_init_and_crop_batch(
     all_runs: dict[str, list] = {}  # dataset_key -> list of runs
     all_runs_flat: list = []
 
-    for sess in all_sessions:
-        ds_key = sess["dataset_key"]
-        runs = _process_session_s3(
+    def _sess_kwargs(sess: dict) -> dict:
+        return dict(
             subject=sess["subject"],
             session=sess["session"],
             candidates=sess["candidates"],
@@ -267,8 +266,39 @@ def run_S3_func_init_and_crop_batch(
             out_root=Path(sess["out_root"]),
             policy=policy,
             s2_root=Path(sess["s2_root"]),
-            dataset_key=ds_key,
+            dataset_key=sess["dataset_key"],
         )
+
+    # This batch (multi-dataset) path previously ignored batch_workers and ran a
+    # plain sequential loop while printing "with N workers" -- the whole cohort
+    # went through one sct_deepseg at a time. Results are collected by session
+    # INDEX, not completion order, so runs.jsonl stays byte-identical regardless
+    # of worker count (reproducibility invariant 7).
+    session_runs: list[list] = [[] for _ in all_sessions]
+    if batch_workers > 1 and len(all_sessions) > 1:
+        with ProcessPoolExecutor(max_workers=batch_workers) as executor:
+            futures = {
+                executor.submit(_process_session_s3, **_sess_kwargs(sess)): idx
+                for idx, sess in enumerate(all_sessions)
+            }
+            for fut in as_completed(futures):
+                idx = futures[fut]
+                try:
+                    session_runs[idx] = fut.result()
+                except Exception as e:
+                    sess = all_sessions[idx]
+                    print(
+                        f"S3 session failed (sub-{sess['subject']} "
+                        f"ses-{sess['session']}, {sess['dataset_key']}): {e}"
+                    )
+                    session_runs[idx] = []
+    else:
+        for idx, sess in enumerate(all_sessions):
+            session_runs[idx] = _process_session_s3(**_sess_kwargs(sess))
+
+    for idx, sess in enumerate(all_sessions):
+        ds_key = sess["dataset_key"]
+        runs = session_runs[idx]
 
         # Tag runs with dataset_key
         for run in runs:
