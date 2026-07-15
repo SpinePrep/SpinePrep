@@ -19,6 +19,21 @@ from spineprep.subtask import (
 from .io import _extract_subject_session_from_work_dir
 
 
+def _apply_outlier_gate(
+    outlier_frac: float, policy: dict[str, Any]
+) -> tuple[str, Optional[str]]:
+    """Soft gate on the censored-frame fraction.
+
+    Observability-only: it WARNs but never FAILs -- high motion is the analyst's
+    call at GLM time, consistent with S8. Shared by the fresh and cached paths so
+    the verdict cannot depend on which one ran.
+    """
+    pass_max = policy.get("qc_thresholds", {}).get("outlier_fraction_pass_max", 0.20)
+    if outlier_frac > pass_max:
+        return "WARN", f"outlier_fraction {outlier_frac:.0%} > {pass_max:.0%} (soft WARN)"
+    return "PASS", None
+
+
 @subtask("S3.2")
 def _process_s3_2_outlier_gating(
     bold_data_path: Path,
@@ -67,9 +82,16 @@ def _process_s3_2_outlier_gating(
          else:
              fig_path = None
 
+         # Re-apply the soft gate from the cached fraction. This branch used to
+         # hardcode PASS, so a run that WARNed on first compute silently became
+         # PASS as soon as its outputs were cached -- the QC verdict depended on
+         # whether the work was redone rather than on the data, and any change to
+         # outlier_fraction_pass_max was invisible on resume. The gate is cheap;
+         # only the image computation above is worth skipping.
+         cached_status, cached_msg = _apply_outlier_gate(outlier_frac, policy)
          return {
-            "outlier_status": "PASS",
-            "failure_message": None,
+            "outlier_status": cached_status,
+            "failure_message": cached_msg,
             "func_ref_path": func_ref_path,
             "frame_metrics_path": frame_metrics_path,
             "outlier_mask_path": outlier_mask_path,
@@ -253,15 +275,7 @@ def _process_s3_2_outlier_gating(
     except Exception as e:
         pass  # Failed to plot metrics
 
-    # Soft gate: outlier_fraction is observability-only — it WARNs but never
-    # FAILs (high motion is the analyst's call at GLM time, consistent with S8).
-    pass_max = policy.get("qc_thresholds", {}).get("outlier_fraction_pass_max", 0.20)
-    if outlier_frac > pass_max:
-        outlier_status = "WARN"
-        outlier_msg = f"outlier_fraction {outlier_frac:.0%} > {pass_max:.0%} (soft WARN)"
-    else:
-        outlier_status = "PASS"
-        outlier_msg = None
+    outlier_status, outlier_msg = _apply_outlier_gate(outlier_frac, policy)
 
     result = {
         "outlier_status": outlier_status,
