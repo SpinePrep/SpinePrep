@@ -1100,6 +1100,12 @@ def _process_s3_1_dummy_drop_and_localization(
         "discovery_seg_crop_path": discovery_seg_crop_path,  # Cropped mask for S3.2/S3.3
         "func_ref_fast_crop_path": func_ref_fast_crop_path,
         "func_bold_coarse_path": func_bold_coarse_path,
+        # The EFFECTIVE drop actually applied here (0 when the scanner already
+        # discarded). S8's physio offset and S9's StartTime are derived from
+        # this via qc.json, so it must be the applied count, not the policy
+        # default -- reporting the default re-introduces the 4-TR physio
+        # misalignment on runs the scanner already trimmed.
+        "n_dummy_dropped": int(dummy_volumes),
         "localization_status": "PASS" if gate_ok else "FAIL",
         "failure_message": None if gate_ok else f"S3.1 brain-contamination check: {gate_msg}",
         "figure_path": rendered_path,

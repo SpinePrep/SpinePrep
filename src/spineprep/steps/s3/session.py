@@ -126,7 +126,8 @@ def _process_session_s3(
                 s3_1_res["func_ref0_path"],
                 s3_1_res["discovery_seg_crop_path"],  # Use CROPPED S3.1 mask
                 work_dir,
-                policy
+                policy,
+                n_dummy_dropped=s3_1_res.get("n_dummy_dropped"),
             )
             run_result["results"].append(("S3.2", s3_2_res))
             if should_exit_after_subtask("S3.2"):
@@ -234,7 +235,15 @@ def _process_session_s3(
                     import json as _json
                     om = _json.loads(Path(om_path).read_text(encoding="utf-8"))
                     metrics["n_frames_total"] = int(om.get("total_frames", 0))
-                    metrics["n_dummy_dropped"] = int(om.get("dummy_dropped", 0))
+                    # S3.1 is authoritative for the effective drop: S3.2 may
+                    # return a CACHED outlier_mask.json written before the
+                    # scanner-discard rule existed, whose dummy_dropped is the
+                    # stale policy default. S8 (physio offset) and S9
+                    # (StartTime) consume this, so prefer the applied count.
+                    _eff = s3_1_res.get("n_dummy_dropped")
+                    metrics["n_dummy_dropped"] = (
+                        int(_eff) if _eff is not None else int(om.get("dummy_dropped", 0))
+                    )
                     metrics["n_outliers"] = int(om.get("outlier_count", 0))
                     metrics["outlier_fraction"] = float(om.get("outlier_fraction", 0.0))
                     thresholds = om.get("thresholds") or {}

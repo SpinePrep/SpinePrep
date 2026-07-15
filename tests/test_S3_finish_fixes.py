@@ -89,3 +89,47 @@ def test_refrms_differencing_preserves_a_spike():
 def test_refrms_length_matches_frames():
     rms = np.random.default_rng(0).normal(10, 1, 37)
     assert len(_refrms(rms)) == 37
+
+
+# --- F1 end-to-end: the effective drop must REACH qc.json -------------------
+# The first F1 fix dropped the right number of volumes but never returned the
+# count: outlier_mask.json (and therefore qc.json metrics.n_dummy_dropped) was
+# read from the POLICY DEFAULT. S8 offsets physio by that value and S9 writes
+# StartTime from it, so on the 83 scanner-discard runs the pipeline dropped 0
+# and then told S8 it had dropped 4 -- re-introducing the exact 4-TR physio
+# misalignment F1 set out to remove.
+
+def test_localize_returns_effective_drop_key():
+    """S3.1's result must expose n_dummy_dropped for session.py to forward."""
+    import inspect
+    from spineprep.steps.s3 import localize
+    src = inspect.getsource(localize)
+    assert '"n_dummy_dropped": int(dummy_volumes)' in src
+
+
+def test_outlier_reports_passed_drop_not_policy_default():
+    """When the caller passes the applied count, reporting must use it."""
+    import inspect
+    from spineprep.steps.s3 import outlier
+    sig = inspect.signature(outlier._process_s3_2_outlier_gating)
+    assert "n_dummy_dropped" in sig.parameters
+    src = inspect.getsource(outlier._process_s3_2_outlier_gating)
+    assert "dummy_count = int(n_dummy_dropped)" in src
+
+
+def test_session_prefers_s3_1_over_cached_outlier_mask():
+    """A cached outlier_mask.json must not override the applied count."""
+    import inspect
+    from spineprep.steps.s3 import session
+    src = inspect.getsource(session)
+    assert 's3_1_res.get("n_dummy_dropped")' in src
+    assert "n_dummy_dropped=s3_1_res.get" in src
+
+
+def test_batch_path_honours_workers():
+    """The multi-dataset path ignored batch_workers while printing 'N workers'."""
+    import inspect
+    from spineprep.steps.s3 import orchestrate
+    src = inspect.getsource(orchestrate.run_S3_func_init_and_crop_batch)
+    assert "ProcessPoolExecutor(max_workers=batch_workers)" in src
+    assert "session_runs[idx]" in src  # index-ordered, not completion-ordered
