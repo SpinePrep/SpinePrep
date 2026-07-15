@@ -140,7 +140,12 @@ outlier_gating:
   # fMRIPrep thresholds standardised DVARS > 1.5 and FD > 0.5 mm, with no IQR
   # rule. Audit: .claude/specs/s3-algorithm-audit.md
   iqr_multiplier: 1.5
-  # Dual criterion (DVARS OR DVARS-ref above threshold) — Power 2014 / Kaptan 2023.
+  # Dual criterion (DVARS OR DVARS-ref above threshold) — Kaptan 2023, verbatim:
+  # "Volumes presenting with dVARS or refRMS values two standard deviations above
+  # the mean values of each run were selected as outliers"; Dabbagh 2024 uses the
+  # same OR at 3 SD. fMRIPrep ORs FD with standardised DVARS the same way
+  # (niworkflows confounds.py: reduce(operator.or_, ...)). NOT Power 2014, which
+  # ORs FD with DVARS, not DVARS with DVARS-ref.
   metrics:
     - dvars     # RMS of frame-to-frame intensity difference within mask
     - dvars_ref # RMS of frame-to-reference intensity difference within mask
