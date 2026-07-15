@@ -1,89 +1,76 @@
 ---
 search:
-  boost: 2
+  boost: 1
 ---
 
-# S0: Setup
+# S0: Developer environment check
 
-S0 verifies the dataset policy and the processing environment before any data is
-read. It writes a QC record and an environment fingerprint, and fails the run if a
-prerequisite is missing. No imaging data is touched and no derivatives are
-produced.
+S0 is a maintainer utility, not a pipeline step. It does not run when SpinePrep is
+invoked as a BIDS-App: the participant level runs S1 to S9 and the group level
+runs S10. Users preprocessing their own dataset never invoke S0, and this page is
+here for contributors working from a repository checkout.
 
-## What it does
+S0 confirms that a development machine can build and run the containers the
+project ships, and that the dataset registry used for the maintainers' validation
+cohort is well formed. It reads no imaging data and writes no derivatives.
 
-S0 runs two groups of checks. The dataset policy gate validates
-`policy/datasets.yaml`. The environment checks confirm that a container runtime is
-available, that the required container images are present and runnable, and that
-the PAM50 template data can be found. A single failed check fails the step: S0
-reports either PASS or FAIL, and the failure message names the first check that
-failed. There is no warning state.
+## What it checks
 
-## Dataset policy gate
+S0 runs a policy gate and a set of environment checks, and reports PASS or FAIL.
+Any failed check fails the step, and the message names the first failure. There is
+no warning state.
 
-`policy/datasets.yaml` is loaded and validated against the v1 gate, which requires
-the mandatory fields, unique dataset keys, valid selection constraints, and
-boolean specification flags. A schema violation fails the step and is reported
-with the offending field.
+The policy gate validates the maintainers' dataset registry against its v1 schema,
+requiring the mandatory fields, unique dataset keys, valid selection constraints,
+and boolean specification flags. This registry exists only to drive the internal
+validation cohort; it is not required to process a dataset.
 
-## Container runtime and images
+The environment checks locate a container runtime by searching for `docker`, then
+`apptainer`, and verify the container images and the PAM50 template data.
 
-A container runtime is located by searching for `docker`, then `apptainer`. If
-neither is present the runtime check fails.
+## Container images
 
 Image verification is implemented for docker only. On a host whose runtime is
-apptainer, the `container_images` check fails with the message "Image checks
-require docker; apptainer path not implemented". Apptainer is therefore usable to
-run the pipeline itself but not to satisfy S0's image verification.
+apptainer the image check fails with "Image checks require docker; apptainer path
+not implemented". Apptainer can still run the pipeline; it just cannot satisfy
+this check.
 
-Four images are checked. Each is inspected with `docker image inspect` to confirm
-it is present locally and to record its repository digest, and a version command
-is then executed inside it with `docker run --rm`:
+Each image is inspected with `docker image inspect` to confirm it is present
+locally and to record its repository digest, then a version command is executed
+inside it with `docker run --rm`:
 
-`SPINEPREP_IMAGE` (environment variable, no default): verified with `spineprep --version` and `python --version`.
-`vnmd/spinalcordtoolbox_7.2:20251215`: verified with `sct_version`.
-`vnmd/fsl_6.0.7.18_20250928`: verified with `fslversion`.
-`vnmd/ants_2.6.0_20250424`: verified with `antsRegistration --version`.
+`SPINEPREP_IMAGE` (environment variable, no default): `spineprep --version` and `python --version`.
+`vnmd/spinalcordtoolbox_7.2:20251215`: `sct_version`.
+`vnmd/fsl_6.0.7.18_20250928`: `fslversion`.
+`vnmd/ants_2.6.0_20250424`: `antsRegistration --version`.
 
 ## PAM50 template
 
 The PAM50 template directory (De Leener et al., 2018) is searched in order: the
 `PAM50_PATH` environment variable, then `$SCT_DIR/data/PAM50`, then
-`~/sct_7.1/data/PAM50`. The first existing path is recorded in the environment
-fingerprint. If none exists the check fails and instructs the user to set
-`PAM50_PATH` or install the SCT data.
+`~/sct_7.1/data/PAM50`. The first existing path is recorded. If none exists the
+check fails and instructs the user to set `PAM50_PATH` or install the SCT data.
 
-## Inputs and outputs
+## Outputs
 
-The inputs are `policy/datasets.yaml` and the host environment. Under the project
-root, S0 writes the QC record (`logs/S0_setup_qc.json`), an environment
-fingerprint (`state/setup_state.yaml`) recording the runtime, image digests, and
-resolved template path, and an audit trail (`logs/S0_evidence/`).
-
-## Quality control
-
-The QC record carries the step code, the status, the failure message, and the list
-of checks, each with its name, outcome, message, and collected information such as
-the runtime version or an image digest. The recorded image digests and template
-path pin the environment that produced a given run, and feed the reproducibility
-receipt at S10. S0 emits no reportlet, since it produces no images.
+S0 writes a QC record listing every check with its outcome and collected
+information such as the runtime version or an image digest, an environment
+fingerprint recording the runtime, image digests, and resolved template path, and
+an audit trail. The recorded digests and template path pin the environment that
+produced a given run.
 
 ## Limitations
 
 S0 confirms that tools are present and report a version; it does not test that
 they compute correctly. Image verification requires docker, so an apptainer-only
-host fails this check even when the pipeline would run. The SpinePrep image has no
-default and must be named through `SPINEPREP_IMAGE`. The policy gate validates the
-schema of `policy/datasets.yaml`, not whether the referenced datasets exist on
-disk, which S1 checks.
+host fails that check even when the pipeline would run. The SpinePrep image has no
+default and must be named through `SPINEPREP_IMAGE`.
 
 ## References
 
 - De Leener, B., et al. (2018). PAM50: unbiased multimodal template of the
   brainstem and spinal cord. NeuroImage.
 
-Running S0: see the [CLI reference](../reference/cli.md).
-
 ---
-*Behaviour reflects `src/spineprep/S0_setup.py` (no `policy/S0*.yaml` by design);
-verified against code 2026-07-15.*
+*Behaviour reflects `src/spineprep/S0_setup.py`; verified against the
+implementation on 2026-07-15.*

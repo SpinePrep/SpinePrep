@@ -91,9 +91,9 @@ nav:
     - Install & use: tutorial.md
     - Setup: setup.md
     - Contribute: contributing.md
+    - Developer environment check: methods/S0_setup.md
   - Methods:
     - Overview: methods/overview.md
-    - S0 Setup: methods/S0_setup.md
     - S1 Input Verify: methods/S1_input_verify.md
     - S2 Anat Cord Ref: methods/S2_anat_cordref.md
     - S2B Func Denoise (optional): methods/S2B_func_denoise.md

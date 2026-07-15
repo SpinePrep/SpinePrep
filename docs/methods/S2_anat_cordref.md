@@ -115,5 +115,5 @@ direct geometric error. Whole-cord Dice is coverage-confounded and is not gated.
 Running S2: see the [CLI reference](../reference/cli.md).
 
 ---
-*Parameters reflect `policy/S2_anat_cordref.yaml`; verified against code
-2026-07-14. See `.claude/specs/s2-algorithm-audit.md` for the audit trail.*
+*Parameters reflect `policy/S2_anat_cordref.yaml`, shipped with SpinePrep;
+verified against the implementation on 2026-07-15.*
