@@ -36,7 +36,7 @@ check** so a field-reader recognises it.
 
 | Choice | Source |
 |---|---|
-| Mask-aware DVARS | Power 2014, Smyser 2019 — restrict DVARS to a cord ROI to avoid noise being dominated by background |
+| Mask-aware DVARS | Power 2014 (DVARS within a spatial mask) — restrict DVARS to a cord ROI to avoid noise being dominated by background |
 | DVARS-ref (refRMS) metric | Standard fMRIPrep / `mriqc` frame metric; Kaptan 2023 / Dabbagh 2024 cord |
 | Outlier boxplot cutoff (Q3 + 1.5·IQR) | Tukey 1977; field-standard non-parametric outlier definition |
 | `sct_deepseg seg_sc_contrast_agnostic` for cord localization | SCT 7.0+ recommended |

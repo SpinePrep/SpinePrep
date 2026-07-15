@@ -114,7 +114,7 @@ extra stage is harmless), but it doubles compute on the bulk stage.
 |---|---|---|
 | "`sct_fmri_moco` slice-wise rigid" | ✅ | SCT command-line docs |
 | "cord-mask-restricted registration ROI" | ✅ | `-m` flag in our cmdline; SCT docs |
-| "FD = Power 2014" | ✅ | Power 2014 NIMG; Smyser 2019 cord adaptation |
+| "FD = Power 2014" | ✅ | Power 2014 NIMG |
 | "tSNR improvement gauge from Mohammed 2020" | ✅ | Mohammed 2020 bioRxiv evaluation paper |
 | "2-stage = Mohammed 2020 best practice" | ⚠️ | Mohammed recommends bulk-then-slice; ours runs *three* stages because sct_fmri_moco's own 3D step still runs |
 

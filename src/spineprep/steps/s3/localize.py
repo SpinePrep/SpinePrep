@@ -804,7 +804,7 @@ def _process_s3_1_dummy_drop_and_localization(
     func_ref0_img = nib.Nifti1Image(func_ref0_data, bold_affine)
     nib.save(func_ref0_img, func_ref0_path)
 
-    # Real localization: EPISeg (`sct_deepseg sc_epi`, Valošek 2025) — the
+    # Real localization: EPISeg (`sct_deepseg sc_epi`, Banerjee et al. 2025) — the
     # EPI-BOLD-specific cord model. It follows the anterior cervical curve
     # where the contrast-agnostic `spinalcord` model (trained on anatomical
     # scans) quits, so it segments the WHOLE imaged cord on the functional

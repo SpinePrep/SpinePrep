@@ -19,7 +19,7 @@ coarse_reference:
 func_localization:
   enabled: true  # Mandatory (no optional flag)
   method: deepseg
-  # EPISeg (sct_deepseg sc_epi, Valošek 2025): the EPI-BOLD-specific cord
+  # EPISeg (sct_deepseg sc_epi, Banerjee et al. 2025): the EPI-BOLD-specific cord
   # model. On BOLD EPI the contrast-agnostic `spinalcord` model (trained on
   # anatomical scans) quits where the cord curves anteriorly (lower cervical),
   # segmenting only the upper ~half; sc_epi follows the curve to the FOV edge.
@@ -96,16 +96,21 @@ func_localization:
 
 # Outlier gating: identify motion-corrupted frames using cord-centric metrics.
 # Definitions: Power 2014 DVARS (RMS of temporal derivative) restricted to the
-# cord mask (Smyser 2019 / Kaptan 2023 cord adaptation) + DVARS-ref (RMS of
+# cord mask (Power 2014 defines DVARS within a spatial mask; the cord-restricted
+# mask is SpinePrep's choice, tighter than Kaptan 2023's 41 mm cord-centred
+# cylinder) + DVARS-ref (RMS of
 # (frame - reference) within mask; aka "refRMS" in Kaptan 2023 / Dabbagh 2024,
 # kept as the canonical "DVARS-ref" name on reportlets and in docs).
 outlier_gating:
-  # Tukey 1977 boxplot cutoff: P75 + 1.5*IQR. NOTE: this is a deviation from
-  # Kaptan 2023 / Dabbagh 2024, which use 3σ above the time-series mean. We
-  # chose Tukey because it is parameter-free, robust to non-Gaussian heavy-
-  # tailed cord DVARS distributions, and adaptive to per-run scanner
-  # variability without a group-mean calibration. Audit:
-  # .claude/specs/s3-algorithm-audit.md
+  # Boxplot cutoff P75 + 1.5*IQR: the documented default of FSL
+  # `fsl_motion_outliers` (Tukey 1977). NOTE: this is a deviation from the cord
+  # papers, which threshold on the run's own mean + k*SD: Kaptan 2023 uses 2 SD,
+  # Dabbagh 2024 uses 3 SD. We chose the boxplot rule because it is
+  # parameter-free, robust to the non-Gaussian heavy-tailed cord DVARS
+  # distribution, and adaptive to per-run scanner variability without a
+  # group-mean calibration. Do NOT describe this as the "fMRIPrep convention":
+  # fMRIPrep thresholds standardised DVARS > 1.5 and FD > 0.5 mm, with no IQR
+  # rule. Audit: .claude/specs/s3-algorithm-audit.md
   iqr_multiplier: 1.5
   # Dual criterion (DVARS OR DVARS-ref above threshold) — Power 2014 / Kaptan 2023.
   metrics:
