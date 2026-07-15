@@ -66,6 +66,10 @@ def _read_bold_sidecar(bids_root: Path, bold_path: Path) -> dict[str, Any]:
         "PhaseEncodingDirection",
         "EffectiveEchoSpacing",
         "TotalReadoutTime",            # primary input for FSL topup acqparams
+        # Steady-state provenance: when the scanner already discarded volumes the
+        # saved series starts at steady state and S3 need not drop more.
+        "NumberOfVolumesDiscardedByScanner",
+        "NumberOfVolumesDiscardedByUser",
         "ParallelReductionFactorInPlane",
         "PartialFourier",
         "EchoTime",

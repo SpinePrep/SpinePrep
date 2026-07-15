@@ -169,10 +169,13 @@ NeuroImage 2023.</p>
 <div class="step">
 <h3>DVARS-ref (a.k.a. refRMS)</h3>
 <p>Root-mean-square of <code>(frame − reference)</code> within the
-cord mask. Where DVARS measures frame-to-previous-frame change,
-DVARS-ref measures frame-to-baseline divergence — a complementary
-view that catches slow drift away from the run's reference even when
-each frame-to-frame step is small.</p>
+cord mask, then its absolute temporal difference. Where DVARS compares
+each frame to the previous one, DVARS-ref compares each frame to the
+run's reference, so it is sensitive to a frame that jumps away from
+baseline rather than from its neighbour. The difference step is what
+FSL does (<code>fsl_motion_outliers --refrms</code>) and removes slow
+drift, which is modelled by the high-pass basis in S8 rather than
+censored here.</p>
 <div class="formula">
 DVARS-ref(t) = sqrt( mean_voxels-in-cord( (Y(v, t) - Y_ref(v))^2 ) )
 </div>

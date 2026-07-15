@@ -115,12 +115,23 @@ def _process_s3_2_outlier_gating(
     bold_masked = bold_data[mask_indices]  # shape (N_voxels, N_frames)
     ref0_masked = ref0_data[mask_indices]  # shape (N_voxels,)
 
-    # DVARS-ref: RMS of (frame - reference) within the cord mask.
-    # Kaptan 2023 / Dabbagh 2024 call this "refRMS"; we use the
-    # literature-aligned "DVARS-ref" name in plots / docs while
-    # keeping the TSV column `ref_rms` for the downstream S8 contract.
+    # DVARS-ref ("refRMS" in Kaptan 2023 / Dabbagh 2024, both of which obtain it
+    # from FSL fsl_motion_outliers --refrms). FSL computes the RMS to the
+    # reference and then takes its ABSOLUTE TEMPORAL DIFFERENCE -- verified in
+    # the FSL source: "now form difference (to remove slow trends - still
+    # obvious in mse)", followed by `fslmaths res_mse1 -sub res_mse0 -abs`.
+    #
+    # SpinePrep previously thresholded the RAW (undifferenced) RMS-to-reference
+    # while citing those papers, so it was not the metric it claimed to be and it
+    # carried scanner drift: on this cohort a third of runs showed refRMS
+    # correlated with time, and it was the dominant flagger. Slow drift belongs
+    # to the high-pass basis in S8, not to frame censoring. The TSV column stays
+    # `ref_rms` for the downstream S8 contract.
     diff_ref = (bold_masked.T - ref0_masked).T
-    ref_rms = np.sqrt(np.mean(diff_ref ** 2, axis=0))
+    rms_to_ref = np.sqrt(np.mean(diff_ref ** 2, axis=0))
+    ref_rms = np.abs(np.diff(rms_to_ref, prepend=rms_to_ref[0]))
+    if len(ref_rms) > 1:
+        ref_rms[0] = ref_rms[1]
 
     # DVARS
     diff_temp = np.diff(bold_masked, axis=1)  # (N_voxels, N_frames-1)

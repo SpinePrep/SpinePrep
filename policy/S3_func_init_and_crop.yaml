@@ -5,10 +5,22 @@ version: 1
 # before any interpolation; S3 consumes S2B's denoised series when present
 # (via _find_denoised_bold) and falls back to the raw BOLD otherwise.
 
-# Dummy volume drop: remove initial unstable frames before computing reference
+# Initial-volume removal: a steady-state margin before the reference is built.
+#
+# This is a SpinePrep default, NOT a published one. Eippert 2017 ran 3 dummy
+# shots BEFORE acquisition (none reach the file) and Kaptan 2023 states no
+# policy, so neither can be cited for removing saved volumes. 4 volumes is ample
+# at every cohort TR (1.55-3.26 s): the approach to steady state is dominated by
+# cos(flip) at 70-87 deg, leaving <0.5% residual in CSF and ~0% in tissue after
+# 4. Empirically no saturation transient is visible at any TR, i.e. the saved
+# data already starts at steady state.
 dummy:
-  # Number of dummy volumes to drop from the start of each BOLD run
+  # Number of volumes to drop when the scanner did not already discard some.
   drop_count: 4
+  # Respect the BIDS sidecar: when NumberOfVolumesDiscardedByScanner > 0 the
+  # saved series already begins at steady state, so drop none rather than throw
+  # away usable data. 83 runs in the cohort (ds005883/ds005884) declare 6.
+  respect_scanner_discards: true
 
 # Coarse reference: fast initial reference before outlier gating
 coarse_reference:
@@ -85,11 +97,27 @@ func_localization:
         min_area_vox: 6        # ignore sub-cord specks
         core_peak_frac: 0.6    # compact core = component voxels >= 0.6 x local peak (isolates cord from a dim halo)
         max_gap: 1             # bridge a single faint slice; two consecutive rejects stop the trace
+    # Brain-contamination check (internally "drift_gate"): rejects a run whose
+    # cord segmentation climbs out of the cord into the brainstem. No published
+    # guard exists for this failure mode; it is a SpinePrep contribution.
+    # CSA anchors: cervical cord ~60-90 mm² (Piaggio 2018: 88.9 ± 6.0 at the
+    # foramen magnum), lower medulla ~130-175 mm² (derived from published
+    # volumes; no axial medulla CSA appears to be published), pons ~540-580 mm².
+    # An earlier comment cited "~500 mm² brainstem", which is the PONS and
+    # overstated the cord/medulla contrast ~4x.
     drift_gate:
       enabled: true
       superior_slices_check: 5
-      area_spike_threshold: 4.0
+      area_spike_threshold: 4.0        # relative jump vs the slice below
+      # Gross-contamination backstop. Set above the largest legitimate cord
+      # (~89 mm²) but also above the lower medulla, so it only fires once the
+      # segmentation is well into the brainstem; the spike and gradient tests
+      # are the sensitive ones.
       absolute_area_cap_mm2: 200.0
+      # Sustained superior climb. The cord tapers ~1.2 mm²/mm (measured on
+      # PAM50_cord); entering the medulla ramps ~8.6 mm²/mm. 4.0 sits between
+      # the two, catching a leak while every slice is still under the cap.
+      max_superior_gradient_mm2_per_mm: 4.0
   crop:
     mask_diameter_mm: 60  # Configurable, default match S2
     min_z_slices: 5
