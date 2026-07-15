@@ -149,3 +149,27 @@ def test_skip_path_also_returns_effective_drop():
     # both the heavy path and the skip path must supply the key
     assert src.count('"n_dummy_dropped"') >= 2
     assert '"n_dummy_dropped": _effective_dummy_drop(bold_path, policy)' in src
+
+
+# --- cached-path gate -------------------------------------------------------
+
+def test_outlier_gate_is_shared_and_soft():
+    from spineprep.steps.s3.outlier import _apply_outlier_gate
+    pol = {"qc_thresholds": {"outlier_fraction_pass_max": 0.20}}
+    assert _apply_outlier_gate(0.05, pol) == ("PASS", None)
+    st, msg = _apply_outlier_gate(0.35, pol)
+    assert st == "WARN" and "35%" in msg      # never FAIL: soft by design
+    assert _apply_outlier_gate(0.20, pol)[0] == "PASS"   # boundary is inclusive
+
+
+def test_cached_path_reapplies_gate_not_hardcoded_pass():
+    """A cached WARN must stay a WARN.
+
+    The skip branch hardcoded outlier_status="PASS", so the QC verdict depended
+    on whether the heavy computation was redone rather than on the data.
+    """
+    import inspect
+    from spineprep.steps.s3 import outlier
+    src = inspect.getsource(outlier._process_s3_2_outlier_gating)
+    assert '"outlier_status": "PASS",' not in src        # no hardcoded verdict
+    assert "cached_status, cached_msg = _apply_outlier_gate" in src
