@@ -63,7 +63,10 @@ def _process_s3_3_crop_and_qc(
 
     # Policy params
     crop_dia = policy.get("crop", {}).get("mask_diameter_mm", 40)
-    dilate_xyz = policy.get("crop", {}).get("dilate_xyz", [2, 2, 0])
+    # No dilation: `dilate_xyz` was read here but never passed to any SCT
+    # command, so the documented 2-voxel margin never applied. Knob removed from
+    # policy rather than enabled, to avoid changing the crop geometry of an
+    # already-validated cohort. See .claude/specs/s3-algorithm-audit.md.
 
     # 1. Create Cylindrical Crop Mask
     cmd_mask = [

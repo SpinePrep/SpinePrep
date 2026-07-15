@@ -84,7 +84,9 @@ wrongly attributed them to Kaptan (DOC-2, verified against the primary sources).
 ## DVARS / refRMS gate
 
 Current: `μ + 3σ` (3-sigma Gaussian assumption).
-fMRIPrep convention: Tukey `Q3 + 1.5·IQR` (non-parametric).
+Replacement: box-plot fence `Q3 + 1.5·IQR` (non-parametric), the documented
+default of FSL `fsl_motion_outliers` (Tukey 1977). NOT an fMRIPrep convention —
+fMRIPrep thresholds standardised DVARS > 1.5 and FD > 0.5 mm, with no IQR rule.
 
 On the balgrist cohort the two methods give similar (≈0%) flagging
 because the cord DVARS distribution is tight. So the DVARS gate

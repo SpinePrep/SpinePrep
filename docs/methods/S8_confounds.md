@@ -43,9 +43,13 @@ slice.
   adaptation of Power's FD.
 - **DVARS / RefRMS**: already computed at S3; repacked here with outlier flags.
 - **Outlier flags**: a volume is flagged if FD > **0.5 mm** (Power 2014 lenient
-  scrubbing cutoff for the cord) **or** if DVARS/RefRMS exceeds a Tukey
-  Q3 + 1.5·IQR fence (the fMRIPrep convention; robust to the cord's heavy-tailed
-  DVARS).
+  scrubbing cutoff) **or** if DVARS/RefRMS exceeds a box-plot fence of
+  Q3 + 1.5·IQR, the documented default of FSL `fsl_motion_outliers` (Tukey 1977),
+  chosen because the cord's DVARS distribution is heavy-tailed. This differs from
+  the cord literature, which thresholds on the run's own mean plus a multiple of
+  its standard deviation (Kaptan et al., 2023 use 2 SD; Dabbagh et al., 2024 use
+  3 SD), and from fMRIPrep, which thresholds standardised DVARS at 1.5 and FD at
+  0.5 mm.
 
 ### 2. CSF aCompCor, per slice (when a CSF mask exists)
 

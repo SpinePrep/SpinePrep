@@ -4,168 +4,162 @@ status: approved
 
 # S3 algorithm audit — literature-backed, truthful, correct
 
-A line-by-line review of every algorithmic choice in S3
-(`steps/s3/{localize,outlier,crop}.py` + `policy/S3_func_init_and_crop.yaml`)
-against the cord-fMRI literature. Verdict per choice + remediation
-flags where the chain deviates from a published reference.
+Rewritten 2026-07-15. Supersedes the previous version, which predated the EPISeg
+switch, cited outlier gates that no longer exist (0.30/0.50), and repeated two
+citation errors. Every claim below was verified against code, the installed
+SCT/FSL, or primary literature; derivations are labelled as such.
 
 ## Sub-step summary
 
 | Stage | Operation | Engine |
 |---|---|---|
-| **S3.1** Dummy drop + cord localization + brain-contamination check | Trim N initial frames, build a coarse median functional reference (`func_ref_coarse`), segment cord via `sct_deepseg seg_sc_contrast_agnostic`, reject runs where the cord seg leaks into brain (pipeline name: "drift gate" — see naming note below) | `sct_deepseg` (SCT ≥ 7.0) |
-| **S3.2** Frame-metrics + outlier flagging + robust funcref | Compute mask-aware DVARS + DVARS-ref (Kaptan 2023 "refRMS"; RMS of `(frame − reference)` within the cord mask) per frame, flag outliers via boxplot cutoff, build median funcref over non-outlier frames | NumPy + nibabel |
-| **S3.3** Cord-focused crop | 60 mm cylinder around the cord centerline, in-plane dilation, apply to 4D BOLD | SCT `sct_crop_image` |
+| **S3.1** | Drop 4 initial volumes, build a coarse median reference, segment the cord with EPISeg, clean the mask, brain-contamination check | `sct_deepseg sc_epi` |
+| **S3.2** | Cord-mask DVARS + DVARS-ref per frame, box-plot outlier fence, robust median reference over non-outlier frames | NumPy + nibabel |
+| **S3.3** | Bounding-box crop around the cord centreline | `sct_crop_image` |
 
-## Per-choice verdict
+## Verdicts
 
-### S3.1 dummy drop
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `dummy.drop_count` | 4 | Eippert 2017: 4–5; Kaptan 2023: 4; CoSpine 2025: 4 (TR ≈ 2 s) | ✅ field-standard |
-| `coarse_reference.method` | median | Mohammed 2020 cord moco — median is more robust to motion outliers than mean | ✅ standard |
-
-### S3.1 cord localization
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `func_localization.method` | `sct_deepseg` `seg_sc_contrast_agnostic` | SCT ≥ 7.0 default; replaces `sct_deepseg_sc -c …`. EPISeg (Valošek 2025) is an emerging alternative tuned to EPI specifically but not yet packaged in SCT batch_processing | ✅ field-standard. Open question: should switch to EPISeg when SCT ships it |
-| `min_z_slices` | 5 | No published precedent; sanity floor for narrow-FOV cord acquisitions (12 BOLD slices total at some sites) | ✅ defensible |
-
-### S3.1 brain-contamination check (a.k.a. "drift gate")
-
-Naming: internal symbol stays `drift_gate` for backwards
-compatibility (policy YAML key, code paths). Reportlet text, comments,
-and docs use **"brain contamination check"** so a field reviewer
-reading the dashboard recognises the QC as the documented
-brain-leak failure mode for cord-fMRI EPI.
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `drift_gate.enabled` | true | **No direct literature precedent.** Brain-contamination failure mode is documented in passing by SCT issue threads and CoSpine acknowledges per-acquisition QC. | ⚠️ **Novel** but principled. |
-| `area_spike_threshold` | 4.0× | Brain stem CSA ~500 mm² vs cervical cord 50–80 mm² → 6–10× expected. 4× is a sensitivity-favoring cutoff (catches even early-onset drift). | ✅ defensible |
-| `absolute_area_cap_mm2` | 200.0 | Cervical cord CSA never exceeds ~80 mm²; 200 mm² is comfortably above the upper bound of healthy cord with margin for swelling or pathology. | ✅ defensible |
-| `superior_slices_check` | 5 | Brain leak happens at the top of FOV first; checking the top 5 cord-bearing slices catches early drift without false-flagging mid-cord. | ✅ defensible |
-
-The brain-contamination check (a.k.a. drift gate) is a SpinePrep contribution. We documented it as
-"NOT in the literature; pipeline-specific guard" — that's truthful.
-It catches a real failure mode the principle §10 reg-cohort surfaced
-(4 KombiShimZBrain runs in balgrist_motor). Worth a methods-paper
-mention as an example of the gain from per-acquisition QC.
-
-### S3.2 frame metrics
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| **DVARS within cord mask** | Power 2014 RMS of temporal derivative, restricted to cord voxels | Power 2014 (defines DVARS within a spatial mask; cord-restricted mask is SpinePrep's choice, tighter than Kaptan 2023's 41 mm cord-centred cylinder) | ✅ standard |
-| **DVARS-ref within cord mask** (Kaptan 2023 "refRMS") | RMS of (frame − reference) | Standard fMRIPrep / MRIQC; Kaptan 2023 / Dabbagh 2024 cord | ✅ standard |
-| **Outlier threshold: Tukey 1.5-IQR boxplot** | `Q3 + 1.5·IQR` | **Different family from literature standard.** Kaptan 2023 / Dabbagh 2024 use **3σ above the time-series mean**. | ⚠️ **Deviates from cord literature**. See remediation below. |
-| **Combination rule** | DVARS OR DVARS-ref above threshold | Standard dual-criterion (Power 2014 brain + Kaptan 2023 cord) | ✅ standard |
-| `outlier_fraction_warn` / `_fail` | 0.30 / 0.50 | Kaptan 2023 reports typical 2 % (range 0.6–5.6 %) for healthy cord rest. 0.30 / 0.50 is conservative — we WARN at the upper end of "still usable" | ✅ defensible (conservative side) |
-
-**Tukey-vs-Z deviation analysis**: For roughly Gaussian DVARS, Q3 +
-1.5·IQR ≈ μ + 2.7σ (cutting top ~0.4 %); 3σ cuts top ~0.13 %.
-**Tukey flags slightly MORE outliers than 3σ.** On the reg cohort
-this produces 1–4 % outlier flags (consistent with Kaptan 2023's
-2 % typical). The choice is defensible because:
-
-1. **Parameter-free** — no calibration against a group mean.
-2. **Robust to non-Gaussian data** — heavy-tailed cord DVARS at low
-   TR isn't well-modelled by σ.
-3. **Adaptive to per-run variability** — scanner / sequence
-   differences are absorbed automatically.
-
-But it IS a deviation. The audit doc flags it for explicit decision.
-
-### S3.2 robust reference
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `robust_reference.method` | median | SCT batch_processing; Mohammed 2020 cord moco | ✅ standard |
-| `min_good_frames` | 10 | No published precedent; sanity floor for a usable median | ✅ defensible |
-
-### S3.3 crop
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `crop.mask_diameter_mm` | **60 mm** | **CoSpine 2025: 35 mm** ; SCT batch_processing variable, often 40–60 mm | ⚠️ **Wider than CoSpine.** Defensible (extra context for motion artifacts) but ~70 % more in-plane voxels than CoSpine. |
-| `dilate_xyz` | [2, 2, 0] | Standard 2-vox in-plane dilation (SCT convention) | ✅ standard |
-| `min_z_slices` | 10 | No published precedent; cord-fMRI typically 12–24 BOLD slices | ✅ defensible |
-
-## What's NOT in S3 (deferred / declined)
-
-| Operation | Status | Rationale |
+| Choice | Value | Verdict |
 |---|---|---|
-| Slice-timing correction | **declined** | Debated for cord fMRI. CoSpine 2025 + SCT batch_processing skip it (Eippert 2017: low benefit at short TR; cord slices are interleaved with brain in cospine pattern). ✅ standard |
-| Spatial smoothing | **deferred to S9** | We use cord-aware `sct_smooth_spinalcord` (in straightened cord space) — better than CoSpine's S3-stage X+Y Gaussian kernel which doesn't account for cord curvature. ✅ improves on CoSpine |
-| MP-PCA thermal-noise reduction | **deferred / not done** | Kaptan 2023 applies MP-PCA on raw EPI before preprocessing. We skip. fMRIPrep brain also skips. v2 candidate — could add a pre-S3.1 step. |
-| Physiological noise modelling | **deferred to S8** | Correct architectural separation (S8 RETROICOR / PNM + SpinalCompCor). ✅ standard |
-| Bandpass filtering | **deferred to S8 / analyst** | Cosine HP basis in S8 columns; analyst applies as part of GLM. ✅ standard (Eippert 2017 / Kaptan 2023) |
-| Volume-level FD (frame-wise displacement) | **deferred to S4** | S4 motion correction produces FD from its rigid params; S3's mask-aware DVARS + DVARS-ref are the cord-level analogs. ✅ correct separation |
+| Dummy drop | 4 volumes, fixed | KEEP-with-caveat (F1) |
+| Coarse + robust reference | median, two-stage | KEEP — matches fMRIPrep `RobustAverage` (`np.median`) |
+| Cord localization | `sct_deepseg sc_epi` (EPISeg; Banerjee et al. 2025) | KEEP — correct default for BOLD EPI |
+| Mask cleanup | bespoke Z-bridge + off-axis drop | KEEP-with-caveat (F6) |
+| Brain-contamination check | area spike 4x, cap 200 mm² | KEEP-with-caveat (F5) |
+| DVARS / DVARS-ref | cord-restricted, Power 2014 | KEEP — the mask is SpinePrep's choice, not Kaptan's |
+| Outlier fence | Q3 + 1.5·IQR | KEEP — FSL `fsl_motion_outliers` default; a real deviation from the cord papers |
+| Crop | 60 mm bounding box | KEEP — rationale was falsified (F4) |
+| No slice-timing correction | — | KEEP-with-caveat (F7) |
 
-## Truthfulness review
+## Findings
 
-| Claim in code/docs | True? | Source |
-|---|---|---|
-| "DVARS as Power 2014" | ✅ | Power 2014 NIMG: RMS of temporal derivative |
-| "DVARS-ref as standard cord metric" (Kaptan 2023 refRMS) | ✅ | Kaptan 2023 / Dabbagh 2024 |
-| "Tukey 1.5-IQR boxplot cutoff" | ✅ | Tukey 1977 EDA; parameter-free outlier definition |
-| "median robust funcref" | ✅ | Mohammed 2020 cord; SCT batch_processing |
-| "60 mm cord crop" | ⚠️ | CoSpine uses 35 mm; we are wider |
-| "brain-contamination check (drift gate) is literature-backed" | ❌ | **Pipeline-specific innovation; honest documentation in this audit doc.** |
+### F1 — Dummy drop: physics fine, provenance not
+4 volumes is ample at every cohort TR (1.55–3.26 s): worst-case residual is ~0.5%
+in CSF and ~0% in tissue, because the approach to steady state is dominated by
+`cos(flip)` (70–87° here). Verified empirically: no saturation transient is
+visible at any TR, so the saved data already starts at steady state. Three gaps:
+- The old citation ("Eippert 2017 / Kaptan 2023 default") was wrong. Eippert ran
+  **3 dummies before acquisition** (never written to file); Kaptan states no
+  policy. Corrected: 4 is a SpinePrep margin, not a published default.
+- **83 runs (ds005883/ds005884) declare `NumberOfVolumesDiscardedByScanner: 6`**
+  and SpinePrep ignores it, dropping 4 more. `src/` never reads the field.
+- The drop is not propagated (F2).
 
-## Remediation flags
+### F2 — The drop is not propagated to events or metadata — PARTLY OPEN
+S3 removes 4 volumes but no derivative sidecar records `StartTime` or
+`NumberOfVolumesDiscardedByUser`, and nothing shifts `events.tsv` onsets. BIDS is
+explicit that onsets refer to the first volume of the imaging file, so a GLM built
+from SpinePrep output plus the raw events file is misaligned by 4 TR with nothing
+in the metadata to reveal it. **The physio arm is FIXED**: S8 now skips
+`n_dummy_dropped` TRs when cropping, reading the count from S3's qc.json
+(`metrics.n_dummy_dropped`). The events/metadata arm remains open and is the
+highest-value remaining item.
 
-1. **Outlier threshold deviation** (Tukey vs Kaptan 3σ). Two options:
-   - **Keep Tukey** (current) — parameter-free, robust to non-Gaussian
-     cord DVARS. Document the deviation in S3's principles-audit
-     spec; cite Tukey 1977 explicitly.
-   - **Switch to 3σ** — matches Kaptan 2023 / Dabbagh 2024 cord-fMRI
-     standard exactly. Lose adaptivity to per-run variability.
+### F3 — DVARS computed pre-motion-correction, shipped as GLM confounds — OPEN
+S3 computes DVARS/refRMS on uncorrected data, which is correct for its own purpose
+(choosing good frames for the reference, as fMRIPrep does). But **S8 re-reads
+S3's `frame_metrics.tsv`** and ships those values as confound columns and scrub
+regressors. Power 2014, Kaptan 2023 and fMRIPrep all compute DVARS *after*
+realignment — the metric exists to catch what motion correction failed to fix. FD
+in the same file *is* post-hoc (from S4), so the `outliers` column ORs metrics
+from both sides of the motion-correction boundary. The fix is scoped to S8:
+recompute on the S5 output; S3's own values stay S3's.
 
-   **Recommendation: keep Tukey** and document. Tukey is more robust
-   on the heterogeneous reg cohort. But the policy YAML's comment
-   "Kaptan 2023" is inaccurate — should say "Tukey 1977" instead.
+### F4 — Crop: rationale falsified, arithmetic wrong — FIXED (docs)
+The policy justified 60 mm as "more landmarks for S6". S6 registers with
+`type: seg` on all three steps and is intensity-agnostic, so nothing consumes the
+context. "~70% more voxels" mistook the linear ratio (60/35 = 1.71) for the area
+ratio ((60/35)² = 2.94, i.e. **+194%**). Also corrected: `sct_crop_image -m`
+extracts a bounding **box**, and the comparable field values (SCT
+`batch_processing.sh`, CoSpine 2025) are 35 mm **moco masks**, not crops — SCT
+never crops the 4D, and the crop is lossless (index box, no interpolation). The
+number is kept; the reasoning is now honest.
+Related and **open**: S4 passes the **cord segmentation** (~3% of voxels) to
+`sct_fmri_moco -m`, where SCT/CoSpine/Kaptan pass a 35–41 mm cylinder that
+deliberately includes the cord/CSF boundary the registration metric keys on.
+Needs an A/B on cord tSNR.
 
-2. **Crop diameter 60 mm vs CoSpine 35 mm.** Two options:
-   - **Keep 60 mm** — more cord-surround context, easier registration
-     in S6 (more anatomical landmarks).
-   - **Switch to 35 mm** — matches CoSpine + Hemmerling; tighter crop
-     means less out-of-cord signal in S8 confound regression.
+### F5 — Brain-contamination check: right idea, wrong number — FIXED (docs)
+No published guard exists for a cord segmentation leaking into the brain, and a
+broad search found no issue or paper documenting the failure, so this is a genuine
+SpinePrep contribution. Its stated basis was wrong: **~500 mm² is the pons**, not
+the medulla. Cord is ~60–90 mm² (Piaggio 2018: 88.9 ± 6.0 at the foramen magnum),
+the lower medulla ~130–175 mm² (derived from published volumes; no axial medulla
+CSA appears to be published) — only ~1.4x over the first centimetre. So the
+200 mm² cap sits above the lower medulla and is a gross-contamination backstop,
+not an early-leak detector; the relative 4x spike test does the real work. A
+gradient test (cord tapers ~1.2 mm²/mm, measured on PAM50_cord, vs ~8.6 mm²/mm
+into the medulla) or a PMJ-referenced extent cap (`sct_detect_pmj`) would be
+sensitive and citable. **Threshold change still open.**
 
-   **Recommendation: keep 60 mm as default** but expose the policy
-   knob more prominently. Add a comment citing CoSpine 35 mm as the
-   alternative for cord-only acquisitions.
+### F6 — Mask cleanup: now well-grounded, but unbenchmarked — OPEN
+EPISeg emits off-axis brain specks on brain+cord FOVs and can split the cord
+across the anterior-curve gap. This is a **documented SCT-side gap**, not a
+mystery: `sct_deepseg.py:449` applies `keep_largest=1` only for the `spinalcord`
+task and explicitly not for `sc_epi`, commenting that the model "sometimes
+predicts pixels outside the cord". SCT applies the same reasoning to
+`sc_canal_t2`. So post-hoc component filtering is SCT's own answer, and a naive
+largest-component keep is what would be wrong here (it re-truncates the fragmented
+cord). Unresolved: the bespoke Z-bridge is gap-sensitive (re-truncates at gaps
+≥3 slices) and has never been benchmarked against `sct_get_centerline -method
+fitseg` (documented to interpolate missing slices) or size-based small-object
+removal. Manual masking is the field norm (Hoggarth 2022: "no reliable algorithms
+for segmenting the spinal cord in functional data"), so there is no published
+standard being deviated from.
 
-3. **Drift gate documentation.** It's a real, principled innovation
-   that catches a documented failure mode. Document it in the
-   principles spec as a SpinePrep contribution; cite the
-   failure mode (brain CSA >> cord CSA + SCT seg behavior at FOV
-   edge).
+### F7 — No slice-timing correction: defensible, one gap — OPEN
+Eippert 2017, Kaptan 2023 and SCT all omit STC. But **CoSpine (Wei 2025) applies
+it** (FSL `slicetimer`, TR 2.68 s, 70 slices, task-based) precisely because the
+enlarged brain+cord FOV lengthens TR — and ds005883/ds005884 (CoSpine pain/motor)
+are in this cohort. The no-STC spec's own carve-out for simultaneous brain+cord
+acquisition therefore applies to our own data and should say so.
 
-## Audit verdict
+### F8 — Citations — FIXED
+- **"Smyser 2019" does not exist.** It was rendered in the tutorial's public
+  reference list and credited as the "cord adaptation" for mask-restricted DVARS.
+  The real Smyser DVARS work is infant *brain* fMRI (Cereb Cortex 2010). Removed;
+  Power 2014 alone licenses the claim (it defines DVARS within a spatial mask).
+- **The cord-restricted mask is SpinePrep's, not Kaptan's.** Kaptan uses a 41 mm
+  cord-*centred* cylinder containing CSF, muscle and vertebrae.
+- **The box-plot fence is FSL's default, not "the fMRIPrep convention"** —
+  fMRIPrep thresholds standardised DVARS > 1.5 and FD > 0.5 mm, with no IQR rule.
+  Fixed in the public S8 page, the policy, and the S8 spec.
+- **Kaptan 2023 uses 2 SD; Dabbagh 2024 uses 3 SD** (previously conflated), and
+  the "2% [0.6–5.6%]" figure is Dabbagh's, not Kaptan's. Dabbagh is *Imaging
+  Neuroscience*.
+- **EPISeg is Banerjee et al. 2025**, not Valošek (verified against SCT's model
+  card, `deepseg/models.py`).
 
-**S3 is correct, well-implemented, and largely standard.**
+### F9 — Dead config — FIXED
+- `dilate_xyz` was read in `crop.py` but never passed to any SCT command; the
+  documented "2-voxel in-plane safety margin" never happened. Knob removed rather
+  than switched on, since enabling it would change the geometry of an
+  already-validated cohort.
+- `outlier_fraction_warn_max: 0.40` was never read by any code, and its comment
+  claimed a FAIL tier that does not exist. Removed; the gate is a soft WARN above
+  `pass_max` only.
+- The gate is uncalibrated: 0.20 is a round number, not derived from the cohort,
+  and neither Kaptan nor Dabbagh proposes a run-level gate. Their thresholds do
+  not transfer, because SpinePrep's metric differs (tighter mask, MP-PCA-denoised
+  input).
 
-- ✅ Choices that match literature exactly: dummy drop, coarse +
-  robust funcref strategy, cord localization tool, dilation,
-  deferred-to-S8/S9 boundaries.
-- ⚠️ Choices that deviate intentionally and defensibly: Tukey
-  outlier threshold (vs Kaptan 3σ), crop diameter 60 mm (vs CoSpine
-  35 mm), brain-contamination check / drift gate (pipeline-specific).
-- ❌ One documentation bug: policy YAML cites "Kaptan 2023" for an
-  outlier rule that's actually Tukey 1977. Fix the comment;
-  algorithm stays.
+### F10 — refRMS is not the literature's refRMS — OPEN (decision)
+FSL computes RMS-to-reference and then **differences it** ("to remove slow
+trends"), so Kaptan's and Dabbagh's refRMS is differenced. SpinePrep thresholds
+the **raw** RMS-to-reference, which therefore carries scanner drift. Either
+difference it to match, or document plainly that DVARS-ref is the undifferenced
+RMS-to-reference and partly indexes drift.
 
-## Recommended actions
+## Open items, by priority
 
-1. Update `policy/S3_func_init_and_crop.yaml` comments:
-   - `outlier_gating.iqr_multiplier: 1.5` — cite Tukey 1977 (EDA),
-     not Kaptan 2023. Note the deviation explicitly.
-   - `crop.mask_diameter_mm: 60` — add `# CoSpine 2025 uses 35 mm;
-     60 mm gives more anatomical context but ~70% more voxels`.
-2. Append a "Drift gate: pipeline-specific QC guard" subsection to
-   `.claude/specs/s3-func-init-and-crop.md` documenting the novel
-   guard with the literature gap explicit.
-3. No code changes required.
+1. **F2** — propagate the dummy drop: emit `StartTime` +
+   `NumberOfVolumesDiscardedByUser` on the derivative BOLD sidecar, and decide on
+   `events.tsv` onsets. (Physio arm already fixed.)
+2. **F3** — recompute DVARS/refRMS in S8 on the S5 output.
+3. **F1** — read `NumberOfVolumesDiscardedByScanner` (83 runs declare it).
+4. **F10** — decide the refRMS differencing question.
+5. **F5** — replace the area cap with a gradient or PMJ-referenced test.
+6. **F6** — benchmark the Z-bridge against `fitseg` / small-object removal.
+7. **F4** — A/B the moco mask (cord-seg vs 35 mm cylinder) on cord tSNR.
+8. **F7** — name CoSpine in the no-STC spec.
+9. Recalibrate `outlier_fraction_pass_max` on the cohort distribution.

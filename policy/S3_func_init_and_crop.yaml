@@ -129,15 +129,30 @@ robust_reference:
 
 # Cord-focused crop: reduce FOV to cord region.
 crop:
-  # Crop mask diameter (mm) around cord centerline. CoSpine 2025 uses 35 mm
-  # (tighter, cord-only). 60 mm gives extra anatomical context for S6 func-
-  # to-anat registration (more landmarks) at the cost of ~70% more in-plane
-  # voxels in downstream BOLD. Tune per cohort; cord-only acquisitions
-  # should consider 35-40 mm.
+  # Bounding-box crop around the cord centerline (sct_crop_image -m extracts a
+  # box, so this is a 60x60 mm square in-plane, not a cylinder).
+  #
+  # The comparable field values are MASKS, not crops: SCT's own fMRI recipe
+  # (batch_processing.sh) and CoSpine 2025 both build a 35 mm cylinder and pass
+  # it to sct_fmri_moco; SCT never crops the 4D. So 60 mm here is not directly
+  # "wider than CoSpine" -- it is a different quantity, and the crop is lossless
+  # (an index bounding box, no interpolation).
+  #
+  # Do NOT justify 60 mm as "more landmarks for S6": S6 registers with
+  # type=seg on all steps and is intensity-agnostic, so nothing downstream
+  # consumes the extra image context. The honest reason to keep it is margin
+  # against cord excursion across the run (the crop is derived from a single
+  # reference), at the cost of more voxels: relative to 35 mm the in-plane area
+  # ratio is (60/35)^2 = 2.94, i.e. ~194% more voxels (an earlier comment said
+  # ~70%, which mistook the linear ratio 1.71 for the area ratio).
+  # Cord-only acquisitions can safely use 35-40 mm.
   mask_diameter_mm: 60
-  # 2-voxel in-plane dilation (SCT convention) for safety margin against
-  # localization jitter between dummy-drop coarse ref and final funcref.
-  dilate_xyz: [2, 2, 0]
+  # NOTE: no dilation is applied. `dilate_xyz` was documented here as a 2-voxel
+  # in-plane safety margin but was never passed to sct_create_mask or
+  # sct_crop_image, so the documented behaviour never happened; the knob is
+  # removed rather than switched on, because enabling it now would change the
+  # crop geometry of an already-validated cohort. The 60 mm cylinder is itself
+  # ~30 mm of margin around a ~7 mm cord, so the jitter allowance is moot.
   # Minimum z-slices in cropped output. Cord-fMRI typical 12-24 BOLD slices.
   min_z_slices: 10
 
@@ -156,8 +171,17 @@ qc:
 # DVARS/refRMS outliers is unusable downstream (Mohammed 2020,
 # Kaptan 2023). PASS gate set conservatively; retune on the reg cohort.
 qc_thresholds:
-  outlier_fraction_pass_max: 0.20  # ≤20% outliers ⇒ PASS gate (Kaptan 2023)
-  outlier_fraction_warn_max: 0.40  # 20–40% ⇒ WARN; above ⇒ FAIL
+  # Soft gate only: above pass_max the run is WARNed, never FAILed (high motion
+  # is the analyst's call at GLM time). There is no FAIL tier; an earlier
+  # `outlier_fraction_warn_max: 0.40` claiming "above ⇒ FAIL" was never read by
+  # the code and has been removed.
+  #
+  # NOT calibrated from Kaptan 2023: Kaptan reports ~1.9% outliers (2 SD rule)
+  # and Dabbagh 2024 reports 2% [0.6-5.6%] (3 SD rule); neither proposes a
+  # run-level gate, and neither threshold transfers to SpinePrep's metric (a
+  # tighter cord-restricted mask on MP-PCA-denoised input). 0.20 is a
+  # conservative round number pending calibration on the cohort distribution.
+  outlier_fraction_pass_max: 0.20  # > this ⇒ soft WARN
 
 # Cost controls: prevent accidental expensive runs
 cost_controls:
