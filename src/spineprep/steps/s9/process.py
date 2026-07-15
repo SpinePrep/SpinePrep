@@ -351,7 +351,14 @@ def _crop_to_bbox(in_path: Path, bbox: tuple, out_path: Path) -> None:
 
 
 def _bold_tr(bold_path: Path) -> Optional[float]:
-    """RepetitionTime (s) from the BOLD header pixdim[4]. SCT preserves it."""
+    """RepetitionTime (s) from the BOLD header pixdim[4].
+
+    WARNING: do NOT use this as a fallback for the derivative sidecar. SCT does
+    NOT preserve pixdim[4]: a processed 1.66 s run reads back as 1.0, so this
+    silently manufactured a wrong TR into a "GLM-ready" sidecar. The
+    authoritative value is the raw BIDS sidecar, read by S9's orchestrate via
+    `_run_repetition_time`. Kept only for diagnostics.
+    """
     z = nib.load(bold_path).header.get_zooms()
     return float(z[3]) if len(z) > 3 and z[3] and z[3] > 0 else None
 
@@ -366,13 +373,25 @@ def _write_bold_sidecar(
     bold_path: Path, tr: Optional[float], task: Optional[str],
     *, space: Optional[str] = None,
     smoothing_fwhm: Optional[list[float]] = None,
+    n_dummy_dropped: int = 0,
 ) -> None:
-    """Emit a `*_bold.json` next to the BOLD with the minimum a GLM needs."""
+    """Emit a `*_bold.json` next to the BOLD with the minimum a GLM needs.
+
+    Records the initial volumes S3 removed. BIDS defines `events.tsv` onsets
+    relative to the first volume of the imaging file, so a GLM combining this
+    derivative with the raw events file must shift onsets by `StartTime`
+    (= n_dummy_dropped x TR). Emitting both makes that shift discoverable
+    instead of silent.
+    """
     meta: dict[str, Any] = {"SkullStripped": False}
     if tr is not None:
         meta["RepetitionTime"] = tr
     if task:
         meta["TaskName"] = task
+    if n_dummy_dropped:
+        meta["NumberOfVolumesDiscardedByUser"] = int(n_dummy_dropped)
+        if tr is not None:
+            meta["StartTime"] = round(float(n_dummy_dropped) * float(tr), 6)
     if space:
         meta["SpatialReference"] = space
     if smoothing_fwhm is not None:
@@ -940,16 +959,24 @@ def run_S9_primary_functional_derivatives(
     # A GLM needs RepetitionTime; BIDS-Derivatives needs the sidecar.
     # Prefer the authoritative TR from the raw BIDS sidecar (passed in via
     # bold_run); the processed header's pixdim[4] is unreliable (defaults to 1.0).
-    tr = bold_run.get("RepetitionTime") or _bold_tr(bold_path)
+    # Authoritative TR only (raw BIDS sidecar, resolved upstream). Never fall
+    # back to the processed header: SCT resets pixdim[4] to 1.0, which used to
+    # be written into the sidecar as a plausible-but-wrong RepetitionTime. If the
+    # TR is unknown the key is omitted, so a GLM fails loudly instead of running
+    # on a fabricated timing.
+    tr = bold_run.get("RepetitionTime")
+    n_drop = int(bold_run.get("n_dummy_dropped") or 0)
     task = _task_from_run_id(run_id)
     try:
-        _write_bold_sidecar(smoothed_native, tr, task, smoothing_fwhm=sigma_fwhm)
-        _write_bold_sidecar(unsmoothed_native, tr, task)
+        _write_bold_sidecar(smoothed_native, tr, task, smoothing_fwhm=sigma_fwhm,
+                            n_dummy_dropped=n_drop)
+        _write_bold_sidecar(unsmoothed_native, tr, task, n_dummy_dropped=n_drop)
         if pam50_smoothed.exists():
             _write_bold_sidecar(pam50_smoothed, tr, task, space="PAM50",
-                                smoothing_fwhm=sigma_fwhm)
+                                smoothing_fwhm=sigma_fwhm, n_dummy_dropped=n_drop)
         if pam50_unsmoothed.exists():
-            _write_bold_sidecar(pam50_unsmoothed, tr, task, space="PAM50")
+            _write_bold_sidecar(pam50_unsmoothed, tr, task, space="PAM50",
+                                n_dummy_dropped=n_drop)
         _ensure_dataset_description(
             out_dir / "derivatives" / "spineprep")
     except Exception as e:

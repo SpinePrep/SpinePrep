@@ -163,6 +163,26 @@ def _resolve_bids_root(datasets_local: Optional[str], dataset_key: str) -> Optio
     return v if isinstance(v, str) else None
 
 
+def _s3_dummy_dropped(out_dir: Path, dataset_key: str, run_id: str) -> int:
+    """Initial volumes S3 removed for this run, from S3's own qc.json.
+
+    Recorded on the derivative BOLD sidecar so the shift between the derivative
+    and the raw `events.tsv` is discoverable rather than silent.
+    """
+    qc = out_dir / "logs" / "S3_func_init_and_crop" / dataset_key / "qc.json"
+    try:
+        data = json.loads(qc.read_text(encoding="utf-8"))
+    except Exception:
+        return 0
+    for run in data.get("runs", []) or []:
+        if str(run.get("run_id")) == str(run_id):
+            try:
+                return int((run.get("metrics") or {}).get("n_dummy_dropped", 0) or 0)
+            except Exception:
+                return 0
+    return 0
+
+
 def _run_repetition_time(bids_root: Optional[str], run_id: str) -> Optional[float]:
     """Authoritative RepetitionTime (s) from the raw BIDS bold sidecar.
 
@@ -214,6 +234,7 @@ def run_S9(
     datasets_local: Optional[str] = None,
     out: Optional[str] = None,
     batch_workers: int = 1,
+    bids_root: Optional[str] = None,
 ) -> StepResult:
     if not out:
         return StepResult("FAIL", "--out is required")
@@ -227,18 +248,23 @@ def run_S9(
         except Exception as e:
             return StepResult("FAIL", f"Policy error: {e}")
 
+    # The caller's --bids-root wins. It is the only source available in the
+    # BIDS-App path: S8's qc carries bids_root=None and the app passes no
+    # --datasets-local, so without this S9 could not read the authoritative
+    # RepetitionTime and silently emitted the processed header's pixdim[4]
+    # (which SCT resets to 1.0) into the derivative sidecar. See
+    # .claude/specs/s3-algorithm-audit.md.
+    cli_bids_root = bids_root
     s8_qc = _load_qc(out_path, "S8_confounds_and_physio_regressors", dataset_key)
     if s8_qc:
         upstream_runs = [r for r in s8_qc.get("runs", []) if r.get("status") != "FAIL"]
         upstream_name = "S8"
-        bids_root = s8_qc.get("bids_root")
+        bids_root = cli_bids_root or s8_qc.get("bids_root")
     else:
         s7_qc = _load_qc(out_path, "S7_template_normalization", dataset_key)
         upstream_runs = [r for r in s7_qc.get("runs", []) if r.get("status") != "FAIL"]
         upstream_name = "S7"
-        bids_root = s7_qc.get("bids_root")
-    # S8's qc carries bids_root=None; fall back to the dataset config so the
-    # authoritative TR (raw BIDS sidecar) can be read for the BOLD sidecars.
+        bids_root = cli_bids_root or s7_qc.get("bids_root")
     if not bids_root:
         bids_root = _resolve_bids_root(datasets_local, dataset_key)
     if not upstream_runs:
@@ -301,7 +327,8 @@ def run_S9(
 
         bold_run = {"subject": subject, "session": session,
                     "run_id": run_id, "path": f"{run_id}_bold.nii.gz",
-                    "RepetitionTime": _run_repetition_time(bids_root, run_id)}
+                    "RepetitionTime": _run_repetition_time(bids_root, run_id),
+                    "n_dummy_dropped": _s3_dummy_dropped(out_path, dataset_key, run_id)}
         res = run_S9_primary_functional_derivatives(
             bold_path=bold, cord_mask_path=cord_mask,
             warp_bold_to_pam50=warp, pam50_ref=pam50_ref,

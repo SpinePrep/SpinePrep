@@ -882,7 +882,8 @@ def _run_S9(args):
         res = run_S9(dataset_key=key,
                      datasets_local=args.datasets_local,
                      out=str(args.out),
-                     batch_workers=args.batch_workers)
+                     batch_workers=args.batch_workers,
+                     bids_root=(str(args.bids_root) if args.bids_root else None))
         if res.status == "FAIL":
             failures.append(key)
             if res.failure_message:
