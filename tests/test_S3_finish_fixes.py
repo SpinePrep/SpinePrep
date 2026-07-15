@@ -133,3 +133,19 @@ def test_batch_path_honours_workers():
     src = inspect.getsource(orchestrate.run_S3_func_init_and_crop_batch)
     assert "ProcessPoolExecutor(max_workers=batch_workers)" in src
     assert "session_runs[idx]" in src  # index-ordered, not completion-ordered
+
+
+def test_skip_path_also_returns_effective_drop():
+    """Resume must not fall back to the stale policy default.
+
+    S3.1 short-circuits when its outputs exist. That early return omitted
+    n_dummy_dropped, so session.py's _eff was None and it read the stale
+    dummy_dropped from the cached outlier_mask.json -- meaning the correction
+    could never be applied by re-running.
+    """
+    import inspect
+    from spineprep.steps.s3 import localize
+    src = inspect.getsource(localize._process_s3_1_dummy_drop_and_localization)
+    # both the heavy path and the skip path must supply the key
+    assert src.count('"n_dummy_dropped"') >= 2
+    assert '"n_dummy_dropped": _effective_dummy_drop(bold_path, policy)' in src

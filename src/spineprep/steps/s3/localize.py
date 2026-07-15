@@ -834,6 +834,11 @@ def _process_s3_1_dummy_drop_and_localization(
               "func_ref_fast_crop_path": func_ref_fast_crop_path,
               "func_bold_coarse_path": func_bold_coarse_path,
               "discovery_seg_crop_path": localize_dir / "func_ref_fast_seg_crop.nii.gz",
+              # Recomputed from the sidecar even on the skip path (cheap, no
+              # image IO): session.py needs the applied count to correct a
+              # qc.json written before the scanner-discard rule existed. Omitting
+              # it here makes resume silently fall back to the stale default.
+              "n_dummy_dropped": _effective_dummy_drop(bold_path, policy),
               "localization_status": "PASS" if gate_ok else "FAIL",
               "failure_message": None if gate_ok else f"S3.1 brain-contamination check: {gate_msg}",
               "figure_path": fig_path,
