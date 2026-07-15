@@ -404,8 +404,10 @@ def _section_S3() -> str:
 <p>Prepares each BOLD run for downstream motion correction. Three
 sub-steps:</p>
 <ul>
-<li><b>S3.1</b> — drop dummy frames (4 frames at TR ≈ 2 s; Eippert
-2017 / Kaptan 2023 default), compute the <b>coarse functional
+<li><b>S3.1</b> — drop the first 4 frames as a steady-state margin (a
+SpinePrep default, not a published one: Eippert 2017 ran 3 dummy shots
+<i>before</i> acquisition so none reach the file, and Kaptan 2023 states
+no dummy policy), compute the <b>coarse functional
 reference</b> (median over all dummy-dropped frames), segment the
 cord on the coarse reference via <code>sct_deepseg
 seg_sc_contrast_agnostic</code>, and apply the <b>brain-contamination

@@ -22,12 +22,15 @@ version: 1
 #     fsl_motion_outliers). The earlier 0.2 mm here was both wrong (should be
 #     0.5 for cord) and mis-cited. Cohort outlier rate dropped 15-83% → 2-30%
 #     after the 0.5 correction, matching the literature 5-30% band.
-#   - DVARS / refRMS gate = Tukey Q3 + 1.5·IQR (fMRIPrep convention; this is the
-#     dVARS/refRMS outlier rule, the cord analogue of Kaptan 2023's SD-cutoff).
-#     The previous μ + 3σ assumed Gaussian; cord DVARS is heavy-tailed.
+#   - DVARS / refRMS gate = box-plot fence Q3 + 1.5·IQR, the documented default of
+#     FSL `fsl_motion_outliers` (Tukey 1977). Do NOT call this the "fMRIPrep
+#     convention": fMRIPrep thresholds standardised DVARS > 1.5 and FD > 0.5 mm and
+#     has no IQR rule. It also differs from the cord papers, which use the run's
+#     mean + k·SD (Kaptan 2023: 2 SD; Dabbagh 2024: 3 SD). We keep the box-plot
+#     fence because cord DVARS is heavy-tailed and the rule is parameter-free.
 motion:
   fd_outlier_threshold_mm: 0.5     # Power 2014 (lenient FD scrub). NOT Kaptan (uses dVARS/refRMS, no FD)
-  dvars_outlier_iqr_k: 1.5         # Tukey Q3 + k·IQR (fMRIPrep convention)
+  dvars_outlier_iqr_k: 1.5         # box-plot fence Q3 + k·IQR (FSL fsl_motion_outliers default; Tukey 1977)
   refrms_outlier_iqr_k: 1.5        # same — dual criterion (OR)
 
 # ----------------------------------------------------------------------

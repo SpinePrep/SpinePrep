@@ -39,9 +39,22 @@ def _check_drift_gate(
 ) -> tuple[bool, str, dict]:
     """Detect brain contamination in a cord segmentation.
 
-    Spinal cord cross-sectional area is ~50-80 mm² cervical; once a segmentation
-    leaks into the brain the per-slice area jumps by an order of magnitude. Two
-    cheap checks on the most-superior `n_check` cord slices catch this:
+    Cervical cord cross-sectional area is ~60-90 mm² (Piaggio 2018: 88.9 ± 6.0
+    at the foramen magnum, 74.8 ± 4.9 at C2-C3). A segmentation that climbs past
+    the cord enters the MEDULLA, which is only ~130-175 mm² (derived from
+    published volumes; no axial medulla CSA appears to be published) -- roughly
+    1.4x the cord over the first centimetre, NOT an order of magnitude. The
+    order-of-magnitude figure (~500 mm²) belongs to the PONS, several centimetres
+    higher, and should not be used to justify these thresholds.
+
+    Consequence: the absolute cap is a gross-contamination backstop, not an
+    early-leak detector -- a leak must climb ~1.3 cm before a 200 mm² cap fires.
+    The relative spike test is what does the real work. A gradient test (cord
+    tapers ~1.2 mm²/mm, measured on PAM50_cord; entering the medulla is
+    ~8.6 mm²/mm) or a PMJ-referenced extent cap (sct_detect_pmj) would be more
+    sensitive; see .claude/specs/s3-algorithm-audit.md.
+
+    Two cheap checks on the most-superior `n_check` cord slices:
 
     - absolute cap: any of those slices exceeds `absolute_area_cap_mm2`
     - spike ratio: top slice area / immediately-inferior slice area > `area_spike_threshold`
