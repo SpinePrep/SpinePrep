@@ -10,6 +10,7 @@ and code call `drift_gate` (kept for backwards compatibility); user-
 facing text uses the literature-aligned name."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Optional
 
@@ -30,6 +31,39 @@ from .localize_viz import _render_s3_1_simple_func_with_mask  # noqa: F401
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _effective_dummy_drop(bold_path: Path, policy: dict[str, Any]) -> int:
+    """How many initial volumes to remove from this run.
+
+    The policy default is a conservative steady-state margin, not a published
+    value (Eippert 2017 ran its 3 dummies before acquisition, so none reach the
+    file; Kaptan 2023 states no policy). When the BIDS sidecar declares that the
+    SCANNER already discarded volumes, the saved series begins at steady state
+    and dropping more only throws away usable data, so we drop none. This is the
+    case for 83 runs in the validation cohort, which declare
+    `NumberOfVolumesDiscardedByScanner: 6`.
+
+    Returns the policy default when the sidecar is absent or unreadable.
+    """
+    default = int(policy.get("dummy", {}).get("drop_count", 4))
+    if not bool(policy.get("dummy", {}).get("respect_scanner_discards", True)):
+        return default
+    name = bold_path.name
+    for suffix in (".nii.gz", ".nii"):
+        if name.endswith(suffix):
+            name = name[: -len(suffix)]
+            break
+    sidecar = bold_path.with_name(f"{name}.json")
+    try:
+        meta = json.loads(sidecar.read_text(encoding="utf-8"))
+    except Exception:
+        return default
+    try:
+        n_scanner = int(meta.get("NumberOfVolumesDiscardedByScanner", 0) or 0)
+    except Exception:
+        return default
+    return 0 if n_scanner > 0 else default
 
 
 def _check_drift_gate(
@@ -137,13 +171,40 @@ def _check_drift_gate(
             info,
         )
 
-    # Absolute cap: any superior slice with area > cap is brain
+    # Absolute cap: a gross-contamination backstop only. The cord is ~60-90 mm²
+    # and the lower medulla only ~130-175 mm², so a cap set above the medulla
+    # cannot catch an early leak; it fires only once the segmentation is well
+    # into the brainstem. The gradient and spike tests below are the sensitive
+    # ones.
     for z in superior_zs:
         a = slice_areas_mm2[z]
         if a > abs_cap_mm2:
             return (
                 False,
                 f"brain detected: slice z={int(z)} area {a:.1f} mm² > cap {abs_cap_mm2:.0f} mm²",
+                info,
+            )
+
+    # Gradient: the cord tapers slowly toward the head (~1.2 mm²/mm, measured on
+    # PAM50_cord), whereas entering the medulla ramps at ~8.6 mm²/mm (derived
+    # from Piaggio 2018 cord CSA at the foramen magnum and published medulla
+    # volumes). A sustained superior climb steeper than `max_superior_gradient
+    # _mm2_per_mm` is a leak even while every slice is still under the cap.
+    grad_cap = drift_cfg.get("max_superior_gradient_mm2_per_mm")
+    if grad_cap is not None and len(superior_zs) >= 2:
+        slice_mm = float(voxel_sizes[is_axis]) or 1.0
+        grads = []
+        for z in superior_zs:
+            below_z = z - 1 if s_is_positive else z + 1
+            if 0 <= below_z < slice_areas_mm2.size and slice_areas_mm2[below_z] > 0:
+                grads.append((slice_areas_mm2[z] - slice_areas_mm2[below_z]) / slice_mm)
+        info["superior_gradients_mm2_per_mm"] = [round(g, 3) for g in grads]
+        if grads and float(np.median(grads)) > float(grad_cap):
+            return (
+                False,
+                f"brain detected: superior area gradient "
+                f"{float(np.median(grads)):.1f} mm²/mm > {float(grad_cap):.1f} mm²/mm "
+                f"(cord tapers ~1.2; medulla ramps ~8.6)",
                 info,
             )
 
@@ -790,7 +851,7 @@ def _process_s3_1_dummy_drop_and_localization(
     # Get dummy volume count from policy. This is the ONE place dummies are
     # dropped — S3.2/S3.3 consume func_bold_coarse (already post-drop) and must
     # NOT drop again.
-    dummy_volumes = policy.get("dummy", {}).get("drop_count", 4)
+    dummy_volumes = _effective_dummy_drop(bold_path, policy)
 
     # Drop dummy volumes
     if bold_data.ndim == 4:
