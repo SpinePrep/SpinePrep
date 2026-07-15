@@ -201,6 +201,30 @@ def _find_moco_params(out_dir: Path, run_id: str) -> tuple[Optional[Path], Optio
     return None, None
 
 
+def _find_s3_dummy_dropped(out_dir: Path, dataset_key: str, run_id: str) -> int:
+    """Number of initial volumes S3 removed for this run.
+
+    S3 records the count it actually applied in its qc.json
+    (``metrics.n_dummy_dropped``). The physio crop must skip the same number of
+    TRs: the BOLD handed to S8 starts that many volumes after the first trigger,
+    so without the offset the physio leads the BOLD and RETROICOR assigns every
+    slice the wrong cardiac and respiratory phase. Returns 0 when the record is
+    unavailable, which reproduces the previous behaviour rather than guessing.
+    """
+    qc = out_dir / "logs" / "S3_func_init_and_crop" / dataset_key / "qc.json"
+    try:
+        data = json.loads(qc.read_text(encoding="utf-8"))
+    except Exception:
+        return 0
+    for run in data.get("runs", []) or []:
+        if str(run.get("run_id")) == str(run_id):
+            try:
+                return int((run.get("metrics") or {}).get("n_dummy_dropped", 0) or 0)
+            except Exception:
+                return 0
+    return 0
+
+
 def _find_frame_metrics(out_dir: Path, run_id: str) -> Optional[Path]:
     """S3 frame_metrics.tsv with dvars + ref_rms + outlier flag."""
     project_root = (out_dir.parent.parent if out_dir.name.startswith("wf_")
@@ -423,6 +447,7 @@ def run_S8(
             tr_s=tr_s,
             slice_timing_s=slice_timing,
             physio_pairs=physio_pairs,
+            n_dummy_dropped=_find_s3_dummy_dropped(out_path, dataset_key, run_id),
             bold_run=bold_run,
             out_dir=out_path,
             work_dir=out_path / "work",
