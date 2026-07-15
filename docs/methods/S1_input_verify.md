@@ -7,10 +7,9 @@ step and gates the rest of the chain.
 
 ## What it does
 
-The dataset is resolved from a `--dataset-key`, looked up in
-`policy/datasets.yaml` and mapped to a local path by `datasets_local.yaml`, or
-from a direct `--bids-root`. Every file under the BIDS root is enumerated,
-excluding `derivatives/`, and classified by modality. For each functional and
+S1 runs first in the participant-level chain, on the BIDS dataset passed to
+SpinePrep. Every file under the dataset root is enumerated, excluding
+`derivatives/`, and classified by modality. For each functional and
 fieldmap run, the relevant BIDS sidecar fields are read following the inheritance
 principle: the same-directory sidecar first, then each parent directory up to the
 dataset root, with `sub-` and `ses-` entities dropped so that a dataset-level
@@ -92,8 +91,8 @@ S1 verifies file presence, NIfTI geometry, and sidecar metadata, not image
 quality; signal-to-noise ratio, motion, and cord coverage are assessed by the
 per-step QC later in the chain. It does not determine whether a functional run
 images the cord, which S3 does. It assumes BIDS validity and does not
-re-implement full BIDS conformance. Subset selection currently normalizes a small
-set of subject-ID variants, a dataset-specific accommodation.
+re-implement full BIDS conformance, so `bids-validator` should be run on the
+dataset first.
 
 ## References
 
@@ -109,6 +108,5 @@ set of subject-ID variants, a dataset-specific accommodation.
 Running S1: see the [CLI reference](../reference/cli.md).
 
 ---
-*Parameters and checks reflect `src/spineprep/steps/s1/` (no `policy/` file by
-design); verified against code 2026-07-14. See
-`.claude/specs/s1-algorithm-audit.md` for the audit trail.*
+*S1 has no tunable parameters by design; its checks are fixed in code. Verified
+against the implementation on 2026-07-15.*

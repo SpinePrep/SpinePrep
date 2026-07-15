@@ -11,6 +11,36 @@ The tell is **density and uniformity**, not any single item. One em-dash is fine
 one per sentence is a signature. One triad is rhetoric; a triad per paragraph is a
 mold. Read every draft aloud before publishing.
 
+## What belongs on the public site (audience and scope)
+
+The site serves two readers: someone preprocessing their own BIDS dataset, and a
+scientist who needs the methods record whether or not they run the tool. Nothing
+else earns a place.
+
+1. **Document the user's real entrypoint**: `spineprep <bids_dir> <out_dir>
+   participant|group`. The per-step dev CLI, `--dataset-key`, `policy/datasets.yaml`,
+   `config/datasets_local.yaml`, and workfolders/scopes are internal plumbing and do
+   not appear. (The BIDS-App synthesizes its own dataset key; users never set one.)
+2. **Publish what the reader supplies, tunes, or reads**: their BIDS data; the step
+   knobs in `policy/Sn_*.yaml` (shipped and genuinely tunable); the derivatives; the
+   QC reports; the limitations.
+3. **Serve the scientist who never runs it**: algorithm, parameters, rationale with
+   citations, QC metric, limitations.
+4. **Keep maintainer scaffolding off the site**: the validation-cohort registry,
+   local path maps, dev scopes, `.claude/specs/` audit trails, and any step users
+   never run. Internal reasoning stays in `.claude/specs/`; the site carries the
+   conclusion and the citation.
+5. **Never present an internal-only path as the user path.** This is a truthfulness
+   rule, not a style preference.
+
+Tests to run before publishing a page:
+- Is the step in `PARTICIPANT_STEPS` (S1–S9) or `GROUP_STEP` (S10)? If not, it is
+  not a method page. S0 is a developer utility and is documented as such.
+- For every file or flag named: does the user create, edit, or read it? If it is
+  synthesized or maintainer-only, do not name it.
+- Could a reader with only their own BIDS dataset follow every sentence? If a
+  sentence assumes the repo checkout or the maintainers' cohort, cut it.
+
 ## Register by genre
 
 | Artifact | Person | Tense | Notes |
