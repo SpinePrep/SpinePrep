@@ -200,7 +200,18 @@ backstop, not a QC criterion.
 5. **F4** — A/B the moco mask (cord-seg vs 35 mm cylinder) on cord tSNR.
 6. **F7** — name CoSpine in the no-STC spec.
 7. **F12** — calibrate or re-scope `outlier_fraction_pass_max`.
-8. `docs/methods/S3_func_init_and_crop.md` is still stale.
+8. **F13** — S3 is not dataset-keyed, unlike S2. `session.py` builds
+   `run_id = <bold filename>` and `work_dir = runs/S3_func_init_and_crop/<run_id>`,
+   and figures land flat at `derivatives/spineprep/sub-XX/figures/`. It accepts
+   `dataset_key` but uses it only to LOOK UP S2's output. Two datasets sharing
+   `(sub, ses, task, acq, run)` would therefore share a work dir and overwrite
+   each other's figures. S2 already fixed this (keyed work dir + 
+   `derivatives/spineprep/<dataset_key>/sub-XX/`); S3 did not inherit it.
+   **Measured on this cohort: 466 runs -> 466 unique run_ids, 0 collisions** — the
+   task/acq labels happen to differ, so nothing is currently corrupted. Latent,
+   not active: a dataset with a plain `sub-01_task-rest_bold` would clobber.
+   Fix before adding datasets, not after.
+9. `docs/methods/S3_func_init_and_crop.md` is still stale.
 
 ### Fixed since the audit
 - **F1** — `NumberOfVolumesDiscardedByScanner` now read (83 runs declare 6).
