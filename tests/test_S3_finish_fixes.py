@@ -173,3 +173,59 @@ def test_cached_path_reapplies_gate_not_hardcoded_pass():
     src = inspect.getsource(outlier._process_s3_2_outlier_gating)
     assert '"outlier_status": "PASS",' not in src        # no hardcoded verdict
     assert "cached_status, cached_msg = _apply_outlier_gate" in src
+
+
+# --- drift gate: the spike test needs an absolute floor ---------------------
+# Measured on the 466-run cohort: 3/3 of S3's only failures were false positives
+# from the spike ratio firing at the mask's fading superior edge, where a ~2 mm²
+# denominator inflates the ratio. The flagged slices (41.0, 33.3, 11.2 mm²) were
+# all below cord CSA (~60-90 mm²) and so could not be brain.
+
+import nibabel as nib
+from spineprep.steps.s3.localize import _check_drift_gate
+
+DRIFT_POLICY = {"func_localization": {"discover": {"drift_gate": {
+    "enabled": True, "superior_slices_check": 5, "area_spike_threshold": 4.0,
+    "absolute_area_cap_mm2": 200.0, "spike_min_area_mm2": 130.0,
+}}}}
+
+
+def _seg_from_areas(areas_mm2, vox_xy=1.5, vox_z=4.0):
+    """Build an RPI seg whose per-slice areas match `areas_mm2`."""
+    vox_area = vox_xy * vox_xy
+    nx, ny = 40, 40
+    d = np.zeros((nx, ny, len(areas_mm2)))
+    for z, a in enumerate(areas_mm2):
+        n_vox = int(round(a / vox_area))
+        for i in range(n_vox):
+            d[i % nx, i // nx, z] = 1
+    affine = np.diag([vox_xy, vox_xy, vox_z, 1.0])   # RAS/S-positive on axis 2
+    return d, affine
+
+
+def test_fading_edge_is_not_brain():
+    """The real sub-08_task-pain profile must PASS: 108 -> 2.2 -> 11.2 -> 0."""
+    d, aff = _seg_from_areas([83.2, 90.0, 108.0, 2.2, 11.2, 11.2])
+    ok, msg, _ = _check_drift_gate(d, aff, DRIFT_POLICY)
+    assert ok, f"false positive on a fading edge: {msg}"
+
+
+def test_fading_edge_gvs_profile_is_not_brain():
+    """The real sub-LK001_task-gvs_run-02 profile: 69.1 -> 7.7 -> 41.0."""
+    d, aff = _seg_from_areas([79.4, 79.4, 69.1, 7.7, 41.0], vox_xy=1.6, vox_z=4.4)
+    ok, msg, _ = _check_drift_gate(d, aff, DRIFT_POLICY)
+    assert ok, f"false positive on a fading edge: {msg}"
+
+
+def test_real_brain_leak_still_caught():
+    """A leak that actually reaches brain size must still FAIL."""
+    # cord ~80 mm², then a slice at 150 mm² (lower medulla) = 4.4x over a 34 mm² step
+    d, aff = _seg_from_areas([80.0, 80.0, 78.0, 34.0, 150.0])
+    ok, msg, _ = _check_drift_gate(d, aff, DRIFT_POLICY)
+    assert not ok and "spike" in msg.lower(), f"missed a real leak: {msg}"
+
+
+def test_gross_contamination_still_caught_by_cap():
+    d, aff = _seg_from_areas([80.0, 90.0, 120.0, 260.0])
+    ok, msg, _ = _check_drift_gate(d, aff, DRIFT_POLICY)
+    assert not ok and "cap" in msg.lower()

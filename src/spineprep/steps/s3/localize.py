@@ -208,14 +208,30 @@ def _check_drift_gate(
                 info,
             )
 
-    # Spike: top slice vs the slice immediately inferior to it
+    # Spike: top slice vs the slice immediately inferior to it.
+    #
+    # The ratio ALONE is not evidence of brain. At the superior edge of the FOV
+    # the mask fades out in fragments (e.g. 108 -> 2.2 -> 11.2 -> 0 mm²), and a
+    # 2.2 mm² denominator makes any recovery look like a large spike. Measured on
+    # the 466-run cohort, this produced 3/3 of the step's only failures, all false
+    # positives: the flagged slices were 41.0, 33.3 and 11.2 mm² -- BELOW cord CSA
+    # (~60-90 mm²), so they cannot be brain.
+    #
+    # A slice can only be brain if it is at least the size of brain tissue at this
+    # level: the lower medulla is ~130-175 mm² (F5's derivation). So require the
+    # spiking slice to reach `spike_min_area_mm2` before calling it a leak. The
+    # test keeps its sensitivity where it matters -- between the floor and the
+    # 200 mm² cap it still fires on a ramping leak, and the gradient test above is
+    # unaffected -- while it no longer indicts the mask's dying edge.
+    spike_floor = float(drift_cfg.get("spike_min_area_mm2", 130.0))
+    info["thresholds"]["spike_min_area_mm2"] = spike_floor
     if len(superior_zs) >= 1:
         for z in superior_zs:
             below_z = z - 1 if s_is_positive else z + 1
             if 0 <= below_z < slice_areas_mm2.size:
                 below = slice_areas_mm2[below_z]
                 top = slice_areas_mm2[z]
-                if below > 0 and top / below > spike_ratio:
+                if below > 0 and top / below > spike_ratio and top >= spike_floor:
                     return (
                         False,
                         f"brain detected: area spike at z={int(z)} "

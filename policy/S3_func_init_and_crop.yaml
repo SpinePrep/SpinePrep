@@ -109,6 +109,16 @@ func_localization:
       enabled: true
       superior_slices_check: 5
       area_spike_threshold: 4.0        # relative jump vs the slice below
+      # A ratio alone is not evidence of brain. At the superior edge of the FOV
+      # the mask fades out in fragments (measured: 108 -> 2.2 -> 11.2 -> 0 mm²),
+      # and a ~2 mm² denominator turns any recovery into a large "spike". On the
+      # 466-run cohort this produced 3/3 of S3's only failures, every one a false
+      # positive: the flagged slices were 41.0, 33.3 and 11.2 mm², all BELOW cord
+      # CSA (~60-90 mm²) and so incapable of being brain. Require the spiking
+      # slice to reach at least the lower medulla (~130 mm², the CSA anchor
+      # above) before calling it a leak. Between this floor and the 200 mm² cap
+      # the test still fires on a ramping leak.
+      spike_min_area_mm2: 130.0
       # Gross-contamination backstop. Set above the largest legitimate cord
       # (~89 mm²) but also above the lower medulla, so it only fires once the
       # segmentation is well into the brainstem; the spike and gradient tests
