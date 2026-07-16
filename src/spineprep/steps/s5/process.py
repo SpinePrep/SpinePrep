@@ -927,6 +927,22 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
     # MI −12.9% while Dice +0.07 and displacement 1.90 → 0.60 mm).
     # The geometric metrics are the ground truth; MI is a backup
     # signal only when geometry isn't available.
+    # Passthrough: the step was asked to correct nothing, so it cannot fail for
+    # leaving distortion in place — the gates below all score a CORRECTION, and
+    # applying them here would FAIL a run for honestly reporting the distortion
+    # it still carries. `none` always WARNs (never PASS, never FAIL): the run did
+    # exactly what was asked, and QC's job is to state how distorted the data is
+    # so a PASS can never be read as "undistorted". See audit-v3.
+    if mode == "none":
+        disp_a = metrics.get("displacement_mean_after_mm")
+        dice_a = metrics.get("dice_mean_after")
+        parts = ["distortion measured, not corrected (mode=none)"]
+        if disp_a is not None:
+            parts.append(f"cord A–P displacement {disp_a:.2f} mm")
+        if dice_a is not None:
+            parts.append(f"cord Dice {dice_a:.2f}")
+        return "WARN", [" — ".join(parts)]
+
     mi_delta = metrics.get("mi_delta_pct")
     dice_delta = metrics.get("dice_delta")
     disp_delta = metrics.get("displacement_delta_mm")
@@ -1107,7 +1123,14 @@ def run_S5_func_distortion_correction(
 
     # Mode selection (orchestrator already passes filtered fmap_runs)
     from .mode import select_mode
-    mode, eligible_fmaps = select_mode(bold_run, fmap_runs)
+    dc_cfg = policy.get("distortion_correction", {}) or {}
+    fallback_mode = dc_cfg.get("fallback_mode", "syn")
+    mode, eligible_fmaps = select_mode(bold_run, fmap_runs, fallback_mode=fallback_mode)
+    prefer = dc_cfg.get("prefer_mode", "auto")
+    if prefer in ("topup", "syn", "none"):
+        mode = prefer
+        if prefer != "topup":
+            eligible_fmaps = []
     # Remember what the data made us *eligible* for, before any fall-through. The
     # run record exposes both so a topup->syn fallback is visible,
     # not silently relabelled as a plain SyN run.
@@ -1134,6 +1157,26 @@ def run_S5_func_distortion_correction(
                   f"{modeinfo.get('failure_message', '<no message>')}",
                   flush=True)
             mode = "syn"
+
+    if mode == "none":
+        # Passthrough: MEASURE distortion, correct nothing.
+        #
+        # This is not a degraded setting — it is the cord field's own default.
+        # Most cord fMRI performs no retrospective SDC, addressing distortion at
+        # acquisition instead (z-shimming: Eippert 2017, Kaptan 2023; cord-focused
+        # shim: Kinany 2022; distortion-resistant readout: Powers 2018). Oliva
+        # 2025 had reversed-PE data in hand and still corrected only the brain.
+        # The geometric metrics below are computed exactly as for the corrected
+        # modes, so a `none` run reports how distorted it IS — which is the
+        # number the field actually publishes — while shipping the BOLD
+        # untouched. See .claude/specs/s5-algorithm-audit-v3.md.
+        out_undistorted.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(str(bold_path), str(out_undistorted))
+        modeinfo = {
+            "status": "OK",
+            "mode": "none",
+            "note": "passthrough: distortion measured, not corrected",
+        }
 
     if mode == "syn":
         if cord_mask_path is None or anat_path is None:
