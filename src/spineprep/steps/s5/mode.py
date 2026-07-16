@@ -74,6 +74,7 @@ def _intended_for_matches(fmap_run: dict, bold_relpath: str) -> bool:
 def select_mode(
     bold_run: dict,
     fmap_runs: list[dict],
+    fallback_mode: str = "syn",
 ) -> tuple[str, list[dict]]:
     """Return (mode, eligible_fmaps).
 
@@ -81,11 +82,19 @@ def select_mode(
         bold_run: an entry from S1 inventory `runs` (modality=="func").
         fmap_runs: all entries from S1 inventory `runs` with modality=="fmap"
             that target the same subject/session as bold_run.
+        fallback_mode: what to do when no reversed-PE pair exists — "syn"
+            (image-based correction) or "none" (measure distortion, correct
+            nothing). "none" is the cord field's own default: most cord fMRI
+            performs NO retrospective distortion correction, addressing the
+            problem at acquisition instead (slice-specific z-shimming, Eippert
+            2017 / Kaptan 2023; cord-focused shim, Kinany 2022; distortion-
+            resistant readouts, Powers 2018). See
+            .claude/specs/s5-algorithm-audit-v3.md.
 
     Returns:
-        mode: one of "topup", "syn".
+        mode: one of "topup", "syn", "none".
         eligible_fmaps: the fmap entries that drove the decision (empty for
-            syn). The orchestrator uses these to build acqparams.
+            syn/none). The orchestrator uses these to build acqparams.
     """
     same_sub_ses = [
         f for f in fmap_runs
@@ -117,9 +126,14 @@ def select_mode(
                     acq.setdefault("PhaseEncodingDirection", pe)
                 return "topup", [epi_fmaps[i], epi_fmaps[j]]
 
-    # Image-only SyN otherwise. (GRE phasediff/magnitude fieldmaps would in
-    # principle drive a FUGUE path, but FUGUE was removed in v1: no GRE-fieldmap
-    # data exists in the validation cohort and the path was never exercised. Such
-    # data falls through to SyN — recorded honestly as the image-based fallback.
-    # See .claude/specs/v1-claims-ledger.md.)
-    return "syn", []
+    # No reversed-PE pair: fall back per policy.
+    #
+    # GRE phasediff/magnitude fieldmaps would in principle drive a FUGUE path,
+    # but FUGUE is not implemented in v1: no GRE-fieldmap data exists in the
+    # validation cohort, so the path could not be validated. Note this is a gap
+    # against the MOST precedented cord SDC method, not a legacy one — Vahdat
+    # 2015 (PLoS Biol) and FASB (Vahdat/Landelle/De Leener/Doyon) both use GRE
+    # fieldmap unwarping for the cord. It is unimplemented for lack of data, not
+    # lack of standing. Such data falls through to the fallback, recorded
+    # honestly. See .claude/specs/s5-algorithm-audit-v3.md.
+    return (fallback_mode if fallback_mode in ("syn", "none") else "syn"), []
