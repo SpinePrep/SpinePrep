@@ -77,17 +77,32 @@ build the motion confound regressors.
 The step-local metric is temporal SNR (voxel temporal mean divided by temporal
 standard deviation) measured inside the cord segmentation, reported before and
 after correction; effective correction raises cord tSNR (Kaptan et al., 2023).
-Framewise displacement is the sum of the absolute derivatives of the in-plane
-translations, `|Δtx| + |Δty|`, a cord adaptation of Power et al. (2012) that
-drops the through-plane and rotational terms because the slice-wise stage
-estimates in-plane translation only. Frames above `fd_threshold_mm` (default
-0.5 mm) are counted as high-motion and censored downstream in S8, not dropped
-here. The 0.5 mm value is Power's brain threshold and has not been calibrated
-for the cord, where it flags a far larger fraction of frames than the cord
-literature reports; treat it as provisional. A run is failed
-only when the high-motion fraction exceeds 0.50 (too little usable data) or cord
-tSNR falls below 3, and warned when the high-motion fraction exceeds 0.30 or a
-single-frame peak exceeds `warn_fd_mm`. The reviewer inspects three reportlets:
+Framewise displacement is reported but does not determine the run's status.
+It is the sum of the absolute derivatives of the in-plane translations,
+`|Δtx| + |Δty|`, a cord adaptation of Power et al. (2012) that drops the
+through-plane and rotational terms because the slice-wise stage estimates
+in-plane translation only. The two stages are composed per slice in millimetres,
+and the absolute temporal difference is taken per slice before averaging across
+slices, so opposing shifts at different levels cannot cancel.
+
+Motion does not fail a run. Frames are censored downstream in S8 on the
+intensity metrics (DVARS and reference-RMS, each against a within-run box-plot
+fence), which is the cord field's practice: Kaptan et al. (2023) censor on those
+metrics at two standard deviations and carry the slice-wise translations as
+regressors rather than thresholding displacement. An absolute displacement
+threshold is not used, for three measured reasons. Power's 0.5 mm was chosen for
+brain data as a value "well above the norm found in still subjects", and it sits
+at the median of cord framewise displacement, so it inverts the criterion that
+produced it. Frames below 0.5 mm show no more residual signal change after
+correction than frames below 0.25 mm, so censoring there removes usable data.
+And displacement is not comparable across acquisitions: it scales with
+repetition time (Jones et al., 2022) and with the definition used, both of which
+vary across datasets. Framewise displacement is instead supplied to S8 as a
+nuisance regressor, where its scale does not matter. A run fails only on a technical
+failure of the correction itself: cord tSNR below 3, or an input defect such as a
+mask that does not match the series geometry. It is warned when correction lowers
+cord tSNR, or when a single-frame displacement peak exceeds `warn_fd_mm`, both of
+which point the reviewer at a specific run without rejecting it. The reviewer inspects three reportlets:
 a motion-trace panel (in-plane translation, FD, and DVARS on a shared time
 axis), a slice-by-time heatmap of the signed slice-wise shift, and a
 before/after tSNR comparison with a per-slice cord profile.
@@ -111,6 +126,9 @@ by itself certify a still run.
   acquisition and analysis. NeuroImage.
 - Jenkinson, M., & Smith, S. (2001). A global optimisation method for robust
   affine registration of brain images. Medical Image Analysis 5(2), 143–156.
+- Jones, S., et al. (2022). A multi-dataset evaluation of frame censoring for
+  motion correction in task-based fMRI. Aperture Neuro.
+  doi:10.52294/ApertureNeuro.2022.2.NXOR2026
 - Kaptan, M., et al. (2023). Reliability of resting-state functional
   connectivity in the human spinal cord. NeuroImage.
 - Power, J. D., et al. (2012). Spurious but systematic correlations in functional

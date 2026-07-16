@@ -521,29 +521,37 @@ def run_S4_func_motion_correction(
     status = "PASS"
     failure_reasons = []
 
-    # Motion gating is RELATIVE and frame-fraction based, not single-frame.
-    # Field standard (Power 2014; fMRIPrep; cord-fMRI Eippert/Kaptan): a single
-    # high-motion frame is CENSORED downstream (S8 motion_outlier regressors),
-    # never grounds to reject a run. A run is excluded only when too large a
-    # FRACTION of its frames would be censored, i.e. too little usable data
-    # remains. This fraction is self-normalizing, so one threshold generalizes
-    # across acquisitions (TR/voxel/cord-vs-brain) where an absolute mm cutoff
-    # does not. (The policy already declared these thresholds; the gate now
-    # enforces them instead of the old single-frame max_fd FAIL.)
+    # S4 does NOT reject a run for MOTION (changed 2026-07-16; evidence in
+    # .claude/specs/s4-fd-threshold.md). S4's job is motion CORRECTION, so the
+    # gate asks whether the correction succeeded -- cord tSNR -- not whether the
+    # subject moved. Motion magnitude is a property of the DATA. Censoring is
+    # S8's job, on dVARS/refRMS at a within-run distributional rule, which is what
+    # the cord field does (Kaptan 2023 never uses FD; it censors on dVARS/refRMS
+    # at mean+2SD and uses the slice-wise translations as regressors) and is the
+    # only metric here with a principled null (Afyouni & Nichols 2018).
+    #
+    # The old absolute FD gate flagged a MEDIAN 48% of frames while post-moco
+    # residual DVARS is FLAT below 0.5 mm -- it discarded clean data -- and its
+    # FAIL pattern tracked TR (1.55-3.26 s across the cohort), not motion.
     qt = policy["qc_thresholds"]
     frac = qc_metrics["high_motion_fraction"]
-    if frac > qt["max_high_motion_fraction"]:
+
+    # Optional, OFF by default (null): a site may still exclude high-motion runs.
+    max_frac = qt.get("max_high_motion_fraction")
+    if max_frac is not None and frac > max_frac:
         status = "FAIL"
         failure_reasons.append(
             f"{frac:.0%} of frames exceed FD>{qt['fd_threshold_mm']}mm "
-            f"(> {qt['max_high_motion_fraction']:.0%} usable-data floor)")
-    elif frac > qt["warn_high_motion_fraction"]:
+            f"(> {max_frac:.0%} usable-data floor; operator-set gate)")
+    elif (qt.get("warn_high_motion_fraction") is not None
+            and frac > qt["warn_high_motion_fraction"]):
         status = "WARN"
-        failure_reasons.append(f"high censored fraction {frac:.0%}")
+        failure_reasons.append(
+            f"elevated motion: {frac:.0%} of frames over "
+            f"FD>{qt['fd_threshold_mm']}mm (observability; not a rejection)")
 
-    # max_fd is a single-frame peak and is also sensitive to slicewise-moco
-    # divergence (e.g. spurious 30+ mm "displacement" on a 128 mm FOV). It is
-    # observability-only: surface as WARN for human QC, never FAIL.
+    # max_fd is a single-frame peak and is sensitive to slicewise-moco divergence
+    # (spurious tens of mm on a ~34 mm FOV). Observability-only.
     if qc_metrics["max_fd_mm"] > qt["warn_fd_mm"]:
         if status == "PASS":
             status = "WARN"
@@ -551,8 +559,16 @@ def run_S4_func_motion_correction(
             f"motion/artifact spike: max FD {qc_metrics['max_fd_mm']:.2f}mm "
             f"(censored downstream, not a rejection)")
 
-    # tSNR FAIL stays: this is a technical motion-correction failure, not a
-    # subject-motion judgement.
+    # The real S4 failure mode: the correction made cord temporal stability WORSE.
+    # Only meaningful now that tSNR is cord-restricted rather than whole-FOV.
+    if qt.get("warn_tsnr_degraded", True) and qc_metrics["tsnr_improvement_pct"] < 0:
+        if status == "PASS":
+            status = "WARN"
+        failure_reasons.append(
+            f"motion correction reduced cord tSNR by "
+            f"{abs(qc_metrics['tsnr_improvement_pct']):.1f}%")
+
+    # tSNR floor: a technical failure of the correction, not a motion judgement.
     if qc_metrics["tsnr_after_mean"] < qt["min_tsnr"]:
         status = "FAIL"
         failure_reasons.append(f"tSNR {qc_metrics['tsnr_after_mean']:.2f} < {qt['min_tsnr']}")

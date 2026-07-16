@@ -14,14 +14,30 @@ version: 1
 # (Power 2-D adapted for cord 2-D moco). DVARS + refRMS already computed
 # by S3.2 (frame_metrics.tsv); we just repack with outlier flags.
 #
-# Outlier gating (audit-v2 .claude/specs/s8-outlier-rate-root-cause.md):
-#   - FD threshold = 0.5 mm — Power 2014 (its "lenient" FD scrubbing cutoff;
-#     the same paper also defines a "stringent" FD > 0.2 mm). DOC-2: do NOT
-#     credit this to Kaptan 2023 — Kaptan uses NO FD threshold at all; it flags
-#     outlier volumes on dVARS/refRMS (≥2 SD above the run mean, via FSL
-#     fsl_motion_outliers). The earlier 0.2 mm here was both wrong (should be
-#     0.5 for cord) and mis-cited. Cohort outlier rate dropped 15-83% → 2-30%
-#     after the 0.5 correction, matching the literature 5-30% band.
+# Outlier gating. Censoring is on the INTENSITY metrics only; FD does not censor
+# by default (changed 2026-07-16 — evidence: .claude/specs/s4-fd-threshold.md).
+# This follows the cord field: Kaptan 2023 uses NO FD at all — it flags outlier
+# volumes on dVARS/refRMS (2 SD above the run mean) and uses the slice-wise
+# translations as REGRESSORS. Dabbagh 2024 likewise uses dVARS/refRMS (3 SD). No
+# cord paper publishes a frame-censoring FD threshold.
+#
+# Why the absolute FD term was removed from the OR:
+#   - It flagged a MEDIAN of 48% of frames on this cohort. Measured against
+#     post-correction residual DVARS, frames below 0.5 mm show NO more signal
+#     disruption than frames below 0.25 mm — it censored clean data and spent GLM
+#     degrees of freedom for nothing. Disruption begins near 0.95 mm.
+#   - 0.5 mm is Power 2012's BRAIN value, chosen by inspecting plots as "values
+#     well above the norm found in still subjects". Cord FD's median IS 0.50 mm,
+#     so the number inverts Power's own criterion.
+#   - FD is not comparable across this cohort: TR spans 1.55–3.26 s (2.1×; Jones
+#     2022: slower TR → larger FD for identical motion), in-plane voxels span
+#     1.0–1.6 mm, and the FD definition itself shifts the value 2× (bulk-only
+#     0.28 mm vs bulk+slicewise 0.55 mm median on identical runs).
+#   - FD has no null distribution; DVARS does (Afyouni & Nichols 2018). The
+#     principled inference exists for the intensity metric only.
+# This also removes an internal inconsistency: the file previously used a
+# data-relative rule for DVARS/refRMS and an inherited absolute for FD.
+#
 #   - DVARS / refRMS gate = box-plot fence Q3 + 1.5·IQR, the documented default of
 #     FSL `fsl_motion_outliers` (Tukey 1977). Do NOT call this the "fMRIPrep
 #     convention": fMRIPrep thresholds standardised DVARS > 1.5 and FD > 0.5 mm and
@@ -29,7 +45,10 @@ version: 1
 #     mean + k·SD (Kaptan 2023: 2 SD; Dabbagh 2024: 3 SD). We keep the box-plot
 #     fence because cord DVARS is heavy-tailed and the rule is parameter-free.
 motion:
-  fd_outlier_threshold_mm: 0.5     # Power 2014 (lenient FD scrub). NOT Kaptan (uses dVARS/refRMS, no FD)
+  # null = FD does not censor (default). Set a value in mm to re-enable the FD
+  # term in the outlier OR; left available for operators who want it, but no
+  # defensible default exists (see above).
+  fd_outlier_threshold_mm: null
   dvars_outlier_iqr_k: 1.5         # box-plot fence Q3 + k·IQR (FSL fsl_motion_outliers default; Tukey 1977)
   refrms_outlier_iqr_k: 1.5        # same — dual criterion (OR)
 
