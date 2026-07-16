@@ -39,6 +39,7 @@ from spineprep.lib.run import run_command as _run_command
 
 def _extract_motion(
     moco_x_4d_path: Path, moco_y_4d_path: Path, n_volumes_expected: int,
+    voxsize_x: float = 1.0, voxsize_y: float = 1.0,
 ) -> dict[str, np.ndarray]:
     """trans_x/y = Stage-1 bulk + mean-over-z of Stage-2 slicewise moco; FD = |Δx|+|Δy|.
 
@@ -46,34 +47,41 @@ def _extract_motion(
     (1, 1, n_slices, n_volumes). Mean across slices yields the scalar
     in-plane slicewise translation per volume; the Stage-1 coarse bulk XY
     (co-located moco_params_coarse.tsv) is added on top so the confound
-    motion + FD reflect total (bulk + slicewise) motion, consistent with
-    S4's FD (BUG-1b).
+    motion + FD reflect total (bulk + slicewise) motion, consistent with S4.
 
-    **Cord-2D motion variant** (not full Friston 1996 24P). S4's cord
-    moco is 2D slicewise — no Z translation and no rotations are
-    estimated. We emit 4 motion columns (trans_x, trans_y, plus
-    derivative1 of each) + FD = |Δtrans_x| + |Δtrans_y|. This matches
-    Mohammed 2020 cord moco conventions and Kaptan 2023's reported
-    4-6 motion params; full 24P with squares and squared-derivatives
-    is deliberately not emitted because it would overfit on the
-    cord's small ROI (~100 voxels per slice). See audit-v2 Findings
-    1-2-5 in .claude/specs/s8-algorithm-audit.md.
+    UNITS (fixed 2026-07-16, .claude/specs/s4-fd-threshold.md). Stage 2 is in MM
+    (ANTs warp components). Stage 1 is in VOXELS -- FLIRT runs on a projection
+    written with an identity affine, so its world-mm are the fake 1 mm grid
+    (verified: a 2-voxel shift on a 1.5 mm grid returns 2.000, not 3.0). The old
+    code added the two directly, so on every dataset that is not 1.0 mm in-plane
+    the bulk term was under-counted by the voxel size and `framewise_displacement`
+    /`trans_x`/`trans_y` shipped to the GLM as a meaningless voxel+mm sum. Stage 1
+    is now scaled to mm first, so all emitted columns are in mm.
+
+    **Cord-2D motion variant** (not full Friston 1996 24P). S4's cord moco is 2D
+    slicewise -- no Z translation and no rotations are estimated. We emit 4 motion
+    columns (trans_x, trans_y, plus derivative1 of each) + FD = |Δtrans_x| +
+    |Δtrans_y|. Using the slice-wise translations as regressors is Kaptan 2023's
+    design ("Baseline + slice-specific motion-correction estimates (x- and y-
+    translation)"); full 24P with squares and squared-derivatives is deliberately
+    not emitted because it would overfit on the cord's small ROI (~100 voxels per
+    slice). See audit-v2 Findings 1-2-5 in .claude/specs/s8-algorithm-audit.md.
     """
     mx = nib.load(moco_x_4d_path).get_fdata()
     my = nib.load(moco_y_4d_path).get_fdata()
     if mx.ndim != 4 or my.ndim != 4:
         raise ValueError(f"moco params not 4D: {mx.shape}, {my.shape}")
-    tx = mx.mean(axis=(0, 1, 2)).astype(np.float64)  # (n_volumes,) slicewise
+    tx = mx.mean(axis=(0, 1, 2)).astype(np.float64)  # (n_volumes,) slicewise, mm
     ty = my.mean(axis=(0, 1, 2)).astype(np.float64)
-    # Add Stage-1 coarse bulk XY so motion/FD = bulk + slicewise, matching
-    # S4's FD. The coarse TSV is co-located with the slicewise NIfTIs; absent
-    # on 2d-only runs, in which case motion stays slicewise-only. (BUG-1b)
+    # Add Stage-1 coarse bulk XY, SCALED FROM VOXELS TO MM, so motion/FD are in
+    # one unit. The coarse TSV is co-located with the slicewise NIfTIs; absent on
+    # 2d-only runs, in which case motion stays slicewise-only. (BUG-1b)
     coarse_tsv = Path(moco_x_4d_path).parent / "moco_params_coarse.tsv"
     if coarse_tsv.exists():
         c = pd.read_csv(coarse_tsv, sep="\t")
         if len(c) == tx.size and {"tx_coarse", "ty_coarse"} <= set(c.columns):
-            tx = tx + c["tx_coarse"].to_numpy(dtype=np.float64)
-            ty = ty + c["ty_coarse"].to_numpy(dtype=np.float64)
+            tx = tx + c["tx_coarse"].to_numpy(dtype=np.float64) * float(voxsize_x)
+            ty = ty + c["ty_coarse"].to_numpy(dtype=np.float64) * float(voxsize_y)
     if tx.size != n_volumes_expected:
         raise ValueError(
             f"moco length {tx.size} != BOLD volumes {n_volumes_expected}"
@@ -109,20 +117,80 @@ def _tukey_outlier_mask(x: np.ndarray, k: float = 1.5) -> np.ndarray:
     return x > (q3 + k * (q3 - q1))
 
 
+def _opt_float(value: Any) -> Optional[float]:
+    """Parse an optional numeric policy knob: None/null/"" -> None.
+
+    `motion.fd_outlier_threshold_mm` defaults to null (FD censoring off), so the
+    old `float(policy.get(..., 0.5))` would raise on None. See
+    .claude/specs/s4-fd-threshold.md.
+    """
+    if value is None or value == "":
+        return None
+    return float(value)
+
+
+def _outlier_family_description(policy: dict) -> str:
+    """Human-readable description of the censoring rule for the BIDS sidecar.
+
+    Must state what actually ran: FD is off by default, so the old fixed
+    "FD > %.2f mm OR ..." string was both untrue and would raise on a null
+    threshold.
+    """
+    dk = float(policy.get("motion", {}).get("dvars_outlier_iqr_k", 1.5))
+    rk = float(policy.get("motion", {}).get("refrms_outlier_iqr_k", 1.5))
+    parts = [
+        f"DVARS > Q3+{dk:.1f}·IQR",
+        f"refRMS > Q3+{rk:.1f}·IQR",
+    ]
+    fd_thr = _opt_float(policy.get("motion", {}).get("fd_outlier_threshold_mm"))
+    if fd_thr is not None:
+        parts.insert(0, f"FD > {fd_thr:.2f} mm (operator-enabled)")
+    return (
+        "one-hot for frames where " + " OR ".join(parts)
+        + ". Censoring is on the intensity metrics (within-run Tukey fence), as in "
+        "the cord literature; framewise displacement is reported and supplied as a "
+        "regressor but does not censor by default."
+    )
+
+
 def _build_outlier_columns(
     frame_metrics: pd.DataFrame, fd: np.ndarray,
-    fd_thresh: float,
+    fd_thresh: Optional[float] = None,
     dvars_iqr_k: float = 1.5, refrms_iqr_k: float = 1.5,
 ) -> tuple[dict[str, np.ndarray], int]:
-    """One-hot spike columns where FD > thresh OR DVARS Tukey OR refRMS Tukey.
+    """One-hot spike columns where DVARS Tukey OR refRMS Tukey (OR optional FD).
 
-    Field-standard convention (fMRIPrep `motion_outlier_NN`):
-      FD > 0.5 mm  (Power 2014 / Kaptan 2023 / Dabbagh 2024 cord)
-      DVARS > Q3 + 1.5·IQR  (Tukey; matches S3.2's own outlier rule)
-      refRMS > Q3 + 1.5·IQR (same)
+    Censoring is on the INTENSITY metrics, matching the cord field:
+      DVARS  > Q3 + 1.5·IQR  (Tukey; FSL fsl_motion_outliers' default rule)
+      refRMS > Q3 + 1.5·IQR  (same; dual criterion, OR)
 
-    Audit references: .claude/specs/s8-outlier-rate-root-cause.md
-    + .claude/specs/s8-algorithm-audit.md.
+    FD IS NOT A CENSORING CRITERION BY DEFAULT (changed 2026-07-16; evidence in
+    .claude/specs/s4-fd-threshold.md). The old code OR-ed in an absolute
+    `FD > 0.5 mm` and credited it to "Power 2014 / Kaptan 2023 / Dabbagh 2024
+    cord" -- but Kaptan 2023 never uses FD at all (it censors on dVARS/refRMS at
+    mean+2SD per run and uses the slice-wise translations as REGRESSORS), and
+    Dabbagh uses dVARS/refRMS at 3 SD. No cord paper publishes a frame-censoring
+    FD threshold. Why the FD term was dropped:
+
+      * 0.5 mm is Power 2012's BRAIN value, chosen by inspecting plots as "values
+        well above the norm found in still subjects". Cord FD's median IS 0.50 mm,
+        so it inverts Power's own criterion and flagged ~48% of frames.
+      * Measured against post-correction residual DVARS, frames under 0.5 mm show
+        no more signal disruption than frames under 0.25 mm -- it censored clean
+        data, costing GLM degrees of freedom for nothing.
+      * FD is not comparable across this cohort anyway: TR spans 1.55-3.26 s
+        (2.1x; Jones 2022 -- slower TR gives larger FD for the same motion),
+        in-plane voxels span 1.0-1.6 mm, and the FD definition itself moves the
+        value 2x (bulk-only vs bulk+slicewise on identical runs).
+      * FD has no null distribution; DVARS does (Afyouni & Nichols 2018). The
+        principled inference exists for the intensity metric only.
+
+    `fd_thresh` is retained as an OPTIONAL operator override (default None = off).
+    The motion estimates still ship as regressors (`_extract_motion`), which is
+    Kaptan's design.
+
+    Audit references: .claude/specs/s4-fd-threshold.md,
+    .claude/specs/s8-outlier-rate-root-cause.md, .claude/specs/s8-algorithm-audit.md.
 
     We do NOT OR-merge S3.2's `frame_metrics["outlier"]` column anymore
     — S3.2 used Tukey on the same DVARS/refRMS for funcref-selection,
@@ -133,7 +201,8 @@ def _build_outlier_columns(
     dvars = frame_metrics["dvars"].to_numpy(dtype=np.float64)
     refrms = frame_metrics["ref_rms"].to_numpy(dtype=np.float64)
     flag = np.zeros(n, dtype=bool)
-    flag |= (fd[:n] > fd_thresh)
+    if fd_thresh is not None:
+        flag |= (fd[:n] > fd_thresh)
     flag |= _tukey_outlier_mask(dvars, k=dvars_iqr_k)
     flag |= _tukey_outlier_mask(refrms, k=refrms_iqr_k)
     cols: dict[str, np.ndarray] = {}
@@ -1195,7 +1264,7 @@ def run_S8_confounds_and_physio_regressors(
         ocols, n_out = _build_outlier_columns(
             frame_metrics,
             columns["framewise_displacement"],
-            fd_thresh=float(mp.get("fd_outlier_threshold_mm", 0.5)),
+            fd_thresh=_opt_float(mp.get("fd_outlier_threshold_mm")),
             dvars_iqr_k=float(mp.get("dvars_outlier_iqr_k", 1.5)),
             refrms_iqr_k=float(mp.get("refrms_outlier_iqr_k", 1.5)),
         )
@@ -1455,12 +1524,8 @@ def run_S8_confounds_and_physio_regressors(
         "PolicySha256": policy_sha,
         "Software": "SpinePrep S8 + FSL PNM (popp + pnm_evs)",
         "ConfoundFamilies": {
-            "motion": "trans_x/y from S4 slicewise NIfTI moco params (mean-over-z), derivative1, FD = |Δx|+|Δy|",
-            "outliers": "one-hot for frames where FD > %.2f mm OR DVARS > Q3+%.1f·IQR OR refRMS > Q3+%.1f·IQR" % (
-                float(policy.get("motion", {}).get("fd_outlier_threshold_mm", 0.5)),
-                float(policy.get("motion", {}).get("dvars_outlier_iqr_k", 1.5)),
-                float(policy.get("motion", {}).get("refrms_outlier_iqr_k", 1.5)),
-            ),
+            "motion": "trans_x/y (mm) = S4 Stage-1 bulk + mean-over-z of Stage-2 slicewise moco, derivative1, FD = |Δtrans_x|+|Δtrans_y|",
+            "outliers": _outlier_family_description(policy),
             "csf": "slicewise CSF aCompCor: top-%d PCs/slice via FSL fslmeants --eig on per-voxel-detrended BOLD (csf_slice{z}_pc{k}); Behzadi 2007 / CoSpi spi12" % int(policy.get("csf_slicewise", {}).get("n_components", 5)),
             "retroicor": "FSL PNM slicewise cardiac/respiratory/interactions × N_slices (cord-mean of voxelwise EVs)",
             "cosine": "DCT type-II basis up to %s Hz (~%.0f s high-pass)" % (
@@ -1507,7 +1572,7 @@ def run_S8_confounds_and_physio_regressors(
         int(np.argmax(v)) for k, v in columns.items()
         if k.startswith("motion_outlier_")
     ], dtype=int)
-    fd_thr = float(policy.get("motion", {}).get("fd_outlier_threshold_mm", 0.5))
+    fd_thr = _opt_float(policy.get("motion", {}).get("fd_outlier_threshold_mm"))
 
     try:
         render_s8_confound_columns(

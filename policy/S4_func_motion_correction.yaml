@@ -36,26 +36,69 @@ motion_correction:
     threshold_mm: 2.0  # Threshold for detecting significant z-shifts
 
 # Quality Control Thresholds
+#
+# S4 no longer rejects a run for MOTION (changed 2026-07-16; evidence in
+# .claude/specs/s4-fd-threshold.md). S4's job is motion CORRECTION, so its gate
+# asks whether the correction succeeded (cord tSNR), not whether the subject
+# moved. Motion magnitude is a property of the data; censoring is S8's job, on
+# dVARS/refRMS. Why the old absolute FD gate was dropped:
+#
+#   * It flagged a MEDIAN of 48% of frames. Measured against post-correction
+#     residual DVARS, frames below 0.5 mm show NO more signal disruption than
+#     frames below 0.25 mm -- motion correction absorbs cord motion up to ~0.5 mm,
+#     so censoring there discarded clean data for no benefit. Disruption begins
+#     at ~0.95 mm.
+#   * 0.5 mm is Power 2012's BRAIN value, chosen by inspecting plots as "values
+#     well above the norm found in still subjects". Our cord FD median IS 0.50 mm,
+#     so the number inverts Power's own criterion.
+#   * It is not comparable across our own cohort. Three confounds, all measured:
+#     TR spans 1.55-3.26 s (2.1x; slower TR -> larger FD for the same motion,
+#     Jones 2022); in-plane voxel size varies 1.0-1.6 mm; and the FD definition
+#     itself moves the number 2x (bulk-only median 0.28 mm vs bulk+slicewise
+#     0.55 mm on identical runs). The old gate's FAIL pattern tracked TR, not
+#     motion -- an acquisition artifact that would read as a site effect.
+#   * No cord paper publishes a frame-censoring FD threshold. Kaptan 2023 never
+#     uses FD at all: it censors on dVARS/refRMS at mean+2SD per run and uses the
+#     slice-wise translations as REGRESSORS. That is the design followed here.
+#   * FD has no null distribution; DVARS does (Afyouni & Nichols 2018). The
+#     principled inference exists for the intensity metric, not for FD.
 qc_thresholds:
-  # FAIL thresholds (hard stop/fail status).
-  # Motion exclusion is RELATIVE: a run is dropped only when a majority of its
-  # frames would be censored (too little usable data). Single-frame max_fd is
-  # NOT a FAIL trigger — that is non-standard (Power 2014 censors frames; fMRIPrep
-  # and cord-fMRI Eippert/Kaptan never reject runs on one frame) and is sensitive
-  # to slicewise-moco artifacts. Fraction is self-normalizing -> generalizes
-  # across acquisitions where an absolute mm cutoff cannot.
-  max_high_motion_fraction: 0.50   # FAIL: >50% of frames exceed fd_threshold_mm
-  min_tsnr: 3.0                    # FAIL: technical moco failure (not motion)
+  # FAIL: technical failure of the CORRECTION -- not subject motion.
+  min_tsnr: 3.0                    # FAIL: no usable cord signal after moco
 
-  # WARN thresholds (warning status; surfaced for human QC, never drop the run)
-  warn_high_motion_fraction: 0.30  # WARN: elevated censored fraction
+  # OPTIONAL run exclusion on motion. Default null = OFF. If a site wants to drop
+  # high-motion runs it can set a fraction here, but it is left to the analyst
+  # because FD is not comparable across TR or FD definition (above), so no
+  # defensible default exists. Ricchi 2024 excludes SUBJECTS at mean FD > 0.4 mm
+  # (not frames) using the same 2-term x/y FD, for reference.
+  max_high_motion_fraction: null   # FAIL gate DISABLED by default
+
+  # WARN thresholds (surfaced for human QC; never drop the run)
+  #
+  # The FD-FRACTION WARN is also disabled (null). With the reference level at
+  # 0.5 mm — which is the cohort's own FD median — a "fraction > 0.30" rule fires
+  # on 72% of runs. A warning that fires on three quarters of the data carries no
+  # information; it was the same miscalibration as the FAIL gate, downgraded.
+  # Motion magnitude stays fully visible as metrics (mean_fd_mm, max_fd_mm,
+  # high_motion_fraction) and in the trace reportlet. Set a fraction here to
+  # re-enable the WARN.
+  warn_high_motion_fraction: null
+  # Kept: a single-frame spike is a real, specific observation (it fires on the
+  # tail, not the bulk) and such frames are censored downstream by S8 on the
+  # intensity metrics. Still an absolute number, so read it as a pointer for the
+  # human, not as a quality verdict.
   warn_fd_mm: 2.0                  # WARN: motion/artifact spike (observability)
   warn_tsnr: 5.0
+  # WARN when motion correction made cord tSNR WORSE. This names the real S4
+  # failure mode directly (audit F9) and is only meaningful now that tSNR is
+  # cord-restricted rather than whole-FOV.
+  warn_tsnr_degraded: true
   # max_fd_mm retired as a FAIL gate 2026-06-16 (was 3.0); see warn_fd_mm.
 
-  # Per-frame "high motion" threshold (Power 2012). Frames above this are the
-  # ones censored/modeled downstream (S8 motion_outlier regressors); the FAIL
-  # gate above is the fraction of frames exceeding it.
+  # Reference level for the `high_motion_fraction` METRIC and the reportlet's
+  # threshold line. NOT a gate. Retained at Power 2012's 0.5 mm so the number
+  # stays interpretable against the brain literature, but see above: it is not
+  # cord-calibrated and our own median sits on it.
   fd_threshold_mm: 0.5
 
 # QC Reportlet Visual Configuration

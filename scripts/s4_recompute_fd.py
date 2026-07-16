@@ -83,8 +83,8 @@ def main() -> int:
     pol = yaml.safe_load((REPO / "policy" / "S4_func_motion_correction.yaml").read_text())
     qt = pol["qc_thresholds"]
     fd_thr = args.fd_threshold if args.fd_threshold is not None else qt["fd_threshold_mm"]
-    fail_frac = qt["max_high_motion_fraction"]
-    warn_frac = qt["warn_high_motion_fraction"]
+    fail_frac = qt.get("max_high_motion_fraction")  # None = motion never FAILs
+    warn_frac = qt.get("warn_high_motion_fraction")
     warn_fd = qt["warn_fd_mm"]
     min_tsnr = qt["min_tsnr"]
 
@@ -117,12 +117,12 @@ def main() -> int:
 
             reasons = []
             status = "PASS"
-            if frac > fail_frac:
+            if fail_frac is not None and frac > fail_frac:
                 status = "FAIL"
                 reasons.append(
                     f"{frac:.0%} of frames exceed FD>{fd_thr}mm "
                     f"(> {fail_frac:.0%} usable-data floor)")
-            elif frac > warn_frac:
+            elif warn_frac is not None and frac > warn_frac:
                 status = "WARN"
                 reasons.append(f"high censored fraction {frac:.0%}")
             if m["max_fd_mm"] > warn_fd:
@@ -131,6 +131,11 @@ def main() -> int:
                 reasons.append(
                     f"motion/artifact spike: max FD {m['max_fd_mm']:.2f}mm "
                     f"(censored downstream, not a rejection)")
+            if qt.get("warn_tsnr_degraded", True) and m.get("tsnr_improvement_pct", 0) < 0:
+                if status == "PASS": status = "WARN"
+                reasons.append(
+                    f"motion correction reduced cord tSNR by "
+                    f"{abs(m['tsnr_improvement_pct']):.1f}%")
             if m.get("tsnr_after_mean", 99) < min_tsnr:
                 status = "FAIL"
                 reasons.append(f"tSNR {m['tsnr_after_mean']:.2f} < {min_tsnr}")
