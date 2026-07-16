@@ -161,41 +161,47 @@ def coarse_bulk_xy_correction(
 
 
 def compute_framewise_displacement(
-    params_df: pd.DataFrame, 
-    radius_mm: float = 50.0 # Standard, essentially ignored for pure Translation
+    params_df: pd.DataFrame,
+    radius_mm: float = 50.0,
 ) -> np.ndarray:
     """
-    Compute Framewise Displacement (FD) from motion parameters.
-    Based on Power et al. (2012) definition: sum of absolute derivatives.
-    
+    Compute cord framewise displacement (FD) from motion parameters.
+
+    For cord fMRI, FD is the sum of the absolute derivatives of the IN-PLANE
+    translations only, following Kaptan et al. (2023, NeuroImage,
+    doi:10.1016/j.neuroimage.2023.120152): "framewise displacement (FD) was
+    computed by summing the absolute values of the derivatives of the motion
+    parameters in x and y". This is the field's deliberate cord adaptation of
+    Power et al. (2012) FD, which sums 6 rigid parameters (3 translations + 3
+    rotations on a 50 mm sphere) for the brain: `sct_fmri_moco` estimates only
+    in-plane slice-wise translations, and rotation is ill-defined on a
+    cord-cropped small FOV, so tz and the rotations are not part of cord FD.
+
+    The rotation branch below is retained only so a caller that passes a full
+    6-column frame still gets a defined result; for the shipped cord engine the
+    frame carries tx/ty only and the rotation columns are absent, so
+    `radius_mm` has no effect.
+
     Args:
-        params_df: DataFrame with motion columns (tx, ty, tz, rx, ry, rz).
-                   Columns can be subset (e.g., just tx, ty).
-        radius_mm: Head radius to convert rotation radians to mm (standard 50mm).
-    
+        params_df: DataFrame with motion columns; the cord engine supplies tx, ty.
+        radius_mm: Sphere radius (mm) for converting any rotation columns to
+                   arc length (unused for the tx/ty-only cord frame).
+
     Returns:
         fd: Array of FD values (mm). First value is 0.
     """
-    # Identify present columns
     trans_cols = [c for c in ['tx', 'ty', 'tz'] if c in params_df.columns]
     rot_cols = [c for c in ['rx', 'ry', 'rz'] if c in params_df.columns]
-    
-    # Calculate differences (derivatives)
+
     diffs = params_df[trans_cols + rot_cols].diff().fillna(0)
-    
-    # Convert rotations to mm (if any)
-    # Assume rotations are in degrees? Or radians?
-    # SCT usually outputs radians? Need to verify input source.
-    # Our coarse step outputs translation only (mm/pixels).
-    # Let's assume input units match.
-    # If rotations present, convert to arc length displacement
+
+    # Any rotation columns (absent for the cord engine) are converted from
+    # radians to arc-length displacement on a radius_mm sphere, per Power 2012.
     for rc in rot_cols:
-        # Assuming radians for now (standard in tools)
-        diffs[rc] = diffs[rc] * radius_mm 
-        
-    # Sum of absolute differences
+        diffs[rc] = diffs[rc] * radius_mm
+
     fd = diffs.abs().sum(axis=1).values
-    
+
     return fd
 
 

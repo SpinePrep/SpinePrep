@@ -30,6 +30,28 @@ class StepResult:
     failure_message: Optional[str] = None
 
 
+def _aggregate_top_status(results: list) -> tuple[str, Optional[str]]:
+    """Derive the dataset-level status from per-run results (matches S3).
+
+    PASS when every run passed; WARN when at least one passed but some
+    warned/failed (partial success); FAIL when none passed or there were no
+    runs. Returns (status, message).
+    """
+    n_pass = sum(1 for r in results if r.get("status") == "PASS")
+    n_warn = sum(1 for r in results if r.get("status") == "WARN")
+    n_fail = sum(1 for r in results if r.get("status") == "FAIL")
+    if results and n_pass == len(results):
+        return "PASS", None
+    if n_pass > 0:
+        parts = []
+        if n_fail:
+            parts.append(f"{n_fail} failed")
+        if n_warn:
+            parts.append(f"{n_warn} warned")
+        return "WARN", ", ".join(parts) + f" out of {len(results)} runs"
+    return "FAIL", (f"all {len(results)} runs failed" if results else "no runs processed")
+
+
 # ---------------------------------------------------------------------------
 # run_S4 -- top-level entry point
 # ---------------------------------------------------------------------------
@@ -145,21 +167,7 @@ def run_S4(
     #   PASS  all runs PASS
     #   WARN  some FAIL or WARN but at least one PASS - partial success
     #   FAIL  no PASS, or no runs at all
-    n_pass = sum(1 for r in results if r.get("status") == "PASS")
-    n_warn = sum(1 for r in results if r.get("status") == "WARN")
-    n_fail = sum(1 for r in results if r.get("status") == "FAIL")
-    if results and n_pass == len(results):
-        top_status = "PASS"
-        top_msg = None
-    elif n_pass > 0:
-        top_status = "WARN"
-        parts = []
-        if n_fail: parts.append(f"{n_fail} failed")
-        if n_warn: parts.append(f"{n_warn} warned")
-        top_msg = ", ".join(parts) + f" out of {len(results)} runs"
-    else:
-        top_status = "FAIL"
-        top_msg = f"all {len(results)} runs failed" if results else "no runs processed"
+    top_status, top_msg = _aggregate_top_status(results)
 
     aggregated_qc = {
         "dataset_key": dataset_key,

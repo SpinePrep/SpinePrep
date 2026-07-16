@@ -3,157 +3,119 @@ search:
   boost: 2
 ---
 
-# S4: Motion Correction
+# S4: Motion correction
 
-**Step Code:** `S4_motion_correction`  
-**Depends on:** S3 (Functional Initialization & Crop)  
-**Required by:** S5 (Distortion Correction), S6 (Registration)
+S4 aligns every functional volume to a common frame and writes the
+motion-corrected 4D series, the per-frame motion parameters, and a motion and
+temporal-SNR quality report.
 
----
+## What it does
 
-## Purpose
+S4 corrects subject motion in the cord-cropped 4D EPI produced by S3. Cord fMRI
+is sensitive to small movements because the cord cross-section is a few
+millimetres across, and its dominant motion is in-plane and can differ slice to
+slice with the cardiac cycle. Correction runs in two stages: a coarse in-plane
+bulk alignment of each volume, then a slice-wise realignment regularized along
+the cord axis. No slice-timing correction is applied; the series is never
+temporally resampled, following the cord-fMRI field standard (Eippert et al.,
+2017; Kaptan et al., 2023). Slice-timing metadata is used only later, by
+RETROICOR in S8.
 
-S4 minimizes the impact of subject motion on the fMRI time series. Even small movements (< 1mm) can induce significant signal changes in spinal fMRI due to the small cross-sectional area of the cord. This step aligns all functional volumes to the robust reference created in S3.
+## Algorithm and parameters
 
-!!! note "No slice-timing correction"
-    The pipeline performs **no slice-timing correction** — it never temporally
-    resamples the BOLD series. This is a deliberate choice for cord fMRI,
-    following the field standard (Eippert 2017; Kaptan 2023). Slice-timing
-    metadata from the BIDS sidecar is used only later, by RETROICOR in S8, to
-    phase the cardiac and respiratory regressors.
+Stage 1 estimates a bulk in-plane translation for each volume with FSL `flirt`
+v6.0 (2-DOF; Jenkinson & Smith, 2001), registering the volume's axial mean
+projection to the mean projection of the robust reference from S3, and applies
+that translation identically to every slice. Stage 2 performs slice-wise
+in-plane realignment with `sct_fmri_moco` (SliceReg; De Leener et al., 2017),
+regularizing the per-slice translations with a polynomial along the
+inferior–superior axis so that a noisy single slice cannot diverge from its
+neighbours. The registration metric is restricted to the cord by a cord mask.
+`sct_fmri_moco` in the integrated SCT 7.1 builds its own registration target by
+iterative averaging and takes no external reference, so the robust reference
+governs Stage 1 and the tSNR comparison rather than the slice-wise stage.
 
----
+`mode`
+: Which stages run. Default `3d+2d` (both). Allowed: `3d+2d`, `3d`, `2d`.
 
-## Algorithm Overview
+`stage1_coarse.interpolation_order`
+: Spline order for applying the Stage-1 shift. Default `1` (linear).
 
-The S4 step consists of two primary subtasks:
+`stage2_slicereg.poly_order`
+: Degree of the along-Z polynomial regularizing the slice-wise translations.
+Default `2` (the `sct_fmri_moco` default).
 
-| Subtask | Name | Description |
-|---------|------|-------------|
-| S4.1 | Motion Correction | Register all volumes to the reference using `sct_fmri_moco` |
-| S4.2 | Evaluation & QC | Compute motion metrics (FD, DVARS) and TSNR improvement |
+`stage2_slicereg.metric`
+: Registration cost function. Default `MeanSquares`, appropriate for the
+same-contrast BOLD-to-BOLD alignment here. Allowed: `MeanSquares`, `MI`.
 
----
+`stage2_slicereg.iterations`
+: Maximum optimizer iterations per slice. Default `10`.
 
-## S4.1: Motion Correction
+`z_shift_correction.enabled`
+: Detect and correct a bulk inferior–superior shift between runs of the same
+subject and task. Default `false`; detection is reported when a run-01 reference
+of matching shape is available.
 
-### Rationale
+## Inputs and outputs
 
-Standard brain motion correction tools (like FSL MCFLIRT) assume a rigid body. The spinal cord, however, is a non-rigid structure that can deform. While fully non-rigid motion correction is complex, a slice-wise or polynomial-regularized approach is more effective for the cord. We use `sct_fmri_moco` with polynomial regularization to account for smooth deformations along the Z-axis.
-
-### Algorithm
-
-1.  **Grouping** - Volumes are grouped (e.g., adjacent 3-5 volumes) to improve SNR for registration if data is noisy (optional).
-2.  **Registration** - Each volume (or group) is registered to the S3 Robust Reference using slice-wise translation (Tx, Ty) regularized by a polynomial function along Z.
-3.  **Resampling** - The calculated transformations are applied to the original data using spline interpolation.
-
-### Command
-```bash
-sct_fmri_moco -i funccrop_bold.nii.gz -ref func_ref.nii.gz \
-              -g 1 -param params.txt -x spline
-```
-
-### QC: Motion Traces
-
-![Motion Traces](../assets/qc/S4_motion_traces_example.png)
-
-**What to look for:**
-
--   ✅ Smooth, low-amplitude traces (typically < 1-2 mm).
--   ✅ Periodic motion often corresponds to respiration.
--   ❌ FAIL: Sudden large jumps (> 2-3 mm) or continuous drift indicating scanner instability or severe patient discomfort.
-
----
-
-## S4.2: Evaluation
-
-### Rationale
-
-We must quantify the success of motion correction. Two key metrics are used:
-1.  **DVARS (Derivative of VARiance):** Measures frame-to-frame intensity changes. Spikes in DVARS indicate sudden motion.
-2.  **tSNR (temporal Signal-to-Noise Ratio):** The mean signal divided by the standard deviation over time. Effective motion correction should increase tSNR in the cord.
-
-### Algorithm
-
-1.  **Compute DVARS** on the motion-corrected data.
-2.  **Compute tSNR** before and after motion correction.
-3.  **Generate QC Reportlets**.
-
-### QC: DVARS Plot
-
-![DVARS Plot](../assets/qc/S4_dvars_plot_example.png)
-
-**What to look for:**
-
--   ✅ Few or no spikes crossing the outlier threshold (dashed line).
--   ✅ Lower overall variability compared to raw data (if plotted together).
-
-### QC: tSNR Comparison
-
-![tSNR Comparison](../assets/qc/S4_tsnr_comparison_example.png){ width="500" }
-
-**What to look for:**
-
--   ✅ **Right side (After)** should be brighter/redder (higher tSNR) than the **Left side (Before)**, especially inside the cord.
--   ✅ Cord structure should be sharper.
--   ❌ FAIL: tSNR decreases or cord becomes blurry.
-
----
-
-## Outputs
-
-### Derivatives
+S4 reads the cropped BOLD, the robust reference, and the cord segmentation from
+the S3 run directory. It writes, per run:
 
 ```
-derivatives/spineprep/{dataset}/sub-{id}/func/
-├── sub-{id}_task-{task}_desc-moco_bold.nii.gz        # Motion-corrected 4D data
-├── sub-{id}_task-{task}_desc-moco_mean.nii.gz        # Mean of moco_bold
-├── sub-{id}_task-{task}_desc-moco_params.tsv         # Motion parameters (Tx, Ty per frame)
-└── sub-{id}_task-{task}_desc-confounds_timeseries.tsv # Updated with FD/DVARS
-
-derivatives/spineprep/{dataset}/sub-{id}/figures/
-├── sub-{id}_..._desc-S4_motion_traces.png
-├── sub-{id}_..._desc-S4_dvars_plot.png
-└── sub-{id}_..._desc-S4_tsnr_comparison.png
+derivatives/spineprep/sub-<id>/[ses-<id>/]func/
+├── sub-<id>_..._desc-mocoref_bold.nii.gz   # motion-corrected 4D series
+└── sub-<id>_..._moco_params.tsv            # per-frame motion magnitude
 ```
 
----
+The signed slice-wise translation fields (`moco_params_x.nii.gz`,
+`moco_params_y.nii.gz`) are retained in the working directory and read by S8 to
+build the motion confound regressors.
 
-## CLI Usage
+## Quality control
 
-```bash
-# Run S4 for a single dataset
-poetry run spineprep run S4_motion_correction \
-  --dataset-key <KEY> \
-  --datasets-local config/datasets_local.yaml \
-  --out work/example
-```
+The step-local metric is temporal SNR (voxel temporal mean divided by temporal
+standard deviation) measured inside the cord segmentation, reported before and
+after correction; effective correction raises cord tSNR (Kaptan et al., 2023).
+Framewise displacement is the sum of the absolute derivatives of the in-plane
+translations, `|Δtx| + |Δty|`, the cord adaptation used by Kaptan et al. (2023);
+frames above `fd_threshold_mm` (default 0.5 mm; Power et al., 2012) are counted
+as high-motion and censored downstream in S8, not dropped here. A run is failed
+only when the high-motion fraction exceeds 0.50 (too little usable data) or cord
+tSNR falls below 3, and warned when the high-motion fraction exceeds 0.30 or a
+single-frame peak exceeds `warn_fd_mm`. The reviewer inspects three reportlets:
+a motion-trace panel (in-plane translation, FD, and DVARS on a shared time
+axis), a slice-by-time heatmap of the signed slice-wise shift, and a
+before/after tSNR comparison with a per-slice cord profile.
 
----
+## Limitations
 
-## QC Status Logic
-
-```
-status = FAIL if:
-  - Max displacement > 3mm (Tx or Ty)
-  - Mean FD > 0.5mm
-  - tSNR improvement < 0% (worsened)
-
-status = WARN if:
-  - Max displacement > 2mm
-  - > 20% frames define as high motion (FD > 0.5mm)
-  - tSNR improvement < 5%
-
-status = PASS otherwise
-```
-
----
+Motion is often sub-voxel in cooperative cohorts, where correction changes the
+series little and the value is mainly in the QC record. The slice-wise stage
+estimates in-plane translations only; through-plane and rotational motion are
+not modelled, consistent with the cord field but a genuine limit on heavily
+moving runs. Correction quality depends on the S3 cord segmentation, since the
+registration metric is restricted to it. Framewise displacement built from
+in-plane translations does not capture out-of-plane motion, so a low FD does not
+by itself certify a still run.
 
 ## References
 
-1.  **SCT Motion Correction:** De Leener et al. *NeuroImage* 145:24-43 (2017). [DOI](https://doi.org/10.1016/j.neuroimage.2016.10.009)
-2.  **Framewise Displacement (FD):** Power et al. *NeuroImage* 59(3):2142-2154 (2012).
+- De Leener, B., et al. (2017). SCT: Spinal Cord Toolbox, an open-source
+  software for processing spinal cord MRI data. NeuroImage 145, 24–43.
+- Eippert, F., et al. (2017). Denoising spinal cord fMRI data: Approaches to
+  acquisition and analysis. NeuroImage.
+- Jenkinson, M., & Smith, S. (2001). A global optimisation method for robust
+  affine registration of brain images. Medical Image Analysis 5(2), 143–156.
+- Kaptan, M., et al. (2023). Reliability of resting-state functional
+  connectivity in the human spinal cord. NeuroImage.
+- Power, J. D., et al. (2012). Spurious but systematic correlations in functional
+  connectivity MRI networks arise from subject motion. NeuroImage 59(3),
+  2142–2154.
+
+Running S4: see the [CLI reference](../reference/cli.md).
 
 ---
-
-*Last updated: February 2026*
+*Parameters reflect `policy/S4_func_motion_correction.yaml`, shipped with
+SpinePrep; verified against the implementation and SCT 7.1 on 2026-07-16. Audit:
+`.claude/specs/s4-algorithm-audit.md`.*

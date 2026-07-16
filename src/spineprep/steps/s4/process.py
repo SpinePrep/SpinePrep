@@ -21,6 +21,26 @@ from spineprep.lib import moco
 logger = logging.getLogger(__name__)
 
 
+def _select_moco_mask(s3_run_dir: Path, crop_mask_path: Path) -> Path:
+    """Choose the mask handed to sct_fmri_moco -m.
+
+    Must be in the SAME space as the cropped BOLD, or sct_fmri_moco's internal
+    mask resample collapses to near-empty and it silently returns zero shifts
+    (the bug that produced 0/223 corrected frames on wf_reg_035). Prefer the
+    cropped S3.1 discovery seg; then funccrop_mask; never the uncropped seg
+    unless nothing else exists.
+    """
+    cord_seg_path_cropped = (
+        s3_run_dir / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz"
+    )
+    cord_seg_path = s3_run_dir / "init" / "localize" / "func_ref_fast_seg.nii.gz"
+    if cord_seg_path_cropped.exists():
+        return cord_seg_path_cropped
+    if crop_mask_path.exists():
+        return crop_mask_path
+    return cord_seg_path
+
+
 def run_S4_func_motion_correction(
     s3_run_dir: Path,
     policy: dict,
@@ -90,16 +110,7 @@ def run_S4_func_motion_correction(
     # slice-wise shifts because the SCT-internal mask resample collapses to a
     # near-empty mask. Prefer the cropped variant; then funccrop_mask; never
     # the uncropped seg.
-    cord_seg_path_cropped = s3_run_dir / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz"
-    cord_seg_path = s3_run_dir / "init" / "localize" / "func_ref_fast_seg.nii.gz"
-    if cord_seg_path_cropped.exists():
-        moco_mask_path = cord_seg_path_cropped
-    elif crop_mask_path.exists():
-        moco_mask_path = crop_mask_path
-    else:
-        # Last resort - the uncropped seg. Will warn downstream if shape
-        # doesn't match the BOLD.
-        moco_mask_path = cord_seg_path
+    moco_mask_path = _select_moco_mask(s3_run_dir, crop_mask_path)
 
     # Work and Output setup
     s4_work_dir = work_dir / step_code / run_name
@@ -268,9 +279,13 @@ def run_S4_func_motion_correction(
         except Exception as _e:
             logger.warning(f"Could not validate moco mask shape: {_e}")
 
-        sct_ref_path = s4_work_dir / "sct_ref.nii.gz"
-        if sct_ref_path.exists(): sct_ref_path.unlink()
-        sct_ref_path.symlink_to(robust_ref_path.resolve())
+        # NOTE: sct_fmri_moco in SCT 7.1 (the pinned version) has NO
+        # external-reference flag -- it builds its own target by iterative
+        # averaging (iterAvg/num_target). The S3 robust reference therefore
+        # governs only Stage 1 (FLIRT) and the tSNR comparison, never the
+        # slice-wise stage. (SCT 7.2 added a -ref flag; wire it here when the
+        # pinned version moves.) An earlier `sct_ref.nii.gz` symlink here was
+        # dead code -- it was never passed to the command -- and is removed.
 
         # Policy params from "stage2_slicereg"
         poly_order = policy["motion_correction"]["stage2_slicereg"].get("poly_order", 2)
@@ -317,7 +332,27 @@ def run_S4_func_motion_correction(
     img_before = nib.load(bold_crop_path)
     img_after = nib.load(stage2_bold_path)
     after_data = img_after.get_fdata()
-    mask = np.mean(after_data, axis=-1) > 0
+
+    # tSNR and DVARS are the step-local truth metric, so they must be measured
+    # CORD-RESTRICTED, not over the whole cropped FOV. The field computes cord/
+    # gray-matter tSNR inside the cord ROI (Kaptan 2023: voxel temporal mean /
+    # temporal SD, averaged within the cord); the cropped FOV also contains the
+    # pulsatile CSF ring, which deflates tSNR and makes a "cord" metric that is
+    # not cord-specific. Use the same cord segmentation passed to sct_fmri_moco;
+    # fall back to the nonzero-FOV mask only if the seg is missing or mis-shaped.
+    mask = None
+    try:
+        seg_data = nib.load(moco_mask_path).get_fdata() > 0
+        if seg_data.shape == after_data.shape[:3] and seg_data.any():
+            mask = seg_data
+    except Exception as _me:
+        logger.warning(f"[{step_code}] Could not load cord mask for tSNR/DVARS: {_me}")
+    if mask is None:
+        logger.warning(
+            f"[{step_code}] Falling back to nonzero-FOV mask for tSNR/DVARS "
+            f"(cord seg unavailable or mis-shaped); metric is not cord-restricted"
+        )
+        mask = np.mean(after_data, axis=-1) > 0
 
     # Compute Metrics
     dvars = moco.compute_dvars(after_data, mask)

@@ -263,57 +263,62 @@ def test_s4_reportlets_only_locates_work_dir_via_run_id(tmp_path, monkeypatch):
 
 def test_s4_aggregates_top_level_status_pass_warn_fail():
     """Top-level qc.json status must be derived from per-run statuses so
-    mark_done sees PASS/WARN/FAIL rather than UNKNOWN."""
-    # Inline the aggregation rule (mirrors run_S4 in orchestrate.py).
-    def agg(results):
-        n_pass = sum(1 for r in results if r.get("status") == "PASS")
-        if results and n_pass == len(results):
-            return "PASS"
-        if n_pass > 0:
-            return "WARN"
-        return "FAIL"
+    mark_done sees PASS/WARN/FAIL rather than UNKNOWN.
 
-    assert agg([{"status": "PASS"}, {"status": "PASS"}]) == "PASS"
-    assert agg([{"status": "PASS"}, {"status": "FAIL"}]) == "WARN"
-    assert agg([{"status": "PASS"}, {"status": "WARN"}]) == "WARN"
-    assert agg([{"status": "FAIL"}, {"status": "FAIL"}]) == "FAIL"
-    assert agg([]) == "FAIL"
+    Calls the REAL aggregator (orchestrate._aggregate_top_status), not an inline
+    copy -- the previous version re-implemented the rule in the test body, so a
+    regression in orchestrate.py would not have failed it.
+    """
+    from spineprep.steps.s4.orchestrate import _aggregate_top_status
+
+    assert _aggregate_top_status([{"status": "PASS"}, {"status": "PASS"}])[0] == "PASS"
+    assert _aggregate_top_status([{"status": "PASS"}, {"status": "FAIL"}])[0] == "WARN"
+    assert _aggregate_top_status([{"status": "PASS"}, {"status": "WARN"}])[0] == "WARN"
+    assert _aggregate_top_status([{"status": "FAIL"}, {"status": "FAIL"}])[0] == "FAIL"
+    assert _aggregate_top_status([])[0] == "FAIL"
+    # message names the partial-failure breakdown
+    st, msg = _aggregate_top_status([{"status": "PASS"}, {"status": "FAIL"}, {"status": "WARN"}])
+    assert st == "WARN" and "1 failed" in msg and "1 warned" in msg
 
 
 def test_s4_picks_cropped_moco_mask_when_present(tmp_path):
     """Regression: S4 must pick the CROPPED S3.1 seg (matches the cropped BOLD)
     not the uncropped one. Mismatched mask shape -> sct_fmri_moco silently
     returns zero shifts, which is exactly the bug that produced 0/223 frames
-    of motion correction on wf_reg_035 before this fix."""
-    import nibabel as nib
+    of motion correction on wf_reg_035 before this fix.
+
+    Calls the REAL selector (process._select_moco_mask), not an inline copy.
+    """
+    from spineprep.steps.s4.process import _select_moco_mask
+
     s3_run = tmp_path / "s3_run"
     localize = s3_run / "init" / "localize"
     localize.mkdir(parents=True)
+    (localize / "func_ref_fast_seg.nii.gz").write_bytes(b"")       # uncropped
+    (localize / "func_ref_fast_seg_crop.nii.gz").write_bytes(b"")  # cropped
 
-    # Uncropped seg (128x128x12) and cropped seg (32x34x11). funccrop_mask
-    # absent. Expect: cropped wins.
-    nib.save(nib.Nifti1Image(
-        np.zeros((128, 128, 12), dtype=np.uint8), np.eye(4)),
-        localize / "func_ref_fast_seg.nii.gz")
-    nib.save(nib.Nifti1Image(
-        np.zeros((32, 34, 11), dtype=np.uint8), np.eye(4)),
-        localize / "func_ref_fast_seg_crop.nii.gz")
-
-    # Replicate the mask-selection logic from process.py
     crop_mask_path = s3_run / "funccrop_mask.nii.gz"  # absent
-    cord_seg_path_cropped = s3_run / "init" / "localize" / "func_ref_fast_seg_crop.nii.gz"
-    cord_seg_path = s3_run / "init" / "localize" / "func_ref_fast_seg.nii.gz"
-
-    if cord_seg_path_cropped.exists():
-        moco_mask_path = cord_seg_path_cropped
-    elif crop_mask_path.exists():
-        moco_mask_path = crop_mask_path
-    else:
-        moco_mask_path = cord_seg_path
-
-    assert moco_mask_path == cord_seg_path_cropped, (
-        f"S4 must prefer the CROPPED mask, got {moco_mask_path}"
+    chosen = _select_moco_mask(s3_run, crop_mask_path)
+    assert chosen == localize / "func_ref_fast_seg_crop.nii.gz", (
+        f"S4 must prefer the CROPPED seg, got {chosen}"
     )
-    assert nib.load(moco_mask_path).shape == (32, 34, 11)
+
+
+def test_s4_moco_mask_fallback_order(tmp_path):
+    """When the cropped seg is absent, funccrop_mask is preferred over the
+    uncropped seg; with neither, the uncropped seg is the last resort."""
+    from spineprep.steps.s4.process import _select_moco_mask
+
+    s3_run = tmp_path / "s3_run"
+    localize = s3_run / "init" / "localize"
+    localize.mkdir(parents=True)
+    (localize / "func_ref_fast_seg.nii.gz").write_bytes(b"")  # uncropped only
+    crop_mask = s3_run / "funccrop_mask.nii.gz"
+
+    # uncropped seg only -> last resort
+    assert _select_moco_mask(s3_run, crop_mask) == localize / "func_ref_fast_seg.nii.gz"
+    # funccrop_mask present, no cropped seg -> funccrop_mask wins over uncropped
+    crop_mask.write_bytes(b"")
+    assert _select_moco_mask(s3_run, crop_mask) == crop_mask
 
 

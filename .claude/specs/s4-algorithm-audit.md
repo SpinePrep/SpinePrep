@@ -4,197 +4,183 @@ status: approved
 
 # S4 algorithm audit — literature-backed, truthful, correct
 
-Line-by-line audit of every motion-correction choice in S4
-(`steps/s4/process.py` + `policy/S4_func_motion_correction.yaml`)
-against the cord-fMRI literature. Sibling of the S3 audit (same
-format).
+Rewritten 2026-07-16. Supersedes the previous version, which predated the
+current research pass, judged the moco mask acceptable (it is a deviation, F2),
+called FD "Power 2014" (the shipped FD is Kaptan's x/y form, F4), and did not
+examine the public doc (wrong, F1), the tSNR mask (F5), the dead reference
+(F6), or the tests (F7). Every claim below was verified against the S4 code,
+the installed SCT 7.1 (`sct_fmri_moco -h`), SCT's vendored fMRI tutorial
+(`docs/vendor/sct/7.2/...`), or primary literature (quotes + DOIs in the
+research log). SpinePrep ships **SCT 7.1** (`Dockerfile.spineprep`:
+`ENV SCT_VERSION=7.1`); version-sensitive claims are scoped to it.
 
-> **Update — Stage-1 engine is now FLIRT 2-DOF, not phase_cross_correlation.**
-> When this audit was written, Stage 1 used scikit-image
-> `phase_cross_correlation`. That approach was evaluated and **reverted**:
-> the shipped Stage 1 is now coarse in-plane (X, Y) bulk correction via
-> **FLIRT 2-DOF on the Z-projection** (`policy/S4_func_motion_correction.yaml`
-> `stage1_coarse.method: flirt_2dof`; `lib/moco.coarse_bulk_xy_correction`,
-> sign-corrected per BUG-1c). The accurate, current spec for Stage 1 is
-> `.claude/specs/s4-stage1-flirt-2d-replacement.md` (status `implemented`).
-> Read the rows below that mention `phase_cross_correlation` as **superseded**
-> — the literature reasoning (XY-only bulk pre-alignment before SCT's
-> slice-wise stage) still holds; only the engine changed.
+## What S4 does (verified against code)
 
-## Sub-step summary
+Two-stage motion correction on the cord-cropped 4D EPI from S3.
 
-The S4 pipeline runs up to three stages of motion correction on the
-S3-cropped 4D BOLD:
-
-| Stage | Operation | Engine | Default mode |
-|---|---|---|---|
-| **(opt) Z-shift** | Inter-run bulk Z-translation between this run's funcref and the run-01 funcref of the same (sub, ses, task) | NumPy cross-correlation in `lib/moco.py` | **disabled** (`z_shift_correction.enabled = false`) |
-| **Stage 1** (3D bulk XY) | Coarse in-plane (X, Y) bulk correction on the Z-projected volume | **FLIRT 2-DOF** (`lib/moco.coarse_bulk_xy_correction`, Jenkinson & Smith 2001) — *replaced the reverted scikit-image `phase_cross_correlation`* | on when mode contains `"3d"` (default `"3d+2d"`) |
-| **Stage 2** (slice-wise) | Slice-by-slice rigid realignment with Z-axis polynomial regularization | `sct_fmri_moco` (`-param poly=2,metric=MeanSquares,iter=10 -x spline`) | on when mode contains `"2d"` (default `"3d+2d"`) |
-
-## Per-choice verdict
-
-### Two-stage architecture
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `motion_correction.mode` | `"3d+2d"` | Mohammed 2020 (bioRxiv 2020.05.20.103986) explicitly recommends a 2-stage approach (bulk → slice-wise) for cord-fMRI; brain pipelines (fMRIPrep) use 6-DOF rigid volume-wise only, but cord motion is z-localized and needs slice-wise. Kaptan 2023 and CoSpine 2025 rely on `sct_fmri_moco`'s built-in 2-stage. | ✅ field-standard. |
-
-**Important nuance**: `sct_fmri_moco` itself is internally a 2-stage
-process (SCT docs: "first step using 3D rigid-body realignment with
-normalized correlation … followed by a second step performing 2D
-slice-wise realignment"). Our pipeline runs:
-1. Our custom Stage 1 phase-cross-correlation XY
-2. `sct_fmri_moco`'s internal 3D rigid step (default — not disabled)
-3. `sct_fmri_moco`'s internal SliceReg 2D step
-
-That's **three** stages, not two. This is potentially redundant.
-
-⚠️ **Action recommended**: either disable our custom Stage 1 (rely on
-SCT's built-in 3D), or pass `-r 0` / equivalent to suppress SCT's 3D
-step and use only the slice-wise stage. Current behaviour works (the
-extra stage is harmless), but it doubles compute on the bulk stage.
-
-### Stage 1 (custom bulk XY)
-
-> **SUPERSEDED — the rows below describe the reverted phase_cross_correlation
-> engine.** The shipped Stage 1 is now FLIRT 2-DOF on the Z-projection
-> (`stage1_coarse.method: flirt_2dof`). The `upsample_factor` knob no
-> longer applies. Current spec: `.claude/specs/s4-stage1-flirt-2d-replacement.md`.
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `stage1_coarse.method` | ~~`phase_cross_correlation`~~ → now `flirt_2dof` | FLIRT 2-DOF (Jenkinson & Smith 2001) on the Z-projection; the phase-correlation engine (Foroosh 2002 / Guizar-Sicairos 2008) was reverted after the dev-cohort A/B | ✅ field-recognised FLIRT primitive |
-| `upsample_factor` | ~~10~~ (n/a) | Was a phase-correlation subpixel parameter; not used by FLIRT 2-DOF | superseded |
-| `interpolation_order` | 1 (bilinear) | Standard for applying small shifts; spline (order 3) is slower and only marginally sharper on EPI data | ✅ defensible |
-
-### Stage 2 (slice-wise via sct_fmri_moco)
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `stage2_slicereg.metric` | `MeanSquares` | SCT docs: "Mean squares was used as the cost function for the curvature of lumbar spine and spline as interpolation can lead to the best result". Same-modality (BOLD ↔ BOLD) registration is well-served by MS; MI is for cross-modal. | ✅ field-standard for same-modality |
-| `stage2_slicereg.poly_order` | 2 | sct_fmri_moco default. Polynomial-2 fit across slices smooths registration parameters along Z — prevents per-slice noise from contaminating individual slice estimates. | ✅ SCT default |
-| `stage2_slicereg.iterations` | 10 | sct_fmri_moco internal default is typically 5–10; 10 favours convergence over speed. | ✅ defensible |
-| `stage2_slicereg.smooth` | 0 mm | No pre-smoothing during registration (sharper cost surface). | ✅ standard for cord |
-| Interpolation (final resampling) | `spline` | SCT default; b-spline preserves the cord boundary better than linear under sub-voxel shifts. | ✅ SCT default |
-
-### Optional Z-shift correction
-
-| Choice | Value | Literature | Verdict |
-|---|---|---|---|
-| `z_shift_correction.enabled` | `false` (default) | No published cord-fMRI pipeline applies inter-run Z-shift correction routinely; this is a SpinePrep guard for cohorts where the table position drifted between runs. | ✅ disabled by default — correct (don't apply unless cohort-specific need) |
-| `z_shift_correction.threshold_mm` | 2.0 | One-slice-thickness threshold (typical cord-fMRI slice ≈ 3-5 mm). 2 mm catches bulk shifts but not pulsation. | ✅ defensible |
-
-### QC thresholds
-
-| Gate | Value | Literature | Verdict |
-|---|---|---|---|
-| `fd_threshold_mm` (high-motion frame) | 0.5 | **Power 2014** lenient FD scrub (its "stringent" 0.2 mm is also Power). DOC-2: Kaptan 2023 is NOT an FD source — it scrubs dVARS/refRMS at SD; the old "Kaptan/Dabbagh 0.2 mm" note was a misattribution. S8 now also uses 0.5 mm. | ✅ Power 2014 |
-| `max_fd_mm` FAIL | 3.0 | Conservative — runs above 3 mm peak FD are unusable | ✅ defensible |
-| `warn_fd_mm` WARN | 2.0 | Cord-fMRI typical max FD < 1 mm in good runs | ✅ defensible |
-| `min_tsnr` FAIL | 3.0 | Cord tSNR typical 8-15 (Eippert 2017); below 3 means no usable signal | ✅ defensible |
-| `warn_tsnr` WARN | 5.0 | Below 5 = noisy cord run | ✅ defensible |
-| `max_high_motion_fraction` FAIL | 0.50 | >50% of frames high-motion ⇒ run unusable | ✅ defensible |
-| `warn_high_motion_fraction` WARN | 0.30 | >30% questionable | ✅ defensible |
-
-## What's NOT in S4 (deferred / declined)
-
-| Operation | Status | Rationale |
+| Stage | Operation | Engine |
 |---|---|---|
-| Motion regressor extraction for confound regression | **deferred to S8** | S4 saves `moco_params.tsv` (translations + rotations per slice/volume); S8 reads it. ✅ correct separation |
-| 24-parameter Friston model expansion | **deferred to S8** | Confound family construction belongs to S8. ✅ standard |
-| Per-frame scrubbing / censoring | **partially S3** | S3 flags outliers via DVARS/refRMS; S8 builds the spike regressors. S4 doesn't censor (motion-correct, don't drop). ✅ correct |
-| Slice-time correction | **declined chain-wide** | Same rationale as S3 audit — debated for cord, CoSpine + SCT skip it. ✅ standard |
-| AFNI 3dvolreg / FSL MCFLIRT | **not used** | Both are volume-wise rigid (no slice-wise), inappropriate for cord pulsation correction. ✅ correct — cord needs sct_fmri_moco's slice-wise stage |
-| DeepRetroMoCo (deep-learning moco) | **not used** | Emerging 2024 method (Front. Psychiatry); not yet packaged in SCT, not field-standard. Track for v2 if validation lands. |
+| **S4.1** | (optional, off by default) inter-run Z-shift detect/correct | `skimage.phase_cross_correlation` |
+| **S4.2** | Stage 1 — coarse in-plane X/Y bulk translation, estimated by FLIRT 2-DOF on the Z-mean projection of each volume, applied identically to every slice | FSL `flirt` + `scipy.ndimage.shift` |
+| **S4.3** | Stage 2 — slice-wise in-plane translation regularized by a polynomial along Z | `sct_fmri_moco` (SliceReg, ANTs) |
+| **S4.4** | metrics (FD, DVARS, tSNR before/after) + 3 reportlets | NumPy |
 
-## Truthfulness review
+Downstream: S5 consumes the moco'd `desc-mocoref_bold`; **S8 reads S4's
+slicewise `moco_params_x/_y.nii.gz` as GLM motion confounds** — so S4's motion
+estimates are load-bearing, not observability-only.
 
-| Claim in audit doc | True? | Source |
+## Verdicts
+
+| Choice | Value | Verdict |
 |---|---|---|
-| "`sct_fmri_moco` slice-wise rigid" | ✅ | SCT command-line docs |
-| "cord-mask-restricted registration ROI" | ✅ | `-m` flag in our cmdline; SCT docs |
-| "FD = Power 2014" | ✅ | Power 2014 NIMG |
-| "tSNR improvement gauge from Mohammed 2020" | ✅ | Mohammed 2020 bioRxiv evaluation paper |
-| "2-stage = Mohammed 2020 best practice" | ⚠️ | Mohammed recommends bulk-then-slice; ours runs *three* stages because sct_fmri_moco's own 3D step still runs |
+| Slice-wise engine | `sct_fmri_moco` (SliceReg) | KEEP — the field standard (Kaptan, CoSpine, SCT) |
+| Two-stage design | FLIRT-2DOF bulk + `sct_fmri_moco` | KEEP-with-caveat (F3): Stage-1 is bespoke, partly duplicates SCT's internal 3D, A/B is 11 retired runs |
+| Moco mask | cord segmentation interior | DEVIATION (F2): field uses a 30–41 mm cylinder; no citation for cord-interior |
+| Framewise displacement | `\|Δtx\|+\|Δty\|`, in-plane only | KEEP — matches Kaptan verbatim; fix the code comments (F4) |
+| tSNR / DVARS mask | whole-crop nonzero | FIX (F5): field measures cord-restricted |
+| Robust reference at Stage 2 | symlinked, never passed | DOCUMENT (F6): SCT 7.1 cannot take an external ref |
+| Motion gate | high-motion fraction + tSNR floor | KEEP — relative, self-normalizing |
+| Public doc | single-stage, `-ref`, wrong outputs | FIX (F1): describes a pipeline that does not exist |
 
-## Remediation flags
+## Findings
 
-1. **Three-stage redundancy** — `sct_fmri_moco` runs its own 3D rigid
-   step before SliceReg by default. We prepend our own
-   `phase_cross_correlation` 3D bulk XY, so the chain is:
-   `[ours: 3D-XY] → [SCT: 3D rigid] → [SCT: 2D SliceReg]`.
+### F1 — The public doc describes a pipeline that does not exist — FIX (done)
+`docs/methods/S4_motion_correction.md`, verified against the code, is wrong in
+four load-bearing ways:
+- It shows single-stage `sct_fmri_moco -i ... -ref func_ref.nii.gz -g 1 -param
+  params.txt -x spline`. The code runs **two stages**, and **`sct_fmri_moco` in
+  SCT 7.1 has no `-ref` flag** (`-r {0,1}` is "remove temp files", verified from
+  `sct_fmri_moco -h`) — the documented command would error. Stage 1 (the FLIRT
+  bulk step) is not mentioned at all.
+- The QC-status logic ("max displacement > 3 mm → FAIL, mean FD > 0.5 → FAIL")
+  is stale. The `max_fd` FAIL gate was retired 2026-06-16; the real gate is
+  high-motion fraction (> 0.50 FAIL, > 0.30 WARN) plus a tSNR floor.
+- Outputs are wrong: the doc claims `desc-moco_bold.nii.gz` and a
+  `desc-moco_mean.nii.gz` that the code never writes (real name:
+  `desc-mocoref_bold.nii.gz`), and lists a retired `S4_dvars_plot.png`.
+- `-ref func_ref.nii.gz` also implies the S3 robust reference drives the
+  slice-wise stage; it does not (F6).
+The "no slice-timing correction" note is correct and kept. Doc rewritten to the
+verified two-stage description in the field register.
 
-   **Options**:
-   - **A**: keep as-is. The extra stage is harmless (just costs CPU
-     time on already-aligned volumes). One can argue the custom Stage 1
-     is more robust to large bulk shifts than SCT's default 3D step.
-   - **B**: drop our Stage 1, rely on SCT's built-in 3D + 2D. Less
-     code, matches Kaptan 2023 / CoSpine 2025 exactly.
-   - **C**: keep Stage 1 but pass `-r 0` (or whatever flag) to
-     sct_fmri_moco to disable its internal 3D step. Pure 2-stage.
+### F2 — The moco mask deviates from the field, and the deviation is uncitable — OPEN (key)
+SpinePrep passes the **cord segmentation interior** to `sct_fmri_moco -m`
+(`process.py:93-102`, hardcoded — not even a policy knob). The field passes a
+**dilated cylinder around the cord centerline**, verified against three primary
+sources:
+- SCT `batch_processing.sh` / vendored tutorial:
+  `sct_create_mask -i fmri.nii.gz -p centerline,seg.nii.gz -size 35mm` → then
+  `sct_fmri_moco -m mask_fmri.nii.gz`.
+- CoSpine (Wei 2025, Sci Data): "a 3D binary mask (35 mm diameter)".
+- Kaptan 2023 (NeuroImage): a cord-centred cylindrical mask, 30–41 mm.
+The `-m` mask "limits the voxels considered by the registration metric" (SCT
+docs). Rationale (SCT developer forum + analysis): the cord interior is nearly
+uniform EPI signal; the cross-correlation/MI metric needs the high-contrast
+**cord↔CSF boundary**, which the 30–41 mm cylinder brackets and a
+cord-interior-only mask starves. No paper endorses a cord-interior moco mask.
 
-   **Recommendation: B** for chain-wide simplification. Our custom
-   Stage 1 doesn't have a literature precedent specifically for cord
-   fMRI, and the SCT built-in handles the same job. This is a defer-
-   to-next-touch action per principle §6 (lock and ship); flagged
-   here so the next contributor knows.
+By invariant 1 (use the field's choice when you cannot cite your own), the
+default should include the cord/CSF boundary. Nuance that must be measured, not
+assumed: S3 already crops to a tight box (~32 mm in-plane in the ZSpine
+example), so a literal 35 mm cylinder ≈ the whole cropped FOV, while the cord
+seg ≈ cord interior. The right cohort A/B is therefore cord-seg vs a **dilated
+cord mask** (cord + a few mm to include the boundary), scored by cord-restricted
+tSNR (F5). Decision deferred to that A/B; do not flip the default silently — it
+changes results for every run and must be validated visually.
 
-2. **Truthfulness fix in S4 principles audit** — the existing
-   `.claude/specs/s4-func-motion-correction.md` says "S4 runs
-   sct_fmri_moco slice-wise rigid" but our actual call includes
-   the custom Stage 1 prelude. Either the principles doc needs a
-   sentence about the prelude, or (recommended) we drop the prelude
-   per #1 to match the doc. Document the gap until #1 is resolved.
+### F3 — Stage-1 is bespoke, partly redundant with SCT, evidence is 11 retired runs — OPEN
+Single-stage `sct_fmri_moco` is the field norm (Kaptan, CoSpine, SCT tutorial).
+SliceReg already runs an **internal 3D rigid initialization** before its
+slice-wise pass (SCT docs: "first step using 3D rigid-body realignment …
+followed by a second step performing 2D slice-wise realignment"). So the real
+chain is three stages: **[custom FLIRT-2DOF] → [SCT internal 3D rigid] → [SCT
+SliceReg]** — the custom Stage 1 partly duplicates SCT's own 3D step.
 
-3. **tSNR-degradation soft gate** — `tsnr_improvement_pct` is
-   computed but not gated. Add a WARN if `tsnr_improvement_pct < 0`
-   (moco hurt tSNR — a real failure mode on extremely-motion-
-   contaminated runs). Low priority; current dual FD + tSNR gates
-   already catch the failure indirectly.
+A two-stage design is documented (Barry group, bioRxiv 2020.05.20.103986: **3D
+FLIRT** → SliceReg), but SpinePrep's Stage 1 is **not** that — it is a 2-DOF
+in-plane fit on the **Z-mean projection**, which collapses all slices to one
+plane and discards the through-plane information a 3D rigid uses. No source
+documents that variant; treat it as bespoke, defensible only as a coarse
+pre-align feeding Stage 2.
 
-## Audit verdict
+Its entire justification is an A/B on the retired 11-run reg cohort
+("FLIRT-2DOF cord tSNR 18.30 vs MCFLIRT 15.26 vs none 15.35"), and **S4 has zero
+outputs on the current 466-run cohort** — the design has never been validated at
+the scale the paper claims. Required: a cohort A/B with three arms — no Stage 1
+(SCT-internal only), FLIRT-2DOF, and MCFLIRT — scored by cord tSNR, or scope the
+claim to the dev cohort. The ledger also flags a lighter option: make Stage 1
+conditional on measured motion (helps high-motion runs, ~no-op on low-motion).
 
-**S4 is correct, reliable, and largely standard.**
+### F4 — Framewise displacement: correct, but the code reads as unfinished — FIX (done)
+The 2-DOF in-plane FD (`|Δtx|+|Δty|`, no rotation, no tz) is **exactly the
+field's cord FD**, verified against Kaptan 2023: "framewise displacement (FD)
+was computed by summing the absolute values of the derivatives of the motion
+parameters in x and y." It also falls out of `sct_fmri_moco`, which only
+estimates in-plane slice-wise translations. Dropping rotation is the field's
+deliberate adaptation for a cord-cropped small FOV, not an oversight — Power
+2012's 6-parameter FD is the brain definition SpinePrep correctly departs from.
 
-- ✅ Every parameter has literature backing (Power 2014, Mohammed 2020,
-  Guizar-Sicairos 2008, SCT docs, Cohen-Adad 2014).
-- ✅ Metric suite (FD, tSNR before/after, DVARS) is the field
-  consensus.
-- ✅ Thresholds (FD 3.0/2.0/0.5, tSNR 3/5, high-motion 0.30/0.50)
-  are defensible.
-- ⚠️ Architecture: **three** stages running where literature describes
-  two. Documented; chain-wide simplification (drop the custom Stage 1)
-  recommended at next S4 touch.
-- ❌ No critical bugs. No truthfulness violations beyond the 3-vs-2
-  stage gap above.
+The defect is presentation: `compute_framewise_displacement` shipped with
+unresolved authoring comments ("Assume rotations are in degrees? Or radians?",
+"Need to verify input source") in a published toolbox. Rewritten to state the
+Kaptan x/y definition, cite it, and note the rotation branch is dead for this
+engine (kept only so a 6-column consumer still gets a full frame).
 
-## Recommended actions (no code change this commit)
+### F5 — tSNR and DVARS are measured over the wrong mask — FIX (done)
+`process.py:320` computes the tSNR gate, the tSNR-improvement metric, and DVARS
+over `np.mean(after_data, axis=-1) > 0` — the whole cropped FOV, which includes
+the pulsatile CSF ring. The field measures tSNR **cord-restricted** (Kaptan:
+cord/gray-matter tSNR = voxel temporal mean / temporal SD, averaged within the
+cord ROI). Over the whole crop, CSF pulsatility deflates tSNR and the "cord"
+truth metric is not cord-specific (violates invariant 2). The ledger already
+listed this as open ("tSNR montage uses FOV mask not cord-seg"). Fixed to use
+the cord segmentation (the same cropped seg passed to moco), with the
+nonzero-FOV mask kept only as a fallback. This changes the tSNR/DVARS values, so
+it lands before the first cohort S4 run (no S4 cohort outputs exist to
+invalidate).
 
-1. Update `.claude/specs/s4-func-motion-correction.md` "Engine"
-   section to mention the three-stage actuality + the simplification
-   path (B above).
-2. Update `policy/S4_func_motion_correction.yaml` `motion_correction:`
-   comment to flag the redundancy and point at this audit.
-3. Defer the code simplification (drop custom Stage 1) per §6 — open
-   issue, prioritize on next reg-cohort calibration.
+### F6 — The robust reference is dead at Stage 2 — DOCUMENT (done)
+`process.py:271-273` symlinks the S3 robust reference as `sct_ref.nii.gz`, but
+it is **never passed to `sct_fmri_moco`** — in SCT 7.1 the tool has no
+external-reference flag and builds its own target by iterative averaging
+(`iterAvg`, `num_target`). So the robust reference governs Stage 1 (FLIRT) and
+the tSNR comparison only; Stage 2's target is SCT's internal average. The dead
+symlink is a fossil of unachievable intent; removed. Version note for the paper:
+SCT **7.2** (2025-11-28) added a `-ref` flag, so "no external reference" is true
+for 7.1 (shipped) and must be scoped to it.
 
-## Sources (consulted)
+### F7 — Two tests shadow the logic instead of exercising it — FIX (done)
+`test_s4_picks_cropped_moco_mask_when_present` and
+`test_s4_aggregates_top_level_status` re-implement the selection/aggregation
+rule inline in the test body, so a regression in `process.py`/`orchestrate.py`
+would not fail them. Replaced with tests that import and call the real code.
 
-- SCT — Motion Correction for fMRI tutorial
-  (`https://spinalcordtoolbox.com/stable/user_section/tutorials/processing-fmri-data/motion-correction-for-fmri.html`)
-- SCT — `sct_fmri_moco` command-line docs
-  (`https://spinalcordtoolbox.com/stable/user_section/command-line/sct_fmri_moco.html`)
-- Mohammed et al. 2020 — Evaluation and Optimization of Motion
-  Correction in Spinal Cord fMRI Preprocessing (bioRxiv
-  2020.05.20.103986)
-- Kaptan et al. 2023 — Reliability of resting-state functional
-  connectivity in the human spinal cord (NeuroImage)
-- Power et al. 2014 — DVARS / FD scrubbing definitions
-- Guizar-Sicairos et al. 2008 — Efficient subpixel image registration
-  algorithms (Optics Letters)
-- Foroosh et al. 2002 — Extension of phase correlation to subpixel
-  registration (IEEE TIP)
-- Eippert et al. 2017 — Denoising spinal cord fMRI data
-  (NeuroImage)
-- CoSpine 2025 (Wei et al., Sci Data) — slice-wise moco via sct_fmri_moco
+### F8 — Output naming — NOTE
+`desc-mocoref_bold` is a non-standard BIDS-Derivatives `desc-` value (it
+conflates "moco" and "ref"; fMRIPrep uses `desc-preproc_bold`). Not changed (S5
+reads this exact name; renaming is a cross-step change), but recorded so the
+paper's derivatives table is accurate.
+
+### F9 — tSNR degradation is computed but not gated — NOTE
+`tsnr_improvement_pct` is written to qc.json but never gates. A run where moco
+lowers cord tSNR (moco actively hurt, seen on severely motion-contaminated
+runs) still passes on that axis. Low priority — the tSNR floor and high-motion
+fraction catch the worst cases — but a WARN on `tsnr_improvement_pct < 0` would
+name the failure mode directly. Deferred until F5's cord-restricted tSNR lands,
+since the sign is only meaningful once the metric is cord-specific.
+
+## Open items, by priority
+1. **F2** — cohort A/B: cord-seg vs dilated-cord moco mask, by cord tSNR; then
+   set the default and make it a policy knob.
+2. **F3** — cohort A/B for Stage 1 (none/SCT-internal vs FLIRT-2DOF vs MCFLIRT),
+   or scope the claim to the dev cohort; consider motion-conditional Stage 1.
+3. Run S4 on the 466-run cohort (none exist yet) and validate reportlets visually.
+4. **F9** — add the tSNR-degradation WARN after F5 lands.
+5. **F8** — decide whether to migrate `desc-mocoref_bold` → a standard `desc-`.
+
+## Fixed in this audit
+- **F1** — public doc rewritten to the verified two-stage description.
+- **F4** — FD comments rewritten, Kaptan cited, dead rotation branch documented.
+- **F5** — tSNR/DVARS now cord-restricted.
+- **F6** — dead `sct_ref` symlink removed; SCT-7.1 version scoping recorded.
+- **F7** — shadow tests replaced with real-path tests.
