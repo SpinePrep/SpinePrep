@@ -416,7 +416,7 @@ The bug: `_sct_deepseg_cord` was calling the legacy
 | Model | Cord voxels | Ratio to anat-cord-in-BOLD (1778) |
 |---|---|---|
 | `sct_deepseg_sc -c t2s` (old) | **219** | 0.12 — severe undersegmentation |
-| `sct_deepseg sc_epi` (EPISeg, Valošek 2025) | **1081** | 0.61 — matches passing cohort |
+| `sct_deepseg sc_epi` (EPISeg, Banerjee et al. 2025) | **1081** | 0.61 — matches passing cohort |
 | `sct_deepseg spinalcord` (contrast-agnostic) | 2985 | 1.68 — over-segments |
 
 Across the cohort the legacy model gave EPI-vs-anat ratios of:

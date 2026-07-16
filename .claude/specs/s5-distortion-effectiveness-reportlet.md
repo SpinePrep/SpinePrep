@@ -157,4 +157,4 @@ Implementation notes:
 - De Leener et al. 2017 — SCT (NeuroImage) QC tool
 - Mohammed et al. 2020 — Cord moco evaluation (bioRxiv)
 - Irfanoglu et al. 2015 — DRBUDDI (NeuroImage)
-- Valošek et al. 2025 — EPISeg / sct_deepseg sc_epi
+- Banerjee et al. 2025 — EPISeg / sct_deepseg sc_epi
