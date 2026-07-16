@@ -471,7 +471,7 @@ def _compute_qc(
 #      so BOLD-before and BOLD-after share the voxel lattice).
 #   2. Save mean BOLD Before/After, write them to disk.
 #   3. Run `sct_deepseg sc_epi` on each mean BOLD → EPI cord seg in
-#      BOLD geometry. (Valošek 2025 EPISeg, packaged in SCT 7.0+.)
+#      BOLD geometry. (EPISeg; Banerjee et al. 2025, packaged in SCT 7.0+.)
 #      CoSpine §Methods originally used sct_deepseg_sc -c t2s, but
 #      that model undersegments certain cord-EPI sequences by ~8×.
 #      sc_epi is the purpose-built EPI cord segmentation model and
@@ -604,7 +604,7 @@ def _sct_deepseg_cord(
     """Run sct_deepseg with the EPI-specific model on a 3D mean BOLD
     to produce a cord mask in the same geometry. Returns True on success.
 
-    We use ``sct_deepseg sc_epi`` (EPISeg, Valošek 2025) rather than
+    We use ``sct_deepseg sc_epi`` (EPISeg; Banerjee et al. 2025) rather than
     the older ``sct_deepseg_sc -c t2s``. On the reg cohort the old
     model severely undersegments the cord on certain EPIs
     (ds004616_handgrasp had only ~200 cord voxels vs ~1800 from the

@@ -24,9 +24,13 @@ distortion_correction:
     smoothing: "2x1x0vox"
     # Convergence `40x20x0` runs effectively as a 2-level SyN — coarsest
     # (shrink 4×) and middle (shrink 2×) levels, with zero iterations at
-    # the finest (shrink 1×) level. Adequate for the cord-mask-restricted
-    # ROI; A-P distortion is low spatial frequency and converges at the
-    # coarser levels. fMRIPrep brain SyN uses `100x70x50` for comparison.
+    # the finest (shrink 1×) level. fMRIPrep brain SyN uses `100x70x50`.
+    # The working assumption is that the A-P distortion mode is dominated by
+    # low spatial frequencies and so converges at the coarser levels. NOTE
+    # (audit-v3 F5): that premise is a DESIGN ASSUMPTION, not a sourced fact —
+    # no citation for it was found. It is retained because the cohort Dice/
+    # displacement gains stand empirically, not because the physics is
+    # established. Open: test `40x20x10` against `40x20x0` and lock the winner.
     #
     # Deformation is NOT PE-restricted (audit-v2 Findings 1/2 attempted
     # this on 2026-05-27 and were reverted after empirical regression
@@ -49,11 +53,27 @@ qc_thresholds:
   epsilon_displacement_mm: 0.2     # tolerance for "did not worsen"
   # Cervical-ROI bound on the displacement/Dice metric (SCT vertebral label:
   # 1=C1..7=C7, 8=T1, 9=T2, ...). Whole-CNS (brain+cord) acquisitions drag the
-  # cord ROI into the lung-adjacent thoracic cord, where susceptibility
-  # distortion is uncorrectable without a fieldmap (10-17 mm A-P vs ~0.4 mm in
-  # the cervical cord) and unfairly drags the run metric past the threshold.
-  # We exclude slices with vertebral level > this cutoff from the metric. T1=8
-  # keeps the cervical cord + the C7/T1 junction, drops T2+. Cervical-only
+  # cord ROI below the levels where the B0 field profile has been characterized.
+  # Static B0 offset rises steeply toward the cervicothoracic junction: ~20 Hz
+  # at C1 to ~154 Hz at T1 at 7T (Beghini 2026, doi:10.1007/s10334-026-01349-4);
+  # cf. Verma & Cohen-Adad 2014 (doi:10.1002/mrm.25075), "maximum of 74 Hz at
+  # C7 ... 0.58 ppm". Published profiles STOP at T1 (cervical coils/FOVs), so we
+  # restrict the metric to the levels where the field is characterized rather
+  # than score the cord on an extrapolation.
+  #
+  # NOTE on the mechanism (corrected 2026-07-16, audit-v3 F4): the static field
+  # driving this distortion is attributable to the VERTEBRAE, not the lungs --
+  # Beghini 2026: "Fourier-based field simulations confirmed the vertebrae to be
+  # the main contributors to the local static field in the spinal canal." Lungs
+  # drive the DYNAMIC (breathing) fluctuation, which is not what this metric
+  # gates. An earlier comment here said "lung-adjacent thoracic cord ...
+  # uncorrectable (10-17 mm A-P vs ~0.4 mm)": wrong mechanism, and that figure
+  # was unsourced -- no thoracic-vs-cervical distortion comparison is published,
+  # and mm displacement is not an anatomical constant (it scales with echo
+  # spacing). Do not claim thoracic > cervical: Kowalczyk 2025 in fact reports
+  # "greater effects were observed in the cervical cord" than lumbar.
+  #
+  # T1=8 keeps the cervical cord + the C7/T1 junction, drops T2+. Cervical-only
   # acquisitions are entirely <= the cutoff, so this is a no-op for them. Set
   # null to disable (evaluate the full captured cord).
   cord_roi_max_level: 8            # keep C1..T1; drop T2+ (lung-region thoracic)
