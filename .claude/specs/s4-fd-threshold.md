@@ -138,6 +138,31 @@ The slice-wise term adds **+0.27 mm** to the median. Two reasonable definitions 
 "cord FD" on identical data differ by a factor of two. No absolute threshold can
 survive that, which is exactly Jones's point demonstrated on our own cohort.
 
+**Jones's other prong applies inside our cohort too.** "FD and DVARS magnitudes
+change with the TR of the data, because the TR is the sampling rate (for a given
+movement, sampling more rapidly will give smaller FD values, even though the total
+motion is the same)." Our TRs span **1.55 s to 3.26 s — a 2.1x spread**:
+
+| dataset | TR (s) |
+|---|---|
+| ds005075 | 1.55 |
+| cospigvs | 1.66 |
+| ds004926 | 1.80 |
+| ds004616 | 2.00 |
+| ds004386 | 2.31 |
+| balgrist_motor | 2.60 |
+| ds005883 / ds005884 | 2.68 |
+| painmotor | 3.26 |
+
+So for identical physical motion the slower-TR datasets return systematically
+larger FD. **One absolute threshold cannot be fair across our own cohort** even
+holding the FD definition fixed — and a single number would preferentially fail
+the slow-TR datasets (painmotor at 3.26 s, balgrist_motor at 2.60 s), which is
+precisely the pattern the 0.5 mm gate produced (balgrist_motor 13/46 FAIL). The
+gate was partly ranking datasets by TR, not by motion. That is a confound
+masquerading as a site/biology effect, and it is the same failure mode as the
+voxel-size artifact above.
+
 This also bears on Ricchi 2024's `mean FD > 0.4 mm` subject-exclusion criterion,
 which uses the same 2-term x/y wording we do. Our bulk-only median (0.28 mm) sits
 comfortably under it; our bulk+slice-wise median (0.55 mm) would exclude 76% of
