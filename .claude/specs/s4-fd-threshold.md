@@ -124,6 +124,30 @@ Run-level consequence (466 runs):
 | **1.0 mm** | **4.5%** | **2** | 21 |
 | 1.5 mm | 0.7% | 0 | 2 |
 
+## 5b. Our own data proves the incommensurability
+
+Jones's claim is not just quotable, it is measurable here. The same 466 runs,
+scored by two defensible FD definitions:
+
+| FD definition | median mean-FD | runs > 0.4 mm |
+|---|---|---|
+| bulk + slice-wise (SpinePrep) | **0.55 mm** | 356 (76%) |
+| bulk only | **0.28 mm** | 102 (22%) |
+
+The slice-wise term adds **+0.27 mm** to the median. Two reasonable definitions of
+"cord FD" on identical data differ by a factor of two. No absolute threshold can
+survive that, which is exactly Jones's point demonstrated on our own cohort.
+
+This also bears on Ricchi 2024's `mean FD > 0.4 mm` subject-exclusion criterion,
+which uses the same 2-term x/y wording we do. Our bulk-only median (0.28 mm) sits
+comfortably under it; our bulk+slice-wise median (0.55 mm) would exclude 76% of
+runs. Since no published cord study would adopt a criterion excluding three
+quarters of ordinary data, Ricchi's FD is very likely bulk/volumetric, not a
+per-slice composition — i.e. **their 0.4 mm is not comparable to our number
+either.** (Inference from the arithmetic, not a statement from the paper; Ricchi
+is also lumbosacral, a different motion regime, at a different TR/resolution, and
+mean-per-subject is not median-per-run.)
+
 ## 6. What the field actually does
 
 - **Kaptan 2023** ([PMC10262064](https://pmc.ncbi.nlm.nih.gov/articles/PMC10262064/),
