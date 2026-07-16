@@ -399,8 +399,6 @@ def run_S4_func_motion_correction(
         mx = nib.load(moco_x_path).get_fdata()
         my = nib.load(moco_y_path).get_fdata()
         if mx.ndim == 4 and mx.shape[-1] == len(params_total):
-            params_total['tx'] += mx.mean(axis=(0, 1, 2))
-            params_total['ty'] += my.mean(axis=(0, 1, 2))
             slicewise_x, slicewise_y = mx, my
         else:
             logger.warning(
@@ -413,8 +411,34 @@ def run_S4_func_motion_correction(
             f"FD reflects bulk stage only"
         )
 
-    # Compute FD
-    fd = moco.compute_framewise_displacement(params_total)
+    # Compute FD by composing the two stages in MATCHED UNITS, per slice.
+    # See moco.compose_cord_fd: Stage 1 is in voxels (FLIRT on identity-affine
+    # temporaries), Stage 2 is in mm (ANTs warp); the old code summed them and
+    # thresholded in mm, and averaged the SIGNED slice field so opposing slice
+    # shifts cancelled. Both are fixed there.
+    _zooms_bold = img_before.header.get_zooms()
+    _axcodes = nib.orientations.aff2axcodes(img_before.affine)
+    fd, fd_info = moco.compose_cord_fd(
+        stage1_tx=params_total['tx'].values,
+        stage1_ty=params_total['ty'].values,
+        slicewise_x=slicewise_x,
+        slicewise_y=slicewise_y,
+        voxsize_x=float(_zooms_bold[0]),
+        voxsize_y=float(_zooms_bold[1]),
+        axcodes=_axcodes,
+    )
+    if fd_info.get("orientation_warning"):
+        logger.warning(f"[{step_code}] {fd_info['orientation_warning']}")
+
+    # The trace panel plots the two stages in mm. Stage 1 is scaled here so the
+    # plotted series carries the same units as the FD beneath it.
+    params_total['tx'] = params_total['tx'].values * float(_zooms_bold[0])
+    params_total['ty'] = params_total['ty'].values * float(_zooms_bold[1])
+    if slicewise_x is not None:
+        params_total['tx_slicewise_mean'] = slicewise_x.reshape(
+            -1, slicewise_x.shape[-1]).mean(axis=0)
+        params_total['ty_slicewise_mean'] = slicewise_y.reshape(
+            -1, slicewise_y.shape[-1]).mean(axis=0)
 
     # High Motion Frames
     fd_threshold = policy["qc_thresholds"].get("fd_threshold_mm", 0.5)
@@ -434,7 +458,10 @@ def run_S4_func_motion_correction(
         "tsnr_after_mean": tsnr_mean_after,
         "tsnr_improvement_pct": float((tsnr_mean_after - tsnr_mean_before) / tsnr_mean_before * 100) if tsnr_mean_before > 0 else 0.0,
         "dvars_mean": float(np.mean(dvars)),
-        "dvars_max": float(np.max(dvars))
+        "dvars_max": float(np.max(dvars)),
+        # How FD was composed (units, slice reduction, orientation). Recorded so
+        # a reader can tell whether a run predates the 2026-07-16 unit fix.
+        "fd_composition": fd_info,
     }
 
     # -------------------------------------------------------------------------

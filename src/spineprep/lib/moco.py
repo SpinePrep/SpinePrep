@@ -168,9 +168,12 @@ def compute_framewise_displacement(
     Compute cord framewise displacement (FD) from motion parameters.
 
     For cord fMRI, FD is the sum of the absolute derivatives of the IN-PLANE
-    translations only. The Eippert lab's lumbosacral cord paper (PMC12290568)
-    states it verbatim: "framewise displacement (FD) was computed by summing the
-    absolute values of the derivatives of the motion parameters in x and y".
+    translations only. Ricchi, Kinany & Van De Ville (2024, Imaging Neuroscience,
+    doi:10.1162/imag_a_00286; PMC12290568) state it verbatim: "framewise
+    displacement (FD) was computed by summing the absolute values of the
+    derivatives of the motion parameters in x and y". Note they use mean FD for
+    SUBJECT-level exclusion ("average FD > 0.4 mm"), NOT for frame censoring --
+    no cord paper found publishes a frame-censoring FD threshold.
     This is a deliberate cord adaptation of Power et al. (2012, NeuroImage
     59(3):2142-2154, doi:10.1016/j.neuroimage.2011.10.018), whose brain FD sums
     6 rigid parameters (3 translations + 3 rotations as arc length on a 50 mm
@@ -178,13 +181,23 @@ def compute_framewise_displacement(
     rotation is ill-defined on a cord-cropped small FOV, so tz and the rotations
     are not part of cord FD.
 
-    CITATION HAZARD (fixed 2026-07-16): do NOT attribute this x/y FD form to
-    Kaptan et al. 2023 (NeuroImage, doi:10.1016/j.neuroimage.2023.120152). That
-    paper -- the resting-state reliability / noise-sources one -- never uses FD
-    at all; it censors on dVARS and refRMS at 2 SD. An earlier version of this
-    docstring made exactly that mis-attribution. CLAUDE.md's "FD threshold
-    (Kaptan 2023)" invariant carries the same error: Kaptan 2023 sets no FD
-    threshold. See .claude/specs/s4-algorithm-audit.md F10.
+    CITATION HAZARDS (both were live in this docstring; fixed 2026-07-16):
+    - Do NOT attribute this x/y FD form to Kaptan et al. 2023 (NeuroImage,
+      doi:10.1016/j.neuroimage.2023.120152). That paper never uses FD at all; it
+      censors on dVARS/refRMS at 2 SD and uses the slice-wise translations as
+      REGRESSORS. CLAUDE.md's old "FD threshold (Kaptan 2023)" invariant carried
+      the same error.
+    - PMC12290568 is Ricchi/Kinany/Van De Ville (EPFL), NOT an Eippert-lab paper.
+      An earlier fix of the first hazard introduced this second one.
+
+    THRESHOLD WARNING: this function returns FD; it does not choose a threshold.
+    The 0.5 mm default elsewhere is Power's BRAIN value and does not transfer
+    here -- this FD sums TWO in-plane translation terms, Power's sums SIX
+    (3 translations + 3 rotations as arc length). Per Jones et al. 2022, "different
+    calculations of FD provide different values ... any absolute threshold would
+    necessarily be metric specific". Power chose 0.5 as "well above the norm found
+    in still subjects"; on this cord cohort 0.5 mm IS the norm (median), so the
+    number inverts Power's own criterion. See .claude/specs/s4-fd-threshold.md.
 
     Power's published difference is BACKWARD (Delta d_i = d_(i-1) - d_i); pandas
     .diff() gives d_i - d_(i-1). The absolute value makes the two identical, so
@@ -218,8 +231,102 @@ def compute_framewise_displacement(
     return fd
 
 
+def compose_cord_fd(
+    stage1_tx: np.ndarray,
+    stage1_ty: np.ndarray,
+    slicewise_x: Optional[np.ndarray],
+    slicewise_y: Optional[np.ndarray],
+    voxsize_x: float,
+    voxsize_y: float,
+    axcodes: Optional[tuple] = None,
+) -> tuple[np.ndarray, dict]:
+    """Compose the two motion-correction stages into a per-volume cord FD (mm).
+
+    Replaces the earlier reduction, which had two defects (audit 2026-07-16):
+
+    1. MIXED UNITS. Stage 1 estimates with FSL FLIRT on a projection written with
+       an identity affine (`coarse_bulk_xy_correction`), so FLIRT's world-mm are
+       the fake 1 mm grid -- i.e. its `tx/ty` are in VOXELS of the real image.
+       Verified by synthetic test: a 2-voxel shift on a 1.5 mm grid returns 2.000,
+       not 3.0. Stage 2's `moco_params_x/y` are ANTs warp components in MM
+       (verified in SCT's `moco.py`, which splits the warp into X/Y and saves the
+       components). The old code summed the two and thresholded the result in mm,
+       so Stage-1 motion was under-counted by the in-plane voxel size on every
+       dataset that is not 1.0 mm (here: 1.5 mm CoSpine x2, 1.6 mm ds005075).
+       FD was therefore NOT comparable across datasets. Stage 1 is now scaled to
+       mm before composing.
+
+    2. CANCELLATION. The old code took `mean(axis=(0,1,2))` of the SIGNED
+       slice-wise field, so opposing rostral/caudal slice shifts cancelled -- the
+       exact motion the slice-wise stage exists to measure. SCT's own convention
+       takes the per-slice MAGNITUDE first (`mean(sqrt(X^2+Y^2))`), which cannot
+       cancel. Here the composition is done PER SLICE and the absolute temporal
+       difference is taken per slice, then averaged over slices, so cancellation
+       is impossible while the per-axis Power form is preserved.
+
+    SIGNS. On the cohort's uniform LAS geometry both stages report the same sign
+    convention per axis (verified by synthetic test at the real orientation), so
+    they compose by addition. This is orientation-dependent: Stage 1 is fixed by
+    its identity-affine temporaries, while Stage 2 follows the image affine, so
+    under RAS the X components would carry opposite signs and adding them would
+    subtract. `axcodes` is checked and a non-LAS input is reported, since the
+    composition has only been verified for LAS.
+
+    FD[0] = 0, per Power et al. (2014): "FD for the first volume of a run is 0 by
+    convention."
+
+    Args:
+        stage1_tx, stage1_ty: (n_vol,) bulk estimates in VOXELS.
+        slicewise_x, slicewise_y: (1,1,n_slices,n_vol) ANTs warp components in mm,
+            or None when the slice-wise stage did not run.
+        voxsize_x, voxsize_y: in-plane voxel sizes in mm.
+        axcodes: nibabel orientation codes of the BOLD, for the LAS check.
+
+    Returns:
+        (fd, info) -- fd is (n_vol,) in mm; info carries provenance for qc.json.
+    """
+    info: dict = {
+        "fd_units": "mm",
+        "stage1_scaled_to_mm_by": [float(voxsize_x), float(voxsize_y)],
+        "slicewise_included": slicewise_x is not None,
+        "reduction": "per-slice |dt| then mean over slices (no cancellation)",
+    }
+    if axcodes is not None:
+        ax = "".join(axcodes)
+        info["axcodes"] = ax
+        if ax != "LAS":
+            info["orientation_warning"] = (
+                f"stage composition verified for LAS only; got {ax}. Stage-2 sign "
+                f"follows the affine, so a non-LAS input may compose incorrectly."
+            )
+
+    # Stage 1 -> mm, broadcast across slices (it applied one shift to every slice).
+    tx_mm = np.asarray(stage1_tx, dtype=float) * float(voxsize_x)
+    ty_mm = np.asarray(stage1_ty, dtype=float) * float(voxsize_y)
+
+    if slicewise_x is None or slicewise_y is None:
+        total_x = tx_mm[None, :]
+        total_y = ty_mm[None, :]
+    else:
+        sx = np.asarray(slicewise_x, dtype=float)
+        sy = np.asarray(slicewise_y, dtype=float)
+        # (1,1,nz,nt) -> (nz,nt)
+        sx = sx.reshape(-1, sx.shape[-1])
+        sy = sy.reshape(-1, sy.shape[-1])
+        total_x = tx_mm[None, :] + sx
+        total_y = ty_mm[None, :] + sy
+        info["n_slices"] = int(sx.shape[0])
+
+    # Per-slice absolute temporal difference; FD[0] = 0 (Power 2014 convention).
+    dx = np.abs(np.diff(total_x, axis=1, prepend=total_x[:, :1]))
+    dy = np.abs(np.diff(total_y, axis=1, prepend=total_y[:, :1]))
+    fd_per_slice = dx + dy                 # Power's per-axis |delta| sum
+    fd = fd_per_slice.mean(axis=0)         # magnitudes -> cannot cancel
+    return fd, info
+
+
 def compute_dvars(
-    bold_4d: np.ndarray, 
+    bold_4d: np.ndarray,
     mask_3d: Optional[np.ndarray] = None
 ) -> np.ndarray:
     """
