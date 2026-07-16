@@ -11,6 +11,21 @@ def _build_inventory(bids_root: Path, dataset_key: str, policy_entry) -> dict:
     files: List[dict] = []
     runs: List[dict] = []
     selection = policy_entry.selection if policy_entry is not None else None
+
+    # Record what the policy subset drops. The filter below removes a subject's
+    # files before they reach `files`, so an excluded subject leaves NO trace in
+    # the inventory at all -- S1 then reported "n_runs_ok = n_runs_total, 0
+    # issues" while a complete subject on disk was silently absent. That is the
+    # opposite of what an input-verification step is for. Measured on the cohort:
+    # 5 subjects (ds004616 sub-04/sub-05, ds005075 sub-P030, ds005883 sub-22,
+    # ds005884 sub-22) were dropped with nothing reported.
+    subjects_on_disk = sorted(
+        p.name[len("sub-"):] for p in bids_root.glob("sub-*") if p.is_dir()
+    )
+    subjects_excluded = sorted(
+        s for s in subjects_on_disk if not _is_selected(s, None, selection)
+    )
+
     for path in sorted(bids_root.rglob("*")):
         if path.is_dir():
             continue
@@ -48,7 +63,17 @@ def _build_inventory(bids_root: Path, dataset_key: str, policy_entry) -> dict:
         runs.append(entry)
     files.sort(key=lambda x: (x["subject"] or "", x["session"] or "", x["path"]))
     runs.sort(key=lambda x: (x["subject"] or "", x["session"] or "", x["path"]))
-    return {"dataset_key": dataset_key, "bids_root": str(bids_root), "files": files, "runs": runs}
+    return {
+        "dataset_key": dataset_key,
+        "bids_root": str(bids_root),
+        "files": files,
+        "runs": runs,
+        "selection": {
+            "n_subjects_on_disk": len(subjects_on_disk),
+            "n_subjects_selected": len(subjects_on_disk) - len(subjects_excluded),
+            "subjects_excluded": subjects_excluded,
+        },
+    }
 
 
 def _read_bold_sidecar(bids_root: Path, bold_path: Path) -> dict[str, Any]:

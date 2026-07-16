@@ -76,6 +76,7 @@ def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dic
     _apply_physio_checks(root, run_records, effective_entry, issues, checks)
     _apply_acquisition_metadata_checks(run_records, checks, issues)
     _apply_session_requirements(run_records, checks, issues)
+    _apply_selection_check(inventory, checks, issues)
 
     for run in run_records.values():
         issues_for_run = run.get("issues", [])
@@ -126,6 +127,11 @@ def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dic
             "n_runs_total": n_runs_total,
             "n_runs_ok": n_runs_ok,
             "n_runs_with_issues": n_runs_total - n_runs_ok,
+            # Subjects on disk vs actually processed. Without these, a policy
+            # subset silently shrinks the cohort and every count below reads as
+            # complete.
+            "n_subjects_on_disk": (inventory.get("selection") or {}).get("n_subjects_on_disk", 0),
+            "n_subjects_excluded": len((inventory.get("selection") or {}).get("subjects_excluded") or []),
             "n_func_cord_runs": n_func_cord,
             "n_anat_runs": n_anat,
             "n_fmap_runs": n_fmap,
@@ -160,6 +166,41 @@ def _validate_run_file(root: Path, run_record: dict) -> None:
     if run_record["modality"] in {"func", "anat", "fmap"} and abs_path.suffix.endswith((".nii", ".gz")):
         expect_4d = run_record["modality"] == "func" and run_record["classification"] == "cord_likely"
         issues.extend(_validate_nifti(abs_path, expect_4d=expect_4d))
+
+
+def _apply_selection_check(inventory: dict, checks: list, issues: list) -> None:
+    """Report subjects the policy subset dropped.
+
+    The subset filter removes a subject's files before they enter the inventory,
+    so an excluded subject leaves no trace and S1 reported "0 issues" while a
+    complete subject sat unprocessed on disk. Whether an exclusion is deliberate
+    is the operator's call -- but it must be visible, not silent. WARN rather than
+    FAIL: a curated subset is legitimate, an undocumented one is not.
+    """
+    sel = (inventory or {}).get("selection") or {}
+    excluded = sel.get("subjects_excluded") or []
+    n_disk = sel.get("n_subjects_on_disk")
+    if not excluded:
+        checks.append({
+            "name": "policy_selection_covers_disk",
+            "passed": True,
+            "severity": "WARN",
+            "message": f"All {n_disk} subject(s) on disk are selected.",
+        })
+        return
+    listed = ", ".join(f"sub-{s}" for s in excluded)
+    msg = (
+        f"policy selection excludes {len(excluded)} of {n_disk} subject(s) "
+        f"present on disk: {listed}. If deliberate, record the reason in "
+        f"policy/datasets.yaml; if not, the subject is being silently dropped."
+    )
+    checks.append({
+        "name": "policy_selection_covers_disk",
+        "passed": False,
+        "severity": "WARN",
+        "message": msg,
+    })
+    issues.append({"severity": "WARN", "message": msg})
 
 
 def _apply_acquisition_metadata_checks(
