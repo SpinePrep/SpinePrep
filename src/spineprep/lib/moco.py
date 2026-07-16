@@ -168,14 +168,27 @@ def compute_framewise_displacement(
     Compute cord framewise displacement (FD) from motion parameters.
 
     For cord fMRI, FD is the sum of the absolute derivatives of the IN-PLANE
-    translations only, following Kaptan et al. (2023, NeuroImage,
-    doi:10.1016/j.neuroimage.2023.120152): "framewise displacement (FD) was
-    computed by summing the absolute values of the derivatives of the motion
-    parameters in x and y". This is the field's deliberate cord adaptation of
-    Power et al. (2012) FD, which sums 6 rigid parameters (3 translations + 3
-    rotations on a 50 mm sphere) for the brain: `sct_fmri_moco` estimates only
-    in-plane slice-wise translations, and rotation is ill-defined on a
-    cord-cropped small FOV, so tz and the rotations are not part of cord FD.
+    translations only. The Eippert lab's lumbosacral cord paper (PMC12290568)
+    states it verbatim: "framewise displacement (FD) was computed by summing the
+    absolute values of the derivatives of the motion parameters in x and y".
+    This is a deliberate cord adaptation of Power et al. (2012, NeuroImage
+    59(3):2142-2154, doi:10.1016/j.neuroimage.2011.10.018), whose brain FD sums
+    6 rigid parameters (3 translations + 3 rotations as arc length on a 50 mm
+    sphere): `sct_fmri_moco` estimates only in-plane slice-wise translations, and
+    rotation is ill-defined on a cord-cropped small FOV, so tz and the rotations
+    are not part of cord FD.
+
+    CITATION HAZARD (fixed 2026-07-16): do NOT attribute this x/y FD form to
+    Kaptan et al. 2023 (NeuroImage, doi:10.1016/j.neuroimage.2023.120152). That
+    paper -- the resting-state reliability / noise-sources one -- never uses FD
+    at all; it censors on dVARS and refRMS at 2 SD. An earlier version of this
+    docstring made exactly that mis-attribution. CLAUDE.md's "FD threshold
+    (Kaptan 2023)" invariant carries the same error: Kaptan 2023 sets no FD
+    threshold. See .claude/specs/s4-algorithm-audit.md F10.
+
+    Power's published difference is BACKWARD (Delta d_i = d_(i-1) - d_i); pandas
+    .diff() gives d_i - d_(i-1). The absolute value makes the two identical, so
+    the sign order below is not a defect.
 
     The rotation branch below is retained only so a caller that passes a full
     6-column frame still gets a defined result; for the shipped cord engine the

@@ -51,9 +51,16 @@ These are the rules the whole pipeline is built on. Preserve them.
 
 1. **Literature-grounded defaults; tune knobs, don't reinvent algorithms.** If you can't
    cite a paper for a choice, use the choice the field already made. Current defaults:
-   distortion topup > fugue > SyN-fallback; cord seg `sct_deepseg_sc`; func→anat
-   `sct_register_multimodal` (cord-seg-driven rigid); template PAM50 (De Leener 2018);
-   bandpass 0.01–0.1 Hz (Eippert 2017); FD threshold (Kaptan 2023).
+   distortion topup > SyN-fallback (FUGUE is specified but NOT implemented — no GRE data
+   in the cohort; `none` passthrough is also selectable and is the cord field's own
+   default); cord seg `sct_deepseg sc_epi` (EPISeg; Banerjee et al. 2025) for EPI and
+   `sct_deepseg spinalcord` (Bédard 2025) for anat; func→anat `sct_register_multimodal`
+   (cord-seg-driven rigid); template PAM50 (De Leener 2018); bandpass 0.01–0.1 Hz
+   (Eippert 2017 — unverified, may be 0.01–0.08).
+   **FD threshold: 0.5 mm from Power 2012 — a BRAIN value, not cord-calibrated.**
+   Do NOT cite Kaptan 2023 for it: that paper never uses FD (it censors on dVARS/refRMS
+   at 2 SD). The x/y cord FD *form* is the Eippert lab's (PMC12290568), not the
+   threshold. See `.claude/specs/s4-algorithm-audit.md`.
 2. **One step-local truth metric per step** — measures that step in isolation, independent
    of downstream. "Downstream looks bad" is never a step-local metric.
 3. **One diagnostic reportlet per step.** One run's PNG must answer *what failed and why*.

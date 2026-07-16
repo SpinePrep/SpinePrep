@@ -78,9 +78,13 @@ The step-local metric is temporal SNR (voxel temporal mean divided by temporal
 standard deviation) measured inside the cord segmentation, reported before and
 after correction; effective correction raises cord tSNR (Kaptan et al., 2023).
 Framewise displacement is the sum of the absolute derivatives of the in-plane
-translations, `|Δtx| + |Δty|`, the cord adaptation used by Kaptan et al. (2023);
-frames above `fd_threshold_mm` (default 0.5 mm; Power et al., 2012) are counted
-as high-motion and censored downstream in S8, not dropped here. A run is failed
+translations, `|Δtx| + |Δty|`, a cord adaptation of Power et al. (2012) that
+drops the through-plane and rotational terms because the slice-wise stage
+estimates in-plane translation only. Frames above `fd_threshold_mm` (default
+0.5 mm) are counted as high-motion and censored downstream in S8, not dropped
+here. The 0.5 mm value is Power's brain threshold and has not been calibrated
+for the cord, where it flags a far larger fraction of frames than the cord
+literature reports; treat it as provisional. A run is failed
 only when the high-motion fraction exceeds 0.50 (too little usable data) or cord
 tSNR falls below 3, and warned when the high-motion fraction exceeds 0.30 or a
 single-frame peak exceeds `warn_fd_mm`. The reviewer inspects three reportlets:
