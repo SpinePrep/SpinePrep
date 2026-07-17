@@ -63,43 +63,50 @@ motion_correction:
 #   * FD has no null distribution; DVARS does (Afyouni & Nichols 2018). The
 #     principled inference exists for the intensity metric, not for FD.
 qc_thresholds:
+  # S4's status reflects ONE question: did the correction work? Motion magnitude
+  # is a property of the data and is reported, never judged.
+
   # FAIL: technical failure of the CORRECTION -- not subject motion.
   min_tsnr: 3.0                    # FAIL: no usable cord signal after moco
 
-  # OPTIONAL run exclusion on motion. Default null = OFF. If a site wants to drop
-  # high-motion runs it can set a fraction here, but it is left to the analyst
-  # because FD is not comparable across TR or FD definition (above), so no
-  # defensible default exists. Ricchi 2024 excludes SUBJECTS at mean FD > 0.4 mm
-  # (not frames) using the same 2-term x/y FD, for reference.
-  max_high_motion_fraction: null   # FAIL gate DISABLED by default
-
-  # WARN thresholds (surfaced for human QC; never drop the run)
-  #
-  # The FD-FRACTION WARN is also disabled (null). With the reference level at
-  # 0.5 mm — which is the cohort's own FD median — a "fraction > 0.30" rule fires
-  # on 72% of runs. A warning that fires on three quarters of the data carries no
-  # information; it was the same miscalibration as the FAIL gate, downgraded.
-  # Motion magnitude stays fully visible as metrics (mean_fd_mm, max_fd_mm,
-  # high_motion_fraction) and in the trace reportlet. Set a fraction here to
-  # re-enable the WARN.
-  warn_high_motion_fraction: null
-  # Kept: a single-frame spike is a real, specific observation (it fires on the
-  # tail, not the bulk) and such frames are censored downstream by S8 on the
-  # intensity metrics. Still an absolute number, so read it as a pointer for the
-  # human, not as a quality verdict.
-  warn_fd_mm: 2.0                  # WARN: motion/artifact spike (observability)
-  warn_tsnr: 5.0
-  # WARN when motion correction made cord tSNR WORSE. This names the real S4
-  # failure mode directly (audit F9) and is only meaningful now that tSNR is
-  # cord-restricted rather than whole-FOV.
+  # WARN: the correction made cord temporal stability WORSE. This is the failure
+  # mode S4 can actually detect (audit F9), and it is only meaningful now that
+  # tSNR is cord-restricted rather than whole-FOV.
   warn_tsnr_degraded: true
-  # max_fd_mm retired as a FAIL gate 2026-06-16 (was 3.0); see warn_fd_mm.
+  warn_tsnr: 5.0
 
-  # Reference level for the `high_motion_fraction` METRIC and the reportlet's
-  # threshold line. NOT a gate. Retained at Power 2012's 0.5 mm so the number
-  # stays interpretable against the brain literature, but see above: it is not
-  # cord-calibrated and our own median sits on it.
-  fd_threshold_mm: 0.5
+  # ---- Everything below is an OPTIONAL operator lever. All null = off. -------
+  #
+  # No absolute displacement threshold ships. `fd_threshold_mm: 0.5` was retained
+  # for a while as a "reference level" for the high_motion_fraction metric and
+  # the reportlet's threshold line, on the theory that a non-gating number is
+  # harmless. It is not:
+  #
+  #   * The reportlet drew a line at 0.5 mm and marked every frame above it red
+  #     with an "N flagged" label. 0.5 mm is this cohort's FD MEDIAN, so roughly
+  #     half of every trace rendered as red "flagged" dots. A reviewer reads that
+  #     as a catastrophic run.
+  #   * S10's release report published `high_motion_fraction * 100` as a headline
+  #     "% high motion" -- a number derived from a threshold documented, in this
+  #     same file, as not cord-calibrated.
+  #
+  # Reporting a fraction-above-an-invalid-threshold is a claim, and it was a
+  # claim above its evidence. The threshold-free statistics (mean_fd_mm,
+  # max_fd_mm, p95_fd_mm) describe the motion without judging it, and the trace
+  # reportlet shows every frame. Setting fd_threshold_mm re-enables the metric,
+  # the reportlet line, and the two gates below.
+  #
+  # Ricchi 2024 excludes SUBJECTS at mean FD > 0.4 mm (not frames) using the same
+  # 2-term x/y FD, if a site wants a starting point.
+  fd_threshold_mm: null            # no reference level; no flagged fraction
+  max_high_motion_fraction: null   # FAIL on censored fraction (needs fd_threshold_mm)
+  warn_high_motion_fraction: null  # WARN on censored fraction (needs fd_threshold_mm)
+  # A single-frame spike WARN. Also disabled: it is absolute, so it carries the
+  # same TR (1.55-3.26 s here) and voxel-size incomparability as the FAIL gate
+  # did, and it fired on ~25-30% of runs. Frames like these are censored
+  # downstream by S8 on the intensity metrics, and the trace plot shows them, so
+  # the WARN added a verdict without adding information.
+  warn_fd_mm: null                 # WARN: motion/artifact spike
 
 # QC Reportlet Visual Configuration
 qc:

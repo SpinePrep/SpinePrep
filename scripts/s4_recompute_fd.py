@@ -82,10 +82,10 @@ def main() -> int:
 
     pol = yaml.safe_load((REPO / "policy" / "S4_func_motion_correction.yaml").read_text())
     qt = pol["qc_thresholds"]
-    fd_thr = args.fd_threshold if args.fd_threshold is not None else qt["fd_threshold_mm"]
+    fd_thr = args.fd_threshold if args.fd_threshold is not None else qt.get("fd_threshold_mm")
     fail_frac = qt.get("max_high_motion_fraction")  # None = motion never FAILs
     warn_frac = qt.get("warn_high_motion_fraction")
-    warn_fd = qt["warn_fd_mm"]
+    warn_fd = qt.get("warn_fd_mm")
     min_tsnr = qt["min_tsnr"]
 
     old_fracs, new_fracs, deltas = [], [], []
@@ -107,25 +107,29 @@ def main() -> int:
             old_frac = m.get("high_motion_fraction")
             old_status = r.get("status")
 
-            n_hi = int(np.sum(fd > fd_thr))
-            frac = n_hi / len(fd)
+            if fd_thr is None:
+                n_hi = None; frac = None
+            else:
+                n_hi = int(np.sum(fd > fd_thr)); frac = n_hi / len(fd)
             m["max_fd_mm"] = float(np.max(fd))
             m["mean_fd_mm"] = float(np.mean(fd))
+            m["median_fd_mm"] = float(np.median(fd))
+            m["p95_fd_mm"] = float(np.percentile(fd, 95))
             m["high_motion_frame_count"] = n_hi
-            m["high_motion_fraction"] = float(frac)
+            m["high_motion_fraction"] = frac
             m["fd_composition"] = info
 
             reasons = []
             status = "PASS"
-            if fail_frac is not None and frac > fail_frac:
+            if frac is not None and fail_frac is not None and frac > fail_frac:
                 status = "FAIL"
                 reasons.append(
                     f"{frac:.0%} of frames exceed FD>{fd_thr}mm "
                     f"(> {fail_frac:.0%} usable-data floor)")
-            elif warn_frac is not None and frac > warn_frac:
+            elif frac is not None and warn_frac is not None and frac > warn_frac:
                 status = "WARN"
                 reasons.append(f"high censored fraction {frac:.0%}")
-            if m["max_fd_mm"] > warn_fd:
+            if warn_fd is not None and m["max_fd_mm"] > warn_fd:
                 if status == "PASS":
                     status = "WARN"
                 reasons.append(
@@ -142,10 +146,8 @@ def main() -> int:
 
             key = f"{old_status}->{status}"
             status_change[key] = status_change.get(key, 0) + 1
-            if old_frac is not None:
-                old_fracs.append(old_frac)
-                new_fracs.append(frac)
-                deltas.append(frac - old_frac)
+            if old_frac is not None and frac is not None:
+                old_fracs.append(old_frac); new_fracs.append(frac)
             r["status"] = status
             r["failure_reasons"] = reasons
             changed = True
