@@ -74,7 +74,7 @@ def _intended_for_matches(fmap_run: dict, bold_relpath: str) -> bool:
 def select_mode(
     bold_run: dict,
     fmap_runs: list[dict],
-    fallback_mode: str = "syn",
+    fallback_mode: str = "none",
 ) -> tuple[str, list[dict]]:
     """Return (mode, eligible_fmaps).
 
@@ -136,4 +136,4 @@ def select_mode(
     # fieldmap unwarping for the cord. It is unimplemented for lack of data, not
     # lack of standing. Such data falls through to the fallback, recorded
     # honestly. See .claude/specs/s5-algorithm-audit-v3.md.
-    return (fallback_mode if fallback_mode in ("syn", "none") else "syn"), []
+    return (fallback_mode if fallback_mode in ("syn", "none") else "none"), []
