@@ -120,7 +120,7 @@ and S2 cord segmentations it consumes.
   in the cervical spinal cord at 3T. NeuroImage.
 - Kaptan, M., et al. (2023). Reliability of resting-state functional connectivity
   in the human spinal cord. NeuroImage 275, 120152.
-- Wei, S., et al. (2025). CoSpine: a simultaneous brain and spinal cord fMRI
+- Wei, Z., et al. (2025). CoSpine: a simultaneous brain and spinal cord fMRI
   dataset. Scientific Data.
 
 Running S6: see the [CLI reference](../reference/cli.md).
