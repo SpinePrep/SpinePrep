@@ -55,7 +55,37 @@ shipping an unvalidatable path violates lock-and-ship. State plainly: FUGUE is
 unimplemented **for lack of GRE data, not for lack of standing**. Do not lean on
 any "fieldmaps are worse" argument (none is present in the specs — verified).
 
-### F3 — a published cord-specific objection to the SyN fallback is unanswered — OPEN (highest reviewer risk)
+### F3-RESULT — held-out validation: SyN recovers ~26% of the measured field and harms 1 in 4 runs
+Ran the held-out test (`scripts/s5_heldout_syn_vs_topup.py`) on all 80 CoSpine
+runs that have a reversed-PE pair: corrected each run with topup (measured field =
+reference) and with SyN (pretending no fieldmap), and scored SyN's agreement with
+the field per slice, never on Dice. Measurement validated: mean uncorrected
+distortion 2.75 mm ≈ CoSpine's published 2.73 mm.
+
+`gap_closed = 1 - mean|d_syn - d_topup| / mean|d_before - d_topup|`
+(1.0 = SyN reproduces the field; 0 = no better than nothing; <0 = SyN moved the
+cord away from the field):
+
+| | value |
+|---|---|
+| median gap_closed | **+0.22** |
+| SyN reproduces field (gap > 0.5) | 20/80 (25%) |
+| SyN helps somewhat (0–0.5) | 40/80 (50%) |
+| **SyN moved cord AWAY from field (gap < 0)** | **20/80 (25%)** |
+| baseline (topup moved the cord) | 2.75 mm |
+| residual (SyN missed by) | 2.03 mm |
+
+So SyN recovers ~26% of the distortion the fieldmap measures, and on a quarter of
+runs it makes the alignment worse — the FASB "twisted warping" failure, measured.
+This is on CoSpine's whole-CNS (brain+cord) acquisition, the highest-distortion
+regime; the 386 fallback runs in the real cohort are mostly cervical-only and
+milder, where SyN is untested and might do relatively better or worse. But the
+decisive asymmetry stands: we cannot tell per-run whether SyN helped or harmed
+(cord Dice is circular), so a `syn` default silently degrades ~1 in 4 runs with no
+way to detect it. Recommendation: flip the fieldmap-less default to `none` (the
+cord field's own default, honest, detectable), keep `syn` as a documented opt-in.
+
+### F3 — a published cord-specific objection to the SyN fallback — ANSWERED by F3-RESULT
 FASB considered nonlinear warping of cord EPI and **argued against it**:
 "Spinal cord EPI images are often spatially distorted at the disk level, and
 performing a nonlinear transformation generates **non-optimal twisted warping
