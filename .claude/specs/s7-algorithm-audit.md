@@ -333,9 +333,46 @@ empirically validated (cospine_pain regression).
 - Eippert et al. 2017 — Spinal cord fMRI denoising / native-GLM convention (NeuroImage)
 - De Leener et al. 2018 — PAM50 template (NeuroImage)
 - Cohen-Adad et al. 2014 — SCT registration validation (NeuroImage)
-- Valošek et al. 2025 — Rootlets-based PAM50 registration (NeuroImage)
+- Rootlets-based PAM50 registration (the anat->PAM50 init) is S2's step, not
+  S7's; its attribution (Bédard/Valošek 2025) and DOI are UNVERIFIED and belong
+  in the S2 audit. S7 only composes S2's warp and does not cite it.
 - SCT `batch_processing.sh` — canonical fMRI block recipe
 - CoSpi reference: `spi08_10_registration.sh`, `spi17_stat_standard.sh`
 - Wei et al. 2025 — CoSpine database (Sci Data)
 - Internal: `.claude/specs/reportlet-visual-standard.md`,
   `.claude/specs/s7-template-normalization.md`
+
+## v2 verification (2026-07-18) — literature pass
+
+Verified the architecture against primary sources. All confirmed sound; three
+citation/framing corrections applied.
+
+- **Keep-BOLD-native + warp-atlas-in = VERIFIED Eippert-lab practice.** Kaptan
+  2023 (NeuroImage 275:120152) verbatim: "all analyses were carried out in native
+  space", registering to PAM50 only "to obtain the warping fields that allowed to
+  bring region-specific probabilistic masks from PAM50 template space to each
+  individual's native space (sct_warp_template)". Dabbagh 2024 (imag_a_00273) same.
+  Precedent is Barry 2014 (eLife e02812), which Kaptan cites. FIX: the doc/policy
+  cited "Eippert 2017" for this; that specific attribution is unverified, corrected
+  to Kaptan 2023 + Barry 2014.
+- **Compose via anat->template seeding = VERIFIED standard** (SCT fMRI tutorial
+  `-initwarp`; Kaptan 2023). NUANCE: SCT and Kaptan both still run a FRESH func
+  refinement pass (reduced iterations, "sensitive to the artifacts in fMRI data").
+  S7's pure-compose (no fresh func pass) is MORE conservative than both — a real
+  deviation, now stated explicitly in the doc.
+- **disc-label sct_register_to_template + PAM50_t2s = VERIFIED standard** (SCT
+  docs; Kaptan: "C2-C7 vertebral levels ... used for the vertebral alignment").
+- **Dice circularity: VERIFIED less circular than S6** (anat->PAM50 hop driven by
+  anat cord + disc labels, independent of the func cord the Dice scores). The
+  field's independent validator is spinal-level/landmark alignment, not cord
+  outline. Open: add a level-alignment metric (the PAM50 levels came from
+  independent disc labels) as the non-circular check.
+- **Per-level Dice: coverage confound real, per-level reporting field-normal
+  (Kaptan, Dabbagh), but "median per-level cord Dice as the gate" is UNVERIFIED as
+  a published metric — it is SpinePrep's own.** Doc now says so.
+- **Refinement-off: defensible.** SCT itself dials fMRI-refinement iterations DOWN
+  (artifact-sensitive); skipping is within that spirit. The 0.82->0.68 drop is our
+  own cohort evidence, not literature.
+- **Citation hazard corrected:** PMC10769329/PMC12290578 = Dabbagh/Horn/Kaptan/
+  Eippert 2024 (imag_a_00273, 3 SD), NOT "Kaptan 2023". The real Kaptan 2023 is
+  NeuroImage 275:120152 (2 SD).
