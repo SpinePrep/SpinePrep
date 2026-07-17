@@ -71,25 +71,26 @@ def test_mode_select_rejects_two_same_pe_fmaps():
     bold = _func_run()
     fmaps = [_fmap_epi("AP_run1", "j-"), _fmap_epi("AP_run2", "j-")]
     mode, _ = select_mode(bold, fmaps)
-    assert mode == "syn", "two same-PE fmaps must fall through to SyN"
+    assert mode == "none", "two same-PE fmaps are not topup-eligible -> default fallback (none)"
 
 
-def test_mode_select_gre_pair_falls_through_to_syn():
-    # FUGUE was removed in v1 (no GRE-fieldmap data in the cohort); GRE
-    # phasediff/magnitude pairs now fall through to image-based SyN.
+def test_mode_select_gre_pair_falls_through_to_fallback():
+    # FUGUE was removed in v1 (no GRE-fieldmap data in the cohort); a GRE
+    # phasediff/magnitude pair is not topup-eligible, so it takes the default
+    # fallback, which is `none` since the 2026-07-17 held-out validation.
     from spineprep.steps.s5.mode import select_mode
     bold = _func_run()
     fmaps = [_fmap_gre_phase(), _fmap_gre_mag()]
     mode, eligible = select_mode(bold, fmaps)
-    assert mode == "syn"
+    assert mode == "none"
     assert eligible == []
 
 
-def test_mode_select_falls_back_to_syn_when_no_fmaps():
+def test_mode_select_falls_back_to_default_when_no_fmaps():
     from spineprep.steps.s5.mode import select_mode
     bold = _func_run()
     mode, eligible = select_mode(bold, [])
-    assert mode == "syn"
+    assert mode == "none"  # default fallback flipped syn->none 2026-07-17
     assert eligible == []
 
 

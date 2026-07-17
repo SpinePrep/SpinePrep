@@ -24,13 +24,20 @@ def test_fallback_none_when_no_reversed_pe_pair():
     assert select_mode(BOLD, [], fallback_mode="none") == ("none", [])
 
 
-def test_fallback_syn_remains_the_default():
-    assert select_mode(BOLD, [])[0] == "syn"
+def test_fallback_none_is_the_default():
+    """Default flipped to `none` 2026-07-17: the held-out validation showed SyN
+    recovers only ~26% of the measured field and harms 1 in 4 runs. `syn` is now
+    opt-in; the function default and the shipped policy default both = none."""
+    assert select_mode(BOLD, [])[0] == "none"
+
+
+def test_syn_is_still_selectable_when_requested():
     assert select_mode(BOLD, [], fallback_mode="syn")[0] == "syn"
 
 
-def test_unknown_fallback_degrades_to_syn():
-    assert select_mode(BOLD, [], fallback_mode="bogus")[0] == "syn"
+def test_unknown_fallback_degrades_to_none():
+    """An unrecognised fallback degrades to the SAFE default (none), not syn."""
+    assert select_mode(BOLD, [], fallback_mode="bogus")[0] == "none"
 
 
 def _fmap(pe, name):

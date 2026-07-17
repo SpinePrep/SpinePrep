@@ -38,16 +38,27 @@ S5 selects one mode per run from the BIDS metadata, using `IntendedFor` and
 directions. FSL `topup` estimates the off-resonance field from the pair and
 `applytopup` unwarps the series (Andersson et al., 2003).
 
-`syn`
-: The fallback when no fieldmap or reversed-PE pair exists. The mean functional
-image is nonlinearly registered to the subject's anatomy with ANTs
-`antsRegistration` (SyN; Avants et al., 2008), restricted to the cord region.
+`none`
+: The default when no fieldmap or reversed-PE pair exists. The distortion is
+measured and reported, and the series is passed through uncorrected. Performing no
+retrospective correction is the cord field's own practice (Eippert et al., 2017;
+Kaptan et al., 2023; Kinany et al., 2022), and it is the honest default here for a
+reason established by a held-out validation (see Quality control): the image-based
+alternative recovers only about a quarter of the true distortion and worsens a
+quarter of runs, and there is no per-run way to tell which.
 
-A gradient-echo phase-difference path (FSL `fugue`) is selected by neither
-branch: it is not implemented in v1 because no dataset in the validation cohort
-ships gradient-echo fieldmaps, so such data falls through to `syn`. The
-fall-through is logged, and the run record carries both the mode that ran and the
-mode the data implied.
+`syn`
+: An opt-in alternative when no fieldmap exists. The mean functional image is
+nonlinearly registered to the subject's anatomy with ANTs `antsRegistration`
+(SyN; Avants et al., 2008), restricted to the cord region. It is off by default on
+the evidence below; a site may enable it after validating it on its own data.
+
+A gradient-echo phase-difference path (FSL `fugue`) is selected by no branch: it
+is not implemented in v1 because no dataset in the validation cohort ships
+gradient-echo fieldmaps, which is a data limitation rather than a judgement on the
+method (gradient-echo unwarping has the longest track record in cord fMRI; Vahdat
+et al., 2015). The run record carries both the mode that ran and the mode the data
+implied.
 
 ## Algorithm and parameters
 
@@ -144,6 +155,16 @@ the pooled 3D Dice in the title), and `distortion_effectiveness` (before and
 after mean BOLD with the anatomy cord contour overlaid).
 
 ## Limitations
+
+The `syn` mode was validated against the measured field and found wanting, which
+is why it is off by default. On the 80 CoSpine runs that carry a reversed-PE pair,
+each run was corrected both by `topup` (the measured field) and by `syn`
+(withholding the fieldmap), and the two were compared per slice against the
+field, not against cord Dice. SyN recovered about a quarter of the distortion the
+fieldmap measured (a residual of roughly 2.0 mm out of 2.75 mm), and on a quarter
+of runs it moved the cord further from the field than doing nothing. The measured
+2.75 mm of uncorrected distortion matches the value CoSpine reports (Wei et al.,
+2025), which confirms the comparison is sound.
 
 The `syn` fallback has no independent measurement of the field. It infers
 displacement from anatomy alone, so it can only be as right as that registration,

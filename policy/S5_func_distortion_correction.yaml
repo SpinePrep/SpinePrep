@@ -8,27 +8,35 @@ distortion_correction:
   prefer_mode: "auto"             # auto | topup | syn | none (forces a mode)
 
   # What to do when no reversed-PE pair exists.
-  #   syn  — image-based ANTs SyN against the anatomy (current default)
   #   none — measure the distortion, correct nothing, ship the BOLD untouched
+  #   syn  — image-based ANTs SyN against the anatomy (opt-in; see below)
   #
-  # `none` is NOT a degraded setting: it is the cord field's own default. Most
-  # cord fMRI performs no retrospective SDC and addresses distortion at
-  # acquisition — slice-specific z-shimming (Eippert 2017; Kaptan 2023), a
-  # cord-focused shim volume (Kinany 2022), or a distortion-resistant readout
-  # (Powers 2018). Oliva 2025 acquired reversed-PE data and still corrected only
-  # the brain. Retrospective TOPUP appears essentially once in the cord
-  # literature (CoSpine / Wei 2025).
+  # DEFAULT IS `none` (set 2026-07-17 by the held-out validation, below). This is
+  # NOT a degraded setting: it is the cord field's own default. Most cord fMRI
+  # performs no retrospective SDC and addresses distortion at acquisition —
+  # slice-specific z-shimming (Eippert 2017; Kaptan 2023), a cord-focused shim
+  # volume (Kinany 2022), or a distortion-resistant readout (Powers 2018). Oliva
+  # 2025 acquired reversed-PE data and still corrected only the brain.
+  # Retrospective TOPUP appears essentially once in the cord literature
+  # (CoSpine / Wei 2025).
   #
-  # The default stays `syn` pending the held-out validation: on this cohort 83
-  # of 469 runs (18%) have a reversed-PE pair and 386 (82%) fall back to SyN, so
-  # the pipeline's distortion story rests on the fallback. SyN is unprecedented
-  # in the cord and FASB (Vahdat/Landelle/De Leener/Doyon) argued against
-  # nonlinear warping of cord EPI ("non-optimal twisted warping fields").
-  # Critically, cord Dice CANNOT validate SyN — the metric rewards the alignment
-  # SyN optimizes. The CoSpine reversed-PE runs are the held-out set that can
-  # settle it by comparing SyN against the measured field.
-  # See .claude/specs/s5-algorithm-audit-v3.md.
-  fallback_mode: "syn"            # syn | none
+  # Why `syn` is no longer the default. On this cohort 83 of 469 runs (18%) have a
+  # reversed-PE pair and get TOPUP; 386 (82%) would fall back. The held-out test
+  # (scripts/s5_heldout_syn_vs_topup.py) corrected all 80 CoSpine reversed-PE runs
+  # both ways and scored SyN against the MEASURED field (not Dice, which is
+  # circular for SyN). Result: SyN recovers only ~26% of the distortion the
+  # fieldmap measures (residual 2.03 mm of 2.75 mm), its median gap-closed is
+  # +0.22, and on 20/80 runs (25%) it moved the cord AWAY from the field — the
+  # FASB "twisted warping" failure, measured. Because cord Dice cannot tell
+  # per-run whether SyN helped or harmed, a `syn` default silently degrades ~1 in
+  # 4 runs undetectably. `none` does nothing, reports the distortion honestly, and
+  # matches the field.
+  #
+  # `syn` remains available as an opt-in for users who validate it on their own
+  # data. Caveat on the evidence: the test is CoSpine whole-CNS (highest-
+  # distortion) data; cervical-only fallback runs are milder and untested, where
+  # SyN may behave differently. See .claude/specs/s5-algorithm-audit-v3.md.
+  fallback_mode: "none"           # none | syn
 
   topup:
     # b02b0_1.cnf uses subsamp=1 throughout. We need this because the
