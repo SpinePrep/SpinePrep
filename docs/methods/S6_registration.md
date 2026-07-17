@@ -3,136 +3,129 @@ search:
   boost: 2
 ---
 
-# S6: Registration
+# S6: Functional-to-anatomical registration
 
-**Step Code:** `S6_func_to_anat_registration`
-**Depends on:** S5 (Distortion Correction), S2 (Anatomical cord reference)
-**Required by:** S7 (Normalization), S8 (Confounds)
+S6 registers the functional data to the subject's own anatomy and stores the
+transform in both directions, so later steps can move data between functional and
+anatomical space without recomputing the alignment.
 
----
+## What it does
 
-## Purpose
+S6 aligns the distortion-corrected mean functional image from S5 to the
+anatomical cord reference from S2, and writes a forward warp (functional to
+anatomy) and its inverse. S7 (template normalization) and S8 (confound
+extraction) reuse these warps rather than recomputing them, so the functional
+series stays in its native space and is never resampled onto the anatomical grid.
+The registration is driven by the cord segmentation rather than image intensity,
+because a cord-cropped EPI has an intensity cost surface dominated by the air
+around the cord, on which an intensity-only registration diverges. Because the
+cost sees only the cord outline, the same recipe works whether the anatomy is
+T1w, T2w or T2star.
 
-S6 aligns the functional data to the subject's own anatomy. It registers the
-distortion-corrected mean BOLD from S5 to the anatomical cord reference from S2,
-and stores the transform in both directions:
+## Algorithm and parameters
 
-- a **forward** warp (BOLD to anat), and
-- an **inverse** warp (anat to BOLD).
-
-S7 (PAM50 template normalization) and S8 (confound extraction) reuse these warps
-rather than recomputing them. The registration is intentionally driven by the
-cord segmentation, not by image intensity, because a cord-cropped EPI has an
-intensity cost surface dominated by the air surrounding the cord — an
-intensity-only registration diverges on this geometry.
-
----
-
-## Algorithm
-
-S6 is a single `sct_register_multimodal` call with a three-stage,
-cord-segmentation-driven parameter string. This is the cord-fMRI field-standard
-recipe (CoSpi 1FOV/2FOV; also used under Kaptan 2023 SCT conventions). The
-functional image is the moving image and the anatomy is the destination
-(`-i funcref -d anat`) — fewer slices on the destination is faster and avoids
-resampling the BOLD onto the anat grid.
-
-Before registration, the anatomy is cropped to a dilated cord region
+S6 is a single `sct_register_multimodal` call (De Leener et al., 2017) with a
+three-stage, cord-segmentation-driven parameter string, run with the functional
+image as the moving image and the anatomy as the destination, `-i funcref -d
+anat`. Before registration the anatomy is cropped to a dilated cord region
 (`sct_crop_image -m anat_seg -dilate 10x10x10`), which restricts the cost surface
 to cord context.
 
-| Step | Algorithm | Role |
-|------|-----------|------|
-| 1 | `centermassrot` | Bulk slicewise center-of-mass alignment plus rotation; needed for oblique cord acquisitions. |
-| 2 | `columnwise` | Right-left scaling and A-P deformation along the cord axis; handles cross-section change along Z. |
-| 3 | `bsplinesyn` (iter 20) | Slicewise nonlinear B-spline refinement. |
+The three stages are built from SCT's standard registration primitives:
+`centermassrot` (slicewise center-of-mass and rotation alignment, for oblique
+acquisitions), `columnwise` (right-left scaling and anterior-posterior
+deformation along the cord axis), and `bsplinesyn` (slicewise nonlinear B-spline
+refinement, 20 iterations). All three use the cord segmentation as the cost
+(`type=seg`) with the MeanSquares metric.
 
-All three stages use `type=seg` (cord segmentation as the cost), the MeanSquares
-metric, and `slicewise=1`. Resampling uses spline interpolation.
+This composition is SpinePrep's own, not a published recipe copied verbatim.
+SCT's default template chain is two stages (`centermassrot` then `bsplinesyn`);
+the inserted `columnwise` stage and the higher iteration count are deliberate
+tuning for cord-cropped EPI. Registering the functional image to the subject's
+own anatomy, rather than to the template directly, is a two-hop design
+(functional to anatomy here, anatomy to PAM50 in S7) shared with CoSpine (Wei et
+al., 2025) and Eippert et al. (2017); some pipelines instead register the
+template to the functional mean directly.
 
----
+`step{1,2,3}.algo`
+: The three stage algorithms above. Defaults `centermassrot`, `columnwise`,
+`bsplinesyn`.
 
-## Step Metric and QC
+`step3.iter`
+: B-spline refinement iterations. Default `20`.
 
-The step-local truth metric is **3D cord Dice** — the overlap between the EPI
-cord (warped into anat space) and the anatomy cord segmentation. This is the
-standard cord-registration validation measure (Cohen-Adad 2014). Three further
-metrics support it:
+`anat_crop.dilate`
+: Dilation of the cord region the anatomy is cropped to. Default `10x10x10`.
 
-- **HD95** (95th-percentile Hausdorff distance) — boundary disagreement. Dice can
-  be high while a few cord voxels are far off; HD95 catches that. It is quantized
-  to the EPI slice thickness (≈ 5 mm) and sensitive to single end-slice
-  segmentation dropout, so it is treated as observability-only (it can soft-WARN
-  but never FAILs).
-- **ASD** (average symmetric surface distance) — mean boundary disagreement, less
-  outlier-sensitive than HD95.
-- **Centerline round-trip drift** — how far the cord centerline moves under
-  forward-then-inverse warp. Because `bsplinesyn` optimizes forward and inverse
-  separately, some drift is intrinsic even at Dice 0.95; this is
-  observability-only, with permissive thresholds.
-- **`mi_after`** — mutual information between BOLD and anat in registered space; a
-  legacy sanity check, not a gate.
+`interpolation`
+: Resampling kernel. Default `spline`.
 
----
-
-## Diagnostic Reportlets
-
-- **`bold_on_anat`** — the BOLD shown against the anatomy with the cord contour
-  overlaid, in axial and sagittal views. If the cord contour sits off the cord,
-  Dice is low; if the cord rises or falls relative to the anatomy along Z, the
-  columnwise stage failed.
-- **`cord_dice_per_slice`** — a per-Z Dice bar chart, color-coded by
-  PASS/WARN/FAIL. A few low-Dice slices point to an HD95 outlier; uniformly
-  middling Dice points to a global mis-registration.
-
----
-
-## Outputs
+## Inputs and outputs
 
 ```
-derivatives/spineprep/{dataset}/sub-{id}/func/
-├── sub-{id}_..._from-bold_to-anat_xfm.nii.gz     # forward warp (+ .json sidecar)
-├── sub-{id}_..._from-anat_to-bold_xfm.nii.gz     # inverse warp
-├── sub-{id}_..._space-anat_desc-mean_bold.nii.gz # mean BOLD in anat geometry (QC)
-└── sub-{id}_..._desc-tsnr_funcref.nii.gz         # tSNR reference (used by S7)
-
-derivatives/spineprep/{dataset}/sub-{id}/figures/
-├── sub-{id}_..._desc-S6_bold_on_anat.png
-└── sub-{id}_..._desc-S6_cord_dice_per_slice.png
+derivatives/spineprep/sub-<id>/[ses-<id>/]func/
+├── sub-<id>_..._from-bold_to-anat_xfm.nii.gz     # forward warp (+ .json sidecar)
+├── sub-<id>_..._from-anat_to-bold_xfm.nii.gz     # inverse warp
+├── sub-<id>_..._space-anat_desc-mean_bold.nii.gz # mean BOLD in anat geometry (QC)
+└── sub-<id>_..._desc-tsnr_funcref.nii.gz         # tSNR reference (used by S7)
 ```
 
-The forward-warp JSON sidecar carries the reproducibility receipt: policy SHA,
-source path, registration method and parameters, and software versions.
+The forward-warp JSON sidecar carries the reproducibility receipt: the policy
+hash, source path, registration method and parameters, and software versions.
 
----
+## Quality control
 
-## QC Status Logic
+The reported metric is 3D cord Dice, the overlap between the EPI cord warped into
+anatomical space and the anatomy cord segmentation. This is a **convergence
+check, not an independent validator**: the registration is driven to maximize
+that same overlap, so a high Dice mainly confirms the optimizer reached its
+objective. It is structurally blind to two things a reviewer should check on the
+reportlet directly. One is a cord aligned in cross-section but shifted along its
+axis (Dice on a smooth cord is nearly invariant to axial shifts); the other is
+intensity mismatch inside the cord. The `0.85` pass level is SpinePrep's operating point on
+cord-cropped EPI, not a threshold reported in the literature.
 
-```
-status = PASS if:
-  - cord Dice >= pass_dice_min (0.85), OR
-  - cord Dice >= pass_dice_min_syn_fallback (0.80) when S5 used the SyN fallback
-    (a looser bar is realistic — a no-fieldmap BOLD is geometrically less faithful)
+Three metrics support it, all observability-only (they never fail a run): HD95
+(95th-percentile Hausdorff distance) catches a few cord voxels sitting far off
+even when Dice is high, though it is quantized to the EPI slice thickness and
+sensitive to single end-slice dropout; ASD (average symmetric surface distance)
+gives the mean boundary disagreement; and a centerline round-trip drift reports
+how far the cord centerline moves under forward-then-inverse warp, which is
+non-zero even for a good registration because `bsplinesyn` optimizes the two
+directions separately.
 
-status = FAIL if:
-  - cord Dice < fail_dice_below (0.65)
+The reviewer inspects two reportlets: `bold_on_anat` (BOLD against anatomy with
+the cord contour overlaid, axial and sagittal; if the contour sits off the cord,
+or the cord rises or falls along Z relative to anatomy, the registration is
+wrong) and `cord_dice_per_slice` (per-Z Dice, where a few low slices point to an
+HD95 outlier and uniformly middling Dice points to a global mis-registration).
 
-status = WARN otherwise (Dice in [0.65, pass gate))
-```
+## Limitations
 
-HD95 and the centerline round-trip are reported but do not FAIL a run. On the
-11-run validation cohort all runs PASS, with Dice 0.89-0.97 on most datasets and
-a floor of 0.80 in the SyN-fallback regime.
-
----
+Cord Dice cannot by itself certify the registration, for the reasons above; the
+visual overlay is the real check, and an independent level- or intensity-based
+metric is a planned addition. The nonlinear refinement is applied to the cord
+segmentation rather than the EPI intensities, which insulates it from the
+susceptibility-driven "twisted warp" failure that motivates avoiding nonlinear
+warps of cord EPI (Vahdat et al.); but because each slice is optimized
+independently, an under-segmented or near-circular cord can still admit
+non-physical slice-to-slice deformation. Registration quality depends on the S3
+and S2 cord segmentations it consumes.
 
 ## References
 
-1.  **SCT registration:** De Leener et al. *NeuroImage* 145:24-43 (2017).
-2.  **Cord registration validation (Dice):** Cohen-Adad et al. (2014).
-3.  **Cord resting-state / SCT conventions:** Kaptan et al. *NeuroImage* (2023).
-4.  **CoSpine database:** Wei et al. *Scientific Data* (2025).
+- De Leener, B., et al. (2017). SCT: Spinal Cord Toolbox, an open-source software
+  for processing spinal cord MRI data. NeuroImage 145, 24–43.
+- Eippert, F., et al. (2017). Investigating resting-state functional connectivity
+  in the cervical spinal cord at 3T. NeuroImage.
+- Kaptan, M., et al. (2023). Reliability of resting-state functional connectivity
+  in the human spinal cord. NeuroImage 275, 120152.
+- Wei, S., et al. (2025). CoSpine: a simultaneous brain and spinal cord fMRI
+  dataset. Scientific Data.
+
+Running S6: see the [CLI reference](../reference/cli.md).
 
 ---
-
-*Last updated: July 2026*
+*Parameters reflect `policy/S6_func_to_anat_registration.yaml`, shipped with
+SpinePrep; verified against the implementation and Kaptan et al. (2023)'s
+published code on 2026-07-16. Audit: `.claude/specs/s6-algorithm-audit-v2.md`.*

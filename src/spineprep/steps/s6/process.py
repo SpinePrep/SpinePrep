@@ -3,8 +3,12 @@
 Spec: ``.claude/specs/s6-func-to-anat-registration.md``
 Audit: ``.claude/specs/s6-algorithm-audit.md``
 
-Algorithm — CoSpi 3-stage cord recipe (`spi06_1fov_reg.sh`,
-Kaptan 2023, CoSpine 2025), intensity-agnostic, seg-driven cost:
+Algorithm — SpinePrep's own 3-stage seg-driven chain (`spi06_1fov_reg.sh`),
+built from SCT's standard sct_register_multimodal primitives; intensity-agnostic
+(seg-driven cost). NOT "Kaptan 2023 verbatim": Kaptan's code is 2 steps
+(centermass -> bsplinesyn, iter=3) registering template->func directly; SCT's
+default is also 2 steps (centermassrot -> bsplinesyn). columnwise and iter=20 are
+SpinePrep tuning. See .claude/specs/s6-algorithm-audit-v2.md.
 
   step=1, type=seg, algo=centermassrot, metric=MeanSquares,
           slicewise=1, smooth=1            # bulk slicewise COM + roll
