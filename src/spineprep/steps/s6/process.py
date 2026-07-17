@@ -511,7 +511,24 @@ def run_S6_func_to_anat_registration(
             f = nib.load(funcref_local).get_fdata()
             a = nib.load(anat_in_bold).get_fdata()
             if f.shape == a.shape:
+                # Whole-image MI (legacy). Dominated by the air/background overlap
+                # on cord-cropped EPI, so it is a weak sanity check, not a gate.
                 metrics["mi_after"] = _mutual_information(f, a)
+                # Cord-restricted intensity MI -- the INDEPENDENT validator
+                # (audit-v2 F3). The registration cost is type=seg (cord-MASK
+                # overlap), so cord Dice is the optimiser's own objective and
+                # cannot certify the alignment. MI between the EPI and the warped
+                # anat INTENSITIES, inside the cord, is a quantity the
+                # registration never optimised, so it is orthogonal to Dice: it
+                # rises only if the actual cord tissue lands on the actual cord
+                # tissue, and it catches an axial mis-registration that Dice on a
+                # smooth cord tube is blind to. Cross-modal (BOLD EPI vs T1w/T2w/
+                # T2star), so MI rather than correlation. Observability-only.
+                cord = nib.load(funccrop_local).get_fdata() > 0.5
+                if cord.shape == f.shape and int(cord.sum()) >= 20:
+                    metrics["mi_cord_after"] = _mutual_information(
+                        f[cord], a[cord], bins=16,
+                    )
         except Exception:
             pass
 
