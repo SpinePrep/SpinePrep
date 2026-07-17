@@ -865,11 +865,13 @@ def _build_references_bib(out_path: Path) -> None:
     """Auto-bibliography of every methods reference used in S2..S9."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
     bib = r"""@article{kaptan2023,
-  title={Spinal fMRI demonstrates segmental organisation of functionally connected networks in the cervical spinal cord},
-  author={Kaptan, M. and others},
-  journal={Imaging Neuroscience},
+  title={Reliability of resting-state functional connectivity in the human spinal cord: Assessing the impact of distinct noise sources},
+  author={Kaptan, M. and Horn, U. and Vannesjo, S.J. and Mildner, T. and Weiskopf, N. and Finsterbusch, J. and Brooks, J.C.W. and Eippert, F.},
+  journal={NeuroImage},
+  volume={275},
+  pages={120152},
   year={2023},
-  doi={10.1162/imag_a_00073}
+  doi={10.1016/j.neuroimage.2023.120152}
 }
 
 @article{veraart2016,
@@ -885,16 +887,9 @@ def _build_references_bib(out_path: Path) -> None:
 @article{hemmerling2025,
   title={Data-driven denoising in spinal cord fMRI with principal component analysis (SpinalCompCor)},
   author={Hemmerling, K.J. and others},
-  journal={Imaging Neuroscience},
-  year={2025},
-  doi={10.1162/imag.a.1143}
-}
-
-@article{hemmerling2023,
-  title={Reliability of resting-state functional connectivity in the human spinal cord},
-  author={Hemmerling, K.J. and others},
   journal={bioRxiv},
-  year={2023}
+  year={2025},
+  doi={10.1101/2025.01.23.634596}
 }
 
 @article{eippert2017,
@@ -970,9 +965,10 @@ def _build_references_bib(out_path: Path) -> None:
 
 @article{cospine2025,
   title={CoSpine open access simultaneous cortico-spinal fMRI database of thermal pain and motor tasks},
-  author={CoSpine consortium},
+  author={Wei, Z. and others},
   journal={Scientific Data},
-  year={2025}
+  year={2025},
+  doi={10.1038/s41597-025-05982-x}
 }
 
 @article{sct2017,

@@ -209,7 +209,7 @@ scored below T1.
   doi:10.1371/journal.pbio.1002186
 - Verma, T., & Cohen-Adad, J. (2014). Effect of respiration on the B0 field in the
   human spinal cord at 3T. Magnetic Resonance in Medicine. doi:10.1002/mrm.25075
-- Wei, S., et al. (2025). CoSpine: a simultaneous brain and spinal cord fMRI
+- Wei, Z., et al. (2025). CoSpine: a simultaneous brain and spinal cord fMRI
   dataset. Scientific Data.
 
 Running S5: see the [CLI reference](../reference/cli.md).

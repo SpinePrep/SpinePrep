@@ -232,11 +232,11 @@ contrast-specific <code>sct_deepseg_sc -c t2</code> / <code>-c
 t2s</code>. Contrast-agnostic models work directly on EPI volumes
 without a per-sequence calibration step, which makes them suitable
 for the functional-reference cord localization in S3.1.</p>
-<p>Open question for future versions: EPISeg (Valošek 2025) is a
+<p>Open question for future versions: EPISeg (Banerjee et al. 2025) is a
 new model tuned to EPI specifically. It is not yet packaged in SCT
 batch_processing; we will switch when it ships.</p>
 <p class="ref">De Leener B et al., NeuroImage 2017 (SCT).
-Valošek J et al., 2025 (EPISeg).</p>
+Banerjee S et al., 2025 (EPISeg).</p>
 </div>
 
 <div class="step">
@@ -311,7 +311,7 @@ plotted in a bar chart) is the diagnostic reportlet: a single
 collapsed-into-zero slice points to exactly which Z had a
 registration failure.</p>
 <p class="ref">De Leener B et al., NeuroImage 2018 (PAM50).
-Wei H et al., 2025 (CoSpine effectiveness reportlets).</p>
+Wei Z et al., 2025 (CoSpine effectiveness reportlets).</p>
 </div>
 
 <div class="step">
@@ -395,7 +395,7 @@ PAM50 cord template — see <a href="#concepts">core concepts</a>.</p>
 overlay), <code>rootlets_montage</code>, <code>pam50_reg_overlay</code>
 (template alignment).</p>
 <p class="ref">De Leener B et al., NeuroImage 2018 (PAM50).
-Valošek J et al., 2023 (TotalSpineSeg). Cohen-Adad J et al., SCT 7.</p>
+Warszawer Y et al., 2024 (TotalSpineSeg). Cohen-Adad J et al., SCT 7.</p>
 </div>
 """
 
@@ -471,7 +471,7 @@ series with FD overlay.</li>
 the headline moco-quality reportlet.</li>
 </ul>
 <p class="ref">Jenkinson M et al., NeuroImage 2002 (MCFLIRT).
-Kaptan M et al., NeuroImage 2023 (cord FD threshold).</p>
+Power J et al., 2012 (FD, brain-derived threshold); Ricchi/Kinany/Van De Ville 2024 (x/y cord FD form). NOTE: Kaptan 2023 does not use FD.</p>
 </div>
 """
 
@@ -498,7 +498,7 @@ slice (CoSpine convention).</li>
 (EPI ∩ anat).</li>
 </ul>
 <p class="ref">Andersson JLR et al., NeuroImage 2003 (topup).
-Wei H et al., 2025 (CoSpine v2).</p>
+Wei Z et al., 2025 (CoSpine v2).</p>
 </div>
 """
 

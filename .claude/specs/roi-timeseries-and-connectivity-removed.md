@@ -179,8 +179,8 @@ Emit per-run BIDS-Derivatives ROI timeseries TSVs + ROI×ROI connectivity matric
 
 ## References (verified in round-2/3 audit)
 
-- Kaptan et al. 2023 — Spinal fMRI segmental functional networks: test-retest reliability ([PMC10831202](https://pmc.ncbi.nlm.nih.gov/articles/PMC10831202/)). Origin of 16-seed (4 horns × 4 segmental C5–C8) + ICC(3,1) + spatial Dice methodology.
-- Hemmerling et al. 2023 — Reliability of rsFC across denoising strategies ([PMC10262064](https://pmc.ncbi.nlm.nih.gov/articles/PMC10262064/)). Quantitative thresholds + "maximal denoising hurts intensity reliability" warning.
+- Kowalczyk & Medina 2024 (HBM) — Spinal fMRI segmental functional networks: test-retest reliability ([PMC10831202](https://pmc.ncbi.nlm.nih.gov/articles/PMC10831202/)). Origin of 16-seed (4 horns × 4 segmental C5–C8) + ICC(3,1) + spatial Dice methodology.
+- Kaptan et al. 2023 — Reliability of rsFC across denoising strategies ([PMC10262064](https://pmc.ncbi.nlm.nih.gov/articles/PMC10262064/)). Quantitative thresholds + "maximal denoising hurts intensity reliability" warning.
 - Vahdat et al. 2020 — Dynamic FC of resting-state spinal cord fMRI (Neuron). Slice-wise-then-average correlation convention.
 - Marrelec et al. 2006 — Partial correlation for fMRI FC.
 - Shrout & Fleiss 1979 — ICC types.
