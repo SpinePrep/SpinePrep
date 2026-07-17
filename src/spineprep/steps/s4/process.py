@@ -440,11 +440,19 @@ def run_S4_func_motion_correction(
         params_total['ty_slicewise_mean'] = slicewise_y.reshape(
             -1, slicewise_y.shape[-1]).mean(axis=0)
 
-    # High Motion Frames
-    fd_threshold = policy["qc_thresholds"].get("fd_threshold_mm", 0.5)
-    high_motion_mask = fd > fd_threshold
-    high_motion_count = int(np.sum(high_motion_mask))
-    high_motion_fraction = high_motion_count / len(fd)
+    # "High motion" is only definable against a threshold, and none ships (see
+    # policy). With fd_threshold_mm null the flagged count/fraction are null
+    # rather than computed against an invalid reference: a fraction-above-an-
+    # invalid-threshold is a claim, and S10 used to publish it as a headline
+    # "% high motion". The threshold-free statistics below describe the motion
+    # without judging it. Setting fd_threshold_mm restores all of this.
+    fd_threshold = policy["qc_thresholds"].get("fd_threshold_mm")
+    if fd_threshold is None:
+        high_motion_count = None
+        high_motion_fraction = None
+    else:
+        high_motion_count = int(np.sum(fd > fd_threshold))
+        high_motion_fraction = high_motion_count / len(fd)
 
     # Metrics Summary
     qc_metrics = {
@@ -452,6 +460,8 @@ def run_S4_func_motion_correction(
         "z_shift_corrected": z_shift_corrected,
         "max_fd_mm": float(np.max(fd)),
         "mean_fd_mm": float(np.mean(fd)),
+        "median_fd_mm": float(np.median(fd)),
+        "p95_fd_mm": float(np.percentile(fd, 95)),
         "high_motion_frame_count": high_motion_count,
         "high_motion_fraction": high_motion_fraction,
         "tsnr_before_mean": tsnr_mean_before,
@@ -536,23 +546,23 @@ def run_S4_func_motion_correction(
     qt = policy["qc_thresholds"]
     frac = qc_metrics["high_motion_fraction"]
 
-    # Optional, OFF by default (null): a site may still exclude high-motion runs.
+    # Optional operator levers; all null by default, so none of this runs. They
+    # need fd_threshold_mm to be set, since `frac` is null without it.
     max_frac = qt.get("max_high_motion_fraction")
-    if max_frac is not None and frac > max_frac:
+    warn_frac = qt.get("warn_high_motion_fraction")
+    if frac is not None and max_frac is not None and frac > max_frac:
         status = "FAIL"
         failure_reasons.append(
             f"{frac:.0%} of frames exceed FD>{qt['fd_threshold_mm']}mm "
             f"(> {max_frac:.0%} usable-data floor; operator-set gate)")
-    elif (qt.get("warn_high_motion_fraction") is not None
-            and frac > qt["warn_high_motion_fraction"]):
+    elif frac is not None and warn_frac is not None and frac > warn_frac:
         status = "WARN"
         failure_reasons.append(
             f"elevated motion: {frac:.0%} of frames over "
             f"FD>{qt['fd_threshold_mm']}mm (observability; not a rejection)")
 
-    # max_fd is a single-frame peak and is sensitive to slicewise-moco divergence
-    # (spurious tens of mm on a ~34 mm FOV). Observability-only.
-    if qc_metrics["max_fd_mm"] > qt["warn_fd_mm"]:
+    warn_fd = qt.get("warn_fd_mm")
+    if warn_fd is not None and qc_metrics["max_fd_mm"] > warn_fd:
         if status == "PASS":
             status = "WARN"
         failure_reasons.append(

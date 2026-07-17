@@ -13,7 +13,7 @@ def render_motion_traces(
     params_df,
     fd,
     dvars,
-    fd_threshold: float,
+    fd_threshold: Optional[float],
     dvars_threshold: float,
     output_path: Path,
     figsize: Tuple[float, float] = (11, 8),
@@ -24,12 +24,15 @@ def render_motion_traces(
 
     Row 1: total in-plane translation X/Y (mm) — the corrected total motion
     (Stage-1 bulk + Stage-2 slicewise mean), both already in mm.
-    Row 2: FD (framewise displacement, mm) with the scrubbing threshold drawn
-    HERE only (FD is a frame-to-frame change, so a horizontal line is meaningful
-    on this panel and meaningless on the position traces) + dots on flagged
-    volumes.
+    Row 2: FD (framewise displacement, mm). A threshold line and flagged dots are
+    drawn ONLY when `fd_threshold` is not None. No absolute FD threshold ships
+    (see policy/S4_func_motion_correction.yaml): the previous 0.5 mm reference sat
+    at the cohort's FD median, so this panel rendered roughly half of every trace
+    as red "flagged" dots, which reads as a catastrophic run. FD is plotted so the
+    reviewer can see the motion; it is not judged here.
     Row 3: DVARS (frame-to-frame intensity change) with its single-sourced
-    threshold + dots. Catches signal disruption FD's rigid model cannot see.
+    threshold + dots. Catches signal disruption FD's rigid model cannot see, and
+    is the metric S8 actually censors on.
     """
     if colors is None:
         colors = {'tx': '#1f77b4', 'ty': '#ff7f0e', 'fd': '#222222',
@@ -51,11 +54,17 @@ def render_motion_traces(
     axes[0].set_title('Total in-plane motion (Stage-1 bulk + Stage-2 slicewise mean)')
 
     axes[1].plot(frames, fd, color=colors['fd'], lw=1, label='FD')
-    axes[1].axhline(fd_threshold, color=colors['threshold'], ls='--', alpha=0.7,
-                    label=f'thr {fd_threshold:g} mm')
-    fo = np.where(fd > fd_threshold)[0]
-    if fo.size:
-        axes[1].scatter(fo, fd[fo], color='red', s=14, zorder=5, label=f'{fo.size} flagged')
+    if fd_threshold is not None:
+        axes[1].axhline(fd_threshold, color=colors['threshold'], ls='--', alpha=0.7,
+                        label=f'thr {fd_threshold:g} mm')
+        fo = np.where(fd > fd_threshold)[0]
+        if fo.size:
+            axes[1].scatter(fo, fd[fo], color='red', s=14, zorder=5, label=f'{fo.size} flagged')
+    else:
+        # No threshold ships. Give the reader the run's own scale instead of a
+        # verdict: a median line is descriptive, not a judgement.
+        axes[1].axhline(float(np.median(fd)), color='#888888', ls=':', alpha=0.8,
+                        label=f'median {np.median(fd):.2f} mm')
     axes[1].set_ylabel('FD\n(mm)')
     axes[1].legend(loc='upper right', fontsize=8, ncol=3)
 

@@ -4,7 +4,11 @@
   "title": "S4_func_motion_correction QC Status",
   "description": "QC status schema for S4_func_motion_correction step (aggregated per dataset key)",
   "type": "object",
-  "required": ["dataset_key", "step_code", "runs"],
+  "required": [
+    "dataset_key",
+    "step_code",
+    "runs"
+  ],
   "properties": {
     "dataset_key": {
       "type": "string",
@@ -34,7 +38,11 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["PASS", "WARN", "FAIL"],
+            "enum": [
+              "PASS",
+              "WARN",
+              "FAIL"
+            ],
             "description": "QC status for this run"
           },
           "step_code": {
@@ -47,15 +55,24 @@
             "description": "Dataset key"
           },
           "subject": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Subject ID (e.g. sub-01)"
           },
           "session": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Session ID (e.g. ses-01) or null"
           },
           "run_id": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Run entity (e.g. run-01) or null"
           },
           "metrics": {
@@ -66,8 +83,6 @@
               "z_shift_corrected",
               "max_fd_mm",
               "mean_fd_mm",
-              "high_motion_frame_count",
-              "high_motion_fraction",
               "tsnr_before_mean",
               "tsnr_after_mean",
               "tsnr_improvement_pct",
@@ -92,11 +107,17 @@
                 "description": "Mean framewise displacement in mm"
               },
               "high_motion_frame_count": {
-                "type": "integer",
+                "type": [
+                  "integer",
+                  "null"
+                ],
                 "description": "Number of frames exceeding FD threshold"
               },
               "high_motion_fraction": {
-                "type": "number",
+                "type": [
+                  "number",
+                  "null"
+                ],
                 "minimum": 0.0,
                 "maximum": 1.0,
                 "description": "Fraction of frames exceeding FD threshold"
@@ -120,6 +141,14 @@
               "dvars_max": {
                 "type": "number",
                 "description": "Maximum DVARS across frames"
+              },
+              "median_fd_mm": {
+                "type": "number",
+                "description": "Median framewise displacement (mm)."
+              },
+              "p95_fd_mm": {
+                "type": "number",
+                "description": "95th percentile framewise displacement (mm)."
               }
             }
           },
@@ -143,7 +172,10 @@
                 "description": "Path to the stacked trace panel PNG (total X/Y translation + FD + DVARS, shared time axis)"
               },
               "S4_slicewise_heatmap": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Path to the slice x volume slicewise-shift heatmap PNG (Stage-2; null when the 2D slicewise stage did not run)"
               },
               "S4_tsnr_comparison": {

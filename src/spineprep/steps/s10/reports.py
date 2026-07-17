@@ -339,11 +339,18 @@ def build_subject_report(
         s5_reasons = steps.get("S5", {}).get("failure_message") or ""
         if "distortion-limited" in s5_reasons:
             disp_note = " <span class='smallnote'>(distortion-limited, no fieldmap)</span>"
+        # FD is reported threshold-free (median/max describe the motion without
+        # judging it). The censored fraction is read from S8, the step that
+        # actually censors, on the intensity metrics. This row previously showed
+        # S4's `high_motion_fraction` under the label "% frames censored", which
+        # was wrong twice over: S4 does not censor, and the fraction was computed
+        # against a 0.5 mm reference that sits at the cohort's own FD median.
+        # See .claude/specs/s4-fd-threshold.md.
         mt = [
-            ("Mean FD (mm)", _fmt(_metric(steps, "S4", "mean_fd_mm"))),
+            ("Median FD (mm)", _fmt(_metric(steps, "S4", "median_fd_mm"))),
             ("Max FD (mm)", _fmt(_metric(steps, "S4", "max_fd_mm"))),
             ("% frames censored", _fmt(
-                (_metric(steps, "S4", "high_motion_fraction") or 0) * 100, 1)),
+                (_metric(steps, "S8", "outlier_fraction") or 0) * 100, 1)),
             ("S5 cord Dice", _fmt(_metric(steps, "S5", "dice_mean_after"))),
             ("S5 A-P disp (mm)", _fmt(disp) + disp_note),
             ("S6 cord Dice", _fmt(_metric(steps, "S6", "cord_dice"))),

@@ -99,3 +99,67 @@ def test_sidecar_description_matches_actual_rule():
     pol["motion"]["fd_outlier_threshold_mm"] = 0.5
     d2 = _outlier_family_description(pol)
     assert "FD > 0.50 mm (operator-enabled)" in d2
+
+
+# --- no absolute FD threshold ships -----------------------------------------
+
+def test_s4_ships_no_absolute_fd_threshold():
+    """Every FD knob is null. A non-gating threshold is not harmless: the
+    reportlet drew a line at 0.5mm and marked ~half of every trace red as
+    "flagged" (0.5mm is the cohort FD median), and S10 published the derived
+    fraction as a headline "% high motion"."""
+    pol = yaml.safe_load((REPO / "policy" / "S4_func_motion_correction.yaml").read_text())
+    qt = pol["qc_thresholds"]
+    for knob in ("fd_threshold_mm", "max_high_motion_fraction",
+                 "warn_high_motion_fraction", "warn_fd_mm"):
+        assert qt[knob] is None, f"{knob} must ship null; got {qt[knob]}"
+    # the gate that reflects whether the CORRECTION worked stays on
+    assert qt["min_tsnr"] == 3.0
+    assert qt["warn_tsnr_degraded"] is True
+
+
+def test_schema_allows_null_motion_flags_and_has_threshold_free_stats():
+    import json
+    s = json.loads((REPO / "schemas" / "qc_S4_func_motion_correction.schema.json").read_text())
+    found = {}
+    def walk(d):
+        if isinstance(d, dict):
+            for k, v in d.items():
+                if k == "required" and isinstance(v, list):
+                    found.setdefault("required", []).extend(v)
+                if k == "properties" and isinstance(v, dict) and "high_motion_fraction" in v:
+                    found["props"] = v
+                walk(v)
+        elif isinstance(d, list):
+            for i in d: walk(i)
+    walk(s)
+    assert "high_motion_fraction" not in found["required"]
+    assert "high_motion_frame_count" not in found["required"]
+    assert "null" in found["props"]["high_motion_fraction"]["type"]
+    # threshold-free descriptors must exist to replace them
+    assert "median_fd_mm" in found["props"] and "p95_fd_mm" in found["props"]
+
+
+def test_reportlet_draws_no_threshold_line_without_one(tmp_path):
+    """With no threshold there must be no line and no red 'flagged' dots."""
+    import inspect
+    from spineprep.lib import viz_s4
+    src = inspect.getsource(viz_s4.render_motion_traces)
+    assert "if fd_threshold is not None:" in src
+    # and it renders without raising when the threshold is None
+    n = 40
+    df = pd.DataFrame({"tx": np.zeros(n), "ty": np.zeros(n)})
+    out = tmp_path / "t.png"
+    viz_s4.render_motion_traces(df, np.abs(np.random.default_rng(0).normal(0.5, .2, n)),
+                                np.ones(n), None, 1.5, out)
+    assert out.exists() and out.stat().st_size > 0
+
+
+def test_s10_reads_censored_fraction_from_the_step_that_censors():
+    """'% frames censored' must come from S8 (which censors), not S4's FD."""
+    import inspect
+    from spineprep.steps.s10 import reports
+    src = inspect.getsource(reports)
+    assert '("% frames censored", _fmt(\n                (_metric(steps, "S8", "outlier_fraction") or 0) * 100, 1))' in src \
+        or '_metric(steps, "S8", "outlier_fraction")' in src
+    assert '_metric(steps, "S4", "high_motion_fraction")' not in src

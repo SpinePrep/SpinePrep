@@ -387,8 +387,23 @@ def run_S4_func_motion_correction_reportlets_only(
         fd_threshold = policy.get("qc_thresholds", {}).get("fd_threshold_mm", 0.5)
         dpi = policy.get("qc", {}).get("motion_traces", {}).get("dpi", 100)
 
+        # Geometry drives the unit scaling below; the cropped BOLD is the same
+        # grid the moco params were estimated on.
+        s3_bold_path = (out_path / "runs" / "S3_func_init_and_crop" / run_id
+                        / "funccrop_bold.nii.gz")
+        vox_x = vox_y = 1.0
+        axcodes = None
+        if s3_bold_path.exists():
+            _bimg = nib.load(s3_bold_path)
+            vox_x, vox_y = (float(v) for v in _bimg.header.get_zooms()[:2])
+            axcodes = nib.orientations.aff2axcodes(_bimg.affine)
+
         try:
-            # Build params_total = Stage-1 bulk + Stage-2 slicewise mean (both mm)
+            # Stage-1 bulk (VOXELS) + Stage-2 slicewise (mm). These are composed
+            # by moco.compose_cord_fd, which scales Stage 1 to mm and reduces per
+            # slice so opposing slice shifts cannot cancel. This path previously
+            # duplicated the old buggy reduction (signed slice-mean, no unit
+            # scaling), so the plotted FD disagreed with qc.json's.
             params_df = pd.DataFrame()
             slicewise_x = slicewise_y = None
             if coarse_path.exists():
@@ -400,7 +415,6 @@ def run_S4_func_motion_correction_reportlets_only(
                 if len(params_df) == 0 and mx.ndim == 4:
                     params_df["tx"] = np.zeros(mx.shape[-1]); params_df["ty"] = np.zeros(mx.shape[-1])
                 if mx.ndim == 4 and mx.shape[-1] == len(params_df):
-                    params_df["tx"] += mx.mean(axis=(0, 1, 2)); params_df["ty"] += my.mean(axis=(0, 1, 2))
                     slicewise_x, slicewise_y = mx, my
 
             # DVARS + cord mask + Tukey threshold (matches S8)
@@ -415,7 +429,15 @@ def run_S4_func_motion_correction_reportlets_only(
             cord_z_extent = (int(cz.min()), int(cz.max())) if cz.size else None
 
             if len(params_df):
-                fd = moco.compute_framewise_displacement(params_df)
+                fd, _fd_info = moco.compose_cord_fd(
+                    stage1_tx=params_df["tx"].values,
+                    stage1_ty=params_df["ty"].values,
+                    slicewise_x=slicewise_x, slicewise_y=slicewise_y,
+                    voxsize_x=vox_x, voxsize_y=vox_y, axcodes=axcodes,
+                )
+                # Plot the traces in mm, matching the FD beneath them.
+                params_df["tx"] = params_df["tx"].values * vox_x
+                params_df["ty"] = params_df["ty"].values * vox_y
                 viz_s4.render_motion_traces(
                     params_df, fd, dvars, fd_threshold, dvars_threshold,
                     figures_dir / f"{prefix}_desc-S4_motion_traces.png", dpi=dpi,
