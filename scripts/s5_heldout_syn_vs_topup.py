@@ -137,18 +137,25 @@ def analyze() -> int:
             if not all(isinstance(x, list) for x in (zt, zs, dt, dsy, db)):
                 continue
             # align on common slices
+            import math
+            def _n(x): return isinstance(x, (int, float)) and not math.isnan(x)
             si = {z: i for i, z in enumerate(zs)}
             res, base = [], []
             for i, z in enumerate(zt):
                 j = si.get(z)
                 if j is None:
                     continue
-                res.append(abs(dsy[j] - dt[i]))
-                base.append(abs(db[i] - dt[i]))
-            if not res or not base:
+                # per-slice values can be NaN (slice dropped below the voxel
+                # floor); skip them or the run's mean poisons to NaN.
+                if _n(dsy[j]) and _n(dt[i]) and _n(db[i]):
+                    res.append(abs(dsy[j] - dt[i]))
+                    base.append(abs(db[i] - dt[i]))
+            if len(res) < 3:                 # need a few valid slices
                 continue
             mres, mbase = st.mean(res), st.mean(base)
-            gap = (1 - mres / mbase) if mbase > 1e-6 else float("nan")
+            if mbase <= 0.05:                # topup barely moved it -> no gap to close
+                continue
+            gap = 1 - mres / mbase
             rows.append({
                 "ds": ds, "run": rid, "n_z": len(res),
                 "residual_mm": mres, "baseline_mm": mbase, "gap_closed": gap,
