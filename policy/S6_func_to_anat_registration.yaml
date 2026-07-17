@@ -1,12 +1,22 @@
 version: 1
 
-# Per-run func->anat registration. Algorithm is the Kaptan 2023 Eippert-lab
-# verbatim chain, intensity-agnostic (type=seg), slicewise non-linear refinement.
-# Anat modality is heterogeneous across v1_validation (T1w vs T2w); the chain
-# is contrast-invariant by design (seg-driven).
+# Per-run func->anat registration. SpinePrep's own seg-driven chain, built from
+# SCT's standard sct_register_multimodal primitives, intensity-agnostic
+# (type=seg) so it is contrast-invariant across the heterogeneous v1_validation
+# anat (T1w vs T2w vs T2star).
+#
+# NOT "Kaptan 2023 verbatim" (corrected 2026-07-16, audit-v2 F1). Verified from
+# Kaptan's published code (eippertlab/restingstate-reliability-spinalcord): their
+# chain is TWO steps, `centermass -> bsplinesyn` (iter=3), and it registers the
+# PAM50 template to the functional mean DIRECTLY (initialised by the anat->
+# template warp) -- not a fresh func->own-anat registration. SCT's own default is
+# also two steps (centermassrot -> bsplinesyn); `columnwise` and `iter=20` are
+# both SpinePrep tuning, not SCT defaults. This chain is in the spirit of the
+# Eippert-lab template-to-native approach but is not identical to it, and the
+# 3-step composition is the operator's (CoSpi spi06_1fov_reg.sh), not a published
+# recipe. See .claude/specs/s6-algorithm-audit-v2.md.
 registration:
-  # CoSpi 1FOV/2FOV recipe (Kiomars 2025; methods.md). Direction:
-  # `-i funcref -d anat` (func is moving, anat is destination — cropped
+  # Direction: `-i funcref -d anat` (func is moving, anat is destination — cropped
   # to dilated cord region). Three slicewise seg-driven steps:
   #   1. centermassrot — COM alignment + slicewise rotation; required
   #      for oblique cord BOLDs (e.g. KombiShimZSpine 12° tilt).
@@ -43,13 +53,22 @@ reproducibility:
   capture_provenance: true
 
 qc_thresholds:
-  # Cord-Dice is the registration-validation metric per Cohen-Adad et al. 2014
-  # (cord template/registration), De Leener et al. 2017 (SCT), and Gros et al.
-  # 2019 (sct_deepseg), which report cord-seg/registration Dice in the
-  # ~0.85-0.95 band — hence pass≥0.85. The 0.65 warn/fail floor is the
-  # lower-quality-but-usable band (CoSpi-validated on cord-cropped EPI; below
-  # it registration is unreliable). DOC-1.
-  pass_dice_min: 0.85                # Cohen-Adad 2014 / De Leener 2017 cord-reg band
+  # Cord Dice (warped EPI cord vs anat cord) is a CONVERGENCE check, not an
+  # independent validator: the registration is seg-driven (type=seg maximises
+  # cord-mask overlap), so a high Dice largely confirms the optimiser met its own
+  # objective. It is structurally blind to axial (along-Z) mis-registration --
+  # Dice on a smooth cord tube is near-invariant to shifts along its axis -- and
+  # to intensity mismatch inside the cord. An independent metric (vertebral-level
+  # agreement, or EPI-vs-anat intensity CC) is the open follow-up (audit-v2 F3).
+  #
+  # The 0.85 bar is SpinePrep's operating point on cord-cropped EPI, NOT a
+  # literature-reported registration-Dice band (audit-v2 F2). The earlier comment
+  # cited Cohen-Adad 2014 / De Leener 2017 / Gros 2019 for a "0.85-0.95 cord
+  # registration Dice band"; that is unverified -- Gros 2019 reports SEGMENTATION
+  # Dice (auto vs manual mask, ~0.9), a different quantity, and no cord-
+  # REGISTRATION Dice band was found in the other two. The 0.65 floor is the
+  # lower-quality-but-usable band, validated empirically on cord-cropped EPI.
+  pass_dice_min: 0.85                # SpinePrep operating point (not a cited band)
   pass_dice_min_syn_fallback: 0.80   # lower bar for S5 SyN-fallback runs
   fail_dice_below: 0.65              # < this = FAIL; [fail, pass) = WARN; >= pass = PASS
   # HD95 in mm: OBSERVABILITY-ONLY (WARN ceiling, never FAIL) as of 2026-06-14.
