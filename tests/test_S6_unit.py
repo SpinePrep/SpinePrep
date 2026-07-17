@@ -293,3 +293,55 @@ def test_top_status_aggregation_rule():
     assert agg(["PASS", "FAIL"]) == "WARN"
     assert agg(["FAIL", "FAIL"]) == "FAIL"
     assert agg([]) == "FAIL"
+
+
+# --- independent registration metric (audit-v2 F3) --------------------------
+
+def test_cord_restricted_mi_is_independent_of_seg_overlap():
+    """The registration cost is type=seg (cord-mask overlap), so cord Dice is
+    circular. A cord-restricted INTENSITY MI is orthogonal: it must rise when
+    the actual tissue intensities agree and stay low when they don't, regardless
+    of mask overlap. This test proves the metric responds to intensity agreement,
+    not to the segmentation the registration optimised."""
+    import numpy as np
+    from spineprep.steps.s6.process import _mutual_information
+
+    rng = np.random.default_rng(0)
+    # Two intensity vectors that agree (a monotonic map of each other) vs two
+    # that are independent -- same "mask" (all voxels), different intensity match.
+    n = 500
+    epi = rng.normal(100, 15, n)
+    anat_agree = epi * 2.0 + rng.normal(0, 1, n)      # tissue lands on tissue
+    anat_random = rng.normal(200, 30, n)              # no correspondence
+    mi_agree = _mutual_information(epi, anat_agree, bins=16)
+    mi_random = _mutual_information(epi, anat_random, bins=16)
+    assert mi_agree > mi_random, (
+        f"cord intensity MI must reward real agreement: agree={mi_agree:.3f} "
+        f"random={mi_random:.3f}")
+
+
+def test_s6_emits_cord_restricted_mi():
+    """process.py must compute mi_cord_after restricted to the cord mask, not
+    the legacy whole-image mi_after (which is dominated by background air)."""
+    import inspect
+    from spineprep.steps.s6 import process
+    src = inspect.getsource(process)
+    assert 'metrics["mi_cord_after"]' in src
+    assert "f[cord], a[cord]" in src        # restricted to the cord ROI
+    assert "audit-v2 F3" in src             # documented as the independent metric
+
+
+def test_schema_has_cord_restricted_mi():
+    import json
+    from pathlib import Path
+    s = json.loads((Path(__file__).parent.parent / "schemas"
+                    / "qc_S6_func_to_anat_registration.schema.json").read_text())
+    found = {"hit": False}
+    def walk(d):
+        if isinstance(d, dict):
+            if "mi_cord_after" in d.get("properties", {}): found["hit"] = True
+            for v in d.values(): walk(v)
+        elif isinstance(d, list):
+            for i in d: walk(i)
+    walk(s)
+    assert found["hit"], "mi_cord_after must be in the S6 schema"
