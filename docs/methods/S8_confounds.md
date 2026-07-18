@@ -49,11 +49,23 @@ et al., 2007) applied slice by slice to a subject-specific CSF mask (the S2 cana
 segmentation minus cord, warped to native functional space through S6, falling
 back to the PAM50 CSF mask). Applying the component analysis per slice suits the
 cord, where the CSF space is a thin ring that changes shape along the cord axis; a
-single volume-wide analysis would blur those differences. Five components per slice
-is SpinePrep's choice on numerical-stability grounds, not a cord-community
-standard. The cord field's own CSF regressor is different (a single mean signal
-from high-variance CSF voxels; Kaptan et al., 2023), and this is a documented
-departure.
+single volume-wide analysis would blur those differences, and it has a cord
+precedent in Barry et al. (2014), which ran a per-slice CSF component analysis
+with an adaptive two to six components. The fixed count of five is SpinePrep's own
+choice and is not a published value. The cord field's majority CSF regressor is
+different again (a single mean signal from high-variance CSF voxels; Eippert et
+al., 2017; Kaptan et al., 2023; Dabbagh et al., 2024), and this is a documented
+departure. The two approaches have never been compared directly in the cord.
+
+Two independent floors guard each slice's component analysis: one on the number of
+mask voxels, and one on the number of those voxels that actually carry signal. The
+second is necessary because the CSF mask is warped in from anatomical space and is
+not clipped to the acquired slab, so it can claim voxels in an edge slice the
+scanner never acquired. A component analysis there is meaningless rather than
+merely noisy: for an all-zero matrix every singular value is zero and the singular
+vectors are arbitrary, so the underlying library returns an arbitrary basis that is
+then normalized into single-frame spikes. Slices failing either floor are skipped
+and recorded in `qc.json` with the reason.
 
 RETROICOR. Cardiac and respiratory phase regressors built with FSL PNM (`popp`
 then `pnm_evs`), auto-disabled when physiology recordings are absent. With cardiac
@@ -91,6 +103,21 @@ and the thresholds are SpinePrep's own. The outlier fraction (the share of frame
 flagged by the intensity metrics) is reported and soft-warns above 0.20, but never
 fails a run: whether to drop a high-motion run is the analyst's call at GLM time.
 
+Alongside the condition number, S8 reports the numerical rank of the design, the
+rank deficit (how many columns are redundant), and the regressor-to-frame ratio.
+The rank deficit is the more actionable number: a condition number says a design is
+ill-posed without saying why, while the deficit counts the redundant columns
+directly. Zero-variance regressors are dropped before the table is written and the
+count is recorded, matching the rule AFNI's `3dTproject` applies.
+
+Rank matters here for degrees of freedom rather than for the fit. Regressing out
+confounds uses only the residuals, and residuals are unique and correct even when
+the design is rank-deficient, since only the individual coefficients become
+unidentifiable (Poline et al.; Mumford et al., 2015). What a rank deficiency does
+break is the usual practice of counting each column as one lost degree of freedom,
+which holds only for linearly independent columns. Reporting the rank lets an
+analyst use `n - rank(X)` instead of the column count.
+
 ## Inputs and outputs
 
 ```
@@ -102,21 +129,39 @@ derivatives/spineprep/sub-<id>/[ses-<id>/]func/
 ## Limitations
 
 The confound matrix is emitted for the analyst to regress, following the fMRIPrep
-contract; SpinePrep does not choose the GLM. With slice-wise physiology and CSF
-components, the per-slice regressor count can approach the degrees of freedom of a
-short run over a small cord region, so the condition-number report matters and the
-analyst should confirm the design is well-conditioned for their run lengths. The
-CSF component count and the condition-number thresholds are SpinePrep choices, not
-cord-community standards.
+contract; SpinePrep does not choose the GLM. The CSF component count and the
+condition-number thresholds are SpinePrep choices, not cord-community standards.
+
+The table is built for a slice-wise GLM, and this is load-bearing rather than
+advisory. Each slice should be cleaned with the global regressors plus its own
+per-slice CSF and physiology columns, which on the reference cohort uses a
+comfortable fraction of the available degrees of freedom. Regressing every column
+at once instead is much wider: across the nine-dataset cohort a flat design carries
+a median of 139 regressors against 227 frames, 86 percent of runs spend more than
+half their degrees of freedom, and 9 percent have more regressors than frames and
+are therefore rank-deficient before any defect. The shipped reference analysis
+demonstrates the slice-wise usage for this reason.
+
+The CSF components describe whatever dominates the variance in their slice, which
+on a slice with a severe transient can be that artifact rather than physiology.
+Projecting the motion and spike regressors out of the CSF time-series before the
+component analysis would address this, and has precedent in CONN, but it changes
+the components on every run and is not done in this version.
 
 ## References
 
+- Barry, R. L., et al. (2014). Resting-state functional connectivity in the human
+  spinal cord. eLife 3, e02812.
 - Behzadi, Y., et al. (2007). A component based noise correction method (CompCor)
   for BOLD and perfusion based fMRI. NeuroImage 37(1), 90–101.
 - Brooks, J. C. W., et al. (2008). Physiological noise modelling for spinal
   functional MRI studies. NeuroImage 39(2), 680–692.
 - Carp, J. (2013). Optimizing the order of operations for movement scrubbing.
   NeuroImage 76, 436–438.
+- Dabbagh, A., et al. (2024). Reliability of task-based spinal cord fMRI. Imaging
+  Neuroscience 2, 1–23.
+- Mumford, J. A., Poline, J.-B., & Poldrack, R. A. (2015). Orthogonalization of
+  regressors in fMRI models. PLoS ONE 10(4), e0126255.
 - Eippert, F., et al. (2017). Denoising spinal cord fMRI data. NeuroImage.
 - Glover, G. H., et al. (2000). Image-based method for retrospective correction of
   physiological motion effects in fMRI: RETROICOR. Magnetic Resonance in Medicine

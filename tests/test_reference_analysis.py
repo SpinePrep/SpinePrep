@@ -94,3 +94,77 @@ def test_missing_inputs_skip_not_crash(tmp_path):
     res = run_reference_analysis(tmp_path, "sub-01_task-rest", "01")
     assert res["status"] == "SKIP"
     assert "missing inputs" in res["reason"]
+
+
+# ---------------------------------------------------------------------------
+# Slicewise confound selection
+#
+# The S8 table is built for a slicewise GLM. Regressing every column at once
+# uses a median 139 regressors against 227 frames on the reference cohort, with
+# 8.7% of runs having more regressors than frames. The demonstration must model
+# the slicewise usage, not the flat one.
+# ---------------------------------------------------------------------------
+
+
+def test_confound_design_slicewise_keeps_only_that_slice(tmp_path):
+    import pandas as pd
+    import numpy as np
+    from spineprep.reference_analysis import _confound_design
+    n = 50
+    rng = np.random.default_rng(0)
+    df = pd.DataFrame({
+        "trans_x": rng.standard_normal(n),
+        "cosine_00": rng.standard_normal(n),
+        "csf_slice00_pc01": rng.standard_normal(n),
+        "csf_slice01_pc01": rng.standard_normal(n),
+        "csf_slice02_pc01": rng.standard_normal(n),
+        "pnm_slice01_ev01": rng.standard_normal(n),
+    })
+    p = tmp_path / "c.tsv"
+    df.to_csv(p, sep="\t", index=False)
+
+    X, names = _confound_design(p, slice_index=1)
+    assert "csf_slice01_pc01" in names
+    assert "pnm_slice01_ev01" in names
+    assert "csf_slice00_pc01" not in names
+    assert "csf_slice02_pc01" not in names
+    # global regressors always survive
+    assert "trans_x" in names and "cosine_00" in names
+    assert X.shape == (n, len(names))
+
+
+def test_confound_design_flat_keeps_everything(tmp_path):
+    import pandas as pd
+    import numpy as np
+    from spineprep.reference_analysis import _confound_design
+    n = 50
+    rng = np.random.default_rng(1)
+    df = pd.DataFrame({
+        "trans_x": rng.standard_normal(n),
+        "csf_slice00_pc01": rng.standard_normal(n),
+        "csf_slice01_pc01": rng.standard_normal(n),
+    })
+    p = tmp_path / "c.tsv"
+    df.to_csv(p, sep="\t", index=False)
+    _, names = _confound_design(p)
+    assert "csf_slice00_pc01" in names and "csf_slice01_pc01" in names
+
+
+def test_confound_design_slicewise_is_narrower_than_flat(tmp_path):
+    """The whole point: slicewise uses fewer degrees of freedom."""
+    import pandas as pd
+    import numpy as np
+    from spineprep.reference_analysis import _confound_design
+    n = 60
+    rng = np.random.default_rng(2)
+    cols = {"trans_x": rng.standard_normal(n)}
+    for z in range(20):
+        for pc in range(5):
+            cols[f"csf_slice{z:02d}_pc{pc:02d}"] = rng.standard_normal(n)
+    p = tmp_path / "c.tsv"
+    pd.DataFrame(cols).to_csv(p, sep="\t", index=False)
+    flat, _ = _confound_design(p)
+    sw, _ = _confound_design(p, slice_index=3)
+    assert sw.shape[1] < flat.shape[1]
+    assert flat.shape[1] > n      # flat is wider than the run is long
+    assert sw.shape[1] < n        # slicewise is not
