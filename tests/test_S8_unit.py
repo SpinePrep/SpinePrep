@@ -348,3 +348,41 @@ def test_normalize_physio_channel_aliases():
         assert _normalize_physio_channel(alias) == "respiratory"
     assert _normalize_physio_channel("trigger") == "trigger"
     assert _normalize_physio_channel("unknown_chan") is None
+
+
+# ---------------------------------------------------------------------------
+# Reportlets must tolerate a disabled FD threshold (fd_thresh=None)
+#
+# Regression for the 2026-07-18 cohort run: disabling FD censoring set
+# fd_outlier_threshold_mm to null, every carpet_plot / fd_dvars_outliers render
+# raised "unsupported format string passed to NoneType.__format__", and all 339
+# runs silently lost both diagnostics while still reporting PASS.
+# ---------------------------------------------------------------------------
+
+
+def test_fd_dvars_reportlet_renders_with_null_fd_threshold(tmp_path):
+    import numpy as np
+    from spineprep.steps.s8.reportlets import render_s8_fd_dvars_outliers
+    rng = np.random.default_rng(0)
+    n = 60
+    out = tmp_path / "fd_dvars.png"
+    render_s8_fd_dvars_outliers(
+        rng.random(n), rng.random(n) * 10, rng.random(n) * 5,
+        3, out, status="PASS", fd_thresh=None,
+        outlier_indices=np.array([5, 20]),
+    )
+    assert out.exists() and out.stat().st_size > 0
+
+
+def test_fd_dvars_reportlet_still_draws_line_when_threshold_set(tmp_path):
+    import numpy as np
+    from spineprep.steps.s8.reportlets import render_s8_fd_dvars_outliers
+    rng = np.random.default_rng(1)
+    n = 60
+    out = tmp_path / "fd_dvars_thr.png"
+    render_s8_fd_dvars_outliers(
+        rng.random(n), rng.random(n) * 10, rng.random(n) * 5,
+        3, out, status="PASS", fd_thresh=0.5,
+        outlier_indices=None,
+    )
+    assert out.exists() and out.stat().st_size > 0

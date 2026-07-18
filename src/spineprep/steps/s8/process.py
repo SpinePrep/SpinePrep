@@ -1632,6 +1632,26 @@ def run_S8_confounds_and_physio_regressors(
     except Exception as e:
         failure_reasons.append(f"carpet_plot reportlet failed: {e}")
 
+    # A run must not PASS while its diagnostic reportlets are missing. The
+    # visual QC is the validator (invariant 4) and each step owes one
+    # diagnostic reportlet (invariant 3), so a render failure is a QC
+    # finding, not a cosmetic one. Escalate PASS -> WARN; never mask a FAIL.
+    # Found on the 2026-07-18 cohort run: fd_thresh became None when FD
+    # censoring was disabled, every carpet_plot and fd_dvars_outliers render
+    # raised, and 336/339 runs still reported PASS with no PNG on disk.
+    _missing_reportlets = [
+        name for name, path in (
+            ("carpet_plot", rep_carpet),
+            ("fd_dvars_outliers", rep_fd),
+            ("confound_columns", rep_cols),
+        ) if not path.exists()
+    ]
+    if _missing_reportlets and status == "PASS":
+        status = "WARN"
+        failure_reasons.append(
+            "diagnostic reportlet(s) not rendered: "
+            f"{', '.join(_missing_reportlets)} — run not visually verifiable")
+
     return {
         "status": status,
         "step_code": step_code,
