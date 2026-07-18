@@ -203,18 +203,22 @@ def render_s8_fd_dvars_outliers(
                 ax.axvline(oi, color="#ef4444", lw=0.4, alpha=0.35)
         # Threshold lines — FD uses caller-supplied threshold; DVARS/
         # refRMS use Tukey Q3 + 1.5·IQR (matches the actual gate).
+        # fd_thresh is None when FD censoring is disabled (the shipped
+        # default): draw no FD line rather than inventing one.
         if i == 0:
-            ax.axhline(fd_thresh, ls="--", color="#9ca3af", lw=0.6,
-                       label=f"FD = {fd_thresh:.2f} mm")
+            if fd_thresh is not None:
+                ax.axhline(fd_thresh, ls="--", color="#9ca3af", lw=0.6,
+                           label=f"FD = {fd_thresh:.2f} mm")
         else:
             q1, q3 = np.percentile(vec, [25, 75])
             thr = q3 + 1.5 * (q3 - q1)
             ax.axhline(thr, ls="--", color="#9ca3af", lw=0.6,
                        label="Q3 + 1.5·IQR")
-        leg = ax.legend(loc="upper right", fontsize=8, facecolor="#1a1d23",
-                        edgecolor=BORDER, labelcolor=TEXT)
-        for t in leg.get_texts():
-            t.set_color(TEXT)
+        if ax.get_legend_handles_labels()[0]:
+            leg = ax.legend(loc="upper right", fontsize=8, facecolor="#1a1d23",
+                            edgecolor=BORDER, labelcolor=TEXT)
+            for t in leg.get_texts():
+                t.set_color(TEXT)
         ax.set_ylabel(label, color=TEXT, fontsize=9)
         ax.grid(alpha=0.15, color=BORDER)
         ax.set_axisbelow(True)
@@ -564,8 +568,10 @@ def render_s8_carpet_plot(
     # Bottom traces
     trace_specs = []
     if has_fd:
-        trace_specs.append((fd, "FD (mm)", "#7dcfff", fd_thresh,
-                            f"FD = {fd_thresh:.2f} mm"))
+        # fd_thresh is None when FD censoring is disabled (the shipped
+        # default): plot the FD trace with no threshold line.
+        fd_lbl = None if fd_thresh is None else f"FD = {fd_thresh:.2f} mm"
+        trace_specs.append((fd, "FD (mm)", "#7dcfff", fd_thresh, fd_lbl))
     if has_dvars:
         # Match the actual DVARS gate (Tukey Q3 + 1.5·IQR), same as the
         # fd_dvars_outliers reportlet — not the abandoned μ+3σ rule.
@@ -578,11 +584,13 @@ def render_s8_carpet_plot(
         _setup_dark_axes(ax)
         x = np.arange(len(vec))
         ax.plot(x, vec, color=color, lw=0.9)
-        ax.axhline(thr, ls="--", color="#9ca3af", lw=0.5, label=thr_lbl)
-        leg = ax.legend(loc="upper right", fontsize=7, facecolor="#1a1d23",
-                        edgecolor=BORDER, labelcolor=TEXT)
-        for t in leg.get_texts():
-            t.set_color(TEXT)
+        if thr is not None:
+            ax.axhline(thr, ls="--", color="#9ca3af", lw=0.5, label=thr_lbl)
+        if ax.get_legend_handles_labels()[0]:
+            leg = ax.legend(loc="upper right", fontsize=7, facecolor="#1a1d23",
+                            edgecolor=BORDER, labelcolor=TEXT)
+            for t in leg.get_texts():
+                t.set_color(TEXT)
         ax.set_ylabel(label, color=TEXT, fontsize=8)
         ax.grid(alpha=0.15, color=BORDER)
         ax.set_axisbelow(True)
