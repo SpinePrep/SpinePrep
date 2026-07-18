@@ -277,3 +277,84 @@ def test_aggregate_mixed_with_fail_is_warn_when_some_ok():
 def test_aggregate_all_fail_is_fail():
     assert _agg([{"status": "FAIL"}, {"status": "FAIL"}]) == "FAIL"
     assert _agg([]) == "FAIL"
+
+
+# ---------------------------------------------------------------------------
+# Per-level Dice gate: three-banded PASS / WARN / FAIL
+#
+# Regression for the cohort finding (9 datasets / 456 runs): a single hard FAIL
+# cliff at the 0.90 PASS level sat inside the distribution's own low tail and
+# split runs of the SAME subject and acquisition. 0.85 is the FAIL floor; the
+# band between routes to visual inspection instead of discarding the run.
+# ---------------------------------------------------------------------------
+
+
+_PLTHR = {
+    "per_level_pass_min": 0.90,
+    "per_level_fail_below": 0.85,
+    "per_level_broken_below": 0.50,
+    "pass_dice_min": 0.80,
+    "fail_dice_below": 0.65,
+}
+
+
+def _pl(*vals):
+    return {"cord_dice_per_level": {str(i): v for i, v in enumerate(vals)}}
+
+
+def test_per_level_pass_above_pass_floor():
+    from spineprep.steps.s7.process import _classify
+    status, _ = _classify(_pl(0.97, 0.98, 0.99), _PLTHR)
+    assert status == "PASS"
+
+
+def test_per_level_warn_band_between_fail_and_pass():
+    """The band that motivated the change: 0.88 is no longer a FAIL."""
+    from spineprep.steps.s7.process import _classify
+    status, reasons = _classify(_pl(0.87, 0.88, 0.89), _PLTHR)
+    assert status == "WARN"
+    assert any("WARN" in r for r in reasons)
+
+
+def test_per_level_sibling_runs_no_longer_split_across_fail():
+    """0.8997 and 0.9019 differ by run-to-run noise; neither may FAIL."""
+    from spineprep.steps.s7.process import _classify
+    lo, _ = _classify(_pl(0.8997, 0.8997, 0.8997), _PLTHR)
+    hi, _ = _classify(_pl(0.9019, 0.9019, 0.9019), _PLTHR)
+    assert lo == "WARN" and hi == "PASS"
+    assert "FAIL" not in (lo, hi)
+
+
+def test_per_level_genuine_outlier_still_fails():
+    """The cohort's real failure group (<=0.82) must still FAIL."""
+    from spineprep.steps.s7.process import _classify
+    for med in (0.688, 0.805, 0.821):
+        status, _ = _classify(_pl(med, med, med), _PLTHR)
+        assert status == "FAIL", med
+
+
+def test_per_level_pass_floor_boundary_is_inclusive_pass():
+    from spineprep.steps.s7.process import _classify
+    status, _ = _classify(_pl(0.90, 0.90, 0.90), _PLTHR)
+    assert status == "PASS"
+
+
+def test_per_level_fail_floor_boundary_is_inclusive_warn():
+    from spineprep.steps.s7.process import _classify
+    status, _ = _classify(_pl(0.85, 0.85, 0.85), _PLTHR)
+    assert status == "WARN"
+
+
+def test_per_level_broken_level_reported_inside_warn_band():
+    """A broken level is its own diagnostic and must survive the WARN band."""
+    from spineprep.steps.s7.process import _classify
+    status, reasons = _classify(_pl(0.0, 0.88, 0.89), _PLTHR)
+    assert status == "WARN"
+    assert any("exclude that level" in r for r in reasons)
+
+
+def test_per_level_broken_level_still_warns_when_median_passes():
+    from spineprep.steps.s7.process import _classify
+    status, reasons = _classify(_pl(0.0, 0.97, 0.98), _PLTHR)
+    assert status == "WARN"
+    assert any("exclude that level" in r for r in reasons)

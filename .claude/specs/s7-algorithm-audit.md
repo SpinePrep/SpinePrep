@@ -376,3 +376,41 @@ citation/framing corrections applied.
 - **Citation hazard corrected:** PMC10769329/PMC12290578 = Dabbagh/Horn/Kaptan/
   Eippert 2024 (imag_a_00273, 3 SD), NOT "Kaptan 2023". The real Kaptan 2023 is
   NeuroImage 275:120152 (2 SD).
+
+---
+
+## v3 (2026-07-18): per-level Dice gate given a WARN band
+
+Cohort finding, from the full 9-dataset / 458-run S7 run. The per-level median
+Dice gate was a single hard cliff at the 0.90 PASS level, calibrated on CoSpiGVS
+alone (good runs 0.95-1.00, failures 0.87-0.88). That separation did not transfer.
+
+Measured across all 456 runs with per-level metrics: median 0.978, p5 0.915,
+p1 0.815. The 0.90 cliff therefore sat inside the distribution's own low tail,
+not below it. The decisive evidence is that it split runs of the SAME subject and
+SAME acquisition:
+
+  sub-01_task-motor   0.896 FAIL, 0.900 FAIL, 0.915 PASS, 0.916 PASS
+  sub-03_task-motor   0.887 FAIL, 0.905/0.905/0.905 PASS
+  sub-20_painmotor    0.895 FAIL, 0.902 PASS
+
+A run failing at 0.8997 beside a sibling passing at 0.9019 is run-to-run noise,
+not a quality difference. Meanwhile the cohort's genuine failure group is well
+separated at <=0.82 (0.688 sub-MC001_gvs; 0.805-0.821 sub-01/sub-05 painmotor,
+sub-07 handgrasp).
+
+The gate was also internally inconsistent: S7's own whole-volume fallback is
+three-banded (PASS 0.80 / FAIL 0.65) while the per-level gate had no WARN band.
+
+Change: keep `per_level_pass_min: 0.90`, add `per_level_fail_below: 0.85`. The
+band between routes to visual inspection (invariant 4) instead of discarding the
+run. The single-broken-level guard was made independent of the median band so it
+still reports inside WARN.
+
+Effect, via `scripts/s7_reclassify.py` (pure reclassification from persisted
+metrics, no reprocessing): 16 FAIL -> 8 FAIL. Eight runs recovered to WARN. The
+8 remaining FAILs are the 6 genuine low-Dice outliers plus sub-19 painmotor's two
+runs, which have no metrics at all because S2 never produced their template warps.
+
+This is a calibration defect surfaced by the cohort, not re-tuning for taste
+(invariant 5 stands).

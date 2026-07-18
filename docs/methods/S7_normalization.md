@@ -55,6 +55,10 @@ closest match to T2\*-weighted BOLD.
 `qc_thresholds.per_level_pass_min`
 : Median per-level cord Dice at or above which a run passes. Default `0.90`.
 
+`qc_thresholds.per_level_fail_below`
+: Median per-level cord Dice below which a run fails. Between this and the pass
+level the run warns and goes to visual inspection. Default `0.85`.
+
 `qc_thresholds.pass_dice_min`
 : Whole-volume cord Dice pass level, used only as a fallback when per-level Dice
 is unavailable. Default `0.80`.
@@ -101,9 +105,21 @@ with the warped PAM50 cord contour overlaid, sagittal and axial) and
 `cord_dice_per_level` (per-level Dice bars, where a single low level flags a broken
 edge slice and uniformly low bars flag a global composition problem).
 
-A run fails when whole-volume cord Dice falls below 0.65 or the registration exits
-non-zero, warns when the median per-level Dice sits below the pass gate or any
-single level falls below 0.50, and passes otherwise.
+The per-level gate is three-banded: a run passes at a median per-level Dice of
+0.90 or above, warns between 0.85 and 0.90, and fails below 0.85. It also fails
+when the registration exits non-zero or its template warps are missing, and warns
+when any single level falls below 0.50, which flags a broken edge slice to exclude
+rather than a bad registration. The whole-volume fallback, used only when
+per-level Dice is unavailable, fails below 0.65 and passes at 0.80.
+
+The intermediate band exists because the pass level does not separate good from
+bad on its own. Measured across the nine-dataset cohort (456 runs), the median
+per-level Dice is 0.978 and the fifth percentile 0.915, so a hard cut at 0.90 sits
+inside the distribution's own low tail: it split runs of the same subject and
+acquisition, failing one at 0.8997 while passing its sibling at 0.9019, a
+difference within run-to-run noise. The cohort's genuine failures sit at 0.82 and
+below, well separated from that tail. Runs in the intermediate band are therefore
+routed to the visual overlay rather than discarded.
 
 ## Limitations
 
