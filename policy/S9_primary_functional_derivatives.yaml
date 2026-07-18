@@ -16,6 +16,14 @@ version: 1
 # receipt.
 
 smoothing:
+  # OFF by default (decision 1A, 2026-07-18). Preprocessing is analysis-agnostic:
+  # the primary derivative desc-preproc_bold is UNSMOOTHED. fMRIPrep does not
+  # smooth; Kaptan/Eippert do not smooth the cord in their primary pipeline and
+  # warn even a 2 mm kernel "should only be employed with great caution in the
+  # spinal cord" (horns mm apart -> smoothing manufactures artificial
+  # connectivity). The field is split (CoSpine smooths 3 mm), so it is a knob.
+  # Set enabled: true to also emit desc-smoothed_bold with the kernel below.
+  enabled: false                   # opt-in cord-aware smoothing
   method: "sct_cord"               # sct_smooth_spinalcord (cord-aware)
                                    # alternative: "gaussian_inplane" (scipy)
   sigma_mm: [1.0, 1.0, 5.0]        # R-L, A-P, S-I  (CoSpi spi14_2)
@@ -34,7 +42,16 @@ smoothing:
 #    template-space BOLD ships GLM-ready (BOLD + mask in one grid).
 #    fMRIPrep analog: space-MNI152..._res-2 (template space, sane resolution).
 pam50_4d_output:
-  enabled: true                    # 4D BOLD in PAM50, cropped to cord FOV
+  # OFF by default (decision 2A, 2026-07-18). The cord field analyzes in NATIVE
+  # space and warps the ATLAS back to native (Kaptan/Eippert); nobody analyzes a
+  # template-resampled 4D cord series, and resampling thick-slice low-SNR cord
+  # EPI into PAM50 is an extra interpolation over interpolation-fragile data at
+  # ~2-4 GB/run. The useful template deliverables are the bidirectional warps
+  # (S7 from-bold_to-PAM50_xfm) + the atlas already in native space (S7), which
+  # let the analyst push their OWN first-level results to PAM50. Set true only
+  # for the convenience 4D (not for primary analysis). This also resolves the
+  # S7 doc's "4D BOLD is never resampled into template space" claim.
+  enabled: false                   # 4D BOLD in PAM50, cropped to cord FOV
   emit_unsmoothed: true            # also emit the unsmoothed PAM50 4D (Q2: both)
   fov_pad_vox: 4                   # padding (PAM50 voxels) around cord coverage
   # parallel_emit: run the smoothed + unsmoothed PAM50 4D warps CONCURRENTLY.

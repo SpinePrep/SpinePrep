@@ -18,8 +18,9 @@ the PAM50 cord, tissue masks and spinal-level atlas into native functional space
 so template ROIs are available in the run's own geometry.
 
 The 4D BOLD is never resampled into template space. The per-subject analysis stays
-in native functional space, and only S9 pushes contrast and statistic maps to
-PAM50 for group inference. Keeping the timeseries native avoids a resampling that
+in native functional space, and the analyst pushes their own
+first-level contrast and statistic maps to PAM50 for group inference, using the
+warps S7 stores. S9 does not resample the 4D BOLD into template space either. Keeping the timeseries native avoids a resampling that
 would blur it for no per-subject benefit, and it matches the cord-fMRI practice of
 analyzing in native space and warping the atlas inward: Kaptan et al. (2023) state
 their analyses were "carried out in native space" and use `sct_warp_template` to

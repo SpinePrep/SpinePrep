@@ -2,17 +2,17 @@
 
 Spec: .claude/specs/s9-primary-functional-derivatives.md
 
-Pipeline:
-  1. Native smoothing via sct_smooth_spinalcord per-volume (CoSpi
-     spi14_2 lineage). σ = 1,1,5 mm (R-L, A-P, S-I) default.
-  2. Warp the smoothed native 4D into PAM50 via S7's composite
-     from-bold_to-PAM50 xfm. Also produce the un-smoothed PAM50 4D
-     for analysts who want unsmoothed PAM50.
-  3. tSNR maps: native (smoothed), PAM50 (smoothed).
-  4. Per-vertebral-level tSNR TSV using S7's PAM50spinallevels in
-     native func.
-  5. Residual FWHM verification via voxelwise autocorrelation in
-     cord mask.
+Analysis-agnostic by default (decisions 1A + 2A, 2026-07-18):
+  1. desc-preproc_bold = the motion + distortion-corrected series, UNSMOOTHED,
+     in native functional space -- the primary analyzable derivative.
+  2. Cord-aware smoothing (sct_smooth_spinalcord) is OPT-IN; when enabled it
+     emits desc-smoothed_bold additionally. fMRIPrep does not smooth; the cord
+     field warns against it (horns mm apart).
+  3. No template-space 4D BOLD by default: the cord field analyzes native and
+     the analyst pushes their own first-level results to PAM50 using S7's warps.
+     3D PAM50 QC refs (funcref, tSNR) are still emitted.
+  4. tSNR maps (native) + per-vertebral-level tSNR TSV (S7 spinal levels).
+  5. Residual FWHM verification only when smoothing ran.
 """
 
 from __future__ import annotations
@@ -582,23 +582,24 @@ def _cord_dice_pre_post(
 
 def _classify(
     metrics: dict, thresholds: dict, fwhm_cfg: dict | None = None,
+    smoothing_enabled: bool = False,
 ) -> tuple[str, list[str]]:
-    """Three gates: tSNR ratio, cord-mask preservation, and per-axis FWHM
-    landing in the policy tolerance band (audit Issue 2 in
-    .claude/specs/s9-reportlet-set-audit.md — the FWHM tolerance keys
-    used to be declared in policy but never enforced).
+    """Gates. The primary, always-on gate is the median in-cord tSNR floor
+    (signal quality). The tSNR-ratio and cord-Dice gates measure the SMOOTHING
+    benefit and only apply when smoothing was opted in (decision 1A) -- with
+    smoothing off they are None by design and must not penalize the run. FWHM
+    tolerance likewise only applies when smoothing ran.
     """
     reasons: list[str] = []
     worst = "PASS"
 
-    # Gate 1: tSNR ratio (smoothing improvement).
+    # Gate 1: tSNR ratio (smoothing improvement) -- only when smoothing ran.
     r = metrics.get("tsnr_ratio_median")
     pass_r = thresholds.get("pass_tsnr_ratio_min", 1.5)
     warn_r = thresholds.get("warn_tsnr_ratio_min", 1.2)
     fail_r = thresholds.get("fail_tsnr_ratio_below", 1.0)
-    if r is None:
-        reasons.append("tsnr_ratio_median not computed")
-        worst = "WARN"
+    if not smoothing_enabled or r is None:
+        pass  # smoothing off: the median-tSNR floor below is the gate
     elif r < fail_r:
         reasons.append(f"tsnr_ratio_median FAIL: {r:.2f}")
         worst = "FAIL"
@@ -724,44 +725,64 @@ def run_S9_primary_functional_derivatives(
             pass
     sigma_fwhm = [s * 2.3548 for s in sigma_xyz]
 
-    # --- 1. Native un-smoothed: copy S5 BOLD to canonical name -----------
-    unsmoothed_native = func_dir / f"{prefix}_desc-unsmoothed_bold.nii.gz"
-    shutil.copy(bold_path, unsmoothed_native)
+    # Smoothing is OFF by default (decision 1A, 2026-07-18). Preprocessing is
+    # analysis-agnostic: the primary derivative is the motion + distortion-
+    # corrected series, UNSMOOTHED, under the canonical fMRIPrep name
+    # desc-preproc_bold. fMRIPrep does not smooth ("in order to remain agnostic
+    # to any possible subsequent analysis, fMRIPrep does not perform ... spatial
+    # smoothing"); Kaptan/Eippert do not smooth the cord in their primary
+    # pipeline and warn even a 2 mm kernel "should only be employed with great
+    # caution in the spinal cord" (dorsal/ventral horns are mm apart, so
+    # smoothing manufactures artificial connectivity). Smoothing stays available
+    # as an OPT-IN extra derivative (desc-smoothed_bold). See
+    # .claude/specs/s9-primary-functional-derivatives.md.
+    smoothing_enabled = bool(policy.get("smoothing", {}).get("enabled", False))
 
-    # --- 2. Native smoothed ----------------------------------------------
-    smoothed_native = func_dir / f"{prefix}_desc-preproc_bold.nii.gz"
-    if method == "gaussian_inplane":
-        ok, err, sm_runtime = _gaussian_inplane(
-            bold_path, sigma_xyz[:2], smoothed_native,
-        )
-    elif method == "sct_cord_pervolume":
-        # Legacy per-volume loop (escape hatch; ~T SCT spawns, shared cache).
-        ok, err, sm_runtime = _run_sct_smooth_per_volume(
-            bold_path, cord_mask_path, sigma_xyz, s9_work_dir, smoothed_native,
-        )
-    else:  # "sct_cord" (default): straighten once, smooth the 4D in batch
-        ok, err, sm_runtime = _run_sct_smooth_batched(
-            bold_path, cord_mask_path, sigma_xyz, s9_work_dir, smoothed_native,
-        )
-    if not ok:
-        return {
-            "status": "FAIL", "step_code": step_code,
-            "dataset_key": dataset_key,
-            "subject": subject, "session": session, "run_id": run_id,
-            "smoothing_method": method, "sigma_mm": sigma_xyz,
-            "failure_message": err,
-            "failure_reasons": [err], "metrics": {}, "reportlets": {},
-        }
+    # --- 1. Primary derivative: desc-preproc_bold (unsmoothed) ----------
+    preproc_native = func_dir / f"{prefix}_desc-preproc_bold.nii.gz"
+    shutil.copy(bold_path, preproc_native)
+
+    # --- 2. Optional cord-aware smoothing (opt-in) ----------------------
+    smoothed_native: Optional[Path] = None
+    sm_runtime = 0.0
+    if smoothing_enabled:
+        smoothed_native = func_dir / f"{prefix}_desc-smoothed_bold.nii.gz"
+        if method == "gaussian_inplane":
+            ok, err, sm_runtime = _gaussian_inplane(
+                bold_path, sigma_xyz[:2], smoothed_native)
+        elif method == "sct_cord_pervolume":
+            ok, err, sm_runtime = _run_sct_smooth_per_volume(
+                bold_path, cord_mask_path, sigma_xyz, s9_work_dir, smoothed_native)
+        else:  # "sct_cord": straighten once, smooth the 4D in batch
+            ok, err, sm_runtime = _run_sct_smooth_batched(
+                bold_path, cord_mask_path, sigma_xyz, s9_work_dir, smoothed_native)
+        if not ok:
+            return {
+                "status": "FAIL", "step_code": step_code,
+                "dataset_key": dataset_key,
+                "subject": subject, "session": session, "run_id": run_id,
+                "smoothing_method": method, "sigma_mm": sigma_xyz,
+                "failure_message": err,
+                "failure_reasons": [err], "metrics": {}, "reportlets": {},
+            }
+
+    # The series an analyst uses is the smoothed one when opted in, else the
+    # unsmoothed preproc. tSNR / funcref / per-level are computed on it.
+    analysis_series = smoothed_native if smoothing_enabled else preproc_native
 
     # --- 3. tSNR maps (native pre + post) --------------------------------
     tsnr_native_pre = s9_work_dir / "tsnr_native_pre.nii.gz"
     tsnr_native_post = func_dir / f"{prefix}_desc-tsnr_native.nii.gz"
     _tsnr_map(bold_path, tsnr_native_pre)
-    _tsnr_map(smoothed_native, tsnr_native_post)
+    _tsnr_map(analysis_series, tsnr_native_post)
     pre_median = _median_tsnr_in_mask(bold_path, cord_mask_path)
-    post_median = _median_tsnr_in_mask(smoothed_native, cord_mask_path)
+    post_median = _median_tsnr_in_mask(analysis_series, cord_mask_path)
+    # The smoothing tSNR ratio is only meaningful when smoothing ran; with
+    # smoothing off, pre == post and the "ratio" is a trivial 1.0, so leave it
+    # None and let the median-tSNR floor be the gate.
     tsnr_ratio = None
-    if pre_median is not None and post_median is not None and pre_median > 0:
+    if (smoothing_enabled and pre_median is not None
+            and post_median is not None and pre_median > 0):
         tsnr_ratio = float(post_median / pre_median)
 
     # --- 4. PAM50 outputs (3D only by default) -------------------------
@@ -778,9 +799,9 @@ def run_S9_primary_functional_derivatives(
 
     # Always emit PAM50 funcref by warping the SMOOTHED native temporal
     # mean (single 3D image — cheap).
-    smoothed_mean_native = s9_work_dir / "smoothed_native_mean.nii.gz"
+    smoothed_mean_native = s9_work_dir / "analysis_series_mean.nii.gz"
     try:
-        p = nib.load(smoothed_native)
+        p = nib.load(analysis_series)
         arr = p.get_fdata().astype(np.float32)
         ref = arr.mean(axis=3) if arr.ndim == 4 else arr
         nib.save(nib.Nifti1Image(ref, p.affine, p.header), smoothed_mean_native)
@@ -839,7 +860,10 @@ def run_S9_primary_functional_derivatives(
                 # only for single-run / low-batch contexts; for batched releases,
                 # scale --batch-workers instead.
                 from concurrent.futures import ThreadPoolExecutor
-                jobs: dict[str, tuple] = {"smoothed": (smoothed_native, pam50_smoothed)}
+                # Opt-in template-space 4D (dropped by default, decision 2A). The
+                # analyzable series (smoothed if opted in, else preproc) plus,
+                # optionally, the unsmoothed input.
+                jobs: dict[str, tuple] = {"preproc": (analysis_series, pam50_smoothed)}
                 if p4d_cfg.get("emit_unsmoothed", True):
                     jobs["unsmoothed"] = (bold_path, pam50_unsmoothed)
                 _mw = len(jobs) if p4d_cfg.get("parallel_emit", False) else 1
@@ -862,10 +886,10 @@ def run_S9_primary_functional_derivatives(
                 except Exception as e:
                     failure_reasons.append(f"PAM50 cord mask crop failed: {e}")
 
-    # --- 5. Native funcref (temporal mean of smoothed native) ----------
+    # --- 5. Native funcref (temporal mean of the analysis series) ------
     funcref_native = func_dir / f"{prefix}_desc-preproc_funcref.nii.gz"
     try:
-        p = nib.load(smoothed_native)
+        p = nib.load(analysis_series)
         arr = p.get_fdata().astype(np.float32)
         ref = arr.mean(axis=3) if arr.ndim == 4 else arr
         nib.save(nib.Nifti1Image(ref, p.affine, p.header), funcref_native)
@@ -878,19 +902,20 @@ def run_S9_primary_functional_derivatives(
     if (policy.get("per_level_tsnr", {}).get("enabled", True)
             and pam50_levels_native and pam50_levels_native.exists()):
         n_levels = _per_vertebral_level_tsnr(
-            smoothed_native, pam50_levels_native, per_level_tsv,
+            analysis_series, pam50_levels_native, per_level_tsv,
         )
     elif policy.get("per_level_tsnr", {}).get("enabled", True):
         per_level_tsv.write_text("level\tmean_tsnr\tstd_tsnr\tn_voxels\n")
         failure_reasons.append("PAM50 spinal_levels not found; per_level skipped")
 
-    # --- 7. Residual FWHM estimate -------------------------------------
+    # --- 7. Residual FWHM estimate (only when smoothing ran) -----------
     fwhm_meta: dict[str, Optional[float]] = {}
-    if policy.get("fwhm_estimate", {}).get("enabled", True):
+    if smoothing_enabled and policy.get("fwhm_estimate", {}).get("enabled", True):
         fwhm_meta = _estimate_residual_fwhm(smoothed_native, cord_mask_path)
 
-    # --- 8. Cord mask preservation -------------------------------------
-    cord_dice = _cord_dice_pre_post(bold_path, smoothed_native, cord_mask_path)
+    # --- 8. Cord mask preservation across smoothing (only when smoothing ran) -
+    cord_dice = (_cord_dice_pre_post(bold_path, smoothed_native, cord_mask_path)
+                 if smoothing_enabled else None)
 
     metrics = {
         "n_volumes": int(nib.load(bold_path).shape[3]),
@@ -912,6 +937,7 @@ def run_S9_primary_functional_derivatives(
         metrics,
         policy.get("qc_thresholds", {}),
         fwhm_cfg=policy.get("fwhm_estimate", {}),
+        smoothing_enabled=smoothing_enabled,
     )
     failure_reasons.extend(reasons)
 
@@ -968,9 +994,12 @@ def run_S9_primary_functional_derivatives(
     n_drop = int(bold_run.get("n_dummy_dropped") or 0)
     task = _task_from_run_id(run_id)
     try:
-        _write_bold_sidecar(smoothed_native, tr, task, smoothing_fwhm=sigma_fwhm,
-                            n_dummy_dropped=n_drop)
-        _write_bold_sidecar(unsmoothed_native, tr, task, n_dummy_dropped=n_drop)
+        # Primary derivative is the unsmoothed preproc; the smoothed sidecar
+        # (with the FWHM) is written only when smoothing was opted in.
+        _write_bold_sidecar(preproc_native, tr, task, n_dummy_dropped=n_drop)
+        if smoothed_native is not None and smoothed_native.exists():
+            _write_bold_sidecar(smoothed_native, tr, task,
+                                smoothing_fwhm=sigma_fwhm, n_dummy_dropped=n_drop)
         if pam50_smoothed.exists():
             _write_bold_sidecar(pam50_smoothed, tr, task, space="PAM50",
                                 smoothing_fwhm=sigma_fwhm, n_dummy_dropped=n_drop)
@@ -1012,8 +1041,9 @@ def run_S9_primary_functional_derivatives(
                 if rep_smsum.exists() else "",
         },
         "output_paths": {
-            "preproc_bold_native":     str(smoothed_native.relative_to(out_dir)),
-            "unsmoothed_bold_native":  str(unsmoothed_native.relative_to(out_dir)),
+            "preproc_bold_native":     str(preproc_native.relative_to(out_dir)),
+            "smoothed_bold_native":    (str(smoothed_native.relative_to(out_dir))
+                if smoothed_native is not None and smoothed_native.exists() else ""),
             "preproc_bold_pam50":      str(pam50_smoothed.relative_to(out_dir))
                 if pam50_smoothed.exists() else "",
             "unsmoothed_bold_pam50":   str(pam50_unsmoothed.relative_to(out_dir))
