@@ -270,16 +270,39 @@ def render_s9_smoothness_summary(
 
     axes_lbl = ["X (R-L)", "Y (A-P)", "Z (S-I)"]
     req = list(requested) + [0.0] * (3 - len(requested))
-    meas = [measured.get("x") or 0.0,
-            measured.get("y") or 0.0,
-            measured.get("z") or 0.0]
+    # A missing measurement is NOT a measurement of zero. Coercing None to 0.0
+    # made every axis read |0 - requested| > tolerance and score FAIL, so a run
+    # that simply never smoothed produced an all-red "catastrophic smoothing
+    # failure" chart. Keep None distinct and say so on the figure instead.
+    meas_raw = [measured.get("x"), measured.get("y"), measured.get("z")]
+    if all(m is None for m in meas_raw):
+        _draw_header(fig := plt.figure(figsize=(10, 5.5), facecolor=BG),
+                     "S9 — Spatial smoothness (requested vs measured)",
+                     "no measurement: smoothing did not run for this run",
+                     status)
+        ax = fig.add_axes((0.10, 0.13, 0.86, 0.72))
+        _setup_dark_axes(ax)
+        ax.text(0.5, 0.5,
+                "Smoothing is disabled, so there is no residual FWHM to "
+                "measure.\nEnable smoothing.enabled to produce this comparison.",
+                ha="center", va="center", color=TEXT, fontsize=11,
+                transform=ax.transAxes, linespacing=1.6)
+        ax.set_xticks([]); ax.set_yticks([])
+        fig.savefig(output_path, dpi=120, facecolor=BG, bbox_inches="tight")
+        plt.close(fig)
+        return
+
+    meas = [0.0 if m is None else float(m) for m in meas_raw]
     tol_pass = [tolerance_xy, tolerance_xy, tolerance_z]
     tol_warn = [tolerance_xy_warn, tolerance_xy_warn, tolerance_z_warn]
 
-    # Per-axis PASS/WARN/FAIL
+    # Per-axis PASS/WARN/FAIL. An axis with no measurement is not scored.
     per_axis_status: list[str] = []
-    for r, m, tp, tw in zip(req, meas, tol_pass, tol_warn):
-        d = abs(m - r)
+    for r, m, tp, tw in zip(req, meas_raw, tol_pass, tol_warn):
+        if m is None:
+            per_axis_status.append("WARN")
+            continue
+        d = abs(float(m) - r)
         if d <= tp:
             per_axis_status.append("PASS")
         elif d <= tw:
@@ -290,8 +313,9 @@ def render_s9_smoothness_summary(
     n_fail = sum(s == "FAIL" for s in per_axis_status)
     n_warn = sum(s == "WARN" for s in per_axis_status)
     n_pass = sum(s == "PASS" for s in per_axis_status)
+    _ms = "/".join("n/a" if m is None else f"{float(m):.1f}" for m in meas_raw)
     subtitle = (f"requested {req[0]:.1f}/{req[1]:.1f}/{req[2]:.1f} mm  ·  "
-                f"measured {meas[0]:.1f}/{meas[1]:.1f}/{meas[2]:.1f} mm  ·  "
+                f"measured {_ms} mm  ·  "
                 f"{n_pass}P · {n_warn}W · {n_fail}F")
 
     fig = plt.figure(figsize=(10, 5.5), facecolor=BG)
@@ -344,11 +368,14 @@ def render_s9_smoothness_summary(
         ax.text(bar.get_x() + bar.get_width() / 2,
                 val + y_top * 0.02, f"{val:.1f}",
                 ha="center", color=TEXT, fontsize=10)
-    for bar, val, st in zip(bars_meas, meas, per_axis_status):
+    for bar, val, raw, st, col in zip(bars_meas, meas, meas_raw,
+                                      per_axis_status, measured_colors):
+        # An unmeasured axis must read "n/a", not "0.0" -- a zero label beside
+        # a zero-height bar is indistinguishable from a real measurement of zero.
         ax.text(bar.get_x() + bar.get_width() / 2,
-                val + y_top * 0.02, f"{val:.1f}",
+                val + y_top * 0.02, "n/a" if raw is None else f"{val:.1f}",
                 ha="center",
-                color=measured_colors[per_axis_status.index(st)],
+                color=col,
                 fontsize=10, fontweight="bold")
 
     ax.set_xticks(x)
