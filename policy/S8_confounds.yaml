@@ -119,7 +119,12 @@ cosine:
 # eigenvalue-intersection cutoff. Off by default v1; default ON for v2
 # pending validation on the 5 reg datasets.
 spinalcompcor:
-  enabled: true                    # optional family; ON by default, set false to omit
+  # OFF by default in v1 (fixed 2026-07-18). The header above states the intent --
+  # "opt-in for v1 ... default ON for v2 pending validation on the 5 reg datasets" --
+  # but the value shipped `true`, contradicting it. SpinalCompCor (Hemmerling 2025)
+  # is a bioRxiv preprint method the pipeline itself flags as unvalidated; an
+  # unvalidated method must not be a v1 default. Set true to opt in.
+  enabled: false                   # optional family; OFF in v1, set true to opt in
   dilation_mm: 18.0                # Hemmerling 2025 noise ROI (rounded to voxels)
   edge_voxel_remove: 3             # up to 3 voxels at slice FOV edge
   pre_pca_mean_center: true        # fMRIPrep convention (paper omits; safer)
@@ -158,7 +163,8 @@ qc_thresholds:
   # voxel ever fits — that is not what the downstream GLM does.
   pass_condition_number: 1000.0
   warn_condition_number: 10000.0
-  # Outlier fraction (volumes flagged as FD>0.5 OR DVARS/refRMS Tukey).
+  # Outlier fraction (volumes flagged by DVARS OR refRMS above the Tukey fence;
+  # FD does NOT flag by default -- removed 2026-07-16, see the motion section).
   # After the root-cause fix (s8-outlier-rate-root-cause.md), empirical
   # reg-cohort range is 2-30%. Set PASS at 0.20 (Power 2014 scrubbing
   # standard); WARN above; classifier still only soft-WARNs

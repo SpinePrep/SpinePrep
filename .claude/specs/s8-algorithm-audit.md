@@ -322,3 +322,56 @@ family matches its source paper:
 - fMRIPrep — `motion_outlier_NN`, `a_comp_cor`, `cosine_NN`
   documentation
 - FSL `pnm_evs` / `popp` documentation
+
+---
+
+## v2 verification (2026-07-18) — literature pass + staleness fixes
+
+This audit above is STALE (it predates the 2026-07-16 FD-censoring removal). It
+describes outliers as "FD>0.2mm OR DVARS>mu+3sigma OR refRMS>mu+3sigma" and CSF as
+"top-20%-variance voxels ... Hemmerling 2025 recipe" — both wrong now. Corrected
+state and literature verdicts:
+
+VERIFIED SOUND — matches the cord field's leading pipeline (Kaptan/Eippert) verbatim:
+- **Motion regressors = trans_x, trans_y (+ derivatives).** Kaptan 2023: "slice-
+  specific motion-correction estimates (x- and y- translation)". Exactly this. The
+  reduced set (no rotations/tz/squares, not Friston-24) is the cord norm because
+  axial cord moco estimates in-plane translation only.
+- **RETROICOR = FSL PNM, 4th order = 32 regressors.** Brooks 2008
+  (doi:10.1016/j.neuroimage.2007.09.018 — NOT the ...2008.07.009 DOI I first used)
+  adapted RETROICOR (Glover 2000) to the cord as slice-wise PNM. Kaptan 2023
+  verbatim: "regressors up to the fourth harmonic ... 16 regressors ... another 16
+  ... total of 32". Eippert 2017 same. Slice-wise phasing is essential (cord slices
+  acquired at different times). SpinePrep's 8+8+16=32 matches. Note: the "2nd-order
+  = 4+4" in my research brief was the BRAIN fMRIPrep convention; the cord uses 4th.
+- **Cosine high-pass 0.01 Hz / 100 s.** Eippert 2017 verbatim "high pass filtering
+  (using a cut-off of 100 s)"; Kaptan 2023 same. Matches. NOTE: Eippert's main
+  pipeline is high-pass ONLY; its bandpass was a robustness variant at 0.01-0.08 Hz,
+  never 0.01-0.1. CLAUDE.md corrected.
+- **Emit-matrix + simultaneous single-GLM regression** = fMRIPrep convention;
+  structurally avoids the Carp 2013 filter-then-scrub artifact. Correct.
+
+CORRECTED (truthfulness):
+- **F-A: the public doc flagged frames on "FD > 0.5 mm".** FD censoring was removed
+  2026-07-16; FD is reported, not a flag. The doc said otherwise (shipped). Fixed.
+- **F-B: SpinalCompCor shipped `enabled: true`** while the policy header says
+  "opt-in for v1 ... off by default v1 ... default ON for v2 pending validation".
+  Value contradicted the intent. It is a bioRxiv-preprint method (Hemmerling 2025)
+  the pipeline itself calls unvalidated -> set OFF for v1.
+- **F-C: CSF aCompCor mis-described.** Slice-wise CSF PCA (5 PCs/slice, fslmeants
+  --eig) is DEFENSIBLE as Behzadi-2007-style aCompCor applied slice-wise, but:
+  (1) it is NOT "SpinalCompCor" — Hemmerling's method PCAs the tissue OUTSIDE
+  cord+CSF, not CSF (the stale audit above conflated them); (2) it is NOT the
+  Kaptan/Eippert cord CSF standard — they use a single mean-signal regressor from
+  top-percentile-variance voxels, not PCA; (3) "5 components" is fMRIPrep's brain
+  convention, not a cord standard. Doc now labels it as SpinePrep's own slice-wise
+  aCompCor adaptation and states the departure.
+
+DOCUMENTED (SpinePrep choices, not cord standards — say so, don't over-cite):
+- Slice-wise CSF PCA (vs the field's single mean CSF regressor).
+- Condition-number QC on the confound matrix (prudent GLM hygiene; no cord
+  precedent; thresholds are ours).
+- Cosines-not-filter (fMRIPrep + Carp 2013, departs from cord papers' explicit filter).
+
+Public doc rewritten in the field register. S8 has not run on the 466-run cohort
+(queued behind S5/S6/S7).
