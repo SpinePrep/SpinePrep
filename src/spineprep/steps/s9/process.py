@@ -969,17 +969,23 @@ def run_S9_primary_functional_derivatives(
         )
     except Exception as e:
         failure_reasons.append(f"tsnr_per_level reportlet failed: {e}")
-    try:
-        render_s9_smoothness_summary(
-            requested=sigma_fwhm, measured=fwhm_meta, output_path=rep_smsum,
-            status=status,
-            tolerance_xy=float(fwhm_cfg_p.get("tolerance_mm_xy", 0.5)),
-            tolerance_xy_warn=float(fwhm_cfg_p.get("tolerance_mm_xy_warn", 1.0)),
-            tolerance_z=float(fwhm_cfg_p.get("tolerance_mm_z", 1.0)),
-            tolerance_z_warn=float(fwhm_cfg_p.get("tolerance_mm_z_warn", 2.0)),
-        )
-    except Exception as e:
-        failure_reasons.append(f"smoothness_summary reportlet failed: {e}")
+    # Only meaningful when smoothing actually ran. With smoothing off (the
+    # shipped default) there is no measured FWHM to compare against, and
+    # rendering the chart anyway drew the requested kernel against zeros and
+    # scored every axis FAIL — a diagnostic that reports catastrophic failure
+    # for a step that was never asked to run.
+    if smoothing_enabled:
+        try:
+            render_s9_smoothness_summary(
+                requested=sigma_fwhm, measured=fwhm_meta, output_path=rep_smsum,
+                status=status,
+                tolerance_xy=float(fwhm_cfg_p.get("tolerance_mm_xy", 0.5)),
+                tolerance_xy_warn=float(fwhm_cfg_p.get("tolerance_mm_xy_warn", 1.0)),
+                tolerance_z=float(fwhm_cfg_p.get("tolerance_mm_z", 1.0)),
+                tolerance_z_warn=float(fwhm_cfg_p.get("tolerance_mm_z_warn", 2.0)),
+            )
+        except Exception as e:
+            failure_reasons.append(f"smoothness_summary reportlet failed: {e}")
 
     # --- 9b. BIDS sidecars for every BOLD + dataset_description --------
     # A GLM needs RepetitionTime; BIDS-Derivatives needs the sidecar.

@@ -452,3 +452,58 @@ def test_s9_preproc_bold_is_the_unsmoothed_primary():
     assert "shutil.copy(bold_path, preproc_native)" in src
     assert 'smoothed_native = func_dir / f"{prefix}_desc-smoothed_bold.nii.gz"' in src
     assert "if smoothing_enabled:" in src
+
+
+# ---------------------------------------------------------------------------
+# smoothness_summary must not report a missing measurement as zero
+#
+# With smoothing off (the shipped default) there is no measured residual FWHM.
+# The renderer coerced None to 0.0, so every axis scored |0 - requested| >
+# tolerance = FAIL, and a run that simply never smoothed produced an all-red
+# "catastrophic smoothing failure" chart with the measured bars at zero.
+# ---------------------------------------------------------------------------
+
+
+def test_smoothness_summary_all_none_renders_not_applicable(tmp_path):
+    from spineprep.steps.s9.reportlets import render_s9_smoothness_summary
+    out = tmp_path / "sm_none.png"
+    render_s9_smoothness_summary(
+        [2.3548, 2.3548, 11.774],
+        {"x": None, "y": None, "z": None},
+        out,
+    )
+    assert out.exists() and out.stat().st_size > 0
+
+
+def test_smoothness_summary_partial_measurement_renders(tmp_path):
+    from spineprep.steps.s9.reportlets import render_s9_smoothness_summary
+    out = tmp_path / "sm_partial.png"
+    render_s9_smoothness_summary(
+        [2.3548, 2.3548, 11.774],
+        {"x": 2.4, "y": None, "z": 10.9},
+        out,
+    )
+    assert out.exists() and out.stat().st_size > 0
+
+
+def test_smoothness_summary_real_measurement_scores_pass(tmp_path):
+    """A genuine on-target measurement must still score PASS, not regress."""
+    from spineprep.steps.s9.reportlets import render_s9_smoothness_summary
+    out = tmp_path / "sm_real.png"
+    render_s9_smoothness_summary(
+        [2.3548, 2.3548, 11.774],
+        {"x": 2.4, "y": 2.5, "z": 10.9},
+        out,
+    )
+    assert out.exists() and out.stat().st_size > 0
+
+
+def test_smoothness_reportlet_skipped_when_smoothing_disabled(tmp_path):
+    """The step must not emit the chart at all when smoothing never ran."""
+    import inspect
+    from spineprep.steps.s9 import process as s9p
+    src = inspect.getsource(s9p.run_S9_primary_functional_derivatives)
+    i_guard = src.find("if smoothing_enabled:")
+    i_call = src.find("render_s9_smoothness_summary(")
+    assert i_guard != -1, "smoothing_enabled guard missing"
+    assert i_call > i_guard, "smoothness reportlet must be inside the guard"
