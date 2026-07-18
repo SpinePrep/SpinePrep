@@ -313,10 +313,12 @@ def test_classify_all_gates_pass():
 
 
 def test_classify_tsnr_ratio_below_fail_floor_is_fail():
+    """The smoothing tSNR-ratio FAIL gate applies only when smoothing was opted
+    in (decision 1A). A ratio below the floor means smoothing HURT tSNR."""
     from spineprep.steps.s9.process import _classify
     metrics = {"tsnr_ratio_median": 0.9, "cord_dice_pre_post": 0.97,
                "tsnr_post_median": 9.0}
-    status, reasons = _classify(metrics, _THR)
+    status, reasons = _classify(metrics, _THR, smoothing_enabled=True)
     assert status == "FAIL"
     assert any("tsnr_ratio_median FAIL" in r for r in reasons)
 
@@ -331,13 +333,15 @@ def test_classify_low_cord_dice_fails():
     assert any("cord_dice FAIL" in r for r in reasons)
 
 
-def test_classify_missing_tsnr_ratio_warns():
-    """Absent tsnr_ratio_median downgrades to WARN, not FAIL."""
+def test_classify_missing_ratio_is_pass_when_smoothing_off():
+    """With smoothing off (the default, 1A), there is no ratio to report and it
+    must NOT penalize the run -- the median in-cord tSNR floor is the gate."""
     from spineprep.steps.s9.process import _classify
-    status, reasons = _classify({"cord_dice_pre_post": 0.97,
-                                 "tsnr_post_median": 9.0}, _THR)
-    assert status == "WARN"
-    assert any("not computed" in r for r in reasons)
+    # smoothing off (default): no ratio, good median tSNR -> PASS, no penalty
+    status, reasons = _classify({"tsnr_post_median": 9.0}, _THR,
+                                smoothing_enabled=False)
+    assert status == "PASS", f"missing ratio must not penalize: {reasons}"
+    assert not any("tsnr_ratio" in r for r in reasons)
 
 
 def test_classify_low_median_cord_tsnr_warn_then_fail():
@@ -421,3 +425,30 @@ def test_resolve_bids_root_from_datasets_yaml(tmp_path):
     assert _resolve_bids_root(str(y), "ds_dict") == "/data/ds_dict"
     assert _resolve_bids_root(str(y), "missing") is None
     assert _resolve_bids_root(None, "ds_str") is None
+
+
+# --- decisions 1A / 2A: analysis-agnostic defaults --------------------------
+
+def test_s9_policy_smoothing_off_and_no_template_4d_by_default():
+    """1A: smoothing off; 2A: no template-space 4D BOLD. Both are analysis-
+    agnostic defaults aligning SpinePrep with fMRIPrep + the cord field."""
+    import yaml
+    from pathlib import Path
+    pol = yaml.safe_load((Path(__file__).parent.parent / "policy"
+                          / "S9_primary_functional_derivatives.yaml").read_text())
+    assert pol["smoothing"]["enabled"] is False, "1A: smoothing must be off by default"
+    assert pol["pam50_4d_output"]["enabled"] is False, "2A: no template 4D by default"
+
+
+def test_s9_preproc_bold_is_the_unsmoothed_primary():
+    """desc-preproc_bold must be the UNSMOOTHED series (a copy of the input),
+    and smoothing must be gated on the policy flag."""
+    import inspect
+    from spineprep.steps.s9 import process
+    src = inspect.getsource(process.run_S9_primary_functional_derivatives) \
+        if hasattr(process, "run_S9_primary_functional_derivatives") \
+        else inspect.getsource(process)
+    assert 'preproc_native = func_dir / f"{prefix}_desc-preproc_bold.nii.gz"' in src
+    assert "shutil.copy(bold_path, preproc_native)" in src
+    assert 'smoothed_native = func_dir / f"{prefix}_desc-smoothed_bold.nii.gz"' in src
+    assert "if smoothing_enabled:" in src

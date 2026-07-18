@@ -3,104 +3,112 @@ search:
   boost: 2
 ---
 
-# S9: Primary Functional Derivatives
+# S9: Primary functional derivatives
 
-**Step Code:** `S9_primary_functional_derivatives`
-**Depends on:** S7 (PAM50 warps and spinal levels)
-**Required by:** S10 (QC Aggregation & Release)
+S9 finalizes the per-run functional outputs: the preprocessed BOLD in native
+space, temporal-SNR maps, and a per-vertebral-level tSNR table, packaged so an
+analyst can run a general linear model directly.
 
----
+## What it does
 
-## Purpose
+S9 writes the motion- and distortion-corrected functional series as the primary
+derivative, `desc-preproc_bold`, in native functional space. It does not high-pass
+filter the series (the cosine basis from S8 provides that), does not regress out
+confounds (that is the analyst's model, using the S8 table), and does not smooth
+by default. It computes temporal-SNR maps and a per-vertebral-level tSNR table,
+and it warps small 3D quality-control references into the PAM50 template for the
+group dashboard.
 
-S9 produces the **final, analysis-ready functional outputs**: the preprocessed
-BOLD series in both native and PAM50 template space, plus temporal-SNR maps and a
-per-vertebral-level tSNR table. It performs the cord-aware spatial smoothing and
-packages everything so an analyst can drop the data straight into a general
-linear model (GLM).
+The design is deliberately analysis-agnostic, matching fMRIPrep, which states it
+"does not perform any denoising (e.g., spatial smoothing) itself" so as to remain
+neutral to any downstream analysis.
 
-S9 does **not** high-pass filter the BOLD (the cosine basis from S8 handles
-drift) and does **not** regress out confounds (that is the analyst's GLM, using
-the S8 table).
+## Smoothing is optional and off by default
 
----
+Cord-aware smoothing along the straightened cord axis (`sct_smooth_spinalcord`) is
+available but off by default. When enabled, it emits an additional
+`desc-smoothed_bold` series with a σ = 1, 1, 5 mm kernel (right-left,
+anterior-posterior, superior-inferior; FWHM ≈ 2.35 × 2.35 × 11.8 mm): light
+in-plane smoothing preserves the cord cross-section while heavier
+superior-inferior smoothing exploits the cord's columnar organization.
 
-## Algorithm
+Smoothing is off by default because it is an analysis choice, not neutral
+preprocessing, and an unusually consequential one in the cord. fMRIPrep does not
+smooth. The Eippert lab does not smooth the cord in its primary pipeline and warns
+that even a 2 mm kernel "should only be employed with great caution in the spinal
+cord," because the dorsal and ventral horns lie millimetres apart, so smoothing
+mixes exactly the signals an analyst wants to separate (Kaptan et al., 2023). The
+field is split (CoSpine, Wei et al. 2025, smooths at 3 mm), which is why S9
+exposes it as a knob rather than baking it in.
 
-### 1. Cord-aware smoothing
+`smoothing.enabled`
+: Emit an additional cord-aware smoothed series. Default `false`.
 
-Brain-style isotropic smoothing would blur signal out of the thin cord. Instead,
-S9 smooths **along the straightened cord axis** using SCT's
-`sct_smooth_spinalcord` (CoSpine lineage), which straightens the cord per volume
-before applying the kernel.
+`smoothing.sigma_mm`
+: Kernel standard deviations in mm (R-L, A-P, S-I) when enabled. Default
+`[1.0, 1.0, 5.0]`.
 
-- **Kernel:** σ = 1, 1, 5 mm in the right-left, anterior-posterior and
-  superior-inferior directions (FWHM ≈ 2.35 × 2.35 × 11.8 mm). The heavy
-  superior-inferior smoothing exploits signal repetition along the cord while the
-  light in-plane smoothing preserves the cord cross-section.
-- An alternative in-plane Gaussian method is available; it applies no
-  through-slice blur.
+## Template space
 
-Both a **smoothed** and an **unsmoothed** series are kept, so analysts who prefer
-to smooth at modelling time can use the unsmoothed data.
+S9 does not resample the 4D BOLD into PAM50 by default. The cord field analyzes in
+native space and warps the atlas back to native (Kaptan et al., 2023); a
+template-resampled 4D cord series is an extra interpolation over
+interpolation-fragile data that no one is meant to analyze, and it costs several
+gigabytes per run. The useful template deliverables are the bidirectional warps
+(from S7) and the PAM50 atlas already resampled into native space (from S7), which
+let an analyst push their own first-level results to PAM50 for group inference.
+Small 3D PAM50 references (temporal mean, tSNR) are still emitted for the group QC
+dashboard.
 
-### 2. PAM50 template-space outputs
+`pam50_4d_output.enabled`
+: Emit a convenience 4D BOLD resampled into PAM50 (not for primary analysis).
+Default `false`.
 
-The BOLD is warped into the PAM50 spinal-cord template. Warping the full 0.5 mm
-template grid would cost ~17 GB per run; instead S9 crops the template to each
-run's cord field of view (with padding) and warps directly into that cropped
-grid, yielding ~1–2 GB per run at the same 0.5 mm resolution. The template-space
-BOLD ships co-gridded with its cord mask, so it is GLM-ready out of the box. Both
-smoothed and unsmoothed PAM50 series are emitted, alongside a PAM50 functional
-reference (temporal mean) and a PAM50 tSNR map.
-
-### 3. Per-level tSNR
-
-Using S7's PAM50 spinal-level labels, S9 writes a table of mean and standard-
-deviation tSNR per vertebral level — the cohort-comparison metric S10 plots as a
-heatmap.
-
----
-
-## Step Metric and QC
-
-The step-local truth metric is the **in-cord tSNR ratio** (post-smoothing /
-pre-smoothing). Cord-aware smoothing should raise tSNR by roughly 1.5–2.5×.
-
-| Metric | PASS | WARN | FAIL |
-|--------|------|------|------|
-| tSNR ratio (post/pre) | ≥ 1.5 | ≥ 1.2 | < 1.0 (smoothing hurt → upstream issue) |
-| median in-cord tSNR | ≥ 5.0 | ≥ 3.0 | — |
-| cord-mask Dice (pre vs. post) | ≥ 0.95 | ≥ 0.85 | — |
-
-S9 also verifies the achieved smoothness by estimating per-axis FWHM in the cord
-mask and checking it against the requested kernel within tolerance.
-
----
-
-## Outputs
+## Inputs and outputs
 
 ```
-derivatives/spineprep/{dataset}/sub-{id}/func/
-├── sub-{id}_..._space-PAM50_desc-smoothed_bold.nii.gz     # GLM-ready, template space
-├── sub-{id}_..._space-PAM50_desc-unsmoothed_bold.nii.gz
-├── sub-{id}_..._space-PAM50_desc-funcref.nii.gz           # temporal mean
-├── sub-{id}_..._space-PAM50_desc-tsnr.nii.gz              # tSNR map
-├── sub-{id}_..._space-PAM50_desc-cordmask.nii.gz          # co-gridded cord mask
-└── sub-{id}_..._desc-tsnr_per_level.tsv                   # per-vertebral-level tSNR
-
-derivatives/spineprep/{dataset}/sub-{id}/figures/
-└── sub-{id}_..._desc-S9_tsnr_map_axial.png
+derivatives/spineprep/sub-<id>/[ses-<id>/]func/
+├── sub-<id>_..._desc-preproc_bold.nii.gz         # primary series, native, unsmoothed
+├── sub-<id>_..._desc-smoothed_bold.nii.gz        # only when smoothing is enabled
+├── sub-<id>_..._desc-preproc_funcref.nii.gz      # temporal mean
+├── sub-<id>_..._desc-tsnr_native.nii.gz          # tSNR map
+├── sub-<id>_..._space-PAM50_desc-tsnr.nii.gz     # 3D tSNR in PAM50 (group QC)
+└── sub-<id>_..._desc-tsnr_per_level.tsv          # per-vertebral-level tSNR
 ```
 
----
+## Quality control
+
+The primary, always-on gate is the median in-cord temporal SNR, the signal-quality
+floor that applies whether or not smoothing ran. When smoothing is enabled, two
+further gates apply: the tSNR ratio before versus after smoothing (smoothing
+should raise cord tSNR, not lower it) and the cord-mask Dice before versus after
+(smoothing must not distort the cord segmentation), with a residual-FWHM check that
+the achieved smoothness matches the requested kernel. With smoothing off, those
+three do not apply, since there is no smoothing to assess.
+
+The reviewer inspects the tSNR map and the per-vertebral-level tSNR reportlet.
+
+## Limitations
+
+The per-vertebral-level tSNR depends on S7's spinal-level atlas in native space; a
+level with too few cord voxels is reported as empty rather than estimated.
+Temporal SNR is a coarse signal-quality summary and does not by itself certify the
+data for a given analysis.
 
 ## References
 
-1. **Cord-aware smoothing:** Spinal Cord Toolbox `sct_smooth_spinalcord`;
-   De Leener et al. *NeuroImage* 145:24–43 (2017). [DOI](https://doi.org/10.1016/j.neuroimage.2016.10.009)
-2. **PAM50 template:** De Leener et al. *NeuroImage* 165:170–179 (2018). [DOI](https://doi.org/10.1016/j.neuroimage.2017.10.041)
+- De Leener, B., et al. (2017). SCT: Spinal Cord Toolbox. NeuroImage 145, 24–43.
+- De Leener, B., et al. (2018). PAM50: unbiased multimodal template. NeuroImage
+  165, 170–179.
+- Esteban, O., et al. (2019). fMRIPrep: a robust preprocessing pipeline for
+  functional MRI. Nature Methods 16, 111–116.
+- Kaptan, M., et al. (2023). Reliability of resting-state functional connectivity
+  in the human spinal cord. NeuroImage 275, 120152.
+- Wei, Z., et al. (2025). CoSpine: a simultaneous brain and spinal cord fMRI
+  dataset. Scientific Data.
+
+Running S9: see the [CLI reference](../reference/cli.md).
 
 ---
-
-*Last updated: June 2026*
+*Parameters reflect `policy/S9_primary_functional_derivatives.yaml`, shipped with
+SpinePrep; verified against the implementation on 2026-07-18.*
