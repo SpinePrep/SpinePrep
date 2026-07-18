@@ -355,10 +355,19 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
 
     We instead gate on the MEDIAN per-level cord Dice — registration quality
     where the cord actually is — with a min-per-level guard for a single broken
-    edge level. Calibrated on CoSpiGVS: good runs cluster at per-level median
-    0.95-1.00; genuine failures sit at 0.87-0.88. The whole-volume Dice is kept
-    as an observability metric. Falls back to the legacy overall-Dice gate when
-    per-level Dice is unavailable.
+    edge level. The whole-volume Dice is kept as an observability metric. Falls
+    back to the legacy overall-Dice gate when per-level Dice is unavailable.
+
+    The gate is three-banded (PASS / WARN / FAIL), matching the shape of the
+    whole-volume fallback below. A single hard cliff at the PASS level was the
+    original design, calibrated on CoSpiGVS alone, where good runs clustered at
+    0.95-1.00 and failures at 0.87-0.88. That separation did not transfer: on
+    the full 9-dataset cohort (n=456, median 0.978, p5 0.915) a 0.90 cliff sits
+    inside the distribution's own low tail and split runs of the SAME subject
+    and acquisition — 0.8997 FAIL beside 0.9019 PASS, a difference within
+    run-to-run noise. The intermediate band routes those to visual inspection
+    (invariant 4) instead of discarding them, while genuine outliers — the
+    cohort's real failure group sits at <=0.82 — still FAIL.
     """
     import statistics as _stats
 
@@ -371,17 +380,26 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
 
     if pl_vals:
         pass_med = thresholds.get("per_level_pass_min", 0.90)
+        fail_med = thresholds.get("per_level_fail_below", 0.85)
         broken_below = thresholds.get("per_level_broken_below", 0.50)
         med = _stats.median(pl_vals)
         lo = min(pl_vals)
-        if med < pass_med:
-            reasons.append(f"per-level median cord Dice FAIL: {med:.3f} (< {pass_med:.2f})")
+        if med < fail_med:
+            reasons.append(f"per-level median cord Dice FAIL: {med:.3f} (< {fail_med:.2f})")
             worst = "FAIL"
-        elif lo < broken_below:
+        elif med < pass_med:
             reasons.append(
-                f"per-level median cord Dice OK ({med:.3f}) but one level Dice={lo:.3f} "
-                f"(< {broken_below:.2f}) — exclude that level")
+                f"per-level median cord Dice WARN: {med:.3f} "
+                f"(in [{fail_med:.2f}, {pass_med:.2f}) — inspect the bold_on_anat overlay)")
             worst = "WARN"
+        # Independent of the median band: a single broken level is its own
+        # diagnostic and must still be reported inside the WARN band.
+        if lo < broken_below:
+            reasons.append(
+                f"one level Dice={lo:.3f} (< {broken_below:.2f}) — exclude that level "
+                f"(per-level median {med:.3f})")
+            if worst == "PASS":
+                worst = "WARN"
         if ov is not None:
             reasons.append(
                 f"whole-volume cord_dice_native_func={ov:.3f} (observability; "

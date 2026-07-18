@@ -1,0 +1,140 @@
+version: 1
+
+# Per-run mode is chosen automatically from S1 inventory + IntendedFor:
+#   topup (reversed-phase EPI pair) -> syn (image-based fallback)
+# GRE-fieldmap FUGUE was removed in v1: no GRE-fieldmap data exists in the
+# validation cohort, so GRE-only data falls through to SyN (recorded honestly).
+distortion_correction:
+  prefer_mode: "auto"             # auto | topup | syn | none (forces a mode)
+
+  # What to do when no reversed-PE pair exists.
+  #   syn  — image-based ANTs SyN against the anatomy (current default)
+  #   none — measure the distortion, correct nothing, ship the BOLD untouched
+  #
+  # `none` is NOT a degraded setting: it is the cord field's own default. Most
+  # cord fMRI performs no retrospective SDC and addresses distortion at
+  # acquisition — slice-specific z-shimming (Eippert 2017; Kaptan 2023), a
+  # cord-focused shim volume (Kinany 2022), or a distortion-resistant readout
+  # (Powers 2018). Oliva 2025 acquired reversed-PE data and still corrected only
+  # the brain. Retrospective TOPUP appears essentially once in the cord
+  # literature (CoSpine / Wei 2025).
+  #
+  # The default stays `syn` pending the held-out validation: on this cohort 83
+  # of 469 runs (18%) have a reversed-PE pair and 386 (82%) fall back to SyN, so
+  # the pipeline's distortion story rests on the fallback. SyN is unprecedented
+  # in the cord and FASB (Vahdat/Landelle/De Leener/Doyon) argued against
+  # nonlinear warping of cord EPI ("non-optimal twisted warping fields").
+  # Critically, cord Dice CANNOT validate SyN — the metric rewards the alignment
+  # SyN optimizes. The CoSpine reversed-PE runs are the held-out set that can
+  # settle it by comparing SyN against the measured field.
+  # See .claude/specs/s5-algorithm-audit-v3.md.
+  fallback_mode: "syn"            # syn | none
+
+  topup:
+    # b02b0_1.cnf uses subsamp=1 throughout. We need this because the
+    # cord-cropped BOLD (and the resampled fmaps) typically have odd
+    # in-plane / Z dimensions (e.g. 30x33x35), which the default
+    # b02b0.cnf rejects (its subsamp=2 first-iteration step requires
+    # even dims). FSL ships b02b0_1.cnf as the tolerance config.
+    config: "b02b0_1.cnf"
+    apply_method: "jac"           # jac | lsr (jac matches fMRIPrep default)
+
+  syn:
+    metric: "MI"
+    bin_count: 32
+    transform: "SyN[0.1,3,0]"      # light SyN; cord-mask-restricted
+    shrink: "4x2x1"
+    smoothing: "2x1x0vox"
+    # Convergence `40x20x0` runs effectively as a 2-level SyN — coarsest
+    # (shrink 4×) and middle (shrink 2×) levels, with zero iterations at
+    # the finest (shrink 1×) level. fMRIPrep brain SyN uses `100x70x50`.
+    # The working assumption is that the A-P distortion mode is dominated by
+    # low spatial frequencies and so converges at the coarser levels. NOTE
+    # (audit-v3 F5): that premise is a DESIGN ASSUMPTION, not a sourced fact —
+    # no citation for it was found. It is retained because the cohort Dice/
+    # displacement gains stand empirically, not because the physics is
+    # established. Open: test `40x20x10` against `40x20x0` and lock the winner.
+    #
+    # Deformation is NOT PE-restricted (audit-v2 Findings 1/2 attempted
+    # this on 2026-05-27 and were reverted after empirical regression
+    # on the reg cohort — see s5-algorithm-audit-v2.md "Update
+    # 2026-05-27"). The wider funccrop cylinder gives SyN enough signal
+    # to converge, and 3-D deformation finds the correct A-P warp
+    # incidentally; cord-only + PE-restricted starves SyN of signal.
+
+qc_thresholds:
+  # CoSpine-style geometric gates (Wei et al., Sci Data 2025). Headline
+  # measures: per-slice 2D cord Dice (EPI ∩ anat) and per-slice A–P
+  # cord-centerline displacement. Initial bands set from the CoSpine
+  # table (post-TOPUP mean A–P displacement 0.13 mm; uncorrected 2.73
+  # mm). Retune on reg-scope run before v1.0 lock.
+  pass_dice_min: 0.50              # cord seg agreement after correction
+  warn_dice_min: 0.30              # below this on After: FAIL
+  pass_displacement_max_mm: 1.0    # post-correction A–P offset, mean
+  warn_displacement_max_mm: 2.0    # above this on After: FAIL
+  epsilon_dice: 0.02               # tolerance for "did not degrade"
+  epsilon_displacement_mm: 0.2     # tolerance for "did not worsen"
+  # Cervical-ROI bound on the displacement/Dice metric (SCT vertebral label:
+  # 1=C1..7=C7, 8=T1, 9=T2, ...). Whole-CNS (brain+cord) acquisitions drag the
+  # cord ROI below the levels where the B0 field profile has been characterized.
+  # Static B0 offset rises steeply toward the cervicothoracic junction: ~20 Hz
+  # at C1 to ~154 Hz at T1 at 7T (Beghini 2026, doi:10.1007/s10334-026-01349-4);
+  # cf. Verma & Cohen-Adad 2014 (doi:10.1002/mrm.25075), "maximum of 74 Hz at
+  # C7 ... 0.58 ppm". Published profiles STOP at T1 (cervical coils/FOVs), so we
+  # restrict the metric to the levels where the field is characterized rather
+  # than score the cord on an extrapolation.
+  #
+  # NOTE on the mechanism (corrected 2026-07-16, audit-v3 F4): the static field
+  # driving this distortion is attributable to the VERTEBRAE, not the lungs --
+  # Beghini 2026: "Fourier-based field simulations confirmed the vertebrae to be
+  # the main contributors to the local static field in the spinal canal." Lungs
+  # drive the DYNAMIC (breathing) fluctuation, which is not what this metric
+  # gates. An earlier comment here said "lung-adjacent thoracic cord ...
+  # uncorrectable (10-17 mm A-P vs ~0.4 mm)": wrong mechanism, and that figure
+  # was unsourced -- no thoracic-vs-cervical distortion comparison is published,
+  # and mm displacement is not an anatomical constant (it scales with echo
+  # spacing). Do not claim thoracic > cervical: Kowalczyk 2025 in fact reports
+  # "greater effects were observed in the cervical cord" than lumbar.
+  #
+  # T1=8 keeps the cervical cord + the C7/T1 junction, drops T2+. Cervical-only
+  # acquisitions are entirely <= the cutoff, so this is a no-op for them. Set
+  # null to disable (evaluate the full captured cord).
+  cord_roi_max_level: 8            # keep C1..T1; drop T2+ (lung-region thoracic)
+  # Mode-aware ceiling. The displacement bands above were calibrated on TOPUP
+  # data (post-TopUp ~0.13 mm). Image-based SyN (no fieldmap, no reverse-PE
+  # pair) physically cannot reach TopUp quality — on whole-CNS acquisitions the
+  # lung-adjacent lower cord (C6-T2) is uncorrectable. When a SyN-fallback run
+  # exceeds the displacement ceiling but its cord still registered (Dice passed
+  # the warn floor), flag it "distortion-limited" (WARN, kept) instead of FAIL:
+  # the reliable upper-cervical levels remain usable and the limitation is
+  # acquisition-side (request a reverse-PE pair), not a pipeline failure. TopUp
+  # runs keep the hard FAIL — they are expected to meet the ceiling.
+  # Set false to hard-FAIL SyN runs too.
+  syn_displacement_distortion_limited: true
+  # Legacy MI: catastrophic-drop fail still applies as sanity check.
+  # MI is no longer the primary gate.
+  fail_mi_max_drop_pct: 10.0
+  # CoSpine pipeline knobs.
+  # min_voxels_per_slice: at 1 mm in-plane resolution, a 5 mm cord has
+  # ~20 voxels per slice (centroid stddev ≈ d/√(12·N) ≈ 0.3 mm). A floor
+  # of 5 admits cord slices at resolutions up to ~1.6 mm × 1.6 mm while
+  # rejecting slices where centroid is sampling-dominated. Raised from
+  # 3 → 5 per s5-algorithm-audit-v2.md Finding 7.
+  cospine_min_voxels_per_slice: 5
+  cospine_smooth_window: 5         # Savitzky-Golay window (odd) on Y(z)
+  cospine_smooth_poly_order: 2     # SG polynomial order on Y(z)
+
+# Reportlet rendering knobs (visual standard inherited from
+# .claude/specs/reportlet-visual-standard.md). distortion_effectiveness
+# is the third S5 reportlet — Before vs After mean BOLD with anat
+# cord-contour overlay. See spec:
+# .claude/specs/s5-distortion-effectiveness-reportlet.md
+qc:
+  distortion_effectiveness:
+    n_axial_tiles: 3               # number of cord-bearing Z columns
+    contour_lw: 2.0                # anat cord contour line width
+    dpi: 120                       # output PNG dpi
+
+cost_controls:
+  estimate_per_run_minutes: 2.5
+  skip_existing_pass: true

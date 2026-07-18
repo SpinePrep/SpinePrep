@@ -68,11 +68,20 @@ qc_thresholds:
   # whole-volume overlap ~0.84 even for a perfect registration. So gate on
   # the MEDIAN per-level cord Dice (registration quality where the cord is
   # covered), with a min-per-level guard for a single broken edge level.
-  # Calibrated on CoSpiGVS: good runs cluster at per-level median 0.95-1.00;
-  # genuine failures at 0.87-0.88. When cord_dice_per_level is present the
-  # classifier uses these; the whole-volume keys below are the legacy
-  # fallback + observability.
+  # Three-banded (PASS / WARN / FAIL), matching the whole-volume shape below.
+  # Provenance: the PASS level was calibrated on CoSpiGVS alone, where good
+  # runs clustered at 0.95-1.00 and failures at 0.87-0.88. That separation did
+  # NOT transfer to the full cohort. Measured on 9 datasets / 456 runs:
+  # median 0.978, p5 0.915, p1 0.815. A hard FAIL cliff at 0.90 therefore sat
+  # inside the distribution's own low tail and split runs of the SAME subject
+  # and acquisition (0.8997 FAIL beside 0.9019 PASS — within run-to-run noise),
+  # while the cohort's genuine failure group sits at <=0.82, well separated.
+  # So 0.90 is kept as the PASS level and 0.85 added as the FAIL floor; the
+  # band between routes to visual inspection rather than discarding the run.
+  # When cord_dice_per_level is present the classifier uses these; the
+  # whole-volume keys below are the legacy fallback + observability.
   per_level_pass_min: 0.90          # median per-level cord Dice >= this = PASS
+  per_level_fail_below: 0.85        # < this = FAIL; [0.85, 0.90) = WARN (inspect overlay)
   per_level_broken_below: 0.50      # any single level < this = WARN (exclude that level)
   # Whole-volume cord Dice (legacy fallback / observability only when
   # per-level Dice is unavailable). PAM50_cord warped to func vs S6 func
