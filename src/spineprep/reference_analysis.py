@@ -24,20 +24,35 @@ import nibabel as nib
 BANNER = "REFERENCE ANALYSIS -- demonstration, not validated preprocessing"
 
 
-def _confound_design(confounds_tsv: Path) -> tuple[np.ndarray, list[str]]:
+def _confound_design(
+    confounds_tsv: Path, slice_index: Optional[int] = None,
+) -> tuple[np.ndarray, list[str]]:
     """Build the confound design matrix from the S8 TSV.
 
-    Uses every numeric column (motion + derivatives, cosine drift, CSF/aCompCor
-    components, physio, and the one-hot spike/outlier columns), drops all-NaN or
-    constant columns, fills residual NaNs with the column mean, and prepends an
-    intercept. This is the whole point of S8's contract: one simultaneous
-    regression, which is where the Carp 2013 filter-then-scrub concern is avoided.
+    S8's design is built for a SLICEWISE GLM: the global regressors (motion,
+    cosine drift, physio, spikes) plus the CSF/RETROICOR columns belonging to
+    the slice being fitted. Passing ``slice_index`` selects that slice's columns
+    and drops the other slices', which is how the table is meant to be consumed.
+
+    With ``slice_index=None`` every numeric column is used -- the "flat GLM".
+    That is NOT recommended and is measured to be unsafe: on the 9-dataset
+    cohort a flat design carries a median 139 regressors against 227 frames,
+    86% of runs spend over half their degrees of freedom, and 8.7% have more
+    regressors than frames (rank-deficient by construction). Used slicewise the
+    same table sits near a 0.37 ratio, which is comfortable.
+
+    Either way the confounds are applied in ONE simultaneous regression, which
+    is where the Carp 2013 filter-then-scrub ordering concern is avoided.
     """
     df = pd.read_csv(confounds_tsv, sep="\t")
     num = df.select_dtypes(include=[np.number]).copy()
     # drop columns that carry no information for a GLM
     keep = [c for c in num.columns
             if num[c].notna().any() and num[c].nunique(dropna=True) > 1]
+    if slice_index is not None:
+        tag = f"slice{int(slice_index):02d}"
+        # keep this slice's per-slice columns; drop every other slice's
+        keep = [c for c in keep if ("slice" not in c) or (tag in c)]
     X = num[keep].to_numpy(dtype=np.float64)
     # column-mean impute any remaining NaNs (e.g. derivative1 first frame)
     col_mean = np.nanmean(X, axis=0)
@@ -100,11 +115,31 @@ def run_reference_analysis(
     else:
         cord = levels > 0                 # fall back to any labelled voxel
 
-    X, col_names = _confound_design(conf_p)
-    resid = _residualize(bold, cord, X)   # (n_vox, T)
-
-    # per-level mean residual time-course, restricted to the cord
-    lvl_in_cord = levels[cord]
+    # Residualize SLICE BY SLICE, the way the S8 design is built to be used:
+    # each slice is cleaned with the global regressors plus its own per-slice
+    # CSF/RETROICOR columns. A single flat regression over all slices' columns
+    # is much wider than the run is long (see _confound_design) and is what the
+    # cohort measurement flagged as unsafe.
+    resid = np.zeros((int(cord.sum()), bold.shape[3]), dtype=np.float64)
+    zs = np.where(cord.any(axis=(0, 1)))[0]
+    filled = 0
+    n_reg_per_slice: list[int] = []
+    col_names: list[str] = []
+    for z in zs:
+        slice_mask = np.zeros_like(cord)
+        slice_mask[:, :, z] = cord[:, :, z]
+        nvox = int(slice_mask.sum())
+        if nvox == 0:
+            continue
+        Xz, cz = _confound_design(conf_p, slice_index=int(z))
+        resid[filled:filled + nvox] = _residualize(bold, slice_mask, Xz)
+        filled += nvox
+        n_reg_per_slice.append(Xz.shape[1])
+        if not col_names:
+            col_names = cz
+    # reorder the level labels to match the slice-major residual ordering
+    lvl_in_cord = np.concatenate(
+        [levels[:, :, z][cord[:, :, z]] for z in zs]) if len(zs) else levels[cord]
     uniq = sorted(int(v) for v in np.unique(lvl_in_cord) if v > 0)
     if len(uniq) < 2:
         return {"status": "SKIP", "run_id": run_id,
@@ -145,13 +180,27 @@ def run_reference_analysis(
                    "spinal_levels": levels_p.name},
         "n_confound_regressors": len(col_names),
         "confound_columns": col_names,
+        "n_slices_fitted": len(n_reg_per_slice),
+        "regressors_per_slice": {
+            "min": int(min(n_reg_per_slice)) if n_reg_per_slice else None,
+            "median": int(np.median(n_reg_per_slice)) if n_reg_per_slice else None,
+            "max": int(max(n_reg_per_slice)) if n_reg_per_slice else None,
+        },
+        "n_frames": int(bold.shape[3]),
         "n_levels": len(uniq), "levels": uniq,
-        "method": ("native-space per-spinal-level ROI connectivity: OLS-residualize "
-                   "the confound design (one simultaneous regression), mean residual "
-                   "per level in the cord, level x level Pearson correlation"),
+        "method": ("native-space per-spinal-level ROI connectivity: SLICEWISE "
+                   "OLS-residualization (each slice cleaned with the global "
+                   "regressors plus its own per-slice CSF/RETROICOR columns, in "
+                   "one simultaneous regression per slice), mean residual per "
+                   "level in the cord, level x level Pearson correlation"),
         "note": ("Illustrative only. The confound selection, the ROI scheme, and the "
                  "connectivity measure are analyst choices SpinePrep does not make. "
                  "No thresholding, no group stats, nothing pushed to template."),
+        "why_slicewise": ("The S8 confound table is built for a slicewise GLM. "
+                          "Regressing every column at once uses a median 139 "
+                          "regressors against 227 frames on the reference cohort, "
+                          "and 8.7% of runs then have more regressors than frames. "
+                          "Fitting per slice keeps the design comfortably narrow."),
     }
     prov_path = ra_dir / f"{run_id}_reference_analysis.json"
     prov_path.write_text(json.dumps(prov, indent=2))

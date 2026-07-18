@@ -244,9 +244,19 @@ def _csf_acompcor_slicewise(
     PhysIO toolbox, which is hard to embed): **FSL `fslmeants --eig --order N`**
     computes the eigenvariates (= PCs), and the BOLD is first per-voxel
     constant+linear detrended in numpy to match PhysIO's pre-PCA step. Validated
-    against PhysIO in ``research/physio_vs_fslmeants_acompcor`` (matches CoSpi
-    ``spi12_acompcor.m``, which uses 5 PCs/slice). Emits up to ``n_components``
-    columns per slice: ``csf_slice{z}_pc{k}``.
+    against PhysIO in ``research/physio_vs_fslmeants_acompcor``. Emits up to
+    ``n_components`` columns per slice: ``csf_slice{z}_pc{k}``.
+
+    Per-slice PCA of CSF voxels follows Barry et al. 2014 (eLife 3:e02812), the
+    cord precedent for this method; it is the minority convention, as Eippert
+    2017 / Kaptan 2023 / Dabbagh 2024 use a mean high-variance CSF time course
+    instead. The FIXED count of 5 is SpinePrep's own choice (matching in-house
+    CoSpi ``spi12_acompcor.m``), not a published value -- Barry used an adaptive
+    2-6 per slice.
+
+    Two independent floors guard the PCA: ``min_voxels_per_slice`` on MASK
+    voxels, and the same floor on LIVE (signal-carrying) voxels. See the comment
+    at the live-voxel check for why the second one is necessary.
     """
     bimg = nib.load(bold_path)
     bold = bimg.get_fdata()
@@ -273,7 +283,8 @@ def _csf_acompcor_slicewise(
     meta: dict[str, Any] = {
         "method": "fslmeants_eig_acompcor", "n_components_requested": n_components,
         "n_slices_total": nz, "n_slices_with_csf": 0,
-        "pcs_per_slice": [], "slice_voxel_counts": [], "skipped_slices": [],
+        "pcs_per_slice": [], "slice_voxel_counts": [], "live_voxel_counts": [],
+        "skipped_slices": [], "skipped_reason": {},
     }
     for z in range(nz):
         m = csf_eroded[:, :, z]
@@ -281,11 +292,33 @@ def _csf_acompcor_slicewise(
         meta["slice_voxel_counts"].append(nv)
         if nv < min_voxels_per_slice:
             meta["skipped_slices"].append(z)
+            meta["skipped_reason"][str(z)] = "too_few_mask_voxels"
             continue
-        # max retrievable PCs is bounded by voxels-1 and timepoints-1
-        k = min(n_components, nv - 1, nt - 1)
+        # The mask is warped in from anatomical space and is NOT clipped to
+        # where the BOLD actually has signal, so it can claim voxels in a slab
+        # edge slice the scanner never acquired. A PCA there is meaningless:
+        # for an all-zero matrix every singular value is zero and the singular
+        # vectors are arbitrary, so LAPACK returns identity basis vectors and
+        # fslmeants variance-normalises them into unit delta functions — five
+        # fabricated "components" that are pure artefact. Where such a delta
+        # lands on a frame an outlier regressor already flags, the design goes
+        # exactly singular; where it does not, the garbage regressor ships
+        # silently. Found on the 2026-07-18 cohort run: 36/456 runs had a dead
+        # CSF slice (35 of them z=0), producing 180 fabricated regressors, of
+        # which only 4 runs failed the condition-number gate.
+        # So require live voxels, not merely masked ones.
+        sl_ts = resid[:, :, z][m]                      # (nv, nt)
+        n_live = int((sl_ts.std(axis=1) > 1e-8).sum())
+        meta["live_voxel_counts"].append(n_live)
+        if n_live < min_voxels_per_slice:
+            meta["skipped_slices"].append(z)
+            meta["skipped_reason"][str(z)] = "no_signal_in_mask"
+            continue
+        # max retrievable PCs is bounded by LIVE voxels-1 and timepoints-1
+        k = min(n_components, n_live - 1, nt - 1)
         if k < 1:
             meta["skipped_slices"].append(z)
+            meta["skipped_reason"][str(z)] = "too_few_components"
             continue
         sm = np.zeros((nx, ny, nz), dtype=np.uint8)
         sm[:, :, z] = m.astype(np.uint8)
@@ -1030,6 +1063,45 @@ def _bpm_cpm_from_popp(work_dir: Path) -> tuple[Optional[float], Optional[float]
     return bpm, cpm
 
 
+def _design_rank_deficit(df: pd.DataFrame) -> dict[str, Any]:
+    """Numerical rank of the standardized design, and how far short it falls.
+
+    The condition number says a design is ill-posed but not why; the rank
+    deficit says how many columns are redundant, which is directly actionable.
+    Reported for observability -- the condition number remains the gate.
+
+    Also reports the regressor-to-frame ratio. The S8 design is built for a
+    SLICEWISE GLM (the global regressors plus one slice's own CSF columns);
+    poured into a single flat regression it is much wider. On the 2026-07-18
+    cohort: median 139 regressors against 227 frames, 86% of designs using
+    over half the available degrees of freedom, and 8.7% with more regressors
+    than frames -- rank-deficient by construction, before any defect.
+    """
+    out: dict[str, Any] = {"rank": None, "n_regressors": None,
+                           "rank_deficit": None, "regressor_frame_ratio": None}
+    if df.empty:
+        return out
+    X = df.to_numpy(dtype=np.float64, copy=False)
+    n_t, n_p = X.shape
+    out["n_regressors"] = int(n_p)
+    out["regressor_frame_ratio"] = float(n_p / n_t) if n_t else None
+    X = X - X.mean(axis=0, keepdims=True)
+    sd = X.std(axis=0)
+    keep = sd > 1e-12
+    if not keep.any():
+        return out
+    Z = X[:, keep] / sd[keep]
+    try:
+        s = np.linalg.svd(Z, compute_uv=False)
+        tol = max(Z.shape) * np.finfo(np.float64).eps * (s[0] if s.size else 0.0)
+        rank = int((s > tol).sum())
+        out["rank"] = rank
+        out["rank_deficit"] = int(n_p - rank)
+    except Exception:
+        pass
+    return out
+
+
 def _condition_number(df: pd.DataFrame) -> float:
     if df.empty:
         return float("nan")
@@ -1456,10 +1528,27 @@ def run_S8_confounds_and_physio_regressors(
     # Truncate any column that overshot n_volumes (defensive)
     df = df.iloc[:n_volumes]
 
+    # Drop degenerate (zero-variance) regressors before they reach the analyst.
+    # A constant column carries no information, contributes nothing to a GLM,
+    # and makes the design rank-deficient. AFNI's 3dTproject applies the same
+    # rule (discard all-zero orts and report the count); fMRIPrep applies none,
+    # so degenerate columns are possible there by construction. This guards
+    # every regressor family, not just CSF.
+    _degenerate = [c for c in df.columns
+                   if float(np.nanstd(df[c].to_numpy(dtype=np.float64))) <= 1e-12]
+    if _degenerate:
+        df = df.drop(columns=_degenerate)
+        failure_reasons.append(
+            f"dropped {len(_degenerate)} zero-variance regressor(s): "
+            f"{', '.join(_degenerate[:6])}"
+            f"{' ...' if len(_degenerate) > 6 else ''}")
+
     # Condition number QC — per-slice (slicewise GLM), see
     # _condition_number_slicewise. Headline = worst slice's design conditioning.
     cn_info = _condition_number_slicewise(df)
     cn = cn_info["condition_number"]
+    # Rank deficit + design width, observability alongside the CN gate.
+    _rank_info = _design_rank_deficit(df)
 
     # SpinalCompCor: report the actual K (component count). In
     # `aggregation: global_3d` (default) this equals
@@ -1505,6 +1594,10 @@ def run_S8_confounds_and_physio_regressors(
         "condition_number": cn,
         "condition_number_global": cn_info["global_only"],
         "condition_number_worst_slice": cn_info["worst_slice"],
+        "design_rank": _rank_info["rank"],
+        "design_rank_deficit": _rank_info["rank_deficit"],
+        "regressor_frame_ratio": _rank_info["regressor_frame_ratio"],
+        "n_columns_dropped_degenerate": len(_degenerate),
         "fd_mean_mm": float(np.mean(columns["framewise_displacement"])),
         "fd_max_mm": float(np.max(columns["framewise_displacement"])),
         "dvars_mean": float(np.mean(columns["dvars"])) if "dvars" in columns else None,

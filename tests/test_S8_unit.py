@@ -386,3 +386,100 @@ def test_fd_dvars_reportlet_still_draws_line_when_threshold_set(tmp_path):
         outlier_indices=None,
     )
     assert out.exists() and out.stat().st_size > 0
+
+
+# ---------------------------------------------------------------------------
+# Dead-slice guard + degenerate-column handling
+#
+# Regression for the 2026-07-18 cohort finding: the CSF mask is warped in from
+# anatomical space and is not clipped to where BOLD has signal, so it can claim
+# voxels in a slab edge slice the scanner never acquired. A PCA on an all-zero
+# matrix is meaningless -- LAPACK returns an arbitrary identity basis which
+# fslmeants normalises into unit deltas -- fabricating 5 "components" per dead
+# slice. 36/456 runs were affected (35 of them at z=0), producing 180 fabricated
+# regressors, of which only 4 tripped the condition-number gate.
+# ---------------------------------------------------------------------------
+
+
+def test_design_rank_deficit_detects_duplicate_column():
+    import pandas as pd
+    from spineprep.steps.s8.process import _design_rank_deficit
+    n = 100
+    rng = np.random.default_rng(0)
+    a = rng.standard_normal(n)
+    df = pd.DataFrame({"x": a, "y": rng.standard_normal(n), "dup": a})
+    info = _design_rank_deficit(df)
+    assert info["n_regressors"] == 3
+    assert info["rank"] == 2
+    assert info["rank_deficit"] == 1
+
+
+def test_design_rank_deficit_full_rank_is_zero():
+    import pandas as pd
+    from spineprep.steps.s8.process import _design_rank_deficit
+    rng = np.random.default_rng(1)
+    df = pd.DataFrame(rng.standard_normal((100, 4)),
+                      columns=list("abcd"))
+    info = _design_rank_deficit(df)
+    assert info["rank_deficit"] == 0
+    assert info["regressor_frame_ratio"] == 4 / 100
+
+
+def test_design_rank_deficit_reports_regressor_frame_ratio():
+    """The width finding: designs wider than the run are rank-deficient by
+    construction, before any defect."""
+    import pandas as pd
+    from spineprep.steps.s8.process import _design_rank_deficit
+    rng = np.random.default_rng(2)
+    df = pd.DataFrame(rng.standard_normal((10, 15)))
+    info = _design_rank_deficit(df)
+    assert info["regressor_frame_ratio"] == 1.5
+    assert info["rank_deficit"] >= 5
+
+
+def test_csf_acompcor_skips_slice_with_no_signal(tmp_path):
+    """A slice whose CSF mask voxels are all zero must be skipped, not fed to
+    the PCA -- otherwise it fabricates unit-delta components."""
+    import nibabel as nib
+    from spineprep.steps.s8.process import _csf_acompcor_slicewise
+    rng = np.random.default_rng(3)
+    nx = ny = 8
+    nz, nt = 3, 40
+    bold = rng.standard_normal((nx, ny, nz, nt)).astype(np.float32) * 10 + 500
+    bold[:, :, 0, :] = 0.0                      # dead slab edge slice
+    mask = np.zeros((nx, ny, nz), np.uint8)
+    mask[2:6, 2:6, :] = 1                       # 16 voxels claimed on every slice
+    aff = np.eye(4)
+    bp = tmp_path / "bold.nii.gz"
+    mp = tmp_path / "csf.nii.gz"
+    nib.save(nib.Nifti1Image(bold, aff), bp)
+    nib.save(nib.Nifti1Image(mask, aff), mp)
+
+    cols, meta = _csf_acompcor_slicewise(bp, mp, tmp_path, n_components=5,
+                                         min_voxels_per_slice=5)
+    assert 0 in meta["skipped_slices"]
+    assert meta["skipped_reason"]["0"] == "no_signal_in_mask"
+    assert not any(c.startswith("csf_slice00") for c in cols), \
+        "dead slice must not emit components"
+    assert meta["slice_voxel_counts"][0] == 16, "mask voxels still recorded"
+
+
+def test_csf_acompcor_keeps_live_slices(tmp_path):
+    """The guard must not touch healthy slices."""
+    import nibabel as nib
+    from spineprep.steps.s8.process import _csf_acompcor_slicewise
+    rng = np.random.default_rng(4)
+    nx = ny = 8
+    nz, nt = 2, 40
+    bold = rng.standard_normal((nx, ny, nz, nt)).astype(np.float32) * 10 + 500
+    mask = np.zeros((nx, ny, nz), np.uint8)
+    mask[2:6, 2:6, :] = 1
+    aff = np.eye(4)
+    bp = tmp_path / "bold.nii.gz"
+    mp = tmp_path / "csf.nii.gz"
+    nib.save(nib.Nifti1Image(bold, aff), bp)
+    nib.save(nib.Nifti1Image(mask, aff), mp)
+    cols, meta = _csf_acompcor_slicewise(bp, mp, tmp_path, n_components=5,
+                                         min_voxels_per_slice=5)
+    assert meta["skipped_slices"] == []
+    assert meta["live_voxel_counts"] == [16, 16]

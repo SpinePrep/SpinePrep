@@ -74,9 +74,21 @@ csf_slicewise:
   # or S6 warp are unavailable.
   mask_source: "S2_canal_minus_cord"
   method: "acompcor_fslmeants_eig"  # FSL fslmeants --eig (PCs), not SPM PhysIO
-  n_components: 5                  # 5 PCs/slice (CoSpi spi12_acompcor.m)
+  # Per-slice PCA of CSF voxels follows Barry et al. 2014 (eLife 3:e02812),
+  # the cord precedent for this method. Note this is the MINORITY convention:
+  # Eippert 2017, Kaptan 2023, Dabbagh 2024 and the EPFL group instead use a
+  # single mean time course over high-variance CSF voxels. The two have never
+  # been compared head-to-head in the cord.
+  # The FIXED count of 5 is SpinePrep's own choice, matching the in-house CoSpi
+  # spi12_acompcor.m; it is NOT from a paper. Barry used a variance-adaptive
+  # 2-6 per slice. Do not cite a publication for the number 5.
+  n_components: 5
   erode_voxels: 0                  # no erosion (cord-CSF too thin)
-  min_voxels_per_slice: 5          # numerical-stability floor
+  # Floor on MASK voxels. A second, independent floor on LIVE (signal-carrying)
+  # voxels is applied in _csf_acompcor_slicewise: the mask is warped in from
+  # anatomy and is not clipped to the acquired slab, so it can claim voxels in
+  # an edge slice the scanner never acquired, where a PCA fabricates components.
+  min_voxels_per_slice: 5
 
 # ----------------------------------------------------------------------
 # 3. RETROICOR slicewise via FSL PNM (when BIDS physio readable)
