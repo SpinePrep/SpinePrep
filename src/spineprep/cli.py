@@ -31,6 +31,18 @@ def build_parser() -> argparse.ArgumentParser:
     _add_S0_arguments(check_parser)
     _add_S1_arguments(check_parser)
 
+    # Opt-in, NON-CANONICAL reference analysis (decision 3B). A demonstration of
+    # consuming the derivatives, deliberately NOT a pipeline step and NOT in
+    # PARTICIPANT_STEPS. See .claude/specs/reference-analysis.md.
+    ra_parser = subparsers.add_parser(
+        "reference-analysis",
+        help="[demonstration] example native-space per-level cord connectivity "
+             "from the derivatives -- not part of validated preprocessing")
+    ra_parser.add_argument("out", help="pipeline output directory")
+    ra_parser.add_argument("--run-id", required=True, help="run id (S9 desc-preproc_bold prefix)")
+    ra_parser.add_argument("--subject", required=True, help="subject label (with or without sub-)")
+    ra_parser.add_argument("--session", default=None)
+
     return parser
 
 
@@ -186,6 +198,15 @@ def main(argv: list[str] | None = None) -> int:
         else:
             parser.error(f"Unsupported step: {step}")
             return 2
+    elif args.command == "reference-analysis":
+        from spineprep.reference_analysis import run_reference_analysis, BANNER
+        print(BANNER)
+        res = run_reference_analysis(
+            out_dir=Path(args.out), run_id=args.run_id,
+            subject=args.subject, session=args.session,
+        )
+        print(json.dumps(res, indent=2))
+        return 0 if res.get("status") in {"OK", "SKIP"} else 1
     else:
         parser.error(f"Unknown command: {args.command}")
         return 2
