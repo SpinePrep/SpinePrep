@@ -217,7 +217,10 @@ def _build_outlier_columns(
 
 
 # ---------------------------------------------------------------------------
-# 3. CSF slicewise — top-20%-variance mean per slice
+# 3. CSF slicewise aCompCor -- top-N principal components (fslmeants --eig) per
+#    slice, on a per-voxel-detrended CSF ROI. Behzadi 2007 aCompCor applied
+#    slice-wise (NOT the field's single mean-CSF regressor; NOT SpinalCompCor,
+#    which PCAs the tissue outside cord+CSF). See s8-algorithm-audit.md v2.
 # ---------------------------------------------------------------------------
 
 
@@ -1130,8 +1133,9 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
             worst = "WARN"
     # Outlier fraction is observability-only — high motion is the analyst's
     # problem to handle at GLM time, not S8's. We surface it as a WARN flag
-    # when it's elevated but never FAIL on it. Datasets like Balgrist
-    # KombiShimZSpine routinely have FD > 0.2 mm and outlier_fraction > 50%.
+    # when it's elevated but never FAIL on it. High-motion datasets (e.g.
+    # Balgrist KombiShimZSpine) routinely exceed the outlier fraction; the flags
+    # are on DVARS/refRMS (FD does not censor -- removed 2026-07-16).
     of = metrics.get("outlier_fraction")
     pass_of = thresholds.get("pass_outlier_fraction_max", 0.20)
     if of is not None and of > pass_of:
