@@ -63,14 +63,24 @@ def _process_s3_2_outlier_gating(
     frame_metrics_path = metrics_dir / "frame_metrics.tsv"
     outlier_mask_path = metrics_dir / "outlier_mask.json"
 
-    # OPTIMIZATION: Skip heavy computation if outputs exist
+    # OPTIMIZATION: Skip heavy computation if outputs exist.
+    # A cache we cannot read must NOT be treated as a perfect run. This used to
+    # fall back to outlier_frac = 0.0, which fed the real gate below and turned
+    # an unreadable cache into a clean PASS reporting 0% censoring -- the same
+    # "unmeasured read as good" defect fixed in S9's FWHM reportlet. Now an
+    # unreadable or non-numeric cache simply falls through and recomputes.
+    _cached_frac = None
     if func_ref_path.exists() and frame_metrics_path.exists() and outlier_mask_path.exists():
-         try:
-             with open(outlier_mask_path, "r") as f:
-                 outlier_info = json.load(f)
-             outlier_frac = outlier_info.get("outlier_fraction", 0.0)
-         except Exception:
-             outlier_frac = 0.0
+        try:
+            with open(outlier_mask_path, "r") as f:
+                _cached_frac = json.load(f).get("outlier_fraction")
+        except Exception:
+            _cached_frac = None
+        if not isinstance(_cached_frac, (int, float)):
+            _cached_frac = None
+
+    if _cached_frac is not None:
+         outlier_frac = _cached_frac
 
          # Reconstruct figure path
          subject, session, out_root = _extract_subject_session_from_work_dir(work_dir)

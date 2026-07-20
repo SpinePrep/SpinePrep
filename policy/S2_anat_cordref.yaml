@@ -99,8 +99,22 @@ registration:
 # same convention S7 uses on the functional side. See
 # .claude/specs/s2-algorithm-audit.md F1.
 qc_thresholds:
-  # Per-level primary gate (S7 band: good runs cluster 0.95-1.00).
+  # Per-level primary gate, three-banded (PASS / WARN / FAIL).
+  #
+  # The PASS level was copied from S7's band, which S7 had calibrated on
+  # CoSpiGVS *functional* data; it was never validated on anatomical data. S7
+  # gave this gate a WARN band on 2026-07-18 after the cohort showed a hard
+  # 0.90 cliff sitting inside the distribution's own low tail and splitting
+  # runs of the SAME subject (0.8997 FAIL beside 0.9019 PASS). S2 kept the
+  # cliff until 2026-07-19.
+  #
+  # The consequence here is larger than in S7: S2 is the anatomical reference,
+  # so a FAIL loses the ENTIRE subject, every run, not one run. Measured on the
+  # 469-run cohort, S2's per-level median Dice runs min 0.9107 / p5 0.9373 /
+  # median 0.9604 -- the minimum sits 0.011 above the cliff, so this has not
+  # fired yet, but 51 subjects lie in the 0.85-0.95 band.
   per_level_pass_min: 0.90         # median per-level cord Dice >= this = PASS
+  per_level_fail_below: 0.85       # < this = FAIL; [0.85, 0.90) = WARN (inspect overlay)
   per_level_broken_below: 0.50     # any single level < this = WARN (exclude that level)
   # Whole-cord Dice — observability + legacy fallback ONLY when per-level is
   # unavailable. Bands are NOT literature-anchored (no published cord-reg Dice

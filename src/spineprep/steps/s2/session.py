@@ -683,13 +683,27 @@ def _process_session(
         _med = _stats.median(_pl_vals)
         _lo = min(_pl_vals)
         _pass_med = _qt.get("per_level_pass_min", 0.90)
+        _fail_med = _qt.get("per_level_fail_below", 0.85)
         _broken = _qt.get("per_level_broken_below", 0.50)
-        if _med < _pass_med:
+        # Three-banded, matching S7. A hard cliff at the PASS level split runs
+        # of the same subject on run-to-run noise; here a FAIL costs the whole
+        # subject, since this is the anatomical reference. See the policy file.
+        if _med < _fail_med:
             run_status = "FAIL"
-            _reasons.append(f"per-level median cord Dice FAIL: {_med:.3f} (< {_pass_med:.2f})")
-        elif _lo < _broken:
+            _reasons.append(f"per-level median cord Dice FAIL: {_med:.3f} (< {_fail_med:.2f})")
+        elif _med < _pass_med:
             run_status = "WARN"
-            _reasons.append(f"per-level median OK ({_med:.3f}) but one level Dice={_lo:.3f} (< {_broken:.2f})")
+            _reasons.append(
+                f"per-level median cord Dice WARN: {_med:.3f} "
+                f"(in [{_fail_med:.2f}, {_pass_med:.2f}) — inspect the overlay)")
+        # A broken single level is its own diagnostic and must still surface
+        # inside the WARN band, so this is not an elif.
+        if _lo < _broken:
+            if run_status == "PASS":
+                run_status = "WARN"
+            _reasons.append(
+                f"one level Dice={_lo:.3f} (< {_broken:.2f}) — exclude that level "
+                f"(per-level median {_med:.3f})")
         _wc = metrics.get("pam50_cord_dice")
         if _wc is not None:
             _reasons.append(f"whole-cord Dice={_wc:.3f} (observability; coverage-confounded, not gated)")

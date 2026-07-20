@@ -1193,9 +1193,22 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
     cn = metrics.get("condition_number")
     pass_cn = thresholds.get("pass_condition_number", 1000.0)
     warn_cn = thresholds.get("warn_condition_number", 10000.0)
-    if cn is None or not np.isfinite(cn):
+    # Order matters: np.isfinite(inf) is False, so a shared "not finite" branch
+    # sent an EXACTLY SINGULAR design (the worst possible outcome) to WARN while
+    # a merely bad one at 20000 got FAIL -- severity inverted at the extreme,
+    # and reported as "not computed" when it had been computed and came out
+    # infinite. That is the same conflation of "catastrophic" with "unmeasured"
+    # as the S9 FWHM defect. Infinity is now the strongest FAIL.
+    if cn is not None and np.isinf(cn):
+        reasons.append(
+            "condition_number FAIL: design matrix is exactly singular "
+            "(infinite condition number; at least one regressor is a linear "
+            "combination of the others)")
+        worst = "FAIL"
+    elif cn is None or np.isnan(cn):
         reasons.append("condition_number not computed")
-        worst = "WARN"
+        if worst == "PASS":
+            worst = "WARN"
     elif cn > warn_cn:
         reasons.append(f"condition_number FAIL: {cn:.1f}")
         worst = "FAIL"
