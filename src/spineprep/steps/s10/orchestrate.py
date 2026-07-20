@@ -35,6 +35,68 @@ from . import reports
 
 logger = logging.getLogger(__name__)
 
+# Per-run participant steps a completed run should have a QC record for.
+# S1 is dataset-level and S2 is anatomy-level, so neither is per-run.
+_PARTICIPANT_STEPS = ("S3", "S4", "S5", "S6", "S7", "S8", "S9")
+
+
+def _run_key(rec: dict) -> tuple:
+    """Identity of a run. Keyed on (dataset, subject, session, run_id) because
+    subject labels collide across datasets -- sub-01 exists in six of them."""
+    return (rec.get("dataset_key"), rec.get("subject"),
+            rec.get("session"), rec.get("run_id"))
+
+
+def _rollup_run_status(records: list[dict]) -> dict[str, int]:
+    """Worst per-run status across the participant steps, counted by verdict.
+
+    A run is FAIL if any step FAILed, WARN if any WARNed, else PASS. This is
+    what the release actually contains, and until 2026-07-19 it never reached
+    S10's verdict at all.
+    """
+    worst: dict[tuple, str] = {}
+    rank = {"PASS": 0, "WARN": 1, "FAIL": 2}
+    for rec in records:
+        if rec.get("step") not in _PARTICIPANT_STEPS:
+            continue
+        if not rec.get("run_id"):
+            continue
+        st = rec.get("status")
+        if st not in rank:
+            continue
+        k = _run_key(rec)
+        if k not in worst or rank[st] > rank[worst[k]]:
+            worst[k] = st
+    counts = {"PASS": 0, "WARN": 0, "FAIL": 0}
+    for st in worst.values():
+        counts[st] += 1
+    return counts
+
+
+def _count_missing_step_qc(records: list[dict]) -> int:
+    """(run, step) pairs with no QC record where one is expected.
+
+    A run is only expected to have records up to the last step it reached: once
+    a step FAILs, downstream steps legitimately skip it. So this counts gaps
+    BELOW a run's high-water mark, which is what "missing QC" should mean --
+    a step that silently produced nothing, not a step correctly skipped.
+    """
+    seen: dict[tuple, set] = {}
+    for rec in records:
+        step = rec.get("step")
+        if step not in _PARTICIPANT_STEPS or not rec.get("run_id"):
+            continue
+        seen.setdefault(_run_key(rec), set()).add(step)
+    missing = 0
+    for steps in seen.values():
+        reached = [i for i, s in enumerate(_PARTICIPANT_STEPS) if s in steps]
+        if not reached:
+            continue
+        for i in range(max(reached) + 1):
+            if _PARTICIPANT_STEPS[i] not in steps:
+                missing += 1
+    return missing
+
 
 @dataclass
 class StepResult:
@@ -256,21 +318,64 @@ def run_S10(
     except Exception as e:
         failures.append(f"release_report: {e}")
 
-    # QC classification
+    # Upstream QC rollup. S10's verdict used to depend only on whether the HTML
+    # rendered, so the release could -- and did -- report PASS while its own
+    # inventory held 18 FAILed and 410 WARN runs out of 469. A release gate that
+    # certifies formatting rather than data is not a QC gate. These counts now
+    # enter the verdict and are published alongside it.
+    run_status = _rollup_run_status(records)
+    n_runs_total = sum(run_status.values())
+    n_runs_failed = run_status.get("FAIL", 0)
+    n_runs_warn = run_status.get("WARN", 0)
+    n_runs_pass = run_status.get("PASS", 0)
+    fail_frac = (n_runs_failed / n_runs_total) if n_runs_total else 0.0
+
+    # missing_step_qc_count was previously the literal 0 -- published as a
+    # measurement while nothing computed it, and its two policy thresholds were
+    # never read. It now counts (run, step) pairs where a run that reached the
+    # chain has no QC record for a participant step it should have.
+    missing_qc = _count_missing_step_qc(records)
+    missing_frac = (missing_qc / (n_runs_total * len(_PARTICIPANT_STEPS))
+                    if n_runs_total else 0.0)
+
     thr = policy.get("qc_thresholds", {})
     pass_min = float(thr.get("pass_min_subject_report_fraction", 0.80))
     warn_min = float(thr.get("warn_min_subject_report_fraction", 0.50))
-    if fraction >= pass_min and not failures:
-        status = "PASS"
-        msg = None
-    elif fraction >= warn_min:
-        status = "WARN"
-        msg = (f"{n_subject_reports}/{n_subjects} per-subject reports "
-               f"({fraction*100:.0f}%)" + (f"; {len(failures)} failures" if failures else ""))
-    else:
+    pass_max_fail = float(thr.get("pass_max_run_fail_fraction", 0.05))
+    warn_max_fail = float(thr.get("warn_max_run_fail_fraction", 0.20))
+    pass_max_missing = float(thr.get("pass_max_missing_qc_fraction", 0.05))
+
+    reasons: list[str] = list(failures)
+    if fail_frac > warn_max_fail:
+        reasons.append(f"{n_runs_failed}/{n_runs_total} runs FAILed upstream "
+                       f"({fail_frac*100:.0f}% > {warn_max_fail*100:.0f}%)")
         status = "FAIL"
-        msg = (f"only {n_subject_reports}/{n_subjects} per-subject reports "
-               f"({fraction*100:.0f}%)")
+    elif fail_frac > pass_max_fail:
+        reasons.append(f"{n_runs_failed}/{n_runs_total} runs FAILed upstream "
+                       f"({fail_frac*100:.0f}% > {pass_max_fail*100:.0f}%)")
+        status = "WARN"
+    else:
+        status = "PASS"
+
+    if missing_frac > pass_max_missing:
+        reasons.append(f"{missing_qc} missing step QC record(s) "
+                       f"({missing_frac*100:.0f}% > {pass_max_missing*100:.0f}%)")
+        if status == "PASS":
+            status = "WARN"
+
+    if fraction < warn_min:
+        reasons.append(f"only {n_subject_reports}/{n_subjects} per-subject "
+                       f"reports ({fraction*100:.0f}%)")
+        status = "FAIL"
+    elif fraction < pass_min or failures:
+        if fraction < pass_min:
+            reasons.append(f"{n_subject_reports}/{n_subjects} per-subject "
+                           f"reports ({fraction*100:.0f}%)")
+        if status == "PASS":
+            status = "WARN"
+
+    msg = "; ".join(reasons) if reasons else None
+    failures = reasons
 
     metrics = {
         "n_subjects_aggregated": int(n_subjects),
@@ -278,7 +383,12 @@ def run_S10(
         "n_datasets": len({r.get("dataset_key") for r in records}),
         "n_subject_reports": int(n_subject_reports),
         "subject_report_fraction": float(fraction),
-        "missing_step_qc_count": 0,
+        "missing_step_qc_count": int(missing_qc),
+        # Run-level rollup: what the release actually contains.
+        "n_runs_pass": int(n_runs_pass),
+        "n_runs_warn": int(n_runs_warn),
+        "n_runs_failed": int(n_runs_failed),
+        "run_fail_fraction": float(fail_frac),
     }
 
     qc_dir = out_path / "logs" / "S10_qc_aggregation_and_release"

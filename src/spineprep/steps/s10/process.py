@@ -261,11 +261,20 @@ def _build_group_dashboard_data(
     if df.empty:
         return {"empty": True}
     df = df.dropna(subset=["subject", "step"])
-    subjects = sorted(df["subject"].astype(str).unique())
+    # Key on (dataset, subject), as every other S10 consumer does. Keying on the
+    # subject LABEL alone merged different people: the cohort has 246
+    # (dataset, subject) pairs but only 129 distinct labels, and sub-01 exists
+    # in six datasets. That hid 117 subjects and let one bad sub-01 paint five
+    # unrelated participants red -- averaging datasets away, which is exactly
+    # what design invariant 8 forbids.
+    df = df.copy()
+    df["_subject_key"] = (df["dataset_key"].astype(str) + " / "
+                          + df["subject"].astype(str))
+    subjects = sorted(df["_subject_key"].unique())
     steps = [s for s, _ in ALL_STEPS]
     # 1. Status matrix: subject × step (worst across runs)
     matrix = pd.DataFrame(index=subjects, columns=steps, dtype=object)
-    for (sub, step), g in df.groupby(["subject", "step"]):
+    for (sub, step), g in df.groupby(["_subject_key", "step"]):
         st = g["status"].tolist()
         if any(s == "FAIL" for s in st):
             v = "FAIL"
@@ -624,7 +633,11 @@ def _build_cohort_tsnr_heatmap(
                           for ds in datasets]
         ax.legend(handles=legend_handles, loc="upper right", fontsize=7,
                   frameon=True, framealpha=0.9)
-        ax.set_title(f"Cohort cord tSNR by level — {df['subject'].nunique()} "
+        # Count (dataset, subject) pairs, not bare labels: sub-01 exists in six
+        # datasets, so nunique() on the label alone printed 128 where the truth
+        # was 177 -- a publication-bound figure captioned 28% low.
+        _n_sub = df.groupby(["dataset_key", "subject"]).ngroups
+        ax.set_title(f"Cohort cord tSNR by level — {_n_sub} "
                      f"subjects, {len(df)} (subject,level) observations")
         fig.tight_layout()
         fig.savefig(out_png, dpi=120, bbox_inches="tight")

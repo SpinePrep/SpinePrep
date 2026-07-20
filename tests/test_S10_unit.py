@@ -170,12 +170,17 @@ def test_group_dashboard_matrix_fail_dominates():
     ]
     data = s11._build_group_dashboard_data(records, policy={})
     matrix = data["matrix"]
+    # Updated 2026-07-19: the matrix is now indexed by "<dataset> / <subject>".
+    # Keying on the bare subject label merged different people -- the cohort has
+    # 246 (dataset, subject) pairs but only 129 distinct labels, and sub-01
+    # exists in six datasets, so one bad sub-01 painted five unrelated
+    # participants red.
     # sub-01 has a FAIL run -> cell is FAIL.
-    assert matrix.loc["01", "S4"] == "FAIL"
+    assert matrix.loc["ds_A / 01", "S4"] == "FAIL"
     # sub-02 has WARN but no FAIL -> cell is WARN.
-    assert matrix.loc["02", "S4"] == "WARN"
+    assert matrix.loc["ds_A / 02", "S4"] == "WARN"
     # sub-03 is all PASS.
-    assert matrix.loc["03", "S4"] == "PASS"
+    assert matrix.loc["ds_A / 03", "S4"] == "PASS"
 
 
 def test_group_dashboard_pass_rate_fraction():

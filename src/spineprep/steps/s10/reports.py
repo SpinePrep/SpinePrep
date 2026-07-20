@@ -723,6 +723,35 @@ def build_overview(
     h.append(f"<p class='muted'>{len(datasets)} dataset(s) · {n_sub} subjects. "
              "Per-dataset group reports below; QC is advisory (the reader rates).</p>")
 
+    # Run-level QC rollup, up front. This page used to be a pure link index: a
+    # reviewer saw a healthy-looking list and had to open run_inventory.tsv
+    # unaided to discover that most runs were WARN or worse.
+    _rank = {"PASS": 0, "WARN": 1, "FAIL": 2}
+    _worst: dict[tuple, str] = {}
+    for r in records:
+        if r.get("step") not in _BOLD_STEPS or not r.get("run_id"):
+            continue
+        st = r.get("status")
+        if st not in _rank:
+            continue
+        k = (r.get("dataset_key"), r.get("subject"), r.get("session"), r.get("run_id"))
+        if k not in _worst or _rank[st] > _rank[_worst[k]]:
+            _worst[k] = st
+    if _worst:
+        n_tot = len(_worst)
+        n_p = sum(1 for v in _worst.values() if v == "PASS")
+        n_w = sum(1 for v in _worst.values() if v == "WARN")
+        n_f = sum(1 for v in _worst.values() if v == "FAIL")
+        h.append("<div class='card'><h2>Run QC summary</h2>")
+        h.append(f"<p><strong>{n_tot}</strong> runs · "
+                 f"<span style='color:#16a34a'>{n_p} PASS</span> · "
+                 f"<span style='color:#d97706'>{n_w} WARN</span> · "
+                 f"<span style='color:#dc2626'>{n_f} FAIL</span> "
+                 f"({100.0*n_f/n_tot:.0f}% failed)</p>")
+        h.append("<p class='muted'>Worst status across S3–S9 per run. "
+                 "Per-run detail is in <code>run_inventory.tsv</code>.</p>")
+        h.append("</div>")
+
     # Per-dataset group reports
     h.append("<div class='card'><h2>Datasets</h2><ul class='links'>")
     for ds in datasets:

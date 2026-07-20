@@ -131,6 +131,11 @@ compliance:
 qc_thresholds:
   pass_min_subject_report_fraction: 0.80
   warn_min_subject_report_fraction: 0.50
+  # Upstream run rollup. Added 2026-07-19: S10's verdict previously depended
+  # only on whether the HTML rendered, so the release reported PASS while its
+  # own inventory held 18 FAILed and 410 WARN runs out of 469.
+  pass_max_run_fail_fraction: 0.05   # > this = WARN
+  warn_max_run_fail_fraction: 0.20   # > this = FAIL
   pass_max_missing_qc_fraction: 0.05
   warn_max_missing_sidecar_fraction: 0.10
 
