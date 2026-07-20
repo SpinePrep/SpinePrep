@@ -208,11 +208,18 @@ def test_classify_hd95_can_only_warn_never_fail():
     assert any("cord_hd95_mm WARN" in r for r in reasons)
 
 
-def test_classify_centerline_max_above_warn_ceiling_fails():
+def test_classify_centerline_max_above_warn_ceiling_warns_but_does_not_fail():
+    """Updated 2026-07-19: this asserted FAIL, contradicting S6's own policy,
+    which states the round-trip drift is "observability-only in v1" because
+    bsplinesyn optimizes the forward and inverse warps separately, so some
+    drift is intrinsic even at Dice 0.95 ("Setting permissive thresholds so it
+    does not gate"). The code FAILed anyway. The policy's reasoning is the
+    sound one, so the metric now caps at WARN."""
     from spineprep.steps.s6.process import _classify
     m = dict(_GOOD, centerline_round_trip_max_vox=12.0)  # > warn 10.0
-    status, _ = _classify(m, {}, syn_fallback=False)
-    assert status == "FAIL"
+    status, reasons = _classify(m, {}, syn_fallback=False)
+    assert status == "WARN"
+    assert any("does not gate" in r for r in reasons)
 
 
 def test_classify_missing_dice_warns_not_fail():

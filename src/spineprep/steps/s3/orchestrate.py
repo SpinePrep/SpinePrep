@@ -501,18 +501,56 @@ def check_S3_func_init_and_crop(
     datasets_local: Optional[str] = None,
     out: Optional[str] = None,
 ) -> StepResult:
-    """
-    Check S3 functional initialization and cropping step.
+    """Verify S3 actually produced its outputs (no writes).
 
-    Verifies existence of:
-    - func_ref (Robust)
-    - funccrop_bold
-    - QC figures (Metrics, Crop)
-    - json logs
+    This used to return PASS from both branches -- pointing it at an empty
+    directory still passed -- while its own docstring claimed it verified the
+    outputs. A check that cannot fail is not a check. It now reads the qc.json
+    the step wrote and confirms, per run, that the primary derivative and the
+    frame-metrics reportlet exist on disk.
     """
-    if out:
-        log_dir = Path(out) / "logs" / "S3_func_init_and_crop"
-        if log_dir.exists() and any(log_dir.iterdir()):
-             return StepResult(status="PASS", failure_message="S3 logs found")
+    if not out:
+        return StepResult(status="FAIL", failure_message="--out is required")
 
-    return StepResult(status="PASS", failure_message="S3 check executed (minimal)")
+    log_dir = Path(out) / "logs" / "S3_func_init_and_crop"
+    if not log_dir.exists():
+        return StepResult(status="FAIL",
+                          failure_message=f"no S3 logs at {log_dir}")
+
+    qc_files = sorted(log_dir.glob("*/qc.json"))
+    if not qc_files:
+        return StepResult(status="FAIL",
+                          failure_message=f"no S3 qc.json under {log_dir}")
+
+    n_runs = 0
+    missing: list[str] = []
+    failed: list[str] = []
+    for qc_path in qc_files:
+        try:
+            qc = json.loads(qc_path.read_text())
+        except Exception as err:
+            missing.append(f"{qc_path.parent.name}: unreadable qc.json ({err})")
+            continue
+        for run in qc.get("runs", []):
+            rid = run.get("run_id") or "<unknown>"
+            n_runs += 1
+            if run.get("status") == "FAIL":
+                failed.append(rid)
+                continue
+            crop = Path(out) / "runs" / "S3_func_init_and_crop" / rid / "funccrop_bold.nii.gz"
+            if not crop.exists():
+                missing.append(f"{rid}: funccrop_bold.nii.gz")
+            for name, rel in (run.get("reportlets") or {}).items():
+                if rel and not (Path(out) / rel).exists():
+                    missing.append(f"{rid}: reportlet {name}")
+
+    if n_runs == 0:
+        return StepResult(status="FAIL", failure_message="S3 qc.json contains no runs")
+    if missing:
+        head = "; ".join(missing[:5]) + (" ..." if len(missing) > 5 else "")
+        return StepResult(status="FAIL",
+                          failure_message=f"{len(missing)} missing S3 output(s): {head}")
+    msg = f"{n_runs} run(s) verified"
+    if failed:
+        msg += f"; {len(failed)} FAILed upstream and were skipped"
+    return StepResult(status="PASS", failure_message=msg)

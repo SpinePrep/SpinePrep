@@ -299,15 +299,29 @@ def _classify(metrics: dict, thresholds: dict, syn_fallback: bool) -> tuple[str,
     worst = "PASS"
 
     def _tier(value: Optional[float], pass_max: float, warn_max: float, label: str,
-              lower_is_better: bool = True) -> str:
+              lower_is_better: bool = True, gates: bool = True) -> str:
+        """PASS/WARN/FAIL band for one metric.
+
+        ``gates=False`` caps the result at WARN, for metrics the policy declares
+        observability-only. ``lower_is_better=False`` inverts both comparisons;
+        previously the warn bound was compared with the same direction as the
+        pass bound, which would misclassify any higher-is-better metric (latent
+        -- no call site used it).
+        """
         if value is None:
+            reasons.append(f"{label} not computed")
             return "WARN"
-        ok = value <= pass_max if lower_is_better else value >= pass_max
-        warn = value <= warn_max if lower_is_better else value >= warn_max
+        if lower_is_better:
+            ok, warn = value <= pass_max, value <= warn_max
+        else:
+            ok, warn = value >= pass_max, value >= warn_max
         if ok:
             return "PASS"
         if warn:
             reasons.append(f"{label} WARN: {value:.3f}")
+            return "WARN"
+        if not gates:
+            reasons.append(f"{label} WARN: {value:.3f} (observability-only, does not gate)")
             return "WARN"
         reasons.append(f"{label} FAIL: {value:.3f}")
         return "FAIL"
@@ -337,19 +351,22 @@ def _classify(metrics: dict, thresholds: dict, syn_fallback: bool) -> tuple[str,
         if worst == "PASS":
             worst = "WARN"
 
+    # Centerline round-trip drift is observability-only, as the policy states:
+    # bsplinesyn optimizes the forward and inverse warps separately, so some
+    # drift is intrinsic even at Dice 0.95. The code used to FAIL on it anyway,
+    # contradicting the policy comment ("Setting permissive thresholds so it
+    # does not gate"). gates=False makes the code match the documented intent.
     rt_med = metrics.get("centerline_round_trip_med_vox")
     t = _tier(rt_med, thresholds.get("pass_centerline_med_vox_max", 3.0),
               thresholds.get("warn_centerline_med_vox_max", 6.0),
-              "centerline_round_trip_med_vox")
-    if t == "FAIL": worst = "FAIL"
-    elif t == "WARN" and worst == "PASS": worst = "WARN"
+              "centerline_round_trip_med_vox", gates=False)
+    if t == "WARN" and worst == "PASS": worst = "WARN"
 
     rt_max = metrics.get("centerline_round_trip_max_vox")
     t = _tier(rt_max, thresholds.get("pass_centerline_max_vox_max", 5.0),
               thresholds.get("warn_centerline_max_vox_max", 10.0),
-              "centerline_round_trip_max_vox")
-    if t == "FAIL": worst = "FAIL"
-    elif t == "WARN" and worst == "PASS": worst = "WARN"
+              "centerline_round_trip_max_vox", gates=False)
+    if t == "WARN" and worst == "PASS": worst = "WARN"
 
     return worst, reasons
 
