@@ -14,7 +14,7 @@ Its contribution is the integration, automation, reproducibility, and standardis
 
 **Current state:** released and public — PyPI package `spineprep`, **v26.0.0** (CalVer),
 docs at [spineprep.com](https://spineprep.com), Zenodo DOI 10.5281/zenodo.21294696. The
-pipeline (steps S1–S10) is **locked and validated on 8 datasets / 384 runs**; the work
+pipeline (steps S1–S10) is **run end to end on 9 datasets / 469 runs** (450 reach S9); the work
 that remains is the paper. The venue pivoted to **eLife** on 2026-07-06.
 
 ## Where things live

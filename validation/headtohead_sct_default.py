@@ -2,7 +2,7 @@
 
 Pre-empts the #1 reviewer objection ("why not just use SCT defaults?"). Compares
 functional->anatomical cord registration quality (cord-Dice) between:
-  - OURS: the S6 cord-driven recipe (Kaptan 2023: centermassrot -> columnwise ->
+  - OURS: the S6 cord-driven recipe (SpinePrep's own composition: centermassrot -> columnwise ->
     bsplinesyn) — `cord_dice` already in each run's S6 qc.json.
   - SCT-default: `sct_register_multimodal -i funcref -d anat_in_bold` with default
     parameters, the warp applied to the func cord seg, Dice vs the anat cord seg.

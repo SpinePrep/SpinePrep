@@ -32,6 +32,41 @@ import pandas as pd
 from spineprep.lib.run import run_command as _run_command
 
 
+
+# ---------------------------------------------------------------------------
+# Resume invalidation
+# ---------------------------------------------------------------------------
+
+
+def _s9_code_sha_for_record() -> str:
+    """Hash of the S9 implementation, stamped into each run record.
+
+    S9 is the only step with a resume path, and it keyed on file existence
+    alone. After the 2026-07-18 FWHM fix a rerun silently republished 445 stale
+    records -- old metrics, old reportlet paths, and a qc.json that reported
+    those reportlets as present because the old PNGs were still on disk. The
+    bug outlived its own fix in the dashboard.
+
+    This is the guard `cost_controls.check_code_hash` advertised in policy and
+    never implemented. Hashing the source is coarse -- any edit invalidates --
+    but it errs toward recomputation, which is the safe direction.
+    """
+    h = hashlib.sha256()
+    here = Path(__file__).parent
+    for name in ("orchestrate.py", "process.py", "reportlets.py"):
+        f = here / name
+        if f.exists():
+            h.update(f.read_bytes())
+    return h.hexdigest()[:16]
+
+
+def _s9_policy_sha_for_record(policy: dict) -> str:
+    """Hash of the resolved S9 policy, so a threshold change invalidates too."""
+    return hashlib.sha256(
+        json.dumps(policy or {}, sort_keys=True, default=str).encode()
+    ).hexdigest()[:16]
+
+
 # ---------------------------------------------------------------------------
 # Smoothing — per-volume sct_smooth_spinalcord (CoSpi pattern)
 # ---------------------------------------------------------------------------
@@ -1051,6 +1086,14 @@ def run_S9_primary_functional_derivatives(
         "metrics": metrics,
         "failure_reasons": failure_reasons,
         "failure_message": "; ".join(failure_reasons) if failure_reasons else None,
+        # Resume invalidation: the orchestrator reuses a prior record only when
+        # both hashes still match, so a code or policy change forces recompute.
+        # Without this, reuse keyed on file existence alone and silently
+        # republished stale results after a fix.
+        "provenance": {
+            "policy_sha256": _s9_policy_sha_for_record(policy),
+            "code_sha": _s9_code_sha_for_record(),
+        },
         "reportlets": reportlets,
         "output_paths": {
             "preproc_bold_native":     str(preproc_native.relative_to(out_dir)),

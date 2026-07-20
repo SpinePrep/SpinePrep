@@ -9,8 +9,7 @@
     so treat the numbers below as preliminary. All values are reproducible via the
     scripts in `validation/`.
 
-So far, SpinePrep has been run end to end across **eight datasets (~360 functional
-runs)** spanning rest and four task types (motor, pain/heat, hand-grasp,
+So far, SpinePrep has been run end to end across **nine datasets (469 functional runs, of which 450 complete the full chain)** spanning rest and four task types (motor, pain/heat, hand-grasp,
 dorsal-horn), drawn from public (OpenNeuro) and internal cohorts, across multiple
 vendors and acquisition protocols (with and without fieldmaps; cervical-only and
 whole-CNS field of view).
@@ -22,7 +21,7 @@ whole-CNS field of view).
 
 ## 1. Coverage & robustness
 
-All eight datasets run S1→S10 to completion. Attrition is fully reconciled — the
+All nine datasets run S1→S10 to completion. Attrition is fully reconciled — the
 number of runs dropped between any two steps equals the number that FAILed the
 earlier step's QC (no silent losses); every surviving derivative is PASS or WARN.
 
@@ -94,9 +93,22 @@ tables: `validation/results/normative_qc_metrics.tsv`,
 ## 4. Head-to-head vs SCT-default
 
 To answer "why not just use SCT's defaults?", we compare functional→anatomical
-cord registration quality (cord-Dice) between our S6 cord-driven recipe (Kaptan
-2023) and out-of-the-box `sct_register_multimodal` on the same runs
-(`validation/headtohead_sct_default.py`).
+cord registration quality (cord-Dice) between our S6 cord-driven recipe and
+out-of-the-box `sct_register_multimodal` on the same runs
+(`validation/headtohead_sct_default.py`). The S6 recipe is SpinePrep's own
+three-stage composition, not a published recipe reproduced verbatim.
+
+Two caveats a reader should weigh before reading the gap below. First, the
+scoring metric favours our arm by construction: our registration is driven by
+the cord segmentation, so it optimises the very overlap that cord-Dice measures,
+while the SCT-default arm is intensity-driven and does not. Part of the gap is
+therefore attributable to the choice of metric rather than to registration
+quality, and cord-Dice is best read here as a convergence check. An independent
+validator is a planned addition. Second, the runs are not fully independent: the
+24 comparisons include the same subjects at two sessions and both hands of the
+same session, so roughly 18 independent subjects contribute. The direction of
+the effect is consistent across every run; the significance value should be read
+as indicative rather than exact.
 
 Across **24 runs / 4 cervical scopes** (dorsalhorn, handgrasp, cosmotor, cospain),
 our recipe gives **cord-Dice 0.904 ± 0.03 vs SCT-default 0.704 ± 0.10 (+0.20;
