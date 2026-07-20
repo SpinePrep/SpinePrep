@@ -162,10 +162,6 @@
           "reportlets": {
             "type": "object",
             "description": "Paths to QC reportlet files",
-            "required": [
-              "S4_motion_traces",
-              "S4_tsnr_comparison"
-            ],
             "properties": {
               "S4_motion_traces": {
                 "type": "string",

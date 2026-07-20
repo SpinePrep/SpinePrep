@@ -4,7 +4,12 @@
   "title": "S5_func_distortion_correction QC Status",
   "description": "QC status schema for S5_func_distortion_correction step (aggregated per dataset key)",
   "type": "object",
-  "required": ["dataset_key", "step_code", "status", "runs"],
+  "required": [
+    "dataset_key",
+    "step_code",
+    "status",
+    "runs"
+  ],
   "properties": {
     "dataset_key": {
       "type": "string",
@@ -17,11 +22,18 @@
     },
     "status": {
       "type": "string",
-      "enum": ["PASS", "WARN", "FAIL"],
+      "enum": [
+        "PASS",
+        "WARN",
+        "FAIL"
+      ],
       "description": "Aggregate status across all runs in this dataset"
     },
     "failure_message": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Aggregate failure / warning summary (null if PASS)"
     },
     "runs": {
@@ -45,13 +57,21 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["PASS", "WARN", "FAIL"],
+            "enum": [
+              "PASS",
+              "WARN",
+              "FAIL"
+            ],
             "description": "QC status for this run"
           },
           "mode": {
             "type": "string",
-            "enum": ["topup", "fugue", "syn"],
-            "description": "Distortion correction mode actually executed"
+            "enum": [
+              "topup",
+              "syn",
+              "none"
+            ],
+            "description": "Distortion-correction mode actually applied. 'none' is the shipped fallback default (82% of the reference cohort). 'fugue' was removed: specified but never implemented."
           },
           "step_code": {
             "type": "string",
@@ -61,15 +81,24 @@
             "type": "string"
           },
           "subject": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Subject ID (e.g. sub-01) or null"
           },
           "session": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Session ID (e.g. ses-01) or null"
           },
           "run_id": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "BIDS run filename stem (without _bold.nii.gz) or null"
           },
           "metrics": {
@@ -89,84 +118,196 @@
                 "description": "Number of finite voxels in the temporal mean of the post-S5 BOLD"
               },
               "mi_before": {
-                "type": ["number", "null"],
+                "type": [
+                  "number",
+                  "null"
+                ],
                 "description": "Mutual information between pre-S5 mean BOLD and anat (in BOLD geometry); null when anat resampling failed"
               },
               "mi_after": {
-                "type": ["number", "null"],
+                "type": [
+                  "number",
+                  "null"
+                ],
                 "description": "Mutual information between post-S5 mean BOLD and anat (in BOLD geometry)"
               },
               "mi_delta_pct": {
-                "type": ["number", "null"],
+                "type": [
+                  "number",
+                  "null"
+                ],
                 "description": "Percentage change in MI (after vs before)"
               },
               "cospine_skip_reason": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "When CoSpine-style metrics could not be computed, this records why (anat unavailable, deepseg failure, no Z coverage). Absent when metrics computed normally."
               },
               "per_slice_z": {
-                "type": ["array", "null"],
-                "items": {"type": "integer"},
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "integer"
+                },
                 "description": "BOLD Z-indices that were scored (intersection of anat cord coverage and EPI cord coverage)"
               },
               "displacement_before_mm": {
-                "type": ["array", "null"],
-                "items": {"type": ["number", "null"]},
-                "description": "Per-slice |Y-centroid(EPI cord) − Y-centroid(anat cord)| in mm, before distortion correction"
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "description": "Per-slice |Y-centroid(EPI cord) \u2212 Y-centroid(anat cord)| in mm, before distortion correction"
               },
               "displacement_after_mm": {
-                "type": ["array", "null"],
-                "items": {"type": ["number", "null"]},
-                "description": "Per-slice A–P cord-centerline displacement in mm, after correction"
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "description": "Per-slice A\u2013P cord-centerline displacement in mm, after correction"
               },
-              "displacement_mean_before_mm": {"type": ["number", "null"]},
-              "displacement_mean_after_mm": {"type": ["number", "null"]},
-              "displacement_max_after_mm": {"type": ["number", "null"]},
+              "displacement_mean_before_mm": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "displacement_mean_after_mm": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "displacement_max_after_mm": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
               "displacement_delta_mm": {
-                "type": ["number", "null"],
-                "description": "displacement_mean_after_mm − displacement_mean_before_mm (negative = improvement)"
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "displacement_mean_after_mm \u2212 displacement_mean_before_mm (negative = improvement)"
               },
               "dice_per_slice_before": {
-                "type": ["array", "null"],
-                "items": {"type": "number"},
-                "description": "Per-slice 2D Dice (EPI cord ∩ anat cord), before correction"
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "number"
+                },
+                "description": "Per-slice 2D Dice (EPI cord \u2229 anat cord), before correction"
               },
               "dice_per_slice_after": {
-                "type": ["array", "null"],
-                "items": {"type": "number"}
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "number"
+                }
               },
-              "dice_mean_before": {"type": ["number", "null"]},
-              "dice_mean_after": {"type": ["number", "null"]},
-              "dice_min_after": {"type": ["number", "null"]},
+              "dice_mean_before": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "dice_mean_after": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "dice_min_after": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
               "dice_3d_before": {
-                "type": ["number", "null"],
+                "type": [
+                  "number",
+                  "null"
+                ],
                 "description": "3D Dice pooled over all evaluated slices (CoSpine-style)"
               },
-              "dice_3d_after": {"type": ["number", "null"]},
-              "dice_delta": {
-                "type": ["number", "null"],
-                "description": "dice_mean_after − dice_mean_before (positive = improvement)"
+              "dice_3d_after": {
+                "type": [
+                  "number",
+                  "null"
+                ]
               },
-              "voxsize_y_mm": {"type": ["number", "null"]},
-              "n_slices_evaluated": {"type": ["integer", "null"]},
+              "dice_delta": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "dice_mean_after \u2212 dice_mean_before (positive = improvement)"
+              },
+              "voxsize_y_mm": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "n_slices_evaluated": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
               "orient_axcodes": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Affine-derived axis codes of the BOLD (e.g. 'RAS', 'LPI'); used to locate the A-P axis for centroid extraction."
               },
               "ap_axis_index": {
-                "type": ["integer", "null"],
+                "type": [
+                  "integer",
+                  "null"
+                ],
                 "description": "0-based BOLD voxel-axis index that maps to anterior-posterior (typically 1 for RAS-like BOLD)."
               },
               "smooth_window": {
-                "type": ["integer", "null"],
+                "type": [
+                  "integer",
+                  "null"
+                ],
                 "description": "Savitzky-Golay window length applied to the per-slice Y(z) cord-centroid trace."
               },
               "smooth_poly_order": {
-                "type": ["integer", "null"],
+                "type": [
+                  "integer",
+                  "null"
+                ],
                 "description": "Savitzky-Golay polynomial order applied alongside `smooth_window`."
               },
               "min_voxels_per_slice": {
-                "type": ["integer", "null"],
+                "type": [
+                  "integer",
+                  "null"
+                ],
                 "description": "Floor on cord voxels per slice for inclusion in centroid/Dice traces."
               }
             }
@@ -179,36 +320,38 @@
             "description": "List of failure / warning reasons (empty if PASS)"
           },
           "failure_message": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "description": "Semicolon-joined failure_reasons or null when none"
           },
           "reportlets": {
             "type": "object",
             "description": "Paths (relative to out_dir) to QC reportlet files",
-            "required": [
-              "slice_displacement",
-              "cord_dice_per_slice",
-              "distortion_effectiveness"
-            ],
             "properties": {
               "slice_displacement": {
                 "type": "string",
-                "description": "Path to per-slice A–P cord-centerline displacement PNG (CoSpine-style)"
+                "description": "Path to per-slice A\u2013P cord-centerline displacement PNG (CoSpine-style)"
               },
               "cord_dice_per_slice": {
                 "type": "string",
-                "description": "Path to per-slice 2D cord-Dice (EPI ∩ anat) PNG (CoSpine-style)"
+                "description": "Path to per-slice 2D cord-Dice (EPI \u2229 anat) PNG (CoSpine-style)"
               },
               "distortion_effectiveness": {
                 "type": "string",
-                "description": "Path to Before-vs-After mean BOLD visualization PNG with anat cord-contour overlay (sagittal pair + 3×2 axial grid)"
+                "description": "Path to Before-vs-After mean BOLD visualization PNG with anat cord-contour overlay (sagittal pair + 3\u00d72 axial grid)"
               }
             }
           },
           "distortion_correction_mode": {
             "type": "string",
-            "enum": ["topup", "fugue", "syn"],
-            "description": "Mode actually executed; downstream (S6) reads this to handle SyN-fallback runs differently"
+            "enum": [
+              "topup",
+              "syn",
+              "none"
+            ],
+            "description": "Distortion-correction mode actually applied. 'none' is the shipped fallback default (82% of the reference cohort). 'fugue' removed: specified but never implemented."
           }
         }
       }

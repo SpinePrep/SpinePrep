@@ -308,7 +308,13 @@ def _csf_acompcor_slicewise(
         # which only 4 runs failed the condition-number gate.
         # So require live voxels, not merely masked ones.
         sl_ts = resid[:, :, z][m]                      # (nv, nt)
-        n_live = int((sl_ts.std(axis=1) > 1e-8).sum())
+        # nanstd, not std: np.std returns NaN for any series containing a NaN,
+        # so a voxel with partial valid data counted as dead. That failed safe
+        # (skip rather than fabricate) but was stricter than intended and could
+        # skip a slice holding usable signal.
+        with np.errstate(invalid="ignore"):
+            _sd = np.nanstd(sl_ts, axis=1)
+        n_live = int(np.sum(np.nan_to_num(_sd, nan=0.0) > 1e-8))
         meta["live_voxel_counts"].append(n_live)
         if n_live < min_voxels_per_slice:
             meta["skipped_slices"].append(z)
@@ -1223,10 +1229,22 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
     # are on DVARS/refRMS (FD does not censor -- removed 2026-07-16).
     of = metrics.get("outlier_fraction")
     pass_of = thresholds.get("pass_outlier_fraction_max", 0.20)
-    if of is not None and of > pass_of:
-        reasons.append(f"outlier_fraction WARN: {of:.2%}")
-        if worst == "PASS":
-            worst = "WARN"
+    warn_of = thresholds.get("warn_outlier_fraction_max")
+    if of is not None:
+        # warn_outlier_fraction_max was declared in policy but never read, so a
+        # run at 90% censored frames reported the same WARN as one at 21%. It
+        # still never FAILs -- whether to drop a high-motion run is the
+        # analyst's call at GLM time -- but the message now distinguishes them.
+        if warn_of is not None and of > float(warn_of):
+            reasons.append(
+                f"outlier_fraction WARN: {of:.2%} — over half the run may be "
+                f"censored (> {float(warn_of):.0%}); check the run is usable")
+            if worst == "PASS":
+                worst = "WARN"
+        elif of > pass_of:
+            reasons.append(f"outlier_fraction WARN: {of:.2%}")
+            if worst == "PASS":
+                worst = "WARN"
     return worst, reasons
 
 

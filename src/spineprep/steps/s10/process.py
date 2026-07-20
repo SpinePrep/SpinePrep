@@ -3,7 +3,14 @@
 Spec: .claude/specs/s11-qc-aggregation-and-release.md
 
 14 deliverables across 4 tiers. Read-only consumer of S1–S9 artifacts.
-Deterministic: same chain → byte-identical outputs.
+
+S10 itself is deterministic: it only reads and formats, so the same inputs give
+the same outputs. That does NOT make the pipeline as a whole bit-reproducible --
+S6/S7 call ANTs through SCT, whose parallel reduction order varies unless
+`reproducibility.strict` pins ITK to one thread. The random seed is now always
+set, which removes the dominant source of variation, but "byte-identical
+re-run" holds only under strict mode and has not yet been demonstrated
+end-to-end (see .claude/specs/v2-highest-venue-claims.md D5).
 """
 
 from __future__ import annotations

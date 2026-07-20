@@ -98,7 +98,8 @@ reproducibility:
   strict: false
   capture_provenance: true
 
-cost_controls:
-  # sct_smooth_spinalcord straightens cord per volume; 200 vol ≈ 10 min
-  estimate_per_run_minutes: 10.0
-  skip_existing_pass: true
+# NOTE: a `cost_controls` block (skip_existing_pass, estimate_per_run_minutes,
+# check_code_hash) was removed 2026-07-19. None of those keys was ever read by
+# any code -- the policy advertised resumability and code-hash checking that do
+# not exist. Only S9 has a resume path, and it is gated by the
+# SPINEPREP_S9_FORCE environment variable, not by policy.

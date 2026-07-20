@@ -137,13 +137,17 @@ qc_thresholds:
   pass_max_run_fail_fraction: 0.05   # > this = WARN
   warn_max_run_fail_fraction: 0.20   # > this = FAIL
   pass_max_missing_qc_fraction: 0.05
-  warn_max_missing_sidecar_fraction: 0.10
+  # (removed 2026-07-19) warn_max_missing_sidecar_fraction was never read;
+  # there is no sidecar-completeness gate. pass_max_missing_qc_fraction is
+  # now live (see _count_missing_step_qc).
 
 # ----------------------------------------------------------------------
 reproducibility:
   strict: false
   capture_provenance: true
 
-cost_controls:
-  estimate_per_run_minutes: 0.2      # S10 is fast; walks finished QC files
-  skip_existing_pass: false          # always re-aggregate (cheap)
+# NOTE: a `cost_controls` block (skip_existing_pass, estimate_per_run_minutes,
+# check_code_hash) was removed 2026-07-19. None of those keys was ever read by
+# any code -- the policy advertised resumability and code-hash checking that do
+# not exist. Only S9 has a resume path, and it is gated by the
+# SPINEPREP_S9_FORCE environment variable, not by policy.
