@@ -101,8 +101,16 @@ publication:
       - "mean_fd_mm"
       - "median_in_cord_tsnr"
       - "included_recommendation"
-    include_threshold_fd: 0.5        # FD > 0.5 mm mean → flag exclusion candidate
-    include_threshold_tsnr: 5.0      # tSNR < 5 → flag exclusion candidate
+    # FD is NOT an inclusion criterion and this key is retained only so old
+    # configs still parse. It formerly drove a "mean FD > 0.5 mm (Kaptan 2023)"
+    # exclusion recommendation, which was wrong three ways: Kaptan 2023 computes
+    # no FD at all (it censors on DVARS/refRMS at 2 SD); 0.5 mm is Power 2012's
+    # BRAIN value; and it sits at this cohort's own FD median (0.494 mm), so it
+    # flagged 265/467 runs. S4 removed the equivalent gate on 2026-07-16 --
+    # "reporting a fraction-above-an-invalid-threshold is a claim, and it was a
+    # claim above its evidence" -- and that fix had not propagated here.
+    include_threshold_fd: null       # unused; FD is descriptive only
+    include_threshold_tsnr: 5.0      # tSNR < 5 → flag for review
 
   methods_manifest:
     enabled: true

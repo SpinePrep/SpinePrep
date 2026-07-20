@@ -226,17 +226,16 @@ SCT batch_processing.sh.</p>
 </div>
 
 <div class="step">
-<h3>sct_deepseg seg_sc_contrast_agnostic</h3>
-<p>The SCT 7.0+ default cord-segmentation tool. Replaces the older
-contrast-specific <code>sct_deepseg_sc -c t2</code> / <code>-c
-t2s</code>. Contrast-agnostic models work directly on EPI volumes
-without a per-sequence calibration step, which makes them suitable
-for the functional-reference cord localization in S3.1.</p>
-<p>Open question for future versions: EPISeg (Banerjee et al. 2025) is a
-new model tuned to EPI specifically. It is not yet packaged in SCT
-batch_processing; we will switch when it ships.</p>
+<h3>sct_deepseg sc_epi (EPISeg)</h3>
+<p>SpinePrep's cord-segmentation model for functional data, used for
+the functional-reference cord localization in S3.1. EPISeg is tuned
+to EPI specifically, rather than the contrast-agnostic model used for
+anatomical images (<code>sct_deepseg spinalcord</code>). Both replace
+the older contrast-specific <code>sct_deepseg_sc -c t2</code> /
+<code>-c t2s</code>, which required a per-sequence calibration step.</p>
 <p class="ref">De Leener B et al., NeuroImage 2017 (SCT).
-Banerjee S et al., 2025 (EPISeg).</p>
+Banerjee S et al., 2025 (EPISeg). Bédard S et al., 2025
+(contrast-agnostic spinalcord model).</p>
 </div>
 
 <div class="step">
@@ -271,13 +270,22 @@ frame-to-frame translations + rotations (rotations converted to
 mm by multiplying by a 50 mm head-radius constant; for cord we
 follow brain convention).</p>
 <div class="formula">
-FD(t) = |Δtx| + |Δty| + |Δtz| + 50·(|Δrx| + |Δry| + |Δrz|)
+FD(t) = |Δtx| + |Δty|
 </div>
-<p>Computed in S4 from the rigid-body parameters MCFLIRT estimates
-per frame. The cord-fMRI FD threshold convention is Kaptan 2023:
-runs with mean FD &gt; 0.5 mm are flagged.</p>
-<p class="ref">Power JD et al., NeuroImage 2014. Kaptan M et al.,
-NeuroImage 2023.</p>
+<p>Computed in S4 by composing the two motion-correction stages: the
+3D bulk translation and the slice-wise refinement. Only the two
+in-plane translations enter, because axial cord EPI constrains motion
+to that plane; this 2-term cord form follows Ricchi, Kinany and Van De
+Ville 2024, not the 6-parameter brain formula.</p>
+<p>FD is reported but does <strong>not</strong> censor frames or
+reject runs. There is no cord-calibrated FD threshold: the widely
+quoted 0.5 mm is a brain value (Power 2012) and sits at this cohort's
+own FD median, so it separates nothing. Frame censoring is on the
+intensity metrics (DVARS and refRMS), which is what the cord
+literature actually does.</p>
+<p class="ref">Power JD et al., NeuroImage 2012 (brain FD).
+Ricchi I, Kinany N, Van De Ville D et al., 2024 (x/y cord FD form).
+NOTE: Kaptan 2023 does not use FD — it censors on DVARS/refRMS.</p>
 </div>
 
 <div class="step">

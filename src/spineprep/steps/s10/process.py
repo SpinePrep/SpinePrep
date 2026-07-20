@@ -956,6 +956,16 @@ def _build_references_bib(out_path: Path) -> None:
   year={2007}
 }
 
+@article{barry2014,
+  title={Resting-state functional connectivity in the human spinal cord},
+  author={Barry, R.L. and Smith, S.A. and Dula, A.N. and Gore, J.C.},
+  journal={eLife},
+  volume={3},
+  pages={e02812},
+  year={2014},
+  doi={10.7554/eLife.02812}
+}
+
 @article{power2014,
   title={Methods to detect, characterize, and remove motion artifact in resting state fMRI},
   author={Power, J.D. and others},
@@ -1095,10 +1105,13 @@ def _build_participants_tsv(
             ts = [t for t in ts if t is not None]
             if ts:
                 median_tsnr = float(np.median(ts))
+        # FD is reported but is NOT an inclusion criterion. The 0.5 mm cut was
+        # Power 2012's brain value, mis-attributed to Kaptan 2023 (which uses no
+        # FD at all), and it sits at this cohort's own FD median -- it flagged
+        # 265/467 runs. S4 removed the equivalent gate on 2026-07-16; the same
+        # reasoning applies here. mean_fd_mm stays as a descriptive column.
         recommend = "include"
-        if (np.isfinite(mean_fd) and mean_fd > fd_thresh) or \
-           (np.isfinite(median_tsnr) and median_tsnr < tsnr_thresh) or \
-           n_failed > 0:
+        if (np.isfinite(median_tsnr) and median_tsnr < tsnr_thresh) or n_failed > 0:
             recommend = "review"
         rows.append({
             "participant_id": f"sub-{sub}",
@@ -1123,13 +1136,20 @@ def _build_participants_tsv(
         "n_passed": {"Description": "Number of runs that PASS across all S2..S9 steps"},
         "n_warn": {"Description": "Number of runs with at least one step WARN"},
         "n_failed": {"Description": "Number of runs with at least one step FAIL"},
-        "mean_fd_mm": {"Description": "Mean framewise displacement (mm) across runs", "Units": "mm"},
-        "median_in_cord_tsnr": {"Description": "Median in-cord tSNR post-smoothing (S9)"},
+        "mean_fd_mm": {
+            "Description": ("Mean framewise displacement (mm) across runs. Descriptive "
+                            "only: NOT an inclusion criterion. No cord-calibrated FD "
+                            "threshold exists; the commonly quoted 0.5 mm is a "
+                            "brain-derived value (Power 2012) that sits at this "
+                            "cohort's own median."),
+            "Units": "mm",
+        },
+        "median_in_cord_tsnr": {"Description": "Median in-cord tSNR (S9)"},
         "included_recommendation": {
             "Description": "Pipeline recommendation for cohort inclusion: 'include' or 'review'",
             "Levels": {
-                "include": "passes FD/tSNR/run thresholds",
-                "review": f"FD > {fd_thresh} mm OR tSNR < {tsnr_thresh} OR any failed run",
+                "include": "no failed steps and in-cord tSNR above the reporting floor",
+                "review": f"tSNR < {tsnr_thresh} OR any failed run",
             },
         },
     }
@@ -1172,9 +1192,61 @@ def _build_methods_manifest(
 
     sigma = s9_pol.get("smoothing", {}).get("sigma_mm", [1, 1, 5])
     sigma_str = "×".join(str(s) for s in sigma)
-    fd_thr = (s8_pol.get("frame_metrics", {}).get("fd_threshold_mm")
-              or s4_pol.get("qc_thresholds", {}).get("warn_max_mean_fd_mm")
-              or 0.5)
+    # These flags decide what the boilerplate may CLAIM. The text below is
+    # published as "reuse verbatim", so every sentence has to match what the
+    # shipped policy actually does. Before 2026-07-19 it described FD censoring
+    # at 0.5 mm (never configured -- both source keys are absent or null, so the
+    # `or 0.5` fallback always fired), SyN as the S5 default (now `none`),
+    # smoothing and PAM50 4D output (both disabled), and SpinalCompCor (off).
+    fd_thr = s8_pol.get("outlier_gating", {}).get("fd_outlier_threshold_mm")
+    fd_censoring = fd_thr is not None
+    smoothing_on = bool(s9_pol.get("smoothing", {}).get("enabled", False))
+    pam50_4d_on = bool(s9_pol.get("pam50_4d_output", {}).get("enabled", False))
+    spcc_on = bool(s8_pol.get("spinalcompcor", {}).get("enabled", False))
+    s5_fallback = str(s5_pol.get("mode_selection", {}).get("fallback_mode")
+                      or s5_pol.get("fallback_mode") or "none")
+    csf_n_pc = s8_pol.get("csf_acompcor", {}).get("n_components", 5)
+
+    if s5_fallback == "none":
+        s5_fallback_note = (
+            "That is, runs without a reversed-phase pair are passed through "
+            "uncorrected and reported as distortion-limited rather than "
+            "failed, which is the cord field's own practice; held-out "
+            "validation against the measured field showed image-based SyN "
+            "recovered only part of it and displaced the cord further on a "
+            "quarter of runs.")
+    else:
+        s5_fallback_note = (
+            "Runs without a fieldmap that exceed the TopUp-calibrated "
+            "displacement ceiling are flagged \"distortion-limited\" rather "
+            "than failed.")
+
+    if fd_censoring:
+        outlier_desc = (f" (Power 2014 [@power2014], FD > {fd_thr} mm "
+                        "+ Tukey IQR DVARS and refRMS)")
+    else:
+        outlier_desc = (" flagged on Tukey IQR fences over DVARS and refRMS "
+                        "(intensity-based, following the cord convention of "
+                        "Kaptan 2023 [@kaptan2023] and Dabbagh 2024 "
+                        "[@dabbagh2024]; FD does not censor)")
+
+    spcc_clause = ("; (f) SpinalCompCor (Hemmerling 2025 [@hemmerling2025])"
+                   if spcc_on else "")
+    n_conf_families = "Six" if spcc_on else "Five"
+
+    if smoothing_on:
+        s9_desc = (f"Cord-aware Gaussian smoothing via SCT "
+                   f"`sct_smooth_spinalcord` (σ = {sigma_str} mm in R-L, A-P, "
+                   f"S-I; Eippert 2017 anisotropic principle [@eippert2017]).")
+    else:
+        s9_desc = ("No spatial smoothing is applied. Smoothing is an analysis "
+                   "choice rather than neutral preprocessing and is left to "
+                   "the analyst, following fMRIPrep; it is available as an "
+                   "opt-in knob.")
+    s9_outputs = ("native + PAM50-space BOLD" if pam50_4d_on
+                  else "the preprocessed BOLD in native space (no 4D template "
+                       "resampling; the bidirectional warps and the PAM50 atlas "
+                       "in native space are provided instead)")
 
     pipeline_v = recipe.get("pipeline_git_describe") or "0.0.0"
     sct_v = recipe.get("sct_version") or "n/a"
@@ -1255,14 +1327,15 @@ regressors.
 
 **Distortion correction (S5)**: Per-run mode is chosen automatically from
 the available fieldmaps: a reversed-phase EPI pair drives FSL TopUp;
-otherwise image-based SyN (ANTs) is used. Runs without a fieldmap that
-exceed the TopUp-calibrated displacement ceiling are flagged
-"distortion-limited" rather than failed. Cord A-P displacement per slice +
-cord Dice per slice emitted as QC.
+otherwise the configured fallback is `{s5_fallback}`. {s5_fallback_note}
+Cord A-P displacement per slice + cord Dice per slice emitted as QC.
 
 **Functional-to-anat registration (S6)**: SCT `sct_register_multimodal`
-with the cord-driven Kaptan 2023 recipe [@kaptan2023]:
-`centermassrot → columnwise → bsplinesyn`. Output: bidirectional warp
+with a cord-segmentation-driven three-stage recipe:
+`centermassrot → columnwise → bsplinesyn`. This composition is SpinePrep's
+own; SCT's default template chain is two stages, and the inserted
+`columnwise` stage and higher iteration count are SpinePrep tuning for
+cord-cropped EPI. Output: bidirectional warp
 `from-bold_to-anat_xfm.nii.gz`.
 
 **Template normalization (S7)**: Composed S2 (anat ↔ PAM50) and S6
@@ -1271,19 +1344,18 @@ the EPI level via a second `sct_register_multimodal` pass
 (`slicereg + bsplinesyn`). PAM50 atlas warped into native func space;
 no 4D BOLD resampling.
 
-**Confounds (S8)**: Six families assembled per BIDS-Derivatives
+**Confounds (S8)**: {n_conf_families} families assembled per BIDS-Derivatives
 convention: (a) motion (trans_x/y + derivatives + FD); (b)
-DVARS+refRMS outlier one-hot regressors (Power 2014 [@power2014],
-FD > {fd_thr} mm + Tukey IQR DVARS); (c) slicewise CSF top-20%-variance
-mean (Hemmerling 2025 [@hemmerling2025]); (d) RETROICOR (FSL PNM
-popp + pnm_evs) [@brooks2008]; (e) cosine basis up to 1/100 Hz; (f)
-SpinalCompCor (Hemmerling 2025 [@hemmerling2025]). All emitted as
-columns; the BOLD itself is not regressed.
+outlier one-hot regressors{outlier_desc}; (c) slicewise CSF aCompCor,
+the top {csf_n_pc} principal components of the CSF signal per slice
+(Behzadi 2007 [@behzadi2007]; per-slice cord application after Barry 2014
+[@barry2014]); (d) RETROICOR (FSL PNM popp + pnm_evs)
+[@brooks2008]; (e) cosine basis up to 1/100 Hz{spcc_clause}. All emitted as
+columns; the BOLD itself is not regressed. FD is reported but does not
+censor by default: no cord-calibrated FD threshold exists.
 
-**Primary functional derivatives (S9)**: Cord-aware Gaussian smoothing
-via SCT `sct_smooth_spinalcord` (σ = {sigma_str} mm in R-L, A-P, S-I;
-Eippert 2017 anisotropic principle [@eippert2017]). Output: native +
-PAM50-space smoothed BOLD, per-vertebral-level tSNR TSV.
+**Primary functional derivatives (S9)**: {s9_desc} Output: {s9_outputs},
+per-vertebral-level tSNR TSV.
 
 _ROI timeseries, connectivity, and reliability (the removed ROI analysis) are
 analyst-owned downstream analysis and are not part of this preprocessing

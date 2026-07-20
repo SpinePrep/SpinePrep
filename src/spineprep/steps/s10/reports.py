@@ -188,17 +188,30 @@ def _img(report_dir: Path, key: str, path: Path, embed: bool) -> str:
 
 
 def _recommendation(mean_fd, median_tsnr, n_failed, fd_thr, tsnr_thr) -> tuple[str, str]:
-    """(recommendation, plain reason). Flag, don't gate — advice only."""
+    """(recommendation, plain reason). Flag, don't gate — advice only.
+
+    FD deliberately does NOT contribute. This report used to add
+    ``mean FD ... exceeds 0.5 mm (Kaptan 2023)``, which was wrong three times
+    over: Kaptan 2023 computes no FD at all (it censors on DVARS/refRMS at
+    2 SD); 0.5 mm is Power 2012's BRAIN value; and it sits at this cohort's own
+    FD median (0.494 mm), so it flagged 265 of 467 runs -- 57% -- as exclusion
+    candidates. S4 removed the equivalent gate on 2026-07-16 with the rationale
+    that "reporting a fraction-above-an-invalid-threshold is a claim, and it was
+    a claim above its evidence"; that reasoning applies identically here and the
+    fix simply had not propagated. Mean FD is still reported as a descriptive
+    number in the metrics table -- it is just no longer a verdict.
+
+    ``fd_thr`` is retained in the signature for callers/tests and is unused.
+    """
+    del fd_thr  # intentionally not a criterion; see docstring
     reasons = []
     if n_failed > 0:
         reasons.append(f"{n_failed} run(s) failed a pipeline step")
-    if mean_fd is not None and np.isfinite(mean_fd) and mean_fd > fd_thr:
-        reasons.append(f"mean FD {mean_fd:.2f} mm exceeds {fd_thr} mm (Kaptan 2023)")
     if (median_tsnr is not None and np.isfinite(median_tsnr)
             and median_tsnr < tsnr_thr):
         reasons.append(f"median in-cord tSNR {median_tsnr:.1f} below {tsnr_thr}")
     if not reasons:
-        return "include", "passes motion, tSNR and per-step QC thresholds"
+        return "include", "no failed steps; in-cord tSNR above the reporting floor"
     rec = "exclude" if n_failed > 0 and len(reasons) >= 2 else "review"
     return rec, "; ".join(reasons)
 
@@ -597,14 +610,17 @@ def build_group_report(
     if dist_png:
         h.append("<div class='card'><h2>QC metric distributions</h2>")
         h.append(f"<img class='fig' src='{dist_png.name}'>")
-        h.append("<p class='figcap'>One dot per run; dashed lines are literature "
-                 "reference values (Kaptan 2023 FD; CoSpine 2025 displacement/Dice; "
-                 "tSNR pass/warn). Spot the outliers — they are advisory, not gated.</p>")
+        h.append("<p class='figcap'>One dot per run; dashed lines are the "
+                 "pipeline's own reporting reference values (CoSpine 2025 for "
+                 "displacement and Dice; SpinePrep's operating points for tSNR). "
+                 "No FD reference line is drawn: the only published cord value is "
+                 "brain-derived and sits at this cohort's own median. "
+                 "Spot the outliers — they are advisory, not gated.</p>")
         h.append("</div>")
 
     # D. Per-vertebral-level views (embed cohort PNGs if present)
     level_imgs = []
-    for nm, fn in [("Cord tSNR by level (Kaptan 2023)", "cohort_tsnr_heatmap.png"),
+    for nm, fn in [("Cord tSNR by vertebral level", "cohort_tsnr_heatmap.png"),
                    ("Vertebral coverage matrix", "cohort_coverage_matrix.png")]:
         fp = deriv_root / fn
         if fp.exists():
