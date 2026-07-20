@@ -73,7 +73,8 @@ qc_thresholds:
   # mode S4 can actually detect (audit F9), and it is only meaningful now that
   # tSNR is cord-restricted rather than whole-FOV.
   warn_tsnr_degraded: true
-  warn_tsnr: 5.0
+  # (removed 2026-07-19) warn_tsnr was never read; the live keys are
+  # warn_tsnr_degraded and min_tsnr.
 
   # ---- Everything below is an OPTIONAL operator lever. All null = off. -------
   #
@@ -140,7 +141,8 @@ qc:
 
 
 # Cost controls
-cost_controls:
-  estimate_per_run_minutes: 5.0
-  skip_existing_pass: true
-  check_code_hash: true
+# NOTE: a `cost_controls` block (skip_existing_pass, estimate_per_run_minutes,
+# check_code_hash) was removed 2026-07-19. None of those keys was ever read by
+# any code -- the policy advertised resumability and code-hash checking that do
+# not exist. Only S9 has a resume path, and it is gated by the
+# SPINEPREP_S9_FORCE environment variable, not by policy.

@@ -154,8 +154,15 @@ def _run_registration(
     ]
 
     env = os.environ.copy()
+    # The seed is free and removes the dominant source of run-to-run variation
+    # (ANTs' stochastic sampler), so it is always set. Pinning ITK to a single
+    # thread additionally fixes the parallel reduction order, which is what
+    # bit-identical output requires -- but it costs real wall-clock, so it stays
+    # behind `reproducibility.strict`. Before 2026-07-19 both were behind that
+    # flag and the flag shipped false, so registration ran fully unseeded while
+    # the docs claimed "byte-identical re-run".
+    env.setdefault("ANTS_RANDOM_SEED", "1")
     if reproducibility_strict:
-        env["ANTS_RANDOM_SEED"] = "1"
         env["ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS"] = "1"
 
     proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
@@ -654,8 +661,13 @@ def run_S6_func_to_anat_registration(
     # 8. Save qc_metrics.json with provenance
     provenance = {
         "policy_sha256": policy_sha,
-        "ants_random_seed": 1 if repro_strict else None,
+        # Record what actually ran, not what was requested: the receipt is the
+        # only way to tell after the fact which mode produced the numbers.
+        "ants_random_seed": 1,
         "itk_threads": 1 if repro_strict else None,
+        "reproducibility_strict": bool(repro_strict),
+        "determinism": ("bit-identical" if repro_strict
+                        else "seeded (thread reduction order not pinned)"),
     }
     # Record only reportlets that exist; a missing diagnostic downgrades PASS.
     # This dict was previously built unconditionally, so a failed render left

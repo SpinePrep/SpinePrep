@@ -183,12 +183,17 @@ def _process_s3_2_outlier_gating(
     if len(dvars) > 1:
         dvars[0] = dvars[1]
 
-    # Outlier Detection (Boxplot)
+    # Outlier detection (Tukey fence). The multiplier is a policy knob: it was
+    # hardcoded to 1.5 while policy/S3 carried a literature justification for a
+    # value that editing the YAML could not actually change.
+    _og = (policy or {}).get("outlier_gating", {}) or {}
+    iqr_k = float(_og.get("iqr_multiplier", 1.5))
+
     def get_cutoff(values):
         p75 = np.percentile(values, 75)
         p25 = np.percentile(values, 25)
         iqr = p75 - p25
-        return p75 + 1.5 * iqr
+        return p75 + iqr_k * iqr
 
     dvars_thresh = get_cutoff(dvars)
     ref_rms_thresh = get_cutoff(ref_rms)
@@ -200,15 +205,35 @@ def _process_s3_2_outlier_gating(
     n_outliers = int(np.sum(outliers_combined))
     outlier_frac = n_outliers / n_frames
 
-    # Robust Reference
+    # Robust reference.
+    #
+    # Two separate questions, which an earlier version of this fix conflated:
+    #   1. Can we build a median from the good frames at all? That needs 2.
+    #      Below that we fall back to all frames -- which silently includes the
+    #      very frames outlier gating exists to exclude, so it is recorded.
+    #   2. Is the reference built from as many frames as we would like?
+    #      `min_good_frames` answers this, and it is advisory. Requiring it
+    #      outright would be wrong on short runs: a 6-frame run can never reach
+    #      10, so the floor would fail runs for being short rather than bad.
+    #      It therefore only applies when the run is long enough for the floor
+    #      to be reachable.
+    min_good = int(_og.get("min_good_frames", 10))
     good_indices = np.where(~outliers_combined)[0]
+    _degraded_ref = None
 
     if len(good_indices) < 2:
         robust_ref_data = np.median(bold_data, axis=3)
         robust_ref_indices = list(range(n_frames))
+        _degraded_ref = (
+            f"robust reference built from ALL {n_frames} frames including "
+            f"outliers: only {len(good_indices)} non-outlier frame(s) available")
     else:
         robust_ref_data = np.median(bold_data[..., good_indices], axis=3)
         robust_ref_indices = good_indices.tolist()
+        if n_frames >= min_good and len(good_indices) < min_good:
+            _degraded_ref = (
+                f"robust reference built from only {len(good_indices)} "
+                f"non-outlier frames (< min_good_frames={min_good})")
 
     # Save Results
     func_ref_path = work_dir / "func_ref.nii.gz"
@@ -287,9 +312,17 @@ def _process_s3_2_outlier_gating(
 
     outlier_status, outlier_msg = _apply_outlier_gate(outlier_frac, policy)
 
+    # A reference built from all frames (including the outliers) is a silent
+    # substitution of the thing outlier gating exists to remove. Surface it.
+    if _degraded_ref:
+        if outlier_status == "PASS":
+            outlier_status = "WARN"
+        outlier_msg = "; ".join(x for x in (outlier_msg, _degraded_ref) if x)
+
     result = {
         "outlier_status": outlier_status,
         "failure_message": outlier_msg,
+        "degraded_reference": _degraded_ref,
         "func_ref_path": func_ref_path,
         "frame_metrics_path": frame_metrics_path,
         "outlier_mask_path": outlier_mask_path,

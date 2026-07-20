@@ -114,5 +114,16 @@ best practice.
 
 Every release ships a `reproducibility_receipt.json` (tool versions, per-step
 policy SHA-256, pipeline git SHA), BIDS-Derivatives `dataset_description.json`,
-auto-generated methods boilerplate, and `CITATION.cff`. Same chain + same policy
-+ same git SHA → byte-identical re-run.
+auto-generated methods boilerplate, and `CITATION.cff`.
+
+What re-running actually guarantees, stated precisely. The registration steps
+call ANTs through the Spinal Cord Toolbox. Its stochastic sampler is seeded, so
+the dominant source of run-to-run variation is removed by default, and the
+receipt records that this was done. Bit-identical output additionally requires
+fixing the order in which parallel threads combine their results, which is what
+`reproducibility.strict` does by pinning the toolkit to a single thread; it
+costs wall-clock time and is therefore off by default. So the honest claim is:
+same chain, same policy, same tool versions and same seed reproduce the same
+numbers, and strict mode is required for byte-identical files. An end-to-end
+demonstration of that is still outstanding and is tracked as a release claim,
+not presented as a completed result.

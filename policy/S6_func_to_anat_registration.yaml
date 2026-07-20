@@ -77,7 +77,8 @@ qc_thresholds:
   # registration is good by the step-local truth metric (cord Dice) — e.g.
   # exp pain sub-19 (Dice 0.886) was wrongly FAILed and lost. > pass = soft WARN.
   pass_hd95_mm_max: 4.0
-  warn_hd95_mm_max: 8.0              # retained for reference; HD95 no longer FAILs
+  # (removed 2026-07-19) warn_hd95_mm_max was never read. HD95 is reported
+  # and soft-WARNs on pass_hd95_mm_max only; it does not have a WARN band.
   # COM-based round-trip drift is observability-only in v1 (bsplinesyn's
   # forward + inverse are separately optimized → non-zero intrinsic drift
   # even at Dice 0.95). Setting permissive thresholds so it does not gate.
@@ -86,6 +87,8 @@ qc_thresholds:
   pass_centerline_max_vox_max: 5.0
   warn_centerline_max_vox_max: 10.0
 
-cost_controls:
-  estimate_per_run_minutes: 3.0
-  skip_existing_pass: true
+# NOTE: a `cost_controls` block (skip_existing_pass, estimate_per_run_minutes,
+# check_code_hash) was removed 2026-07-19. None of those keys was ever read by
+# any code -- the policy advertised resumability and code-hash checking that do
+# not exist. Only S9 has a resume path, and it is gated by the
+# SPINEPREP_S9_FORCE environment variable, not by policy.

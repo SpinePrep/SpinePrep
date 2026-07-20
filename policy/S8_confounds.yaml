@@ -110,7 +110,8 @@ retroicor:
   #   slicewise   — per-slice columns (~32 × N_slices; only when N_slices
   #                 is small and you need slicewise GLM)
   aggregation: "slice_mean"
-  use_csf_regressor_from_pnm: false  # we compute CSF separately (csf_slicewise)
+  # (removed 2026-07-19) use_csf_regressor_from_pnm was never read; CSF is
+  # always computed separately by the csf_slicewise family.
   hr_rvt_enabled: true             # heart rate + RVT slow regressors (2 cols; popp --rvt --heartrate)
 
 # ----------------------------------------------------------------------
@@ -190,6 +191,8 @@ reproducibility:
   strict: false                    # numpy seed for IAAFT when true
   capture_provenance: true
 
-cost_controls:
-  estimate_per_run_minutes: 2.0    # 3.0 with SpinalCompCor enabled
-  skip_existing_pass: true
+# NOTE: a `cost_controls` block (skip_existing_pass, estimate_per_run_minutes,
+# check_code_hash) was removed 2026-07-19. None of those keys was ever read by
+# any code -- the policy advertised resumability and code-hash checking that do
+# not exist. Only S9 has a resume path, and it is gated by the
+# SPINEPREP_S9_FORCE environment variable, not by policy.

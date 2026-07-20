@@ -227,11 +227,8 @@ qc_thresholds:
   outlier_fraction_pass_max: 0.20  # > this ⇒ soft WARN
 
 # Cost controls: prevent accidental expensive runs
-cost_controls:
-  # Skip runs that already have PASS status with the same code_hash
-  skip_existing_pass: true
-  # Track code_hash in each run for skip decisions
-  check_code_hash: true
-  # Runtime estimation (minutes per run, assuming 48 workers)
-  estimate_per_run_minutes: 1.0
-
+# NOTE: a `cost_controls` block (skip_existing_pass, estimate_per_run_minutes,
+# check_code_hash) was removed 2026-07-19. None of those keys was ever read by
+# any code -- the policy advertised resumability and code-hash checking that do
+# not exist. Only S9 has a resume path, and it is gated by the
+# SPINEPREP_S9_FORCE environment variable, not by policy.

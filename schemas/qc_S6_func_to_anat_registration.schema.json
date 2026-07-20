@@ -103,11 +103,11 @@
             ],
             "enum": [
               "topup",
-              "fugue",
               "syn",
+              "none",
               null
             ],
-            "description": "S5 mode for this run (used to gate Dice PASS bar)"
+            "description": "Distortion-correction mode actually applied. 'none' is the shipped fallback default (82% of the reference cohort). 'fugue' removed: specified but never implemented."
           },
           "metrics": {
             "type": "object",
@@ -183,10 +183,6 @@
           },
           "reportlets": {
             "type": "object",
-            "required": [
-              "bold_on_anat",
-              "cord_dice_per_slice"
-            ],
             "properties": {
               "bold_on_anat": {
                 "type": "string",
@@ -196,7 +192,8 @@
                 "type": "string",
                 "description": "Per-Z 3D-Dice bar chart with PASS/WARN/FAIL color bands. Quantitative complement to bold_on_anat."
               }
-            }
+            },
+            "description": "Reportlet paths relative to out_dir. A key may be absent or empty: a run that FAILs before rendering emits none, and an empty string means the render did not produce a file."
           },
           "xfm_paths": {
             "type": "object",
