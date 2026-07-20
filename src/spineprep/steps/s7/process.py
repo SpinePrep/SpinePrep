@@ -734,6 +734,17 @@ def run_S7_template_normalization(
     except Exception as e:
         failure_reasons.append(f"cord_dice_per_level reportlet failed: {e}")
 
+    # Record only reportlets that exist; a missing diagnostic downgrades PASS
+    # to WARN. Paths were already existence-gated here, but status was computed
+    # before rendering and never revisited, so a render failure left the run
+    # reporting PASS with an empty reportlet path and no way to verify it.
+    from spineprep.reportlets_common import resolve_reportlets
+    reportlets, status = resolve_reportlets(
+        {"pam50_on_func": rep_composite, "cord_dice_per_level": rep_levels},
+        out_dir, status, failure_reasons,
+        required=("pam50_on_func", "cord_dice_per_level"),
+    )
+
     # 10. Save work-side qc_metrics.json
     provenance = {
         "policy_sha256": policy_sha,
@@ -761,12 +772,7 @@ def run_S7_template_normalization(
         "metrics": metrics,
         "failure_reasons": failure_reasons,
         "failure_message": "; ".join(failure_reasons) if failure_reasons else None,
-        "reportlets": {
-            "pam50_on_func": str(rep_composite.relative_to(out_dir))
-                if rep_composite.exists() else "",
-            "cord_dice_per_level": str(rep_levels.relative_to(out_dir))
-                if rep_levels.exists() else "",
-        },
+        "reportlets": reportlets,
         "xfm_paths": {
             "from_bold_to_PAM50": str(xfm_fwd.relative_to(out_dir)),
             "from_PAM50_to_bold": str(xfm_inv.relative_to(out_dir)),

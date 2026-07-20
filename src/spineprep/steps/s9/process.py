@@ -987,6 +987,19 @@ def run_S9_primary_functional_derivatives(
         except Exception as e:
             failure_reasons.append(f"smoothness_summary reportlet failed: {e}")
 
+    # Record only reportlets that exist; a missing diagnostic downgrades PASS
+    # to WARN. smoothness_summary is deliberately NOT required: with smoothing
+    # off (the default) there is nothing to measure and the chart is correctly
+    # absent, so requiring it would WARN every run in the shipped config.
+    from spineprep.reportlets_common import resolve_reportlets
+    reportlets, status = resolve_reportlets(
+        {"tsnr_map_axial": rep_tsnrmap,
+         "tsnr_per_level": rep_perlevel,
+         "smoothness_summary": rep_smsum},
+        out_dir, status, failure_reasons,
+        required=("tsnr_map_axial", "tsnr_per_level"),
+    )
+
     # --- 9b. BIDS sidecars for every BOLD + dataset_description --------
     # A GLM needs RepetitionTime; BIDS-Derivatives needs the sidecar.
     # Prefer the authoritative TR from the raw BIDS sidecar (passed in via
@@ -1038,14 +1051,7 @@ def run_S9_primary_functional_derivatives(
         "metrics": metrics,
         "failure_reasons": failure_reasons,
         "failure_message": "; ".join(failure_reasons) if failure_reasons else None,
-        "reportlets": {
-            "tsnr_map_axial":               str(rep_tsnrmap.relative_to(out_dir))
-                if rep_tsnrmap.exists() else "",
-            "tsnr_per_level":               str(rep_perlevel.relative_to(out_dir))
-                if rep_perlevel.exists() else "",
-            "smoothness_summary":           str(rep_smsum.relative_to(out_dir))
-                if rep_smsum.exists() else "",
-        },
+        "reportlets": reportlets,
         "output_paths": {
             "preproc_bold_native":     str(preproc_native.relative_to(out_dir)),
             "smoothed_bold_native":    (str(smoothed_native.relative_to(out_dir))
