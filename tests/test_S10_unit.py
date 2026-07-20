@@ -232,14 +232,19 @@ def test_recommendation_include_when_clean():
     rec, reason = s10r._recommendation(mean_fd=0.2, median_tsnr=12.0,
                                        n_failed=0, fd_thr=0.5, tsnr_thr=5.0)
     assert rec == "include"
-    assert "passes" in reason
+    assert "no failed steps" in reason
 
 
-def test_recommendation_review_on_high_fd():
+def test_recommendation_ignores_high_fd():
+    """Updated 2026-07-19: this test previously asserted that high FD triggers
+    review, which was the defect. FD had been gated at 0.5 mm and cited to
+    Kaptan 2023 -- a paper that computes no FD at all -- and 0.5 mm sits at this
+    cohort's own FD median, so it flagged 265/467 runs. FD is now descriptive
+    only, matching S4's 2026-07-16 removal of the equivalent gate."""
     rec, reason = s10r._recommendation(mean_fd=0.9, median_tsnr=12.0,
                                        n_failed=0, fd_thr=0.5, tsnr_thr=5.0)
-    assert rec == "review"
-    assert "FD" in reason
+    assert rec == "include"
+    assert "FD" not in reason
 
 
 def test_recommendation_review_on_low_tsnr():
@@ -249,8 +254,9 @@ def test_recommendation_review_on_low_tsnr():
 
 
 def test_recommendation_exclude_on_fail_plus_metric():
-    # a failed run AND a bad metric escalates to exclude
-    rec, _ = s10r._recommendation(mean_fd=0.9, median_tsnr=12.0,
+    # a failed run AND a bad metric escalates to exclude. Uses low tSNR as the
+    # second criterion; high FD no longer counts as one (see above).
+    rec, _ = s10r._recommendation(mean_fd=0.2, median_tsnr=2.0,
                                   n_failed=1, fd_thr=0.5, tsnr_thr=5.0)
     assert rec == "exclude"
 
