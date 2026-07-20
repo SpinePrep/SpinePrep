@@ -1305,12 +1305,19 @@ def run_S5_func_distortion_correction(
     except Exception as e:
         reasons.append(f"distortion_effectiveness render failed: {e}")
 
-    # qc.json reportlet paths must be RELATIVE to out_dir (HEADER convention)
-    reportlets = {
-        "slice_displacement": str(disp_path.relative_to(out_dir)),
-        "cord_dice_per_slice": str(dice_path.relative_to(out_dir)),
-        "distortion_effectiveness": str(effect_path.relative_to(out_dir)),
-    }
+    # qc.json reportlet paths must be RELATIVE to out_dir (HEADER convention).
+    # Recorded only if actually written, and a missing diagnostic downgrades
+    # PASS -> WARN. This block previously emitted all three paths regardless of
+    # whether the renders succeeded, so a failed render left qc.json naming
+    # PNGs that do not exist while the run still reported PASS.
+    from spineprep.reportlets_common import resolve_reportlets
+    reportlets, status = resolve_reportlets(
+        {"slice_displacement": disp_path,
+         "cord_dice_per_slice": dice_path,
+         "distortion_effectiveness": effect_path},
+        out_dir, status, reasons,
+        required=("slice_displacement", "cord_dice_per_slice"),
+    )
 
     qc_metrics_path = s5_work_dir / "qc_metrics.json"
     s5_work_dir.mkdir(parents=True, exist_ok=True)

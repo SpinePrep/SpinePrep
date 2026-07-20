@@ -657,6 +657,16 @@ def run_S6_func_to_anat_registration(
         "ants_random_seed": 1 if repro_strict else None,
         "itk_threads": 1 if repro_strict else None,
     }
+    # Record only reportlets that exist; a missing diagnostic downgrades PASS.
+    # This dict was previously built unconditionally, so a failed render left
+    # qc.json naming images that were never written.
+    from spineprep.reportlets_common import resolve_reportlets
+    reportlets, status = resolve_reportlets(
+        {"bold_on_anat": rep_composite, "cord_dice_per_slice": rep_dice},
+        out_dir, status, failure_reasons,
+        required=("bold_on_anat", "cord_dice_per_slice"),
+    )
+
     qc_metrics_path = s6_work_dir / "qc_metrics.json"
     qc_metrics_path.write_text(json.dumps({
         "metrics": metrics,
@@ -679,10 +689,7 @@ def run_S6_func_to_anat_registration(
         "metrics": metrics,
         "failure_reasons": failure_reasons,
         "failure_message": "; ".join(failure_reasons) if failure_reasons else None,
-        "reportlets": {
-            "bold_on_anat": str(rep_composite.relative_to(out_dir)),
-            "cord_dice_per_slice": str(rep_dice.relative_to(out_dir)),
-        },
+        "reportlets": reportlets,
         "xfm_paths": {
             "from_bold_to_anat": str(xfm_fwd.relative_to(out_dir)),
             "from_anat_to_bold": str(xfm_inv.relative_to(out_dir)),

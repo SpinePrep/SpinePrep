@@ -98,13 +98,25 @@ def _process_run(bold_path: Path, run_id: str, subject: str, session: Optional[s
     # Reportlets
     sub_dir = f"sub-{subject}" + (f"/ses-{session}" if session else "")
     fig_dir = out_path / "derivatives" / "spineprep" / dataset_key / sub_dir / "figures"
+    figs: dict = {}
     try:
         figs = render_denoise_reportlets(
             bold_path, out_bold, noise_map, fig_dir, run_id,
             status=res["status"], tsnr_gain_pct=gain)
-        res["reportlets"] = {k: str(v.relative_to(out_path)) for k, v in figs.items()}
     except Exception as e:
         res.setdefault("failure_reasons", []).append(f"reportlet failed: {e}")
+    # Assign outside the try: this used to sit inside it, so an exception left
+    # the "reportlets" key absent entirely while status stayed PASS.
+    from spineprep.reportlets_common import resolve_reportlets
+    res["reportlets"], res["status"] = resolve_reportlets(
+        figs, out_path, res["status"], res["failure_reasons"],
+        required=tuple(figs.keys()) if figs else (),
+    )
+    if not figs:
+        if res["status"] == "PASS":
+            res["status"] = "WARN"
+        res["failure_reasons"].append(
+            "no denoise reportlets rendered — run not visually verifiable")
     return res
 
 

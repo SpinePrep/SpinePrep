@@ -583,6 +583,18 @@ def run_S4_func_motion_correction(
         status = "FAIL"
         failure_reasons.append(f"tSNR {qc_metrics['tsnr_after_mean']:.2f} < {qt['min_tsnr']}")
 
+    from spineprep.reportlets_common import resolve_reportlets
+    _s4_reportlets, status = resolve_reportlets(
+        {
+            "S4_motion_traces": figures_dir / f"{prefix}_desc-S4_motion_traces.png",
+            "S4_slicewise_heatmap": ((out_dir / slicewise_rel)
+                                     if slicewise_rel else None),
+            "S4_tsnr_comparison": figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png",
+        },
+        out_dir, status, failure_reasons,
+        required=("S4_motion_traces", "S4_tsnr_comparison"),
+    )
+
     qc_status = {
         "status": status,
         "step_code": step_code,
@@ -592,13 +604,13 @@ def run_S4_func_motion_correction(
         "run_id": run_id,
         "metrics": qc_metrics,
         "failure_reasons": failure_reasons,
-        "reportlets": {
-            # Store paths RELATIVE to out_dir so the dashboard can resolve them
-            # in chain workfolders (S2/S3 already follow this convention).
-            "S4_motion_traces": str((figures_dir / f"{prefix}_desc-S4_motion_traces.png").relative_to(out_dir)),
-            "S4_slicewise_heatmap": slicewise_rel,
-            "S4_tsnr_comparison": str((figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png").relative_to(out_dir)),
-        }
+        # Paths are stored RELATIVE to out_dir so the dashboard can resolve them
+        # in chain workfolders (S2/S3 follow the same convention). Recorded only
+        # when the file exists: this dict was previously built unconditionally,
+        # and S4's reportlet regeneration swallows render failures with a bare
+        # `except Exception: pass`, so a failed render left qc.json naming PNGs
+        # that were never written.
+        "reportlets": _s4_reportlets,
     }
 
     return qc_status

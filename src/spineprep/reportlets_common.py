@@ -604,3 +604,63 @@ def stub_figure(output_path: Path, reason: str) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=120, facecolor=BG, bbox_inches="tight")
     plt.close(fig)
+
+
+# ---------------------------------------------------------------------------
+# Reportlet accounting
+# ---------------------------------------------------------------------------
+
+
+def resolve_reportlets(
+    candidates: dict, out_dir, status: str, failure_reasons: list,
+    required: tuple = (),
+) -> tuple[dict, str]:
+    """Record only reportlets that exist, and refuse to PASS without them.
+
+    Returns ``(reportlets_dict, status)``.
+
+    Two defects this prevents, both found across the pipeline in the
+    2026-07-19 audit:
+
+    1. **Paths recorded for files that were never written.** S4, S5 and S6 built
+       their ``reportlets`` dict unconditionally, so a failed render left
+       ``qc.json`` naming a PNG that does not exist. The QC record actively
+       pointed at missing evidence. Entries are now dropped unless the file is
+       on disk.
+
+    2. **PASS with no diagnostic.** Every step computed ``status`` before
+       rendering and never revisited it, so a render failure appended a reason
+       but changed nothing. On the cohort this let 336 S8 runs report PASS with
+       zero diagnostic images. Visual QC is the validator (invariant 4) and each
+       step owes one diagnostic reportlet (invariant 3), so a missing *required*
+       reportlet escalates PASS to WARN. FAIL is never masked.
+
+    ``required`` names the reportlets whose absence makes a run
+    non-verifiable. Anything omitted from it is treated as optional -- e.g. a
+    chart that legitimately does not apply under the current policy, like S9's
+    smoothness summary when smoothing is off.
+    """
+    from pathlib import Path
+
+    out_dir = Path(out_dir)
+    resolved: dict = {}
+    for name, path in candidates.items():
+        if path is None:
+            resolved[name] = ""
+            continue
+        p = Path(path)
+        if p.exists():
+            try:
+                resolved[name] = str(p.relative_to(out_dir))
+            except ValueError:
+                resolved[name] = str(p)
+        else:
+            resolved[name] = ""
+
+    missing = [n for n in (required or ()) if not resolved.get(n)]
+    if missing and status == "PASS":
+        status = "WARN"
+        failure_reasons.append(
+            "diagnostic reportlet(s) not rendered: "
+            f"{', '.join(missing)} — run not visually verifiable")
+    return resolved, status
