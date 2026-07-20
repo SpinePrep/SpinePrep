@@ -111,6 +111,22 @@ def _run_totalspineseg(
     tss_cord = tss_dir / "tss_step1_cord.nii.gz"
     tss_canal = tss_dir / "tss_step1_canal.nii.gz"
 
+    # A failed segmentation must FAIL even when an output file is already on
+    # disk. Previously `ok` was only consulted inside the `not exists()` branch,
+    # so a crashed run (OOM, no GPU, killed) silently adopted the PREVIOUS
+    # invocation's segmentation and reported PASS -- with nothing in qc.json
+    # recording that the tool had failed. Vertebral and disc labels were then
+    # regenerated from stale anatomy. Found in the 2026-07-19 audit.
+    if not ok:
+        return {
+            "status": "FAIL",
+            "failure_message": (
+                f"TotalSpineSeg failed: {message}"
+                + (" (a previous output exists on disk and was NOT reused)"
+                   if tss_output.exists() else "")
+            ),
+        }
+
     if not tss_output.exists():
         # List what files were actually created for debugging
         created_files = list(tss_dir.rglob("*.nii.gz"))

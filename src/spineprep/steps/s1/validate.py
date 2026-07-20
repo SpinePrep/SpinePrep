@@ -499,7 +499,87 @@ def _validate_nifti(path: Path, expect_4d: bool) -> list[dict]:
     sform_code = int(np.array(header.get("sform_code", np.array([0]))).reshape(-1)[0])
     if qform_code == 0 and sform_code == 0:
         issues.append({"severity": "WARN", "message": "qform_code and sform_code are 0 (orientation unset)."})
+
+    issues.extend(_check_data_complete(path, img))
     return issues
+
+
+def _check_data_complete(path: Path, img) -> list[dict]:
+    """Detect a truncated or partially-downloaded image.
+
+    Everything above reads only the HEADER, which a truncated file preserves
+    intact -- the header sits at the front. So a half-downloaded scan passed S1
+    as clean and only surfaced much later as a gzip ``EOFError`` inside S3, or
+    (uncompressed) as silently zero-filled volumes. That is the one failure an
+    input-verification step exists to catch. Found 2026-07-19: the known
+    truncated sub-22 in ds005883 passed S1 with no issues at all.
+
+    Both checks are O(1) -- no decompression, no data load. Reading a 292 MB
+    gzip to its end would be correct but far too slow to run over a cohort.
+      * uncompressed .nii -- the file must be at least header + voxel bytes;
+      * gzipped .nii.gz -- the last 4 bytes of a gzip stream are ISIZE, the
+        uncompressed length (mod 2**32). A truncated file's trailing bytes are
+        arbitrary compressed data, so ISIZE will not match the size the NIfTI
+        header implies.
+    """
+    try:
+        if not path.exists():
+            return [{"severity": "FAIL", "message": "File does not exist."}]
+        actual = path.stat().st_size
+        if actual == 0:
+            return [{"severity": "FAIL", "message": "File is empty (0 bytes)."}]
+
+        hdr = img.header
+        n_vox = int(np.prod(img.shape)) if img.shape else 0
+        itemsize = int(np.dtype(hdr.get_data_dtype()).itemsize)
+        data_bytes = n_vox * itemsize
+        if data_bytes <= 0:
+            return []
+        # get_data_offset() reports 0 for a loaded .nii.gz, so fall back to the
+        # header's own declared size + the 4-byte extension flag (352 for
+        # NIfTI-1, 544 for NIfTI-2) rather than assuming a constant.
+        try:
+            vox_offset = int(hdr.get_data_offset())
+        except Exception:
+            vox_offset = 0
+        if vox_offset <= 0:
+            try:
+                vox_offset = int(np.asarray(hdr["sizeof_hdr"]).reshape(-1)[0]) + 4
+            except Exception:
+                vox_offset = 352
+        expected = vox_offset + data_bytes
+
+        name = path.name.lower()
+        if name.endswith(".nii"):
+            if actual < expected:
+                pct = 100.0 * actual / expected
+                return [{
+                    "severity": "FAIL",
+                    "message": (f"Truncated NIfTI: file is {actual} bytes, header implies "
+                                f"{expected} ({pct:.0f}%). Likely an incomplete download."),
+                }]
+        elif name.endswith(".gz"):
+            with open(path, "rb") as fh:
+                if fh.read(2) != b"\x1f\x8b":
+                    return [{"severity": "FAIL",
+                             "message": "File named .gz but lacks a gzip magic number."}]
+                fh.seek(-4, 2)
+                isize = int.from_bytes(fh.read(4), "little")
+            # ISIZE is modulo 2**32; compare in the same ring so large files
+            # (>4 GB uncompressed) do not raise a spurious mismatch.
+            if isize != (expected % (1 << 32)):
+                pct = 100.0 * isize / expected if expected else 0.0
+                return [{
+                    "severity": "FAIL",
+                    "message": (f"Truncated or corrupt NIfTI: gzip trailer reports "
+                                f"{isize} uncompressed bytes, header implies {expected} "
+                                f"({pct:.0f}%). Likely an incomplete download."),
+                }]
+    except Exception as err:  # noqa: BLE001
+        # Never let the completeness probe itself fail the run silently.
+        return [{"severity": "WARN",
+                 "message": f"Could not verify file completeness: {err}"}]
+    return []
 
 
 def _classification_counts(runs: list[dict]) -> dict:

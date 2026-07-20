@@ -32,6 +32,56 @@ from .localize_viz import _render_s3_1_simple_func_with_mask  # noqa: F401
 # Helpers
 # ---------------------------------------------------------------------------
 
+CROP_PAD_XY = 10   # voxels of in-plane margin around the cord (~20 mm total)
+CROP_PAD_Z = 0     # no margin along the cord axis; the cord spans the slab
+
+
+def _cord_crop_bbox(coords: np.ndarray, shape) -> list[int]:
+    """Half-open crop box [r0, r1, c0, c1, s0, s1] enclosing the whole cord.
+
+    The upper bounds are ``max + pad + 1`` because Python slicing excludes the
+    stop index. Omitting that ``+1`` silently discarded the most superior cord
+    slice of EVERY run: with ``pad_z = 0`` a cord spanning z=5..14 produced
+    ``[5:14]``, keeping z=5..13. The in-plane axes lost a voxel too, hidden by
+    the 10-voxel margin, which made the padding asymmetric (10 low, 9 high).
+
+    Found 2026-07-19 on the 469-run cohort: 40/40 runs sampled had lost exactly
+    one cord slice, always at the superior end -- the rostral end, where C1-C3
+    coverage matters most for level-wise analysis. Nothing downstream could see
+    it, because no metric checks that the crop still contains the segmentation.
+    ``_crop_contains_cord`` now does.
+    """
+    lo = coords.min(axis=0) - [CROP_PAD_XY, CROP_PAD_XY, CROP_PAD_Z]
+    hi = coords.max(axis=0) + [CROP_PAD_XY, CROP_PAD_XY, CROP_PAD_Z] + 1
+    r0, c0, s0 = (max(0, int(v)) for v in lo)
+    r1 = min(int(shape[0]), int(hi[0]))
+    c1 = min(int(shape[1]), int(hi[1]))
+    s1 = min(int(shape[2]), int(hi[2]))
+    return [r0, r1, c0, c1, s0, s1]
+
+
+def _crop_contains_cord(coords: np.ndarray, crop_bbox: list[int]) -> tuple[bool, str]:
+    """Verify the crop box encloses every segmented cord voxel.
+
+    The step-local guarantee S3 owes downstream: whatever cord the segmentation
+    found is still present after cropping. Without this the 2026-07-19
+    off-by-one ran undetected across the whole cohort.
+    """
+    if coords.size == 0:
+        return True, ""
+    r0, r1, c0, c1, s0, s1 = crop_bbox
+    lo = coords.min(axis=0)
+    hi = coords.max(axis=0)
+    lost = []
+    for ax, name, a, b in ((0, "R-L", r0, r1), (1, "A-P", c0, c1), (2, "S-I", s0, s1)):
+        if int(lo[ax]) < a:
+            lost.append(f"{name} low edge ({int(lo[ax])} < {a})")
+        if int(hi[ax]) >= b:
+            lost.append(f"{name} high edge ({int(hi[ax])} >= {b})")
+    if lost:
+        return False, "crop drops cord voxels at " + ", ".join(lost)
+    return True, ""
+
 
 def _effective_dummy_drop(bold_path: Path, policy: dict[str, Any]) -> int:
     """How many initial volumes to remove from this run.
@@ -803,14 +853,7 @@ def _process_s3_1_dummy_drop_and_localization(
 
          coords = np.argwhere(disc_data > 0)
          if coords.size > 0:
-             pad_xy = 10
-             pad_z = 0
-             r_min, c_min, s_min = coords.min(axis=0) - [pad_xy, pad_xy, pad_z]
-             r_max, c_max, s_max = coords.max(axis=0) + [pad_xy, pad_xy, pad_z]
-             r_min, r_max = max(0, r_min), min(func_ref_fast_data.shape[0], r_max)
-             c_min, c_max = max(0, c_min), min(func_ref_fast_data.shape[1], c_max)
-             s_min, s_max = max(0, s_min), min(func_ref_fast_data.shape[2], s_max)
-             crop_bbox = [int(r_min), int(r_max), int(c_min), int(c_max), int(s_min), int(s_max)]
+             crop_bbox = _cord_crop_bbox(coords, func_ref_fast_data.shape)
          else:
              crop_bbox = None
 
@@ -978,23 +1021,21 @@ def _process_s3_1_dummy_drop_and_localization(
          }
 
     # Calculate crop_bbox from discovery segmentation
+    crop_containment_msg = ""
     try:
         disc_img = nib.load(discovery_seg_path)
         disc_data = disc_img.get_fdata()
         coords = np.argwhere(disc_data > 0)
         if coords.size > 0:
-            # ROI = bbox of cord pixels + padding
-            pad_xy = 10  # 10 voxels padding around cord (approx 20mm total margin)
-            pad_z = 0    # No Z padding
-            r_min, c_min, s_min = coords.min(axis=0) - [pad_xy, pad_xy, pad_z]
-            r_max, c_max, s_max = coords.max(axis=0) + [pad_xy, pad_xy, pad_z]
-
-            # Clip to image bounds
-            r_min, r_max = max(0, r_min), min(func_ref_fast_data.shape[0], r_max)
-            c_min, c_max = max(0, c_min), min(func_ref_fast_data.shape[1], c_max)
-            s_min, s_max = max(0, s_min), min(func_ref_fast_data.shape[2], s_max)
-
-            crop_bbox = [int(r_min), int(r_max), int(c_min), int(c_max), int(s_min), int(s_max)]
+            crop_bbox = _cord_crop_bbox(coords, func_ref_fast_data.shape)
+            ok_crop, crop_containment_msg = _crop_contains_cord(coords, crop_bbox)
+            if not ok_crop:
+                return {
+                    "status": "FAIL",
+                    "failure_message": crop_containment_msg,
+                    "figure_path": None,
+                    "crop_bbox": crop_bbox,
+                }
         else:
              crop_bbox = [0, func_ref_fast_data.shape[0], 0, func_ref_fast_data.shape[1], 0, func_ref_fast_data.shape[2]]
     except Exception:
