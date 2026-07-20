@@ -14,7 +14,11 @@ from typing import Optional
 
 import yaml
 
-from .process import run_S9_primary_functional_derivatives
+from .process import (
+    _s9_code_sha_for_record as _s9_code_sha,
+    _s9_policy_sha_for_record as _s9_policy_sha,
+    run_S9_primary_functional_derivatives,
+)
 from spineprep.lib.chain_scope import chain_scope
 
 logger = logging.getLogger(__name__)
@@ -281,6 +285,8 @@ def run_S9(
     # force full recomputation.
     import os as _os
     _force_s9 = _os.environ.get("SPINEPREP_S9_FORCE") == "1"
+    _code_sha = _s9_code_sha()
+    _policy_sha = _s9_policy_sha(policy)
     _prior_s9 = {
         (_norm_sub(r.get("subject")), r.get("run_id")): r
         for r in _load_qc(out_path, "S9_primary_functional_derivatives",
@@ -298,7 +304,15 @@ def run_S9(
                 _func_dir_candidates(out_path, subject, session, dataset_key),
                 f"{run_id}_desc-preproc_bold.nii.gz")
             _prev = _prior_s9.get((_norm_sub(subject), run_id))
-            if _done is not None and _prev is not None:
+            # Existence alone is not enough. Reusing on "the output file is on
+            # disk" silently republished 445 stale records after the 2026-07-18
+            # FWHM fix -- old metrics, old reportlet paths, and a qc.json that
+            # reported those reportlets as present because the old PNGs were
+            # still there. Only reuse when the prior record was produced by the
+            # same code and the same policy.
+            if (_done is not None and _prev is not None
+                    and _prev.get("provenance", {}).get("code_sha") == _code_sha
+                    and _prev.get("provenance", {}).get("policy_sha256") == _policy_sha):
                 results.append(_prev)
                 continue
 
