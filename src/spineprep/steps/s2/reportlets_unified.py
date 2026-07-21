@@ -61,6 +61,7 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import nibabel as nib
 import numpy as np
+from spineprep.lib.timing import timed_subprocess_run
 
 
 # ---------------------------------------------------------------------------
@@ -1203,7 +1204,7 @@ def _warp_pam50_cord_to_anat(
             return None
         work_dir.mkdir(parents=True, exist_ok=True)
         out = work_dir / "pam50_cord_in_anat.nii.gz"
-        p = subprocess.run(
+        p = timed_subprocess_run(
             ["sct_apply_transfo", "-i", str(pam50_cord),
              "-d", str(anat_ref), "-w", str(warp_template2anat),
              "-x", "nn", "-o", str(out)],

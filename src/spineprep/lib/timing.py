@@ -187,3 +187,26 @@ def timed_step(fn):
         return res
 
     return _wrapped
+
+
+def timed_subprocess_run(cmd, **kwargs):
+    """``subprocess.run`` that records its duration for the benchmark.
+
+    Several steps call subprocess directly rather than through
+    ``lib.run.run_command`` -- usually to pass a custom ``env`` (S6/S7 set the
+    ANTs seed) or because the call predates the shared wrapper. Those calls were
+    invisible to the timing, which is why S4 reported a 0% tool share on the
+    2026-07-21 cohort run despite spending nearly all of its time in
+    ``sct_fmri_moco``.
+
+    Use this in place of ``subprocess.run`` anywhere an external tool is
+    invoked, so the tool/overhead split stays truthful.
+    """
+    import subprocess
+    t0 = time.perf_counter()
+    try:
+        return subprocess.run(cmd, **kwargs)
+    finally:
+        # Recorded even when the call raises: a failed tool still consumed the
+        # time, and excluding failures would understate a run that died late.
+        add_tool_time(time.perf_counter() - t0)

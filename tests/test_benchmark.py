@@ -239,3 +239,38 @@ def test_latency_handles_a_cohort_with_no_topup(tmp_path):
         {"run_id": "r1", "status": "PASS", "metrics": {"n_volumes": 359}}])
     picks = pick_runs(tmp_path)
     assert [p["role"] for p in picks] == ["short", "long"]
+
+
+def test_no_step_calls_subprocess_run_directly():
+    """Direct subprocess.run bypasses tool-time accounting.
+
+    Regression for the 2026-07-21 cohort run: S4 reported a 0% tool share
+    despite spending nearly all its wall-clock inside sct_fmri_moco, because it
+    called subprocess.run directly rather than through the timed wrapper. Five
+    steps had the same gap. External tools must be invoked via
+    lib.run.run_command or lib.timing.timed_subprocess_run.
+    """
+    import re
+    from pathlib import Path
+    # timing.py defines the wrapper; run.py IS the timed path and calls
+    # add_tool_time itself. Anything else must either use a timed wrapper or
+    # carry an explicit `# notimed:` marker giving the reason -- so exemptions
+    # are auditable in the source rather than hidden in this test.
+    exempt_files = {"timing.py", "run.py"}
+    offenders = []
+    for p in sorted(Path("src/spineprep").rglob("*.py")):
+        if p.name in exempt_files:
+            continue
+        for i, line in enumerate(p.read_text().splitlines(), 1):
+            if re.search(r"(?<!timed_)subprocess\.run\(", line) and "notimed:" not in line:
+                offenders.append(f"{p}:{i}")
+    assert not offenders, (
+        "these call subprocess.run directly and so are invisible to the "
+        "benchmark:\n  " + "\n  ".join(offenders))
+
+
+def test_timed_subprocess_records_even_on_failure():
+    from spineprep.lib.timing import time_step, timed_subprocess_run
+    with time_step() as t:
+        timed_subprocess_run(["false"], capture_output=True)
+    assert t["n_tool_calls"] == 1

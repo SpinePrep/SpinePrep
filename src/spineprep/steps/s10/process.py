@@ -692,7 +692,7 @@ def _detect_fsl_version() -> Optional[str]:
             if v:
                 return v
     try:
-        out = subprocess.run(["fslversion"], capture_output=True, text=True, timeout=10)
+        out = subprocess.run(["fslversion"], capture_output=True, text=True, timeout=10)  # notimed: version probe, not processing work
         merged = (out.stdout or "") + "\n" + (out.stderr or "")
         parsed = _parse_version_lines(merged)
         if parsed:
@@ -704,7 +704,7 @@ def _detect_fsl_version() -> Optional[str]:
 
 def _detect_sct_version() -> Optional[str]:
     try:
-        out = subprocess.run(["sct_version"], capture_output=True, text=True, timeout=10)
+        out = subprocess.run(["sct_version"], capture_output=True, text=True, timeout=10)  # notimed: version probe, not processing work
         merged = (out.stdout or "") + "\n" + (out.stderr or "")
         parsed = _parse_version_lines(merged)
         if parsed:
@@ -727,7 +727,7 @@ def _detect_ants_version() -> Optional[str]:
     import re as _re
     for binary in ("antsRegistration", "isct_antsRegistration"):
         try:
-            out = subprocess.run([binary, "--version"], capture_output=True,
+            out = subprocess.run([binary, "--version"], capture_output=True,  # notimed: version probe, not processing work
                                  text=True, timeout=10)
             merged = (out.stdout or "") + "\n" + (out.stderr or "")
             ver = None
@@ -760,7 +760,7 @@ def _detect_mrtrix_version() -> Optional[str]:
     """MRtrix3 version (used for S2B MP-PCA denoising via dwidenoise). dwidenoise
     -version prints '== dwidenoise <ver> =='."""
     try:
-        out = subprocess.run(["dwidenoise", "-version"], capture_output=True,
+        out = subprocess.run(["dwidenoise", "-version"], capture_output=True,  # notimed: version probe, not processing work
                              text=True, timeout=10)
         merged = (out.stdout or "") + "\n" + (out.stderr or "")
         import re as _re
@@ -837,12 +837,12 @@ def _build_reproducibility_receipt(
             os.environ.get("SPINEPREP_GIT_DESCRIBE") or env_sha)
     else:
         try:
-            out = subprocess.run(
+            out = subprocess.run(  # notimed: version probe, not processing work
                 ["git", "-C", str(project_root), "rev-parse", "HEAD"],
                 capture_output=True, text=True, timeout=5,
             )
             recipe["pipeline_git_sha"] = out.stdout.strip() or None
-            out = subprocess.run(
+            out = subprocess.run(  # notimed: version probe, not processing work
                 ["git", "-C", str(project_root), "describe", "--always", "--tags"],
                 capture_output=True, text=True, timeout=5,
             )
@@ -1017,7 +1017,7 @@ def _detect_code_url(project_root: Path) -> Optional[str]:
     was a placeholder ``[org]`` literal — audit B14).
     """
     try:
-        out = subprocess.run(
+        out = subprocess.run(  # notimed: version probe, not processing work
             ["git", "-C", str(project_root), "remote", "get-url", "origin"],
             capture_output=True, text=True, timeout=5,
         )
@@ -1401,7 +1401,7 @@ for the full environment inventory.
     # Pandoc → LaTeX + HTML (NiPreps convention)
     def _pandoc(target: Path, fmt: str) -> bool:
         try:
-            r = subprocess.run(
+            r = subprocess.run(  # notimed: version probe, not processing work
                 ["pandoc", "-f", "markdown", "-t", fmt, "-o", str(target)],
                 input=md, text=True, capture_output=True, timeout=20,
             )

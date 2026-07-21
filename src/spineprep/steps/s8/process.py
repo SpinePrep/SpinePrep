@@ -31,6 +31,7 @@ import pandas as pd
 
 from spineprep.lib.run import run_command as _run_command
 from spineprep.lib.timing import timed_step
+from spineprep.lib.timing import timed_subprocess_run
 
 
 # ---------------------------------------------------------------------------
@@ -334,7 +335,7 @@ def _csf_acompcor_slicewise(
         out_txt = acdir / f"csf_slice{z:02d}_eig.txt"
         cmd = ["fslmeants", "-i", str(det_path), "--eig", f"--order={k}",
                "-m", str(sm_path), "-o", str(out_txt)]
-        res = subprocess.run(cmd, capture_output=True, text=True)
+        res = timed_subprocess_run(cmd, capture_output=True, text=True)
         if res.returncode != 0 or not out_txt.exists():
             meta["skipped_slices"].append(z)
             continue
