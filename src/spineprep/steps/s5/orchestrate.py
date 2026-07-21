@@ -211,6 +211,8 @@ def run_S5(
     fmap_runs = [r for r in inv.get("runs", []) if r.get("modality") == "fmap"]
 
     # Process each run
+    # Export for the timing decorator (see lib/timing.timed_step).
+    import os as _os_t; _os_t.environ["SPINEPREP_N_WORKERS"] = str(batch_workers)
     results: list[dict] = []
     for s4_run in s4_runs:
         run_id = s4_run.get("run_id")

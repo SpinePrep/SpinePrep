@@ -30,6 +30,7 @@ import numpy as np
 import pandas as pd
 
 from spineprep.lib.run import run_command as _run_command
+from spineprep.lib.timing import timed_step
 
 
 # ---------------------------------------------------------------------------
@@ -1282,6 +1283,7 @@ def _build_csf_mask_from_s2(
     return csf_path
 
 
+@timed_step
 def run_S8_confounds_and_physio_regressors(
     bold_path: Path,
     cord_mask_path: Path,

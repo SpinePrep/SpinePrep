@@ -33,6 +33,7 @@ import nibabel as nib
 import numpy as np
 
 from spineprep.lib.run import run_command as _run_command
+from spineprep.lib.timing import timed_step
 
 
 # ---------------------------------------------------------------------------
@@ -435,6 +436,7 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
 # ---------------------------------------------------------------------------
 
 
+@timed_step
 def run_S7_template_normalization(
     funcref_path: Path,
     func_cord_seg_path: Path,

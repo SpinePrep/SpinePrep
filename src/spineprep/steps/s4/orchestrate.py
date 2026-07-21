@@ -133,6 +133,9 @@ def run_S4(
 
     # Run in parallel
     results = []
+    # Export for the timing decorator: worker count is not visible inside
+    # the run function, and env vars survive the fork into pool workers.
+    import os as _os_t; _os_t.environ["SPINEPREP_N_WORKERS"] = str(batch_workers)
     with ProcessPoolExecutor(max_workers=batch_workers) as executor:
         futures = {
             executor.submit(

@@ -162,6 +162,9 @@ def run_S2B_func_denoise(
 
     if batch_workers > 1:
         from concurrent.futures import ProcessPoolExecutor, as_completed
+        # Export for the timing decorator: worker count is not visible inside
+        # the run function, and env vars survive the fork into pool workers.
+        import os as _os_t; _os_t.environ["SPINEPREP_N_WORKERS"] = str(batch_workers)
         with ProcessPoolExecutor(max_workers=batch_workers) as ex:
             futs = {ex.submit(_do, s, e, c): (s, e, c) for s, e, c in items}
             for f in as_completed(futs):

@@ -46,6 +46,7 @@ import nibabel as nib
 import numpy as np
 
 from spineprep.lib.run import run_command as _run_command
+from spineprep.lib.timing import timed_step
 
 
 # ---------------------------------------------------------------------------
@@ -383,6 +384,7 @@ def _classify(metrics: dict, thresholds: dict, syn_fallback: bool) -> tuple[str,
 # ---------------------------------------------------------------------------
 
 
+@timed_step
 def run_S6_func_to_anat_registration(
     funcref_path: Path,
     bold_path: Path,

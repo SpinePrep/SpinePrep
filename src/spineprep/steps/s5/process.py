@@ -16,6 +16,7 @@ import nibabel as nib
 import numpy as np
 
 from spineprep.lib.run import run_command as _run_command
+from spineprep.lib.timing import timed_step
 from .mode import _pe_from_run
 from spineprep.lib.chain_scope import chain_scope
 
@@ -1037,6 +1038,7 @@ def _classify_run_status(metrics: dict, mode: str, thresholds: dict) -> tuple[st
 # ---------------------------------------------------------------------------
 
 
+@timed_step
 def run_S5_func_distortion_correction(
     bold_path: Path,
     bold_run: dict,

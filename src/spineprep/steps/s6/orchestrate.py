@@ -193,6 +193,10 @@ def run_S6(
         return StepResult("FAIL",
                           f"No PASS/WARN S5 runs for dataset {dataset_key}")
 
+    # Export for the timing decorator (see lib/timing.timed_step).
+
+    import os as _os_t; _os_t.environ["SPINEPREP_N_WORKERS"] = str(batch_workers)
+
     results: list[dict] = []
     for s5_run in s5_runs:
         run_id = s5_run.get("run_id")

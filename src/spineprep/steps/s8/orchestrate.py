@@ -387,6 +387,9 @@ def run_S8(
     bids_root = _bids_root_from_qc(s2_qc) or _bids_root_from_qc(upstream_qc)
 
     results: list[dict] = []
+    # Export for the timing decorator: worker count is not visible inside
+    # the run function, and env vars survive the fork into pool workers.
+    import os as _os_t; _os_t.environ["SPINEPREP_N_WORKERS"] = str(batch_workers)
     for u in upstream_runs:
         run_id = u.get("run_id")
         subject = u.get("subject")
