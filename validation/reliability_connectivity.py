@@ -31,12 +31,17 @@ import pandas as pd
 from reliability_tsnr import icc_2_1, _level_name  # reuse the ICC + naming
 
 # (scope -> (repeat dimension, reliability type label, human label)). The cohort's
-# repeated measures are NOT uniform — only dorsalhorn/handgrasp are true
+# repeated measures are NOT uniform. Only dorsalhorn is a true test-retest:
+# handgrasp ds004616 ses-02 follows a 30-min acute intermittent hypoxia
+# protocol (Hemmerling 2023), so it is between-session ACROSS AN
+# INTERVENTION, not repeat measurement. Label it as such wherever reported.
+# (kept in the analysis because the source paper found no significant
+# S2-S1 activation difference, but it is not plain reliability.)
 # between-session test-retest; rest is cross-shim (auto vs manual z-shim). Each is
 # labelled honestly (no run/cross-shim repeat is called "test-retest").
 RELIABILITY_SCOPES = {
     "dorsalhorn": ("ses", "test-retest", "dorsalhorn pain (heat task, ses-01 vs ses-02)"),
-    "handgrasp":  ("ses", "test-retest", "handgrasp motor (ses-01 vs ses-02)"),
+    "handgrasp":  ("ses", "across-AIH", "handgrasp motor (ses-01 vs ses-02, post-AIH)"),
     "rest":       ("acq", "cross-shim reproducibility",
                    "rest (auto vs manual z-shim — NOT test-retest)"),
 }
