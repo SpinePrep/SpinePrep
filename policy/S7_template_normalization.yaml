@@ -39,12 +39,21 @@ refinement:
 
 atlas:
   warp_full_atlas: true         # -a 1 (full PAM50 atlas + masks in native func)
+  # sct_warp_template already produces all of these on every run; they were
+  # being computed and then left in the work tree. Emitting them costs a file
+  # copy, not a recomputation. Added 2026-07-21 for the analysis endpoints:
+  # vertebral levels and the probabilistic atlas (which carries the grey-matter
+  # dorsal/ventral horn parcels the cord literature reports on).
   masks_to_emit:
     - "PAM50_cord"
     - "PAM50_csf"
     - "PAM50_wm"
     - "PAM50_gm"
-    - "PAM50_spinal_levels"
+    - "PAM50_spinal_levels"      # SPINAL levels (nerve roots)
+    - "PAM50_levels"             # VERTEBRAL levels -- a different thing
+    - "PAM50_rootlets"
+  # The probabilistic tract/GM atlas is emitted as one 4D file plus a JSON label
+  # table whenever label/atlas/ exists; it needs no entry here.
 
 interpolation:
   # SCT sct_apply_transfo accepts only `nn | linear | spline`. The
