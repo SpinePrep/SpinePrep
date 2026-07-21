@@ -186,11 +186,35 @@ METRICS: dict[str, Metric] = {m.name: m for m in [
        caveat="Spatial reliability of the effect, distinct from the "
               "reliability of its magnitude."),
     _m("laterality_index",
-       "(ipsi - contra) / (ipsi + contra) effect, on the hemicord tier",
-       None, "effect", True, None, None,
-       caveat="Only meaningful for lateralised paradigms (handgrasp, "
-              "CoSpine motor); undefined for bilateral or pain tasks.",
+       "(ipsi - contra) / (ipsi + contra) on suprathreshold voxel COUNTS per "
+       "hemicord (Hemmerling 2023), not the mean beta", None, "effect", True,
+       None, None,
+       citation="Hemmerling 2023; Weber 2016",
+       caveat="Activation asymmetry, not a mean. Only meaningful for lateralised "
+              "paradigms (handgrasp, CoSpine motor); undefined for bilateral or "
+              "pain tasks.",
        valid_tiers=("hemicord", "gmhorn")),
+
+    # --- biological validity (C3; derived, group- or subject-level) ---------
+    _m("laterality_ipsi_frac",
+       "Fraction of subjects whose sided conditions are ipsilateral-dominant "
+       "(LI > 0)", "frac", "effect", True, None, True,
+       citation="Hemmerling 2023; Weber 2016",
+       caveat="Single-subject level: laterality is strong and reliable per "
+              "subject, unlike the dorsal/ventral dissociation.",
+       valid_tiers=("hemicord",)),
+    _m("horn_dissociation_d",
+       "One-sample Cohen's d across subjects of (expected-horn minus other-horn) "
+       "effect", None, "effect", True, None, True,
+       citation="Dabbagh 2024 (single-subject horn ICC 0.03-0.24)",
+       caveat="GROUP LEVEL ONLY. Single-subject horn localisation is unreliable "
+              "at EPI resolution; never claim a per-subject dorsal/ventral result.",
+       valid_tiers=("gmhorn",)),
+    _m("horn_expected_frac",
+       "Fraction of subjects with the expected horn stronger than the other",
+       "frac", "effect", True, None, True,
+       caveat="Group-level companion to horn_dissociation_d; descriptive.",
+       valid_tiers=("gmhorn",)),
 ]}
 
 

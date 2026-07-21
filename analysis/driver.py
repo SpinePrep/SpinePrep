@@ -69,7 +69,12 @@ GM_PARCELS = {
 REPEAT_AXIS = {
     "openneuro_ds004926_dorsalhorn_pain": "session",
     "openneuro_ds004616_spinalcord_handgrasp_task": "run",
-    "openneuro_ds004386_spinalcord_rest_testretest": "run",
+    # ds004386's two runs are auto vs manual z-shim (Kaptan 2022, HBM
+    # 10.1002/hbm.26018), NOT repeat measurements. Treating them as a
+    # reliability axis would compute a spurious cross-run ICC that actually
+    # measures a shim contrast. Split-half within each run is the honest axis;
+    # the auto-vs-manual comparison is a separate, deliberate analysis.
+    "openneuro_ds004386_spinalcord_rest_testretest": "split",
     "internal_balgrist_cospigvs_11": "run",
     "internal_balgrist_motor_11": "run",
     "internal_balgrist_painmotor_21": "run",
