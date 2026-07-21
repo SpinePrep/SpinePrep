@@ -6,6 +6,7 @@ from scipy.ndimage import shift
 from skimage.registration import phase_cross_correlation
 from pathlib import Path
 from typing import Tuple, List, Optional, Union
+from spineprep.lib.timing import timed_subprocess_run
 
 def coarse_bulk_xy_correction(
     bold_4d: np.ndarray,
@@ -94,7 +95,7 @@ def coarse_bulk_xy_correction(
         ]
         
         # Run FLIRT
-        res = subprocess.run(cmd, capture_output=True, text=True)
+        res = timed_subprocess_run(cmd, capture_output=True, text=True)
         if res.returncode != 0:
             logger.error(f"FLIRT failed at volume {t}:\n{res.stderr}")
             return {'volume': t, 'tx_coarse': 0.0, 'ty_coarse': 0.0}

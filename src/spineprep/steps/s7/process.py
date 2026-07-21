@@ -34,6 +34,7 @@ import numpy as np
 
 from spineprep.lib.run import run_command as _run_command
 from spineprep.lib.timing import timed_step
+from spineprep.lib.timing import timed_subprocess_run
 
 
 # ---------------------------------------------------------------------------
@@ -158,7 +159,7 @@ def _run_refinement(
     if reproducibility_strict:
         env["ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS"] = "1"
 
-    proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    proc = timed_subprocess_run(cmd, capture_output=True, text=True, env=env)
     if proc.returncode != 0:
         return {
             "status": "FAIL",

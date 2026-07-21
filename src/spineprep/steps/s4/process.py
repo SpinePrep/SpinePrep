@@ -18,6 +18,7 @@ from typing import Optional, Dict, Any
 
 from spineprep.lib import moco
 from spineprep.lib.timing import timed_step
+from spineprep.lib.timing import timed_subprocess_run
 
 logger = logging.getLogger(__name__)
 
@@ -304,7 +305,7 @@ def run_S4_func_motion_correction(
         ]
 
         logger.info(f"Executing: {' '.join(cmd)}")
-        result = subprocess.run(cmd, cwd=s4_work_dir, capture_output=True, text=True)
+        result = timed_subprocess_run(cmd, cwd=s4_work_dir, capture_output=True, text=True)
         if result.returncode != 0:
             logger.error(f"sct_fmri_moco failed: {result.stderr}")
             return {"status": "FAIL", "reason": "sct_fmri_moco failed"}
