@@ -62,12 +62,22 @@ def run_command(
     directory): without a private cwd, concurrent workers race on those
     shared filenames. Pass a per-run dir to isolate them.
     """
+    # Timed for benchmarking: nearly all of SpinePrep's cost is these external
+    # calls, so accumulating here (rather than at each of the ~200 call sites)
+    # gives every step tool-time accounting for free. The GPU-slot wait is
+    # deliberately OUTSIDE the measured window -- queueing for a shared GPU is a
+    # scheduling cost, not the tool's runtime, and counting it would make a
+    # 12-worker run look like the tool got slower.
+    from spineprep.lib.timing import add_tool_time
+
+    _t0 = None
     try:
         env = os.environ.copy()
         env["OMP_NUM_THREADS"] = "1"
         env["NUMEXPR_MAX_THREADS"] = "1"
         env["MKL_NUM_THREADS"] = "1"
         with (_gpu_slot() if _is_gpu_cmd(cmd) else contextlib.nullcontext()):
+            _t0 = time.perf_counter()
             result = subprocess.run(
                 cmd,
                 text=True,
@@ -77,12 +87,19 @@ def run_command(
                 timeout=timeout,
                 cwd=cwd,
             )
+            add_tool_time(time.perf_counter() - _t0)
     except FileNotFoundError:
         return False, f"Command not found: {cmd[0]}"
     except subprocess.CalledProcessError as err:
+        # A failed call still consumed real time; counting only successes would
+        # understate the cost of a run that retried or died late.
+        if _t0 is not None:
+            add_tool_time(time.perf_counter() - _t0)
         output = "\n".join(part for part in [err.stdout, err.stderr] if part)
         return False, output.strip()
     except subprocess.TimeoutExpired:
+        if _t0 is not None:
+            add_tool_time(time.perf_counter() - _t0)
         return False, f"Command timed out after {timeout}s: {' '.join(cmd[:3])}"
     output = "\n".join(part for part in [result.stdout, result.stderr] if part)
     return True, output.strip()

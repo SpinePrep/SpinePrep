@@ -106,6 +106,9 @@ def run_S3_func_init_and_crop(
     print(f"Starting S3 processing for {len(session_items)} sessions with {batch_workers} workers...")
 
     if batch_workers > 1:
+        # Export for the timing decorator: worker count is not visible inside
+        # the run function, and env vars survive the fork into pool workers.
+        import os as _os_t; _os_t.environ["SPINEPREP_N_WORKERS"] = str(batch_workers)
         with ProcessPoolExecutor(max_workers=batch_workers) as executor:
             futures = {
                 executor.submit(_process_session_s3, sub, ses, cands, bids_root, out_path, policy, s2_out_root, dataset_key): (sub, ses)

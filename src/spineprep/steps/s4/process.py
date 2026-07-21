@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 
 from spineprep.lib import moco
+from spineprep.lib.timing import timed_step
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ def _select_moco_mask(s3_run_dir: Path, crop_mask_path: Path) -> Path:
     return cord_seg_path
 
 
+@timed_step
 def run_S4_func_motion_correction(
     s3_run_dir: Path,
     policy: dict,

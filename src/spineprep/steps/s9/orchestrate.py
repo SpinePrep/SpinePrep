@@ -294,6 +294,9 @@ def run_S9(
     }
 
     results: list[dict] = []
+    # Export for the timing decorator: worker count is not visible inside
+    # the run function, and env vars survive the fork into pool workers.
+    import os as _os_t; _os_t.environ["SPINEPREP_N_WORKERS"] = str(batch_workers)
     for u in upstream_runs:
         run_id = u.get("run_id")
         subject = u.get("subject")
@@ -313,6 +316,11 @@ def run_S9(
             if (_done is not None and _prev is not None
                     and _prev.get("provenance", {}).get("code_sha") == _code_sha
                     and _prev.get("provenance", {}).get("policy_sha256") == _policy_sha):
+                # Mark as served from cache. A resumed run costs milliseconds
+                # and would otherwise deflate every timing summary it enters.
+                from spineprep.lib.timing import resumed_timing
+                _prev = dict(_prev)
+                _prev["timing"] = resumed_timing()
                 results.append(_prev)
                 continue
 

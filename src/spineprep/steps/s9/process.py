@@ -30,6 +30,7 @@ import numpy as np
 import pandas as pd
 
 from spineprep.lib.run import run_command as _run_command
+from spineprep.lib.timing import timed_step
 
 
 
@@ -697,6 +698,7 @@ def _classify(
 # ---------------------------------------------------------------------------
 
 
+@timed_step
 def run_S9_primary_functional_derivatives(
     bold_path: Path,
     cord_mask_path: Path,
