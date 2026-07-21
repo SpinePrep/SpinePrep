@@ -358,3 +358,89 @@ def test_per_level_broken_level_still_warns_when_median_passes():
     status, reasons = _classify(_pl(0.0, 0.97, 0.98), _PLTHR)
     assert status == "WARN"
     assert any("exclude that level" in r for r in reasons)
+
+
+# ---------------------------------------------------------------------------
+# Native-space atlas export (added 2026-07-21 for the analysis endpoints)
+#
+# sct_warp_template already produced the full PAM50 atlas, vertebral levels and
+# rootlets on every run; they were left in the work tree and never emitted.
+# Exporting them is a file copy, not a recomputation. The grey-matter parcels
+# are what the cord literature reports on (dorsal/ventral horn), so the label
+# table must make them unambiguous.
+# ---------------------------------------------------------------------------
+
+
+def _fake_label_tree(tmp_path):
+    import nibabel as nib
+    import numpy as np
+    lab = tmp_path / "label"
+    (lab / "template").mkdir(parents=True)
+    (lab / "atlas").mkdir(parents=True)
+    aff = np.eye(4)
+    for stem in ("PAM50_cord", "PAM50_gm", "PAM50_spinal_levels",
+                 "PAM50_levels", "PAM50_rootlets"):
+        nib.save(nib.Nifti1Image(np.ones((4, 4, 3), np.float32), aff),
+                 lab / "template" / f"{stem}.nii.gz")
+    rows = [(30, "GM left ventral horn"), (34, "GM left dorsal horn"),
+            (4, "WM left lateral corticospinal tract")]
+    for idx, _ in rows:
+        nib.save(nib.Nifti1Image(np.full((4, 4, 3), 0.5, np.float32), aff),
+                 lab / "atlas" / f"PAM50_atlas_{idx:02d}.nii.gz")
+    (lab / "atlas" / "info_label.txt").write_text(
+        "# comment line\n" +
+        "\n".join(f"{i}, {n}, PAM50_atlas_{i:02d}.nii.gz" for i, n in rows))
+    return lab
+
+
+def test_atlas_export_emits_vertebral_levels_and_rootlets(tmp_path):
+    """Vertebral levels are a DIFFERENT parcellation from spinal levels."""
+    from spineprep.steps.s7.process import _copy_native_atlas
+    lab = _fake_label_tree(tmp_path)
+    out = tmp_path / "func"; out.mkdir()
+    paths = _copy_native_atlas(lab, ["PAM50_cord", "PAM50_spinal_levels",
+                                     "PAM50_levels", "PAM50_rootlets"], out, "sub-01")
+    assert "PAM50vertlevels" in paths
+    assert "PAM50spinallevels" in paths
+    assert paths["PAM50vertlevels"] != paths["PAM50spinallevels"]
+    assert "PAM50rootlets" in paths
+
+
+def test_atlas_export_writes_one_4d_file_with_a_label_table(tmp_path):
+    import json
+    import nibabel as nib
+    from spineprep.steps.s7.process import _copy_native_atlas
+    lab = _fake_label_tree(tmp_path)
+    out = tmp_path / "func"; out.mkdir()
+    paths = _copy_native_atlas(lab, ["PAM50_cord"], out, "sub-01")
+    p = paths.get("PAM50atlas_probseg")
+    assert p, "probabilistic atlas not emitted"
+    img = nib.load(p)
+    assert img.ndim == 4 and img.shape[3] == 3
+    meta = json.loads(open(p.replace(".nii.gz", ".json")).read())
+    assert len(meta["Labels"]) == 3
+    # index must address the 4th dimension; atlas_id is the PAM50 number
+    assert [l["index"] for l in meta["Labels"]] == [0, 1, 2]
+    assert {l["atlas_id"] for l in meta["Labels"]} == {4, 30, 34}
+
+
+def test_atlas_export_identifies_the_grey_matter_horn_parcels(tmp_path):
+    """These are the parcels the cord literature reports on."""
+    import json
+    from spineprep.steps.s7.process import _copy_native_atlas
+    lab = _fake_label_tree(tmp_path)
+    out = tmp_path / "func"; out.mkdir()
+    paths = _copy_native_atlas(lab, [], out, "sub-01")
+    meta = json.loads(open(paths["PAM50atlas_probseg"].replace(".nii.gz", ".json")).read())
+    gm = [l for l in meta["Labels"] if l["name"].startswith("GM")]
+    assert len(gm) == 2
+    assert any("dorsal horn" in l["name"] for l in gm)
+
+
+def test_atlas_export_is_optional_and_never_fails_the_run(tmp_path):
+    """A missing atlas directory must not break S7."""
+    from spineprep.steps.s7.process import _copy_native_atlas
+    lab = tmp_path / "label"; (lab / "template").mkdir(parents=True)
+    out = tmp_path / "func"; out.mkdir()
+    paths = _copy_native_atlas(lab, ["PAM50_cord"], out, "sub-01")
+    assert "PAM50atlas_probseg" not in paths

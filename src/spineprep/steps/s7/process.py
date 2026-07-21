@@ -224,6 +224,11 @@ def _copy_native_atlas(
         "PAM50_wm":            "PAM50wm_mask",
         "PAM50_gm":            "PAM50gm_mask",
         "PAM50_spinal_levels": "PAM50spinallevels",
+        # Added 2026-07-21 for the analysis endpoints. sct_warp_template already
+        # produces all of these -- they were computed on every run and then left
+        # in the work tree. Emitting them costs a copy, not a recomputation.
+        "PAM50_levels":        "PAM50vertlevels",     # VERTEBRAL, not spinal
+        "PAM50_rootlets":      "PAM50rootlets",
     }
     for src_stem in masks_to_emit:
         src = template_dir / f"{src_stem}.nii.gz"
@@ -233,6 +238,55 @@ def _copy_native_atlas(
         dst = func_dir / f"{prefix}_desc-{desc}.nii.gz"
         shutil.copy(src, dst)
         paths[desc] = str(dst)
+
+    # Probabilistic tract/grey-matter atlas (label/atlas/PAM50_atlas_NN.nii.gz).
+    # Emitted as a single 4D file plus its label table rather than 37 separate
+    # volumes: it keeps the derivatives directory readable and makes the
+    # parcel index unambiguous at analysis time. The grey-matter parcels
+    # (dorsal horn, ventral horn, intermediate zone) are the ones the cord
+    # literature cares about; note they are only 8-17 voxels at EPI
+    # resolution, so anything computed on them is noisy by construction.
+    atlas_dir = label_dir / "atlas"
+    info = atlas_dir / "info_label.txt"
+    if atlas_dir.is_dir() and info.exists():
+        try:
+            import nibabel as _nib
+            import numpy as _np
+            entries: list[tuple[int, str, str]] = []
+            for line in info.read_text().splitlines():
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                parts = [p.strip() for p in line.split(",")]
+                if len(parts) >= 3 and parts[0].isdigit():
+                    entries.append((int(parts[0]), parts[1], parts[2]))
+            vols, labels = [], []
+            ref = None
+            for idx, name, fname in sorted(entries):
+                f = atlas_dir / fname
+                if not f.exists():
+                    continue
+                img = _nib.load(f)
+                if ref is None:
+                    ref = img
+                vols.append(_np.asarray(img.dataobj, dtype=_np.float32))
+                labels.append({"index": len(vols) - 1, "atlas_id": idx, "name": name})
+            if vols and ref is not None:
+                stack = _np.stack(vols, axis=-1)
+                dst = func_dir / f"{prefix}_desc-PAM50atlas_probseg.nii.gz"
+                _nib.save(_nib.Nifti1Image(stack, ref.affine, ref.header), dst)
+                (func_dir / f"{prefix}_desc-PAM50atlas_probseg.json").write_text(
+                    json.dumps({
+                        "Description": ("PAM50 probabilistic atlas warped to native "
+                                        "functional space; 4th dimension indexes the "
+                                        "parcels listed in Labels."),
+                        "Space": "native functional",
+                        "Labels": labels,
+                    }, indent=2))
+                paths["PAM50atlas_probseg"] = str(dst)
+        except Exception:
+            # Never fail the run over an optional analysis convenience.
+            pass
     return paths
 
 
