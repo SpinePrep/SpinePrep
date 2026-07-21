@@ -28,7 +28,7 @@ import pandas as pd
 # scope -> repeated-measures datasets with >=2 sessions on disk
 TEST_RETEST_SCOPES = {
     "dorsalhorn": "dorsalhorn pain (heat task, ses-01 vs ses-02)",
-    "handgrasp": "handgrasp motor (ses-01 vs ses-02)",
+    "handgrasp": "handgrasp motor (ses-01 vs ses-02; ses-02 is post-AIH, not plain test-retest)",
 }
 
 

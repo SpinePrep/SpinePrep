@@ -48,7 +48,15 @@ Fleiss 1979), computed by `validation/reliability_*.py`.
 
 The cohort's repeated measures are not uniform, and we label each honestly:
 
-- **Between-session test-retest** (task data): dorsalhorn, handgrasp.
+- **Between-session test-retest** (task data): dorsalhorn.
+- **Between-session, across an intervention**: handgrasp ds004616 — *not a
+  plain test-retest*. Session 2 was acquired 45–60 min after a 30-minute
+  acute intermittent hypoxia (AIH) protocol (Hemmerling et al., 2023), which
+  was the broader study's purpose. The source paper's own S2−S1 comparison
+  found 4 significant voxels in a single contrast and nothing elsewhere, and
+  the authors averaged the two sessions on that basis; but grip strength did
+  fall measurably between sessions, so the participant's motor state was not
+  identical. We report the ICC with that caveat rather than as reliability.
 - **Cross-shim reproducibility** (same session, auto vs manual z-shim): rest
   ds004386 — *not* test-retest.
 - **Within-session run reliability**: balgrist motor (run-01..04).
