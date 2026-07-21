@@ -119,6 +119,9 @@ def main() -> int:
     ap.add_argument("--auto", help="cohort dir to pick representative runs from")
     ap.add_argument("--runs", nargs="*", default=[], help="explicit run_ids")
     ap.add_argument("--repeats", type=int, default=3)
+    ap.add_argument("--dataset-key", help="dataset to time (default: from --auto picks)")
+    ap.add_argument("--n-runs", type=int, default=3,
+                    help="how many timed runs are enough (informational)")
     ap.add_argument("--datasets-local", default="config/datasets_local.yaml")
     ap.add_argument("--max-load", type=float, default=4.0,
                     help="refuse to start above this 1-min load average")
@@ -152,52 +155,47 @@ def main() -> int:
 
     out_root = Path(args.out)
     out_root.mkdir(parents=True, exist_ok=True)
+
+    # Latency is measured by running a dataset SERIALLY (one worker) and reading
+    # back the per-run timing records each step writes. Those records ARE the
+    # per-run latency -- there is no need to invoke the pipeline once per run,
+    # and the CLI has no per-run filter anyway (finest granularity is
+    # --dataset-key). An earlier version of this script invoked the CLI per run
+    # and would have silently processed the whole dataset each time.
     env = dict(os.environ,
                SPINEPREP_BENCHMARK="latency",
                SPINEPREP_N_WORKERS="1",
                SPINEPREP_S9_FORCE="1")   # never resume; we are measuring compute
 
-    results: list[dict] = []
+    ds = args.dataset_key or (picks[0].get("dataset") if picks else None)
+    if not ds:
+        print("Could not determine a dataset to time.", file=sys.stderr)
+        return 1
+    print(f"  dataset : {ds} (serial, stopping after {args.n_runs} timed runs)")
+
     for rep in range(args.repeats):
-        for p in picks:
-            rid = p["run_id"]
-            wd = out_root / f"rep{rep}" / rid
-            wd.mkdir(parents=True, exist_ok=True)
+        wd = out_root / f"rep{rep}"
+        wd.mkdir(parents=True, exist_ok=True)
+        for step in STEP_ORDER:
+            cmd = [sys.executable, "-m", "spineprep.cli", "run", step,
+                   "--dataset-key", ds, "--out", str(wd),
+                   "--datasets-local", args.datasets_local,
+                   "--batch-workers", "1"]
             t0 = time.perf_counter()
-            per_step: dict[str, float] = {}
-            for step in STEP_ORDER:
-                s0 = time.perf_counter()
-                cmd = [sys.executable, "-m", "spineprep.cli", "run", step,
-                       "--out", str(wd), "--datasets-local", args.datasets_local,
-                       "--batch-workers", "1"]
-                subprocess.run(cmd, env=env, capture_output=True, text=True)
-                per_step[step] = round(time.perf_counter() - s0, 2)
-            results.append({
-                "repeat": rep, "cold": rep == 0, "run_id": rid,
-                "role": p.get("role"), "n_volumes": p.get("n_volumes"),
-                "mode": p.get("mode"),
-                "total_s": round(time.perf_counter() - t0, 2),
-                "per_step_s": per_step,
-                "load_avg_start": round(load, 2),
-            })
-            print(f"  rep{rep} {rid[:38]:40s} {results[-1]['total_s']/60:6.1f} min"
-                  + ("   [cold]" if rep == 0 else ""))
+            proc = subprocess.run(cmd, env=env, capture_output=True, text=True)
+            print(f"  rep{rep} {step[:38]:40s} {(time.perf_counter()-t0)/60:6.1f} min"
+                  + ("" if proc.returncode == 0 else "   [nonzero exit]"))
 
-    rep_path = out_root / "latency_results.json"
-    rep_path.write_text(json.dumps(results, indent=2))
+    rep_path = out_root / "latency_note.json"
+    rep_path.write_text(json.dumps({
+        "dataset": ds, "repeats": args.repeats, "workers": 1,
+        "note": ("Per-run latency lives in each step's qc.json timing record "
+                 "under rep*/logs/. Summarise with benchmark/analyze.py."),
+    }, indent=2))
 
-    print("\nlatency per run (warm repeats only)")
-    print("-" * 62)
-    for p in picks:
-        warm = [r["total_s"] for r in results
-                if r["run_id"] == p["run_id"] and not r["cold"]]
-        cold = [r["total_s"] for r in results
-                if r["run_id"] == p["run_id"] and r["cold"]]
-        if warm:
-            print(f"  {p['run_id'][:34]:36s} {p.get('role',''):8s} "
-                  f"median {st.median(warm)/60:5.1f} min "
-                  f"(range {min(warm)/60:.1f}-{max(warm)/60:.1f})"
-                  + (f"   cold {cold[0]/60:.1f} min" if cold else ""))
+    print("\nPer-run latency is in the timing records. Summarise with:")
+    for rep in range(args.repeats):
+        print(f"  python3 benchmark/analyze.py {out_root / f'rep{rep}'}")
     print(f"\nwrote {rep_path}")
     print("Per-step detail is in each run's qc.json; summarise with "
           "benchmark/analyze.py")
