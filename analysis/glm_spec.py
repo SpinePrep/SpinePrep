@@ -215,3 +215,67 @@ def corrected_events(dataset_key: str, rows: list[dict], start_time_s: float,
         out.append({"onset": round(onset, 4), "duration": round(dur, 4),
                     "trial_type": cond})
     return out
+
+
+# --------------------------------------------------------------------------
+# Repetition time
+# --------------------------------------------------------------------------
+
+# The largest silent-failure risk in this cohort, so it is a function rather
+# than a note: EVERY preprocessed BOLD carries a placeholder TR of 1.0 s in its
+# NIfTI header, while the sidecar JSON is correct (1.55-3.26 s by dataset).
+# Verified on all 450 files. This is known Spinal Cord Toolbox resampling
+# behaviour that SpinePrep already works around internally, but it reaches the
+# analyst: FSL FEAT's auto-fill, AFNI, and nilearn without an explicit `t_r=`
+# all read the header and would silently model timing at 1 second. Nothing
+# errors; every result is just wrong.
+PLACEHOLDER_HEADER_TR_S = 1.0
+
+
+class RepetitionTimeError(RuntimeError):
+    """Raised rather than returning a TR that cannot be trusted."""
+
+
+def repetition_time_s(bold_path, *, allow_header: bool = False) -> float:
+    """Authoritative TR for a preprocessed run, from its sidecar.
+
+    Never falls back to the NIfTI header silently. If the sidecar is missing or
+    lacks RepetitionTime this raises, because a wrong TR corrupts a GLM without
+    any visible symptom -- exactly the class of defect this project has spent
+    the week removing. ``allow_header=True`` is an explicit, auditable opt-out
+    for a caller who knows the header is trustworthy for that file.
+    """
+    from pathlib import Path
+    import json as _json
+
+    p = Path(bold_path)
+    sidecar = Path(str(p).replace(".nii.gz", ".json").replace(".nii", ".json"))
+    if sidecar.exists():
+        try:
+            tr = _json.loads(sidecar.read_text()).get("RepetitionTime")
+        except Exception as err:
+            raise RepetitionTimeError(f"{sidecar} unreadable: {err}") from err
+        if isinstance(tr, (int, float)) and tr > 0:
+            return float(tr)
+        raise RepetitionTimeError(
+            f"{sidecar.name} has no usable RepetitionTime. Do NOT fall back to "
+            f"the image header: it reads {PLACEHOLDER_HEADER_TR_S} s on every "
+            f"file in this cohort.")
+    if not allow_header:
+        raise RepetitionTimeError(
+            f"No sidecar for {p.name}. The NIfTI header cannot substitute -- it "
+            f"carries a placeholder {PLACEHOLDER_HEADER_TR_S} s TR on all 450 "
+            f"preprocessed runs. Pass allow_header=True only if you have "
+            f"verified this particular file's header.")
+    import nibabel as nib
+    return float(nib.load(str(p)).header.get_zooms()[3])
+
+
+def assert_tr_trustworthy(bold_path) -> dict:
+    """Report whether a file's header TR can be believed. Diagnostic helper."""
+    import nibabel as nib
+    hdr = float(nib.load(str(bold_path)).header.get_zooms()[3])
+    side = repetition_time_s(bold_path)
+    return {"header_tr_s": hdr, "sidecar_tr_s": side,
+            "header_trustworthy": abs(hdr - side) < 1e-3,
+            "use": side}
