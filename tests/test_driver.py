@@ -113,3 +113,5 @@ def test_repeat_axis_matches_the_measured_cohort_structure():
     assert REPEAT_AXIS["openneuro_ds004616_spinalcord_handgrasp_task"] == "run"
     # ds005884's two runs are different conditions, not repeats
     assert REPEAT_AXIS["openneuro_ds005884_cospine_motor"] == "split"
+    # ds004386's two runs are auto vs manual z-shim (Kaptan 2022), not repeats
+    assert REPEAT_AXIS["openneuro_ds004386_spinalcord_rest_testretest"] == "split"
