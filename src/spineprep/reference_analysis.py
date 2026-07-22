@@ -160,7 +160,7 @@ def run_reference_analysis(
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots(figsize=(5, 4.2))
-        im = ax.imshow(corr, vmin=-1, vmax=1, cmap="RdBu_r")
+        im = ax.imshow(corr, vmin=-1, vmax=1, cmap="RdBu_r", interpolation="nearest")
         ax.set_xticks(range(len(labels))); ax.set_yticks(range(len(labels)))
         ax.set_xticklabels(labels, rotation=90, fontsize=7)
         ax.set_yticklabels(labels, fontsize=7)

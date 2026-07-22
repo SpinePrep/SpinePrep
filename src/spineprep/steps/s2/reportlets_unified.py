@@ -311,7 +311,7 @@ def _render_axial_tile(
         overlays_cropped = overlays
     disp = np.rot90(slice_xy)
     ax.imshow(disp, cmap="gray", vmin=vmin, vmax=vmax,
-              interpolation="bilinear", aspect="equal")
+              interpolation="nearest", aspect="equal")
     for ov in overlays_cropped:
         m, color, lw = ov[0], ov[1], ov[2]
         fill_alpha = ov[3] if len(ov) > 3 else 0.0
@@ -354,7 +354,7 @@ def _render_sagittal(
     # sag_yz: shape (n_y, n_z). Rotate so head is up.
     disp = np.rot90(sag_yz)
     ax.imshow(disp, cmap="gray", vmin=vmin, vmax=vmax,
-              interpolation="bilinear", aspect="equal")
+              interpolation="nearest", aspect="equal")
     for m, color, alpha, lw in overlays:
         m_rot = np.rot90(m.astype(bool))
         if not m_rot.any():
