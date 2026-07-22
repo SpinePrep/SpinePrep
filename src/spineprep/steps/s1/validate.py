@@ -535,36 +535,26 @@ def _check_data_complete(path: Path, img) -> list[dict]:
         data_bytes = n_vox * itemsize
         if data_bytes <= 0:
             return []
-        # get_data_offset() reports 0 for a loaded .nii.gz, so fall back to the
-        # header's own declared size + the 4-byte extension flag (352 for
-        # NIfTI-1, 544 for NIfTI-2) rather than assuming a constant.
+        # header + voxel bytes, WITHOUT any extension. get_data_offset() reads 0
+        # for a loaded .nii.gz, so fall back to the header's declared size + the
+        # 4-byte extension flag (352 for NIfTI-1, 544 for NIfTI-2). A header
+        # EXTENSION, when present, sits between this offset and the voxel data
+        # and makes the true size LARGER -- handled per-format below.
         try:
             vox_offset = int(hdr.get_data_offset())
         except Exception:
             vox_offset = 0
         if vox_offset <= 0:
             try:
-                base = int(np.asarray(hdr["sizeof_hdr"]).reshape(-1)[0]) + 4
+                vox_offset = int(np.asarray(hdr["sizeof_hdr"]).reshape(-1)[0]) + 4
             except Exception:
-                base = 352
-            # A NIfTI header EXTENSION sits between the header and the voxel
-            # data; get_data_offset() misses it here, so add its on-disk size
-            # (each extension is padded to a 16-byte boundary, 8-byte esize+ecode
-            # included). Omitting it made `expected` understate the true size,
-            # so a complete file with a 6 kB AFNI extension read as "truncated"
-            # and wrongly failed 46 complete motor runs (2026-07-22).
-            ext_bytes = 0
-            try:
-                for e in hdr.extensions:
-                    esize = 8 + len(e.get_content())
-                    ext_bytes += ((esize + 15) // 16) * 16
-            except Exception:
-                ext_bytes = 0
-            vox_offset = base + ext_bytes
+                vox_offset = 352
         expected = vox_offset + data_bytes
 
         name = path.name.lower()
         if name.endswith(".nii"):
+            # An extension only makes the real file larger, so actual < expected
+            # is still an unambiguous shortfall (missing voxel data).
             if actual < expected:
                 pct = 100.0 * actual / expected
                 return [{
@@ -579,20 +569,35 @@ def _check_data_complete(path: Path, img) -> list[dict]:
                              "message": "File named .gz but lacks a gzip magic number."}]
                 fh.seek(-4, 2)
                 isize = int.from_bytes(fh.read(4), "little")
-            # ISIZE is the uncompressed length mod 2**32; `expected` now counts
-            # header + extension + voxels, so a COMPLETE file matches it exactly
-            # and any deviation is genuine truncation or corruption (a truncated
-            # gzip's last 4 bytes are mid-stream compressed data, so ISIZE
-            # becomes garbage). Compare in the same modular ring so files larger
-            # than 4 GB uncompressed do not raise a spurious mismatch.
+            # Fast path: a file with NO header extension has ISIZE (uncompressed
+            # length mod 2**32) exactly equal to header+voxels, so an exact match
+            # certifies completeness in O(1) for the clean majority. Any mismatch
+            # is ambiguous -- a real extension makes ISIZE legitimately larger,
+            # while a truncated download leaves a garbage trailer -- and NO cheap
+            # header arithmetic distinguishes them (nibabel's own extension size
+            # is off by up to 16 bytes because it strips content padding, which
+            # false-failed 9 complete motor runs). Resolve it the one way that
+            # cannot be fooled: stream the whole decompression. A truncated gzip
+            # raises before the end; a complete one (extension or not) does not.
+            # The full read is paid ONLY for the rare mismatching file.
             if isize != (expected % (1 << 32)):
-                pct = 100.0 * isize / expected if expected else 0.0
-                return [{
-                    "severity": "FAIL",
-                    "message": (f"Truncated or corrupt NIfTI: gzip trailer reports "
-                                f"{isize} uncompressed bytes, header implies {expected} "
-                                f"({pct:.0f}%). Likely an incomplete download."),
-                }]
+                try:
+                    import gzip as _gz
+                    with _gz.open(path, "rb") as g:
+                        while g.read(1 << 22):
+                            pass
+                except Exception as err:  # EOFError / BadGzipFile / zlib error
+                    pct = 100.0 * isize / expected if expected else 0.0
+                    return [{
+                        "severity": "FAIL",
+                        "message": (f"Truncated or corrupt NIfTI: gzip stream ends before "
+                                    f"the end-of-stream marker ({type(err).__name__}); "
+                                    f"trailer claims {isize} bytes, header implies "
+                                    f"{expected} ({pct:.0f}%). Likely an incomplete "
+                                    f"download."),
+                    }]
+                # Decompressed cleanly to the end -> complete; the ISIZE mismatch
+                # was a header extension or a zero vox_offset, not missing data.
     except Exception as err:  # noqa: BLE001
         # Never let the completeness probe itself fail the run silently.
         return [{"severity": "WARN",
