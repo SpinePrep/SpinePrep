@@ -83,3 +83,48 @@ def test_check_is_cheap(tmp_path):
     for _ in range(20):
         _validate_nifti(p, expect_4d=True)
     assert (time.time() - t0) / 20 < 0.05
+
+
+# ---------------------------------------------------------------------------
+# Regression 2026-07-22: a COMPLETE file carrying a NIfTI header extension has
+# an uncompressed size LARGER than header+voxels, because the extension sits
+# between them. The trailer-vs-expected check counted only header+voxels, so
+# isize > expected and the file was branded "truncated". This false-positived
+# 46 complete motor runs (a 6 kB AFNI extension) and failed the whole dataset.
+# ---------------------------------------------------------------------------
+
+
+def _write_with_extension(tmp_path, name, ext_len=6139, shape=(12, 12, 8, 20)):
+    d = (np.random.rand(*shape) * 500).astype(np.int16)
+    img = nib.Nifti1Image(d, np.eye(4))
+    img.header.extensions.append(nib.nifti1.Nifti1Extension(4, b"A" * ext_len))
+    p = tmp_path / name
+    nib.save(img, p)
+    return p
+
+
+def test_complete_file_with_header_extension_is_clean(tmp_path):
+    p = _write_with_extension(tmp_path, "sub-01_task-x_bold.nii.gz")
+    assert _truncation_issues(_validate_nifti(p, expect_4d=True)) == []
+
+
+def test_truncated_file_with_extension_still_failed(tmp_path):
+    # even with an extension, cutting the tail must still be caught
+    p = _write_with_extension(tmp_path, "sub-01_task-x_bold.nii.gz")
+    _truncate(p, 0.5)
+    hits = _truncation_issues(_validate_nifti(p, expect_4d=True))
+    assert hits and hits[0]["severity"] == "FAIL"
+
+
+def test_failure_message_surfaces_run_level_reason():
+    """A FAIL whose cause is a per-run issue (not a dataset check) must still
+    report a reason -- an unexplained FAIL is itself a QC-honesty failure."""
+    from spineprep.steps.s1.validate import _failure_message
+    runs = [
+        {"path": "sub-22/func/sub-22_task-pain_bold.nii.gz", "status": "FAIL",
+         "issues": [{"severity": "FAIL", "message": "Truncated or corrupt NIfTI: ..."}]},
+        {"path": "sub-01/func/sub-01_bold.nii.gz", "status": "PASS"},
+    ]
+    msg = _failure_message("FAIL", checks=[], issues=[], runs=runs)
+    assert msg is not None
+    assert "sub-22" in msg and "Truncated" in msg
