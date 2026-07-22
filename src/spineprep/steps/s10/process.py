@@ -528,7 +528,7 @@ def _build_cohort_coverage_matrix(
         covered = (pivot > 0).astype(int).fillna(0)
         fig, ax = plt.subplots(figsize=(max(7, len(all_levels) * 0.8),
                                         max(3, len(covered) * 0.30 + 1.5)))
-        ax.imshow(covered.to_numpy(), cmap="Greens", vmin=0, vmax=1,
+        ax.imshow(covered.to_numpy(), cmap="Greens", vmin=0, vmax=1, interpolation="nearest",
                   aspect="auto")
         ax.set_xticks(range(len(all_levels)))
         ax.set_xticklabels([(f"C{l}" if l <= 8 else f"T{l-8}")

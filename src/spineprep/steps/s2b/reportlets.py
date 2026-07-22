@@ -47,7 +47,7 @@ def _montage(ax, vol3d, slices, cmap, vmax=None, title=""):
     strip = np.concatenate(tiles, axis=1)
     vmax = vmax if vmax is not None else (np.percentile(strip[strip > 0], 99)
                                           if (strip > 0).any() else 1.0)
-    ax.imshow(strip, cmap=cmap, vmin=0, vmax=vmax)
+    ax.imshow(strip, cmap=cmap, vmin=0, vmax=vmax, interpolation="nearest")
     ax.set_title(title, color=_FG, fontsize=10, loc="left")
     ax.axis("off")
     return vmax

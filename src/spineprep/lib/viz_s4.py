@@ -217,15 +217,14 @@ def create_axial_montage(
                 # But resizing float array with PIL requires mode 'F' or conversion.
                 # PIL resizing of float might interpret as 0-1 or raw?
                 # Safer: Use scipy.ndimage.zoom, OR use matplotlib to plot?
-                # S3 constructs a PIL image grid.
-                # Here we return a numpy montage for imshow.
-                # Converting to fixed pixel size implies resampling.
-                # interpolation implies values might change slightly.
-                # Let's use skimage.transform.resize if avaialble, or just scipy zoom.
-                # Or simplistic: use PIL.Image.fromarray(..., mode='F')
-                
+                # NEAREST, never an interpolating filter: this montage carries
+                # tSNR VALUES, and bilinear/lanczos resampling invents
+                # intermediate ones that were never measured (and blurs the
+                # cord edge into the CSF ring). Per reportlet-visual-standard,
+                # a QC image shows actual voxels -- one screen block per voxel.
                 im_pil = Image.fromarray(crop_rot)
-                im_resized = im_pil.resize((tile_size, tile_size), resample=Image.Resampling.BILINEAR)
+                im_resized = im_pil.resize((tile_size, tile_size),
+                                           resample=Image.Resampling.NEAREST)
                 final_tile = np.array(im_resized)
                 
                 row_strips.append(final_tile)
@@ -268,10 +267,22 @@ def render_tsnr_comparison(
     fig = plt.figure(figsize=figsize, facecolor='black')
     gs = fig.add_gridspec(2, 2, height_ratios=[2.2, 1.0], hspace=0.18, wspace=0.04)
     ax_b = fig.add_subplot(gs[0, 0]); ax_a = fig.add_subplot(gs[0, 1])
+    # Colour ONLY inside the cord. tSNR outside the cord (CSF ring, vertebrae,
+    # muscle) is not what this step is judged on, and showing it lets a bright
+    # off-cord background dominate the eye and the shared colour scale. The
+    # mask rides through the identical montage geometry (same crops, NEAREST
+    # resize keeps it binary), so non-cord voxels become NaN and render as the
+    # figure background.
+    cmap_obj = plt.get_cmap(colormap).copy()
+    cmap_obj.set_bad(color='black')
+    mask_f = mask.astype(np.float32)
     im = None
     for ax, data, title in [(ax_b, tsnr_before, 'Before MoCo'), (ax_a, tsnr_after, 'After MoCo')]:
         montage = create_axial_montage(data, mask, zooms, n_slices=n_slices)
-        im = ax.imshow(montage, cmap=colormap, vmin=0, vmax=vmax)
+        mont_mask = create_axial_montage(mask_f, mask, zooms, n_slices=n_slices) > 0.5
+        montage = np.where(mont_mask, montage, np.nan)
+        im = ax.imshow(montage, cmap=cmap_obj, vmin=0, vmax=vmax,
+                       interpolation='nearest')
         ax.set_title(title, fontsize=13, color='white'); ax.axis('off')
     cbar = fig.colorbar(im, ax=[ax_b, ax_a], shrink=0.85, label='tSNR')
     cbar.ax.yaxis.set_tick_params(color='white', labelcolor='white')

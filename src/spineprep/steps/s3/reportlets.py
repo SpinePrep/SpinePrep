@@ -312,8 +312,11 @@ def _render_t2_to_func_overlay(
     anat_w = max(1, int(anat_pil.width * target_h / max(anat_pil.height, 1)))
     func_w = max(1, int(func_pil.width * target_h / max(func_pil.height, 1)))
 
-    anat_resized = anat_pil.resize((anat_w, target_h), resample=Image.Resampling.LANCZOS)
-    func_resized = func_pil.resize((func_w, target_h), resample=Image.Resampling.LANCZOS)
+    # NEAREST, not LANCZOS: these are QC images of actual voxels. Lanczos
+    # smooths and rings (overshoots at the cord/CSF edge), inventing contrast
+    # that is not in the data. See reportlet-visual-standard.
+    anat_resized = anat_pil.resize((anat_w, target_h), resample=Image.Resampling.NEAREST)
+    func_resized = func_pil.resize((func_w, target_h), resample=Image.Resampling.NEAREST)
 
     # Compose side-by-side with labels
     gap = 4
