@@ -37,6 +37,17 @@ TIER_ORDER = ["cord", "hemicord", "spinallevel", "gmhorn"]
 TIER_VOX = {"cord": 462, "hemicord": 230, "spinallevel": 50, "gmhorn": 8.5}
 
 
+def _short(ds: str) -> str:
+    """A distinct short label per dataset (the openneuro accession, or the
+    internal paradigm), so the three internal 'balgrist' sets do not collide."""
+    parts = ds.split("_")
+    for p in parts:
+        if p.startswith("ds") and p[2:].isdigit():
+            return p
+    # internal_balgrist_<paradigm>_NN -> the paradigm token
+    return parts[2] if len(parts) > 2 else ds
+
+
 def _read(name: str) -> list[dict]:
     p = RESULTS / name
     if not p.exists() or p.stat().st_size == 0:
@@ -83,7 +94,7 @@ def fig_reliability_scale(path: Path = None):
                     xs.append(TIER_VOX[tier]); ys.append(float(np.mean(vals)))
             if len(xs) >= 2:
                 ax.plot(xs, ys, "-o", ms=4, lw=1, alpha=0.8,
-                        label=ds.split("_")[1] if "_" in ds else ds)
+                        label=_short(ds))
         ax.set_xscale("log")
         ax.set_xlabel("parcel size (voxels, log scale)")
         ax.set_ylabel("split-half reliability (Spearman-Brown)")
@@ -155,7 +166,7 @@ def fig_biological(path: Path = None):
     lat = [(r["dataset"], _f(r["value"]), _f(r["n"]))
            for r in rows if r.get("metric") == "laterality_ipsi_frac"]
     if lat:
-        labels = [d.split("_")[1] if "_" in d else d for d, _, _ in lat]
+        labels = [_short(d) for d, _, _ in lat]
         a1.bar(range(len(lat)), [v for _, v, _ in lat], color="#3b6")
         a1.set_xticks(range(len(lat))); a1.set_xticklabels(labels, rotation=30, fontsize=7)
         a1.set_ylim(0, 1.05); a1.axhline(0.5, ls="--", lw=0.8, color="0.6")
@@ -167,7 +178,7 @@ def fig_biological(path: Path = None):
     dv = [(r["dataset"], _f(r["value"]))
           for r in rows if r.get("metric") == "horn_dissociation_d"]
     if dv:
-        labels = [d.split("_")[1] if "_" in d else d for d, _ in dv]
+        labels = [_short(d) for d, _ in dv]
         a2.bar(range(len(dv)), [v for _, v in dv], color="#63b")
         a2.set_xticks(range(len(dv))); a2.set_xticklabels(labels, rotation=30, fontsize=7)
         a2.axhline(0, lw=0.8, color="0.6")
