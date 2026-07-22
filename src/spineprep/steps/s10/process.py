@@ -1085,10 +1085,14 @@ def _build_participants_tsv(
         out_tsv.write_text("participant_id\n")
         out_json.write_text("{}")
         return 0
-    fd_thresh = float(policy.get("publication", {}).get("participants_tsv", {}).get(
-        "include_threshold_fd", 0.5))
-    tsnr_thresh = float(policy.get("publication", {}).get("participants_tsv", {}).get(
-        "include_threshold_tsnr", 5.0))
+    # A threshold set to null in policy means "disabled", NOT "fall back to the
+    # default". dict.get(key, default) returns None when the key is present with
+    # a null value, so coerce explicitly: null -> None, missing -> default.
+    _pt = policy.get("publication", {}).get("participants_tsv", {})
+    _fd_raw = _pt.get("include_threshold_fd", 0.5)
+    fd_thresh = float(_fd_raw) if _fd_raw is not None else None  # FD is not a gate
+    _ts_raw = _pt.get("include_threshold_tsnr", 5.0)
+    tsnr_thresh = float(_ts_raw) if _ts_raw is not None else None
     # n_runs is a count of BOLD runs (S3..S9); S1/S2 records pollute it.
     df_runs = df[df["step"].isin(_BOLD_STEPS)].dropna(subset=["run_id"])
     rows = []
@@ -1131,7 +1135,8 @@ def _build_participants_tsv(
         # 265/467 runs. S4 removed the equivalent gate on 2026-07-16; the same
         # reasoning applies here. mean_fd_mm stays as a descriptive column.
         recommend = "include"
-        if (np.isfinite(median_tsnr) and median_tsnr < tsnr_thresh) or n_failed > 0:
+        if ((tsnr_thresh is not None and np.isfinite(median_tsnr)
+             and median_tsnr < tsnr_thresh) or n_failed > 0):
             recommend = "review"
         rows.append({
             "participant_id": f"sub-{sub}",

@@ -207,8 +207,8 @@ def _recommendation(mean_fd, median_tsnr, n_failed, fd_thr, tsnr_thr) -> tuple[s
     reasons = []
     if n_failed > 0:
         reasons.append(f"{n_failed} run(s) failed a pipeline step")
-    if (median_tsnr is not None and np.isfinite(median_tsnr)
-            and median_tsnr < tsnr_thr):
+    if (tsnr_thr is not None and median_tsnr is not None
+            and np.isfinite(median_tsnr) and median_tsnr < tsnr_thr):
         reasons.append(f"median in-cord tSNR {median_tsnr:.1f} below {tsnr_thr}")
     if not reasons:
         return "include", "no failed steps; in-cord tSNR above the reporting floor"
@@ -254,9 +254,13 @@ def build_subject_report(
     out_path = report_dir / f"sub-{subject}_qc_report.html"
     fig_dirs = _fig_dirs(out_dir, dataset, subject)
 
+    # A null threshold in policy means "disabled", not "use the default":
+    # dict.get returns None for a present-but-null key, so coerce explicitly.
     p_thr = policy.get("publication", {}).get("participants_tsv", {})
-    fd_thr = float(p_thr.get("include_threshold_fd", 0.5))
-    tsnr_thr = float(p_thr.get("include_threshold_tsnr", 5.0))
+    _fd_raw = p_thr.get("include_threshold_fd", 0.5)
+    fd_thr = float(_fd_raw) if _fd_raw is not None else None  # unused; FD is not a gate
+    _ts_raw = p_thr.get("include_threshold_tsnr", 5.0)
+    tsnr_thr = float(_ts_raw) if _ts_raw is not None else None
 
     # --- headline numbers + recommendation ---
     bold_run_ids = [rid for rid, steps in runs.items()

@@ -306,3 +306,36 @@ def test_attrition_reconciles_with_fail_drops(tmp_path):
     assert wf["counts"]["S5"] == 2
     drop = wf["counts"]["S4"] - wf["counts"]["S5"]
     assert drop == wf["fails"]["S4"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Null-threshold regression: a policy that DISABLES the FD gate (sets it to
+# null) must not crash the participants table or the recommendation. dict.get
+# returns None for a present-but-null key, so float(...get(k, default)) used to
+# raise "float() argument ... not 'NoneType'" for every subject. (2026-07-22)
+# ---------------------------------------------------------------------------
+
+
+def test_participants_tsv_survives_null_fd_threshold(tmp_path):
+    from spineprep.steps.s10.process import _build_participants_tsv
+    records = [
+        _rec("S4", "01", "PASS", metrics={"mean_fd_mm": 0.3}),
+        _rec("S9", "01", "PASS", metrics={"tsnr_post_median": 18.0}),
+    ]
+    policy = {"publication": {"participants_tsv": {
+        "include_threshold_fd": None,       # FD gate disabled -> was the crash
+        "include_threshold_tsnr": 5.0}}}
+    out_tsv, out_json = tmp_path / "p.tsv", tmp_path / "p.json"
+    n = _build_participants_tsv(tmp_path, records, policy, out_tsv, out_json)
+    assert n == 1
+    assert "sub-01" in out_tsv.read_text()
+
+
+def test_recommendation_handles_null_tsnr_threshold():
+    from spineprep.steps.s10.reports import _recommendation
+    # tsnr_thr None (gate disabled) must not raise on the < comparison
+    rec, reason = _recommendation(0.3, 12.0, 0, None, None)
+    assert rec == "include"
+    # a real failure still flags even with both thresholds disabled
+    rec2, _ = _recommendation(0.3, 12.0, 2, None, None)
+    assert rec2 in ("review", "exclude")
