@@ -87,7 +87,7 @@ def _summarise_inventory(inventory: dict, policy_entry) -> tuple[list[dict], dic
     runs = sorted(run_records.values(), key=lambda r: (r["subject"] or "", r["session"] or "", r["path"]))
 
     status = _overall_status(checks, runs, issues)
-    failure_message = _failure_message(status, checks, issues)
+    failure_message = _failure_message(status, checks, issues, runs)
 
     # Aggregate quantitative metrics — give the step a step-local
     # truth gauge that's comparable across datasets without re-reading
@@ -544,9 +544,23 @@ def _check_data_complete(path: Path, img) -> list[dict]:
             vox_offset = 0
         if vox_offset <= 0:
             try:
-                vox_offset = int(np.asarray(hdr["sizeof_hdr"]).reshape(-1)[0]) + 4
+                base = int(np.asarray(hdr["sizeof_hdr"]).reshape(-1)[0]) + 4
             except Exception:
-                vox_offset = 352
+                base = 352
+            # A NIfTI header EXTENSION sits between the header and the voxel
+            # data; get_data_offset() misses it here, so add its on-disk size
+            # (each extension is padded to a 16-byte boundary, 8-byte esize+ecode
+            # included). Omitting it made `expected` understate the true size,
+            # so a complete file with a 6 kB AFNI extension read as "truncated"
+            # and wrongly failed 46 complete motor runs (2026-07-22).
+            ext_bytes = 0
+            try:
+                for e in hdr.extensions:
+                    esize = 8 + len(e.get_content())
+                    ext_bytes += ((esize + 15) // 16) * 16
+            except Exception:
+                ext_bytes = 0
+            vox_offset = base + ext_bytes
         expected = vox_offset + data_bytes
 
         name = path.name.lower()
@@ -565,8 +579,12 @@ def _check_data_complete(path: Path, img) -> list[dict]:
                              "message": "File named .gz but lacks a gzip magic number."}]
                 fh.seek(-4, 2)
                 isize = int.from_bytes(fh.read(4), "little")
-            # ISIZE is modulo 2**32; compare in the same ring so large files
-            # (>4 GB uncompressed) do not raise a spurious mismatch.
+            # ISIZE is the uncompressed length mod 2**32; `expected` now counts
+            # header + extension + voxels, so a COMPLETE file matches it exactly
+            # and any deviation is genuine truncation or corruption (a truncated
+            # gzip's last 4 bytes are mid-stream compressed data, so ISIZE
+            # becomes garbage). Compare in the same modular ring so files larger
+            # than 4 GB uncompressed do not raise a spurious mismatch.
             if isize != (expected % (1 << 32)):
                 pct = 100.0 * isize / expected if expected else 0.0
                 return [{
@@ -622,7 +640,8 @@ def _overall_status(checks: list[dict], runs: list[dict], issues: list[dict]) ->
     return "PASS"
 
 
-def _failure_message(status: str, checks: list[dict], issues: list[dict]) -> Optional[str]:
+def _failure_message(status: str, checks: list[dict], issues: list[dict],
+                     runs: Optional[list[dict]] = None) -> Optional[str]:
     if status == "PASS":
         return None
     failing_checks = [c for c in checks if not c.get("passed", True)]
@@ -631,6 +650,20 @@ def _failure_message(status: str, checks: list[dict], issues: list[dict]) -> Opt
     for issue in issues:
         if issue.get("severity") in {"FAIL", "WARN"}:
             return issue.get("message")
+    # The status can also come from a per-run issue (e.g. a truncated file),
+    # which lives on the run record, not in the dataset checks/issues. Surface
+    # it so a FAIL is never reported with a null reason -- an unexplained FAIL
+    # is a QC-honesty failure in its own right.
+    order = {"FAIL": 2, "WARN": 1, "PASS": 0}
+    flagged = sorted(
+        (r for r in (runs or []) if r.get("status") in {"FAIL", "WARN"}),
+        key=lambda r: order.get(r.get("status"), 0), reverse=True)
+    if flagged:
+        first = flagged[0]
+        rissues = first.get("issues") or [{}]
+        msg = rissues[0].get("message", "input validation issue")
+        more = f" (and {len(flagged) - 1} more run(s))" if len(flagged) > 1 else ""
+        return f"{first.get('path', 'run')}: {msg}{more}"
     return None
 
 
