@@ -63,12 +63,34 @@ def test_no_interpolating_resample_in_renderers():
         + ", ".join(offenders))
 
 
-def test_s4_tsnr_montage_is_cord_masked():
-    """The tSNR montage must colour only cord voxels: non-cord becomes NaN and
-    the colormap renders it as background."""
+def _render_tsnr_body():
     src = (SRC / "lib" / "viz_s4.py").read_text()
     body = src[src.index("def render_tsnr_comparison"):]
-    body = body[: body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
-    assert "set_bad" in body, "colormap must define a background for masked voxels"
+    return body[: body.index("\ndef ", 1)] if "\ndef " in body[1:] else body
+
+
+def test_s4_tsnr_montage_is_cord_masked():
+    """The tSNR montage must colour only cord voxels: non-cord becomes NaN so
+    whatever sits underneath shows through."""
+    body = _render_tsnr_body()
+    assert "set_bad" in body, "colormap must define how masked voxels render"
     assert "np.nan" in body, "non-cord voxels must be set to NaN, not drawn"
     assert "mont_mask" in body, "the cord mask must ride through the same montage geometry"
+
+
+def test_s4_tsnr_shows_the_image_underneath():
+    """A black surround hides the anatomy needed to judge whether the cord mask
+    sits on the actual cord, so the mean EPI is drawn in greyscale beneath the
+    overlay and the masked-out region must be TRANSPARENT, not filled."""
+    body = _render_tsnr_body()
+    assert "bg_before" in body and "bg_after" in body, "renderer must accept backdrops"
+    assert "cmap='gray'" in body or 'cmap="gray"' in body, "backdrop is greyscale"
+    assert "set_bad(alpha=0" in body.replace(" ", "").replace("set_bad(alpha=0.0", "set_bad(alpha=0"), \
+        "masked voxels must be transparent so the image shows through"
+
+
+def test_s4_callers_pass_a_backdrop():
+    """Both call sites must supply the backdrop, or the fix only lands in one."""
+    for rel in (("steps", "s4", "process.py"), ("steps", "s4", "orchestrate.py")):
+        text = (SRC.joinpath(*rel)).read_text()
+        assert "bg_before=" in text and "bg_after=" in text, f"{rel[-1]} passes no backdrop"

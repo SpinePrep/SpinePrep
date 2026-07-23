@@ -250,13 +250,20 @@ def render_tsnr_comparison(
     dpi: int = 100,
     n_slices: int = 6,
     colormap: str = 'viridis',
-    vmax_percentile: float = 99.0
+    vmax_percentile: float = 99.0,
+    bg_before: Optional[np.ndarray] = None,
+    bg_after: Optional[np.ndarray] = None,
 ):
     """tSNR before/after — the step-local truth metric (did moco make each
     voxel's signal steadier). Top row: two cord-centred axial montages (same
-    mask -> identical crops). Bottom: per-slice cord-tSNR vs Z for before and
+    mask -> identical crops), each showing the mean EPI in greyscale with the
+    cord tSNR overlaid in colour. Bottom: per-slice cord-tSNR vs Z for before and
     after — a slice where 'after' dips BELOW 'before' is a slice Stage-2 harmed,
     which the whole-cord average hides. Improvement % shown in the title.
+
+    ``bg_before`` / ``bg_after`` are the time-mean EPI volumes matching each tSNR
+    map. They are optional: without them the surround is left empty, but with
+    them the reader can see whether the cord mask sits on the actual cord.
     """
     if mask.sum() > 0:
         vals = np.concatenate([tsnr_before[mask], tsnr_after[mask]])
@@ -267,19 +274,34 @@ def render_tsnr_comparison(
     fig = plt.figure(figsize=figsize, facecolor='black')
     gs = fig.add_gridspec(2, 2, height_ratios=[2.2, 1.0], hspace=0.18, wspace=0.04)
     ax_b = fig.add_subplot(gs[0, 0]); ax_a = fig.add_subplot(gs[0, 1])
-    # Colour ONLY inside the cord. tSNR outside the cord (CSF ring, vertebrae,
-    # muscle) is not what this step is judged on, and showing it lets a bright
-    # off-cord background dominate the eye and the shared colour scale. The
-    # mask rides through the identical montage geometry (same crops, NEAREST
-    # resize keeps it binary), so non-cord voxels become NaN and render as the
-    # figure background.
+    # Colour ONLY inside the cord, over the ACTUAL IMAGE. tSNR outside the cord
+    # (CSF ring, vertebrae, muscle) is not what this step is judged on, and a
+    # bright off-cord tSNR would dominate the eye and the shared colour scale.
+    # But a black surround hides the anatomy needed to judge whether the cord
+    # mask sits where it should, so the mean EPI is drawn underneath in
+    # greyscale and the tSNR is overlaid only inside the cord. Non-cord voxels
+    # become NaN and are made fully transparent so the image shows through.
     cmap_obj = plt.get_cmap(colormap).copy()
-    cmap_obj.set_bad(color='black')
+    cmap_obj.set_bad(alpha=0.0)
     mask_f = mask.astype(np.float32)
     im = None
-    for ax, data, title in [(ax_b, tsnr_before, 'Before MoCo'), (ax_a, tsnr_after, 'After MoCo')]:
-        montage = create_axial_montage(data, mask, zooms, n_slices=n_slices)
+    panels = [(ax_b, tsnr_before, bg_before, 'Before MoCo'),
+              (ax_a, tsnr_after, bg_after, 'After MoCo')]
+    for ax, data, bg, title in panels:
         mont_mask = create_axial_montage(mask_f, mask, zooms, n_slices=n_slices) > 0.5
+        if bg is not None and np.shape(bg) == np.shape(data):
+            mont_bg = create_axial_montage(np.asarray(bg, dtype=np.float32), mask,
+                                           zooms, n_slices=n_slices)
+            finite = mont_bg[np.isfinite(mont_bg) & (mont_bg > 0)]
+            if finite.size:
+                lo, hi = np.percentile(finite, [2.0, 98.0])
+                if hi <= lo:
+                    lo, hi = float(finite.min()), float(max(finite.max(), finite.min() + 1))
+            else:
+                lo, hi = 0.0, 1.0
+            ax.imshow(mont_bg, cmap='gray', vmin=lo, vmax=hi,
+                      interpolation='nearest')
+        montage = create_axial_montage(data, mask, zooms, n_slices=n_slices)
         montage = np.where(mont_mask, montage, np.nan)
         im = ax.imshow(montage, cmap=cmap_obj, vmin=0, vmax=vmax,
                        interpolation='nearest')
