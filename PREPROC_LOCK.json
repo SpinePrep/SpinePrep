@@ -1,0 +1,129 @@
+{
+  "locked_utc": "2026-07-23T00:00:00Z",
+  "git": {
+    "sha": "961a77909c73bee807037ec83a2603b51130d96d",
+    "describe": "961a779",
+    "clean": true
+  },
+  "cohort_root": "/mnt/ssd1/spineprep_cohort_s2",
+  "policy_sha256": {
+    "S10_qc_aggregation_and_release.yaml": "13509d09814fffee33f0750f7a26bfb005ed17f25bb5e988932f3927d929c7a4",
+    "S2B_func_denoise.yaml": "64cd31cea3c61834376215a21635bc6f9e421a611f6c6b4f14e9f9c684ed33a4",
+    "S2_anat_cordref.yaml": "90524ca3dc4ff061f6fe65b6d53d48f3df889a3e0f4f5bfd3dc0d100de2ffae1",
+    "S3_func_init_and_crop.yaml": "d741a52d0aaab1e62372098cd4fa96ad0b155ce09012854a0ad9f3f22500c21e",
+    "S4_func_motion_correction.yaml": "0c8041689f1638784494cb537cfdec39a4edf54386ec5c4597470ffe2becfa49",
+    "S5_func_distortion_correction.yaml": "a83f120f1699c6f3cc44dc0e45e8e31f90698f4ff3451e68991f3ac6bf4bed13",
+    "S6_func_to_anat_registration.yaml": "17524ab2cfaaeb75108d20625fd6d3879fd9c6ebada76ee3f14ca3a59bc1b666",
+    "S7_template_normalization.yaml": "db9388ac488e59bcc77a76431a1d7ec067f378ec9b7faf375e79270f71f5ff34",
+    "S8_confounds.yaml": "fb4c0efaf233f3ce4be1c73298c2068de08d3bfa9ba6469c012a793de582d985",
+    "S9_primary_functional_derivatives.yaml": "84b2613c45a9201baf9600a718308bff9a8d307f0ea4028a03e2db2c5717a068",
+    "datasets.schema.yaml": "9adaca8e434169d9218cf68cad4f3723e72196fc294a029c464257febee1666e",
+    "datasets.yaml": "b53d7de7958a6e7b55828301d877f3dca4a9f8332c14428f4fd626fe031dcf41"
+  },
+  "steps": {
+    "S1_input_verify": {
+      "datasets": 9,
+      "runs": 9,
+      "PASS": 6,
+      "WARN": 2,
+      "FAIL": 1
+    },
+    "S2_anat_cordref": {
+      "datasets": 9,
+      "runs": 310,
+      "PASS": 300,
+      "WARN": 9,
+      "FAIL": 1
+    },
+    "S3_func_init_and_crop": {
+      "datasets": 9,
+      "runs": 469,
+      "PASS": 468,
+      "WARN": 0,
+      "FAIL": 1
+    },
+    "S4_func_motion_correction": {
+      "datasets": 9,
+      "runs": 468,
+      "PASS": 466,
+      "WARN": 1,
+      "FAIL": 1
+    },
+    "S5_func_distortion_correction": {
+      "datasets": 9,
+      "runs": 467,
+      "PASS": 73,
+      "WARN": 391,
+      "FAIL": 3
+    },
+    "S6_func_to_anat_registration": {
+      "datasets": 9,
+      "runs": 464,
+      "PASS": 390,
+      "WARN": 68,
+      "FAIL": 6
+    },
+    "S7_template_normalization": {
+      "datasets": 9,
+      "runs": 458,
+      "PASS": 384,
+      "WARN": 66,
+      "FAIL": 8
+    },
+    "S8_confounds_and_physio_regressors": {
+      "datasets": 9,
+      "runs": 450,
+      "PASS": 450,
+      "WARN": 0,
+      "FAIL": 0
+    },
+    "S9_primary_functional_derivatives": {
+      "datasets": 9,
+      "runs": 450,
+      "PASS": 450,
+      "WARN": 0,
+      "FAIL": 0
+    },
+    "S10_qc_aggregation_and_release": {
+      "datasets": 1,
+      "runs": 0,
+      "PASS": 0,
+      "WARN": 0,
+      "FAIL": 0
+    }
+  },
+  "reportlets": {
+    "S1": 0,
+    "S2": 1545,
+    "S3": 2469,
+    "S4": 1401,
+    "S5": 243,
+    "S6": 928,
+    "S7": 912,
+    "S8": 2250,
+    "S9": 900,
+    "S10": 0
+  },
+  "tools": {
+    "sct_version": "7.1",
+    "fsl_version": "6.0.7.15",
+    "ants_version": "0.0.0.0 (SCT-bundled; compiled May 16 2022 18:30:30)",
+    "mrtrix_version": "3.0.4",
+    "python_version": "3.12.3",
+    "os": "Linux-6.8.0-124-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "nilearn": null,
+      "nibabel": "5.2.1",
+      "scipy": "1.11.4",
+      "numpy": "1.26.4",
+      "pandas": "2.3.3",
+      "matplotlib": "3.10.8",
+      "scikit-image": "0.26.0",
+      "scikit-learn": "1.8.0",
+      "joblib": "1.5.3"
+    }
+  },
+  "receipt_git_sha": "961a77909c73bee807037ec83a2603b51130d96d",
+  "lock_version": "preproc-v1",
+  "scope": "preprocessing S1-S10 on cohort spineprep_cohort_s2"
+}
