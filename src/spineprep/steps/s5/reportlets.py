@@ -143,10 +143,20 @@ def render_s5_slice_displacement(
     # Left: per-slice trace (Z on Y, displacement on X)
     ax = axes[0]
     ax.set_facecolor("black")
-    ax.plot(db, z, "o-", color=_COLOR_BEFORE, label="Before",
-            markersize=4, linewidth=1.4, alpha=0.95)
-    ax.plot(da, z, "o-", color=_COLOR_AFTER, label="After",
-            markersize=4, linewidth=1.6, alpha=0.95)
+    # mode="none" applies NO correction, so "After" is byte-identical to
+    # "Before" (verified: 373 of 386 such runs match exactly, the rest to
+    # <0.01 mm). Drawing both would put two overlapping curves under Before/
+    # After labels and read as "correction ran and changed nothing". Plot the
+    # single measured curve instead: this is a distortion MEASUREMENT, and it
+    # is the evidence behind the distortion-limited flag.
+    if mode == "none":
+        ax.plot(db, z, "o-", color=_COLOR_BEFORE, label="measured (uncorrected)",
+                markersize=4, linewidth=1.6, alpha=0.95)
+    else:
+        ax.plot(db, z, "o-", color=_COLOR_BEFORE, label="Before",
+                markersize=4, linewidth=1.4, alpha=0.95)
+        ax.plot(da, z, "o-", color=_COLOR_AFTER, label="After",
+                markersize=4, linewidth=1.6, alpha=0.95)
     ax.axvline(0.0, color="#444444", linestyle="--", linewidth=0.8)
     ax.set_xlabel("|cord A–P offset vs anat| (mm)", color="white")
     ax.set_ylabel("Z slice (BOLD)", color="white")
@@ -243,10 +253,16 @@ def render_s5_cord_dice_per_slice(
 
     ax = axes[0]
     ax.set_facecolor("black")
-    ax.plot(db, z, "o-", color=_COLOR_BEFORE, label="Before",
-            markersize=4, linewidth=1.4, alpha=0.95)
-    ax.plot(da, z, "o-", color=_COLOR_AFTER, label="After",
-            markersize=4, linewidth=1.6, alpha=0.95)
+    # See render_s5_slice_displacement: with mode="none" the After curve is a
+    # duplicate of Before, so only the measured curve is drawn.
+    if mode == "none":
+        ax.plot(db, z, "o-", color=_COLOR_BEFORE, label="measured (uncorrected)",
+                markersize=4, linewidth=1.6, alpha=0.95)
+    else:
+        ax.plot(db, z, "o-", color=_COLOR_BEFORE, label="Before",
+                markersize=4, linewidth=1.4, alpha=0.95)
+        ax.plot(da, z, "o-", color=_COLOR_AFTER, label="After",
+                markersize=4, linewidth=1.6, alpha=0.95)
     ax.axvline(1.0, color="#444444", linestyle="--", linewidth=0.8)
     ax.set_xlim(0.0, 1.05)
     ax.set_xlabel("2D Dice (EPI cord ∩ anat cord)", color="white")
