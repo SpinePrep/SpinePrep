@@ -519,12 +519,20 @@ def run_S4_func_motion_correction(
         slicewise_rel = str(sw_path.relative_to(out_dir))
 
     # Figure 3 — tSNR before/after + per-slice cord-tSNR profile
+    # Greyscale backdrop = the time-mean of the very volumes each tSNR map was
+    # computed from, so the overlay lands in exactly matching geometry.
+    try:
+        _bg_before = np.mean(img_before.get_fdata(), axis=-1)
+        _bg_after = np.mean(after_data, axis=-1)
+    except Exception:
+        _bg_before = _bg_after = None
     viz_s4.render_tsnr_comparison(
         tsnr_map_before, tsnr_map_after, mask,
         zooms=zooms[:3],
         output_path=figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png",
         improvement_pct=qc_metrics["tsnr_improvement_pct"],
         colormap=policy["qc"]["tsnr_comparison"]["colormap"],
+        bg_before=_bg_before, bg_after=_bg_after,
     )
 
     # -------------------------------------------------------------------------

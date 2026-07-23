@@ -463,11 +463,26 @@ def run_S4_func_motion_correction_reportlets_only(
                 m = nib.load(mask_path).get_fdata() > 0 if mask_path and mask_path.exists() else tb > 0
                 mb = tb[m].mean() if m.sum() else 0.0
                 impr = float((ta[m].mean() - mb) / mb * 100) if mb > 0 else 0.0
+                # Greyscale backdrop: the mean EPI behind each panel, so the
+                # reader can see the cord the tSNR overlay sits on. Both live in
+                # the S4 work dir in the tSNR maps' own geometry; a missing or
+                # mis-shaped one simply leaves that panel without a backdrop.
+                bg_b = bg_a = None
+                try:
+                    coarse = s4_work_dir / "bold_coarse.nii.gz"
+                    if coarse.exists():
+                        bg_b = np.mean(nib.load(coarse).get_fdata(), axis=-1)
+                    moco_mean = s4_work_dir / "sct_input_moco_mean.nii.gz"
+                    if moco_mean.exists():
+                        bg_a = nib.load(moco_mean).get_fdata()
+                except Exception:
+                    bg_b = bg_a = None
                 viz_s4.render_tsnr_comparison(
                     tb, ta, m, zooms=zooms,
                     output_path=figures_dir / f"{prefix}_desc-S4_tsnr_comparison.png",
                     improvement_pct=impr,
                     colormap=policy.get("qc", {}).get("tsnr_comparison", {}).get("colormap", "viridis"),
+                    bg_before=bg_b, bg_after=bg_a,
                 )
             except Exception:
                 pass
