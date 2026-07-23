@@ -1280,22 +1280,24 @@ def run_S5_func_distortion_correction(
     disp_path = figures_dir / f"{prefix}_desc-S5_slice_displacement.png"
     dice_path = figures_dir / f"{prefix}_desc-S5_cord_dice_per_slice.png"
     effect_path = figures_dir / f"{prefix}_desc-S5_distortion_effectiveness.png"
-    try:
-        render_s5_slice_displacement(metrics, disp_path, mode)
-    except Exception as e:
-        # Don't fail the whole run on a viz hiccup; status still reflects metrics
-        reasons.append(f"slice_displacement render failed: {e}")
-    try:
-        render_s5_cord_dice_per_slice(metrics, dice_path, mode)
-    except Exception as e:
-        reasons.append(f"cord_dice_per_slice render failed: {e}")
-    # With mode="none" NO correction is applied, so the Before/After panels of
-    # the effectiveness reportlet are the same image. Rendering it would present
-    # a no-op as an evaluated correction, which is the opposite of what this
-    # reportlet exists to show. Skip it: the two quantitative reportlets above
-    # still report the MEASURED distortion, which is the evidence behind the
-    # distortion-limited flag.
-    render_effectiveness = (mode != "none")
+    # mode="none" applies NO correction, so S5 ships NO reportlets for that run.
+    # All three are correction diagnostics: the effectiveness panel would show
+    # Before against an identical After, and the two per-slice traces would draw
+    # a curve against its own duplicate. A step that did not act should not
+    # illustrate an action. The distortion it MEASURED still reaches the report
+    # through the qc.json metrics and the distortion-limited WARN.
+    corrected = (mode != "none")
+    if corrected:
+        try:
+            render_s5_slice_displacement(metrics, disp_path, mode)
+        except Exception as e:
+            # Don't fail the whole run on a viz hiccup; status still reflects metrics
+            reasons.append(f"slice_displacement render failed: {e}")
+        try:
+            render_s5_cord_dice_per_slice(metrics, dice_path, mode)
+        except Exception as e:
+            reasons.append(f"cord_dice_per_slice render failed: {e}")
+    render_effectiveness = corrected
     if render_effectiveness:
         try:
             # The third reportlet reads cached mean BOLDs + warped anat cord
@@ -1321,15 +1323,17 @@ def run_S5_func_distortion_correction(
     # whether the renders succeeded, so a failed render left qc.json naming
     # PNGs that do not exist while the run still reported PASS.
     from spineprep.reportlets_common import resolve_reportlets
-    _candidates = {"slice_displacement": disp_path,
-                   "cord_dice_per_slice": dice_path}
-    if render_effectiveness:
-        # Only offered when a correction was actually applied; listing it for
-        # mode="none" would name a PNG that is deliberately not written.
-        _candidates["distortion_effectiveness"] = effect_path
+    # Nothing is offered or required for an uncorrected run: the PNGs are
+    # deliberately not written, so demanding them would downgrade a run for a
+    # diagnostic it was never supposed to produce.
+    _candidates = ({"slice_displacement": disp_path,
+                    "cord_dice_per_slice": dice_path,
+                    "distortion_effectiveness": effect_path}
+                   if corrected else {})
     reportlets, status = resolve_reportlets(
         _candidates, out_dir, status, reasons,
-        required=("slice_displacement", "cord_dice_per_slice"),
+        required=(("slice_displacement", "cord_dice_per_slice")
+                  if corrected else ()),
     )
 
     qc_metrics_path = s5_work_dir / "qc_metrics.json"
