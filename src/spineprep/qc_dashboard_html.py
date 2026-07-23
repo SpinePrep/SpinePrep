@@ -31,7 +31,10 @@ REPORTLET_ORDER: dict[str, list[str]] = {
     ],
     "S4_func_motion_correction": [
         "S4_motion_traces",         # S4 - Motion parameter traces
-        "S4_dvars_plot",            # S4 - DVARS timeseries
+        # S4_dvars_plot was dropped from S4's output (see s4/orchestrate.py) but
+        # stayed listed here, so the dashboard held a dead slot while the
+        # slicewise heatmap that S4 DOES emit was never displayed at all.
+        "S4_slicewise_heatmap",     # S4 - slice x volume map of the Stage-2 correction
         "S4_tsnr_comparison",       # S4 - tSNR before/after (THE moco-quality reportlet)
     ],
     "S5_func_distortion_correction": [
@@ -84,7 +87,7 @@ REPORTLET_LABELS: dict[str, dict[str, str]] = {
     },
     "S4_func_motion_correction": {
         "S4_motion_traces": "S4 - Motion Parameter Traces",
-        "S4_dvars_plot": "S4 - DVARS Timeseries",
+        "S4_slicewise_heatmap": "S4 - Slicewise Correction (Slice x Volume)",
         "S4_tsnr_comparison": "S4 - tSNR Before/After",
     },
     "S5_func_distortion_correction": {

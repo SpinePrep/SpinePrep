@@ -70,7 +70,9 @@ HEADLINE_FIG = {
 SECONDARY_FIG = {
     "S2": ["totalspineseg", "rootlets", "crop_box"],
     "S3": ["func_localization", "funcref", "frame_metrics", "crop_box"],
-    "S4": ["dvars"],
+    # S4 stopped emitting a DVARS plot (see s4/orchestrate.py); listing it here
+    # left a dead link while the slicewise heatmap S4 DOES emit went unshown.
+    "S4": ["slicewise_heatmap"],
     "S5": ["slice_displacement", "cord_dice_per_slice"],
     "S6": ["bold_on_anat", "cord_dice"],
     "S7": ["pam50_on_func", "pam50_overlay", "cord_dice_per_level"],
@@ -385,7 +387,11 @@ def build_subject_report(
         for s in ("S4", "S5", "S9"):
             figs = _step_figs(fig_dirs, rid, s)
             embedded += _pick(figs, HEADLINE_FIG.get(s, []))
-        for s in ("S3", "S5", "S6", "S7", "S8", "S9"):
+        # S4 belongs here too: it was absent from this tuple, so SECONDARY_FIG["S4"]
+        # was never consulted at all -- which is why its stale "dvars" entry went
+        # unnoticed and why the slicewise heatmap S4 emits every run was never
+        # linked from any subject report.
+        for s in ("S3", "S4", "S5", "S6", "S7", "S8", "S9"):
             figs = _step_figs(fig_dirs, rid, s)
             linked += [(f"{s}·{k}", p) for k, p in _pick(figs, SECONDARY_FIG.get(s, []))]
         if embedded:
