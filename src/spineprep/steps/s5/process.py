@@ -1289,23 +1289,31 @@ def run_S5_func_distortion_correction(
         render_s5_cord_dice_per_slice(metrics, dice_path, mode)
     except Exception as e:
         reasons.append(f"cord_dice_per_slice render failed: {e}")
-    try:
-        # The third reportlet reads cached mean BOLDs + warped anat cord
-        # from s5_work_dir/cospine/ — no pipeline rerun, just visualization.
-        render_s5_distortion_effectiveness(
-            metrics, effect_path, mode, s5_work_dir,
-            n_axial_tiles=int(policy.get("qc", {})
-                              .get("distortion_effectiveness", {})
-                              .get("n_axial_tiles", 3)),
-            contour_lw=float(policy.get("qc", {})
-                             .get("distortion_effectiveness", {})
-                             .get("contour_lw", 2.0)),
-            dpi=int(policy.get("qc", {})
-                    .get("distortion_effectiveness", {})
-                    .get("dpi", 120)),
-        )
-    except Exception as e:
-        reasons.append(f"distortion_effectiveness render failed: {e}")
+    # With mode="none" NO correction is applied, so the Before/After panels of
+    # the effectiveness reportlet are the same image. Rendering it would present
+    # a no-op as an evaluated correction, which is the opposite of what this
+    # reportlet exists to show. Skip it: the two quantitative reportlets above
+    # still report the MEASURED distortion, which is the evidence behind the
+    # distortion-limited flag.
+    render_effectiveness = (mode != "none")
+    if render_effectiveness:
+        try:
+            # The third reportlet reads cached mean BOLDs + warped anat cord
+            # from s5_work_dir/cospine/ — no pipeline rerun, just visualization.
+            render_s5_distortion_effectiveness(
+                metrics, effect_path, mode, s5_work_dir,
+                n_axial_tiles=int(policy.get("qc", {})
+                                  .get("distortion_effectiveness", {})
+                                  .get("n_axial_tiles", 3)),
+                contour_lw=float(policy.get("qc", {})
+                                 .get("distortion_effectiveness", {})
+                                 .get("contour_lw", 2.0)),
+                dpi=int(policy.get("qc", {})
+                        .get("distortion_effectiveness", {})
+                        .get("dpi", 120)),
+            )
+        except Exception as e:
+            reasons.append(f"distortion_effectiveness render failed: {e}")
 
     # qc.json reportlet paths must be RELATIVE to out_dir (HEADER convention).
     # Recorded only if actually written, and a missing diagnostic downgrades
@@ -1313,11 +1321,14 @@ def run_S5_func_distortion_correction(
     # whether the renders succeeded, so a failed render left qc.json naming
     # PNGs that do not exist while the run still reported PASS.
     from spineprep.reportlets_common import resolve_reportlets
+    _candidates = {"slice_displacement": disp_path,
+                   "cord_dice_per_slice": dice_path}
+    if render_effectiveness:
+        # Only offered when a correction was actually applied; listing it for
+        # mode="none" would name a PNG that is deliberately not written.
+        _candidates["distortion_effectiveness"] = effect_path
     reportlets, status = resolve_reportlets(
-        {"slice_displacement": disp_path,
-         "cord_dice_per_slice": dice_path,
-         "distortion_effectiveness": effect_path},
-        out_dir, status, reasons,
+        _candidates, out_dir, status, reasons,
         required=("slice_displacement", "cord_dice_per_slice"),
     )
 
