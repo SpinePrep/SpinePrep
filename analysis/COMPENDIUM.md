@@ -438,3 +438,78 @@ Nine, across the exploration: six design failures (§7), one process failure
 three confounded comparisons found by this audit. Each would have produced a
 plausible but false headline. They are recorded rather than quietly fixed because
 the reliability of everything else here depends on that being visible.
+
+---
+
+# 12. MAJOR RETRACTION (2026-07-26): the aCompCor findings are confounded by MISUSE
+
+An external novelty audit flagged that the degrees-of-freedom argument only bites
+if the slice-wise CSF design is applied **flat**. It was. Verified in the code:
+
+- `confound_benchmark.family_builder` selects **all** `csf_sliceNN_pcMM` columns
+  and returns them as one matrix;
+- `glm.fit_run` applies that matrix to **every cord voxel**
+  (`X = column_stack([Xtask, Xn, ones])`);
+- **S8's own spec states: "The design is built for a SLICEWISE GLM"** — each
+  slice's 5 components belong only to that slice's voxels. Applied correctly the
+  cost is **5 regressors per slice, not 125–140 for the whole cord.**
+- The same flat selection was used in the G4 connectivity arm.
+
+## What is RETRACTED
+
+- **"aCompCor spends 125+ regressors for no sensitivity gain."** The 125 figure is
+  an artifact of flat application. Correctly applied, the budget is 5/slice.
+- **"aCompCor destroys connectivity (D–D ICC 0.40 → 0.05)."** Same flat misuse.
+- The **7.8% rank-deficiency** figure is also a property of the flat design, i.e.
+  of a design nobody should build, and must be requalified rather than quoted.
+
+These were listed as flagship-grade. They are not. Both must be recomputed with
+slice-wise application before any version is claimed.
+
+## What SURVIVES, and is now better sourced than my own benchmark
+
+**The fixed per-slice component count has no precedent in 20 years of CompCor** —
+established from the literature, independent of my flawed benchmark:
+
+| implementation | stopping rule | CSF components |
+|---|---|---|
+| Behzadi 2007 (original) | broken-stick vs null | 6.3 ± 0.5 **total** |
+| Muschelli 2014 (aCompCor50) | 50% variance | **3.0 ± 1.1** for CSF |
+| Barry 2014 (cord) | 50% variance / eigenvalue gap | adaptive **2–6 per slice** |
+| Ricchi 2024 (cord) | fixed K | **5 total** |
+| Hemmerling 2026 (cord) | parallel analysis | median **9 total** |
+| **SpinePrep** | **fixed 5 per slice** | **125–140** |
+
+Muschelli's number is decisive: the canonical variance criterion yields ~3 CSF
+components because CSF variance is low-rank, and 5 PCs already explain 70% of it.
+A fixed per-slice count is an unforced design error in SpinePrep itself — a
+**pipeline fix**, not a research finding.
+
+## And the direction was already published — four times
+
+The novelty audit found the "stricter cord denoising reduces connectivity"
+direction is **not ours**: Kaptan 2023 (D–D ICC 0.71 → 0.59), Ricchi 2024
+(12 pipelines, 0–40 regressors, non-denoised strongest), and above all
+**Hemmerling et al. 2026, Imaging Neuroscience** (Barry & Bright; D–D difference
+0.170, p = 0.006; "group-level activation maps did not show a clear benefit from
+including SpinalCompCor regressors"; already recommends using it only when physio
+recordings are unavailable). Brain analogues are stronger still: Hoeppli 2023
+(aCompCor collapsed an auditory effect from 0.357 to 0.006), Parkes 2018
+(aCompCor50 lowest test–retest reliability), Bright & Murphy 2015.
+
+**The one genuinely novel inference remains available** — but only if the
+slice-wise recomputation supports it. Kaptan interpreted reduced connectivity as
+*increased validity* (removing "reliable artefacts"); Hemmerling could not rule out
+that real signal was removed. Neither could resolve it, because a rest-only design
+cannot. A paired task arm can: if the denoising bought validity, task detection
+would rise. That inference is the publishable core, and it is currently
+**unproven** because the arm that would prove it was misapplied.
+
+## Traceability fix also required
+
+Finding §3.2 states FD > 0.5 mm censors ~25% of frames. That figure comes from the
+`framewise_displacement` column of the confounds TSV. A project spec
+(`s4-fd-threshold.md`) reports median **48.5%** using a *composed* (bulk +
+slice-wise) FD. Two FD definitions, a 2× spread — the same critique this section
+makes of borrowed thresholds. The paper must name which FD definition it uses; all
+analyses here used the TSV column.
