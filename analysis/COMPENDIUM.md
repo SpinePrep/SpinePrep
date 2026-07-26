@@ -726,3 +726,112 @@ modality.
 **Morrison et al. 2016** — the primary paper could not be located (no journal, volume
 or DOI); it is known only through the Bradshaw 2017 review. Earlier notes here cited
 it for peak-vs-CoG; that citation must be removed pending verification.
+
+---
+
+# 15. THE UNIFYING THESIS (2026-07-26) — supersedes "the cord is not a small brain"
+
+**One fact explains three of our findings:**
+
+> **Cord activation is focal relative to every spatial unit the field currently
+> analyses it with.**
+
+- it explains §3.4 — **parcels dilute it** (the horn ROI averages signal into noise);
+- it explains §3.5 — **its peak is unlocatable** (too few voxels to fix a position);
+- it explains §4.1 — **kernels wider than a horn erase it**.
+
+The mechanism is measurable: an individual grey-matter horn is median **4.5 mm²**,
+spanning only **2–5 mm × 2–3 mm** (measured directly from `PAM50_gm.nii.gz`), against
+a cervical cord cross-section of 58–88 mm². A **4–6 mm FWHM kernel is wider than a
+single horn** and approaches the whole A–P extent of the cord. Dabbagh's 61-voxel
+group map and the 4.5 mm² horn are the same observation from two directions.
+
+**Why this framing is strategically right:** each of the three findings is
+*partially* known, so presenting them separately invites "all three are already
+published." The unifying claim is **not** published, and it converts three partial
+novelties into one argument with a measured mechanism.
+
+# 16. NOVELTY VERIFICATION — the three measurement findings
+
+## §3.4 ROI summary measure — PARTIALLY KNOWN; the SIGN FLIP is novel
+**Already published, in both organs.** Brain: Poldrack 2007 states the mechanism
+verbatim ("could swamp the signal … may cancel each other out");
+Nieto-Castañón & Fedorenko 2012 derive "partial coverage" (0.05 %BOLD where truth is
+1.02 — a 20-fold dilution); **Tong et al. 2016** compared **ten** summary measures
+across **four** datasets and concluded thresholding to top-activated voxels
+"significantly improved" effect sizes — structurally our study, in brain, ten years
+ago; Mitsis 2008 found top-20% most reliable.
+
+**Cord — and this is the important one: Dabbagh 2024 used our exact three measures.**
+Their Table 1 (left dorsal horn C6, β): ROI-average ICC **0.03**, peak **0.20**,
+top-10% **0.20**; z-scores 0.10 / 0.24 / 0.17. **The average is worst every time.**
+They even wrote the dilution argument down — *"the former included many nonresponsive
+voxels"* — then dismissed it. Oliva 2025 adds: *"Averaging across all spinal cord
+segments could hide activation."*
+
+**Genuinely ours:** (1) a **sign flip** — no documented case in brain or cord where
+summary-measure choice *reverses the direction* of a group effect (Tong shows changed
+significance; Nieto-Castañón shows collapse-to-null); (2) framing as **group
+detection / effect size** rather than reliability — and **none of the five key cord
+papers reports a Cohen's d for the group task effect at all**, which is exactly why
+the sign problem went unnoticed.
+
+**CIRCULARITY DEFENCE (must appear in the abstract).** Selecting top-10% voxels and
+reporting an effect size from the same data is the practice Vul 2009 and
+Kriegeskorte 2009 indict as double dipping. **Our d comes from odd/even split-half
+cross-validation — voxels selected on one half, measured on the other.** This must be
+stated prominently or the finding reads as circular.
+
+## §3.5 Peak location — the RANDOM-PLACEMENT NULL is novel
+**Peak instability itself is documented in cord:** Dabbagh 2024 (group across-day
+Dice **0**; same axis structure — D-V similar, rostrocaudal differs);
+**Seifert et al. 2024** (HBM, doi:10.1002/hbm.26597) — peak S-I location varies "up to
+1½ vertebral levels" within subjects across protocols, and they explicitly invite the
+study: *"The cause for this variation is unclear without conducting a reproducibility
+study"*; Kowalczyk 2025 (Dice 0.01 within-visit, 0.04 between).
+Brain: Hu 2022; **Zhao N et al. 2022** (Neuroinformatics) — CoG 3.8–7.3 mm vs FC peak
+**~30 mm**, the aggregate/peak dissociation with numbers.
+
+**The random-placement null was not found anywhere**, in brain or cord. Nearest is a
+**preprint only** (Zhao Y 2024, UK Biobank n=35,423, TMS targets vs random locations).
+The cord is where a uniform-placement null is genuinely defensible — small ROI, clean
+boundary, consistent shape.
+
+**Must scope to TASK activation.** Resting-state spatial patterns look stable:
+Kowalczyk 2024 DSC 0.88 group / 0.67 subject; Ricchi 2026 reports a connectivity
+"fingerprint."
+
+**Reviewer alternative to pre-empt:** random-field theory gives a noise-based null,
+SD(peak) ≈ FWHM/(MaxZ·√(4log2)), 95% half-widths 3–10 mm (Ma/Worsley/Evans). We must
+justify why an arbitrary-placement null is the right comparison.
+
+**Tightening required:** report per-dataset values with intervals, not the
+0.67–1.49 range (which spans "somewhat better than random" to "worse than random").
+And the 92% laterality needs its chance baseline stated — 50% for a binary call, so
+give the binomial test.
+
+**Impact:** this invalidates a class of published claims — Hemmerling 2023
+("most concentrated in the C7 segment"), Kowalczyk 2025 ("peaks at levels C6 and C7"),
+Seifert 2024 (C6). High ceiling, high variance.
+
+## §4.1 Smoothing — LARGELY PUBLISHED; do not lead with it
+Brain settled it in 2008: **Weibull 2008** — "The optimal smoothing kernel width was
+dependent on the CNR … At CNR >1, little or no smoothing proved advantageous" (our
+dataset-dependence, with the mechanism named); Mikl 2008; Chen & Calhoun 2018.
+
+**Both of our specific cord numbers are already published.** Hemmerling 2023:
+*"Unsurprisingly, spatial smoothing increases the amount of active spinal cord
+voxels"* (~50→200 voxels) — our 2.7× is a **replication**. Kaptan 2023 already found a
+smoothing-induced **sign change** in dorsal–ventral connectivity and concluded *"even
+modest smoothing kernels such as 2 mm should only be employed with great caution."*
+
+**Still ours:** the first cord kernel **sweep on task effect size** (Kaptan swept 2 vs
+4 mm on resting FC only), and a direct **contradiction of a published cord
+conclusion** — Hemmerling 2023 concluded "smoothing … improved sensitivity to motor
+activation"; we show it can destroy the effect (d +0.26 → −0.06). Framed as that
+correction plus the 4.5 mm² horn mechanism it is a solid supporting section; framed as
+"no universal optimum" it reads as a 2008 brain result rediscovered.
+
+Field default nobody has tested: 2 mm in-plane (Hemmerling, Dabbagh, Kowalczyk ×2),
+2×2×6 (Seifert), 2×2×5 (Oliva), 3 mm (CoSpine). Hemmerling justified 2 mm as merely
+"based on recent spinal cord fMRI work."
