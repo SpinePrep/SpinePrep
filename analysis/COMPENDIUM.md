@@ -1,0 +1,340 @@
+# SpinePrep — complete analysis compendium
+
+**Single authoritative record of every analysis run in the P2 exploration.**
+Consolidates and supersedes: `paper/FINDINGS.md`, `paper/P2_UNSCOOPED.md`,
+`analysis/RESULTS.md`, `analysis/replication/REPLICATION_LOG.md`.
+Compiled 2026-07-26.
+
+## Provenance
+
+| item | value |
+|---|---|
+| cohort | `/mnt/ssd1/spineprep_cohort_s2` — 9 datasets, 469 runs entering S3, **450 complete S9 (all PASS)** |
+| preprocessing | frozen as **`preproc-v1`**, git `961a779` (`PREPROC_LOCK.md` / `.json`) |
+| tools | SCT 7.1, FSL 6.0.7.15, MRtrix 3.0.4, ANTs (SCT-bundled), Python 3.12.3 |
+| scripts | `analysis/experiments/` (all committed) |
+| tables | `analysis/results/*.csv` (gitignored; regenerate via the scripts) |
+| scope | **PIPELINE claims only.** Design/power/scan-time was handed to P1 (`/mnt/hdd2/P3_DesignOpt/HANDOFF_FROM_P2_2026-07-25.md`) |
+
+## The thesis (after all amendments)
+
+**"The cord is not a small brain: preprocessing conventions imported from brain
+fMRI misfire in the spinal cord."**
+
+Two conventions are demonstrably harmful, one is wasteful-and-destructive, and
+three more turn out unpredictable or inert rather than beneficial. The pipeline's
+authority to say so rests on reproducing the field's own published results.
+
+---
+
+# 1. MASTER TABLE — every analysis and its verdict
+
+| # | analysis | n | verdict | strength |
+|---|---|---|---|---|
+| 1 | Replication of published results | 9 datasets | 7/7 task activations reproduced | ★★★ moat |
+| 2 | Distortion, 3-way vs measured field | 80 paired runs | SyN harms 28% of runs | ★★★ strongest |
+| 3 | FD censoring threshold | 199 runs | brain's 0.5 mm is wrong for cord | ★★★ |
+| 4 | ROI summary measure | 4 datasets | parcel-mean destroys the effect | ★★★ |
+| 5 | Confound families (task) | 324 runs | no family improves sensitivity | ★★ |
+| 6 | aCompCor on connectivity | 48 pairs | **destroys** connectivity | ★★ |
+| 7 | Peak-voxel localisation | 2 datasets | not reproducible (≈ random) | ★★ |
+| 8 | Confound-design degeneracy | 450 runs | 7.8% rank-deficient | ★ |
+| 9 | Biological-conclusion robustness | 199 runs | laterality stable | ★ reassurance |
+| 10 | Motion regression cost | 199 runs | −23% d, mechanism unresolved | downgraded |
+| 11 | Smoothing | 4 datasets | **no universal optimum** | downgraded |
+| 12 | Motion correction ablation | 4 datasets | tSNR +0–121%, no consistent d gain | mixed |
+| 13 | High-pass filtering | 4 datasets | **null** (justifies inherited 100 s) | null |
+| 14 | Physio benefit by cord zone | 4 datasets | not edge-concentrated | null |
+| 15 | Effect reliability (between/within) | 5 datasets | confirmatory + partly scooped | supporting |
+| 16 | Kaptan connectivity replication | 48 pairs | V–V ✓, D–D unresolved | open |
+
+---
+
+# 2. VALIDATION — the pipeline reproduces the field
+
+Group activation at the a-priori focal horn, correct side, peak/top-10% measure:
+
+| dataset | group t | published result | verdict |
+|---|---|---|---|
+| ds004616 handgrasp | 20.8 | ipsilateral ventral, C7, LI 0.96–0.99 (Hemmerling 2023) | ✓ (ours 92% ipsilateral) |
+| ds005884 cospine motor | 11.7 | ipsilateral ventral (Wei 2025) | ✓ |
+| internal motor | 14.3 | — | ✓ |
+| internal painmotor | 21.0 | — | ✓ |
+| ds004926 dorsal-horn pain | 17.9 | left dorsal C6; ICC 0.03–0.24 (Dabbagh 2024) | ✓ (ours ICC 0.05) |
+| ds005883 cospine pain | 14.9 | right dorsal C5–C6 (Wei 2025) | ✓ |
+| internal cospigvs | 11.1 | — | ✓ |
+| ds004386 rest | — | conn ICC D–D 0.59 / V–V 0.63 (Kaptan 2023) | partial (see §6) |
+| ds005075 brain-spine | — | somatotopy Dice 0.84 (Landelle 2024) | out of scope (cord-only) |
+
+**Unbiased cross-validation** (select on odd timepoints, measure on even):
+ds004616 motor d = **+0.64** (p = 0.005, genuine); ds004926 pain **null** (d = 0.11)
+— the strong motor response cross-validates, the weak pain response does not.
+
+**Method lesson:** an apparent "only 1/6 datasets show a group effect" was an
+artifact of the parcel-MEAN summary. Cord activation is focal; the field's
+peak/top-10% convention is necessary, not arbitrary (see §3.4).
+
+---
+
+# 3. SURVIVING FINDINGS
+
+## 3.1 Distortion — use a fieldmap; image-based SyN harms  ★ STRONGEST
+80 CoSpine reversed-PE runs, corrected three ways, scored against the anatomical
+truth. The measured field is a physical referee SyN never saw.
+
+| arm | median cord displacement from anatomy | vs no correction |
+|---|---|---|
+| no correction | 3.34 mm | — |
+| image-based SyN (the no-fieldmap fallback) | 2.21 mm | −34% |
+| **measured field (TopUp)** | **0.61 mm** | **−82%** |
+
+- TopUp worsens **1%** of runs; **SyN worsens 28%**.
+- SyN beats the measured field on only **5%** of runs.
+- Median `gap_closed` (1 = matches physics) = **+0.23**.
+- Recommendation both ways: acquire reversed-PE fieldmaps; do not trust
+  image-based correction without one. Justifies the shipped `none` default.
+
+## 3.2 FD censoring — the brain's threshold is wrong for the cord  ★
+| rule | frames removed | median Δ detectability |
+|---|---|---|
+| FD > 0.5 mm (Power 2012, a **brain** value) | 24% | **−8%** (motor −34%, −29%) |
+| worst 10% of frames (**cord-derived**) | 10% | **+61%** |
+
+The imported threshold discards a quarter of the data and hurts motor paradigms;
+a light data-driven rule improves 3/4 datasets.
+
+## 3.3 aCompCor — wasteful for task, DESTRUCTIVE for connectivity  ★
+Task (324 runs):
+
+| family set | sensitivity | residual DVARS | DOF |
+|---|---|---|---|
+| motion only | 2.54 | 38.3 | 4 |
+| +spike+cosine | 2.38 | 37.0 | 27 |
+| +retroicor | 2.36 | 33.6 | 47 |
+| +csf aCompCor | 2.48 | 22.0 | **125** |
+| full | 2.19 | 20.0 | **144** |
+
+Connectivity (ds004386, 48 subject-pairs, band-passed 0.01–0.13 Hz):
+
+| denoising | D–D r | D–D ICC | V–V r | V–V ICC |
+|---|---|---|---|---|
+| motion only | 0.20 | 0.40 | 0.37 | 0.49 |
+| **+ CSF aCompCor** | **0.07** | **0.05** | **0.14** | **0.36** |
+
+No confound family improves task sensitivity; aCompCor spends 125+ regressors for
+none, and **collapses** connectivity. RETROICOR is the efficient choice. Related:
+median 139 regressors vs 227 frames; **35/450 runs (7.8%) rank-deficient**.
+No cord equivalent of Ciric 2017 / Parkes 2018 exists.
+
+## 3.4 The ROI summary measure decides whether you find anything  ★
+Same data, same GLM, different summary of the focal horn (group d):
+
+| dataset | parcel-MEAN | top-10% | peak |
+|---|---|---|---|
+| ds004616 | **−0.35** | +0.90 | +0.25 |
+| ds005884 | +0.10 | +0.41 | +0.15 |
+| ds004926 | +0.11 | +0.11 | +0.24 |
+| ds005883 | **−0.17** | +0.44 | +0.16 |
+
+The parcel-mean costs **~107%** of detectability and can invert the sign.
+
+## 3.5 Peak-voxel localisation is not reproducible across subjects  ★
+Scatter of each subject's peak location, normalised to RANDOM placement inside the
+ROI (span/√12). 1.0 = no consistency at all.
+
+| dataset | x | y | z |
+|---|---|---|---|
+| ds004616 | 0.73 | 1.49 | 0.67 |
+| ds004926 | 1.04 | 1.41 | 0.93 |
+
+≈ random on every axis. **Aggregates are reproducible (92% laterality; top-10%
+d up to +0.90); the single peak is not.** This is the mechanism for the horn-scale
+null. Consequence: peak-coordinate and peak-based segment claims are unsupportable
+at this resolution. Caveat: peak statistics are noisy in any modality — cord-vs-brain
+specificity would need a matched comparison.
+
+## 3.6 The biological conclusion is robust
+Laterality sign is stable across every nuisance arm wherever the effect exists
+(ds004616 LI +0.13…+0.19).
+
+---
+
+# 4. WEAKENED / DOWNGRADED
+
+## 4.1 Smoothing — NO universal optimum (was "~4 mm, +30%")
+| dataset | 0 mm | 2 mm | 4 mm | 6 mm | best |
+|---|---|---|---|---|---|
+| ds004616 | +0.64 | +0.64 | **+1.15** | +1.13 | 4 mm |
+| ds005884 | +0.26 | **+0.34** | −0.06 | −0.01 | 2 mm |
+| ds004926 | +0.11 | +0.03 | +0.27 | **+0.30** | 6 mm |
+| ds005883 | +0.13 | **+0.32** | +0.27 | +0.26 | 2 mm |
+| **median** | +0.20 | **+0.33** | +0.27 | +0.28 | — |
+
+The original "+30% at 4 mm" was **ds004616 alone (n=1)**. Best kernel differs per
+dataset (4/2/6/2 mm) and 4–6 mm **destroys** the effect in ds005884. Honest claim:
+light (~2 mm) smoothing gives a modest median gain; heavier is dataset-dependent
+and can harm. Separately: smoothing inflates apparent extent **2.7×** (42→115
+"active" voxels) while **halving peak effect** (0.275→0.127); specificity unaffected.
+
+## 4.2 Motion regression costs detectability — mechanism unresolved
+Median Δd = **−23%** across 4 datasets. Motion regressors do carry task
+correlation (median max |r| **0.16 motor vs 0.10 pain**, directionally as
+predicted), but magnitudes are modest and pain was hurt too, so
+"removes task-correlated signal" cannot be separated from "spends degrees of
+freedom" (Bright & Murphy 2015).
+
+## 4.3 Motion correction — large but heterogeneous tSNR gain, no consistent transfer
+| dataset | tSNR off → on | group d off → on |
+|---|---|---|
+| ds004616 | 22.2 → 22.9 (**+3%**) | +0.61 → +0.58 |
+| ds005884 | 9.1 → 19.8 (**+118%**) | +0.25 → +0.32 |
+| ds004926 | 16.5 → 16.5 (**0%**) | +0.07 → +0.15 |
+| ds005883 | 9.7 → 21.4 (**+121%**) | +0.01 → −0.08 |
+
+The most universally applied step buys large quality gains in some datasets and
+none in others, and those gains do not reliably become statistical power.
+Detectability estimates are noisy (n = 15–37), so stated as "no consistent
+translation", NOT "moco does not help detection".
+
+## 4.4 Reliability — confirmatory and partly scooped
+Between-session effect ICC: pain **0.05** (= Dabbagh 0.03), motor **0.51**
+(AIH-confounded floor). Within-session split-half **0.84** and tSNR-ICC **0.75**
+overstate both. Verified against Dabbagh 2024, Kowalczyk 2024, Kaptan 2023,
+Elliott 2020 (brain mean ICC 0.397). **Scooped** for the cord by Kowalczyk 2026
+(bioRxiv 2025.09.07.674708) and for the framing by Kragel 2021. Keep as
+characterisation benchmarked to brain; do not headline.
+
+---
+
+# 5. NULLS (reported as nulls)
+
+- **High-pass filtering has no material effect.** Valid design (fixed a-priori
+  ROI, no selection): median group d = 0.035 / 0.015 / 0.010 / −0.020 across
+  none→quarter→half→all. Within noise. This **justifies the inherited 100 s
+  cutoff as harmless** and confirms the retraction in §7.2.
+- **Physio noise is not edge-concentrated.** RETROICOR variance-explained gain,
+  cord rim (next to CSF) vs core: 1.29 / 0.99 / 1.20 / 1.02 (median ≈ 1.1). No
+  case for spatially targeted denoising. RETROICOR does explain **10–17%** of cord
+  variance uniformly — it removes variance without removing the limiting noise.
+
+---
+
+# 6. OPEN / UNRESOLVED
+
+- **Kaptan dorsal–dorsal connectivity.** Ours 0.20 r / 0.40 ICC vs published
+  0.48 / 0.59; V–V replicates reasonably (0.37 / 0.49 vs 0.43 / 0.63). No
+  denoising arm recovers D–D. Likely causes we cannot adjudicate: Kaptan used
+  physio recordings **absent from this OpenNeuro release** (ds004386 ships zero
+  RETROICOR columns), and possibly different horn seeds. Recorded as an open
+  discrepancy — not a replication success, not a pipeline failure.
+- **Tier-3 ablations** needing pipeline re-runs: slice-timing, registration,
+  normalization. Triggers defined; none fired. (Motion correction turned out
+  post-hoc testable — see §4.3.)
+- **Cerebro-spinal somatotopy** (Landelle 2024) is out of scope for a cord-only
+  pipeline.
+
+---
+
+# 7. RETRACTED / INVALID — my own errors, caught by self-check
+
+Recorded deliberately: six design failures in this exploration, each of which
+would have produced a plausible but false headline.
+
+1. **Motion-correction ablation v1 — INVALID.** Unequal nuisance models (moco arm
+   penalised by motion regressors that exist only because moco ran) and arms that
+   were "full pipeline vs crop-only", not moco vs no-moco. *Partial correction:* I
+   also cited a tSNR discrepancy (+3% vs the pipeline's +32%) as proof of a bug —
+   that was **real dataset heterogeneity**, not an error (see §4.3). The
+   retraction stands on the other two grounds only.
+2. **High-pass test v1 — INVALID.** Appeared to show filtering costs 33–56% of
+   detectability. Odd/even CV cannot test filtering: low-frequency drift is smooth
+   in time, so both halves share it, inflating agreement when the filter is
+   removed. Confirmed by the valid design (§5).
+3. **Suprathreshold-count effect size — INVALID.** Gave d ≈ 2.0–2.7, but a
+   one-sample t-test of a **non-negative count** against zero cannot be negative;
+   the "effect" was an artifact of the test.
+4. **"Laterality flips across preprocessing arms" — FALSE ALARM.** Signs appeared
+   to flip in 3/4 datasets, but those have LI ≈ 0.00, so noise flips sign
+   trivially. Where laterality exists it is stable — the opposite of the alarming
+   reading.
+5. **Reliability-vs-spatial-scale decline — ARTIFACT.** Caused by taking the
+   median across all six horn parcels, mixing activated with non-activated tissue.
+   There is no honest scale-decline result.
+6. **Leave-one-subject-out design — NOT COMPUTABLE.** Parcels live in each
+   subject's native voxel grid, so the cross-subject coordinate intersection is
+   empty. LOSO needs a common template space this pipeline does not provide for
+   BOLD. Replaced by per-question designs (§8).
+
+Plus one **process** failure: a stray `cat >` with no input consumed stdin, so a
+script was never written while I reported it as running. Fixed by writing scripts
+with a file tool and verifying CPU time climbs before claiming a job is alive.
+
+---
+
+# 8. METHODS NOTES
+
+**Designs, matched to each threat**
+- *Detection claims:* cross-validated selection (select voxels on odd timepoints,
+  measure on even) so the reported effect is never selected on itself.
+- *Filtering comparisons:* fixed a-priori ROI, no selection — nothing for shared
+  drift to inflate.
+- *Ablations:* identical nuisance models across arms, adjacent pipeline stages
+  only (S4 input vs S4 output).
+- *Effect summary:* top-10% of the a-priori focal horn (the field's convention;
+  §3.4 shows why the mean fails).
+
+**Anti-circularity rules applied throughout**
+1. Report curves and landscapes, never "the best config and its effect size on the
+   same data" (Kriegeskorte 2009).
+2. Any result contradicting the pipeline's own metrics is treated as an analysis
+   bug until proven otherwise. *(This caught #1; it also over-fired — see the
+   partial correction.)*
+3. Nulls are reported as nulls.
+4. Promotion to flagship requires: surprising, actionable, unscooped, survives an
+   adversarial check.
+
+**Literature verification.** Five research agents checked novelty and numbers
+against Dabbagh 2024, Kowalczyk 2024/2026, Kaptan 2023, Landelle 2024, Wei 2025,
+Hemmerling 2023, Elliott 2020, Kragel 2021, Noble 2019, Han/Kragel/Wager 2022,
+Hedge 2018, Marek 2022, Botvinik-Nezer 2020, Caceres 2009, Bright & Murphy 2015.
+
+---
+
+# 9. SCRIPT AND DATA INVENTORY
+
+| script (`analysis/experiments/`) | produces |
+|---|---|
+| `run_c4_syn.py` | distortion 3-way (§3.1) → `results/distortion.csv` |
+| `tier1_all.py` | motion-task correlation, FD censoring, ROI summary, robustness (§3.2–3.4, §3.6, §4.2) |
+| `tier2_all.py` | physio-by-zone, high-pass v1 (invalid), peak scatter (§3.5, §5) |
+| `gapclose2.py` | smoothing ×4, valid high-pass, clean moco (§4.1, §4.3, §5) |
+| `smoothing_tradeoff.py` | extent inflation / peak halving (§4.1) |
+| `t25_ranking.py` | integrative figure (**needs rebuild** — carries the invalidated +30% smoothing bar) |
+| `duration_scaling.py` | handed to P1 |
+| `../effect_reliability.py` | between/within-session effect ICC (§4.4) |
+| `../run_confound_benchmark.py` | confound families (§3.3) |
+
+---
+
+# 10. NOT DONE
+
+1. **Integrative figure is stale** — its smoothing bar is the invalidated n=1
+   number (§4.1). Rebuild required; it is the paper's centrepiece.
+2. **No paper figures** built around this thesis; the F4–F8 files on disk belong
+   to the abandoned reliability framing.
+3. **No prose** — no Methods, Results, Introduction or Discussion.
+4. `paper/OUTLINE.md` still encodes the superseded reliability-led structure.
+5. **P1 blocked:** its v5 results were computed on pre-crop-fix derivatives and
+   its harness has not been re-run on `preproc-v1`.
+6. Housekeeping: 31 GB in `/mnt/ssd1/spineprep_c4_syn` (safe to delete);
+   `.pre_csffix` backup still served as a live dashboard section; schema drift
+   (S3 requires a `failure_class` it no longer emits; S1/S8 have no schema).
+
+## Realistic venue
+
+**Imaging Neuroscience** solid; NeuroImage/HBM a reach. Not Nature-tier — Neptune
+(Rangaprakash & Barry 2026) removes the "first tool" claim, and corrective
+preprocessing findings do not carry that tier without Marek-scale samples or a
+NARPS-scale design. Honest strengths: SCOPE (9 datasets, one pipeline),
+REPRODUCIBILITY (containerised BIDS-App + receipt), and a measured physical ground
+truth in the strongest arm.
