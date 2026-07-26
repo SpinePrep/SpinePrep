@@ -117,6 +117,24 @@ an understatement produced by the confounded comparison).
 - Recommendation both ways: acquire reversed-PE fieldmaps (they remove 81% of the
   distortion); do **not** apply image-based correction without one. This is the
   evidence behind the shipped `none` default.
+### Robustness of the distortion finding (deeper verification, 2026-07-26)
+Confirmed on a **second, independent metric** and in **both datasets separately**:
+
+| evidence | TopUp | SyN | SyN worsened |
+|---|---|---|---|
+| displacement reduction, ds005883 (n=37) | **+83%** | −13% | **84%** of runs |
+| displacement reduction, ds005884 (n=43) | **+79%** | −19% | **81%** of runs |
+| **per-slice cord Dice change** (independent of centroid displacement) | **+0.33** | **−0.039** | **76%** of runs |
+
+Paired Wilcoxon on ΔDice, TopUp vs SyN: **p = 9.5×10⁻¹⁵**. The displacement metric
+measures centroid offset; Dice measures mask overlap. They are computed differently
+and agree, so the result is not an artifact of either metric.
+
+**Scope limit, stated honestly:** both datasets are CoSpine — one lab, one scanner,
+one acquisition protocol. The finding is robust *within* that acquisition but has
+not been shown across vendors. This is the single most important caveat on the
+paper's strongest claim.
+
 - Limitation now documented: the S5 displacement metric carries ~1–3 mm of
   registration variability between invocations, so absolute displacements should be
   quoted with that uncertainty; only within-run before/after differences are exact.
