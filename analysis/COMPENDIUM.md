@@ -78,21 +78,36 @@ peak/top-10% convention is necessary, not arbitrary (see §3.4).
 
 # 3. SURVIVING FINDINGS
 
-## 3.1 Distortion — use a fieldmap; image-based SyN harms  ★ STRONGEST
-80 CoSpine reversed-PE runs, corrected three ways, scored against the anatomical
-truth. The measured field is a physical referee SyN never saw.
+## 3.1 Distortion — use a fieldmap; image-based SyN makes geometry WORSE  ★ STRONGEST
+**Corrected 2026-07-26 after a fairness audit.** The first version compared the
+absolute post-correction displacement of the two arms. That was **confounded**: S5
+re-runs its anat->BOLD registration on every invocation, so the two arms measure
+against different anatomical references (median 2.8 mm apart on matched slices,
+worst 7.3 mm) — larger than the between-arm difference being claimed. Absolute
+after-values across arms are NOT comparable.
 
-| arm | median cord displacement from anatomy | vs no correction |
-|---|---|---|
-| no correction | 3.34 mm | — |
-| image-based SyN (the no-fieldmap fallback) | 2.21 mm | −34% |
-| **measured field (TopUp)** | **0.61 mm** | **−82%** |
+Valid analysis: judge each arm on its **own within-run before->after** change
+(same registration within a run, so the difference is paired and sound).
 
-- TopUp worsens **1%** of runs; **SyN worsens 28%**.
-- SyN beats the measured field on only **5%** of runs.
-- Median `gap_closed` (1 = matches physics) = **+0.23**.
-- Recommendation both ways: acquire reversed-PE fieldmaps; do not trust
-  image-based correction without one. Justifies the shipped `none` default.
+| arm | before | after | reduction | slices worsened | runs made worse |
+|---|---|---|---|---|---|
+| **measured field (TopUp)** | 3.34 mm | 0.62 mm | **−81%** | 9% | **1%** |
+| **image-based SyN** | 1.98 mm | 2.47 mm | **+24% (WORSE)** | 65% | **82%** |
+
+Paired Wilcoxon on per-run reduction: **p = 8×10⁻¹⁵**. SyN's reduction beats
+TopUp's on **1%** of the 80 runs.
+
+**The corrected result is stronger than the original claim.** Image-based SyN does
+not merely underperform the measured field — it actively **increases** cord
+displacement from anatomy in **82% of runs** (the earlier figure, "28% worse", was
+an understatement produced by the confounded comparison).
+
+- Recommendation both ways: acquire reversed-PE fieldmaps (they remove 81% of the
+  distortion); do **not** apply image-based correction without one. This is the
+  evidence behind the shipped `none` default.
+- Limitation now documented: the S5 displacement metric carries ~1–3 mm of
+  registration variability between invocations, so absolute displacements should be
+  quoted with that uncertainty; only within-run before/after differences are exact.
 
 ## 3.2 FD censoring — the brain's threshold is wrong for the cord  ★
 | rule | frames removed | median Δ detectability |
