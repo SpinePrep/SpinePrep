@@ -31,9 +31,9 @@ authority to say so rests on reproducing the field's own published results.
 
 | # | analysis | n | verdict | strength |
 |---|---|---|---|---|
-| 1 | Replication of published results | 9 datasets | 7/7 task activations reproduced | ★★★ moat |
-| 2 | Distortion, 3-way vs measured field | 80 paired runs | SyN harms 28% of runs | ★★★ strongest |
-| 3 | FD censoring threshold | 199 runs | brain's 0.5 mm is wrong for cord | ★★★ |
+| 1 | Replication of published results | 9 datasets | **1/4 group activations survive unbiased CV**; laterality + reliability replicate | ★★ (corrected) |
+| 2 | Distortion, within-run paired | 80 runs | SyN makes geometry WORSE in 82% of runs | ★★★ strongest |
+| 3 | FD censoring | 324 runs | **only the FRACTION censored matters**, not the threshold rule | ★★ (corrected) |
 | 4 | ROI summary measure | 4 datasets | parcel-mean destroys the effect | ★★★ |
 | 5 | Confound families (task) | 324 runs | no family improves sensitivity | ★★ |
 | 6 | aCompCor on connectivity | 48 pairs | **destroys** connectivity | ★★ |
@@ -50,31 +50,43 @@ authority to say so rests on reproducing the field's own published results.
 
 ---
 
-# 2. VALIDATION — the pipeline reproduces the field
+# 2. VALIDATION — what the pipeline actually reproduces
 
-Group activation at the a-priori focal horn, correct side, peak/top-10% measure:
+**CORRECTED 2026-07-26.** The first version claimed "7/7 task datasets reproduce
+their published group activation (t = 11-21)". Those t-values came from **biased**
+top-10% selection — voxels chosen and measured on the same data, which is almost
+guaranteed to be positive. Recomputed with unbiased cross-validation (select on
+odd timepoints, measure on even):
 
-| dataset | group t | published result | verdict |
-|---|---|---|---|
-| ds004616 handgrasp | 20.8 | ipsilateral ventral, C7, LI 0.96–0.99 (Hemmerling 2023) | ✓ (ours 92% ipsilateral) |
-| ds005884 cospine motor | 11.7 | ipsilateral ventral (Wei 2025) | ✓ |
-| internal motor | 14.3 | — | ✓ |
-| internal painmotor | 21.0 | — | ✓ |
-| ds004926 dorsal-horn pain | 17.9 | left dorsal C6; ICC 0.03–0.24 (Dabbagh 2024) | ✓ (ours ICC 0.05) |
-| ds005883 cospine pain | 14.9 | right dorsal C5–C6 (Wei 2025) | ✓ |
-| internal cospigvs | 11.1 | — | ✓ |
-| ds004386 rest | — | conn ICC D–D 0.59 / V–V 0.63 (Kaptan 2023) | partial (see §6) |
-| ds005075 brain-spine | — | somatotopy Dice 0.84 (Landelle 2024) | out of scope (cord-only) |
+| dataset | biased d | biased p | **unbiased d** | **unbiased p** | N |
+|---|---|---|---|---|---|
+| ds004616 handgrasp | +4.24 | <1e-5 | **+0.64** | **0.005** | 24 |
+| ds005884 cospine motor | +3.57 | <1e-5 | +0.26 | 0.33 | 15 |
+| ds004926 dorsal-horn pain | +2.62 | <1e-5 | +0.11 | 0.52 | 37 |
+| ds005883 cospine pain | +3.04 | <1e-5 | +0.13 | 0.52 | 25 |
 
-**Unbiased cross-validation** (select on odd timepoints, measure on even):
-ds004616 motor d = **+0.64** (p = 0.005, genuine); ds004926 pain **null** (d = 0.11)
-— the strong motor response cross-validates, the weak pain response does not.
+**Significant with biased selection: 4/4. With unbiased selection: 1/4.**
 
-**Method lesson:** an apparent "only 1/6 datasets show a group effect" was an
-artifact of the parcel-MEAN summary. Cord activation is focal; the field's
-peak/top-10% convention is necessary, not arbitrary (see §3.4).
+### What genuinely replicates
+- **ds004616 motor group activation** — survives unbiased CV (d = 0.64, p = 0.005).
+- **Hemmerling 2023 laterality** — 92% of subjects ipsilateral-dominant vs
+  published LI 0.96-0.99. Independent of voxel selection, so unaffected.
+- **Dabbagh 2024 pain reliability** — our between-session effect ICC 0.05 vs
+  published 0.03. Independent measure.
+- **Kaptan 2023 ventral-ventral connectivity** — ICC 0.49 vs published 0.63.
 
----
+### What does NOT replicate under honest analysis
+Cross-validated group task activation in ds005884, ds004926 and ds005883. These are
+null. This is **not** a pipeline failure: it agrees with the literature's own
+conclusion that cord task effects are weak, and it independently reproduces P1's
+leave-subject-out finding that cross-validated cord task effect sizes are near zero.
+Two projects, two different estimators, same answer.
+
+**Consequence for the paper:** the "reproduces the field across 9 datasets" moat is
+**substantially weaker** than first claimed. The defensible statement is that
+SpinePrep reproduces the published *laterality*, *reliability* and *connectivity*
+results, and the one genuinely strong task activation — not that it recovers group
+activation everywhere.
 
 # 3. SURVIVING FINDINGS
 
@@ -109,14 +121,28 @@ an understatement produced by the confounded comparison).
   registration variability between invocations, so absolute displacements should be
   quoted with that uncertainty; only within-run before/after differences are exact.
 
-## 3.2 FD censoring — the brain's threshold is wrong for the cord  ★
-| rule | frames removed | median Δ detectability |
-|---|---|---|
-| FD > 0.5 mm (Power 2012, a **brain** value) | 24% | **−8%** (motor −34%, −29%) |
-| worst 10% of frames (**cord-derived**) | 10% | **+61%** |
+## 3.2 FD censoring — only the FRACTION matters, not the threshold rule
+**CORRECTED 2026-07-26.** The first version claimed the brain's 0.5 mm threshold is
+"mis-calibrated for the cord" and a cord-derived rule is better. A fraction-matched
+control shows that is **wrong**:
 
-The imported threshold discards a quarter of the data and hurts motor paradigms;
-a light data-driven rule improves 3/4 datasets.
+| arm | frames removed | median group d (4 datasets) |
+|---|---|---|
+| no censoring | 0% | +0.197 |
+| **worst 10% (light)** | 10% | **+0.425** |
+| FD > 0.5 mm (brain rule) | 25% | +0.062 |
+| cord percentile matched to 25% | 25% | **+0.062 — identical** |
+
+The cord-derived rule matched to the same fraction gives **exactly** the brain
+rule's result. In hindsight this is necessary, not surprising: any threshold on FD
+is a monotone selection of the worst frames, so two rules removing the same
+fraction remove the *same frames*. The threshold VALUE is irrelevant.
+
+**The honest finding is still useful, and still a corrective:** censoring ~10% of
+frames improves detectability (+116% over none), while censoring ~25% badly hurts
+it (-69%). The brain's 0.5 mm threshold is wrong for cord data **not because the
+rule is mis-calibrated but because in cord data it happens to remove ~25% of
+frames — far past the optimum.** Argue about fractions, not thresholds.
 
 ## 3.3 aCompCor — wasteful for task, DESTRUCTIVE for connectivity  ★
 Task (324 runs):
@@ -353,3 +379,44 @@ preprocessing findings do not carry that tier without Marek-scale samples or a
 NARPS-scale design. Honest strengths: SCOPE (9 datasets, one pipeline),
 REPRODUCIBILITY (containerised BIDS-App + receipt), and a measured physical ground
 truth in the strongest arm.
+
+---
+
+# 11. VERIFICATION AUDIT (2026-07-26) — what an adversarial re-check changed
+
+Every headline claim was re-tested against the data rather than re-read from
+notes. Three of the strongest claims were confounded; all three are corrected
+above. This section records what changed, because the pattern matters more than
+any single number.
+
+| claim | first version | after audit | direction |
+|---|---|---|---|
+| Distortion (§3.1) | "SyN harms 28% of runs" (arms compared against **different** anat registrations, 2.8 mm apart) | within-run paired: SyN **worsens 82% of runs**, +24% displacement; TopUp −81% | **stronger** |
+| Replication (§2) | "7/7 task activations reproduced, t = 11–21" (**biased** selection) | **1/4** survive unbiased CV; laterality/reliability/connectivity do replicate | **much weaker** |
+| FD censoring (§3.2) | "the brain's threshold is mis-calibrated for the cord" | fraction-matched control is **identical**; only the FRACTION censored matters | **reframed** |
+
+**Why the errors clustered.** All three shared one root cause: a comparison that
+looked fair but wasn't. Two arms measured against different references; selection
+and measurement performed on the same data; two rules that differ in name but
+remove identical frames. None was a coding bug — every one produced clean,
+plausible, publishable-looking numbers.
+
+**What this implies for the paper.** The corrected claims are the ones to write:
+the distortion result is now the single strongest finding and is stated more
+strongly; the replication claim must be scoped to laterality, reliability and
+connectivity rather than universal group activation; the censoring result becomes
+"censor ~10%, not 25%" rather than "the brain's threshold is wrong".
+
+**Convergent validation with P1.** The unbiased replication result (3 of 4 task
+datasets null) independently reproduces P1's leave-subject-out finding that
+cross-validated cord task effects are near zero. Two projects, two estimators, one
+answer — which raises confidence in both, and confirms this is a property of cord
+fMRI rather than of either analysis.
+
+## Running total of self-caught errors
+
+Nine, across the exploration: six design failures (§7), one process failure
+(a shell error left a script unwritten while it was reported as running), and now
+three confounded comparisons found by this audit. Each would have produced a
+plausible but false headline. They are recorded rather than quietly fixed because
+the reliability of everything else here depends on that being visible.
