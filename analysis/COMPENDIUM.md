@@ -655,3 +655,74 @@ Both datasets are **CoSpine — one lab, one scanner, one whole-CNS protocol**, 
 highest-distortion regime in cord fMRI. Until it replicates on cervical-only
 reduced-FOV data from another vendor this is *"SyN harms cord geometry in whole-CNS
 EPI"*, **not a general law**. Frame it as a falsification of a borrowed brain default.
+
+---
+
+# 14. NOVELTY VERIFICATION — the aggregate-vs-peak dissociation (2026-07-26)
+
+Peer literature review of brain fMRI. **The "aggregate measures reliable, single
+voxel not" structure is solidly established and our findings sit comfortably inside
+it.** One adjacent claim must be avoided.
+
+## Brain support for the dissociation (strong)
+The cleanest demonstrations show a reliable summary index sitting on top of
+unreliable voxel-level maps **in the same data**:
+
+| paper | summary measure | voxel-level on the same data |
+|---|---|---|
+| **Wilson, Yen & Eriksson 2018**, HBM 39(8):3285 | LI ICC **0.88** (semantic), 0.83 (narrative) | Dice **0.66 ± 0.15**, 0.47 ± 0.17 |
+| **Sanchez Panchuelo et al. 2024**, Front Neurol 15:1419047 | LI ICC **0.76**, r = 0.78 | spatial overlap only **≥52%** |
+| **Hu et al. 2022**, Front Neuroinform 16:882126 | component ICC **0.72–0.80** | peak moves **18.8–21.5 mm**; only **41%** within 10 mm |
+
+**Hu 2022 is the single best citation for our peak result** — an explicit
+amplitude-reliable / location-unreliable dissociation.
+
+**Kolasinski et al. 2016**, J Neurosci 36(4):1113 adds the ideal precedent for
+*relational* stability: absolute peak positions vary five-fold across people
+(inter-digit distances spanning 2.75–16.9 mm), yet the relational summary is highly
+consistent (Cronbach's α **0.84–0.97**). Aggregate geometry is stable where absolute
+position is not — exactly our pattern.
+
+Backdrop: **Elliott 2020** mean task-fMRI ICC **0.397**, so summary-index ICCs of
+0.76–0.88 are unusually good for the modality.
+
+## Our 92% laterality is competitive with the clinical standard
+| benchmark | agreement |
+|---|---|
+| **Gerrits & Vingerhoets 2025**, Imaging Neurosci 3 | **97%** categorical reproducibility in strongly-lateralised subjects vs **51%** in bilateral (sign flips: 0% vs 80%) |
+| **Campbell et al. 2023**, Interv Neuroradiol | fMRI–Wada concordance **91.4%** (reading), **96.9%** (auditory) |
+| **Herfurth et al. 2022**, Front Hum Neurosci | fMRI–Wada **85.7%** (12/14), κ = 0.71 |
+
+The accepted clinical range is **86–97%**, so our **92%** ipsilateral agreement is
+competitive rather than weak — a materially stronger validation of the laterality
+replication than we had. Gerrits also supplies the ideal framing: directional calls
+are near-perfect where asymmetry is strong and near coin-flip where it is weak.
+*(Caveat verified: the Gerrits test–retest arm is functional transcranial Doppler,
+not fMRI — fMRI was acquired once.)*
+
+## GUARDRAIL — do NOT claim centre-of-mass beats the peak
+This adjacent claim is **not established in fMRI** and would be attackable:
+- **Nettekoven et al. 2018**, NeuroImage 176:215 — local maxima **6.45 ± 1.36 mm**
+  BEAT centres of gravity **8.03 ± 2.01 mm**, significantly.
+- **Weiss et al. 2013**, NeuroImage 66:531 — fMRI hotspot ED 6.2 ± 1.1 mm, peak-voxel
+  ICC > 0.8, and CoG stability "similar"; extent was the unreliable part.
+- **Vidyasagar & Parkes 2011**, JMRI 34(6):1439 — the one study favouring a spatially
+  averaged measure, but the abstract gives **no separate numbers** for CoG or peak
+  (Wiley 403, no open copy). Margin is unquotable.
+- Exhaustive Europe PMC full-text phrase searches found **no** methodological
+  statement anywhere in brain fMRI that the peak is a noisy estimator to be replaced
+  by a centre-of-mass summary. The field uses CoG by convention, not by argument.
+- The clean "CoG beats hotspot" numbers are **TMS motor mapping**, not fMRI
+  (Nazarova 2021: CoG ICC 0.95–0.99 vs hotspot 0.73–0.97, smallest detectable change
+  ~0.5 cm vs ~1 cm; Kahl 2023).
+
+**Consequence for our wording:** claim only what we measured — *extent and
+single-voxel location are unreliable while aggregate summaries over the same data are
+reliable*. Do **not** recommend centre-of-mass over the peak; if that recommendation
+is ever wanted, it must be sourced to the TMS literature and labelled as an adjacent
+modality.
+
+## Also do not cite
+**Morrison et al. 2016** — the primary paper could not be located (no journal, volume
+or DOI); it is known only through the Bradshaw 2017 review. Earlier notes here cited
+it for peak-vs-CoG; that citation must be removed pending verification.
