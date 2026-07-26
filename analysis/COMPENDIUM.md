@@ -197,20 +197,75 @@ Same data, same GLM, different summary of the focal horn (group d):
 
 The parcel-mean costs **~107%** of detectability and can invert the sign.
 
-## 3.5 Peak-voxel localisation is not reproducible across subjects  ★
-Scatter of each subject's peak location, normalised to RANDOM placement inside the
-ROI (span/√12). 1.0 = no consistency at all.
+## 3.5 Inter-subject variability of peak location  ★ (revised 2026-07-26)
 
-| dataset | x | y | z |
+**Terminology corrected.** This was headed "peak localisation is not reproducible".
+"Reproducibility" conventionally means test-retest *within* subject; what we measured
+is scatter *across* subjects. The correct term is **inter-subject variability of peak
+location**, and that evidence base is both cleaner and better supported.
+
+### What we measured
+Raw across-subject SD of each subject's peak-activation voxel inside the a-priori horn:
+
+| dataset | SD left-right | SD ant-post | SD rostrocaudal |
 |---|---|---|---|
-| ds004616 | 0.73 | 1.49 | 0.67 |
-| ds004926 | 1.04 | 1.41 | 0.93 |
+| ds004616 | 1.05 mm | 2.15 mm | **13.98 mm** |
+| ds004926 | 1.20 mm | 3.87 mm | **18.84 mm** |
 
-≈ random on every axis. **Aggregates are reproducible (92% laterality; top-10%
-d up to +0.90); the single peak is not.** This is the mechanism for the horn-scale
-null. Consequence: peak-coordinate and peak-based segment claims are unsupportable
-at this resolution. Caveat: peak statistics are noisy in any modality — cord-vs-brain
-specificity would need a matched comparison.
+Normalised against scatter expected from RANDOM placement inside the ROI
+(span/√12), all axes sit at 0.67–1.49 — i.e. **no better-than-chance consistency on
+any axis**.
+
+**Both readings are true and answer different questions.** The normalised view says
+there is no evidence of consistent localisation given how much room each axis has.
+The raw view says localisation is strongly **anisotropic**: in-plane position is
+determined to 1–4 mm, rostrocaudal position to 14–19 mm. My earlier note treating
+the anisotropy as purely an ROI-shape artifact was too dismissive — see below.
+
+### Convergent cord evidence (this is the key support)
+**Dabbagh et al. 2024** (*Imaging Neuroscience*, doi:10.1162/imag_a_00273; n=40, two
+days, same organ and resolution regime) independently reports the same anisotropy:
+group across-day Dice **0** at corrected p<0.05 (0.26 at p<0.05 uncorrected); only
+**5 of 35** participants showed any across-day overlap. Verbatim: *"while the
+location on the dorsal-ventral dimension remained similar, the patterns differed
+rostrocaudally"*, with Day-1 voxels "consistently more caudal in segment C6" than
+Day 2. An independent lab, an independent metric, the same in-plane-stable /
+rostrocaudally-unstable pattern.
+
+### Brain benchmarks — the cord is NOT worse than the brain
+Between-subject peak scatter in brain is of the same order as ours:
+- **Wang et al. 2021** (*Quant Imaging Med Surg* 11(2):810–822; n=893): individual
+  peak to atlas hotspot **8.7–20.8 mm** (motor 10.7–20.8; language 8.7–16.8).
+- **Zhen et al. 2017** (*Hum Brain Mapp* 38(4):2260–2275): scene-selective regions
+  show **>20 mm** divergence in peak location; per-axis SD 4–9 mm.
+
+So cord rostrocaudal scatter (14–19 mm) sits inside the brain's range — consistent
+with the "cord obeys brain norms" framing rather than a cord-specific defect.
+
+### Honest counter-evidence, to be conceded in half a sentence
+Two presurgical studies find the peak **more** stable than the cluster centre:
+**Weiss et al. 2013** (*NeuroImage* 66:531–542; fMRI hotspot Euclidean distance
+6.2 ± 1.1 mm, peak-voxel ICC > 0.8) and **Nettekoven et al. 2018** (*NeuroImage*
+176:215–225; maxima 6.45 ± 1.36 mm vs centres-of-gravity 8.03 ± 2.01 mm,
+significantly better). Both used ROI-constrained searches, which bounds how far a
+peak can travel — but the concession costs nothing and closes the obvious attack.
+The opposite direction is supported by **Morrison et al. 2016**
+(*PLoS ONE* 11(2):e0149547; peak displacement up to ~23 mm, centre-of-mass more
+reproducible than peak) and **Hu et al. 2022** (*Front Neuroinform* 16:882126), which
+gives the cleanest published dissociation: coordinate ICC **0.72–0.80** while the
+peak moves **~20 mm** and only **41%** of peaks land within 10 mm.
+
+### Verified NOT available
+There is **no** review or meta-analysis of peak-coordinate displacement, so no
+pooled "typical peak displacement" exists — every claim must cite individual
+studies. **Do not** cite Bennett & Miller 2010 or Elliott 2020 for location: neither
+has a peak-location metric (both report amplitude/extent only).
+
+### Consequence
+Aggregate measures are sound (92% laterality; top-10% d up to +0.90); **single-peak
+and peak-based spinal-segment assignment are not supportable** at this resolution.
+This is the mechanism behind the horn-scale null, and it is now supported by an
+independent cord dataset rather than by our data alone.
 
 ## 3.6 The biological conclusion is robust
 Laterality sign is stable across every nuisance arm wherever the effect exists
