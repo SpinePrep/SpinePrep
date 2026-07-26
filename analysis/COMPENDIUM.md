@@ -568,3 +568,90 @@ Finding §3.2 states FD > 0.5 mm censors ~25% of frames. That figure comes from 
 slice-wise) FD. Two FD definitions, a 2× spread — the same critique this section
 makes of borrowed thresholds. The paper must name which FD definition it uses; all
 analyses here used the TSV column.
+
+---
+
+# 13. NOVELTY VERIFICATION — the distortion finding (2026-07-26)
+
+**Verdict: NOVEL, with one qualitative precedent and no quantitative precedent in
+either cord or brain imaging. It also CONTRADICTS standing published advice rather
+than extending it — which raises its impact.**
+
+## No cord study has ever tested this
+Verified across the field: **Horn 2025** (7T, Eippert lab — acquires opposing-PE
+volumes but uses them only to *choose* the less-distorted direction, no SDC),
+**Oliva 2025** (opposing-PE pair used for the **brain** only; cord preprocessing has
+no SDC step), **Neptune** (Rangaprakash & Barry 2026 — no SDC step in its 19-step
+pipeline), the **SCT** fMRI tutorial (no SDC), **Kaptan 2024** review (never mentions
+distortion correction or fieldmaps), **Kinany 2023** review (recommends shimming
+only), **FASB** (measured GRE fieldmap), **CoSpine** (topup — essentially the only
+cord topup use). No cord fMRI paper compares image-based SDC to a measured field.
+
+## The brain literature recommends the opposite — this is the key point
+| source | position |
+|---|---|
+| **Wang et al. 2017**, Front Neuroinform 11:17 | ANTs SyN gave **higher** FA test–retest reliability than an acquired GRE fieldmap. Verbatim: *"If there is no field map, or if it is suboptimal, use nonlinear registration with ANTs to correct distortion."* |
+| **fMRIPrep / SDCFlows** | implements exactly this as `--use-syn-sdc`, labelled "experimental", with no accuracy warning |
+| **Montez 2023**, Dev Cogn Neurosci 60:101234 | fieldmap-less "performs comparably … **and often outperforms**" fieldmap methods |
+| **Schilling 2019** (Synb0-DisCo) / **Yu 2023** (SynBOLD-DisCo) | "practically equivalent" to blip-up/blip-down |
+
+**No paper in brain fMRI or dMRI reports a per-run fraction degraded by
+fieldmap-less SDC.** Our "82% of runs worsened" statistic is unprecedented in either
+field. So this finding inverts a recommendation that is currently shipped as a
+default option in the field's most-used pipeline.
+
+## The one prior assertion — real, verbatim, and data-free
+**Vahdat, Landelle, Lungu, De Leener, Doyon & Baniasad (FASB)**, Research Square
+preprint doi:10.21203/rs.3.rs-3889284/v1 (still a preprint):
+> *"Spinal cord EPI images are often spatially distorted at the disk level, and
+> performing a nonlinear transformation generates non-optimal twisted warping
+> fields."*
+
+An assertion in a Discussion with **zero supporting measurement**, about nonlinear
+registration for func-to-anat alignment rather than distortion correction, in a paper
+that itself uses a measured GRE fieldmap. We would be the first to measure it.
+
+## Closest prior work — and it explicitly leaves our question open
+**Schilling et al. 2024**, Magn Reson Imaging 108:11–21 (cord **dMRI**, 7 datasets,
+214 participants): within-cord metrics *"do not improve significantly … or even get
+worse with distortion correction"*, full-FOV gains were *"largely driven by the
+high-contrast CSF"*, and a *"smudging/smearing artifact is often observed"*.
+Decisively, they name the gap: *"these discrepancies could be addressed by the
+registration step through **nonlinear registration, which is not investigated in
+this study**."*
+
+## How our claim differs, precisely
+First cord **fMRI** study; first anywhere to test image-based SDC against a
+**measured field within the same runs**; first to use a within-run paired geometric
+metric against a **rigid-only** anatomical reference (so the reference cannot absorb
+the distortion — the design flaw Schilling flagged); and first anywhere to report a
+**per-run worsening fraction** as the headline.
+
+## Population affected — large
+Our own count from `policy/datasets.yaml`: **2 of 9** open human cord-fMRI datasets
+ship fieldmaps (both CoSpine, one lab), and at run level **83/469 = 18%** have a
+usable reversed-PE pair. So **~82% of cord runs cannot use a measured field** and are
+candidates for the harmful fallback. No published survey tabulates this — our number
+is the first.
+
+## The most actionable lever (reframe the paper around this)
+TopUp removing **81%** of cord displacement is a concrete argument for adding a
+~30-second reversed-PE pair to cord protocols. **Horn 2025 and Oliva 2025 already
+acquire opposing-PE data and discard it for the cord.** Telling the field to keep and
+use what it already collects is a larger practical win than the negative SyN result.
+
+## Reviewer hazards to pre-empt
+1. **Snoussi et al. 2021** (arXiv:2108.03817, Cohen-Adad co-author, cord dMRI, n=95)
+   found **TOPUP performed worst** of four measured-field methods, with "significant
+   deterioration at C2". A reviewer will ask why topup looks so good here.
+2. **FASB** found adding GRE fieldmap correction did **not** significantly improve
+   template overlap over T1w-based registration alone (p > 0.05) — a null on a metric
+   that cannot separate the two.
+3. **Wang 2017** conceded mutual information favoured fieldmaps yet still recommended
+   SyN, noting "in real analyses MI is not normally an outcome metric".
+
+## Honest ceiling
+Both datasets are **CoSpine — one lab, one scanner, one whole-CNS protocol**, the
+highest-distortion regime in cord fMRI. Until it replicates on cervical-only
+reduced-FOV data from another vendor this is *"SyN harms cord geometry in whole-CNS
+EPI"*, **not a general law**. Frame it as a falsification of a borrowed brain default.
