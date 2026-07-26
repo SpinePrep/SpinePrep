@@ -282,3 +282,208 @@ a new one. Start there.
   legitimately correlate with, which is the finding, not an error, but the two readings
   must be separated explicitly).
 - Do not let N9 lead. It reads as an attack unless N1 has already supplied the mechanism.
+
+---
+---
+
+# ROUND 2 -- after N1, the paired-organ control and N5
+
+Written 2026-07-27, once five new results were in hand. Same rules as above:
+speculative, novelty marks *(unchecked)* until a literature review clears them.
+
+## 1. What the new results did to the Round 1 thinking
+
+Round 1 recommended the thesis *"cord fMRI inherited its inferential machinery
+from the brain, and in a 1 cm pulsing tube that machinery misfires."* **Our own
+data refuted it.** That framing is withdrawn.
+
+| prediction from Round 1 | measured | verdict |
+|---|---|---|
+| cord FWE inflated above nominal | 5.9% vs 5% | essentially correct |
+| aliased pulsation corrupts the t null | inflation 1.00-1.02x | no |
+| RFT invalid in a thin tube | cluster FWE 1.4%, conservative | no, the reverse |
+| prewhitening mis-specified | residuals already white; AR(1) made FWE worse | no |
+| cord noisier/harder than brain | cord FWE 10.4% vs brain 28.7% in the SAME run | **inverted** |
+
+The cord turns out to be the *better-behaved* organ for inference, at a third of
+the brain's tSNR. That is a finding, not a disappointment, but it kills the tent.
+
+Two other results reshaped the picture:
+- **N5**: peak-location ICC is +0.16, +0.03, +0.05, -0.04 across four datasets,
+  and between-run SD within one session equals or exceeds between-subject SD.
+  Because within-subject repeats share the registration, normalisation is
+  exonerated and measurement noise is convicted.
+- **Paired-organ B**: dilution is **organ-independent**. The brain dilutes exactly
+  as the cord does when its activation is focal (motor M1); it escapes when the
+  activation is distributed (pain network). The governing variable is activated
+  extent divided by ROI size.
+
+## 2. The thesis the evidence now supports
+
+> **The cord's problem is geometry, not statistics.**
+>
+> Cord fMRI is a temporally sound and spatially uninformative measurement.
+
+Sort every result by what it is about, and the split is total:
+
+| TEMPORAL / STATISTICAL -- all clean | SPATIAL -- all broken |
+|---|---|
+| inference valid at nominal (N1) | image-based SDC worsens geometry, 82% of runs (F1) |
+| parametric t null correct (N1) | ROI summary reverses the sign (F2) |
+| prewhitening unnecessary (N1) | peak location carries no subject information (N5) |
+| noise better than brain's (paired A) | kernels are wider than a 4.5 mm2 horn (S1) |
+| high-pass filtering inert (S3) | dilution governed by extent/ROI ratio (paired B) |
+| physiological modelling inert (S4) | |
+
+**Why this is a higher framing than focality.** It is *allocative*: it tells the
+field where effort pays and where it does not. Every methods debate in cord fMRI
+has been about denoising, and our data says denoising is inert while geometry is
+where the one large measured win lives (TopUp, -81%). It also absorbs F1, which
+the focality thesis had to leave outside. And it rests on positive AND negative
+results, which is far more credible than a list of things that are broken.
+
+**The dissociation to aim for.** If multivariate detection or pattern
+fingerprinting works while the peak does not, the headline becomes: *the cord
+response is real and detectable but not localisable.* That is a striking,
+quotable, mechanistically supported claim.
+
+## 3. The gap none of the work so far has closed
+
+**No effect analysis in this project has an external criterion.** Every one tests
+a response against zero. F1 is the strongest finding precisely because it has a
+physical referee -- a measured field. The effect side has no referee at all.
+
+The cohort has referees sitting unused:
+
+| dataset | criterion available | n |
+|---|---|---|
+| ds004926 | per-trial **delivered temperature**, `rating`, `onset_scr` (skin conductance) | 80 runs, 2 sessions |
+| ds005883 | per-trial **PR** (pain intensity) and **UpR** (unpleasantness), 0-10 VAS | 37 runs |
+| ds004616 | **grip force** traces per hand (already verified, 384 blocks) | 52 physio files |
+
+Delivered temperature is experimenter-controlled and physical. It is the effect
+side's equivalent of F1's measured field, and it has never been used here.
+
+## 4. Round 2 candidates, ranked by (novelty x impact) / cost
+
+### R1 -- Behaviour and stimulus as the referee: a cord BOLD dose-response
+The highest-ceiling idea available. Within subject, across trials, does cord
+response amplitude scale with **delivered temperature** (a physical dose), with
+**rated intensity**, and with **grip force**?
+
+Why it outranks everything else:
+- A dose-response curve is the classical validity criterion. It answers "is any
+  of this signal real", which no analysis here has yet answered.
+- It is immune to both problems we have documented: a within-subject correlation
+  across trials needs no spatial summary choice and no localisation.
+- Temperature versus rating is a genuine neuroscience question, not a methods
+  question. If the dorsal horn tracks **percept** better than **stimulus**, that
+  is a biological claim about spinal pain processing, and it would carry a
+  biology venue rather than a methods one.
+- Skin conductance in ds004926 gives a third, autonomic referee.
+
+Cost: low, all data present. Risk: a null means the amplitude is not trial-wise
+resolvable, which is itself publishable next to the ICC results.
+
+### R2 -- Which QC metric predicts scientific outcome
+MRIQC's unfinished business, borrowed directly. The brain field has never
+established which image-quality metric predicts a scientific result *(unchecked)*.
+We hold 450 runs, 9 datasets, one pipeline, with per-run QC metrics **and**
+per-run effect sizes already computed.
+
+Regress per-run detectability on tSNR, FD, DVARS, cord cross-sectional area, the
+distortion gap statistic and registration quality. **This is a direct test of the
+new thesis**: if geometry and registration metrics predict outcome while tSNR
+does not, "geometry not statistics" stops being an interpretation and becomes a
+measurement. It also decides whether the pipeline's QC is actionable or
+decorative, which matters for the whole QC-first premise.
+
+Cost: very low, nothing new to compute. This is the best value on the list.
+
+### R3 -- Activation fingerprinting
+N5 shows the peak carries no subject information. Does the **pattern**? Finn 2015
+established connectome fingerprinting in the brain; the cord has no equivalent
+*(unchecked)*. Compare within-subject to between-subject correlation of the cord
+beta map across repeats. If within exceeds between, subject-specific spatial
+information exists and merely is not in the argmax -- which rescues the
+individual-differences use case and sharpens N5 from "no information" to "no
+information in the peak". Cheap; the betas exist.
+
+### R4 -- What spatial claim IS supportable
+The constructive twin of N5. Test the rostrocaudal **profile** (mean response per
+slice or per level) for within- versus between-subject reproducibility. If the
+profile reproduces where the peak does not, the field gets a usable rule: report
+profiles and centroids over levels, not peak coordinates.
+
+This is also the only honest route to the centre-of-mass claim that F3's
+guardrail currently forbids asserting: measure it rather than assume it.
+
+### R5 -- The whole-cord global signal
+The paired-organ anomaly (ds005884 mean d rising to +0.72 at 657 of ~848 cord
+voxels) points at a task-locked whole-cord fluctuation. The brain has a large
+global-signal literature (Power 2017, Murphy & Fox 2017, Liu 2017); the cord has
+no definition of a global signal at all *(unchecked)*. Define it, quantify its
+task coupling, test whether removing it destroys or preserves the focal effect,
+and test whether it tracks respiration. Explains an anomaly we found, borrows a
+mature framework, and would add a confound family the pipeline lacks.
+
+### R6 -- The biomarker ceiling
+Nearly free, and it reaches a clinical audience. With effect ICC ~0.05, the
+correction for attenuation caps any correlation between a cord measure and a
+clinical variable at sqrt(0.05 x ICC_clinical). One equation over measured
+numbers yields a hard limit and a required N. Elliott 2020 did this for the brain
+and reframed the individual-differences literature; the SCI field has no
+equivalent statement.
+
+### R7 -- The degrees-of-freedom budget
+Bright & Murphy 2015, borrowed. The pipeline spends 125-140 CSF regressors plus
+motion, cosine and spikes, and 7.8% of designs are already rank-deficient.
+Quantify the DOF consumed and its cost in detectability. Pairs with the confirmed
+aCompCor component-count bug.
+
+### R8 -- Responder consistency
+Reliability of the binary question "did this subject respond" across repeats,
+rather than of the continuous amplitude. More clinically meaningful than ICC and
+a different question from the one Dabbagh answered.
+
+### R9 -- Model-free detection by inter-subject correlation
+Hasson's ISC needs no HRF and no design matrix. Where stimulus timing is shared
+across subjects, ISC isolates stimulus-driven signal. If ISC detects where the
+GLM does not, that is another "estimator, not signal" result. Moderate cost.
+
+### R10 -- The pruned multiverse
+Now both cheaper and better motivated. We have measured which axes move the
+answer (distortion, summary measure, censoring fraction) and which are inert
+(high-pass, physiological modelling, prewhitening, inference method). Three axes
+instead of six is tractable, and **the pruning itself is a result**: a multiverse
+over axes already shown to be inert would be padding.
+
+## 5. Execution order
+
+| | idea | cost | why now |
+|---|---|---|---|
+| 1 | R2 QC -> outcome | very low | measures the new thesis with data in hand |
+| 2 | R1 dose-response referee | low | supplies the missing criterion; biology, not methods |
+| 3 | R3 fingerprinting | low | resolves the tension N5 creates |
+| 4 | R4 profile reproducibility | low | says what spatial claim survives |
+| 5 | R5 global signal | medium | explains a measured anomaly |
+| 6 | R6 biomarker ceiling | trivial | clinical reach for free |
+| 7 | R7 DOF budget | low | pipeline claim, pairs with a known bug |
+| 8 | R8 responder consistency | low | |
+| 9 | R9 ISC | medium | |
+| 10 | R10 pruned multiverse | high | only after the axis list is final |
+
+## 6. Cautions carried forward
+
+- The Round 1 tent collapsed because it was built on predictions rather than
+  measurements. R2 exists partly to stop that repeating: it tests the new thesis
+  directly instead of assuming it.
+- R1's trap is the mirror of N1's. A within-subject correlation between BOLD and
+  a rating is not proof of neural encoding: temperature drives arousal, motion
+  and respiration together, and any of those can carry the correlation. The
+  physiological and motion regressors must enter the trial-wise model, and a
+  motion-only arm must be reported alongside.
+- R3's trap is that pattern correlation is inflated by anything stable within a
+  subject and unrelated to task, including vasculature and residual anatomy. The
+  comparison has to be within-subject versus between-subject on the SAME
+  contrast, never raw pattern similarity.
