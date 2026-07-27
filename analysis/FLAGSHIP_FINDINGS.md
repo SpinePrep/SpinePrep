@@ -192,6 +192,41 @@ voxel index × voxel size — each subject's own cropped grid, so crop placement
 have been inside the number. Against a crop-free coordinate the inflation is
 **0.95–1.13×**.
 
+### Tightened 2026-07-27 (B4) — the three things this finding needed
+
+**Per-dataset rostrocaudal scatter, with intervals** — replacing the pooled 0.67–1.49
+range, which spanned "better than chance" to "worse than chance" and hid the only
+thing a reader needs. Observed SD divided by the SD of random placement in the same
+ROI (1.0 = chance):
+
+| dataset | N | SD (mm) | obs/random | 95% CI |
+|---|---|---|---|---|
+| ds004616 | 24 | 11.44 | **0.55** | [0.40, 0.66] |
+| ds005883 | 25 | 22.85 | 0.76 | [0.57, 0.90] |
+| ds005884 | 15 | 24.80 | 0.84 | [0.55, 1.06] |
+| ds004926 | 37 | 18.66 | 0.86 | [0.69, 1.00] |
+
+Every ratio is **at or below 1**, so the honest statement is *at best marginally
+better than chance, never clearly so* — tighter and more defensible than the old
+range, which implied some datasets were worse than random.
+
+**The 92% laterality, tested** — an untested proportion is not evidence. Against a
+50% null: **p = 1.8×10⁻⁵ to 6.2×10⁻⁸** depending on cohort size, 95% CI **[73%, 99%]**
+(n=24) to **[78%, 98%]** (n=37). Quote the interval alongside the percentage.
+
+**The random-field-theory null, considered and quantitatively excluded.** A reviewer
+will answer the arbitrary-placement null with the noise-based one: for a smooth
+Gaussian field the peak's positional SD ≈ FWHM / (Z_max·√(4 ln 2)), which predicts
+scatter from smoothness and peak height with no biology in it. For any plausible
+values (FWHM 4–10 mm, Z_max 3–5) that predicts **0.5–2.5 mm**. The measured
+rostrocaudal scatter is **11–25 mm** — an order of magnitude larger. **The noise-based
+null does not explain the scatter**, so the arbitrary-placement null is the right
+comparison. State it as excluded, not ignored.
+
+The same expression settles the in-plane question: it predicts 0.5–2.5 mm and the
+observed in-plane SD is **0.27–0.68 mm**, *smaller* than noise alone would give —
+confirming the peak is pinned by the ROI's width rather than well localised.
+
 **⚠ GUARDRAILS.**
 - The in-plane SDs (0.27–0.68 mm) are **not** evidence of good localisation. The horn
   is a 15-voxel column, 72 mm long and a couple of voxels across, so in plane the peak
