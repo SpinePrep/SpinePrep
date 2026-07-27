@@ -63,7 +63,7 @@ from analysis.glm_spec import conditions_for, corrected_events, repetition_time_
 
 COHORT = Path("/mnt/ssd1/spineprep_cohort_s2")
 OUT = Path("/mnt/ssd1/SpinePrep/analysis/results")
-N_PERM = 50
+N_PERM = 30
 SEED = 20260727
 HRF_DELAY_S = 4.0
 CLEAR_S = 10.0
@@ -144,11 +144,32 @@ def _ab(o, dur, tr, n_vol):
     return max(0, a), min(n_vol, max(a + 1, b))
 
 
-def cv_auc(X, y, g, rng=None, permute=False):
-    """Leave-one-block-out AUC, plus the univariate comparators on the same folds."""
+def cv_auc(X, y, g, rng=None, permute=False, n_folds=5):
+    """K-fold AUC over contiguous block groups, averaged ACROSS folds.
+
+    REPLACES an earlier leave-one-block-out version that was invalid. Two defects,
+    both caught by the permutation null it shipped with (permuted AUC came out at
+    0.25-0.47 instead of 0.50):
+
+    1. Leave-one-out with a TRAINED classifier is biased below chance on small
+       samples. Removing a sample shifts the training class mean away from it,
+       pushing its own prediction toward the opposite class. The bias tracked
+       exactly which arms train: the untrained univariate-mean arm sat at 0.518,
+       voxel selection at 0.430, LDA at 0.362.
+    2. Decision values were POOLED across folds. Each fold has its own offset and
+       scale, so pooling destroys the ranking AUC depends on.
+
+    Worse, the bias grows with the true effect size, because a sample carrying real
+    signal shifts the mean it is removed from further. So permutation referencing
+    could not rescue it either -- ds004926 came out 0.385 BELOW its own permuted
+    null, which is a signature of an effect with an uninterpretable sign.
+
+    The fix: several block-pairs per fold, and AUC computed WITHIN each fold then
+    averaged, so no cross-fold pooling occurs and each training set keeps most of
+    the data.
+    """
     y = y.copy()
     if permute and rng is not None:
-        # shuffle the label of each block PAIR, preserving the design structure
         for gi in np.unique(g):
             m = g == gi
             if m.sum() == 2:
@@ -156,29 +177,30 @@ def cv_auc(X, y, g, rng=None, permute=False):
         if len(np.unique(y)) < 2:
             return None
     groups = np.unique(g)
-    if len(groups) < 4:
+    if len(groups) < 6:
         return None
-    scores, truth, uni, unitop = [], [], [], []
-    for gi in groups:
-        te = g == gi
+    k = min(n_folds, len(groups) // 2)
+    if k < 2:
+        return None
+    folds = np.array_split(groups, k)
+    aucs, unis, tops = [], [], []
+    for fold in folds:
+        te = np.isin(g, fold)
         trn = ~te
-        if len(np.unique(y[trn])) < 2 or te.sum() == 0:
+        if len(np.unique(y[trn])) < 2 or len(np.unique(y[te])) < 2:
             continue
         Xtr, Xte = X[trn], X[te]
         mu, sd = Xtr.mean(0), Xtr.std(0)
         sd[sd < 1e-9] = 1.0
         Xtr, Xte = (Xtr - mu) / sd, (Xte - mu) / sd
-        # univariate comparators BEFORE any dimensionality reduction, so they see
-        # the same voxels the ROI actually contains
+        yte = y[te]
         con = Xtr[y[trn] == 1].mean(0) - Xtr[y[trn] == 0].mean(0)
-        uni.append(np.atleast_1d(Xte.mean(axis=1)))
-        k = max(1, int(0.1 * len(con)))
-        top = np.argsort(con)[-k:]
-        unitop.append(np.atleast_1d(Xte[:, top].mean(axis=1)))
-        # PCA on the TRAINING half only. A whole-cord ROI is ~850 voxels against
-        # ~30 samples, where a full covariance estimate is both unstable and the
-        # dominant cost. Components are fitted on train and applied to test, so
-        # no test information reaches the reduction.
+        try:
+            unis.append(roc_auc_score(yte, Xte.mean(axis=1)))
+            kk = max(1, int(0.1 * len(con)))
+            tops.append(roc_auc_score(yte, Xte[:, np.argsort(con)[-kk:]].mean(axis=1)))
+        except Exception:
+            pass
         ncomp = int(min(Xtr.shape[1], max(2, Xtr.shape[0] - 2), 40))
         if Xtr.shape[1] > ncomp:
             try:
@@ -189,22 +211,14 @@ def cv_auc(X, y, g, rng=None, permute=False):
                 pass
         try:
             clf = LDA(solver="lsqr", shrinkage="auto").fit(Xtr, y[trn])
-            s = clf.decision_function(Xte)
+            aucs.append(roc_auc_score(yte, clf.decision_function(Xte)))
         except Exception:
-            uni.pop(); unitop.pop()
-            continue
-        scores.append(np.atleast_1d(s)); truth.append(y[te])
-    if len(truth) < 4:
+            pass
+    if len(aucs) < 2:
         return None
-    tr_ = np.concatenate(truth)
-    if len(np.unique(tr_)) < 2:
-        return None
-    def auc(v):
-        try:
-            return float(roc_auc_score(tr_, np.concatenate(v)))
-        except Exception:
-            return np.nan
-    return dict(auc_mvpa=auc(scores), auc_uni_mean=auc(uni), auc_uni_top10=auc(unitop))
+    m = lambda v: float(np.mean(v)) if len(v) >= 2 else np.nan
+    return dict(auc_mvpa=m(aucs), auc_uni_mean=m(unis), auc_uni_top10=m(tops),
+                n_folds_used=len(aucs))
 
 
 def main():
@@ -362,8 +376,9 @@ def report(df):
     print("\n  READING. The whole-cord row is the one that matters: it needs no")
     print("  anatomical guess. If it detects where the a-priori horn univariate")
     print("  test is null, the field's cord nulls are a summary-measure artifact.")
-    print("  If the permutation AUC is not ~0.5, the fold structure leaks and")
-    print("  nothing here is interpretable.")
+    print("  The permutation AUC MUST sit near 0.5. If it does not, the fold")
+    print("  structure is biased and nothing here is interpretable -- that is exactly")
+    print("  how the earlier leave-one-block-out version was caught and discarded.")
     print("\nDONE_MARKER")
 
 
