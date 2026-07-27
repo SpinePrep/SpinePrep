@@ -8,10 +8,13 @@ locked cohort (`preproc-v1`, git `961a779`, `/mnt/ssd1/spineprep_cohort_s2`,
 Scope: **pipeline claims only**. Design/power/scan-time belongs to P1
 (`/mnt/hdd2/P3_DesignOpt/HANDOFF_FROM_P2_2026-07-25.md`).
 
-> **NOVELTY STATUS.** Round 1 findings (F1–F5) were novelty-checked by dedicated
-> literature review. **Rounds 2–3 findings are marked *(unchecked)*** — the session's
-> web-search budget was exhausted before that review could run. No unchecked claim
-> may enter prose until it clears a search specific enough to have found prior work.
+> **NOVELTY STATUS — reviewed 2026-07-27.** Round 1 (F1–F5) was checked by dedicated
+> literature review; Rounds 2–3 against targeted PubMed searches recorded in
+> `analysis/NOVELTY_REVIEW.md`. **Eight claims verified novel**, one novel with a close
+> neighbour to cite (Chu 2023), and **one partially scooped**: R3 fingerprinting —
+> Ricchi et al., *Imaging Neuroscience* 2026 report the first cord connectivity
+> fingerprint. Ours is task activation, not resting connectivity, and it is at chance.
+> Reframed below. **No "first" language for fingerprinting.**
 
 Revised 2026-07-27 to fold in Rounds 2 and 3.
 
@@ -59,7 +62,7 @@ Paired Wilcoxon on per-run reduction **p = 8×10⁻¹⁵**; SyN beats TopUp on *
 worsening 2%; SyN **−0.039** worsening **76%**; paired Wilcoxon **p = 9.5×10⁻¹⁵**.
 Per-dataset: SyN worsens **84%** (ds005883, n=37) and **81%** (ds005884, n=43).
 
-### NEW — the premise, measured *(unchecked)*
+### NEW — the premise, measured
 F1 rests on the cord being the hard case for distortion. That was asserted, never
 measured against the brain in one acquisition. The reversed-PE fieldmaps are full FOV
 (128×128×70), so **one topup gives the measured field over both organs at once**:
@@ -73,7 +76,7 @@ measured against the brain in one acquisition. The reversed-PE fieldmaps are ful
 54 runs, cord worse in **46/54**, paired **p = 1.9×10⁻⁷**. Same shot, same shim, same
 subject, same field.
 
-### NEW — the mechanism *(unchecked)*
+### NEW — the mechanism
 SyN's estimated field against topup's measured one, voxelwise in the cord:
 **|r| = 0.47** but magnitude ratio **0.178** (median |SyN| 0.90 mm vs |measured|
 5.44 mm). SyN recovers real structure but **under-corrects by ~6×**.
@@ -115,7 +118,7 @@ protocol**. This is *"SyN harms cord geometry in whole-CNS EPI"*, not a general 
 
 **Supersedes and absorbs the old F2.** 54 fully defensible pipelines per dataset over
 the axes measured to move the answer (summary measure, censoring fraction, smoothing)
-plus the confound set. *(unchecked)*
+plus the confound set.
 
 | dataset | significant POSITIVE | sign flips | d range |
 |---|---|---|---|
@@ -172,7 +175,7 @@ matched 19-voxel ROI the organs are comparable (+0.84/+0.50 brain, +0.47/+0.52 c
 # F3 ★★★ The cord peak is not a measurement of the subject
 
 **Replaces the old F3, which reported across-subject scatter and was open to "your
-registration is bad".** *(unchecked)*
+registration is bad".**
 
 | | between runs, same session, same subject | between subjects |
 |---|---|---|
@@ -244,7 +247,7 @@ rostrocaudally"*. Seifert 2024 explicitly invites this study. Kowalczyk 2025 Dic
 0.01/0.04. **Cord is not worse than brain:** Wang 2021 (n=893) peak-to-hotspot
 8.7–20.8 mm.
 
-### What spatial claim IS supportable *(unchecked)*
+### What spatial claim IS supportable
 A monotone ordering, after the tSNR and mean-signal patterns are regressed out:
 
 | spatial summary | within-subject similarity |
@@ -263,11 +266,25 @@ Identification accuracy is at chance for the task pattern everywhere, while the
 permuted chance). Anatomy and vasculature are a powerful cord fingerprint; the task
 response is not.
 
+**⚠ POSITION AGAINST Ricchi et al. 2026** (*Imaging Neuroscience*, "Spine-prints:
+Transposing brain fingerprints to the spinal cord"), which reports the **first cord
+connectivity fingerprint** — 53.3% identification against 8.3% chance, from
+resting-state functional connectivity. **Do not claim priority on cord
+fingerprinting, and use no "first" language.** Two things here survive, and both are
+worth more as a caveat on that paper than as a claim of our own:
+
+1. **Task activation does not fingerprint while resting connectivity does** — a
+   dissociation between the two, not a contradiction of either.
+2. **Their acknowledged limitation may be a confound.** They attribute the lower
+   spine-print score to low tSNR. We measured that anatomy and tSNR patterns *on their
+   own* identify subjects far above chance, so a cord connectivity fingerprint could
+   partly ride on them. That control does not appear in their paper.
+
 ---
 
 # F4 ★★★ Individual-level cord fMRI fails on every estimator tried
 
-**New, and the most defensible claim in the set** *(unchecked)*. Seven independent
+**New, and the most defensible claim in the set**. Seven independent
 estimators, one answer.
 
 | what | measured |
@@ -319,7 +336,7 @@ the arithmetic points at connectivity, not task activation.**
 
 # F5 ★★ Pipeline defects with measured costs
 
-Three concrete, actionable findings about the pipeline itself. *(unchecked)*
+Three concrete, actionable findings about the pipeline itself.
 
 **The confound model spends most of the run.** Across 450 runs: CSF (slice-wise
 aCompCor) is **110 columns, 78%** of all confound regressors. **85.8% of runs spend
