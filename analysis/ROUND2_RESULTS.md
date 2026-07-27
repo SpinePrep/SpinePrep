@@ -379,6 +379,46 @@ Group-level detection works; individual-level inference does not. That is one
 consistent message from seven independent estimators, and it is the most defensible
 claim this round produced after R10.
 
+## REMAINING ANALYSIS — complete list, 2026-07-27
+
+### A. New analysis still available, ranked by value
+
+| # | analysis | why it matters | cost |
+|---|---|---|---|
+| A1 | **aCompCor recomputed SLICE-WISE** | the one retracted analysis with a genuinely novel inference still inside it: Kaptan read reduced connectivity as increased validity, Hemmerling could not rule out real signal loss, and a paired task arm settles it. Now doubly motivated — R7 shows this design spends 78% of the confound budget and 105 recoverable dof | medium |
+| A2 | **F1 paired-organ retrofit** | does SyN *help* the brain in the SAME volume while harming the cord? Turns F1 from "the recommendation is wrong" into "it is organ-specific", which is more defensible and more publishable. Proposed in Round 2 and NOT executed — only the noise and dilution arms were | medium (needs a brain distortion metric) |
+| A3 | **Distortion axis added to R10** | R10's spread is explicitly a lower bound because distortion cannot be varied post-hoc. F1 found the largest single effect on that axis, so adding it raises the headline number | high (re-run S5 per arm; the 31 GB C4 SyN root already exists) |
+| A4 | **Global signal on RAW data** | the ds005884 anomaly (cord mean d +0.72 at 657 of ~848 voxels) is still unexplained. R5 measured 1–2% on preproc-v1, which cannot produce it; the anomaly was in raw EPI. Also gives cord-vs-brain global signal in the same volume | low |
+| A5 | **Normative QC distributions** (Round 1 N6, never run) | 450 harmonised runs plus a 397-participant segmentation database — nobody else has this. R2 changed its framing (the metrics do not predict outcome) but not its value as a reference population | medium |
+| A6 | **Variance decomposition: dataset vs subject vs run** | directly tests the project's own "heterogeneity is the signal" invariant. If dataset dominates subject, multi-site cord fMRI needs harmonisation before pooling | low |
+| A7 | **F4 paired-organ retrofit** | is the 10% censoring optimum organ-specific? Proposed, not executed | low |
+| A8 | **Residual non-rigid motion** (Round 1 N8) | cord centreline LENGTH variation over time after slicewise rigid correction. A cord-specific failure mode with no brain analogue; plausible mechanism for the S2 heterogeneity (+0% to +121%) | low |
+| A9 | **Physio-free respiration** (Round 1 N7) | recover the respiratory trace from cord voxels; four datasets have belts to validate against | medium |
+| A10 | **Slice-timing correction** | named in the original scope and never tested. Small knob, likely inert given the high-pass and physio nulls | low |
+
+### B. Verification and tightening required before anything is published
+
+| # | task | note |
+|---|---|---|
+| B1 | **Literature novelty review of every Round 2 finding** | all are marked *(unchecked)*. R10 first (is there any cord multiverse?), then the null effect-size floor, the paired-organ inference comparison, and the DOF audit. F1's standard is the bar |
+| B2 | **Update `FLAGSHIP_FINDINGS.md`** | it currently contains ZERO Round 2 content. N5 should replace F3, R10 should become a top flagship, and the five failed predictions belong in the record |
+| B3 | **Propagate the estimator caveat** | `COMPENDIUM.md` and `FLAGSHIP_FINDINGS.md` state F2 without it. The caveat does not invalidate F2 but must travel with it |
+| B4 | **Tighten F3/N5** | per-dataset intervals rather than the 0.67–1.49 range; binomial test for the 92% laterality; pre-empt the RFT noise-based null |
+| B5 | **FD definition traceability** | 25% from the `framewise_displacement` column vs 48.5% from a composed FD in `s4-fd-threshold.md`. Name which is used |
+| B6 | **Remove Morrison 2016** | still 2 occurrences in `COMPENDIUM.md`; the primary source could not be located |
+| B7 | **Rebuild the integrative figure** | `t25_ranking.py` still carries the invalidated smoothing bar |
+| B8 | **Re-run P1's harness on preproc-v1** | blocking for the second paper |
+
+### C. Not analysis
+
+Paper figures and prose (nothing drafted; `paper/OUTLINE.md` still encodes the
+superseded reliability framing) · 31 GB `/mnt/ssd1/spineprep_c4_syn` cleanup ·
+`.pre_csffix` backup still serving a live dashboard section · schema drift (S3
+`failure_class`, no S1/S8 schema) · 3 unsubmitted GitHub issue drafts in
+`.claude/issues/`.
+
+---
+
 ## Open
 
 - N3's final numbers.
