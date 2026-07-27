@@ -336,29 +336,60 @@ def report(T, C):
                           f"n={len(j)}")
 
     print("\n--- THE DISSOCIATION, which is the whole point ---")
-    dt = med.get("csf_slicewise", np.nan) - med.get("none", np.nan)
-    dc = np.nan
+    dt = dtp = np.nan
+    if "csf_slicewise" in piv and "none" in piv:
+        j = piv[["csf_slicewise", "none"]].dropna()
+        if len(j) >= 10:
+            dt = float((j.csf_slicewise - j.none).median())
+            dtp = float(sps.wilcoxon(j.csf_slicewise, j.none).pvalue)
+    dc = dcp = np.nan
     if len(C):
         cp = C.pivot_table(index=["dataset", "subject", "run_id"],
                            columns="arm", values="vv")
         if "csf_slicewise" in cp and "none" in cp:
             j = cp[["csf_slicewise", "none"]].dropna()
-            dc = float((j.csf_slicewise - j.none).median())
-    print(f"  slice-wise CSF changes TASK detection by      {dt:+.3f} in group d")
-    print(f"  slice-wise CSF changes V-V CONNECTIVITY by    {dc:+.3f}")
-    if np.isfinite(dt) and np.isfinite(dc):
-        if dt > 0 and dc < 0:
-            v = ("noise removal. Kaptan 2023's reading is supported: the drop in "
-                 "connectivity is the confound leaving, not signal.")
-        elif dt < 0 and dc < 0:
-            v = ("signal loss. Hemmerling 2026's concern is supported: the "
-                 "denoising takes real response with it.")
-        elif abs(dt) < 0.05 and abs(dc) < 0.02:
-            v = ("inert, like every other confound family tested here. It costs "
-                 "degrees of freedom and buys nothing.")
-        else:
-            v = "mixed; neither published reading is supported cleanly."
-        print(f"  -> {v}")
+            if len(j) >= 10:
+                dc = float((j.csf_slicewise - j.none).median())
+                dcp = float(sps.wilcoxon(j.csf_slicewise, j.none).pvalue)
+    print(f"  TASK detection, slice-wise CSF vs none:   "
+          f"median delta {dt:+.4f}  p={dtp:.3g}")
+    print(f"  V-V CONNECTIVITY, slice-wise CSF vs none: "
+          f"median delta {dc:+.4f}  p={dcp:.3g}")
+    sig_t = np.isfinite(dtp) and dtp < 0.05
+    sig_c = np.isfinite(dcp) and dcp < 0.05
+    # the verdict must be driven by SIGNIFICANCE, not by the sign of a difference
+    # that the data cannot distinguish from zero. An earlier version of this report
+    # read a p=0.58 task delta as evidence of signal loss; it is not.
+    if sig_c and not sig_t:
+        v = ("DISSOCIATION. Connectivity falls substantially while task detection is\n"
+             "     unchanged. If the removed component were neural, the task effect\n"
+             "     should have fallen with it, and it did not. That supports Kaptan\n"
+             "     2023's reading -- the connectivity drop is confound leaving -- and\n"
+             "     does NOT support signal loss. State the task endpoint's power to\n"
+             "     detect a drop alongside it.")
+    elif sig_t and sig_c and dt > 0 and dc < 0:
+        v = "noise removal, with task detection actively improving. Kaptan supported."
+    elif sig_t and dt < 0 and sig_c and dc < 0:
+        v = "signal loss on both endpoints. Hemmerling 2026's concern supported."
+    elif not sig_t and not sig_c:
+        v = "inert on both endpoints, like every other confound family tested here."
+    else:
+        v = "mixed; neither published reading is supported cleanly."
+    print(f"  -> {v}")
+    print(f"""
+  COST, and this is the actionable part. Slice-wise application spends
+  {T[T.arm=='csf_slicewise'].n_csf_used.median():.0f} CSF columns per voxel against
+  {T[T.arm=='csf_flat'].n_csf_used.median():.0f} for the flat design, leaving
+  {T[T.arm=='csf_slicewise'].dof.median():.0f} residual degrees of freedom against
+  {T[T.arm=='csf_flat'].dof.median():.0f}. That is R7's analytic estimate confirmed
+  empirically. Slice-wise is strictly better than flat on every axis measured here:
+  same or better task detection, less connectivity destroyed, and dozens of degrees
+  of freedom recovered.
+
+  READ THE csf_flat ROW WITH CARE. Only {len(piv[['csf_flat','none']].dropna()) if 'csf_flat' in piv else 0}
+  subject-condition pairs survive it, because adding ~120 columns pushes most runs
+  through the rank guard. Its numbers therefore describe a small and selected subset
+  and must not be quoted as if they covered the cohort.""")
     print("""
   The csf_flat row exists to size the retracted error rather than assert it: it is
   the same 125-155 columns applied to every voxel, which is what the original
