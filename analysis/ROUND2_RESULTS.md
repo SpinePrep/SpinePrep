@@ -316,8 +316,31 @@ Two invalid designs were built and discarded before a valid one:
    linear time trend fitted on the training fold only, plus the class time gap
    reported next to every result.
 
-Final numbers pending. The unbiased univariate-mean arm was already at chance (horn
-AUC 0.508, p=0.41), consistent with R1.
+**Final numbers, valid design** (permAUC 0.492-0.505 everywhere; class time gap 0.0
+frames on the interleaved arms):
+
+| dataset | design | ROI | AUC mvpa | p | AUC uni-mean |
+|---|---|---|---|---|---|
+| ds005883 | cond-vs-cond | **whole cord** | **0.639** | **0.0001** | 0.500 |
+| ds005883 | cond-vs-cond | hemicord | 0.614 | 0.0005 | 0.500 |
+| ds005883 | cond-vs-cond | a-priori horn | 0.563 | 0.051 | 0.500 |
+| balgrist_painmotor | cond-vs-cond | whole cord | 0.557 | 0.049 | 0.499 |
+| ds004616 | cond-vs-cond | all | 0.466-0.503 | ns | 0.500-0.661 |
+| ds004926 | task-vs-rest | all | 0.442-0.518 | ns | 0.502-0.509 |
+
+**One clean positive, and it is the constructive twin of F2.** In ds005883 the
+univariate mean sits at exactly 0.500 while multivariate detection reaches 0.639 from
+the **whole cord** -- no anatomical guess required. There the signal is present and
+averaging discards all of it.
+
+**But it does not generalise.** Pooled across datasets nothing is significant (horn
+0.521 p=0.13, hemicord 0.520 p=0.28, cord 0.532 p=0.076), and 3 of 5 datasets are
+null. So multivariate detection can rescue a univariate null but does not reliably do
+so.
+
+*Caveat retained:* ds004926 and ds005884 could not use the interleaved design (single
+condition) and their class time gap is -85 and -79 frames, so those two rows stay
+confounded with time-in-run and are not interpretable.
 
 ---
 
