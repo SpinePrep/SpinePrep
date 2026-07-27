@@ -249,11 +249,16 @@ Two presurgical studies find the peak **more** stable than the cluster centre:
 176:215–225; maxima 6.45 ± 1.36 mm vs centres-of-gravity 8.03 ± 2.01 mm,
 significantly better). Both used ROI-constrained searches, which bounds how far a
 peak can travel — but the concession costs nothing and closes the obvious attack.
-The opposite direction is supported by **Morrison et al. 2016**
-(*PLoS ONE* 11(2):e0149547; peak displacement up to ~23 mm, centre-of-mass more
-reproducible than peak) and **Hu et al. 2022** (*Front Neuroinform* 16:882126), which
-gives the cleanest published dissociation: coordinate ICC **0.72–0.80** while the
-peak moves **~20 mm** and only **41%** of peaks land within 10 mm.
+The opposite direction rests on **Hu et al. 2022** (*Front Neuroinform* 16:882126),
+which gives the cleanest published dissociation: coordinate ICC **0.72–0.80** while
+the peak moves **~20 mm** and only **41%** of peaks land within 10 mm.
+
+*A second citation was removed here on 2026-07-27.* Morrison et al. 2016 was
+previously cited for the same direction; its primary source could not be located and
+it is known only through a review, so it does not meet the standard applied to every
+other reference in this document. See "Also do not cite" below. Nothing else in this
+paragraph depended on it, so the argument is unchanged — it now rests on one verified
+source instead of two, one of which was unverifiable.
 
 ### Verified NOT available
 There is **no** review or meta-analysis of peak-coordinate displacement, so no
@@ -724,8 +729,25 @@ modality.
 
 ## Also do not cite
 **Morrison et al. 2016** — the primary paper could not be located (no journal, volume
-or DOI); it is known only through the Bradshaw 2017 review. Earlier notes here cited
-it for peak-vs-CoG; that citation must be removed pending verification.
+or DOI); it is known only through the Bradshaw 2017 review. It was cited here for
+peak-vs-CoG and that citation was **REMOVED on 2026-07-27** (§3.5). Do not
+reintroduce it unless the primary source is located and read.
+
+## FD: which definition, and why two numbers exist
+Resolved 2026-07-27. Two censored fractions appear in this project and they are
+**different quantities, not a contradiction**:
+
+- **F4's ~25%** is the mean per-run fraction of frames with
+  `framewise_displacement > 0.5 mm` taken from the confounds table. Measured across
+  all 450 runs: **mean 24.3%, median 22.3%**. That column is a **2-DOF, in-plane,
+  translation-only FD** — verified numerically as `|Δtrans_x| + |Δtrans_y|` to
+  2×10⁻⁶ mm. There is no z or rotation term because the cord motion correction is 2D
+  slicewise, so none exists to include.
+- **`s4-fd-threshold.md`'s 48.5%** is a median over 466 runs using a **composed** FD
+  that adds terms the confounds column does not carry.
+
+Any FD figure entering prose must name which of the two it is. F4 uses the confounds
+column, so F4 should say "in-plane translation FD" explicitly rather than "FD".
 
 ---
 
