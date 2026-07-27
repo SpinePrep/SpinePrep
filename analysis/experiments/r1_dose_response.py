@@ -203,7 +203,7 @@ def main():
     roots = {k: mkpath(v) for k, v in rawcfg.items()}
     import nibabel as nib
 
-    rows = []
+    rows, runrows = [], []
     runs = [r for r in driver.iter_runs(COHORT) if r["dataset"] in CFG]
     print(f"runs: {len(runs)}", flush=True)
 
@@ -282,8 +282,14 @@ def main():
         rcols = CFG[ds][3]
         sides = [side_of(str(e["trial_type"])) or fixed for e in events]
 
-        # criteria per trial
-        crit = {}
+        # criteria per trial, and run-level criteria kept separately.
+        # ds004926's `rating` turned out to be CONSTANT across all 20 trials of a
+        # run: it is a run-level report, not a trial-wise one (verified: within-run
+        # SD is exactly 0 in all 76 runs, between-run SD 12.17 over 19 distinct
+        # values). A trial-wise correlation is undefined there, so those runs would
+        # have vanished silently -- which is why the run-level arm below exists
+        # rather than the dataset simply being dropped.
+        crit, crit_run = {}, {}
         for rc in rcols:
             vals = []
             for e in events:
@@ -293,13 +299,18 @@ def main():
                 except Exception:
                     vals.append(np.nan)
             a = np.asarray(vals, float)
-            if np.isfinite(a).sum() >= 6 and np.nanstd(a) > 0:
-                crit[rc] = a
+            if np.isfinite(a).sum() >= 6:
+                if np.nanstd(a) > 0:
+                    crit[rc] = a
+                else:
+                    crit_run[rc] = float(np.nanmean(a))
         if not rcols:
             g = grip_per_trial(run["run_id"], root, events, sides)
             if g is not None and np.isfinite(g).sum() >= 6 and np.nanstd(g) > 0:
                 crit["grip_force"] = g
-        if not crit:
+        # NOT `if not crit` -- ds004926 has only a RUN-level criterion, and
+        # guarding on the trial-wise one alone silently dropped all 80 of its runs.
+        if not crit and not crit_run:
             continue
 
         # ROI masks
@@ -315,6 +326,41 @@ def main():
         rois[("whole_cord", None)] = np.ones(len(midx), bool)
 
         istarget = np.array([str(e["trial_type"]) in targets for e in events])
+
+        # run-level amplitudes, for criteria that are constant within a run.
+        # The horn MEAN is used, never a selected top-10%: R2 showed the split-half
+        # selection estimator's magnitude grows as run noise rises, so comparing
+        # selected magnitudes ACROSS runs is exactly the unsafe operation. The
+        # unselected mean has no such dependence.
+        if crit_run:
+            base_all = data[cord].reshape(-1, n_vol).mean(axis=1)
+            try:
+                cdf2 = pd.read_csv(run["confounds"], sep="\t").iloc[:n_vol]
+                fdm = float(np.nanmean(cdf2["framewise_displacement"])) \
+                    if "framewise_displacement" in cdf2 else np.nan
+            except Exception:
+                fdm = np.nan
+            sdv = data[cord].reshape(-1, n_vol).std(axis=1)
+            tsnr_run = float(np.median(base_all[sdv > 0] / sdv[sdv > 0])) \
+                if (sdv > 0).any() else np.nan
+            for (roi, rside), fi in rois.items():
+                if fi.sum() < 8:
+                    continue
+                sel = istarget.copy()
+                if rside is not None:
+                    sel &= np.array([s2 == rside for s2 in sides])
+                if sel.sum() < 4:
+                    continue
+                bb = np.maximum(base_all[fi].mean(), 1e-6)
+                amp = 100.0 * float(B[np.ix_(np.where(sel)[0], np.where(fi)[0])]
+                                    .mean()) / bb
+                for cname, cval in crit_run.items():
+                    runrows.append(dict(
+                        dataset=ds, subject=run["subject"],
+                        session=str(run.get("session") or "none"),
+                        run_id=run["run_id"], criterion=cname, roi=roi,
+                        side=rside or "-", crit=cval, amp=amp,
+                        tsnr=tsnr_run, fd=fdm, n_trials=int(sel.sum())))
         for cname, cvals in crit.items():
             for (roi, rside), fi in rois.items():
                 if fi.sum() < 8:
@@ -379,7 +425,10 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(rows)
     df.to_csv(OUT / "r1_dose_response.csv", index=False)
+    rdf = pd.DataFrame(runrows)
+    rdf.to_csv(OUT / "r1_dose_response_runlevel.csv", index=False)
     report(df)
+    report_runlevel(rdf)
 
 
 def grp(g, col):
@@ -429,6 +478,67 @@ def report(df):
     print("  - grip force is the strongest referee: it is a physical measurement,")
     print("    not a subject report.")
     print("\nDONE_MARKER")
+
+
+def report_runlevel(rdf):
+    print("\n" + "=" * 88)
+    print("R1b  RUN-LEVEL CRITERION (ds004926 rating is constant within a run)")
+    print("=" * 88)
+    if not len(rdf):
+        print("no run-level criterion resolved")
+        print("\nDONE_MARKER_RUNLEVEL")
+        return
+    for (ds, cname), g in rdf.groupby(["dataset", "criterion"]):
+        print(f"\n  {ds.split('_')[1]} / {cname}   {g.run_id.nunique()} runs, "
+              f"{g.subject.nunique()} subjects")
+        print(f"    {'ROI':13} {'side':5} {'rho':>7} {'p':>8} "
+              f"{'rho|tSNR,FD':>12} {'p':>8} {'n runs':>7}")
+        for (roi, side), gg in g.groupby(["roi", "side"]):
+            d = gg.dropna(subset=["crit", "amp"])
+            if len(d) < 8 or d.crit.nunique() < 4:
+                continue
+            r, p = sps.spearmanr(d.crit, d.amp)
+            # partial out tSNR and mean FD, both of which move amplitude
+            dd = d.dropna(subset=["tsnr", "fd"])
+            rp = pp = np.nan
+            if len(dd) >= 12:
+                Z = np.column_stack([sps.rankdata(dd.tsnr), sps.rankdata(dd.fd),
+                                     np.ones(len(dd))])
+                q, _ = np.linalg.qr(Z)
+                ra = sps.rankdata(dd.amp) - q @ (q.T @ sps.rankdata(dd.amp))
+                rc = sps.rankdata(dd.crit) - q @ (q.T @ sps.rankdata(dd.crit))
+                if np.std(ra) > 0 and np.std(rc) > 0:
+                    rp, pp = sps.pearsonr(ra, rc)
+            star = "  <--" if (np.isfinite(pp) and pp < 0.05) else ""
+            print(f"    {roi:13} {side:5} {r:+7.3f} {p:8.4f} {rp:+12.3f} "
+                  f"{pp:8.4f} {len(d):7}{star}")
+
+        # within-subject paired design: two sessions per subject removes every
+        # between-subject confound, at the cost of needing the rating to change
+        print("    WITHIN-SUBJECT paired change across sessions "
+              "(removes all between-subject confounds):")
+        for (roi, side), gg in g.groupby(["roi", "side"]):
+            dl = []
+            for sub, gs in gg.groupby("subject"):
+                m = gs.groupby("session")[["crit", "amp"]].mean()
+                if len(m) == 2 and m.crit.nunique() == 2:
+                    a, b = m.iloc[0], m.iloc[1]
+                    dl.append((b.crit - a.crit, b.amp - a.amp))
+            if len(dl) < 6:
+                print(f"      {roi:13} {side:5} only {len(dl)} subjects with a "
+                      f"rating CHANGE between sessions -- not testable")
+                continue
+            A = np.array(dl)
+            r, p = sps.spearmanr(A[:, 0], A[:, 1])
+            print(f"      {roi:13} {side:5} rho(d_rating, d_response) {r:+.3f} "
+                  f"p={p:.4f}  n={len(dl)} subjects")
+    print("""
+  READING. The run-level arm is weaker than a trial-wise one by construction: it
+  compares different runs, so anything that differs between runs can carry the
+  correlation. That is why tSNR and mean FD are partialled out, and why the
+  within-subject paired change is reported -- it is the only version in which no
+  between-subject variable can contribute.""")
+    print("\nDONE_MARKER_RUNLEVEL")
 
 
 if __name__ == "__main__":
