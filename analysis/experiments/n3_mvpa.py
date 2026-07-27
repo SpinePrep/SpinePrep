@@ -99,7 +99,16 @@ def residualise(Y, Xn):
 
 
 def samples(Y, tr, blocks, n_vol):
-    """(X, y, group) -- one row per block plus matched baseline rows."""
+    """(X, y, group, time) -- one row per block plus matched baseline rows.
+
+    WARNING, measured rather than assumed. For DENSE event designs the frames that
+    are clear of every event are not spread through the run: in ds004926 only 13% of
+    frames qualify and their mean index is 157 against 77 for the task windows. A
+    classifier then learns TIME-IN-RUN rather than task, which is exactly what
+    produced an AUC of 0.128 with a valid permutation null at 0.500. The returned
+    `time` vector exists so that confound is reported for every arm, and
+    `samples_cond` below avoids it entirely where a second condition exists.
+    """
     d = HRF_DELAY_S
     onoff = np.zeros(n_vol, bool)
     for o, dur in blocks:
@@ -112,7 +121,7 @@ def samples(Y, tr, blocks, n_vol):
         a = int(np.floor((o - CLEAR_S) / tr))
         b = int(np.ceil((o + dur + d + CLEAR_S) / tr))
         clear[max(0, a):min(n_vol, max(a + 1, b))] = False
-    X, y, g = [], [], []
+    X, y, g, tm = [], [], [], []
     for i, (o, dur) in enumerate(blocks):
         a = int(np.floor((o + d) / tr))
         b = int(np.ceil((o + dur + d) / tr))
@@ -120,6 +129,7 @@ def samples(Y, tr, blocks, n_vol):
         if b <= a:
             continue
         X.append(Y[a:b].mean(axis=0)); y.append(1); g.append(i)
+        tm.append(0.5 * (a + b))
     if not X:
         return None
     # baseline windows of the same mean length, spread over the clear frames
@@ -135,7 +145,33 @@ def samples(Y, tr, blocks, n_vol):
     chosen = wins[::step][:len(X)]
     for j, wi in enumerate(chosen):
         X.append(Y[wi].mean(axis=0)); y.append(0); g.append(j)
-    return np.asarray(X), np.asarray(y), np.asarray(g)
+        tm.append(float(np.mean(wi)))
+    return np.asarray(X), np.asarray(y), np.asarray(g), np.asarray(tm)
+
+
+def samples_cond(Y, tr, blocks_a, blocks_b, n_vol):
+    """Two INTERLEAVED conditions as the two classes -- immune to the time confound.
+
+    Both classes are events delivered throughout the run, so their time
+    distributions overlap by construction and no classifier can win by learning
+    when in the run a sample came from. This is the primary design wherever a
+    dataset has a second modelled condition; task-versus-baseline is kept only as a
+    secondary arm with its time confound reported.
+    """
+    d = HRF_DELAY_S
+    X, y, g, tm = [], [], [], []
+    for cls, blocks in ((1, blocks_a), (0, blocks_b)):
+        for i, (o, dur) in enumerate(blocks):
+            a = int(np.floor((o + d) / tr))
+            b = int(np.ceil((o + dur + d) / tr))
+            a, b = max(0, a), min(n_vol, max(a + 1, b))
+            if b <= a:
+                continue
+            X.append(Y[a:b].mean(axis=0)); y.append(cls); g.append(i)
+            tm.append(0.5 * (a + b))
+    if len(X) < 8:
+        return None
+    return np.asarray(X), np.asarray(y), np.asarray(g), np.asarray(tm)
 
 
 def _ab(o, dur, tr, n_vol):
@@ -144,7 +180,7 @@ def _ab(o, dur, tr, n_vol):
     return max(0, a), min(n_vol, max(a + 1, b))
 
 
-def cv_auc(X, y, g, rng=None, permute=False, n_folds=5):
+def cv_auc(X, y, g, tm=None, rng=None, permute=False, n_folds=5):
     """K-fold AUC over contiguous block groups, averaged ACROSS folds.
 
     REPLACES an earlier leave-one-block-out version that was invalid. Two defects,
@@ -190,6 +226,16 @@ def cv_auc(X, y, g, rng=None, permute=False, n_folds=5):
         if len(np.unique(y[trn])) < 2 or len(np.unique(y[te])) < 2:
             continue
         Xtr, Xte = X[trn], X[te]
+        if tm is not None:
+            # strip a linear trend in sample time, fitted on TRAIN only. Without
+            # this a dense event design lets the classifier learn time-in-run.
+            T = np.column_stack([tm[trn], np.ones(trn.sum())])
+            try:
+                w, *_ = np.linalg.lstsq(T, Xtr, rcond=None)
+                Xtr = Xtr - T @ w
+                Xte = Xte - np.column_stack([tm[te], np.ones(te.sum())]) @ w
+            except Exception:
+                pass
         mu, sd = Xtr.mean(0), Xtr.std(0)
         sd[sd < 1e-9] = 1.0
         Xtr, Xte = (Xtr - mu) / sd, (Xte - mu) / sd
@@ -293,26 +339,39 @@ def main():
                     fi = hemi[tuple(midx.T)]
                     if fi.sum() >= 20:
                         rois["hemicord"] = fi
+            other = [c for c in conds if c != cond]
+            oblocks = []
+            if other:
+                oc = max(other, key=lambda c: sum(
+                    1 for e in events if e["trial_type"] == c))
+                oblocks = [(float(e["onset"]), float(e["duration"]))
+                           for e in events if e["trial_type"] == oc]
             for roi, fi in rois.items():
-                s = samples(Yc[:, fi], tr, blocks, n_vol)
+                design = "cond_vs_cond" if len(oblocks) >= 4 else "task_vs_rest"
+                s = (samples_cond(Yc[:, fi], tr, blocks, oblocks, n_vol)
+                     if design == "cond_vs_cond"
+                     else samples(Yc[:, fi], tr, blocks, n_vol))
                 if s is None:
                     continue
-                X, y, g = s
+                X, y, g, tmv = s
                 if X.shape[1] < 5:
                     continue
-                real = cv_auc(X, y, g)
+                real = cv_auc(X, y, g, tmv)
                 if real is None:
                     continue
                 perm = []
                 for _ in range(N_PERM):
-                    p = cv_auc(X, y, g, rng=rng, permute=True)
+                    p = cv_auc(X, y, g, tmv, rng=rng, permute=True)
                     if p:
                         perm.append(p["auc_mvpa"])
                 perm = np.asarray([v for v in perm if np.isfinite(v)])
+                t1 = tmv[y == 1].mean() if (y == 1).any() else np.nan
+                t0 = tmv[y == 0].mean() if (y == 0).any() else np.nan
                 rows.append(dict(
                     dataset=ds, subject=run["subject"], run_id=run["run_id"],
                     condition=cond, roi=roi, n_vox=int(fi.sum()),
-                    n_blocks=len(blocks), **real,
+                    n_blocks=len(blocks), design=design,
+                    time_gap_frames=float(t1 - t0), **real,
                     perm_mean=float(perm.mean()) if perm.size else np.nan,
                     perm_p=float((perm >= real["auc_mvpa"]).mean()) if perm.size else np.nan,
                 ))
@@ -347,6 +406,9 @@ def report(df):
     print("perm_p is the within-run block-label permutation null, averaged.\n")
     for ds, gds in df.groupby("dataset"):
         print(f"  {ds}")
+        print(f"    design: {'/'.join(sorted(gds.design.unique()))}   "
+              f"median class time gap {gds.time_gap_frames.median():+.1f} frames "
+              f"(0 = no time confound)")
         print(f"    {'ROI':10} {'vox':>5} {'AUC mvpa':>9} {'d':>7} {'p':>9} "
               f"{'permAUC':>8} {'AUC uni-mean':>13} {'AUC uni-top10':>14} {'N':>4}")
         for roi in ("horn", "hemicord", "cord"):
