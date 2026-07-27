@@ -495,6 +495,165 @@ attributed to something that does not fit.
 
 ---
 
+## REMAINING ANALYSIS — status after Round 3 (2026-07-27)
+
+### A. New analysis — 6 of 10 DONE
+
+| # | analysis | status |
+|---|---|---|
+| A1 | aCompCor recomputed slice-wise | **DONE** — clean dissociation, Kaptan supported |
+| A2a | SyN estimate vs measured field | **DONE** — under-corrects 6x |
+| A2b | cord vs brain distortion, same shot | **DONE** — ratio 2.60 |
+| A4 | global signal on raw data | **DONE** — null; anomaly still unexplained |
+| A6 | variance decomposition of QC metrics | **DONE** — 48% dataset, explains R2 |
+| A8 | residual non-rigid motion | **DONE** — 3.85x, 416/416 runs |
+| A3 | distortion axis added to R10 | **not done** — needs S5 re-run per arm; would raise F2's headline, which is currently a lower bound |
+| A5 | normative QC distributions | **not done** — companion-paper material, and A6 reframes it: the metrics are 48% site variance |
+| A9 | physio-free respiration | **not done** — not flagship |
+| A10 | slice-timing correction | **not done** — likely inert given the high-pass and physio nulls |
+
+### B. Verification — 5 of 8 done, 1 BLOCKED
+
+| # | task | status |
+|---|---|---|
+| B2 | rewrite FLAGSHIP_FINDINGS | **DONE** — thesis replaced, F1-F5 restructured |
+| B3 | propagate the estimator caveat | **DONE** — now travels with F2 |
+| B4 | tighten F3 | **DONE** — per-dataset CIs, binomial test, RFT null excluded |
+| B5 | FD definition traceability | **DONE** — two different quantities, both named |
+| B6 | remove Morrison 2016 | **DONE** — removed, do-not-cite entry records it |
+| B7 | rebuild the integrative figure | **DONE** — t25_ranking retired with a README |
+| **B1** | **literature novelty review** | **BLOCKED** — the session's web-search budget (200/200) was exhausted. Every Round 2-3 novelty mark stays *(unchecked)*. Needs `CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION` raised or a fresh session. **This blocks prose, not analysis.** |
+| B8 | re-run P1's harness on preproc-v1 | **not done** — cross-project, blocks the second paper rather than this one |
+
+### C. Not analysis
+
+Paper figures beyond the integrative one, and prose (nothing drafted; `paper/OUTLINE.md`
+still encodes the superseded reliability framing) · `.pre_csffix` backup still serving a
+live dashboard section · schema drift (S3 `failure_class`, no S1/S8 schema) · 3
+unsubmitted GitHub issue drafts in `.claude/issues/`.
+
+**Do NOT delete `/mnt/ssd1/spineprep_c4_syn` (31 GB).** It was listed as cleanup, but
+A3 needs it: adding the distortion axis to the multiverse requires the SyN-corrected
+derivatives, and regenerating them costs far more than the disk.
+
+---
+
+## ROUND 3 — the retrofits (2026-07-27)
+
+Executed after the remaining-analysis list, selecting the items that feed the
+flagship findings. Scripts: `a1_acompcor_slicewise.py`, `a2_f1_field_retrofit.py`,
+`a468_supporting.py`.
+
+### A2b — cord distortion is 2.6× the brain's, measured in the same shot ★★★
+F1's premise is that the cord is the hard case for distortion. Universally asserted,
+never measured against the brain in one acquisition. The CoSpine reversed-PE
+fieldmaps are full FOV (128×128×70), so one topup yields the measured field over both
+organs simultaneously. **54 runs.**
+
+| | median displacement |
+|---|---|
+| **cord** | **4.79–4.86 mm** |
+| brain | 1.53–1.67 mm |
+| **ratio** | **2.60** (IQR 1.82–5.10) |
+
+Cord worse in **46/54 runs**, paired Wilcoxon **p = 1.9×10⁻⁷**. Same shot, same shim,
+same subject, same field. F1's premise is now a number.
+
+### A2a — SyN under-corrects by 6× ★★
+80 runs, topup's re-expanded displacement field against SyN's own, voxelwise in the
+cord along the phase-encoding axis.
+
+| |r| | ratio SyN/measured | median &#124;measured&#124; | median &#124;SyN&#124; |
+|---|---|---|---|
+| **0.47** | **0.178** | 5.44 mm | 0.90 mm |
+
+58/80 runs above |r| = 0.3. The consistent negative sign is a **coordinate
+convention**, resolvable by construction: images are LAS (anterior-positive), ANTs
+stores fields in LPS (posterior-positive), and the phase-encoding axis is that axis.
+
+**The hypothesis this arm tested was wrong.** It predicted SyN's field would be
+*unrelated* to the truth. It is not — |r| ≈ 0.47 means it recovers real structure. The
+measured mechanism is **under-correction by ~6× plus partial spatial mismatch**.
+
+*Open, and not glossed:* a warp pointing the right way at 18% strength should improve
+geometry slightly, not degrade it in 82% of runs. Reconcilable (F1's metric is
+per-slice centreline displacement, not global RMS) but that is an **inference**, not a
+measurement.
+
+### A1 — the retracted aCompCor analysis, done correctly ★★★
+The original handed all 125–155 `csf_sliceNN_pcMM` columns to every cord voxel when
+S8's spec says the design is slice-wise. Rebuilt with slice indices verified against
+the bold z extent. **191 runs, three arms, both endpoints on the same runs.**
+
+| arm | CSF cols/voxel | residual dof |
+|---|---|---|
+| none | 0 | 191 |
+| csf_flat (the retracted error) | 120 | 148 |
+| **csf_slicewise (correct)** | **5** | **186** |
+
+| endpoint | slice-wise vs none | p |
+|---|---|---|
+| task detection (CV top-10%) | −0.019 | **0.582** |
+| V–V connectivity (Kaptan) | **−0.121** | **2.3×10⁻³⁵** |
+
+**A clean dissociation.** Connectivity falls ~35% while task detection is unchanged.
+If the removed component were neural, the task effect should have fallen with it. It
+did not. That **supports Kaptan 2023** (the connectivity drop is confound leaving) and
+does **not** support Hemmerling 2026's signal-loss concern. State the task endpoint's
+power alongside it: "unchanged" means not distinguishable from zero at n = 193 pairs.
+
+**Actionable:** slice-wise beats flat on every axis — same task detection, less
+connectivity destroyed (+0.071, p = 3.4×10⁻²⁵), **38 dof recovered per run**. R7's
+analytic estimate, confirmed empirically.
+
+*Corrected in-flight:* the first verdict read the sign of the p = 0.58 task delta as
+signal loss. The logic now requires significance before calling a direction.
+*Caveat:* only 22 pairs survive csf_flat, since ~120 extra columns push most runs
+through the rank guard.
+
+### A8 — the deformation the pipeline cannot correct is 4× what it does ★★
+Per timepoint, the intensity-weighted cord centroid of every axial slice. Removing
+each timepoint's mean over slices strips the rigid translation S4 models; what remains
+is centreline **shape** change, which 2D slicewise rigid correction cannot touch.
+
+| | |
+|---|---|
+| residual rigid SD | 0.014 mm |
+| **non-rigid SD** | **0.053 mm** |
+| **ratio** | **3.85** |
+| non-rigid exceeds rigid | **416/416 runs (100%)**, all 9 datasets, ratios 2.78–4.84 |
+
+Read correctly: S4 removes what it models, and what it does not model is four times
+larger. A cord-specific failure mode with no brain analogue, and a candidate mechanism
+for the S2 heterogeneity (+0% to +121% tSNR gain, no consistent transfer).
+
+### A6 — the QC metrics measure the site, not the person ★★
+Variance split into dataset / subject / run across 33 metrics.
+
+| | dataset | subject | run |
+|---|---|---|---|
+| mean over metrics | **48%** | 19% | 33% |
+
+**Dataset dominates subject in 27 of 33 metrics.** The exceptions are the ones that
+should be anatomical: cord cross-sectional area 82% subject, PAM50 cord Dice 69%.
+
+**This explains R2's null.** If roughly half a metric's variance is between-dataset,
+then within a dataset little remains for it to predict with — exactly the regime R2
+tested. And it is a direct statement for multi-site work: cord fMRI QC needs
+harmonisation before pooling.
+
+### A4 — the raw global signal does NOT explain the anomaly either (null)
+R5 found 1–2% on preproc-v1 and could not account for the paired-organ anomaly, but
+the anomaly lived in **raw** data. Measured there across 107 runs: cord R²
+0.009–0.013 against brain 0.007–0.013, paired **p = 0.093**, and the raw cord global
+signal correlates with the task design at median |r| = 0.128.
+
+Neither large nor task-locked in raw data either. **Two explanations attempted, two
+failed.** The ds005884 anomaly stands open and is recorded as such rather than
+attributed to something that does not fit.
+
+---
+
 ## REMAINING ANALYSIS — complete list, 2026-07-27
 
 ### A. New analysis still available, ranked by value
