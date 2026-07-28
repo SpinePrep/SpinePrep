@@ -1,7 +1,10 @@
 ---
 status: deferred
 supersedes: private/SPEC/S10_roi_timeseries_and_reliability.md
+slug: roi-timeseries-and-connectivity-removed
+needs_review: true
 ---
+
 
 > **DEFERRED 2026-06-11 — removed from the active pipeline.** This step was
 > the **former S10 (ROI/connectivity)**; its step number has since been reused
@@ -258,4 +261,3 @@ that the cohort needs to be aware of. Lock and ship (principle §6).
 - The 50-ROI drop on cospine_motor reflects a known coverage gap in
   that dataset; the S10 (QC aggregation & release) cohort coverage matrix surfaces this to the
   analyst directly.
-

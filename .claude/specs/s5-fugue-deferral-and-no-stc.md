@@ -1,6 +1,9 @@
 ---
-status: superseded   # FUGUE removed in v1 (v1-claims-ledger.md); STC section still valid
+status: superseded
+status_note: superseded   # FUGUE removed in v1 (v1-claims-ledger.md); STC section still valid
+slug: s5-fugue-deferral-and-no-stc
 ---
+
 
 # Spec: FUGUE deferral + no slice-timing correction (S4/S5)
 
