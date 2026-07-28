@@ -1,6 +1,9 @@
 ---
 status: characterized
+slug: s9-smoothing-bottleneck
+needs_review: true
 ---
+
 
 # Spec: S9 cord-smoothing bottleneck + restart stall
 
