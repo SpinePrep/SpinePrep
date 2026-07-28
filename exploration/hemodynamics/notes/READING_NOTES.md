@@ -73,3 +73,55 @@ Not a delay paper — its only "delay" mention is about draining veins (Kay 2020
 3 s onset transient and a 30 s sustained response in *different laminae*, which means a single
 global delay is the wrong model if both components are present. Check for a phasic component
 before fitting one shift.
+
+## Figley CR & Stroman PW 2012, *Magn Reson Imaging* 30(4) — THE cord response-function paper
+doi:10.1016/j.mri.2011.12.015 · PMID 22285878 · no PMC (metadata only)
+
+**Found 2026-07-28 while writing the HRF teaching note. This is the closest thing to a
+measured spinal cord response function, and it was missing from the handoff.**
+
+First event-related spinal cord fMRI. Verbatim from the abstract:
+
+> "the spinal cord SEEP response (time to peak ≈8 s; FWHM ≈4 s; and probably lacking pre-
+> and poststimulus undershoots) is slower than previous estimates of SEEP or BOLD
+> responses in the brain, but faster than previously reported spinal cord BOLD responses."
+
+So, against a brain canonical HRF peaking at 5–6 s:
+
+| | time to peak | FWHM | undershoots |
+|---|---|---|---|
+| brain canonical (SPM) | 5–6 s | ~3–5 s | yes, pre and post |
+| **cord SEEP** | **≈8 s** | **≈4 s** | **probably none** |
+| prior cord BOLD | slower than 8 s | — | — |
+
+**Consequence for the P1 handoff.** The premise is already supported by prior work, and
+by more than Patrick cited: the cord response is ~2–3 s slower at the peak than the
+canonical HRF *globally*, independent of any dorsal-versus-ventral difference. That is a
+different claim from Hemmerling's 6.2 s territorial delay and it arrives from a
+different method. Both should be in the answer to CoSpi.
+
+**Caveat.** SEEP is a proposed non-BOLD mechanism (signal enhancement by extravascular
+water protons; Stroman 2002, Figley & Leitch & Stroman 2010) and is contested. A SEEP
+response function is not automatically the BOLD response function. But their own
+comparison says prior cord *BOLD* estimates were slower still, so both point the same
+way.
+
+## Design audit of our own datasets for HRF recovery (measured 2026-07-28)
+
+| dataset | events | duration | ISI median | ISI range | jittered | TR |
+|---|---|---|---|---|---|---|
+| **ds004926 heat** | 20 | **1 s** | 13.2 s | 11–15 s | yes | **1.80 s** |
+| ds005883 pain | 30 | 4–11 s | 17.9 s | 16–23 s | yes | 2.68 s |
+| ds004616 grasp | 48 | 5–15 s | 15.0 s | 5–15 s | yes | 2.00 s |
+| balgrist painmotor | 36 | 3–20 s | 19.6 s | 3–29 s | yes | 3.26 s |
+
+**ds004926 is the only dataset with a genuinely impulse-like stimulus** (1 s), and it has
+the shortest TR. It is the one design that can support model-free response-shape
+recovery. The others have 4–20 s events, so their responses are dominated by the
+stimulus duration rather than the response function, and they can only support the
+weaker "does a shifted canonical fit better" test.
+
+Note that ISI ~13 s is shorter than the ~25–30 s a response needs to return fully to
+baseline, so recovery requires the standard linearity assumption to deconvolve
+overlapping trials (Dale 1999). Jitter is what makes that possible, and all four are
+jittered.
