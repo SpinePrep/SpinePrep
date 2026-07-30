@@ -1391,6 +1391,14 @@ release as of 2026-06-11._
 The boilerplate above is licensed CC0 — reuse it verbatim. Cite the
 methods listed in `CITATION.bib` (auto-generated alongside this file).
 
+**If a plagiarism checker flags this text.** That is expected, and it is not a
+problem. This boilerplate is public domain (CC0) and is deliberately written to
+be reproduced word-for-word by everyone who runs SpinePrep, because editing it
+would misdescribe what the pipeline actually did and break the reproducibility
+this file exists to provide. If a reviewer or editor raises it, point them here
+and to https://spineprep.com. (This convention follows fMRIPrep, which has
+distributed a CC0 methods boilerplate on the same terms since 2018.)
+
 ## Reproducibility
 
 Per-step policy SHA256 + pipeline Git SHA captured in
