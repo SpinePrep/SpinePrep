@@ -907,9 +907,9 @@ def _build_references_bib(out_path: Path) -> None:
 @article{hemmerling2025,
   title={Data-driven denoising in spinal cord fMRI with principal component analysis (SpinalCompCor)},
   author={Hemmerling, K.J. and others},
-  journal={bioRxiv},
+  journal={Imaging Neuroscience},
   year={2025},
-  doi={10.1101/2025.01.23.634596}
+  doi={10.1162/imag.a.1143}
 }
 
 @article{eippert2017,
