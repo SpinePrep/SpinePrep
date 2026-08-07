@@ -8,13 +8,22 @@ type: software
 authors:
   - family-names: Sharifi
     given-names: Kiomars
+    orcid: "https://orcid.org/0000-0002-7032-7995"
     affiliation: "ETH Zurich; University of Zurich; Balgrist University Hospital"
 version: 26.0.0
 doi: 10.5281/zenodo.21294696
 date-released: "2026-07-10"
 license: Apache-2.0
 repository-code: "https://github.com/SpinePrep/SpinePrep"
+repository-artifact: "https://pypi.org/project/spineprep/"
 url: "https://spineprep.com"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21294696
+    description: Concept DOI — always resolves to the latest version
+  - type: doi
+    value: 10.5281/zenodo.21294697
+    description: Version DOI for v26.0.0
 keywords:
   - spinal cord
   - functional MRI
