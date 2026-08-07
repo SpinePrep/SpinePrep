@@ -36,7 +36,7 @@ reproducibility, and standardised quality control around them**, not new algorit
 
 > [!NOTE]
 > SpinePrep is at **v26.0.0** and methods validation is **ongoing**. It has been
-> developed and tested on cervical spinal-cord EPI-BOLD at 3 T across eight public
+> developed and tested on cervical spinal-cord EPI-BOLD at 3 T across nine public
 > and internal datasets; it runs outside that envelope but warns you. See the
 > [validation page](https://spineprep.com/validation/) for current evidence and
 > known limits.
