@@ -1,0 +1,38 @@
+{
+  "title": "SpinePrep: a containerised BIDS-App for reproducible spinal-cord fMRI preprocessing",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "Apache-2.0",
+  "creators": [
+    {
+      "name": "Sharifi, Kiomars",
+      "orcid": "0000-0002-7032-7995",
+      "affiliation": "ETH Zurich; University of Zurich; Balgrist University Hospital"
+    }
+  ],
+  "description": "<p>SpinePrep is an open, containerised BIDS-App for reproducible preprocessing of human spinal-cord fMRI. A BIDS dataset goes in; GLM-ready derivatives and per-step quality control come out.</p><p>The pipeline runs ten steps end to end &mdash; input verification, anatomical cord reference, functional reference and cord-focused crop, motion correction, distortion correction, functional-to-anatomical registration, PAM50 template normalization, confounds and physiological regressors, GLM-ready derivatives with per-vertebral-level tSNR, and QC aggregation with a reproducibility receipt. Each step measures itself in isolation and emits its own diagnostic reportlet, so a failure is attributable to the step that caused it.</p><p>The scientific methods belong to the tools SpinePrep integrates &mdash; the Spinal Cord Toolbox, FSL, ANTs, and the PAM50 template. SpinePrep's contribution is the integration, automation, reproducibility, and standardised quality control around them, not new algorithms.</p><p>Please cite SpinePrep alongside the underlying tools (SCT, FSL, ANTs, PAM50). The auto-generated methods boilerplate in each run's report lists the ones that run actually used.</p>",
+  "keywords": [
+    "spinal cord",
+    "functional MRI",
+    "preprocessing",
+    "BIDS-App",
+    "quality control",
+    "reproducibility",
+    "PAM50",
+    "neuroimaging"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://pypi.org/project/spineprep/",
+      "relation": "isIdenticalTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://spineprep.com",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-softwaredocumentation",
+      "scheme": "url"
+    }
+  ]
+}
