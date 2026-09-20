@@ -11,8 +11,8 @@
 import json, os, shutil, subprocess, sys, statistics as st
 from pathlib import Path
 
-REPO = Path("/mnt/ssd1/SpinePrep")
-C4 = Path("/mnt/ssd1/spineprep_c4_syn")
+REPO = Path("/path/to/SpinePrep")
+C4 = Path("/path/to/spineprep_c4_syn")
 POLICY = REPO / "policy" / "S5_func_distortion_correction.yaml"
 BACKUP = Path("/tmp/claude-1000/-mnt-ssd1-SpinePrep/"
               "f4e0bb8b-cddd-41fb-aa92-db62665bad69/scratchpad/S5_policy_backup.yaml")

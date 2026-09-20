@@ -40,7 +40,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/mnt/ssd1/SpinePrep")
+sys.path.insert(0, "/path/to/SpinePrep")
 
 import numpy as np
 import pandas as pd
@@ -50,8 +50,8 @@ from analysis import driver
 from analysis.glm import lean_confounds, spm_hrf
 from analysis.glm_spec import conditions_for, repetition_time_s
 
-COHORT = Path("/mnt/ssd1/spineprep_cohort_s2")
-OUT = Path("/mnt/ssd1/SpinePrep/analysis/results")
+COHORT = Path("/path/to/spineprep_cohort_s2")
+OUT = Path("/path/to/SpinePrep/analysis/results")
 N_DESIGN = 200
 SEED = 20260727
 

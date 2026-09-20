@@ -1,7 +1,7 @@
 
 import sys
 from pathlib import Path
-sys.path.append("/mnt/ssd1/SpinePrep/src")
+sys.path.append("/path/to/SpinePrep/src")
 
 from spineprep.S3_func_init_and_crop import run_S3_func_init_and_crop
 

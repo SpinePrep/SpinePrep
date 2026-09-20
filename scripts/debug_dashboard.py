@@ -3,7 +3,7 @@ import json
 import os
 from pathlib import Path
 
-work_dir = Path("/mnt/ssd1/SpinePrep/work/wf_reg_033")
+work_dir = Path("/path/to/SpinePrep/work/wf_reg_033")
 logs_dir = work_dir / "logs"
 
 print(f"Checking logs in: {logs_dir}")

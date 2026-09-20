@@ -1,7 +1,7 @@
 # SpinePrep analysis — real-cohort results
 
 Computed by `analysis/run_all.py` on the crop-fix cohort at
-`/mnt/ssd1/spineprep_cohort_s2` (S9: 450/450 runs PASS; top cord slice recovered;
+`/path/to/spineprep_cohort_s2` (S9: 450/450 runs PASS; top cord slice recovered;
 4D `PAM50atlas_probseg` emitted). 324 runs carried a modelled task (126 rest runs
 skipped). Every number below traces to a table under `analysis/results/`
 (gitignored — regenerate with the one command). Provisional only in the sense
@@ -87,5 +87,5 @@ launched. `distortion.csv` is empty until `qc_syn.json` exists.
 
 ## Reproduce
 
-    python3 -m analysis.run_all /mnt/ssd1/spineprep_cohort_s2
+    python3 -m analysis.run_all /path/to/spineprep_cohort_s2
     python3 -m analysis.figures

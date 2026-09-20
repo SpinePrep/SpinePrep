@@ -6,8 +6,8 @@ Anything that drifts later is detectable by re-running this and diffing.
 """
 import json, glob, os, hashlib, subprocess, collections
 
-REPO = "/mnt/ssd1/SpinePrep"
-COH = "/mnt/ssd1/spineprep_cohort_s2"
+REPO = "/path/to/SpinePrep"
+COH = "/path/to/spineprep_cohort_s2"
 
 def sh(*a):
     return subprocess.run(a, cwd=REPO, capture_output=True, text=True).stdout.strip()

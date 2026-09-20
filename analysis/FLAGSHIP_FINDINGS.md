@@ -1,12 +1,12 @@
 # SpinePrep — flagship findings
 
 **The verified, novelty-checked core.** Every number computed in-session on the
-locked cohort (`preproc-v1`, git `961a779`, `/mnt/ssd1/spineprep_cohort_s2`,
+locked cohort (`preproc-v1`, git `961a779`, `/path/to/spineprep_cohort_s2`,
 450 runs all S9 PASS). Full detail: `analysis/COMPENDIUM.md` (Round 1) and
 `analysis/ROUND2_RESULTS.md` (Rounds 2–3). Scripts: `analysis/experiments/`.
 
 Scope: **pipeline claims only**. Design/power/scan-time belongs to P1
-(`/mnt/hdd2/P3_DesignOpt/HANDOFF_FROM_P2_2026-07-25.md`).
+(`/path/to/P3_DesignOpt/HANDOFF_FROM_P2_2026-07-25.md`).
 
 > **NOVELTY STATUS — reviewed 2026-07-27.** Round 1 (F1–F5) was checked by dedicated
 > literature review; Rounds 2–3 against targeted PubMed searches recorded in

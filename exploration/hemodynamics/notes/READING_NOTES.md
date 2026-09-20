@@ -68,7 +68,7 @@ Metadata only (PMID 18383283). The feasibility paper for cord ASL; little uptake
 
 ## Horn U et al. 2025 (preprint) — 7 T layer-specific cord responses
 PDF: `papers/horn_2025_7T_layer_specific_dorsalhorn.pdf`. Full note in
-`/mnt/hdd2/P1_CoSpi/papers/literature/NOTES_horn2025_layers.md`.
+`/path/to/P1_CoSpi/papers/literature/NOTES_horn2025_layers.md`.
 Not a delay paper — its only "delay" mention is about draining veins (Kay 2020). **But** it puts a
 3 s onset transient and a 30 s sustained response in *different laminae*, which means a single
 global delay is the wrong model if both components are present. Check for a phasic component

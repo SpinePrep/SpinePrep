@@ -219,7 +219,7 @@ that makes this fair rather than accusatory.
 - **Precision / dense-sampling imaging.** Maximum is two sessions per subject. Not
   enough.
 - **Sample-size and scan-duration scaling.** Belongs to P1 by the agreed boundary
-  (`/mnt/hdd2/P3_DesignOpt/HANDOFF_FROM_P2_2026-07-25.md`).
+  (`/path/to/P3_DesignOpt/HANDOFF_FROM_P2_2026-07-25.md`).
 
 ---
 

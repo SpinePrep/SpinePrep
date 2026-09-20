@@ -2,8 +2,8 @@ function run_physio()
 % Run PhysIO noise_rois (aCompCor) on slice01 only.
 % Output: physio_slice01.txt with [mean, pc1..pc5] z-scored.
 
-addpath('/home/kiomars/Documents/MATLAB/spm12');
-addpath(genpath('/home/kiomars/Documents/MATLAB/tapas/PhysIO'));
+addpath('$HOME/Documents/MATLAB/spm12');
+addpath(genpath('$HOME/Documents/MATLAB/tapas/PhysIO'));
 
 bold = '/tmp/physio_verify/bold.nii';
 mask = '/tmp/physio_verify/mask_slice01.nii';

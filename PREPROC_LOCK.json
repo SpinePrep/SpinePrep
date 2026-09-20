@@ -5,7 +5,7 @@
     "describe": "961a779",
     "clean": true
   },
-  "cohort_root": "/mnt/ssd1/spineprep_cohort_s2",
+  "cohort_root": "/path/to/spineprep_cohort_s2",
   "policy_sha256": {
     "S10_qc_aggregation_and_release.yaml": "13509d09814fffee33f0750f7a26bfb005ed17f25bb5e988932f3927d929c7a4",
     "S2B_func_denoise.yaml": "64cd31cea3c61834376215a21635bc6f9e421a611f6c6b4f14e9f9c684ed33a4",

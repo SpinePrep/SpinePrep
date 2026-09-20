@@ -18,7 +18,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
-WORK_ROOT = Path(os.environ.get("SFMRI_WORK_ROOT", "/mnt/ssd1/SpinePrep/work"))
+WORK_ROOT = Path(os.environ.get("SFMRI_WORK_ROOT", "/path/to/SpinePrep/work"))
 # reg/smoke dev cohorts retired 2026-06-16; production scopes are the full
 # per-dataset chains + the balgrist experiment. Any scope with a work/done/<scope>
 # dir is served regardless (see _is_scope); this list is just the fast-path/default.

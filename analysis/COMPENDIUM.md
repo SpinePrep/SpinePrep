@@ -9,12 +9,12 @@ Compiled 2026-07-26.
 
 | item | value |
 |---|---|
-| cohort | `/mnt/ssd1/spineprep_cohort_s2` — 9 datasets, 469 runs entering S3, **450 complete S9 (all PASS)** |
+| cohort | `/path/to/spineprep_cohort_s2` — 9 datasets, 469 runs entering S3, **450 complete S9 (all PASS)** |
 | preprocessing | frozen as **`preproc-v1`**, git `961a779` (`PREPROC_LOCK.md` / `.json`) |
 | tools | SCT 7.1, FSL 6.0.7.15, MRtrix 3.0.4, ANTs (SCT-bundled), Python 3.12.3 |
 | scripts | `analysis/experiments/` (all committed) |
 | tables | `analysis/results/*.csv` (gitignored; regenerate via the scripts) |
-| scope | **PIPELINE claims only.** Design/power/scan-time was handed to P1 (`/mnt/hdd2/P3_DesignOpt/HANDOFF_FROM_P2_2026-07-25.md`) |
+| scope | **PIPELINE claims only.** Design/power/scan-time was handed to P1 (`/path/to/P3_DesignOpt/HANDOFF_FROM_P2_2026-07-25.md`) |
 
 ## The thesis (after all amendments)
 
@@ -445,7 +445,7 @@ Hedge 2018, Marek 2022, Botvinik-Nezer 2020, Caceres 2009, Bright & Murphy 2015.
 4. `paper/OUTLINE.md` still encodes the superseded reliability-led structure.
 5. **P1 blocked:** its v5 results were computed on pre-crop-fix derivatives and
    its harness has not been re-run on `preproc-v1`.
-6. Housekeeping: 31 GB in `/mnt/ssd1/spineprep_c4_syn` (safe to delete);
+6. Housekeeping: 31 GB in `/path/to/spineprep_c4_syn` (safe to delete);
    `.pre_csffix` backup still served as a live dashboard section; schema drift
    (S3 requires a `failure_class` it no longer emits; S1/S8 have no schema).
 

@@ -3,7 +3,7 @@
 Binding for any text SpinePrep publishes: method/reference docs, README, tutorials,
 release notes, paper prose, and dashboard/report copy. Goal: prose that reads as
 written by a careful cord-fMRI methodologist, not by an LLM. Grounded in (a) the
-corpus-derived field paper register at `/mnt/ssd1/qai/knowledge/style/rubric_academic.md`
+corpus-derived field paper register at `/path/to/qai/knowledge/style/rubric_academic.md`
 (35 spinal-cord-fMRI papers), (b) the documentation register of fMRIPrep / MRIQC /
 SCT / nipreps, and (c) a structural + lexical AI-tell audit.
 

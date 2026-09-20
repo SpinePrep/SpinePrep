@@ -33,7 +33,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 from spineprep.steps.s7.process import _classify  # noqa: E402
 
-OUT = Path("/mnt/ssd1/spineprep_cohort_s2")
+OUT = Path("/path/to/spineprep_cohort_s2")
 QC = OUT / "logs" / "S7_template_normalization"
 POLICY = REPO / "policy" / "S7_template_normalization.yaml"
 

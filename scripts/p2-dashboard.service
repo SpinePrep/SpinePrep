@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=kiomars
-WorkingDirectory=/mnt/ssd1/SpinePrep
-Environment=SFMRI_WORK_ROOT=/mnt/ssd1/SpinePrep/work
-ExecStart=/home/kiomars/.cache/pypoetry/virtualenvs/spineprep-amBcnVRj-py3.12/bin/uvicorn spineprep.dashboard_server:app --host 127.0.0.1 --port 9002
+WorkingDirectory=/path/to/SpinePrep
+Environment=SFMRI_WORK_ROOT=/path/to/SpinePrep/work
+ExecStart=$HOME/.cache/pypoetry/virtualenvs/spineprep-amBcnVRj-py3.12/bin/uvicorn spineprep.dashboard_server:app --host 127.0.0.1 --port 9002
 Restart=on-failure
 RestartSec=5
 

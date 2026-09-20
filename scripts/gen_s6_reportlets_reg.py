@@ -5,7 +5,7 @@ cohort, applying the BUG-4 (affine-derived S/I/A/P markers) + FEAT-3
 matching derivatives figures dir (same filenames the qc.json already lists)."""
 import sys, glob, json
 from pathlib import Path
-ROOT = Path("/mnt/ssd1/SpinePrep"); sys.path.insert(0, str(ROOT / "src"))
+ROOT = Path("/path/to/SpinePrep"); sys.path.insert(0, str(ROOT / "src"))
 from spineprep.steps.s6.reportlets import render_s6_composite, render_s6_dice_per_slice
 
 s6 = (ROOT / "work" / "done" / "reg" / "S6").resolve()

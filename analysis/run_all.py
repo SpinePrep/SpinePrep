@@ -50,7 +50,7 @@ def _dataset_roots() -> dict[str, Path]:
     roots = {}
     for k, v in raw.items():
         p = Path(v.get("path") or v.get("bids_root")) if isinstance(v, dict) else Path(v)
-        roots[k] = p if p.is_absolute() else Path("/mnt/ssd1/SpinePrep") / p
+        roots[k] = p if p.is_absolute() else Path("/path/to/SpinePrep") / p
     return roots
 
 

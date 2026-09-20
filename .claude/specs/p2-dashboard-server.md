@@ -25,7 +25,7 @@ Wrap the existing static QC dashboard in a lightweight web server on localhost:9
 - CLI entrypoint or standalone script
 
 ## Inputs
-- Workfolders at `/mnt/ssd1/SpinePrep/work/wf_*`
+- Workfolders at `/path/to/SpinePrep/work/wf_*`
 - Pre-generated `dashboard/` HTML in each workfolder
 - Existing `qc_dashboard_html.py` already emits JS that fetches `/__spineprep__/workfolders.json`
 

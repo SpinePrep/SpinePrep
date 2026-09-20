@@ -18,10 +18,12 @@ cannot silently diverge again.
 import json
 from pathlib import Path
 
+import os
+
 import pytest
 
 SCHEMA_DIR = Path("schemas")
-COHORT = Path("/mnt/ssd1/spineprep_cohort_s2/logs")
+COHORT = Path(os.environ.get("SPINEPREP_COHORT", "/path/to/spineprep_cohort_s2/logs"))
 
 
 def _schema(name):

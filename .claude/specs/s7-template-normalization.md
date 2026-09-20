@@ -147,7 +147,7 @@ Bring the PAM50 template, cord/WM/GM/CSF masks, and white-matter atlas into nati
 - [Landelle et al. 2023 — Spinal Cord fMRI review](https://pmc.ncbi.nlm.nih.gov/articles/PMC10623605/)
 - [De Leener et al. 2018 — PAM50 template](https://www.sciencedirect.com/science/article/abs/pii/S1053811917308686)
 - [Eippert et al. 2017 — Spinal fMRI preprocessing](https://pmc.ncbi.nlm.nih.gov/articles/PMC10623605/)
-- CoSpi reference: `/mnt/hdd2/P1_CoSpi/scripts_pilot_motor/spi08_10_registration.sh`, `spi17_stat_standard.sh`.
+- CoSpi reference: `/path/to/P1_CoSpi/scripts_pilot_motor/spi08_10_registration.sh`, `spi17_stat_standard.sh`.
 
 ---
 

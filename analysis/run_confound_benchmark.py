@@ -29,7 +29,7 @@ def _roots() -> dict:
     out = {}
     for k, v in raw.items():
         p = Path(v.get("path") or v.get("bids_root")) if isinstance(v, dict) else Path(v)
-        out[k] = p if p.is_absolute() else Path("/mnt/ssd1/SpinePrep") / p
+        out[k] = p if p.is_absolute() else Path("/path/to/SpinePrep") / p
     return out
 
 
@@ -52,7 +52,7 @@ def _events_and_start(run, roots):
 
 
 def main() -> int:
-    out_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/mnt/ssd1/spineprep_cohort_s2")
+    out_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/path/to/spineprep_cohort_s2")
     roots = _roots()
     import nibabel as nib
     import numpy as np

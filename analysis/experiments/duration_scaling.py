@@ -1,4 +1,4 @@
-import sys,csv,json; sys.path.insert(0,'/mnt/ssd1/SpinePrep')
+import sys,csv,json; sys.path.insert(0,'/path/to/SpinePrep')
 from pathlib import Path
 from collections import defaultdict
 import numpy as np, yaml, statistics as st
@@ -7,11 +7,11 @@ from analysis.glm import build_task_design
 from analysis.glm_spec import conditions_for, corrected_events, repetition_time_s
 import nibabel as nib, pandas as pd
 from scipy import stats as sps
-cfg=yaml.safe_load(Path("/mnt/ssd1/SpinePrep/config/datasets_local.yaml").read_text()) or {}
+cfg=yaml.safe_load(Path("/path/to/SpinePrep/config/datasets_local.yaml").read_text()) or {}
 raw=cfg.get("datasets",cfg)
 def mkpath(v):
     p=Path(v.get("path") or v.get("bids_root")) if isinstance(v,dict) else Path(v)
-    return p if p.is_absolute() else Path("/mnt/ssd1/SpinePrep")/p
+    return p if p.is_absolute() else Path("/path/to/SpinePrep")/p
 roots={k:mkpath(v) for k,v in raw.items()}
 def conf(tsv,n):
     if not Path(tsv).exists(): return np.empty((n,0))
@@ -28,7 +28,7 @@ CFG={'openneuro_ds004926_dorsalhorn_pain':('dorsal','L','pain'),
 FRACS=[0.25,0.5,0.75,1.0]
 acc=defaultdict(lambda: defaultdict(lambda: defaultdict(list)))  # frac -> ds -> sub -> [eff]
 dur_min=defaultdict(list)
-for run in driver.iter_runs(Path("/mnt/ssd1/spineprep_cohort_s2")):
+for run in driver.iter_runs(Path("/path/to/spineprep_cohort_s2")):
     ds=run["dataset"]
     if ds not in CFG: continue
     conds=conditions_for(ds,run["run_id"])

@@ -182,7 +182,7 @@ literature). `moco.mcflirt_bulk_correction` retained as a documented option.
 Re-running reg to restore the FLIRT-2DOF cohort.
 
 ## S4 Stage-1 → MCFLIRT (CoSpi recipe) — 2026-06-10 [REVERTED, see above]
-Verified CoSpi (`/mnt/hdd2/P1_CoSpi/pilot_motor/code/spi06_2_motioncorrection.sh`)
+Verified CoSpi (`/path/to/P1_CoSpi/pilot_motor/code/spi06_2_motioncorrection.sh`)
 uses MCFLIRT 3D 6-DOF rigid for the bulk stage, then sct_fmri_moco slicewise,
 keeping all 6 MCFLIRT params as nuisance regressors. Our old Stage-1 was a custom
 2-DOF FLIRT-on-Z-mean (in-plane X/Y only) — a non-literature deviation (and the

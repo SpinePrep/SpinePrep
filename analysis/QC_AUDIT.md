@@ -1,6 +1,6 @@
 # SpinePrep cohort QC audit — end to end
 
-Full-cohort verification of the crop-fix cohort at `/mnt/ssd1/spineprep_cohort_s2`
+Full-cohort verification of the crop-fix cohort at `/path/to/spineprep_cohort_s2`
 (9 datasets, 469 runs entering S3, 450 completing S9). Every number below was
 read from the cohort's own qc.json / derivatives in this session. Recorded
 2026-07-22.

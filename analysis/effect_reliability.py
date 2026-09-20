@@ -51,7 +51,7 @@ def _roots() -> dict:
     out = {}
     for k, v in raw.items():
         p = Path(v.get("path") or v.get("bids_root")) if isinstance(v, dict) else Path(v)
-        out[k] = p if p.is_absolute() else Path("/mnt/ssd1/SpinePrep") / p
+        out[k] = p if p.is_absolute() else Path("/path/to/SpinePrep") / p
     return out
 
 
@@ -229,6 +229,6 @@ def run(out_dir: Path, limit: Optional[int] = None) -> dict:
 
 if __name__ == "__main__":
     import sys
-    out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/mnt/ssd1/spineprep_cohort_s2")
+    out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/path/to/spineprep_cohort_s2")
     lim = int(sys.argv[2]) if len(sys.argv) > 2 else None
     run(out, lim)

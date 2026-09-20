@@ -32,13 +32,13 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/mnt/ssd1/SpinePrep")
+sys.path.insert(0, "/path/to/SpinePrep")
 
 import numpy as np
 import pandas as pd
 from scipy import stats as sps
 
-R = Path("/mnt/ssd1/SpinePrep/analysis/results")
+R = Path("/path/to/SpinePrep/analysis/results")
 SHORT = lambda d: d.split("_")[1] if d.split("_")[0] == "openneuro" else d.split("_")[2]
 
 

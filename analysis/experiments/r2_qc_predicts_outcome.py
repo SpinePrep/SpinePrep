@@ -67,7 +67,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/mnt/ssd1/SpinePrep")
+sys.path.insert(0, "/path/to/SpinePrep")
 
 import numpy as np
 import pandas as pd
@@ -78,9 +78,9 @@ from analysis import driver
 from analysis.glm import build_task_design, lean_confounds
 from analysis.glm_spec import conditions_for, corrected_events, repetition_time_s
 
-COHORT = Path("/mnt/ssd1/spineprep_cohort_s2")
+COHORT = Path("/path/to/spineprep_cohort_s2")
 LOGS = COHORT / "logs"
-OUT = Path("/mnt/ssd1/SpinePrep/analysis/results")
+OUT = Path("/path/to/SpinePrep/analysis/results")
 
 HORN = {
     "openneuro_ds004616_spinalcord_handgrasp_task": ("ventral", None),
@@ -146,7 +146,7 @@ def per_run_effect():
 
     def mkpath(v):
         p = Path(v.get("path") or v.get("bids_root")) if isinstance(v, dict) else Path(v)
-        return p if p.is_absolute() else Path("/mnt/ssd1/SpinePrep") / p
+        return p if p.is_absolute() else Path("/path/to/SpinePrep") / p
 
     roots = {k: mkpath(v) for k, v in rawcfg.items()}
     import nibabel as nib

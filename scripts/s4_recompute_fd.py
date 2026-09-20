@@ -44,7 +44,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 from spineprep.lib.moco import compose_cord_fd  # noqa: E402
 
-OUT = Path("/mnt/ssd1/spineprep_cohort_s2")
+OUT = Path("/path/to/spineprep_cohort_s2")
 W = OUT / "work" / "S4_func_motion_correction"
 S3 = OUT / "runs" / "S3_func_init_and_crop"
 QC = OUT / "logs" / "S4_func_motion_correction"

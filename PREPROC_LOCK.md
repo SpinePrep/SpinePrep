@@ -1,7 +1,7 @@
 # Preprocessing lock — `preproc-v1`
 
 Preprocessing is **frozen** as of git `961a779` (clean tree). Steps S1–S10 and the
-cohort at `/mnt/ssd1/spineprep_cohort_s2` are the locked baseline; all downstream
+cohort at `/path/to/spineprep_cohort_s2` are the locked baseline; all downstream
 analysis reads from this state and nothing in S1–S10 changes without unlocking.
 
 Machine-readable companion: `PREPROC_LOCK.json` (policy hashes, per-step tallies,
@@ -12,7 +12,7 @@ tool versions). Re-run the generator and diff it to detect drift.
 | item | locked value |
 |---|---|
 | Code | git `961a779`, working tree clean |
-| Cohort | `/mnt/ssd1/spineprep_cohort_s2` |
+| Cohort | `/path/to/spineprep_cohort_s2` |
 | Policy | 12 YAML files, SHA-256 recorded per file |
 | Tools | SCT 7.1, FSL 6.0.7.15, MRtrix 3.0.4, ANTs (SCT-bundled), Python 3.12.3 |
 | Receipt | `derivatives/spineprep/reproducibility_receipt.json`, git SHA matches HEAD |

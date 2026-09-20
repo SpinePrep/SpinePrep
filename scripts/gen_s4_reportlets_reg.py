@@ -8,7 +8,7 @@ import sys, glob, shutil
 from pathlib import Path
 import numpy as np, pandas as pd, nibabel as nib, yaml
 
-ROOT = Path("/mnt/ssd1/SpinePrep")
+ROOT = Path("/path/to/SpinePrep")
 sys.path.insert(0, str(ROOT / "src"))
 from spineprep.lib import moco, viz_s4
 

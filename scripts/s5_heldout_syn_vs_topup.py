@@ -57,9 +57,9 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-OUT = Path("/mnt/ssd1/spineprep_cohort_s2")
+OUT = Path("/path/to/spineprep_cohort_s2")
 POLICY = REPO / "policy" / "S5_func_distortion_correction.yaml"
-SNAP = Path("/mnt/ssd1/spineprep_s5_heldout")
+SNAP = Path("/path/to/spineprep_s5_heldout")
 DATASETS = ["openneuro_ds005883_cospine_pain", "openneuro_ds005884_cospine_motor"]
 WORKERS = os.environ.get("HELDOUT_WORKERS", "8")
 

@@ -45,7 +45,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, "/mnt/ssd1/SpinePrep")
+sys.path.insert(0, "/path/to/SpinePrep")
 
 import numpy as np
 import pandas as pd
@@ -55,10 +55,10 @@ from scipy import stats as sps
 from analysis import driver
 from analysis.glm_spec import conditions_for
 
-COHORT = Path("/mnt/ssd1/spineprep_cohort_s2")
+COHORT = Path("/path/to/spineprep_cohort_s2")
 S5 = COHORT / "work" / "S5_func_distortion_correction"
 S3 = COHORT / "runs" / "S3_func_init_and_crop"
-OUT = Path("/mnt/ssd1/SpinePrep/analysis/results")
+OUT = Path("/path/to/SpinePrep/analysis/results")
 SCRATCH = Path("/tmp/claude-1000/-mnt-ssd1-SpinePrep/"
                "f4e0bb8b-cddd-41fb-aa92-db62665bad69/scratchpad/a2work")
 DATASETS = ["openneuro_ds005884_cospine_motor", "openneuro_ds005883_cospine_pain"]
@@ -227,7 +227,7 @@ def arm_b(limit=None, workers=10):
 
     def mkpath(v):
         p_ = Path(v.get("path") or v.get("bids_root")) if isinstance(v, dict) else Path(v)
-        return p_ if p_.is_absolute() else Path("/mnt/ssd1/SpinePrep") / p_
+        return p_ if p_.is_absolute() else Path("/path/to/SpinePrep") / p_
 
     roots = {k: mkpath(v) for k, v in rawcfg.items()}
     runs = [r for r in driver.iter_runs(COHORT) if r["dataset"] in DATASETS]

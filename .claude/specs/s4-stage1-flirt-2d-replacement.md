@@ -90,6 +90,6 @@ slower by ~30-50× but still <1 min/run total.
 - FSL FLIRT user guide — `-dof`, `-schedule` semantics
 - Guizar-Sicairos et al. 2008 *Opt. Lett.* — current Stage 1 (phase-XC)
 - SCT-P2 presentation vox transcript:
-  `/mnt/ssd1/qai/vox/transcripts/2026/03/2026-03-30_*_SCT_P2_Presentation.md`
+  `/path/to/qai/vox/transcripts/2026/03/2026-03-30_*_SCT_P2_Presentation.md`
   (~46:00–50:00 mark)
 - Parent audit: `.claude/specs/s4-algorithm-audit.md`

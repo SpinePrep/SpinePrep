@@ -28,7 +28,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/mnt/ssd1/SpinePrep")
+sys.path.insert(0, "/path/to/SpinePrep")
 
 import numpy as np
 import pandas as pd
@@ -37,8 +37,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
-R = Path("/mnt/ssd1/SpinePrep/analysis/results")
-OUTPNG = Path("/mnt/ssd1/SpinePrep/analysis/results/fig_integrative.png")
+R = Path("/path/to/SpinePrep/analysis/results")
+OUTPNG = Path("/path/to/SpinePrep/analysis/results/fig_integrative.png")
 
 plt.rcParams.update({
     "font.family": "DejaVu Sans", "font.size": 8.5, "axes.linewidth": 0.8,

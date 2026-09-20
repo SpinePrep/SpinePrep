@@ -1,6 +1,6 @@
 # Received: HRF handoff from P1_CoSpi — the paper, read
 
-**Handoff:** `/mnt/hdd2/P1_CoSpi/analysis/HANDOFF_hrf_spineprep.md`, written 2026-07-27.
+**Handoff:** `/path/to/P1_CoSpi/analysis/HANDOFF_hrf_spineprep.md`, written 2026-07-27.
 **Raised by:** Patrick and Gergely, group meeting 2026-07-27.
 **Answer needed by 2026-08-11** — after that CoSpi defaults to the canonical HRF.
 **Picked up here:** 2026-07-28. Paper located and read; no analysis run yet.

@@ -30,7 +30,7 @@ unit-tested (`analysis/distortion.py`); only the data is missing.
 rewrites corrected BOLD; running SyN inside the locked cohort would overwrite
 outputs S6-S9 already consumed. So:
 
-    OUT=/mnt/ssd1/spineprep_c4_syn      # a SEPARATE output root
+    OUT=/path/to/spineprep_c4_syn      # a SEPARATE output root
     # force distortion_correction.mode = syn via a policy overlay
     spineprep run S5_func_distortion_correction \
         --dataset-key openneuro_ds005883_cospine_pain --out $OUT ...

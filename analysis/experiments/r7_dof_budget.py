@@ -28,14 +28,14 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/mnt/ssd1/SpinePrep")
+sys.path.insert(0, "/path/to/SpinePrep")
 
 import numpy as np
 import pandas as pd
 
-COHORT = Path("/mnt/ssd1/spineprep_cohort_s2")
+COHORT = Path("/path/to/spineprep_cohort_s2")
 LOGS = COHORT / "logs"
-OUT = Path("/mnt/ssd1/SpinePrep/analysis/results")
+OUT = Path("/path/to/SpinePrep/analysis/results")
 
 KEYS = ["n_volumes", "n_columns_total", "n_columns_motion", "n_columns_csf",
         "n_csf_components_per_slice", "n_csf_slices", "n_columns_retroicor",

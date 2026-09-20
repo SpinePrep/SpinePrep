@@ -1,7 +1,7 @@
 # Delegation → p2-spineprep: reliable cord discovery on EPI (use EPISeg / `sc_epi`)
 
-**From:** p1-cospi-gvs session (data dir `/mnt/hdd2/P1_CoSpiGVS`, read-only consumer of SpinePrep output)
-**To:** p2-spineprep session (pipeline repo `/mnt/ssd1/SpinePrep`)
+**From:** p1-cospi-gvs session (data dir `/path/to/P1_CoSpiGVS`, read-only consumer of SpinePrep output)
+**To:** p2-spineprep session (pipeline repo `/path/to/SpinePrep`)
 **Date:** 2026-07-13
 **Owner after handoff:** p2-spineprep (you). Continue the toolbox work here.
 
@@ -54,7 +54,7 @@ the cord through the anterior curve to the bottom of the FOV. Side-by-side:
 `proof_AS002_run01_current_vs_epiSeg.png`. Seg output: `AS002_run01_sc_epi_seg.nii.gz`.
 ~40 s on CPU per run.
 
-## 4. Exact code to change (`/mnt/ssd1/SpinePrep`)
+## 4. Exact code to change (`/path/to/SpinePrep`)
 
 All in `src/spineprep/steps/s3/`:
 
@@ -104,7 +104,7 @@ All in `src/spineprep/steps/s3/`:
 ## 6. Validation (definition of done)
 
 - Re-run S3 (localization + crop) for **all 43 GVS runs**
-  (`/mnt/hdd2/P1_CoSpiGVS` BIDS; 11 subjects, MC001 has 3 runs).
+  (`/path/to/P1_CoSpiGVS` BIDS; 11 subjects, MC001 has 3 runs).
 - Re-render the S3 `func_localization` reportlets and confirm the discovery cord
   spans the full imaged cord on the sagittal for every run — spot-check the known
   bad ones: **AS002 (all), CO001 (all), LK001 (all), MC001 (all)**.

@@ -98,7 +98,7 @@ map already carries the smoothing signal):
 - Subject-specific kernel adaptation (e.g., per-vertebral-level σ).
 
 ## References
-- CoSpi reference: `/mnt/hdd2/P1_CoSpi/scripts_pilot_motor/spi14_2_smooth.sh` (σ = 1, 1, 5 via sct_smooth_spinalcord, cord-restricted).
+- CoSpi reference: `/path/to/P1_CoSpi/scripts_pilot_motor/spi14_2_smooth.sh` (σ = 1, 1, 5 via sct_smooth_spinalcord, cord-restricted).
 - SCT — `sct_smooth_spinalcord` documentation: σ in mm, R-L/A-P/S-I order, straighten-smooth-destraighten pipeline.
 - Eippert et al. 2017 — anisotropic smoothing principle (small in-plane, larger S-I).
 - Brooks et al. 2008 — physiological noise modelling foundational; anisotropic FWHM 1.5×1.5×6 mm originator.

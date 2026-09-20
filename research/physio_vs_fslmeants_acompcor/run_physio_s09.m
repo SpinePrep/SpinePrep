@@ -1,6 +1,6 @@
 function run_physio_s09()
-addpath('/home/kiomars/Documents/MATLAB/spm12');
-addpath(genpath('/home/kiomars/Documents/MATLAB/tapas/PhysIO'));
+addpath('$HOME/Documents/MATLAB/spm12');
+addpath(genpath('$HOME/Documents/MATLAB/tapas/PhysIO'));
 bold = '/tmp/physio_verify/bold.nii';
 mask = '/tmp/physio_verify/mask_slice09.nii';
 header = niftiinfo(bold);

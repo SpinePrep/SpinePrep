@@ -1,7 +1,7 @@
 # Round 2 results — the geometry-not-statistics programme
 
 Every experiment proposed in `FLAGSHIP_IDEAS.md` Round 2, executed end to end on the
-locked cohort (`preproc-v1`, git `961a779`, `/mnt/ssd1/spineprep_cohort_s2`).
+locked cohort (`preproc-v1`, git `961a779`, `/path/to/spineprep_cohort_s2`).
 Scripts: `analysis/experiments/n{1..5}_*.py` and `r{1,2,5..10}_*.py`.
 Proven findings live in `FLAGSHIP_FINDINGS.md`; the full record is `COMPENDIUM.md`.
 
@@ -532,7 +532,7 @@ still encodes the superseded reliability framing) · `.pre_csffix` backup still 
 live dashboard section · schema drift (S3 `failure_class`, no S1/S8 schema) · 3
 unsubmitted GitHub issue drafts in `.claude/issues/`.
 
-**Do NOT delete `/mnt/ssd1/spineprep_c4_syn` (31 GB).** It was listed as cleanup, but
+**Do NOT delete `/path/to/spineprep_c4_syn` (31 GB).** It was listed as cleanup, but
 A3 needs it: adding the distortion axis to the multiverse requires the SyN-corrected
 derivatives, and regenerating them costs far more than the disk.
 
@@ -687,7 +687,7 @@ attributed to something that does not fit.
 ### C. Not analysis
 
 Paper figures and prose (nothing drafted; `paper/OUTLINE.md` still encodes the
-superseded reliability framing) · 31 GB `/mnt/ssd1/spineprep_c4_syn` cleanup ·
+superseded reliability framing) · 31 GB `/path/to/spineprep_c4_syn` cleanup ·
 `.pre_csffix` backup still serving a live dashboard section · schema drift (S3
 `failure_class`, no S1/S8 schema) · 3 unsubmitted GitHub issue drafts in
 `.claude/issues/`.
