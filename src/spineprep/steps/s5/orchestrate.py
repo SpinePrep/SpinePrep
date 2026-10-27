@@ -1,7 +1,7 @@
 """Public API for S5 distortion correction: run, check, reportlets-only.
 
-Filter discovery by S4's per-dataset qc.json (chain-aware), matching the
-A2/A4 pattern used by S4. Aggregate top-level status PASS/WARN/FAIL.
+Only runs that passed S4 are processed: S4's per-dataset qc.json is read first, the same
+way S4 reads S3's. Aggregate top-level status PASS/WARN/FAIL.
 """
 
 from __future__ import annotations
@@ -14,6 +14,8 @@ from pathlib import Path
 from typing import Optional
 
 import yaml
+
+from spineprep.lib.policy import read_policy_yaml
 
 from .process import run_S5_func_distortion_correction
 from spineprep.lib.chain_scope import chain_scope
@@ -194,7 +196,7 @@ def run_S5(
     policy = {}
     if policy_path.exists():
         try:
-            policy = yaml.safe_load(policy_path.read_text()) or {}
+            policy = read_policy_yaml(policy_path) or {}
         except Exception as e:
             return StepResult("FAIL", f"Policy error: {e}")
 

@@ -16,6 +16,8 @@ end-to-end (see .claude/specs/v2-highest-venue-claims.md D5).
 from __future__ import annotations
 
 import hashlib
+
+from spineprep.lib.policy import active_preset
 import json
 import os
 import platform
@@ -795,7 +797,13 @@ def _hash_policy_yaml(project_root: Path, step_full: str) -> Optional[str]:
     if not candidates:
         return None
     try:
-        return hashlib.sha256(candidates[0].read_bytes()).hexdigest()
+        blob = candidates[0].read_bytes()
+        preset = active_preset()
+        if preset:  # the settings that ran are the default plus the preset's override
+            over = pol_dir / "presets" / preset / candidates[0].name
+            if over.exists():
+                blob += over.read_bytes()
+        return hashlib.sha256(blob).hexdigest()
     except Exception:
         return None
 
@@ -852,6 +860,7 @@ def _build_reproducibility_receipt(
             recipe["pipeline_git_describe"] = None
     # Per-step policy SHA: hash the YAML directly so symlinked workfolders
     # don't shadow upstream steps.
+    recipe["policy_preset"] = active_preset()
     recipe["policy_sha256_per_step"] = {
         short: _hash_policy_yaml(project_root, full)
         for short, full in ALL_STEPS + [("S10", "S10_qc_aggregation_and_release")]

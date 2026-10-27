@@ -1,4 +1,4 @@
-"""S5_func_distortion_correction: re-export from steps.s5 subpackage."""
+"""S5_func_distortion_correction: short import path for the step; what it does, its input, output and usage are in steps/s5/__init__.py."""
 from spineprep.steps.s5 import (
     StepResult,
     run_S5,

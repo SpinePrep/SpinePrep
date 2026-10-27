@@ -1,5 +1,0 @@
-# subject data, keep local
-fsl_pcs_*.txt
-physio_slice*.txt
-physio_slice*.mat
-matlab*.log

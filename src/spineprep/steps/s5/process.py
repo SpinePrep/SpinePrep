@@ -91,7 +91,7 @@ _BIDS_PE_TO_ACQPARAMS = {
 def _trt_for(run: dict, bids_root: Optional[Path] = None) -> Optional[float]:
     """Pull TotalReadoutTime from S1 acquisition dict. Fallback: compute
     from EES x (ReconMatrixPE - 1). Last resort: open the BIDS JSON sidecar
-    directly (for old S1 inventories that pre-date the A5 fmap-extraction).
+    directly (for S1 inventories written before S1 recorded field-map acquisition parameters).
     Returns None when no source works.
 
     BIDS records TRT as the unaccelerated-equivalent readout time -
@@ -196,8 +196,8 @@ def _run_topup(
     work_dir.mkdir(parents=True, exist_ok=True)
 
     # Resolve TRT from any of the fmap runs (they share it with BOLD).
-    # If S1 inventory predates the A5 commit, the acquisition dict will be
-    # absent; falls through to reading the BIDS sidecar directly.
+    # If the S1 inventory was written before S1 recorded acquisition parameters,
+    # the acquisition dict is absent; falls through to reading the BIDS sidecar directly.
     trt = (_trt_for(fmap_runs[0], bids_root)
            or _trt_for(bold_run, bids_root))
     if trt is None:

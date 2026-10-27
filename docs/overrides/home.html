@@ -44,7 +44,11 @@
     <div class="sp-stat"><div class="sp-n">9</div><div class="sp-l">datasets</div></div>
     <div class="sp-stat"><div class="sp-n">469</div><div class="sp-l">functional runs</div></div>
     <div class="sp-stat"><div class="sp-n">5</div><div class="sp-l">task &amp; rest types</div></div>
-    <div class="sp-stat"><div class="sp-n">~250</div><div class="sp-l">subjects</div></div>
+    <!-- 241, counted 2026-08-14 by summing unique subjects per dataset over the runs
+         that reach S9 (analysis/driver.py:iter_runs on the preproc-v1 cohort). It read
+         "~250", which was rounded up by nine and traceable to nothing. The same count
+         independently matches the 241 subject-sessions behind the normalisation claim. -->
+    <div class="sp-stat"><div class="sp-n">241</div><div class="sp-l">subjects</div></div>
     <div class="sp-note">A per-vertebral-level QC reference for cord fMRI, with fully reconciled QC attrition and a test–retest reliability characterisation. Validation is ongoing.</div>
   </div></section>
 
@@ -147,7 +151,11 @@
         <div class="sp-eyebrow">Cite</div>
         <h2>An open BIDS-App for spinal-cord fMRI.</h2>
         <p>If SpinePrep is part of your analysis, please cite it — and the tools it stands on (SCT, FSL, ANTs, PAM50). A per-release archival DOI is minted via Zenodo.</p>
-        <div class="sp-chips"><span class="sp-chip">Apache-2.0</span><span class="sp-chip">CITATION.cff</span><a class="sp-chip" href="https://doi.org/10.5281/zenodo.21294696">DOI: 10.5281/zenodo.21294696</a><span class="sp-chip">NeuroStars: spineprep</span></div>
+        <div class="sp-chips"><span class="sp-chip">Apache-2.0</span><span class="sp-chip">CITATION.cff</span><a class="sp-chip" href="https://doi.org/10.5281/zenodo.21294696">DOI: 10.5281/zenodo.21294696</a></div>
+        <!-- A "NeuroStars: spineprep" chip was removed 2026-08-14. The tag does not
+             exist: https://neurostars.org/tag/spineprep returns "That page doesn't
+             exist or is private", checked directly. It pointed a user asking for help
+             at nothing. Restore it only after the tag has actually been created. -->
       </div>
       <pre class="sp-bib">@software{<span class="sp-v">spineprep</span>,
   <span class="sp-k">title</span>   = {SpinePrep: a containerised BIDS-App

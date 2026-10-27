@@ -233,6 +233,25 @@ def _erode_mask_voxels(mask: np.ndarray, n: int = 1) -> np.ndarray:
     return binary_erosion(mask, iterations=n)
 
 
+def _load_eigenvectors(path, nt: int):
+    """Read a ``fslmeants --eig`` file as a (timepoints, components) array.
+
+    ``fslmeants --eig`` can exit 0 and still write an empty or truncated file
+    when a slice's CSF ROI is degenerate. Loading it as-is makes a ragged column
+    and the confounds table then fails for the whole run. Such a slice is
+    skipped with a reason instead; zero-filling would invent a regressor no
+    data supports. Returns ``(array, None)`` or ``(None, reason)``.
+    """
+    arr = np.loadtxt(str(path), ndmin=1) if Path(path).stat().st_size else np.empty(0)
+    if arr.size == 0:
+        return None, "empty_eigenvector_file"
+    if arr.ndim == 1:
+        arr = arr[:, None]
+    if arr.shape[0] != nt:
+        return None, f"eigenvector length {arr.shape[0]} != {nt} timepoints"
+    return arr, None
+
+
 def _csf_acompcor_slicewise(
     bold_path: Path, csf_mask_path: Path, work_dir: Path,
     n_components: int = 5,
@@ -339,9 +358,11 @@ def _csf_acompcor_slicewise(
         if res.returncode != 0 or not out_txt.exists():
             meta["skipped_slices"].append(z)
             continue
-        arr = np.loadtxt(str(out_txt))
-        if arr.ndim == 1:
-            arr = arr[:, None]
+        arr, reason = _load_eigenvectors(out_txt, nt)
+        if arr is None:
+            meta["skipped_slices"].append(z)
+            meta["skipped_reason"][str(z)] = reason
+            continue
         for j in range(arr.shape[1]):
             cols[f"csf_slice{z:02d}_pc{j + 1:02d}"] = arr[:, j].astype(np.float32)
         meta["pcs_per_slice"].append(int(arr.shape[1]))
@@ -574,6 +595,68 @@ def _write_pnm_slicetiming(slice_timing_s: list[float], dest: Path) -> None:
     dest.write_text(" ".join(f"{t:.6f}" for t in slice_timing_s) + "\n")
 
 
+def _bandpassed_cardiac_peaks(cardiac: np.ndarray, fs: float) -> tuple[np.ndarray, int]:
+    """Heartbeat peaks from a 0.6-3 Hz band-passed pulse trace.
+
+    Returns (peak sample indices at the decimated rate, decimation factor).
+    """
+    from scipy import signal
+    q = max(int(fs // 50), 1)
+    f2 = fs / q
+    x = signal.decimate(cardiac, q, ftype="fir")
+    b, a = signal.butter(2, [0.6 / (f2 / 2), 3.0 / (f2 / 2)], "band")
+    y = signal.filtfilt(b, a, x)
+    peaks, _ = signal.find_peaks(y, distance=int(0.5 * f2), prominence=np.std(y) * 0.5)
+    return peaks, q
+
+
+def _pulse_counted_twice(popp_rate: float, bandpassed_rate: float) -> bool:
+    """popp above 120/min while a band-passed detector finds 0.4-0.6 of that rate."""
+    return popp_rate > 120.0 and 0.4 * popp_rate <= bandpassed_rate <= 0.6 * popp_rate
+
+
+def _rebuild_double_counted_pulse(card_file: Path, physio_pnm_path: Path, fs: float,
+                                  cmd_popp: list, pnm_dir: Path) -> bool:
+    """Rerun popp with rebuilt cardiac triggers when it counted each heartbeat twice.
+
+    With a strong dicrotic notch popp marks two peaks per heartbeat (P1 CoSpi sub-01, sub-07:
+    166-177 "beats"/min against 86-88 from a band-passed detector; spectrum peak at the second
+    harmonic). More cardiac smoothing does not cure it (0.3 s removes the pulse). One rule for
+    every run (_pulse_counted_twice); when it fires, each band-passed peak is moved to the trace
+    maximum within +-0.15 s and handed to popp as a trigger (--pulseox_trigger). The rates before
+    and after are written to cardiac_rebuilt.json. Returns True when popp was rerun.
+    """
+    pk = np.loadtxt(card_file)
+    rate = 60.0 / float(np.median(np.diff(pk))) if pk.ndim == 1 and len(pk) > 20 else 0.0
+    if rate <= 120.0:
+        return False
+    physio = np.loadtxt(physio_pnm_path)
+    peaks, q = _bandpassed_cardiac_peaks(physio[:, 0], fs)
+    f2 = fs / q
+    rate2 = 60.0 / float(np.median(np.diff(peaks)) / f2) if len(peaks) > 20 else 0.0
+    if not _pulse_counted_twice(rate, rate2):
+        return False
+    idx = []
+    for c in (peaks * q).astype(int):
+        a0, b0 = max(c - int(0.15 * fs), 0), min(c + int(0.15 * fs), len(physio))
+        idx.append(a0 + int(np.argmax(physio[a0:b0, 0])))
+    trig = np.zeros(len(physio))
+    trig[np.unique(idx)] = 1
+    trig_path = pnm_dir / "physio_pnm_cardtrigger.txt"
+    np.savetxt(trig_path, np.column_stack([trig, physio[:, 1]]), fmt="%.6f")
+    cmd2 = list(cmd_popp)
+    cmd2[cmd2.index(str(physio_pnm_path))] = str(trig_path)
+    cmd2.append("--pulseox_trigger")
+    _run_command(cmd2)
+    pk2 = np.loadtxt(card_file)
+    rate3 = 60.0 / float(np.median(np.diff(pk2)))
+    (pnm_dir / "cardiac_rebuilt.json").write_text(json.dumps({
+        "popp_rate_per_min": round(rate, 1), "bandpassed_detector_rate_per_min": round(rate2, 1),
+        "rate_after_rebuild_per_min": round(rate3, 1),
+        "rule": "popp > 120/min and band-passed detector within 0.4-0.6 of it"}, indent=1))
+    return True
+
+
 def _run_pnm(
     bold_path: Path,
     physio_pnm_path: Path,
@@ -614,6 +697,10 @@ def _run_pnm(
                 else pnm_dir / "popp_resp.txt"
     if not card_file.exists() or not resp_file.exists():
         return False, f"popp failed: {stderr or 'no stderr'}", None
+    try:
+        _rebuild_double_counted_pulse(card_file, physio_pnm_path, sampling_rate_hz, cmd_popp, pnm_dir)
+    except Exception as exc:  # never let the check break the step; popp's own peaks stay in use
+        (pnm_dir / "cardiac_rebuilt_error.txt").write_text(str(exc))
     # HR + RVT outputs (popp writes <prefix>.hr and <prefix>.rvt when flags passed)
     hr_file = popp_out.with_suffix(".hr")
     rvt_file = popp_out.with_suffix(".rvt")
@@ -1657,7 +1744,9 @@ def run_S8_confounds_and_physio_regressors(
         "ConfoundFamilies": {
             "motion": "trans_x/y (mm) = S4 Stage-1 bulk + mean-over-z of Stage-2 slicewise moco, derivative1, FD = |Δtrans_x|+|Δtrans_y|",
             "outliers": _outlier_family_description(policy),
-            "csf": "slicewise CSF aCompCor: top-%d PCs/slice via FSL fslmeants --eig on per-voxel-detrended BOLD (csf_slice{z}_pc{k}); Behzadi 2007 / CoSpi spi12" % int(policy.get("csf_slicewise", {}).get("n_components", 5)),
+            "csf": ("slicewise CSF aCompCor: top-%d PCs/slice via FSL fslmeants --eig on per-voxel-detrended "
+                    "BOLD (csf_slice{z}_pc{k}); Behzadi 2007 / CoSpi spi12"
+                    % int(policy.get("csf_slicewise", {}).get("n_components", 5))),
             "retroicor": "FSL PNM slicewise cardiac/respiratory/interactions × N_slices (cord-mean of voxelwise EVs)",
             "cosine": "DCT type-II basis up to %s Hz (~%.0f s high-pass)" % (
                 str(policy.get("cosine", {}).get("cutoff_hz", 0.01)),

@@ -299,7 +299,10 @@ def run_v1_policy_gate(policy: DatasetPolicy) -> PolicyGateResult:
 
     checks.append(_coverage_check("coverage_task", any("task" in e.spec.paradigms for e in v1_entries), "At least one v1_validation dataset must include paradigm 'task'."))
     checks.append(_coverage_check("coverage_rest", any("rest" in e.spec.paradigms for e in v1_entries), "At least one v1_validation dataset must include paradigm 'rest'."))
-    checks.append(_coverage_check("coverage_brain_spine", any("brain_spine" in e.spec.domains for e in v1_entries), "At least one v1_validation dataset must include domain 'brain_spine'."))
+    checks.append(_coverage_check(
+        "coverage_brain_spine",
+        any("brain_spine" in e.spec.domains for e in v1_entries),
+        "At least one v1_validation dataset must include domain 'brain_spine'."))
 
     fmap_physio_failures = _find_null_flags(v1_entries)
     checks.append(

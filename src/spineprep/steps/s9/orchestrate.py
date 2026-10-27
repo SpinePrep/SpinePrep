@@ -14,12 +14,15 @@ from typing import Optional
 
 import yaml
 
+from spineprep.lib.policy import read_policy_yaml
+
 from .process import (
     _s9_code_sha_for_record as _s9_code_sha,
     _s9_policy_sha_for_record as _s9_policy_sha,
     run_S9_primary_functional_derivatives,
 )
 from spineprep.lib.chain_scope import chain_scope
+from spineprep.lib.run import only_subjects
 
 logger = logging.getLogger(__name__)
 
@@ -88,12 +91,12 @@ def _find_cord_mask(out_dir: Path, run_id: str) -> Optional[Path]:
     """EPI cord seg in the SAME geometry as the post-S5 BOLD that S9
     operates on.
 
-    Priority (same pattern as S6 / S7 — audit refs:
-    .claude/specs/s6-algorithm-audit.md F10 and the matching S7 fix):
+    Priority (the same order S6 and S7 use; S6 audit finding F10 in
+    .claude/specs/s6-algorithm-audit.md):
       1. S5 ``cospine/bold_after_cord_seg.nii.gz`` — sct_deepseg sc_epi
          on the POST-S5 mean BOLD. Matches the post-S5 BOLD that S9
          smooths.
-      2. S3.1 ``func_ref_fast_seg_crop.nii.gz`` — fallback, PRE-S5
+      2. S3 localisation (sub-step S3.1) ``func_ref_fast_seg_crop.nii.gz`` — fallback, PRE-S5
          geometry. Only correct when S5 made minimal cord shifts (SyN-
          fallback). On topup runs the cord shifts 5-10 mm A-P and this
          seg lands off-cord, producing the misaligned-mask artifact the
@@ -248,7 +251,7 @@ def run_S9(
     policy: dict = {}
     if policy_path.exists():
         try:
-            policy = yaml.safe_load(policy_path.read_text()) or {}
+            policy = read_policy_yaml(policy_path) or {}
         except Exception as e:
             return StepResult("FAIL", f"Policy error: {e}")
 
@@ -271,6 +274,7 @@ def run_S9(
         bids_root = cli_bids_root or s7_qc.get("bids_root")
     if not bids_root:
         bids_root = _resolve_bids_root(datasets_local, dataset_key)
+    upstream_runs = only_subjects(upstream_runs, logger)
     if not upstream_runs:
         return StepResult("FAIL",
                           f"No PASS/WARN {upstream_name} runs for dataset {dataset_key}")

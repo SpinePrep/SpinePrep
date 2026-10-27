@@ -1,4 +1,4 @@
-"""S4_func_motion_correction: backwards-compatible re-export from steps.s4 subpackage."""
+"""S4_func_motion_correction: short import path for the step; what it does, its input, output and usage are in steps/s4/__init__.py."""
 from spineprep.steps.s4 import (
     StepResult,
     run_S4,

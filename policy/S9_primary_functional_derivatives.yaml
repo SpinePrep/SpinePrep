@@ -6,11 +6,11 @@ version: 1
 # handles it). No confound regression (left to the analyst's GLM).
 #
 # Sigma values are in mm, order R-L, A-P, S-I (SCT convention).
-# σ = 1.0, 1.0, 8.0 → FWHM ≈ 2.35 × 2.35 × 18.84 mm (FWHM = 2.3548·σ).
+# σ = 1.0, 1.0, 5.0 (the value set below) → FWHM ≈ 2.35 × 2.35 × 11.77 mm (FWHM = 2.3548·σ).
 # Anisotropic cord-aligned smoothing is the field convention (Eippert 2017;
 # CoSpine spi14_2): light in-plane (~2.35 mm FWHM, ~1-2 voxels) preserves the
 # small cord cross-section and avoids blurring cord signal into adjacent
-# CSF/partial-volume, while heavy S-I (~18.8 mm FWHM) exploits the cord's
+# CSF/partial-volume, while heavier S-I (~11.8 mm FWHM) exploits the cord's
 # columnar/segmental organisation to boost SNR without crossing functional
 # boundaries. The exact kernel is reported in the methods + reproducibility
 # receipt.

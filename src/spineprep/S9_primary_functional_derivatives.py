@@ -1,4 +1,4 @@
-"""S9_primary_functional_derivatives: re-export from steps.s9 subpackage."""
+"""S9_primary_functional_derivatives: short import path for the step; what it does, its input, output and usage are in steps/s9/__init__.py."""
 from spineprep.steps.s9 import (
     StepResult,
     run_S9,

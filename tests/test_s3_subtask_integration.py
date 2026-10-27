@@ -21,6 +21,40 @@ from spineprep.S3_func_init_and_crop import (
 )
 from spineprep.subtask import ExecutionContext, set_execution_context, should_exit_after_subtask
 
+# These tests check S3's subtask plumbing, not the cord model: the input is random noise.
+# By default a stand-in sct_deepseg writes a central cord column (seconds instead of
+# minutes to hours for the real model). SPINEPREP_REAL_SCT=1 runs the real SCT instead.
+_FAKE_DEEPSEG = '''#!{python}
+import sys
+import nibabel as nib
+import numpy as np
+a = sys.argv
+img = nib.load(a[a.index("-i") + 1])
+seg = np.zeros(img.shape[:3], dtype=np.uint8)
+x, y, z = (s // 2 for s in seg.shape)
+seg[x - 3:x + 3, y - 3:y + 3, 1:-1] = 1
+nib.save(nib.Nifti1Image(seg, img.affine), a[a.index("-o") + 1])
+'''
+
+
+@pytest.fixture(autouse=True)
+def _cord_model(tmp_path_factory, monkeypatch):
+    import os
+    import shutil
+
+    if os.environ.get("SPINEPREP_REAL_SCT") == "1":
+        if shutil.which("sct_deepseg") is None:
+            pytest.skip("SPINEPREP_REAL_SCT=1 but sct_deepseg is not on PATH")
+        return
+    bin_dir = tmp_path_factory.mktemp("fake_sct")
+    deepseg = bin_dir / "sct_deepseg"
+    deepseg.write_text(_FAKE_DEEPSEG.format(python=sys.executable))
+    propseg = bin_dir / "sct_propseg"
+    propseg.write_text("#!/bin/sh\nexit 1\n")
+    for f in (deepseg, propseg):
+        f.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}{os.environ['PATH']}")
+
 
 def test_s3_1_subtask_execution(tmp_path):
     """Test that S3.1 executes correctly when targeted."""
@@ -161,10 +195,18 @@ def test_s3_1_skips_later_subtasks(tmp_path):
         set_execution_context(None)
 
 
-def test_s3_all_subtasks_without_target(tmp_path):
-    """Test that all subtasks execute when no target is specified."""
+@pytest.mark.parametrize("crop_fails", [False, True])
+def test_s3_all_subtasks_without_target(tmp_path, monkeypatch, crop_fails):
+    """All subtasks run when no target is given; a failed S3.3 crop fails the run (was reported PASS)."""
     # No execution context (all subtasks should run)
     set_execution_context(None)
+    if crop_fails:
+        import os
+        broken = tmp_path / "broken_bin"
+        broken.mkdir()
+        (broken / "sct_create_mask").write_text("#!/bin/sh\necho mask tool broken >&2\nexit 1\n")
+        (broken / "sct_create_mask").chmod(0o755)
+        monkeypatch.setenv("PATH", f"{broken}{os.pathsep}{os.environ['PATH']}")
 
     try:
         out_dir = tmp_path / "test_output_all"
@@ -257,6 +299,13 @@ def test_s3_all_subtasks_without_target(tmp_path):
             subtask_id=None,
             out=str(out_dir),
         )
+
+        if crop_fails:
+            assert result.status == "FAIL"
+            qc = json.loads((out_dir / "logs" / "S3_func_init_and_crop" / "ad_hoc" / "qc.json").read_text())
+            assert qc["runs"][0]["status"] == "FAIL"
+            assert "S3.3 crop failed" in qc["runs"][0]["failure_message"]
+            return
 
         # Verify all subtasks executed
         assert result.status == "PASS", f"Run failed with: {result.failure_message}"

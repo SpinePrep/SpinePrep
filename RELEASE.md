@@ -120,10 +120,7 @@ The `spineprep` tag exists as a URL but is empty until first use. Create a
 neurostars.org account and make one introductory post tagged `spineprep` so the
 support links in the docs and issue templates resolve to real content.
 
-## Phase 10 — Local folder rename  [HUMAN]
-Rename `/path/to/SpinalfMRIprep` → `/path/to/SpinePrep` and update references
-(`.mcp.json`, the `qsm`/tmux session, the Claude memory dir key). Do this from
-*outside* an active session in the old path, or the running shell's CWD breaks.
+## Phase 10 — (retired: a local folder rename on the maintainer's machine, done)
 
 ## Phase 11 — Announce  [HUMAN]
 bioRxiv preprint → journal submission; announce on the docs site, the seeded

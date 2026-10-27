@@ -33,15 +33,21 @@ def _run_register_to_template(
     ]
     if disc_labels_path is not None:
         cmd.extend(["-ldisc", str(disc_labels_path)])
+    rootlet_info: dict = {}
     if rootlets_path is not None:
+        rootlets_path, rootlet_info = _fill_interior_rootlet_gaps(Path(rootlets_path), work_dir)
         cmd.extend(["-lrootlet", str(rootlets_path)])
-    ok, message = _run_command(cmd)
+    # sct_register_to_template writes rootlets_mid.nii.gz (and straightening files) into the current directory:
+    # run it in this subject's folder, so subjects run side by side never share those files and a read-only
+    # working directory (the container's /app under --user) does not fail it.
+    ok, message = _run_command(cmd, cwd=work_dir)
     if not ok:
         variant = "rootlet" if rootlets_path is not None else "disc"
         return {
             "status": "FAIL",
             "failure_message": f"{variant} registration failed: {message}",
-        }
+                **rootlet_info,
+            }
 
     warp_anat2template = work_dir / "warp_anat2template.nii.gz"
     warp_template2anat = work_dir / "warp_template2anat.nii.gz"
@@ -56,11 +62,67 @@ def _run_register_to_template(
     return {
         "status": "PASS",
         "failure_message": None,
+        **rootlet_info,
         "warp_anat2template": str(warp_anat2template),
         "warp_template2anat": str(warp_template2anat),
         "anat2template": str(anat2template) if anat2template.exists() else None,
         "template2anat": str(template2anat) if template2anat.exists() else None,
     }
+
+
+def _fill_interior_rootlet_gaps(rootlets_path: Path, work_dir: Path, max_gap: int = 2) -> tuple[Path, dict]:
+    """Fill a short interior gap in the rootlet level sequence with an interpolated landmark.
+
+    WHY. SCT 7.1's `sct_register_to_template -lrootlet` crashes in cord straightening when
+    the rootlet levels are not contiguous (IndexError in
+    Centerline.get_inverse_plans_coordinates). On internal_balgrist_painmotor_21 (2026-09-03)
+    every subject whose deepseg rootlet labels had a gap crashed identically - sub-03
+    [2,3,6..9], sub-17 [2,3,5..9], sub-19 [2,3,5..9] - and all 18 with contiguous labels
+    registered. The rootlet model is trained on T2w/MP2RAGE; this cohort's reference is a
+    T1w MPRAGE, so a missed level is an off-distribution segmentation miss, not anatomy.
+
+    WHY INTERPOLATE RATHER THAN DROP. Registering on the longest contiguous run below the
+    gap removes the crash but the warp is then valid only from the most rostral label used:
+    the PAM50 cord mapped back into the functional volume covered 8 of 18 slices and spinal
+    C4-C5 were lost. Withdrawn. SCT reduces each rootlet level to ONE midpoint for
+    registration, so a missing interior level can be supplied as a landmark at the
+    position interpolated between its nearest present neighbours. Measured on the three
+    subjects: every level C2-C9 then lands within ~1 mm of PAM50's rootlet centroids
+    (interpolated C4: -0.2 / -0.2 / +0.7 mm) and the warp covers the full cord; an
+    independent re-segmentation on the T2*-weighted MEGRE placed the same levels within
+    ~1 mm of the interpolated positions.
+
+    WHAT IS AND IS NOT TOUCHED. The derivative (desc-rootlets_dseg) is the segmentation as
+    found. Only the registration INPUT gains a small landmark blob per missing level, and QC
+    records `rootlet_labels_interpolated`. Gaps wider than `max_gap`, or at either end of the
+    sequence, are not filled - there is nothing to interpolate between, and inventing a level
+    from one side would be a guess rather than an interpolation.
+    """
+    import numpy as np
+    import nibabel as nib
+    img = nib.load(str(rootlets_path))
+    data = np.asarray(img.dataobj)
+    labels = sorted(int(v) for v in np.unique(data) if v > 0)
+    info = {"rootlet_labels_found": labels, "rootlet_labels_interpolated": []}
+    if len(labels) < 2:
+        return rootlets_path, info
+    cent = {v: np.array(np.where(data == v)).mean(axis=1) for v in labels}
+    out = data.copy()
+    for a, b in zip(labels, labels[1:]):
+        gap = b - a - 1
+        if gap == 0 or gap > max_gap:
+            continue
+        for k in range(1, gap + 1):
+            v = a + k
+            p = np.round(cent[a] + (cent[b] - cent[a]) * (k / (gap + 1))).astype(int)
+            sl = tuple(slice(max(int(c) - 1, 0), int(c) + 2) for c in p)
+            out[sl][out[sl] == 0] = v
+            info["rootlet_labels_interpolated"].append(v)
+    if not info["rootlet_labels_interpolated"]:
+        return rootlets_path, info
+    dst = work_dir / "rootlets_registration_input.nii.gz"
+    nib.save(nib.Nifti1Image(out.astype(data.dtype), img.affine, img.header), str(dst))
+    return dst, info
 
 
 def _resolve_pam50_dir() -> Optional[Path]:

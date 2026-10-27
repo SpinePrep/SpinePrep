@@ -79,7 +79,10 @@ def _concat_transfo(
     cmd = ["sct_concat_transfo", "-w"] + [str(w) for w in warps] + [
         "-d", str(dest), "-o", str(out),
     ]
-    ok, stderr = _run_command(cmd)
+    # sct_concat_transfo writes warp_final.nii.gz into the current directory before moving it to -o: run it in
+    # the run's own folder, so parallel runs never share that file and a read-only working directory (the
+    # container's /app under --user) does not fail it.
+    ok, stderr = _run_command(cmd, cwd=out.parent)
     if not ok or not out.exists():
         return False, stderr or "sct_concat_transfo produced no output"
     return True, None
@@ -492,6 +495,25 @@ def _classify(metrics: dict, thresholds: dict) -> tuple[str, list[str]]:
 
 
 @timed_step
+def _anat_link_warps(subject: str) -> Optional[tuple[Path, Path]]:
+    """Warps linking S6's anatomy (T2*) to S2's anatomy (T2w) for one subject, if supplied.
+
+    When S6 registers the functional to a multi-echo T2* while S2 registers a T2w to the
+    template, composing the two warps as if they shared a space misplaces the cord (measured
+    on P1 CoSpi: 0.08-2.05 mm). A link computed outside SpinePrep is read from
+    ``$SPINEPREP_T2LINK_ROOT/sub-<label>/warp_T2star_to_T2w.nii.gz`` and
+    ``warp_T2w_to_T2star.nii.gz``. Unset, or files missing: no link, the two-warp chain is used.
+    Returns (T2star->T2w, T2w->T2star) or None.
+    """
+    import os
+    root = os.environ.get("SPINEPREP_T2LINK_ROOT")
+    if not root:
+        return None
+    d = Path(root) / f"sub-{subject}"
+    fwd, inv = d / "warp_T2star_to_T2w.nii.gz", d / "warp_T2w_to_T2star.nii.gz"
+    return (fwd, inv) if fwd.exists() and inv.exists() else None
+
+
 def run_S7_template_normalization(
     funcref_path: Path,
     func_cord_seg_path: Path,
@@ -590,8 +612,15 @@ def run_S7_template_normalization(
     #    func -> PAM50 = (func -> anat) then (anat -> PAM50)
     init_PAM50_to_func = s7_work_dir / "warp_PAM50_to_func_init.nii.gz"
     init_func_to_PAM50 = s7_work_dir / "warp_func_to_PAM50_init.nii.gz"
+    # S6 may register the functional to a different anatomy (e.g. a multi-echo T2*) than the one S2
+    # registered to the template. If a link warp between the two is supplied, insert it.
+    link = _anat_link_warps(subject)
+    pam50_chain = ([s2_warp_PAM50_to_anat, link[1], s6_warp_anat_to_func] if link
+                   else [s2_warp_PAM50_to_anat, s6_warp_anat_to_func])
+    func_chain = ([s6_warp_func_to_anat, link[0], s2_warp_anat_to_PAM50] if link
+                  else [s6_warp_func_to_anat, s2_warp_anat_to_PAM50])
     ok, err = _concat_transfo(
-        [s2_warp_PAM50_to_anat, s6_warp_anat_to_func],
+        pam50_chain,
         dest=funcref_local, out=init_PAM50_to_func,
     )
     if not ok:
@@ -606,7 +635,7 @@ def run_S7_template_normalization(
             "refinement_enabled": False,
         }
     ok, err = _concat_transfo(
-        [s6_warp_func_to_anat, s2_warp_anat_to_PAM50],
+        func_chain,
         dest=pam50_t2s, out=init_func_to_PAM50,
     )
     if not ok:
@@ -826,6 +855,7 @@ def run_S7_template_normalization(
         "provenance": provenance,
         "param_string": param_string,
         "anat_to_pam50_init_method": s2_init_method,
+        "t2star_to_t2w_link_used": bool(link),
         "refinement_enabled": refinement_enabled,
     }, indent=2, default=str))
 
@@ -837,6 +867,7 @@ def run_S7_template_normalization(
         "session": session,
         "run_id": run_id,
         "anat_to_pam50_init_method": s2_init_method,
+        "t2star_to_t2w_link_used": bool(link),
         "refinement_enabled": refinement_enabled,
         "metrics": metrics,
         "failure_reasons": failure_reasons,

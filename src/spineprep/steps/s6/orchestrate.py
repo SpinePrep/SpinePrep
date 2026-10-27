@@ -1,7 +1,7 @@
 """Public API for S6 func->anat registration: run, check, reportlets-only.
 
-Filter discovery by S5's per-dataset qc.json (chain-aware), matching the
-A2/A4/A5 pattern. Aggregate top-level status PASS/WARN/FAIL.
+Only runs that passed S5 are processed: S5's per-dataset qc.json is read first, the same
+way S4 and S5 read the step before them. Aggregate top-level status PASS/WARN/FAIL.
 """
 
 from __future__ import annotations
@@ -14,8 +14,11 @@ from typing import Optional
 
 import yaml
 
+from spineprep.lib.policy import read_policy_yaml
+
 from .process import run_S6_func_to_anat_registration
 from spineprep.lib.chain_scope import chain_scope
+from spineprep.lib.run import only_subjects
 
 logger = logging.getLogger(__name__)
 
@@ -183,12 +186,13 @@ def run_S6(
     policy: dict = {}
     if policy_path.exists():
         try:
-            policy = yaml.safe_load(policy_path.read_text()) or {}
+            policy = read_policy_yaml(policy_path) or {}
         except Exception as e:
             return StepResult("FAIL", f"Policy error: {e}")
 
     s5_qc = _load_s5_qc(out_path, dataset_key)
     s5_runs = [r for r in s5_qc.get("runs", []) if r.get("status") != "FAIL"]
+    s5_runs = only_subjects(s5_runs, logger)
     if not s5_runs:
         return StepResult("FAIL",
                           f"No PASS/WARN S5 runs for dataset {dataset_key}")

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spineprep"
-version = "26.0.0"
+version = "26.1.0"
 description = "A containerised BIDS-App for reproducible spinal-cord fMRI preprocessing with per-vertebral-level quality control"
 license = "Apache-2.0"
 authors = ["Kiomars Sharifi <sharifikiomars@gmail.com>"]
@@ -58,6 +58,17 @@ mkdocs-git-revision-date-localized-plugin = "^1.2.0"
 mkdocs-glightbox = "^0.4.0"
 mkdocstrings = {extras = ["python"], version = "^0.26.1"}
 
+
+[tool.pytest.ini_options]
+# The repo root must be on sys.path: five test files import the top-level `analysis`
+# package, which is tracked but is NOT a poetry package (only `spineprep` from src/ is).
+#
+# Without this, `python -m pytest` passes and the bare `pytest` console script fails with
+# ModuleNotFoundError at COLLECTION time — exit code 2, no test runs. That is a silent
+# split: the local habit is `python -m pytest`, which prepends the working directory, and
+# CI invokes `pytest`, which does not. CI was red on main from 2026-08-03 for this reason
+# and the failure looked like a broken suite rather than a missing path.
+pythonpath = ["."]
 
 [build-system]
 requires = ["poetry-core>=1.7.0"]

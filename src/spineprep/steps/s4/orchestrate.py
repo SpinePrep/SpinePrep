@@ -17,6 +17,8 @@ import pandas as pd
 import nibabel as nib
 import yaml
 
+from spineprep.lib.policy import read_policy_yaml
+
 from spineprep.lib import moco
 
 from .process import run_S4_func_motion_correction
@@ -75,7 +77,7 @@ def run_S4(
     policy_path = Path("policy/S4_func_motion_correction.yaml")
     if policy_path.exists():
         try:
-            policy = yaml.safe_load(policy_path.read_text())
+            policy = read_policy_yaml(policy_path)
         except Exception as e:
             return StepResult("FAIL", f"Policy error: {e}")
     else:
@@ -341,7 +343,7 @@ def run_S4_func_motion_correction_reportlets_only(
     # Load policy
     policy_path = Path("policy/S4_func_motion_correction.yaml")
     if policy_path.exists():
-        policy = yaml.safe_load(policy_path.read_text())
+        policy = read_policy_yaml(policy_path)
     else:
         return StepResult(status="FAIL", failure_message="Missing policy file")
 

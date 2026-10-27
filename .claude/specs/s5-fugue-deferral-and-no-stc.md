@@ -2,6 +2,8 @@
 status: superseded
 status_note: superseded   # FUGUE removed in v1 (v1-claims-ledger.md); STC section still valid
 slug: s5-fugue-deferral-and-no-stc
+kind: decision
+needs_review: true        # the FUGUE deferral rests on a premise falsified 2026-08-12
 ---
 
 
@@ -18,8 +20,25 @@ when a run has a GRE phasediff + magnitude pair, so the capability is detected;
 the dispatcher then falls through to SyN.
 
 **Why deferred.**
-- No `intended_use: v1_validation` dataset ships a GRE phasediff fieldmap. The
-  cohort spans reversed-PE EPI pairs (-> TopUp) and image-only runs (-> SyN).
+- ~~No `intended_use: v1_validation` dataset ships a GRE phasediff fieldmap.~~
+  **FALSIFIED 2026-08-12, and the correction unblocks the strongest available
+  validation.** ds005883 ships GRE fieldmap data for **all 39 subjects** — 234 files,
+  `acq-GRE_magnitude1` (TE 4.92 ms), `magnitude2` (TE 7.38 ms) and `phase1`. The phase
+  image is scaled **−4096 to +4094**, which is Siemens phase-*difference* scaling, not
+  absolute phase, so ΔTE = **2.46 ms** and `fsl_prepare_fieldmap` has every input it
+  needs. The file is named `phase1` rather than the BIDS `phasediff`, which is the only
+  reason `select_mode` never detects it.
+
+  **This is better than a bug report.** ds005883 carries a reversed-PE pair *and* a GRE
+  map for the same 39 subjects, which is precisely the dataset this spec says does not
+  exist: **two independent measured fields on the same run**. That makes it the natural
+  validation set for FUGUE, and it also gives F1 a second physical referee — the finding
+  currently rests on one measured field, and this would test it against another obtained
+  by a different physical mechanism. Before implementing, check that the phase map
+  unwraps in the neck; cord GRE maps often do not, and a documented unwrap failure is
+  itself the measured reason the cord field prefers reversed-PE.
+- The rest of the cohort spans reversed-PE EPI pairs (-> TopUp) and image-only runs
+  (-> SyN).
 - Shipping an unvalidatable code path violates the project's lock-and-ship rule
   (#6) and "visual QC is the validator" (#5): we cannot eyeball a FUGUE reportlet
   on data we do not have. Speculative SDC code that never runs is liability, not
@@ -110,3 +129,33 @@ Hemmerling/Bright 2025 (PMC11785179); Cohen-Adad "Ten Key Insights" (PMC6162663)
 Harita/Stroman/Barry brain+cord (PMC7363111); Sladky 2011 (PMID 21757015);
 Kasper 2016 (PMC5274797); Parker & Razlighi 2019 (PMC6736626); Glasser 2013 HCP;
 spinalcordmri.org "Slice timing in spinal cord fMRI" forum thread.
+
+## Unverified / Assumptions
+
+Added 2026-08-12 alongside the correction to the FUGUE deferral premise.
+
+**Verified in this session, on disk:**
+- ds005883 ships 234 GRE files, `acq-GRE_magnitude1` / `magnitude2` / `phase1`, for all
+  39 subjects. Checked by directory listing.
+- Echo times 4.92 ms and 7.38 ms, read from the JSON sidecars, so ΔTE = 2.46 ms.
+- The `phase1` image spans −4096 to +4094 in float64, read from the array itself.
+
+**Assumed, not verified:**
+- That the ±4096 range means a Siemens *phase-difference* map rather than a rescaled
+  absolute phase. This is the standard `gre_field_mapping` export and the two-magnitude,
+  one-phase layout is that sequence's signature, but the sidecars carry no `EchoTime1` /
+  `EchoTime2` pair and no `Units`, so the interpretation rests on convention. **Check
+  before implementing:** a phase-difference map has near-zero mean inside tissue and
+  wraps smoothly; an absolute phase map does not.
+- That the map unwraps usably in the cervical neck. Cord GRE fieldmaps frequently do not,
+  and this has not been attempted here.
+- That `IntendedFor` links these fmaps to the BOLD runs. Not checked; the sidecar read in
+  this session returned `IntendedFor: None` for sub-01, so the S5 matcher would fall
+  through to its permissive default.
+
+**Unaffected by the correction:** no run was silently degraded. ds005883 also has a
+reversed-PE pair, so every one of its runs already ran `topup`. What was wrong is the
+stated *reason* for deferring FUGUE, not the outcome of any run.
+
+**Section 2 (no slice-timing correction) is untouched by this correction** and its
+sources stand as written.

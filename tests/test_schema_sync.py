@@ -16,14 +16,14 @@ present, and always check the drift cases above, so a schema and its step
 cannot silently diverge again.
 """
 import json
-from pathlib import Path
-
 import os
+from pathlib import Path
 
 import pytest
 
 SCHEMA_DIR = Path("schemas")
-COHORT = Path(os.environ.get("SPINEPREP_COHORT", "/path/to/spineprep_cohort_s2/logs"))
+# A real cohort's logs/ folder to validate against; unset or missing: that test is skipped.
+COHORT = Path(os.environ.get("SPINEPREP_COHORT_LOGS", "/nonexistent"))
 
 
 def _schema(name):

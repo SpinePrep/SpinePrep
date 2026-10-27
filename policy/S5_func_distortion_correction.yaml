@@ -2,8 +2,10 @@ version: 1
 
 # Per-run mode is chosen automatically from S1 inventory + IntendedFor:
 #   topup (reversed-phase EPI pair) -> syn (image-based fallback)
-# GRE-fieldmap FUGUE was removed in v1: no GRE-fieldmap data exists in the
-# validation cohort, so GRE-only data falls through to SyN (recorded honestly).
+# GRE-fieldmap FUGUE is not implemented in v1. One validation dataset (ds005883)
+# ships GRE magnitude + phase-difference images, but they are not named
+# `phasediff`, so the mode picker does not see them; GRE-only runs fall through
+# to the no-pair setting below (see .claude/specs/s5-fugue-deferral-and-no-stc.md).
 distortion_correction:
   prefer_mode: "auto"             # auto | topup | syn | none (forces a mode)
 

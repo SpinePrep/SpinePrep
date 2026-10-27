@@ -1,4 +1,4 @@
-"""S1_input_verify: backwards-compatible re-export from steps.s1 subpackage."""
+"""S1_input_verify: short import path for the step; what it does, its input, output and usage are in steps/s1/__init__.py."""
 from spineprep.steps.s1 import (
     run_S1_input_verify,
     check_S1_input_verify,

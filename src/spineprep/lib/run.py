@@ -108,3 +108,22 @@ def run_command(
 def is_command_not_found(message: str) -> bool:
     """Check if an error message indicates a missing command."""
     return "Command not found" in message or "not found" in message.lower()
+
+
+def only_subjects(runs: list[dict], logger=None) -> list[dict]:
+    """Keep only the runs of the subjects named in ``SPINEPREP_ONLY_SUBJECTS``.
+
+    S6-S9 iterate their run list serially, so using more cores means several
+    invocations over disjoint subject sets. The filter makes those sets explicit;
+    without it every invocation processes the whole dataset and they race on the
+    same output folders. Comma-separated labels, with or without ``sub-``.
+    Unset or empty: all runs are kept.
+    """
+    only = os.environ.get("SPINEPREP_ONLY_SUBJECTS", "").strip()
+    if not only:
+        return runs
+    keep = {s.strip().replace("sub-", "") for s in only.split(",") if s.strip()}
+    kept = [r for r in runs if str(r.get("subject", "")).replace("sub-", "") in keep]
+    if logger is not None:
+        logger.info("SPINEPREP_ONLY_SUBJECTS=%s -> %d runs", only, len(kept))
+    return kept

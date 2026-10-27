@@ -153,14 +153,21 @@ def _process_session_s3(
                 cordref_std_path=cordref_std_path,
             )
             run_result["results"].append(("S3.3", s3_3_res))
+            if s3_3_res.get("qc_status") == "FAIL":
+                run_result["status"] = "FAIL"
+                run_result["failure_message"] = f"S3.3 crop failed: {s3_3_res.get('failure_message')}"
+                session_runs.append(run_result)
+                continue
 
             # Copy final figures to derivatives/figures
             reportlets = {}
             if "figure_path" in s3_1_res and s3_1_res["figure_path"]:
-                 reportlets["func_localization"] = str(Path(s3_1_res["figure_path"]).relative_to(out_root)) if Path(s3_1_res["figure_path"]).is_absolute() else str(s3_1_res["figure_path"])
+                 fig = Path(s3_1_res["figure_path"])
+                 reportlets["func_localization"] = str(fig.relative_to(out_root)) if fig.is_absolute() else str(fig)
 
             if "figure_path" in s3_2_res and s3_2_res["figure_path"]:
-                 reportlets["frame_metrics"] = str(Path(s3_2_res["figure_path"]).relative_to(out_root)) if Path(s3_2_res["figure_path"]).is_absolute() else str(s3_2_res["figure_path"])
+                 fig = Path(s3_2_res["figure_path"])
+                 reportlets["frame_metrics"] = str(fig.relative_to(out_root)) if fig.is_absolute() else str(fig)
 
             if s3_3_res.get("figures"):
                 figs_out = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / "figures"
@@ -370,6 +377,8 @@ def _run_s3_test_harness(out: Optional[str]) -> StepResult:
         work_dir=work_dir,
         policy=policy
     )
+    if s3_3["qc_status"] == "FAIL":
+        return StepResult("FAIL", s3_3.get("failure_message"))
 
     if out:
         from spineprep.qc_dashboard import generate_dashboard_safe

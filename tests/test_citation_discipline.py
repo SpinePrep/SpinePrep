@@ -13,9 +13,15 @@ from pathlib import Path
 import pytest
 
 # Files a reader or reviewer actually sees.
+#
+# The docs surface is *.md AND *.html. Until 2026-08-14 it was Markdown only, which left
+# the single most-read page on the site -- the landing page at docs/overrides/home.html --
+# as the one page outside this gate. A gate that misses the front page is worse than no
+# gate, because it reads as coverage.
 _SURFACES = sorted(
     [p for p in Path("src/spineprep").rglob("*.py")]
     + [p for p in Path("docs").rglob("*.md")]
+    + [p for p in Path("docs").rglob("*.html")]
     + [p for p in Path("policy").glob("*.yaml")]
     + [Path("README.md"), Path("paper/DRAFT.md")]
     + [p for p in Path("validation").glob("*.py")]

@@ -1,8 +1,23 @@
-"""
-pl00_SETUP run and check entry points.
+"""Check the dataset registry and the processing environment before any run.
 
-Ensures policy/datasets.yaml passes the v1 gate and environment prerequisites
-are satisfied, then writes QC and state outputs.
+S0 is a developer utility. It is not part of the BIDS-App chain run by
+`spineprep <bids_dir> <out_dir> participant`.
+
+Input: `policy/datasets.yaml` under the project root (validated against the v1
+policy gate), the container runtime (`docker` or `apptainer`), the container
+images, and the PAM50 template data (`PAM50_PATH` or the SCT data directory).
+
+Output: `logs/S0_setup_qc.json` (one record per check, PASS or FAIL),
+`state/setup_state.yaml` (registry fingerprint and environment record), and
+copies of both plus `checks.txt` and `summary.md` under `logs/S0_evidence/`.
+S0 writes no derivatives.
+
+QC picture: none. The QC record lists every check with its outcome; the first
+failed check is named as the failure message.
+
+Usage:
+    spineprep run S0_SETUP --project-root <project_root>
+    spineprep check S0_SETUP --project-root <project_root>
 """
 
 from __future__ import annotations

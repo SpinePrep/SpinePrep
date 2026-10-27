@@ -68,6 +68,23 @@ def _s9_policy_sha_for_record(policy: dict) -> str:
     ).hexdigest()[:16]
 
 
+def _sigma_override(value: Optional[str]) -> Optional[list[float]]:
+    """Smoothing sigma (mm, R-L A-P S-I) from SPINEPREP_SIGMA_MM, e.g. "1,1,5"; None when unset.
+
+    Set by the BIDS-App --smoothing-sigma-mm flag. A value that is not three numbers is refused
+    rather than ignored, so a typo never runs the default kernel unnoticed.
+    """
+    if not value or not value.strip():
+        return None
+    try:
+        sigma = [float(x) for x in value.replace(",", " ").split()]
+    except ValueError:
+        sigma = []
+    if len(sigma) != 3 or any(s < 0 for s in sigma):
+        raise ValueError(f"SPINEPREP_SIGMA_MM={value!r}: expected three non-negative numbers in mm, e.g. 1,1,5")
+    return sigma
+
+
 # ---------------------------------------------------------------------------
 # Smoothing — per-volume sct_smooth_spinalcord (CoSpi pattern)
 # ---------------------------------------------------------------------------
@@ -534,25 +551,26 @@ def _estimate_fwhm_axis(
     """One-sided autocorrelation FWHM along a single axis in voxel units,
     then convert to mm.
 
-    Method: per-voxel temporal-mean of cord BOLD; compute autocorr at lag 1
-    along the axis; full-width-at-half-max approximation from the lag-1
-    correlation using FWHM = 2 √(−2 log(r1)) under Gaussian field theory.
-    Reference: FSL `smoothest` / Forman 1995.
+    Method: lag-1 spatial correlation r1 of the temporally demeaned series,
+    pooled over voxels and volumes, converted to the FWHM of the equivalent
+    Gaussian kernel: FWHM = sqrt(2 ln 2 / -ln r1) voxels (AFNI 3dFWHMx
+    classic / Forman 1995 convention). Verified by simulation: recovers a
+    known kernel FWHM of 1.5-4.0 voxels to within 0.1 voxel
+    (tests/test_s9_fwhm.py). Accepts 3-D or 4-D input.
     """
-    if data.ndim != 3 or not mask.any():
+    if data.ndim not in (3, 4) or not mask.any():
         return None
-    # Restrict to mask
-    arr = data * mask
+    if data.ndim == 3:
+        data = data[..., None]
+    arr = data * mask[..., None]
     # Shift by 1 along axis
     sl_a = [slice(None)] * 3
     sl_b = [slice(None)] * 3
     sl_a[axis] = slice(None, -1)
     sl_b[axis] = slice(1, None)
-    m1 = mask[tuple(sl_a)]
-    m2 = mask[tuple(sl_b)]
-    both = m1 & m2
-    a = arr[tuple(sl_a)][both]
-    b = arr[tuple(sl_b)][both]
+    both = mask[tuple(sl_a)] & mask[tuple(sl_b)]
+    a = arr[tuple(sl_a)][both].ravel()
+    b = arr[tuple(sl_b)][both].ravel()
     if a.size < 5:
         return None
     a = a - a.mean(); b = b - b.mean()
@@ -562,7 +580,7 @@ def _estimate_fwhm_axis(
     r1 = float((a * b).sum() / denom)
     if r1 <= 0 or r1 >= 1.0:
         return None
-    fwhm_vox = 2.0 * np.sqrt(-2.0 * np.log(r1))
+    fwhm_vox = float(np.sqrt(2.0 * np.log(2.0) / -np.log(r1)))
     return float(fwhm_vox * zoom_mm)
 
 
@@ -573,13 +591,15 @@ def _estimate_residual_fwhm(
     data = img.get_fdata().astype(np.float32)
     if data.ndim != 4:
         return {"x": None, "y": None, "z": None}
-    mean = data.mean(axis=3)
+    # Residual proxy: remove each voxel's temporal mean. The temporal mean
+    # itself is anatomy contrast, not noise, and must not be measured.
+    resid = data - data.mean(axis=3, keepdims=True)
     mask = nib.load(cord_mask_path).get_fdata() > 0.5
     zooms = img.header.get_zooms()[:3]
     return {
-        "x": _estimate_fwhm_axis(mean, mask, axis=0, zoom_mm=zooms[0]),
-        "y": _estimate_fwhm_axis(mean, mask, axis=1, zoom_mm=zooms[1]),
-        "z": _estimate_fwhm_axis(mean, mask, axis=2, zoom_mm=zooms[2]),
+        "x": _estimate_fwhm_axis(resid, mask, axis=0, zoom_mm=zooms[0]),
+        "y": _estimate_fwhm_axis(resid, mask, axis=1, zoom_mm=zooms[1]),
+        "z": _estimate_fwhm_axis(resid, mask, axis=2, zoom_mm=zooms[2]),
     }
 
 
@@ -753,13 +773,7 @@ def run_S9_primary_functional_derivatives(
     # SPINEPREP_SIGMA_MM env var (set by the BIDS-App --smoothing-sigma-mm
     # flag) so a user can tune the kernel without editing policy YAML.
     import os
-    _env_sigma = os.environ.get("SPINEPREP_SIGMA_MM")
-    sigma_xyz = list(sm.get("sigma_mm", [1.0, 1.0, 5.0]))
-    if _env_sigma:
-        try:
-            sigma_xyz = [float(x) for x in _env_sigma.replace(",", " ").split()][:3]
-        except Exception:
-            pass
+    sigma_xyz = _sigma_override(os.environ.get("SPINEPREP_SIGMA_MM")) or list(sm.get("sigma_mm", [1.0, 1.0, 5.0]))
     sigma_fwhm = [s * 2.3548 for s in sigma_xyz]
 
     # Smoothing is OFF by default (decision 1A, 2026-07-18). Preprocessing is

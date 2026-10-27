@@ -860,7 +860,9 @@ def _process_s3_1_dummy_drop_and_localization(
          # Reconstruct figure path for dashboard consistency
          figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
          if out_root:
-             fig_path = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_func_localization.png"
+             fig_path = (out_root / "derivatives" / "spineprep" / f"sub-{subject}"
+                         / (f"ses-{session}" if session else "") / "figures"
+                         / f"{figure_prefix}_desc-S3_func_localization.png")
          else:
              fig_path = None
 

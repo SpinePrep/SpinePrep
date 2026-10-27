@@ -24,7 +24,8 @@ if _SRC not in sys.path:
 
 # (test-file basename, name substring or None for the whole file, required tools)
 _TOOL_REQUIREMENTS = [
-    ("test_s3_subtask_integration.py", None, ("sct_deepseg", "flirt")),
+    # sct_deepseg is a stand-in unless SPINEPREP_REAL_SCT=1; the crop needs SCT's fast tools
+    ("test_s3_subtask_integration.py", None, ("flirt", "sct_create_mask", "sct_crop_image")),
     ("test_S4_unit.py", "test_coarse_bulk_xy_correction", ("flirt",)),
 ]
 

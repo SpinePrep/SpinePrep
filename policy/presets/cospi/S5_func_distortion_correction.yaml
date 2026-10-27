@@ -1,0 +1,2 @@
+distortion_correction:
+  prefer_mode: "none"

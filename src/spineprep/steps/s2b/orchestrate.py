@@ -5,7 +5,7 @@ S4 moco) -- MP-PCA needs the rawest, non-interpolated data (see lib/denoise.py).
 OFF by default; when disabled the step is a clean passthrough (qc PASS, no
 outputs) and S3 falls back to the raw BOLD.
 
-Outputs per run, under the workfolder:
+Outputs per run, under the output root (`--out`):
   denoise/<run_id>/desc-denoised_bold.nii.gz   (S3 consumes this when present)
   denoise/<run_id>/denoise_noise_map.nii.gz
   derivatives/spineprep/<ds>/sub-XX/figures/  (3 QC reportlets)
@@ -21,6 +21,8 @@ from typing import Any, Optional
 import nibabel as nib
 import numpy as np
 import yaml
+
+from spineprep.lib.policy import read_policy_yaml
 
 from spineprep.lib.denoise import mppca_denoise
 from spineprep.steps.s2.io import StepResult
@@ -49,7 +51,7 @@ def _residual_structure_corr(raw: np.ndarray, den: np.ndarray) -> Optional[float
 def _load_policy() -> dict:
     if POLICY_PATH.exists():
         try:
-            return yaml.safe_load(POLICY_PATH.read_text()) or {}
+            return read_policy_yaml(POLICY_PATH) or {}
         except Exception:
             return {}
     return {}

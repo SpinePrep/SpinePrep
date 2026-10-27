@@ -14,8 +14,11 @@ from typing import Optional
 
 import yaml
 
+from spineprep.lib.policy import read_policy_yaml
+
 from .process import run_S8_confounds_and_physio_regressors
 from spineprep.lib.chain_scope import chain_scope
+from spineprep.lib.run import only_subjects
 
 logger = logging.getLogger(__name__)
 
@@ -363,7 +366,7 @@ def run_S8(
     policy: dict = {}
     if policy_path.exists():
         try:
-            policy = yaml.safe_load(policy_path.read_text()) or {}
+            policy = read_policy_yaml(policy_path) or {}
         except Exception as e:
             return StepResult("FAIL", f"Policy error: {e}")
 
@@ -378,6 +381,7 @@ def run_S8(
         upstream_runs = [r for r in s6_qc.get("runs", []) if r.get("status") != "FAIL"]
         upstream_qc = s6_qc
         upstream_name = "S6"
+    upstream_runs = only_subjects(upstream_runs, logger)
     if not upstream_runs:
         return StepResult("FAIL",
                           f"No PASS/WARN {upstream_name} runs for dataset {dataset_key}")

@@ -1,4 +1,4 @@
-"""S3_func_init_and_crop: backwards-compatible re-export from steps.s3 subpackage."""
+"""S3_func_init_and_crop: short import path for the step; what it does, its input, output and usage are in steps/s3/__init__.py."""
 from spineprep.steps.s3 import (
     run_S3_func_init_and_crop,
     check_S3_func_init_and_crop,

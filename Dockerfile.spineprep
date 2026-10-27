@@ -43,6 +43,9 @@ RUN git clone --depth 1 --branch ${SCT_VERSION} \
     /opt/sct/bin/sct_maths -h > /dev/null 2>&1 && \
     echo "SCT functionally verified"
 ENV PATH=/opt/sct/bin:$PATH SCT_DIR=/opt/sct
+# SCT reads its version from its git checkout; under `docker run --user` git refuses a root-owned repository and
+# SCT reports "git-unknown", which then lands in every sidecar and the receipt.
+RUN git config --system --add safe.directory /opt/sct
 
 # --- FSL (topup/applytopup + PNM) -------------------------------------------
 # Use FSL's official installer; accept the license non-interactively per FSL ToU.
@@ -50,6 +53,14 @@ RUN curl -fsSL https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinst
         -o /tmp/fslinstaller.py && \
     python3 /tmp/fslinstaller.py -d /opt/fsl -V 6.0.7.9 && rm /tmp/fslinstaller.py
 ENV FSLDIR=/opt/fsl PATH=/opt/fsl/bin:$PATH FSLOUTPUTTYPE=NIFTI_GZ
+
+# --- MRtrix3 dwidenoise (S2B MP-PCA denoising) -------------------------------
+# S2B is off by default but presets can turn it on (cospi does). Pinned to 3.0.4, installed with the micromamba that
+# FSL's installer ships, into its own prefix; only dwidenoise is put on PATH so nothing else in FSL or SCT is shadowed.
+RUN /opt/fsl/bin/micromamba create -q -y -p /opt/mrtrix3 -c mrtrix3 -c conda-forge mrtrix3=3.0.4 && \
+    /opt/fsl/bin/micromamba clean -q -a -y && \
+    ln -s /opt/mrtrix3/bin/dwidenoise /usr/local/bin/dwidenoise && \
+    dwidenoise -version | head -1
 
 # --- Pre-install SCT deep-learning models -----------------------------------
 # The pipeline calls these sct_deepseg tasks; SCT downloads each model on first
@@ -83,7 +94,12 @@ COPY src /app/src
 COPY policy /app/policy
 COPY schemas /app/schemas
 COPY config /app/config
-RUN pip3 install --no-cache-dir .
+RUN pip3 install --no-cache-dir . && \
+    chmod 1777 /app
+# /app is the working directory (steps read policy/ relative to it). Some SCT tools drop working files into the
+# current directory; world-writable (sticky) /app lets them do so under `docker run --user`.
+# A user without a home (docker run --user) gets a writable HOME for matplotlib and fontconfig caches.
+ENV HOME=/tmp MPLCONFIGDIR=/tmp/matplotlib
 
 # Stamp the pipeline version into the image so the reproducibility receipt records
 # it (the image has no .git to query). Pass at build time:

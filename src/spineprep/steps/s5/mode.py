@@ -26,7 +26,7 @@ def _opposite_pe(pe_a: Optional[str], pe_b: Optional[str]) -> bool:
 
 def _pe_from_run(run: dict) -> Optional[str]:
     """Pull PhaseEncodingDirection from the run's acquisition dict if S1
-    extracted it (post-A5 commit); else fall back to the BIDS `dir-`
+    extracted it (S1 records it since it reads field-map parameters); else fall back to the BIDS `dir-`
     filename entity. dir-AP -> j-, dir-PA -> j (standard cervical EPI
     convention; LR/RL not used in our v1_validation set)."""
     acq = run.get("acquisition") or {}
@@ -129,11 +129,13 @@ def select_mode(
     # No reversed-PE pair: fall back per policy.
     #
     # GRE phasediff/magnitude fieldmaps would in principle drive a FUGUE path,
-    # but FUGUE is not implemented in v1: no GRE-fieldmap data exists in the
-    # validation cohort, so the path could not be validated. Note this is a gap
-    # against the MOST precedented cord SDC method, not a legacy one — Vahdat
-    # 2015 (PLoS Biol) and FASB (Vahdat/Landelle/De Leener/Doyon) both use GRE
-    # fieldmap unwarping for the cord. It is unimplemented for lack of data, not
+    # but FUGUE is not implemented in v1. ds005883 does ship GRE magnitude +
+    # phase-difference images (corrected 2026-08-12), but they are not named
+    # `phasediff`, so this picker never sees them and the path is unvalidated.
+    # Note this is a gap against the MOST precedented cord SDC method, not a
+    # legacy one — Vahdat 2015 (PLoS Biol) and FASB (Vahdat/Landelle/De
+    # Leener/Doyon) both use GRE fieldmap unwarping for the cord. It is
+    # unimplemented because the path was never built and validated, not for
     # lack of standing. Such data falls through to the fallback, recorded
     # honestly. See .claude/specs/s5-algorithm-audit-v3.md.
     return (fallback_mode if fallback_mode in ("syn", "none") else "none"), []

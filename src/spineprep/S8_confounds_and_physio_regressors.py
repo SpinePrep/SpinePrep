@@ -1,4 +1,4 @@
-"""S8_confounds_and_physio_regressors: re-export from steps.s8 subpackage."""
+"""S8_confounds_and_physio_regressors: short import path for the step; what it does, its input, output and usage are in steps/s8/__init__.py."""
 from spineprep.steps.s8 import (
     StepResult,
     run_S8,

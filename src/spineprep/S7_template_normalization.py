@@ -1,4 +1,4 @@
-"""S7_template_normalization: re-export from steps.s7 subpackage."""
+"""S7_template_normalization: short import path for the step; what it does, its input, output and usage are in steps/s7/__init__.py."""
 from spineprep.steps.s7 import (
     StepResult,
     run_S7,

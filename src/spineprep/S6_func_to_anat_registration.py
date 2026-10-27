@@ -1,4 +1,4 @@
-"""S6_func_to_anat_registration: re-export from steps.s6 subpackage."""
+"""S6_func_to_anat_registration: short import path for the step; what it does, its input, output and usage are in steps/s6/__init__.py."""
 from spineprep.steps.s6 import (
     StepResult,
     run_S6,

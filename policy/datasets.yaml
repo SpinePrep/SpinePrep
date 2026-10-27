@@ -149,7 +149,12 @@ datasets:
   - v1_validation
   counts:
     participants: 48
-    sessions: 2
+    # CORRECTED 2026-08-12: ds004386 has ONE session per subject, containing two
+    # acquisitions that differ in shim (acq-autozshim / acq-manualzshim). The run
+    # filenames carry no `ses-` entity. Any analysis treating these as a
+    # session-gap repeat axis rests on a wrong premise; the cohort's only genuinely
+    # multi-session datasets are ds004616 and ds004926.
+    sessions: 1
   spec:
     domains:
     - spinalcord
@@ -160,6 +165,18 @@ datasets:
     - rest
     tasks: []
     has_fmap: false
+    # STAYS false, and the reason is worth recording. This flag means "the RAW
+    # BIDS tree ships physio that S1 can find", which is what S1 validates against
+    # (steps/s1/validate.py:355 WARNs on every cord run when it is true and no
+    # raw physio is present). The raw tree has none, so false is correct here.
+    #
+    # But physiology DOES exist for this dataset, in its own derivatives:
+    # datasets/openneuro_ds004386_.../derivatives/sub-*/physio/*_physio_table.csv
+    # -- 96 files, 48 subjects x 2 shim arms, columns ecg/resp/trigger/peaks with
+    # R peaks already detected, 1000 Hz. Verified on disk 2026-08-14.
+    # So any ANALYSIS wanting cardiac/respiratory regressors on the cohort's
+    # largest resting dataset can have them; it just must not read this flag to
+    # decide that. Flipping this to true would emit 96 spurious S1 warnings.
     has_physio: false
   selection:
     mode: all

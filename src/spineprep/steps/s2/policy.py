@@ -5,11 +5,13 @@ from pathlib import Path
 
 import yaml
 
+from spineprep.lib.policy import read_policy_yaml
+
 
 def _load_policy(path: Path) -> dict:
     if not path.exists():
         raise ValueError(f"Policy not found: {path}")
-    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    raw = read_policy_yaml(path) or {}
     if not isinstance(raw, dict):
         raise ValueError("S2_anat_cordref policy must be a mapping.")
     version = raw.get("version")

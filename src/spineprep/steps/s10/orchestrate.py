@@ -14,6 +14,8 @@ from typing import Optional
 
 import yaml
 
+from spineprep.lib.policy import read_policy_yaml
+
 from .process import (
     _build_citation_cff,
     _build_cohort_coverage_matrix,
@@ -123,7 +125,7 @@ def run_S10(
     policy: dict = {}
     if policy_path.exists():
         try:
-            policy = yaml.safe_load(policy_path.read_text()) or {}
+            policy = read_policy_yaml(policy_path) or {}
         except Exception as e:
             return StepResult("FAIL", f"Policy error: {e}")
 

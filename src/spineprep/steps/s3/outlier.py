@@ -88,7 +88,9 @@ def _process_s3_2_outlier_gating(
          run_id = work_dir.name if work_dir.name.startswith("sub-") else None
          figure_prefix = run_id if run_id else (f"sub-{subject}_ses-{session}" if session else f"sub-{subject}")
          if out_root:
-             fig_path = out_root / "derivatives" / "spineprep" / f"sub-{subject}" / (f"ses-{session}" if session else "") / "figures" / f"{figure_prefix}_desc-S3_frame_metrics.png"
+             fig_path = (out_root / "derivatives" / "spineprep" / f"sub-{subject}"
+                         / (f"ses-{session}" if session else "") / "figures"
+                         / f"{figure_prefix}_desc-S3_frame_metrics.png")
          else:
              fig_path = None
 

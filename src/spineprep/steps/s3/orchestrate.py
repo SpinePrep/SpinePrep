@@ -9,6 +9,8 @@ from typing import Optional
 import nibabel as nib
 import numpy as np
 import yaml
+
+from spineprep.lib.policy import read_policy_yaml
 from PIL import Image
 
 from spineprep.steps.s2.io import StepResult
@@ -86,7 +88,7 @@ def run_S3_func_init_and_crop(
     policy_path = Path("policy") / "S3_func_init_and_crop.yaml"
     try:
         if policy_path.exists():
-            policy = yaml.safe_load(policy_path.read_text()) or {}
+            policy = read_policy_yaml(policy_path) or {}
         else:
             policy = {}
     except Exception as e:
@@ -248,7 +250,7 @@ def run_S3_func_init_and_crop_batch(
     policy_path = Path("policy") / "S3_func_init_and_crop.yaml"
     try:
         if policy_path.exists():
-            policy = yaml.safe_load(policy_path.read_text()) or {}
+            policy = read_policy_yaml(policy_path) or {}
         else:
             policy = {}
     except Exception as e:

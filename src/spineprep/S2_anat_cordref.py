@@ -1,4 +1,4 @@
-"""S2_anat_cordref: backwards-compatible re-export from steps.s2 subpackage."""
+"""S2_anat_cordref: short import path for the step; what it does, its input, output and usage are in steps/s2/__init__.py."""
 from spineprep.steps.s2 import (
     StepResult,
     run_S2_anat_cordref,

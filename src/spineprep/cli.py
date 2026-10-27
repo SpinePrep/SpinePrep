@@ -53,7 +53,11 @@ def _add_S0_arguments(subparser: argparse.ArgumentParser) -> None:
         # pipeline (analyst-owned); the release step is now S10 (was S11).
         # 2026-06-11 — it is analyst-owned downstream analysis, not preprocessing.
         # The module stays importable as a library; it is no longer a runnable step.
-        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S2B_func_denoise", "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction", "S6_func_to_anat_registration", "S7_template_normalization", "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives", "S10_qc_aggregation_and_release"],
+        choices=["S0_SETUP", "S1_input_verify", "S2_anat_cordref", "S2B_func_denoise",
+                 "S3_func_init_and_crop", "S4_func_motion_correction", "S5_func_distortion_correction",
+                 "S6_func_to_anat_registration", "S7_template_normalization",
+                 "S8_confounds_and_physio_regressors", "S9_primary_functional_derivatives",
+                 "S10_qc_aggregation_and_release"],
         help="Pipeline step code",
     )
     subparser.add_argument(
